@@ -67,4 +67,4 @@ ribbon:
   ReadTimeout: 5000
 services:
   attachment:
-    url: http://minio.staging.saas.hand-china.com/agile-service/
+    url: example.com
