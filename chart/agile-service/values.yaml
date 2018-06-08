@@ -17,7 +17,6 @@ service:
   port: 8378
 
 preJob:
-  appname: agile-service
   preConfig:
     configFile: application.yml
     mysql:
@@ -44,6 +43,7 @@ env:
     SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: kafka-0.kafka-headless.kafka.svc.cluster.local:9092, kafka-1.kafka-headless.kafka.svc.cluster.local:9092, kafka-2.kafka-headless.kafka.svc.cluster.local:9092
     SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES: zookeeper-0.zookeeper-headless.zookeeper.svc.cluster.local:2181,zookeeper-1.zookeeper-headless.zookeeper.svc.cluster.local:2181,zookeeper-2.zookeeper-headless.zookeeper.svc.cluster.local:2181
     SPRING_CLOUD_CONFIG_URI: http://config-server.io-choerodon:8010/
+    SERVICES_ATTACHMENT_URL: example.com
 
 metrics:
   path: /prometheus

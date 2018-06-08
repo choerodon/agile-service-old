@@ -190,7 +190,7 @@
     </dependencies>
 
     <build>
-        <finalName>agile</finalName>
+        <finalName>app</finalName>
     </build>
 
 </project>
