@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.IssueLabelMapper">
+
+    <delete id="labelGarbageCollection">
+        DELETE
+        FROM
+            agile_issue_label
+        WHERE
+            label_id IN (
+                SELECT d.id
+                FROM
+                    (
+                        SELECT ail.label_id AS id
+                        FROM
+                            agile_issue_label ail
+                            LEFT JOIN agile_label_issue_rel ali ON ali.label_id = ail.label_id
+                        WHERE
+                            ali.issue_id IS NULL
+                    ) d
+            )
+    </delete>
+
+    <select id="checkNameExist" resultType="java.lang.Boolean">
+        SELECT count(ail.label_id)
+        FROM agile_issue_label ail
+        WHERE project_id = #{projectId} AND label_name = #{labelName}
+    </select>
+
+    <select id="queryLabelIdByLabelNameAndProjectId" resultType="java.lang.Long">
+        SELECT ail.label_id
+        FROM agile_issue_label ail
+        WHERE project_id = #{projectId} AND label_name = #{labelName}
+    </select>
+
+</mapper>

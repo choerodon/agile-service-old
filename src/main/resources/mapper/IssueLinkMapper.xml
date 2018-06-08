@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.IssueLinkMapper">
+
+    <insert id="batchCreateIssueLink">
+        INSERT INTO
+        agile_issue_link(issue_id,issue_link_type_code,linked_issue_id)
+        VALUES
+        <foreach collection="issueLinkDOList" item="temp" separator=",">
+            (#{issueId},#{temp.issueLinkTypeCode},#{temp.linkedIssueId})
+        </foreach>
+    </insert>
+
+</mapper>

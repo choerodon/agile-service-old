@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.VersionIssueRelMapper">
+
+    <delete id="deleteIncompleteIssueByVersionId">
+        DELETE avir
+        FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
+        WHERE avir.version_id = #{versionId} AND ai.project_id = #{projectId}
+        AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix' AND ai.status_id = ais.id
+        AND ais.category_code != 'done'
+    </delete>
+
+</mapper>

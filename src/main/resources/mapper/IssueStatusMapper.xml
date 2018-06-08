@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.IssueStatusMapper">
+
+    <resultMap id="statusAndIssuesMap" type="io.choerodon.agile.infra.dataobject.StatusAndIssuesDO">
+        <id property="id" column="ais_id"/>
+        <id property="projectId" column="ais_project_id"/>
+        <id property="name" column="ais_name"/>
+        <id property="enable" column="ais_enable"/>
+        <id property="categoryCode" column="ais_category_code"/>
+        <id property="objectVersionNumber" column="ais_object_version_number"/>
+        <collection property="issues" autoMapping="true" columnPrefix="ai_"
+                    ofType="io.choerodon.agile.infra.dataobject.IssueForBoardDO"/>
+    </resultMap>
+
+    <select id="queryUnCorrespondStatus" resultMap="statusAndIssuesMap">
+        SELECT
+            ais.id                    AS ais_id,
+            ais.project_id            AS ais_project_id,
+            ais.name                  AS ais_name,
+            ais.is_enable             AS ais_enable,
+            ais.category_code            ais_category_code,
+            ais.object_version_number AS ais_object_version_number,
+            ai.issue_id               AS ai_issue_id,
+            ai.summary                AS ai_summary,
+            ai.priority_code          AS ai_priority_code,
+            ai.object_version_number  AS ai_object_version_number
+        FROM
+            agile_issue_status ais
+            LEFT JOIN agile_issue ai ON ai.status_id = ais.id
+        WHERE
+            ais.project_id = #{projectId}
+            AND (
+                    SELECT COUNT(1) AS num
+                    FROM
+                        agile_board_column_status_rel abcsr, agile_board_column abc
+                    WHERE
+                        abc.board_id = #{boardId}
+                        AND abcsr.column_id = abc.column_id
+                        AND ais.id = abcsr.status_id
+                ) = 0
+    </select>
+
+    <select id="queryIdByProjectIdAndCategoryCode" resultType="java.lang.Long">
+        SELECT id
+        FROM agile_issue_status
+        WHERE project_id = #{projectId} AND category_code = #{categoryCode}
+    </select>
+
+    <select id="queryIssueStatus" resultType="io.choerodon.agile.infra.dataobject.IssueStatusCreateDO">
+        SELECT
+            id,
+            category_code
+        FROM
+            agile_issue_status
+        WHERE
+            project_id = #{projectId}
+            AND (category_code = 'todo'
+                 OR category_code = 'doing'
+                 OR category_code = 'done')
+            AND id IS NOT NULL
+        ORDER BY
+            id ASC
+    </select>
+
+    <select id="checkSameStatus" resultType="java.lang.Integer">
+        SELECT
+            COUNT(id)
+        FROM
+            agile_issue_status
+        WHERE project_id = #{projectId} AND LOWER(`name`) = LOWER(#{statusName})
+    </select>
+
+
+</mapper>

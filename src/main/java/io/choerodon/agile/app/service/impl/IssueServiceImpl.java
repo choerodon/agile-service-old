@@ -1,0 +1,582 @@
+package io.choerodon.agile.app.service.impl;
+
+
+import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.app.assembler.EpicDataAssembler;
+import io.choerodon.agile.app.assembler.IssueSearchAssembler;
+import io.choerodon.agile.app.service.IssueAttachmentService;
+import io.choerodon.agile.app.service.IssueCommentService;
+import io.choerodon.agile.domain.agile.entity.*;
+import io.choerodon.agile.domain.agile.repository.*;
+import io.choerodon.agile.domain.agile.rule.IssueRule;
+import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
+import io.choerodon.agile.domain.agile.rule.SprintRule;
+import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.common.utils.RankUtil;
+import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.agile.app.assembler.IssueAssembler;
+import io.choerodon.agile.app.service.IssueService;
+import io.choerodon.core.domain.Page;
+import io.choerodon.core.exception.CommonException;
+import io.choerodon.mybatis.pagehelper.PageHelper;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * 敏捷开发Issue
+ *
+ * @author dinghuang123@gmail.com
+ * @since 2018-05-14 20:30:48
+ */
+@Service
+@Transactional(rollbackFor = CommonException.class)
+public class IssueServiceImpl implements IssueService {
+
+    @Autowired
+    private IssueRepository issueRepository;
+    @Autowired
+    private ComponentIssueRelRepository componentIssueRelRepository;
+    @Autowired
+    private IssueLinkRepository issueLinkRepository;
+    @Autowired
+    private LabelIssueRelRepository labelIssueRelRepository;
+    @Autowired
+    private VersionIssueRelRepository versionIssueRelRepository;
+    @Autowired
+    private IssueAssembler issueAssembler;
+    @Autowired
+    private EpicDataAssembler epicDataAssembler;
+    @Autowired
+    private IssueSearchAssembler issueSearchAssembler;
+    @Autowired
+    private IssueMapper issueMapper;
+    @Autowired
+    private ProductVersionRule productVersionRule;
+    @Autowired
+    private IssueComponentRepository issueComponentRepository;
+    @Autowired
+    private ProductVersionRepository productVersionRepository;
+    @Autowired
+    private IssueLabelRepository issueLabelRepository;
+    @Autowired
+    private IssueRule issueRule;
+    @Autowired
+    private SprintRule sprintRule;
+    @Autowired
+    private SprintMapper sprintMapper;
+    @Autowired
+    private IssueStatusMapper issueStatusMapper;
+    @Autowired
+    private IssueAttachmentService issueAttachmentService;
+    @Autowired
+    private IssueLabelMapper issueLabelMapper;
+    @Autowired
+    private ProductVersionMapper productVersionMapper;
+    @Autowired
+    private IssueComponentMapper issueComponentMapper;
+    @Autowired
+    private IssueCommentService issueCommentService;
+    @Autowired
+    private ProjectInfoMapper projectInfoMapper;
+    @Autowired
+    private ProjectInfoRepository projectInfoRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private LookupValueMapper lookupValueMapper;
+
+    private static final String STATUS_CODE_TODO = "todo";
+    private static final String STATUS_CODE_DOING = "doing";
+    private static final String STATUS_CODE_DONE = "done";
+    private static final String SUB_TASK = "sub_task";
+    private static final String ISSUE_EPIC = "issue_epic";
+    private static final String ISSUE_MANAGER_TYPE = "模块负责人";
+    private static final String TYPE_CODE_FIELD = "typeCode";
+    private static final String EPIC_NAME_FIELD = "epicName";
+    private static final String COLOR_CODE_FIELD = "colorCode";
+    private static final String EPIC_ID_FIELD = "epicId";
+    private static final String SPRINT_ID_FIELD = "sprintId";
+    private static final String EPIC_COLOR_TYPE = "epic_color";
+    private static final String RELATION_TYPE_FIX = "fix";
+
+    @Value("${services.attachment.url}")
+    private String attachmentUrl;
+
+    @Override
+    public IssueDTO createIssue(IssueCreateDTO issueCreateDTO) {
+        IssueE issueE = issueAssembler.issueCreateDtoToIssueE(issueCreateDTO);
+        //设置初始状态,如果有todo，就用todo，否则为doing，最后为done
+        List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(issueE.getProjectId());
+        Long statusId = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
+                issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
+                        issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(new IssueStatusCreateDO()))).getId();
+        //设置issue编号
+        initializationIssueNum(issueE);
+        issueE.initializationIssue(statusId);
+        //如果是epic，初始化颜色
+        List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
+        issueE.initializationColor(colorList);
+        if (issueE.isIssueRank()) {
+            if (sprintRule.hasIssue(issueE.getProjectId(), issueE.getSprintId())) {
+                String rank = sprintMapper.queryMaxRank(issueE.getProjectId(), issueE.getSprintId());
+                issueE.setRank(RankUtil.genNext(rank));
+            } else {
+                issueE.setRank(RankUtil.mid());
+            }
+        }
+        Long issueId = issueRepository.create(issueE).getIssueId();
+        handleCreateIssueLink(issueCreateDTO.getIssueLinkDTOList(), issueId);
+        handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
+        handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
+        handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
+        return queryIssue(issueCreateDTO.getProjectId(), issueId);
+    }
+
+    @Override
+    public IssueDTO queryIssue(Long projectId, Long issueId) {
+        IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
+        if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
+            issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
+        }
+        return issueAssembler.issueDetailDoToDto(issue);
+    }
+
+    @Override
+    public Page<IssueListDTO> listIssueWithoutSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
+        //连表查询需要设置主表别名
+        pageRequest.resetOrder("ai", new HashMap<>());
+        Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
+                issueMapper.queryIssueListWithoutSub(projectId, searchDTO.getSearchArgs(), searchDTO.getAdvancedSearchArgs()));
+        Page<IssueListDTO> issueListDTOPage = new Page<>();
+        issueListDTOPage.setNumber(issueDOPage.getNumber());
+        issueListDTOPage.setNumberOfElements(issueDOPage.getNumberOfElements());
+        issueListDTOPage.setSize(issueDOPage.getSize());
+        issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
+        issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
+        issueListDTOPage.setContent(issueAssembler.issueDoToIssueListDto(issueDOPage.getContent()));
+        return issueListDTOPage;
+    }
+
+    @Override
+    public IssueDTO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList) {
+        if (fieldList != null && !fieldList.isEmpty()) {
+            if (fieldList.contains(SPRINT_ID_FIELD)) {
+                issueRepository.batchUpdateSubIssueSprintId(projectId, issueUpdateDTO.getSprintId(), issueUpdateDTO.getIssueId());
+            }
+            issueRepository.update(issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO), fieldList.toArray(new String[fieldList.size()]));
+        }
+        Long issueId = issueUpdateDTO.getIssueId();
+        handleUpdateIssueLink(issueUpdateDTO.getIssueLinkDTOList(), issueId);
+        handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId);
+        handleUpdateComponentIssueRel(issueUpdateDTO.getComponentIssueRelDTOList(), projectId, issueId);
+        handleUpdateVersionIssueRel(issueUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId);
+        return queryIssue(projectId, issueId);
+    }
+
+    @Override
+    public List<EpicDataDTO> listEpic(Long projectId) {
+        List<EpicDataDTO> epicDataList = epicDataAssembler.doListToDTO(issueMapper.queryEpicList(projectId));
+        if (!epicDataList.isEmpty()) {
+            List<Long> epicIds = epicDataList.stream().map(EpicDataDTO::getIssueId).collect(Collectors.toList());
+            Map<Long, Integer> issueCountMap = issueMapper.queryIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> doneIssueCountMap = issueMapper.queryDoneIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> notEstimateIssueCountMap = issueMapper.queryNotEstimateIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> totalEstimateMap = issueMapper.queryTotalEstimateByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            epicDataList.forEach(epicData -> {
+                epicData.setIssueCount(issueCountMap.get(epicData.getIssueId()));
+                epicData.setDoneIssueCount(doneIssueCountMap.get(epicData.getIssueId()));
+                epicData.setNotEstimate(notEstimateIssueCountMap.get(epicData.getIssueId()));
+                epicData.setTotalEstimate(totalEstimateMap.get(epicData.getIssueId()));
+            });
+        }
+        return epicDataList;
+    }
+
+    @Override
+    public int deleteIssue(Long projectId, Long issueId) {
+        IssueE issueE = queryIssueByProjectIdAndIssueId(projectId, issueId);
+        //删除issueLink
+        issueLinkRepository.deleteByIssueId(issueE.getIssueId());
+        //删除标签关联
+        labelIssueRelRepository.deleteByIssueId(issueE.getIssueId());
+        //没有issue使用的标签进行垃圾回收
+        issueLabelRepository.labelGarbageCollection();
+        //删除模块关联
+        componentIssueRelRepository.deleteByIssueId(issueE.getIssueId());
+        //删除版本关联
+        versionIssueRelRepository.deleteByIssueId(issueE.getIssueId());
+        //删除评论信息
+        issueCommentService.deleteByIssueId(issueE.getIssueId());
+        //删除附件
+        issueAttachmentService.deleteByIssueId(issueE.getIssueId());
+        //不是子任务的issue删除子任务
+        if (!(SUB_TASK).equals(issueE.getTypeCode())) {
+            if ((ISSUE_EPIC).equals(issueE.getTypeCode())) {
+                //如果是epic，会把该epic下的issue的epicId置为0
+                issueRepository.batchUpdateIssueEpicId(projectId, issueE.getIssueId());
+            }
+            List<IssueDO> issueDOList = issueMapper.queryIssueSubList(projectId, issueE.getIssueId());
+            if (issueDOList != null && !issueDOList.isEmpty()) {
+                issueDOList.forEach(subIssue -> deleteIssue(subIssue.getProjectId(), subIssue.getIssueId()));
+            }
+        }
+        return issueRepository.delete(projectId, issueE.getIssueId());
+    }
+
+    @Override
+    public IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO) {
+        IssueE subIssueE = issueAssembler.issueSubCreateDtoToEntity(issueSubCreateDTO);
+        IssueE issueE = queryIssueByProjectIdAndIssueId(subIssueE.getProjectId(), subIssueE.getParentIssueId());
+        //设置初始状态,如果有todo，就用todo，否则为doing，最后为done
+        List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(issueE.getProjectId());
+        Long statusId = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
+                issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
+                        issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(new IssueStatusCreateDO()))).getId();
+        subIssueE = issueE.initializationSubIssue(subIssueE, statusId);
+        //设置issue编号
+        initializationIssueNum(subIssueE);
+        Long issueId = issueRepository.create(subIssueE).getIssueId();
+        handleCreateIssueLink(issueSubCreateDTO.getIssueLinkDTOList(), issueId);
+        handleCreateLabelIssue(issueSubCreateDTO.getLabelIssueRelDTOList(), issueId);
+        handleCreateVersionIssueRel(issueSubCreateDTO.getVersionIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
+        return queryIssueSub(subIssueE.getProjectId(), issueId);
+    }
+
+    @Override
+    public IssueSubDTO updateSubIssue(Long projectId, IssueSubUpdateDTO issueSubUpdateDTO, List<String> fieldList) {
+        if (fieldList != null && !fieldList.isEmpty()) {
+            issueRepository.update(issueAssembler.issueSubUpdateDtoToEntity(issueSubUpdateDTO), fieldList.toArray(new String[fieldList.size()]));
+        }
+        Long issueId = issueSubUpdateDTO.getIssueId();
+        handleUpdateIssueLink(issueSubUpdateDTO.getIssueLinkDTOList(), issueId);
+        handleUpdateLabelIssue(issueSubUpdateDTO.getLabelIssueRelDTOList(), issueId);
+        handleUpdateVersionIssueRel(issueSubUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId);
+        return queryIssueSub(projectId, issueId);
+    }
+
+    @Override
+    public List<IssueSearchDTO> batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds) {
+        if (versionId != null && !Objects.equals(versionId, 0L)) {
+            productVersionRule.judgeExist(projectId, versionId);
+            issueRepository.batchIssueToVersion(projectId, versionId, issueIds);
+        } else {
+            issueRepository.batchRemoveVersion(projectId, issueIds);
+        }
+        return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>());
+    }
+
+    @Override
+    public List<IssueSearchDTO> batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds) {
+        issueRule.judgeExist(projectId, epicId);
+        issueRepository.batchIssueToEpic(projectId, epicId, issueIds);
+        return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>());
+    }
+
+    @Override
+    public List<IssueSearchDTO> batchIssueToSprint(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO) {
+        sprintRule.judgeExist(projectId, sprintId);
+        List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
+        if (moveIssueDTO.getBefore()) {
+            beforeRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
+        } else {
+            afterRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
+        }
+        issueRepository.batchIssueToSprint(projectId, sprintId, moveIssueDOS);
+        issueRepository.batchSubIssueToSprint(projectId, sprintId, moveIssueDTO.getIssueIds());
+        List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds());
+        List<Long> assigneeIds = issueSearchDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDO::getAssigneeId).distinct().collect(Collectors.toList());
+        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+        return issueSearchAssembler.doListToDTO(issueSearchDOList, usersMap);
+    }
+
+    private void beforeRank(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
+        moveIssueDTO.setIssueIds(issueMapper.queryIssueIdOrderByRankDesc(projectId, moveIssueDTO.getIssueIds()));
+        if (moveIssueDTO.getOutsetIssueId() == null || Objects.equals(moveIssueDTO.getOutsetIssueId(), 0L)) {
+            noOutsetBeforeRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
+        } else {
+            outsetBeforeRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
+        }
+    }
+
+    private void outsetBeforeRank(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
+        String rightRank = issueMapper.queryRank(projectId, sprintId, moveIssueDTO.getOutsetIssueId());
+        String leftRank = issueMapper.queryLeftRank(projectId, sprintId, rightRank);
+        if (leftRank == null) {
+            for (Long issueId : moveIssueDTO.getIssueIds()) {
+                rightRank = RankUtil.genPre(rightRank);
+                moveIssueDOS.add(new MoveIssueDO(issueId, rightRank));
+            }
+        } else {
+            for (Long issueId : moveIssueDTO.getIssueIds()) {
+                rightRank = RankUtil.between(leftRank, rightRank);
+                moveIssueDOS.add(new MoveIssueDO(issueId, rightRank));
+            }
+        }
+    }
+
+    private void noOutsetBeforeRank(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
+        String minRank = sprintMapper.queryMinRank(projectId, sprintId);
+        if (minRank == null) {
+            minRank = RankUtil.mid();
+            for (Long issueId : moveIssueDTO.getIssueIds()) {
+                moveIssueDOS.add(new MoveIssueDO(issueId, minRank));
+                minRank = RankUtil.genPre(minRank);
+            }
+        } else {
+            for (Long issueId : moveIssueDTO.getIssueIds()) {
+                minRank = RankUtil.genPre(minRank);
+                moveIssueDOS.add(new MoveIssueDO(issueId, minRank));
+            }
+        }
+    }
+
+    private void afterRank(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
+        moveIssueDTO.setIssueIds(issueMapper.queryIssueIdOrderByRankAsc(projectId, moveIssueDTO.getIssueIds()));
+        String leftRank = issueMapper.queryRank(projectId, sprintId, moveIssueDTO.getOutsetIssueId());
+        String rightRank = issueMapper.queryRightRank(projectId, sprintId, leftRank);
+        if (rightRank == null) {
+            for (Long issueId : moveIssueDTO.getIssueIds()) {
+                leftRank = RankUtil.genNext(leftRank);
+                moveIssueDOS.add(new MoveIssueDO(issueId, leftRank));
+            }
+        } else {
+            for (Long issueId : moveIssueDTO.getIssueIds()) {
+                leftRank = RankUtil.between(leftRank, rightRank);
+                moveIssueDOS.add(new MoveIssueDO(issueId, leftRank));
+            }
+        }
+    }
+
+    @Override
+    public List<IssueEpicDTO> listEpicSelectData(Long projectId) {
+        return issueAssembler.doListToEpicDto(issueMapper.queryIssueEpicSelectList(projectId));
+    }
+
+    @Override
+    public IssueSubDTO queryIssueSub(Long projectId, Long issueId) {
+        IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
+        if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
+            issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
+        }
+        return issueAssembler.issueDetailDoToIssueSubDto(issue);
+    }
+
+    @Override
+    public IssueDTO updateIssueTypeCode(IssueE issueE, IssueUpdateTypeDTO issueUpdateTypeDTO) {
+        if (issueUpdateTypeDTO.getTypeCode().equals(ISSUE_EPIC)) {
+            issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
+            issueE.setEpicName(issueUpdateTypeDTO.getEpicName());
+            List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
+            issueE.initializationColor(colorList);
+            issueE.setEpicId(0L);
+            issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD});
+        } else if (issueE.getTypeCode().equals(ISSUE_EPIC)) {
+            //如果之前类型是epic，会把该epic下的issue的epicId置为0
+            issueRepository.batchUpdateIssueEpicId(issueE.getProjectId(), issueE.getIssueId());
+            issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
+            issueE.setColorCode(null);
+            issueE.setEpicName(null);
+            issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, EPIC_NAME_FIELD, COLOR_CODE_FIELD});
+        } else {
+            issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
+            issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD});
+        }
+        return queryIssue(issueE.getProjectId(), issueE.getIssueId());
+    }
+
+    @Override
+    public IssueE queryIssueByProjectIdAndIssueId(Long projectId, Long issueId) {
+        IssueDO issueDO = new IssueDO();
+        issueDO.setProjectId(projectId);
+        issueDO.setIssueId(issueId);
+        return ConvertHelper.convert(issueMapper.selectOne(issueDO), IssueE.class);
+    }
+
+    private void handleCreateLabelIssue(List<LabelIssueRelDTO> labelIssueRelDTOList, Long issueId) {
+        if (labelIssueRelDTOList != null && !labelIssueRelDTOList.isEmpty()) {
+            List<LabelIssueRelE> labelIssueEList = ConvertHelper.convertList(labelIssueRelDTOList, LabelIssueRelE.class);
+            labelIssueEList.forEach(labelIssueRelE -> {
+                labelIssueRelE.setIssueId(issueId);
+                handleLabelIssue(labelIssueRelE);
+            });
+        }
+    }
+
+    private void handleCreateVersionIssueRel(List<VersionIssueRelDTO> versionIssueRelDTOList, Long projectId, Long issueId) {
+        if (versionIssueRelDTOList != null && !versionIssueRelDTOList.isEmpty()) {
+            //创建版本默认为fix
+            versionIssueRelDTOList.forEach(versionIssueRelDTO -> versionIssueRelDTO.setRelationType(RELATION_TYPE_FIX));
+            handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId);
+        }
+    }
+
+    private void handleVersionIssueRel(List<VersionIssueRelE> versionIssueRelEList, Long projectId, Long issueId) {
+        versionIssueRelEList.forEach(versionIssueRelE -> {
+            versionIssueRelE.setIssueId(issueId);
+            versionIssueRelE.setProjectId(projectId);
+            issueRule.verifyVersionIssueRelData(versionIssueRelE);
+            if (versionIssueRelE.getName() != null && versionIssueRelE.getVersionId() == null) {
+                //重名校验
+                ProductVersionE productVersionE = versionIssueRelE.createProductVersionE();
+                if (productVersionMapper.isRepeatName(productVersionE.getProjectId(), productVersionE.getName())) {
+                    versionIssueRelE.setVersionId(productVersionMapper.queryVersionIdByNameAndProjectId(productVersionE.getName(), productVersionE.getProjectId()));
+                } else {
+                    productVersionE = productVersionRepository.createVersion(productVersionE);
+                    versionIssueRelE.setVersionId(productVersionE.getVersionId());
+                }
+            }
+            if (issueRule.existVersionIssueRel(versionIssueRelE)) {
+                versionIssueRelRepository.create(versionIssueRelE);
+            }
+        });
+    }
+
+    private void handleCreateIssueLink(List<IssueLinkDTO> issueLinkDTOList, Long issueId) {
+        if (issueLinkDTOList != null && !issueLinkDTOList.isEmpty()) {
+            List<IssueLinkDO> issueLinkDOList = ConvertHelper.convertList(issueLinkDTOList, IssueLinkDO.class);
+            issueLinkDOList.forEach(issueLinkDO -> {
+                issueLinkDO.setIssueId(issueId);
+                issueRule.verifyIssueLinkData(issueLinkDO);
+            });
+            //SQL批量创建提高性能
+            issueLinkRepository.batchCreateIssueLink(issueLinkDOList, issueId);
+        }
+    }
+
+    private void handleCreateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId) {
+        if (componentIssueRelDTOList != null && !componentIssueRelDTOList.isEmpty()) {
+            handleComponentIssueRel(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId);
+        }
+    }
+
+    private void handleComponentIssueRel(List<ComponentIssueRelE> componentIssueRelEList, Long projectId, Long issueId) {
+        componentIssueRelEList.forEach(componentIssueRelE -> {
+            componentIssueRelE.setIssueId(issueId);
+            componentIssueRelE.setProjectId(projectId);
+            issueRule.verifyComponentIssueRelData(componentIssueRelE);
+            //重名校验
+            if (componentIssueRelE.getName() != null && componentIssueRelE.getComponentId() == null) {
+                if (issueComponentMapper.checkNameExist(componentIssueRelE.getName(), componentIssueRelE.getProjectId())) {
+                    componentIssueRelE.setComponentId(issueComponentMapper.queryComponentIdByNameAndProjectId(
+                            componentIssueRelE.getName(), componentIssueRelE.getProjectId()));
+                } else {
+                    IssueComponentE issueComponentE = componentIssueRelE.createIssueComponent();
+                    issueComponentE = issueComponentRepository.create(issueComponentE);
+                    componentIssueRelE.setComponentId(issueComponentE.getComponentId());
+                }
+            }
+            //issue经办人可以根据模块策略进行区分
+            handleComponentIssue(componentIssueRelE, issueId);
+            if (issueRule.existComponentIssueRel(componentIssueRelE)) {
+                componentIssueRelRepository.create(componentIssueRelE);
+            }
+        });
+    }
+
+    private void handleComponentIssue(ComponentIssueRelE componentIssueRelE, Long issueId) {
+        IssueComponentE issueComponentE = ConvertHelper.convert(issueComponentMapper.selectByPrimaryKey(
+                componentIssueRelE.getComponentId()), IssueComponentE.class);
+        if (ISSUE_MANAGER_TYPE.equals(issueComponentE.getDefaultAssigneeRole()) && issueComponentE.getManagerId() !=
+                null && issueComponentE.getManagerId() != 0) {
+            //如果模块有选择模块负责人或者经办人的话，对应的issue的负责人要修改
+            IssueE issueE = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueE.class);
+            if (issueE.getAssigneeId() == null || issueE.getAssigneeId() == 0) {
+                issueE.setAssigneeId(issueComponentE.getManagerId());
+                issueRepository.update(issueE, new String[]{"assigneeId"});
+            }
+        }
+    }
+
+    private void handleUpdateLabelIssue(List<LabelIssueRelDTO> labelIssueRelDTOList, Long issueId) {
+        if (labelIssueRelDTOList != null) {
+            if (!labelIssueRelDTOList.isEmpty()) {
+                labelIssueRelRepository.deleteByIssueId(issueId);
+                List<LabelIssueRelE> labelIssueEList = ConvertHelper.convertList(labelIssueRelDTOList, LabelIssueRelE.class);
+                labelIssueEList.forEach(labelIssueRelE -> {
+                    labelIssueRelE.setIssueId(issueId);
+                    handleLabelIssue(labelIssueRelE);
+                });
+            } else {
+                labelIssueRelRepository.deleteByIssueId(issueId);
+            }
+            //没有issue使用的标签进行垃圾回收
+            issueLabelRepository.labelGarbageCollection();
+        }
+
+    }
+
+    private void handleUpdateVersionIssueRel(List<VersionIssueRelDTO> versionIssueRelDTOList, Long projectId, Long issueId) {
+        if (versionIssueRelDTOList != null) {
+            if (!versionIssueRelDTOList.isEmpty()) {
+                versionIssueRelRepository.deleteByIssueId(issueId);
+                handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId);
+            } else {
+                versionIssueRelRepository.deleteByIssueId(issueId);
+            }
+        }
+
+    }
+
+    private void handleUpdateIssueLink(List<IssueLinkDTO> issueLinkDTOList, Long issueId) {
+        if (issueLinkDTOList != null) {
+            if (!issueLinkDTOList.isEmpty()) {
+                issueLinkRepository.deleteByIssueId(issueId);
+                List<IssueLinkDO> issueLinkDOList = ConvertHelper.convertList(issueLinkDTOList, IssueLinkDO.class);
+                issueLinkDOList.forEach(issueLinkDO -> {
+                    issueLinkDO.setIssueId(issueId);
+                    issueRule.verifyIssueLinkData(issueLinkDO);
+                });
+                //SQL批量创建提高性能
+                issueLinkRepository.batchCreateIssueLink(issueLinkDOList, issueId);
+            } else {
+                issueLinkRepository.deleteByIssueId(issueId);
+
+            }
+        }
+    }
+
+    private void handleUpdateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId) {
+        if (componentIssueRelDTOList != null) {
+            if (!componentIssueRelDTOList.isEmpty()) {
+                componentIssueRelRepository.deleteByIssueId(issueId);
+                handleComponentIssueRel(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId);
+            } else {
+                componentIssueRelRepository.deleteByIssueId(issueId);
+            }
+        }
+    }
+
+    private void handleLabelIssue(LabelIssueRelE labelIssueRelE) {
+        issueRule.verifyLabelIssueData(labelIssueRelE);
+        if (labelIssueRelE.getLabelName() != null && labelIssueRelE.getLabelId() == null) {
+            //重名校验
+            if (issueLabelMapper.checkNameExist(labelIssueRelE.getLabelName(), labelIssueRelE.getProjectId())) {
+                labelIssueRelE.setLabelId(issueLabelMapper.queryLabelIdByLabelNameAndProjectId(labelIssueRelE.getLabelName(), labelIssueRelE.getProjectId()));
+            } else {
+                IssueLabelE issueLabelE = labelIssueRelE.createIssueLabelE();
+                issueLabelE = issueLabelRepository.create(issueLabelE);
+                labelIssueRelE.setLabelId(issueLabelE.getLabelId());
+            }
+        }
+        if (issueRule.existLabelIssue(labelIssueRelE)) {
+            labelIssueRelRepository.create(labelIssueRelE);
+        }
+    }
+
+    private void initializationIssueNum(IssueE issueE) {
+        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+        projectInfoDO.setProjectId(issueE.getProjectId());
+        ProjectInfoDO query = projectInfoMapper.selectOne(projectInfoDO);
+        Integer max = query.getIssueMaxNum().intValue() + 1;
+        issueE.setIssueNum(max.toString());
+        projectInfoRepository.updateIssueMaxNum(issueE.getProjectId());
+    }
+
+}
