@@ -21,7 +21,7 @@ import java.util.Optional;
  * Email: fuqianghuang01@gmail.com
  */
 @RestController
-@RequestMapping(value = "/v1/project/{projectId}/issue_attachment")
+@RequestMapping(value = "/v1/project/{project_id}/issue_attachment")
 public class IssueAttachmentController {
 
     @Autowired
@@ -31,7 +31,7 @@ public class IssueAttachmentController {
     @ApiOperation("上传附件")
     @PostMapping
     public ResponseEntity<List<IssueAttachmentDTO>> uploadAttachment(@ApiParam(value = "项目id", required = true)
-                                                                      @PathVariable Long projectId,
+                                                                      @PathVariable(name = "project_id") Long projectId,
                                                                       @ApiParam(value = "issue id", required = true)
                                                                       @RequestParam Long issueId,
                                                                       HttpServletRequest request) {
@@ -44,7 +44,7 @@ public class IssueAttachmentController {
     @ApiOperation("删除附件")
     @DeleteMapping(value = "/{issueAttachmentId}")
     public ResponseEntity deleteAttachment(@ApiParam(value = "项目id", required = true)
-                                            @PathVariable Long projectId,
+                                            @PathVariable(name = "project_id") Long projectId,
                                             @ApiParam(value = "附件id", required = true)
                                             @PathVariable Long issueAttachmentId) {
         issueAttachmentService.delete(projectId, issueAttachmentId);
@@ -55,7 +55,7 @@ public class IssueAttachmentController {
     @ApiOperation("上传附件，直接返回地址")
     @RequestMapping(value = "/upload_for_address", method = {RequestMethod.POST})
     public ResponseEntity<List<String>> uploadForAddress(@ApiParam(value = "project id", required = true)
-                                                          @PathVariable Long projectId,
+                                                          @PathVariable(name = "project_id") Long projectId,
                                                           HttpServletRequest request) {
         return Optional.ofNullable(issueAttachmentService.uploadForAddress(projectId, request))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
