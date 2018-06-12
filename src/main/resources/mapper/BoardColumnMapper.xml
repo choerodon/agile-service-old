@@ -42,6 +42,7 @@
         ai.issue_id AS ai_issue_id,
         IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) AS ai_issue_num,
         ai.summary AS ai_summary,
+        ai.assignee_id AS ai_assignee_id,
         alv.name AS ai_priority_name,
         ai.parent_issue_id AS ai_parent_issue_id,
         ai.type_code AS ai_type_code,
@@ -50,7 +51,8 @@
         agile_board_column abc
         LEFT JOIN agile_board_column_status_rel abcsr ON abc.column_id = abcsr.column_id
         LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.id
-        LEFT JOIN agile_issue ai ON ai.sprint_id = #{activeSprintId} AND ai.status_id = ais.id AND ai.type_code != 'issue_epic'
+        LEFT JOIN agile_issue ai ON ai.sprint_id = #{activeSprintId} AND ai.status_id = ais.id AND ai.type_code !=
+        'issue_epic'
         <if test='onlyStory != null and onlyStory == true'>
             AND ai.type_code = 'story'
         </if>
@@ -96,12 +98,12 @@
     <update id="updateColumnColor">
         UPDATE agile_board_column
         SET color_code = CASE
-                    WHEN sequence = 0
-                        THEN 'column_color_todo'
-                    WHEN sequence = #{columnNum} - 1
-                        THEN 'column_color_done'
-                    ELSE 'column_color_doing'
-                    END
+                         WHEN sequence = 0
+                             THEN 'column_color_todo'
+                         WHEN sequence = #{columnNum} - 1
+                             THEN 'column_color_done'
+                         ELSE 'column_color_doing'
+                         END
         WHERE board_id = #{boardId}
     </update>
 
@@ -219,4 +221,14 @@
         WHERE
             board_id = #{boardId} AND sequence > #{sequence}
     </update>
+
+    <select id="queryAssigneeIdsBySprintId" resultType="java.lang.Long">
+        SELECT DISTINCT assignee_id
+        FROM
+            agile_issue
+        WHERE
+            project_id = #{projectId}
+            AND sprint_id = #{activeSprintId}
+    </select>
+
 </mapper>
