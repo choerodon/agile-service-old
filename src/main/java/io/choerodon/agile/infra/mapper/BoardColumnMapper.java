@@ -32,7 +32,7 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
                               @Param("columnNum") Integer columnNum);
 
     void updateColumnColor(@Param("boardId") Long boardId,
-                              @Param("columnNum") Integer columnNum);
+                           @Param("columnNum") Integer columnNum);
 
     BoardColumnCheckDO selectColumnByStatusId(@Param("projectId") Long projectId,
                                               @Param("statusId") Long statusId,
@@ -57,4 +57,13 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
     List<BoardColumnDO> selectByBoardIdOrderBySequence(@Param("boardId") Long boardId);
 
     void updateSequenceWhenDelete(@Param("boardId") Long boardId, @Param("sequence") Integer sequence);
+
+    /**
+     * 根据冲刺id查询当前冲刺所有用户
+     *
+     * @param projectId    projectId
+     * @param activeSprintId activeSprintId
+     * @return Long
+     */
+    List<Long> queryAssigneeIdsBySprintId(@Param("projectId") Long projectId, @Param("activeSprintId")Long activeSprintId);
 }
