@@ -91,6 +91,16 @@ public class BoardColumnServiceImpl implements BoardColumnService {
                 updateSequence(boardColumnDTO);
             }
         }
+        if (boardColumnDTO.getCategoryCode().equals(DOING_CODE)) {
+            BoardColumnDO boardColumnDO = new BoardColumnDO();
+            boardColumnDO.setCategoryCode(DONE_CODE);
+            boardColumnDO.setBoardId(boardColumnDTO.getBoardId());
+            if (boardColumnMapper.select(boardColumnDO).isEmpty()) {
+                boardColumnDTO.setCategoryCode(DONE_CODE);
+            } else {
+                updateSequence(boardColumnDTO);
+            }
+        }
     }
 
     @Override
