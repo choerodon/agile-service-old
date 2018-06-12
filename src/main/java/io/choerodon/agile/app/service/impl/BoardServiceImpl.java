@@ -6,9 +6,7 @@ import io.choerodon.agile.api.dto.IssueMoveDTO;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
-import io.choerodon.agile.domain.agile.repository.BoardColumnRepository;
-import io.choerodon.agile.domain.agile.repository.ColumnStatusRelRepository;
-import io.choerodon.agile.domain.agile.repository.IssueRepository;
+import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -17,17 +15,13 @@ import io.choerodon.agile.api.dto.BoardDTO;
 import io.choerodon.agile.app.service.BoardColumnService;
 import io.choerodon.agile.app.service.BoardService;
 import io.choerodon.agile.domain.agile.entity.BoardE;
-import io.choerodon.agile.domain.agile.repository.BoardRepository;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.BoardColumnMapper;
 import io.choerodon.agile.infra.mapper.BoardMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
@@ -71,6 +65,9 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private BoardColumnRepository boardColumnRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
 
     @Override
@@ -167,6 +164,14 @@ public class BoardServiceImpl implements BoardService {
             activeSprintId = activeSprint.getSprintId();
         }
         List<ColumnAndIssueDO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory);
+        List<Long> assigneeIds = boardColumnMapper.queryAssigneeIdsBySprintId(projectId,activeSprintId);
+        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+        columns.forEach(columnAndIssueDO -> columnAndIssueDO.getSubStatuses().forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> {
+            String assigneeName = usersMap.get(issueForBoardDO.getAssigneeId()) != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getName() : null;
+            String imageUrl = assigneeName != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getImageUrl() : null;
+            issueForBoardDO.setAssigneeName(assigneeName);
+            issueForBoardDO.setImageUrl(imageUrl);
+        })));
         jsonObject.put("parentIds", putParentIdsAndSort(columns));
         jsonObject.put("columnsData", putColumnData(columns));
         jsonObject.put("currentSprint",putCurrentSprint(activeSprint));

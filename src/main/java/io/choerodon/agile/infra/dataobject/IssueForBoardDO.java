@@ -20,6 +20,12 @@ public class IssueForBoardDO {
 
     private Long objectVersionNumber;
 
+    private Long assigneeId;
+
+    private String assigneeName;
+
+    private String imageUrl;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -74,5 +80,29 @@ public class IssueForBoardDO {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Long getAssigneeId() {
+        return assigneeId;
+    }
+
+    public void setAssigneeId(Long assigneeId) {
+        this.assigneeId = assigneeId;
+    }
+
+    public String getAssigneeName() {
+        return assigneeName;
+    }
+
+    public void setAssigneeName(String assigneeName) {
+        this.assigneeName = assigneeName;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
