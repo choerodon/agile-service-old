@@ -114,28 +114,29 @@ public class BoardServiceImpl implements BoardService {
         return columnsData;
     }
 
-    private void getParents(List<SubStatus> subStatuses, List<Long> parentIds) {
+    private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds) {
         for (SubStatus status : subStatuses) {
             for (IssueForBoardDO issue : status.getIssues()) {
                 if (issue.getParentIssueId() != null && issue.getParentIssueId() != 0) {
-                    if (parentIds.contains(issue.getParentIssueId())) {
-                        continue;
+                    if (!parentIds.contains(issue.getParentIssueId())) {
+                        parentIds.add(issue.getParentIssueId());
                     }
-                    parentIds.add(issue.getParentIssueId());
+                    if (!assigneeIds.contains(issue.getAssigneeId())) {
+                        assigneeIds.add(issue.getAssigneeId());
+                    }
                 }
             }
         }
     }
 
-    public List<Long> putParentIdsAndSort(List<ColumnAndIssueDO> columns) {
-        List<Long> parentIds = new ArrayList<>();
+    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds) {
         for (ColumnAndIssueDO column : columns) {
             List<SubStatus> subStatuses = column.getSubStatuses();
-            getParents(subStatuses, parentIds);
+            getDatas(subStatuses, parentIds, assigneeIds);
             Collections.sort(subStatuses, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
         }
         Collections.sort(parentIds);
-        return parentIds;
+        Collections.sort(assigneeIds);
     }
 
     private SprintDO getActiveSprint(Long projectId) {
@@ -163,8 +164,13 @@ public class BoardServiceImpl implements BoardService {
         if (activeSprint != null) {
             activeSprintId = activeSprint.getSprintId();
         }
+        List<Long> assigneeIds = new ArrayList<>();
+        List<Long> parentIds = new ArrayList<>();
         List<ColumnAndIssueDO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory);
-        List<Long> assigneeIds = boardColumnMapper.queryAssigneeIdsBySprintId(projectId,activeSprintId);
+        putDatasAndSort(columns, assigneeIds, parentIds);
+        jsonObject.put("parentIds", parentIds);
+//        List<Long> assigneeIds = boardColumnMapper.queryAssigneeIdsBySprintId(projectId,activeSprintId);
+        jsonObject.put("assigneeIds", assigneeIds);
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         columns.forEach(columnAndIssueDO -> columnAndIssueDO.getSubStatuses().forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> {
             String assigneeName = usersMap.get(issueForBoardDO.getAssigneeId()) != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getName() : null;
@@ -172,7 +178,6 @@ public class BoardServiceImpl implements BoardService {
             issueForBoardDO.setAssigneeName(assigneeName);
             issueForBoardDO.setImageUrl(imageUrl);
         })));
-        jsonObject.put("parentIds", putParentIdsAndSort(columns));
         jsonObject.put("columnsData", putColumnData(columns));
         jsonObject.put("currentSprint",putCurrentSprint(activeSprint));
         return jsonObject;
