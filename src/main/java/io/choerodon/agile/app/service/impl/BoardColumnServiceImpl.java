@@ -81,8 +81,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
                 boardColumnDTO.setCategoryCode(DOING_CODE);
                 updateSequence(boardColumnDTO);
             }
-        }
-        if (boardColumnDTO.getCategoryCode().equals(TODO_CODE)) {
+        } else if (boardColumnDTO.getCategoryCode().equals(TODO_CODE)) {
             BoardColumnDO boardColumnDO = new BoardColumnDO();
             boardColumnDO.setCategoryCode(TODO_CODE);
             boardColumnDO.setBoardId(boardColumnDTO.getBoardId());
@@ -90,8 +89,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
                 boardColumnDTO.setCategoryCode(DOING_CODE);
                 updateSequence(boardColumnDTO);
             }
-        }
-        if (boardColumnDTO.getCategoryCode().equals(DOING_CODE)) {
+        } else if (boardColumnDTO.getCategoryCode().equals(DOING_CODE)) {
             BoardColumnDO boardColumnDO = new BoardColumnDO();
             boardColumnDO.setCategoryCode(DONE_CODE);
             boardColumnDO.setBoardId(boardColumnDTO.getBoardId());
