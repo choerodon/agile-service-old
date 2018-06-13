@@ -121,9 +121,9 @@ public class BoardServiceImpl implements BoardService {
                     if (!parentIds.contains(issue.getParentIssueId())) {
                         parentIds.add(issue.getParentIssueId());
                     }
-                    if (!assigneeIds.contains(issue.getAssigneeId())) {
-                        assigneeIds.add(issue.getAssigneeId());
-                    }
+                }
+                if (issue.getAssigneeId() != null && !assigneeIds.contains(issue.getAssigneeId())) {
+                    assigneeIds.add(issue.getAssigneeId());
                 }
             }
         }
@@ -167,7 +167,7 @@ public class BoardServiceImpl implements BoardService {
         List<Long> assigneeIds = new ArrayList<>();
         List<Long> parentIds = new ArrayList<>();
         List<ColumnAndIssueDO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory);
-        putDatasAndSort(columns, assigneeIds, parentIds);
+        putDatasAndSort(columns, parentIds, assigneeIds);
         jsonObject.put("parentIds", parentIds);
 //        List<Long> assigneeIds = boardColumnMapper.queryAssigneeIdsBySprintId(projectId,activeSprintId);
         jsonObject.put("assigneeIds", assigneeIds);
