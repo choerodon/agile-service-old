@@ -1,14 +1,80 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.agile.infra.mapper.IssueLinkMapper">
+    <delete id="deleteByIssueId">
+        DELETE FROM agile_issue_link ail
+        WHERE ail.issue_id = #{issueId} OR ail.linked_issue_id = #{issueId}
+    </delete>
 
-    <insert id="batchCreateIssueLink">
-        INSERT INTO
-        agile_issue_link(issue_id,issue_link_type_code,linked_issue_id)
-        VALUES
-        <foreach collection="issueLinkDOList" item="temp" separator=",">
-            (#{issueId},#{temp.issueLinkTypeCode},#{temp.linkedIssueId})
-        </foreach>
-    </insert>
+    <select id="queryInIssueLinkByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueLinkDO">
+        SELECT
+            ail.*,
+            ailt.link_name                                 AS linkTypeName,
+            ailt.in_ward                                   AS ward,
+            CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+            ai.summary,
+            ai.priority_code,
+            ais.NAME,
+            abc.color_code
+        FROM
+            agile_issue_link ail
+            LEFT JOIN agile_issue_link_type ailt ON ailt.link_type_id = ail.link_type_id
+            LEFT JOIN agile_issue ai ON ail.issue_id = ai.issue_id
+            LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
+            LEFT JOIN agile_issue_status ais ON ais.id = ai.issue_id
+            LEFT JOIN agile_board_column abc ON abc.category_code = ais.category_code
+        WHERE
+            ail.issue_id = #{issueId}
+            AND ai.project_id = #{projectId}
+            AND ai.type_code != 'sub_task'
+        ORDER BY ailt.link_name
+    </select>
 
+    <select id="queryIssueLinkByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueLinkDO">
+        SELECT a.*
+        FROM
+            (
+                SELECT
+                    ail.*,
+                    ailt.link_name                                 AS link_type_name,
+                    ailt.out_ward                                   AS ward,
+                    CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+                    ai.summary,
+                    ai.priority_code,
+                    ais.NAME,
+                    ais.category_code                              AS status_code,
+                    ai.type_code
+                FROM
+                    agile_issue_link ail
+                    LEFT JOIN agile_issue_link_type ailt ON ailt.link_type_id = ail.link_type_id
+                    LEFT JOIN agile_issue ai ON ail.issue_id = ai.issue_id
+                    LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
+                    LEFT JOIN agile_issue_status ais ON ais.id = ai.issue_id
+                WHERE
+                    ail.issue_id = #{issueId}
+                    AND ai.project_id = #{projectId}
+                UNION ALL
+                SELECT
+                    ail1.*,
+                    ailt1.link_name                                  AS link_type_name,
+                    ailt1.in_ward                                   AS ward,
+                    CONCAT_WS('-', api1.project_code, ai1.issue_num) AS issue_num,
+                    ai1.summary,
+                    ai1.priority_code,
+                    ais1.NAME,
+                    ais1.category_code                               AS status_code,
+                    ai1.type_code
+                FROM
+                    agile_issue_link ail1
+                    LEFT JOIN agile_issue_link_type ailt1 ON ailt1.link_type_id = ail1.link_type_id
+                    LEFT JOIN agile_issue ai1 ON ail1.issue_id = ai1.issue_id
+                    LEFT JOIN agile_project_info api1 ON api1.project_id = ai1.project_id
+                    LEFT JOIN agile_issue_status ais1 ON ais1.id = ai1.issue_id
+                WHERE
+                    ail1.linked_issue_id = #{issueId}
+                    AND ai1.project_id = #{projectId}
+            ) a
+        ORDER BY
+            a.link_type_name
+    </select>
 </mapper>

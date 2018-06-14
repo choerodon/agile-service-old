@@ -5,10 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.IssueSubCreateDTO;
 import io.choerodon.agile.api.dto.IssueUpdateTypeDTO;
 import io.choerodon.agile.app.service.IssueService;
-import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
-import io.choerodon.agile.domain.agile.entity.IssueE;
-import io.choerodon.agile.domain.agile.entity.LabelIssueRelE;
-import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
+import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.exception.CommonException;
@@ -25,6 +22,8 @@ public class IssueRule {
 
     @Autowired
     private IssueMapper issueMapper;
+    @Autowired
+    private IssueLinkTypeMapper issueLinkTypeMapper;
     @Autowired
     private SprintMapper sprintMapper;
     @Autowired
@@ -123,14 +122,6 @@ public class IssueRule {
         }
     }
 
-    public void verifyIssueLinkData(IssueLinkDO issueLinkDO) {
-        if (issueLinkDO.getIssueLinkTypeCode() == null) {
-            throw new CommonException("error.issueLink.IssueLinkTypeCode");
-        } else if (issueLinkDO.getLinkedIssueId() == null) {
-            throw new CommonException("error.issueLink.LinkIssueId");
-        }
-    }
-
     public void verifyVersionIssueRelData(VersionIssueRelE versionIssueRelE) {
         if (versionIssueRelE.getName() == null && versionIssueRelE.getVersionId() == null) {
             throw new CommonException("error.versionIssueRel.Name");
@@ -184,4 +175,5 @@ public class IssueRule {
         labelIssueRelDO.setIssueId(labelIssueRelE.getIssueId());
         return labelIssueRelMapper.selectOne(labelIssueRelDO) == null;
     }
+
 }

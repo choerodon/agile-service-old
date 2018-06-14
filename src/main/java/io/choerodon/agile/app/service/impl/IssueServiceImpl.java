@@ -6,6 +6,7 @@ import io.choerodon.agile.app.assembler.EpicDataAssembler;
 import io.choerodon.agile.app.assembler.IssueSearchAssembler;
 import io.choerodon.agile.app.service.IssueAttachmentService;
 import io.choerodon.agile.app.service.IssueCommentService;
+import io.choerodon.agile.app.service.IssueLinkService;
 import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
@@ -91,6 +92,8 @@ public class IssueServiceImpl implements IssueService {
     private UserRepository userRepository;
     @Autowired
     private LookupValueMapper lookupValueMapper;
+    @Autowired
+    private IssueLinkService issueLinkService;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -132,7 +135,9 @@ public class IssueServiceImpl implements IssueService {
             }
         }
         Long issueId = issueRepository.create(issueE).getIssueId();
-        handleCreateIssueLink(issueCreateDTO.getIssueLinkDTOList(), issueId);
+        if (issueCreateDTO.getIssueLinkCreateDTOList() != null && !issueCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
+            issueLinkService.createIssueLinkList(issueCreateDTO.getIssueLinkCreateDTOList(), issueId, issueCreateDTO.getProjectId());
+        }
         handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
         handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
         handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
@@ -173,7 +178,6 @@ public class IssueServiceImpl implements IssueService {
             issueRepository.update(issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO), fieldList.toArray(new String[fieldList.size()]));
         }
         Long issueId = issueUpdateDTO.getIssueId();
-        handleUpdateIssueLink(issueUpdateDTO.getIssueLinkDTOList(), issueId);
         handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId);
         handleUpdateComponentIssueRel(issueUpdateDTO.getComponentIssueRelDTOList(), projectId, issueId);
         handleUpdateVersionIssueRel(issueUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId);
@@ -243,7 +247,9 @@ public class IssueServiceImpl implements IssueService {
         //设置issue编号
         initializationIssueNum(subIssueE);
         Long issueId = issueRepository.create(subIssueE).getIssueId();
-        handleCreateIssueLink(issueSubCreateDTO.getIssueLinkDTOList(), issueId);
+        if (issueSubCreateDTO.getIssueLinkCreateDTOList() != null && !issueSubCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
+            issueLinkService.createIssueLinkList(issueSubCreateDTO.getIssueLinkCreateDTOList(), issueId, issueSubCreateDTO.getProjectId());
+        }
         handleCreateLabelIssue(issueSubCreateDTO.getLabelIssueRelDTOList(), issueId);
         handleCreateVersionIssueRel(issueSubCreateDTO.getVersionIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
         return queryIssueSub(subIssueE.getProjectId(), issueId);
@@ -255,7 +261,6 @@ public class IssueServiceImpl implements IssueService {
             issueRepository.update(issueAssembler.issueSubUpdateDtoToEntity(issueSubUpdateDTO), fieldList.toArray(new String[fieldList.size()]));
         }
         Long issueId = issueSubUpdateDTO.getIssueId();
-        handleUpdateIssueLink(issueSubUpdateDTO.getIssueLinkDTOList(), issueId);
         handleUpdateLabelIssue(issueSubUpdateDTO.getLabelIssueRelDTOList(), issueId);
         handleUpdateVersionIssueRel(issueSubUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId);
         return queryIssueSub(projectId, issueId);
@@ -438,18 +443,6 @@ public class IssueServiceImpl implements IssueService {
         });
     }
 
-    private void handleCreateIssueLink(List<IssueLinkDTO> issueLinkDTOList, Long issueId) {
-        if (issueLinkDTOList != null && !issueLinkDTOList.isEmpty()) {
-            List<IssueLinkDO> issueLinkDOList = ConvertHelper.convertList(issueLinkDTOList, IssueLinkDO.class);
-            issueLinkDOList.forEach(issueLinkDO -> {
-                issueLinkDO.setIssueId(issueId);
-                issueRule.verifyIssueLinkData(issueLinkDO);
-            });
-            //SQL批量创建提高性能
-            issueLinkRepository.batchCreateIssueLink(issueLinkDOList, issueId);
-        }
-    }
-
     private void handleCreateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId) {
         if (componentIssueRelDTOList != null && !componentIssueRelDTOList.isEmpty()) {
             handleComponentIssueRel(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId);
@@ -522,24 +515,6 @@ public class IssueServiceImpl implements IssueService {
             }
         }
 
-    }
-
-    private void handleUpdateIssueLink(List<IssueLinkDTO> issueLinkDTOList, Long issueId) {
-        if (issueLinkDTOList != null) {
-            if (!issueLinkDTOList.isEmpty()) {
-                issueLinkRepository.deleteByIssueId(issueId);
-                List<IssueLinkDO> issueLinkDOList = ConvertHelper.convertList(issueLinkDTOList, IssueLinkDO.class);
-                issueLinkDOList.forEach(issueLinkDO -> {
-                    issueLinkDO.setIssueId(issueId);
-                    issueRule.verifyIssueLinkData(issueLinkDO);
-                });
-                //SQL批量创建提高性能
-                issueLinkRepository.batchCreateIssueLink(issueLinkDOList, issueId);
-            } else {
-                issueLinkRepository.deleteByIssueId(issueId);
-
-            }
-        }
     }
 
     private void handleUpdateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId) {

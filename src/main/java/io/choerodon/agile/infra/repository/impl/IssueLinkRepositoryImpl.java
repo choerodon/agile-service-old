@@ -44,21 +44,19 @@ public class IssueLinkRepositoryImpl implements IssueLinkRepository {
         if (issueLinkMapper.insert(issueLinkDO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        IssueLinkDO issueLinkDO1 = new IssueLinkDO();
-        issueLinkDO1.setIssueId(issueLinkDO.getIssueId());
-        return ConvertHelper.convertList(issueLinkMapper.select(issueLinkDO1), IssueLinkE.class);
+        IssueLinkDO query = new IssueLinkDO();
+        query.setIssueId(issueLinkDO.getIssueId());
+        return ConvertHelper.convertList(issueLinkMapper.select(query), IssueLinkE.class);
     }
 
     @Override
     public int deleteByIssueId(Long issueId) {
-        IssueLinkDO issueLinkDO = new IssueLinkDO();
-        issueLinkDO.setIssueId(issueId);
-        return issueLinkMapper.delete(issueLinkDO);
+        return issueLinkMapper.deleteByIssueId(issueId);
     }
 
     @Override
-    public void batchCreateIssueLink(List<IssueLinkDO> issueLinkDOList, Long issueId) {
-        issueLinkMapper.batchCreateIssueLink(issueLinkDOList, issueId);
+    public int delete(Long issueLinkId) {
+        return issueLinkMapper.deleteByPrimaryKey(issueLinkId);
     }
 
 }

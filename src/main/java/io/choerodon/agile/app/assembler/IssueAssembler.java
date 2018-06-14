@@ -43,7 +43,6 @@ public class IssueAssembler {
         IssueDTO issueDTO = new IssueDTO();
         BeanUtils.copyProperties(issueDetailDO, issueDTO);
         issueDTO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
-        issueDTO.setIssueLinkDTOList(ConvertHelper.convertList(issueDetailDO.getIssueLinkDOList(), IssueLinkDTO.class));
         issueDTO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
         issueDTO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
         issueDTO.setIssueAttachmentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueAttachmentDOList(), IssueAttachmentDTO.class));
