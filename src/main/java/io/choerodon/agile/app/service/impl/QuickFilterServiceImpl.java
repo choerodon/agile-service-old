@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.QuickFilterDTO;
+import io.choerodon.agile.api.dto.QuickFilterValueDTO;
 import io.choerodon.agile.app.service.QuickFilterService;
 import io.choerodon.agile.domain.agile.entity.QuickFilterE;
 import io.choerodon.agile.domain.agile.repository.QuickFilterRepository;
@@ -30,13 +31,27 @@ public class QuickFilterServiceImpl implements QuickFilterService {
     @Autowired
     private QuickFilterFiledMapper quickFilterFiledMapper;
 
+    private String getSqlQuery(List<QuickFilterValueDTO> quickFilterValueDTOList, List<String> relationOperations) {
+        String sqlQuery = "";
+        int idx = 0;
+        for (QuickFilterValueDTO quickFilterValueDTO : quickFilterValueDTOList) {
+            String filed = quickFilterFiledMapper.selectByPrimaryKey(quickFilterValueDTO.getFiledId()).getFiled();
+            sqlQuery = sqlQuery + filed + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ";
+            int length = relationOperations.size();
+            if (idx < length && !relationOperations.get(idx).isEmpty()) {
+                sqlQuery = sqlQuery + relationOperations.get(idx) +" ";
+                idx ++;
+            }
+        }
+        return sqlQuery;
+    }
+
     @Override
     public QuickFilterDTO create(Long projectId, QuickFilterDTO quickFilterDTO) {
         if (!projectId.equals(quickFilterDTO.getProjectId())) {
             throw new CommonException("error.projectId.notEqual");
         }
-        String filed = quickFilterFiledMapper.selectByPrimaryKey(quickFilterDTO.getFiledId()).getFiled();
-        String sqlQuery = filed + quickFilterDTO.getOperation() + quickFilterDTO.getValue();
+        String sqlQuery = getSqlQuery(quickFilterDTO.getQuickFilterValueDTOList(), quickFilterDTO.getRelationOperations());
         QuickFilterE quickFilterE = ConvertHelper.convert(quickFilterDTO, QuickFilterE.class);
         quickFilterE.setSqlQuery(sqlQuery);
         return ConvertHelper.convert(quickFilterRepository.create(quickFilterE), QuickFilterDTO.class);

@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import java.util.List;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/6/13.
  * Email: fuqianghuang01@gmail.com
@@ -14,11 +16,9 @@ public class QuickFilterDTO {
 
     private String expressQuery;
 
-    private Long filedId;
+    private List<QuickFilterValueDTO> quickFilterValueDTOList;
 
-    private String operation;
-
-    private String value;
+    private List<String> relationOperations;
 
     private Long objectVersionNumber;
 
@@ -54,30 +54,6 @@ public class QuickFilterDTO {
         this.expressQuery = expressQuery;
     }
 
-    public void setFiledId(Long filedId) {
-        this.filedId = filedId;
-    }
-
-    public Long getFiledId() {
-        return filedId;
-    }
-
-    public void setOperation(String operation) {
-        this.operation = operation;
-    }
-
-    public String getOperation() {
-        return operation;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
     }
@@ -86,5 +62,19 @@ public class QuickFilterDTO {
         return objectVersionNumber;
     }
 
+    public void setQuickFilterValueDTOList(List<QuickFilterValueDTO> quickFilterValueDTOList) {
+        this.quickFilterValueDTOList = quickFilterValueDTOList;
+    }
 
+    public List<QuickFilterValueDTO> getQuickFilterValueDTOList() {
+        return quickFilterValueDTOList;
+    }
+
+    public void setRelationOperations(List<String> relationOperations) {
+        this.relationOperations = relationOperations;
+    }
+
+    public List<String> getRelationOperations() {
+        return relationOperations;
+    }
 }
