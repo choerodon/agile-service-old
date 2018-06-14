@@ -51,13 +51,15 @@
         agile_board_column abc
         LEFT JOIN agile_board_column_status_rel abcsr ON abc.column_id = abcsr.column_id
         LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.id
-        LEFT JOIN agile_issue ai ON ai.sprint_id = #{activeSprintId} AND ai.status_id = ais.id AND ai.type_code !=
-        'issue_epic'
+        LEFT JOIN agile_issue ai ON ai.sprint_id = #{activeSprintId} AND ai.status_id = ais.id AND ai.type_code != 'issue_epic'
         <if test='onlyStory != null and onlyStory == true'>
             AND ai.type_code = 'story'
         </if>
         <if test='assigneeId != null'>
             AND ai.assignee_id = #{assigneeId}
+        </if>
+        <if test='filterSql != null'>
+            AND ai.issue_id IN (${filterSql})
         </if>
         LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
         LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code

@@ -9,6 +9,7 @@ import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.mapper.IssueMapper;
+import io.choerodon.agile.infra.mapper.QuickFilterMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.dto.BoardDTO;
@@ -68,6 +69,9 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private QuickFilterMapper quickFilterMapper;
 
 
     @Override
@@ -156,6 +160,23 @@ public class BoardServiceImpl implements BoardService {
         return null;
     }
 
+    private String getQuickFilter(Long projectId) {
+        QuickFilterDO quickFilterDO = new QuickFilterDO();
+        quickFilterDO.setProjectId(projectId);
+        List<QuickFilterDO> quickFilterDOList = quickFilterMapper.select(quickFilterDO);
+        String sql = "select issue_id from agile_issue where ";
+        int idx = 0;
+        for (QuickFilterDO filter : quickFilterDOList) {
+            if (idx == 0) {
+                sql = sql + filter.getSqlQuery();
+                idx += 1;
+            } else {
+                sql = sql + " and " + filter.getSqlQuery();
+            }
+        }
+        return sql;
+    }
+
     @Override
     public JSONObject queryAllData(Long projectId, Long boardId, Long assigneeId, Boolean onlyStory) {
         JSONObject jsonObject = new JSONObject(true);
@@ -164,20 +185,21 @@ public class BoardServiceImpl implements BoardService {
         if (activeSprint != null) {
             activeSprintId = activeSprint.getSprintId();
         }
+        String filterSql = getQuickFilter(projectId);
         List<Long> assigneeIds = new ArrayList<>();
         List<Long> parentIds = new ArrayList<>();
-        List<ColumnAndIssueDO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory);
+        List<ColumnAndIssueDO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory, filterSql);
         putDatasAndSort(columns, parentIds, assigneeIds);
         jsonObject.put("parentIds", parentIds);
 //        List<Long> assigneeIds = boardColumnMapper.queryAssigneeIdsBySprintId(projectId,activeSprintId);
         jsonObject.put("assigneeIds", assigneeIds);
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
-        columns.forEach(columnAndIssueDO -> columnAndIssueDO.getSubStatuses().forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> {
-            String assigneeName = usersMap.get(issueForBoardDO.getAssigneeId()) != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getName() : null;
-            String imageUrl = assigneeName != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getImageUrl() : null;
-            issueForBoardDO.setAssigneeName(assigneeName);
-            issueForBoardDO.setImageUrl(imageUrl);
-        })));
+//        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+//        columns.forEach(columnAndIssueDO -> columnAndIssueDO.getSubStatuses().forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> {
+//            String assigneeName = usersMap.get(issueForBoardDO.getAssigneeId()) != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getName() : null;
+//            String imageUrl = assigneeName != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getImageUrl() : null;
+//            issueForBoardDO.setAssigneeName(assigneeName);
+//            issueForBoardDO.setImageUrl(imageUrl);
+//        })));
         jsonObject.put("columnsData", putColumnData(columns));
         jsonObject.put("currentSprint",putCurrentSprint(activeSprint));
         return jsonObject;
