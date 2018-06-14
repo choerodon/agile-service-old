@@ -36,7 +36,7 @@ public class IssueCreateDTO {
 
     private List<ComponentIssueRelDTO> componentIssueRelDTOList;
 
-    private List<IssueLinkDTO> issueLinkDTOList;
+    private List<IssueLinkCreateDTO> issueLinkCreateDTOList;
 
     private BigDecimal remainingTime;
 
@@ -148,12 +148,12 @@ public class IssueCreateDTO {
         this.componentIssueRelDTOList = componentIssueRelDTOList;
     }
 
-    public List<IssueLinkDTO> getIssueLinkDTOList() {
-        return issueLinkDTOList;
+    public List<IssueLinkCreateDTO> getIssueLinkCreateDTOList() {
+        return issueLinkCreateDTOList;
     }
 
-    public void setIssueLinkDTOList(List<IssueLinkDTO> issueLinkDTOList) {
-        this.issueLinkDTOList = issueLinkDTOList;
+    public void setIssueLinkCreateDTOList(List<IssueLinkCreateDTO> issueLinkCreateDTOList) {
+        this.issueLinkCreateDTOList = issueLinkCreateDTOList;
     }
 
     public BigDecimal getRemainingTime() {

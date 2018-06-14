@@ -1,7 +1,6 @@
 package io.choerodon.agile.domain.agile.repository;
 
 import io.choerodon.agile.domain.agile.entity.IssueLinkE;
-import io.choerodon.agile.infra.dataobject.IssueLinkDO;
 
 import java.util.List;
 
@@ -39,10 +38,11 @@ public interface IssueLinkRepository {
     int deleteByIssueId(Long issueId);
 
     /**
-     * 批量创建issueLink
+     * 删除issue链接
      *
-     * @param issueLinkDOList issueLinkDOList
-     * @param issueId         issueId
+     * @param issueLinkId issueLinkId
+     * @return int
      */
-    void batchCreateIssueLink(List<IssueLinkDO> issueLinkDOList, Long issueId);
+    int delete(Long issueLinkId);
+
 }

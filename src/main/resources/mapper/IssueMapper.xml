@@ -36,9 +36,6 @@
         <collection property="componentIssueRelDOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
                     select="queryComponentIssueRelByIssueId"/>
-        <collection property="issueLinkDOList" column="issue_id"
-                    ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
-                    select="queryIssueLinkByIssueId"/>
         <collection property="issueCommentDOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
                     select="queryIssueCommentByIssueId"/>
@@ -129,14 +126,6 @@
             aic.name
         FROM agile_component_issue_rel acir LEFT JOIN agile_issue_component aic ON aic.component_id = acir.component_id
         WHERE acir.issue_id = #{issueId}
-    </select>
-
-    <select id="queryIssueLinkByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueLinkDO">
-        SELECT
-            ail.*,
-            ai.summary
-        FROM agile_issue_link ail LEFT JOIN agile_issue ai ON ail.linked_issue_id = ail.issue_id
-        WHERE ail.issue_id = #{issueId}
     </select>
 
     <select id="queryIssueCommentByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueCommentDO">

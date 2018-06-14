@@ -26,4 +26,27 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue_link.groovy') {
             column(name: 'linked_issue_id')
         }
     }
+    changeSet(id: '2018-06-14-agile-issue-link-change', author: 'dinghuang123@gmail.com') {
+        dropIndex(tableName: 'agile_issue_link', indexName: 'uk_issue_id_linked_issue_id')
+        addColumn(tableName: 'agile_issue_link') {
+            column(name: 'link_id', type: 'BIGINT UNSIGNED', remarks: 'link id')
+            column(name: 'link_type_id', type: 'BIGINT UNSIGNED', remarks: 'link类型id')
+        }
+        dropColumn(tableName: 'agile_issue_link') {
+            column(name: 'issue_link_type_code')
+        }
+        addNotNullConstraint(tableName: 'agile_issue_link', columnName: 'link_id', columnDataType: "BIGINT UNSIGNED")
+        addNotNullConstraint(tableName: 'agile_issue_link', columnName: 'link_type_id', columnDataType: "BIGINT UNSIGNED")
+        addPrimaryKey(tableName: 'agile_issue_link', columnNames: 'link_id', constraintName: '')
+        addAutoIncrement(tableName: 'agile_issue_link', columnName: 'link_id', columnDataType: 'BIGINT UNSIGNED')
+        createIndex(indexName: 'idx_issue_id', tableName: 'agile_issue_link') {
+            column(name: 'issue_id')
+        }
+        createIndex(indexName: 'idx_link_type_id', tableName: 'agile_issue_link') {
+            column(name: 'link_type_id')
+        }
+        createIndex(indexName: 'idx_linked_issue_id', tableName: 'agile_issue_link') {
+            column(name: 'linked_issue_id')
+        }
+    }
 }
