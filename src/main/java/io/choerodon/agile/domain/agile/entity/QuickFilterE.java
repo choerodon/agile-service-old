@@ -16,6 +16,8 @@ public class QuickFilterE {
 
     private String expressQuery;
 
+    private Boolean childIncluded;
+
     private Long objectVersionNumber;
 
     public Long getFilterId() {
@@ -56,6 +58,14 @@ public class QuickFilterE {
 
     public void setExpressQuery(String expressQuery) {
         this.expressQuery = expressQuery;
+    }
+
+    public void setChildIncluded(Boolean childIncluded) {
+        this.childIncluded = childIncluded;
+    }
+
+    public Boolean getChildIncluded() {
+        return childIncluded;
     }
 
     public void setObjectVersionNumber(Long objectVersionNumber) {

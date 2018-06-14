@@ -20,6 +20,8 @@ public class QuickFilterDTO {
 
     private List<String> relationOperations;
 
+    private Boolean childIncluded;
+
     private Long objectVersionNumber;
 
     public Long getFilterId() {
@@ -76,5 +78,13 @@ public class QuickFilterDTO {
 
     public List<String> getRelationOperations() {
         return relationOperations;
+    }
+
+    public void setChildIncluded(Boolean childIncluded) {
+        this.childIncluded = childIncluded;
+    }
+
+    public Boolean getChildIncluded() {
+        return childIncluded;
     }
 }

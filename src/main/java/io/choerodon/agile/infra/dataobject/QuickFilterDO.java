@@ -4,6 +4,7 @@ import io.choerodon.mybatis.annotation.ModifyAudit;
 import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
 
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -28,6 +29,9 @@ public class QuickFilterDO extends AuditDomain {
     private String sqlQuery;
 
     private String expressQuery;
+
+    @Column(name = "is_child_included")
+    private Boolean childIncluded;
 
     public Long getFilterId() {
         return filterId;
@@ -67,5 +71,13 @@ public class QuickFilterDO extends AuditDomain {
 
     public void setExpressQuery(String expressQuery) {
         this.expressQuery = expressQuery;
+    }
+
+    public void setChildIncluded(Boolean childIncluded) {
+        this.childIncluded = childIncluded;
+    }
+
+    public Boolean getChildIncluded() {
+        return childIncluded;
     }
 }
