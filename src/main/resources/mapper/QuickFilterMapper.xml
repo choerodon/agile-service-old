@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.choerodon.agile.infra.mapper.QuickFilterMapper">
+
+    <select id="selectSqlQueryByIds" resultType="java.lang.String">
+        SELECT sql_query
+        FROM agile_quick_filter
+        WHERE filter_id IN
+        <foreach collection="quickFilterIds" item="filterId" index="index"
+                 open="(" close=")" separator=",">
+            #{filterId}
+        </foreach>
+    </select>
+
+</mapper>
