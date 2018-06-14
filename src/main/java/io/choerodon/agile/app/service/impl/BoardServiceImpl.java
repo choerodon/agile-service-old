@@ -192,7 +192,6 @@ public class BoardServiceImpl implements BoardService {
         List<ColumnAndIssueDO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory, filterSql);
         putDatasAndSort(columns, parentIds, assigneeIds);
         jsonObject.put("parentIds", parentIds);
-//        List<Long> assigneeIds = boardColumnMapper.queryAssigneeIdsBySprintId(projectId,activeSprintId);
         jsonObject.put("assigneeIds", assigneeIds);
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         columns.forEach(columnAndIssueDO -> columnAndIssueDO.getSubStatuses().forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> {
