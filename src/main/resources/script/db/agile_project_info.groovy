@@ -17,4 +17,14 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_project_info.groovy') {
         addAutoIncrement(schemaName: '', tableName: 'agile_project_info', columnName: 'info_id', columnDataType: 'BIGINT UNSIGNED')
     }
 
+    changeSet(id: '2018-06-15-agile-project-info', author: 'dinghuang123@gmail.com') {
+        addColumn(tableName: 'agile_project_info') {
+            column(name: "object_version_number", type: "BIGINT UNSIGNED", defaultValue: "1")
+            column(name: "created_by", type: "BIGINT UNSIGNED", defaultValue: "0")
+            column(name: "creation_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
+            column(name: "last_updated_by", type: "BIGINT UNSIGNED", defaultValue: "0")
+            column(name: "last_update_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
+        }
+    }
+
 }

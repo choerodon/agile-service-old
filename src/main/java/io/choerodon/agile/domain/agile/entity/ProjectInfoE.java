@@ -1,25 +1,13 @@
-package io.choerodon.agile.infra.dataobject;
+package io.choerodon.agile.domain.agile.entity;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 /**
  * @author dinghuang123@gmail.com
- * @since 2018/5/30
+ * @since 2018/6/15
  */
-@ModifyAudit
-@VersionAudit
-@Table(name = "agile_project_info")
-public class ProjectInfoDO extends AuditDomain {
+public class ProjectInfoE {
 
-    @Id
-    @GeneratedValue
     private Long infoId;
 
     private Long projectId;
@@ -27,6 +15,8 @@ public class ProjectInfoDO extends AuditDomain {
     private String projectCode;
 
     private Long issueMaxNum;
+
+    private Long objectVersionNumber;
 
     public Long getInfoId() {
         return infoId;
@@ -58,6 +48,14 @@ public class ProjectInfoDO extends AuditDomain {
 
     public void setIssueMaxNum(Long issueMaxNum) {
         this.issueMaxNum = issueMaxNum;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
     }
 
     @Override

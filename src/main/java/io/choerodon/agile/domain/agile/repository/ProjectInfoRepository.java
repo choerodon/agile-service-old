@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.repository;
 
-import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
+import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 
 /**
  * @author dinghuang123@gmail.com
@@ -11,10 +11,10 @@ public interface ProjectInfoRepository {
     /**
      * 创建
      *
-     * @param projectInfoDO projectInfoDO
-     * @return ProjectInfoDO
+     * @param projectInfoE projectInfoE
+     * @return ProjectInfoE
      */
-    ProjectInfoDO create(ProjectInfoDO projectInfoDO);
+    ProjectInfoE create(ProjectInfoE projectInfoE);
 
     /**
      * 根据projectId更新issueMaxNum+1
@@ -23,4 +23,12 @@ public interface ProjectInfoRepository {
      * @return int
      */
     int updateIssueMaxNum(Long projectId);
+
+    /**
+     * 更新
+     *
+     * @param projectInfoE projectInfoE
+     * @return ProjectInfoE
+     */
+    ProjectInfoE update(ProjectInfoE projectInfoE);
 }

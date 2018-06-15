@@ -29,7 +29,7 @@ public class IssueLinkController {
 
     @Permission(level = ResourceLevel.PROJECT)
     @ApiOperation("创建issueLink")
-    @PutMapping(value = "/{issueId}")
+    @PostMapping(value = "/{issueId}")
     public ResponseEntity<List<IssueLinkDTO>> createIssueLinkList(@ApiParam(value = "项目id", required = true)
                                                                   @PathVariable(name = "project_id") Long projectId,
                                                                   @ApiParam(value = "issueId", required = true)
@@ -37,7 +37,7 @@ public class IssueLinkController {
                                                                   @ApiParam(value = "issueLink创建对象", required = true)
                                                                   @RequestBody List<IssueLinkCreateDTO> issueLinkCreateDTOList) {
         return Optional.ofNullable(issueLinkService.createIssueLinkList(issueLinkCreateDTOList, issueId, projectId))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.IssueLink.createIssueLink"));
     }
 
