@@ -110,6 +110,15 @@ public class IssueServiceImpl implements IssueService {
     private static final String SPRINT_ID_FIELD = "sprintId";
     private static final String EPIC_COLOR_TYPE = "epic_color";
     private static final String RELATION_TYPE_FIX = "fix";
+    private static final String FILED_SUMMARY = "summary";
+    private static final String FILED_DESCRIPTION = "description";
+    private static final String FILED_PRIORITY = "priority";
+    private static final String FILED_ASSIGNEE = "assignee";
+    private static final String FILED_REPORTER = "reporter";
+    private static final String FILED_SPRINT = "Sprint";
+    private static final String FILED_STORY_POINTS = "Story Points";
+    private static final String FILED_EPIC_LINK = "Epic Link";
+    private static final String FILED_TIMEESTIMATE = "timeestimate";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -176,7 +185,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled("summary");
+            dataLogE.setFiled(FILED_SUMMARY);
             dataLogE.setOldString(originIssue.getSummary());
             dataLogE.setNewString(issueUpdateDTO.getSummary());
             dataLogRepository.create(dataLogE);
@@ -188,7 +197,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled("description");
+            dataLogE.setFiled(FILED_DESCRIPTION);
             dataLogE.setOldString(originIssue.getDescription());
             dataLogE.setNewString(issueUpdateDTO.getDescription());
             dataLogRepository.create(dataLogE);
@@ -200,7 +209,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled("priority");
+            dataLogE.setFiled(FILED_PRIORITY);
             dataLogE.setOldString(lookupValueMapper.selectNameByValueCode(originIssue.getPriorityCode()));
             dataLogE.setNewString(lookupValueMapper.selectNameByValueCode(issueUpdateDTO.getPriorityCode()));
             dataLogRepository.create(dataLogE);
@@ -212,7 +221,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled("assignee");
+            dataLogE.setFiled(FILED_ASSIGNEE);
             dataLogE.setOldValue(originIssue.getAssigneeId().toString());
             if (originIssue.getAssigneeId() != null && originIssue.getAssigneeId() != 0) {
                 dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getAssigneeId(),false));
@@ -233,7 +242,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled("reporter");
+            dataLogE.setFiled(FILED_REPORTER);
             dataLogE.setOldValue(originIssue.getReporterId().toString());
             if (originIssue.getReporterId() != null && originIssue.getReporterId() != 0) {
                 dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getReporterId(),false));
@@ -250,7 +259,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled("Sprint");
+            dataLogE.setFiled(FILED_SPRINT);
             dataLogE.setOldValue(originIssue.getSprintId().toString());
             if (originIssue.getSprintId() != null && originIssue.getSprintId() != 0) {
                 dataLogE.setOldString(sprintMapper.selectNameBySprintId(originIssue.getSprintId()));
@@ -271,7 +280,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled("Story Points");
+            dataLogE.setFiled(FILED_STORY_POINTS);
             dataLogE.setOldString(originIssue.getStoryPoints().toString());
             dataLogE.setNewString(issueUpdateDTO.getStoryPoints().toString());
             dataLogRepository.create(dataLogE);
@@ -283,7 +292,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled("Epic Link");
+            dataLogE.setFiled(FILED_EPIC_LINK);
             if (originIssue.getEpicId() != null && originIssue.getEpicId() != 0) {
                 dataLogE.setOldValue(originIssue.getEpicId().toString());
                 dataLogE.setOldString(originIssue.getSummary());
@@ -304,7 +313,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled("timeestimate");
+            dataLogE.setFiled(FILED_TIMEESTIMATE);
             if (originIssue.getRemainingTime() != null) {
                 dataLogE.setOldValue(originIssue.getRemainingTime().toString());
                 dataLogE.setOldString(originIssue.getRemainingTime().toString());
