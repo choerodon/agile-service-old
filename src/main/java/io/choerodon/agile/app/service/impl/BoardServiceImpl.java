@@ -258,16 +258,42 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
+    private void dataLogResolution(Long projectId, Long issueId, IssueStatusDO originStatus, IssueStatusDO currentStatus) {
+        if (!(originStatus.getCompleted() && currentStatus.getCompleted())) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(projectId);
+            dataLogE.setIssueId(issueId);
+            dataLogE.setFiled("resolution");
+            if (originStatus.getCompleted()) {
+                dataLogE.setOldValue(originStatus.getId().toString());
+                dataLogE.setOldString(originStatus.getName());
+                dataLogE.setNewValue(null);
+                dataLogE.setNewValue(null);
+            } else if (currentStatus.getCompleted()) {
+                dataLogE.setOldValue(null);
+                dataLogE.setOldString(null);
+                dataLogE.setNewValue(currentStatus.getId().toString());
+                dataLogE.setNewValue(currentStatus.getName());
+            }
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
     private void dataLogStatus(IssueDO originIssue, IssueE currentIssue) {
         DataLogE dataLogE = new DataLogE();
         dataLogE.setProjectId(originIssue.getProjectId());
         dataLogE.setIssueId(currentIssue.getIssueId());
         dataLogE.setFiled(FILED_STATUS);
         dataLogE.setOldValue(originIssue.getStatusId().toString());
-        dataLogE.setOldString(issueStatusMapper.selectByPrimaryKey(originIssue.getStatusId()).getName());
+        IssueStatusDO originStatus = issueStatusMapper.selectByPrimaryKey(originIssue.getStatusId());
+        IssueStatusDO currentStatus = issueStatusMapper.selectByPrimaryKey(currentIssue.getStatusId());
+        dataLogE.setOldString(originStatus.getName());
         dataLogE.setNewValue(currentIssue.getStatusId().toString());
-        dataLogE.setNewString(issueStatusMapper.selectByPrimaryKey(currentIssue.getStatusId()).getName());
+        dataLogE.setNewString(currentStatus.getName());
         dataLogRepository.create(dataLogE);
+        if (originStatus.getCompleted() || currentStatus.getCompleted()) {
+            dataLogResolution(originIssue.getProjectId(), currentIssue.getIssueId(), originStatus, currentStatus);
+        }
     }
 
     @Override

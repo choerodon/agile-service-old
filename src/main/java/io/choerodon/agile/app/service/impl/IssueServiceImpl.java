@@ -118,7 +118,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String FILED_SPRINT = "Sprint";
     private static final String FILED_STORY_POINTS = "Story Points";
     private static final String FILED_EPIC_LINK = "Epic Link";
-    private static final String FILED_TIMEESTIMATE = "timeestimate";
+    private static final String FILED_TIMEORIGINESTIMATE = "timeoriginalestimate";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -313,7 +313,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled(FILED_TIMEESTIMATE);
+            dataLogE.setFiled(FILED_TIMEORIGINESTIMATE);
             if (originIssue.getRemainingTime() != null) {
                 dataLogE.setOldValue(originIssue.getRemainingTime().toString());
                 dataLogE.setOldString(originIssue.getRemainingTime().toString());
