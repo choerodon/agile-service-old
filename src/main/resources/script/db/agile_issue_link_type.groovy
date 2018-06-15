@@ -22,4 +22,9 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue_link_type.groovy') {
             column(name: "last_update_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
     }
+
+    changeSet(id: '2018-06-15-agile-issue-link-type', author: 'dinghuang123@gmail.com') {
+        addPrimaryKey(tableName: 'agile_issue_link_type', columnNames: 'link_type_id', constraintName: '')
+        addAutoIncrement(schemaName: '', tableName: 'agile_issue_link_type', columnName: 'link_type_id', columnDataType: 'BIGINT UNSIGNED')
+    }
 }
