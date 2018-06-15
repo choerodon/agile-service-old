@@ -94,6 +94,8 @@ public class IssueServiceImpl implements IssueService {
     private LookupValueMapper lookupValueMapper;
     @Autowired
     private IssueLinkService issueLinkService;
+    @Autowired
+    private DataLogRepository dataLogRepository;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -169,14 +171,172 @@ public class IssueServiceImpl implements IssueService {
         return issueListDTOPage;
     }
 
+    private void dataLogSummary(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getSummary() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setFiled("summary");
+            dataLogE.setOldString(originIssue.getSummary());
+            dataLogE.setNewString(issueUpdateDTO.getSummary());
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLogDescription(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getDescription() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setFiled("description");
+            dataLogE.setOldString(originIssue.getDescription());
+            dataLogE.setNewString(issueUpdateDTO.getDescription());
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLogPriority(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getPriorityCode() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setFiled("priority");
+            dataLogE.setOldString(lookupValueMapper.selectNameByValueCode(originIssue.getPriorityCode()));
+            dataLogE.setNewString(lookupValueMapper.selectNameByValueCode(issueUpdateDTO.getPriorityCode()));
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLogAssignee(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getAssigneeId() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setFiled("assignee");
+            dataLogE.setOldValue(originIssue.getAssigneeId().toString());
+            if (originIssue.getAssigneeId() != null && originIssue.getAssigneeId() != 0) {
+                dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getAssigneeId(),false));
+            }
+            if (issueUpdateDTO.getAssigneeId() != 0) {
+                dataLogE.setNewValue(issueUpdateDTO.getAssigneeId().toString());
+                dataLogE.setNewString(userRepository.queryUserNameByOption(issueUpdateDTO.getAssigneeId(), false));
+            } else {
+                dataLogE.setNewValue(null);
+                dataLogE.setNewString(null);
+            }
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLogReporter(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getReporterId() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setFiled("reporter");
+            dataLogE.setOldValue(originIssue.getReporterId().toString());
+            if (originIssue.getReporterId() != null && originIssue.getReporterId() != 0) {
+                dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getReporterId(),false));
+            }
+            if (issueUpdateDTO.getReporterId() != 0) {
+                dataLogE.setNewValue(issueUpdateDTO.getReporterId().toString());
+                dataLogE.setNewString(userRepository.queryUserNameByOption(issueUpdateDTO.getReporterId(), false));
+            }
+        }
+    }
+
+    private void dataLogSprint(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getSprintId() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setFiled("Sprint");
+            dataLogE.setOldValue(originIssue.getSprintId().toString());
+            if (originIssue.getSprintId() != null && originIssue.getSprintId() != 0) {
+                dataLogE.setOldString(sprintMapper.selectNameBySprintId(originIssue.getSprintId()));
+            }
+            if (issueUpdateDTO.getSprintId() != 0) {
+                dataLogE.setNewValue(issueUpdateDTO.getSprintId().toString());
+                dataLogE.setNewString(sprintMapper.selectNameBySprintId(issueUpdateDTO.getSprintId()));
+            } else {
+                dataLogE.setNewValue(null);
+                dataLogE.setNewString(null);
+            }
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLogStoryPoint(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getStoryPoints() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setFiled("Story Points");
+            dataLogE.setOldString(originIssue.getStoryPoints().toString());
+            dataLogE.setNewString(issueUpdateDTO.getStoryPoints().toString());
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLogEpic(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getEpicId() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setFiled("Epic Link");
+            if (originIssue.getEpicId() != null && originIssue.getEpicId() != 0) {
+                dataLogE.setOldValue(originIssue.getEpicId().toString());
+                dataLogE.setOldString(originIssue.getSummary());
+            }
+            if (issueUpdateDTO.getEpicId() != 0) {
+                dataLogE.setNewValue(issueUpdateDTO.getEpicId().toString());
+                dataLogE.setNewString(issueMapper.selectByPrimaryKey(issueUpdateDTO.getEpicId()).getSummary());
+            } else {
+                dataLogE.setNewValue(null);
+                dataLogE.setNewString(null);
+            }
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLogRemainTime(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getRemainingTime() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setFiled("timeestimate");
+            if (originIssue.getRemainingTime() != null) {
+                dataLogE.setOldValue(originIssue.getRemainingTime().toString());
+                dataLogE.setOldString(originIssue.getRemainingTime().toString());
+            }
+            dataLogE.setNewValue(issueUpdateDTO.getRemainingTime().toString());
+            dataLogE.setNewString(issueUpdateDTO.getRemainingTime().toString());
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLog(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        dataLogSummary(originIssue, issueUpdateDTO);
+        dataLogDescription(originIssue, issueUpdateDTO);
+        dataLogPriority(originIssue, issueUpdateDTO);
+        dataLogAssignee(originIssue, issueUpdateDTO);
+        dataLogReporter(originIssue, issueUpdateDTO);
+        dataLogSprint(originIssue, issueUpdateDTO);
+        dataLogStoryPoint(originIssue, issueUpdateDTO);
+        dataLogEpic(originIssue, issueUpdateDTO);
+        dataLogRemainTime(originIssue, issueUpdateDTO);
+    }
+
     @Override
     public IssueDTO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList) {
+        IssueDO originIssue = issueMapper.selectByPrimaryKey(issueUpdateDTO.getIssueId());
         if (fieldList != null && !fieldList.isEmpty()) {
             if (fieldList.contains(SPRINT_ID_FIELD)) {
                 issueRepository.batchUpdateSubIssueSprintId(projectId, issueUpdateDTO.getSprintId(), issueUpdateDTO.getIssueId());
             }
             issueRepository.update(issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO), fieldList.toArray(new String[fieldList.size()]));
         }
+        dataLog(originIssue, issueUpdateDTO);
         Long issueId = issueUpdateDTO.getIssueId();
         handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId);
         handleUpdateComponentIssueRel(issueUpdateDTO.getComponentIssueRelDTOList(), projectId, issueId);
@@ -373,8 +533,21 @@ public class IssueServiceImpl implements IssueService {
         return issueAssembler.issueDetailDoToIssueSubDto(issue);
     }
 
+    private void dataLogIssueType(String originType, IssueUpdateTypeDTO issueUpdateTypeDTO) {
+        String originTypeName = lookupValueMapper.selectNameByValueCode(originType);
+        String currentTypeName = lookupValueMapper.selectNameByValueCode(issueUpdateTypeDTO.getTypeCode());
+        DataLogE dataLogE = new DataLogE();
+        dataLogE.setFiled("issuetype");
+        dataLogE.setIssueId(issueUpdateTypeDTO.getIssueId());
+        dataLogE.setProjectId(issueUpdateTypeDTO.getProjectId());
+        dataLogE.setOldString(originTypeName);
+        dataLogE.setNewString(currentTypeName);
+        dataLogRepository.create(dataLogE);
+    }
+
     @Override
     public IssueDTO updateIssueTypeCode(IssueE issueE, IssueUpdateTypeDTO issueUpdateTypeDTO) {
+        String originType = issueE.getTypeCode();
         if (issueUpdateTypeDTO.getTypeCode().equals(ISSUE_EPIC)) {
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
             issueE.setEpicName(issueUpdateTypeDTO.getEpicName());
@@ -393,6 +566,7 @@ public class IssueServiceImpl implements IssueService {
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
             issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD});
         }
+        dataLogIssueType(originType, issueUpdateTypeDTO);
         return queryIssue(issueE.getProjectId(), issueE.getIssueId());
     }
 
