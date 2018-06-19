@@ -69,4 +69,5 @@ public class SprintRule {
             throw new CommonException(SPRINT_DATE_ERROR);
         }
     }
+
 }
