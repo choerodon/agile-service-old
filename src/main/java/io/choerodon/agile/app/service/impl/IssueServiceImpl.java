@@ -134,6 +134,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String RANK_LOWER = "评级更低";
     private static final String FILED_LABELS = "labels";
     private static final String FILED_COMPONENT = "Component";
+    private static final String FILED_EPIC_NAME = "Epic Name";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -378,7 +379,20 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
+    private void dataLogEpicName(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getEpicName() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setFiled(FILED_EPIC_NAME);
+            dataLogE.setOldString(originIssue.getEpicName());
+            dataLogE.setNewString(issueUpdateDTO.getEpicName());
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
     private void dataLog(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        dataLogEpicName(originIssue, issueUpdateDTO);
         dataLogSummary(originIssue, issueUpdateDTO);
         dataLogDescription(originIssue, issueUpdateDTO);
         dataLogPriority(originIssue, issueUpdateDTO);
@@ -404,7 +418,8 @@ public class IssueServiceImpl implements IssueService {
         handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId);
         handleUpdateComponentIssueRel(issueUpdateDTO.getComponentIssueRelDTOList(), projectId, issueId);
         handleUpdateVersionIssueRel(issueUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId);
-        return queryIssue(projectId, issueId);
+//        return queryIssue(projectId, issueId);
+        return null;
     }
 
     @Override
