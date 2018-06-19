@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
+import io.choerodon.agile.domain.agile.entity.BurnDownChangeE;
 import io.choerodon.agile.domain.agile.entity.ReportIssueE;
 import io.choerodon.agile.domain.agile.entity.SprintE;
 import org.apache.ibatis.annotations.Param;
@@ -52,4 +53,5 @@ public interface ReportMapper {
      * @return Integer
      */
     Integer queryRemainingTimesBeforeSprintStart(@Param("sprintE") SprintE sprintE);
+
 }

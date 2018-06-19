@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -115,6 +116,18 @@ public class ReportServiceImpl implements ReportService {
 
     private void queryRemainingEstimatedTimeReport(SprintE sprintE, BurnDownChangeE burnDownChangeE) {
         //todo 根据剩余预估时间返回燃尽图报告信息
+        burnDownChangeE.getSprintStartDataE().setStartDate(sprintE.getStartDate());
+        //todo 查询开启冲刺时候的issue的剩余估计时间
+//        burnDownChangeE.getSprintStartDataE().setIssueChangeDataEList(reportMapper.queryIssueChangeBeforeSprint(sprintE));
+        if (sprintE.getEndDate() != null) {
+            burnDownChangeE.getSprintEndDataE().setEndDate(sprintE.getEndDate());
+//            burnDownChangeE.getSprintEndDataE().setIssueChangeDataEList(reportMapper.queryIssueChangeAfterSprint(sprintE));
+        }
+        //todo 获取当前冲刺期间加入的issue(包含加入时间、加入时的剩余预估时间)
+//        burnDownChangeE.setIssueChangeDataEList(reportMapper.queryIssueRemoveChangeBySprint(sprintE));
+        //todo 获取当前冲刺期间移除的issue(包含移除时间、移除时的剩余预估时间)
+//        burnDownChangeE.setIssueChangeDataEList(reportMapper.queryIssueAddChangeBySprint(sprintE));
+        burnDownChangeE.getIssueChangeDataEList().stream().sorted(Comparator.comparing(BurnDownChangeE.IssueChangeDataE::getChangeDate));
     }
 
     private void queryStoryPointsReport(SprintE sprintE, BurnDownChangeE burnDownChangeE) {

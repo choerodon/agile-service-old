@@ -15,7 +15,7 @@ public class BurnDownChangeE {
 
     private SprintEndDataE sprintEndDataE;
 
-    private List<IssueChangeE> issueChangeEList;
+    private List<IssueChangeDataE> issueChangeDataEList;
 
     public SprintStartDataE getSprintStartDataE() {
         return sprintStartDataE;
@@ -33,12 +33,12 @@ public class BurnDownChangeE {
         this.sprintEndDataE = sprintEndDataE;
     }
 
-    public List<IssueChangeE> getIssueChangeEList() {
-        return issueChangeEList;
+    public List<IssueChangeDataE> getIssueChangeDataEList() {
+        return issueChangeDataEList;
     }
 
-    public void setIssueChangeEList(List<IssueChangeE> issueChangeEList) {
-        this.issueChangeEList = issueChangeEList;
+    public void setIssueChangeDataEList(List<IssueChangeDataE> issueChangeDataEList) {
+        this.issueChangeDataEList = issueChangeDataEList;
     }
 
     public class SprintStartDataE {
@@ -74,9 +74,9 @@ public class BurnDownChangeE {
 
         private String changeDetail;
 
-        private Integer oldDate;
+        private Integer oldData;
 
-        private Integer newDate;
+        private Integer newData;
 
         private Date changeDate;
 
@@ -112,20 +112,20 @@ public class BurnDownChangeE {
             this.changeDetail = changeDetail;
         }
 
-        public Integer getOldDate() {
-            return oldDate;
+        public Integer getOldData() {
+            return oldData;
         }
 
-        public void setOldDate(Integer oldDate) {
-            this.oldDate = oldDate;
+        public void setOldData(Integer oldData) {
+            this.oldData = oldData;
         }
 
-        public Integer getNewDate() {
-            return newDate;
+        public Integer getNewData() {
+            return newData;
         }
 
-        public void setNewDate(Integer newDate) {
-            this.newDate = newDate;
+        public void setNewData(Integer newData) {
+            this.newData = newData;
         }
 
         public Date getChangeDate() {
@@ -134,29 +134,6 @@ public class BurnDownChangeE {
 
         public void setChangeDate(Date changeDate) {
             this.changeDate = changeDate;
-        }
-    }
-
-    public class IssueChangeE {
-
-        private Date date;
-
-        private List<IssueChangeDataE> issueChangeDataEList;
-
-        public Date getDate() {
-            return date;
-        }
-
-        public void setDate(Date date) {
-            this.date = date;
-        }
-
-        public List<IssueChangeDataE> getIssueChangeDataEList() {
-            return issueChangeDataEList;
-        }
-
-        public void setIssueChangeDataEList(List<IssueChangeDataE> issueChangeDataEList) {
-            this.issueChangeDataEList = issueChangeDataEList;
         }
     }
 
