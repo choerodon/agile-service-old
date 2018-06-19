@@ -13,4 +13,18 @@
         ORDER BY last_update_date,created_by
     </select>
 
+    <select id="selectLastWorkLogById" resultType="io.choerodon.agile.infra.dataobject.DataLogDO">
+        SELECT
+            *
+        FROM
+            agile_data_log
+        WHERE
+            project_id = #{projectId}
+        AND issue_id = #{issueId}
+        AND filed = #{filed}
+        ORDER BY
+            log_id DESC
+        LIMIT 1
+    </select>
+
 </mapper>

@@ -15,4 +15,8 @@ public interface DataLogMapper extends BaseMapper<DataLogDO> {
 
     List selectByIssueId(@Param("projectId") Long projectId,
                          @Param("issueId") Long issueId);
+
+    DataLogDO selectLastWorkLogById(@Param("issueId") Long issueId,
+                                    @Param("projectId") Long projectId,
+                                    @Param("filed") String filed);
 }
