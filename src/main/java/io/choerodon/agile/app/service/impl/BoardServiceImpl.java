@@ -5,11 +5,11 @@ import io.choerodon.agile.api.dto.BoardSprintDTO;
 import io.choerodon.agile.api.dto.IssueMoveDTO;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
+import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.infra.common.utils.DateUtil;
-import io.choerodon.agile.infra.mapper.IssueMapper;
-import io.choerodon.agile.infra.mapper.QuickFilterMapper;
+import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.dto.BoardDTO;
@@ -17,8 +17,6 @@ import io.choerodon.agile.app.service.BoardColumnService;
 import io.choerodon.agile.app.service.BoardService;
 import io.choerodon.agile.domain.agile.entity.BoardE;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.mapper.BoardColumnMapper;
-import io.choerodon.agile.infra.mapper.BoardMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +34,7 @@ public class BoardServiceImpl implements BoardService {
     private static final String CONTRAINT_ISSUE_WITHOUT_SUBTASK = "issue_without_sub_task";
     private static final String STORY_POINTS = "story_point";
     private static final String STORY = "story";
+    private static final String FILED_STATUS = "status";
 
     @Autowired
     private BoardRepository boardRepository;
@@ -72,6 +71,12 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private QuickFilterMapper quickFilterMapper;
+
+    @Autowired
+    private IssueStatusMapper issueStatusMapper;
+
+    @Autowired
+    private DataLogRepository dataLogRepository;
 
 
     @Override
@@ -253,6 +258,44 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
+    private void dataLogResolution(Long projectId, Long issueId, IssueStatusDO originStatus, IssueStatusDO currentStatus) {
+        if (!(originStatus.getCompleted() && currentStatus.getCompleted())) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(projectId);
+            dataLogE.setIssueId(issueId);
+            dataLogE.setFiled("resolution");
+            if (originStatus.getCompleted()) {
+                dataLogE.setOldValue(originStatus.getId().toString());
+                dataLogE.setOldString(originStatus.getName());
+                dataLogE.setNewValue(null);
+                dataLogE.setNewValue(null);
+            } else if (currentStatus.getCompleted()) {
+                dataLogE.setOldValue(null);
+                dataLogE.setOldString(null);
+                dataLogE.setNewValue(currentStatus.getId().toString());
+                dataLogE.setNewValue(currentStatus.getName());
+            }
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLogStatus(IssueDO originIssue, IssueE currentIssue) {
+        DataLogE dataLogE = new DataLogE();
+        dataLogE.setProjectId(originIssue.getProjectId());
+        dataLogE.setIssueId(currentIssue.getIssueId());
+        dataLogE.setFiled(FILED_STATUS);
+        dataLogE.setOldValue(originIssue.getStatusId().toString());
+        IssueStatusDO originStatus = issueStatusMapper.selectByPrimaryKey(originIssue.getStatusId());
+        IssueStatusDO currentStatus = issueStatusMapper.selectByPrimaryKey(currentIssue.getStatusId());
+        dataLogE.setOldString(originStatus.getName());
+        dataLogE.setNewValue(currentIssue.getStatusId().toString());
+        dataLogE.setNewString(currentStatus.getName());
+        dataLogRepository.create(dataLogE);
+        if (originStatus.getCompleted() || currentStatus.getCompleted()) {
+            dataLogResolution(originIssue.getProjectId(), currentIssue.getIssueId(), originStatus, currentStatus);
+        }
+    }
+
     @Override
     public IssueMoveDTO move(Long projectId, Long issueId, IssueMoveDTO issueMoveDTO) {
         Long boardId = issueMoveDTO.getBoardId();
@@ -260,6 +303,7 @@ public class BoardServiceImpl implements BoardService {
         BoardDO boardDO = boardMapper.selectByPrimaryKey(boardId);
         checkColumnContraint(projectId, issueMoveDTO, boardDO.getColumnConstraint(),issueDO.getStatusId());
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
+        dataLogStatus(issueDO, issueE);
         return ConvertHelper.convert(issueRepository.updateSelective(issueE), IssueMoveDTO.class);
     }
 

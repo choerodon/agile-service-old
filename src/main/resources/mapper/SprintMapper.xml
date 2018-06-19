@@ -273,4 +273,10 @@
 
     </select>
 
+    <select id="selectNameBySprintId" resultType="java.lang.String">
+        SELECT sprint_name
+        FROM agile_sprint
+        WHERE sprint_id = #{sprintId}
+    </select>
+
 </mapper>

@@ -6,7 +6,9 @@ import io.choerodon.agile.api.dto.IssueCommentDTO;
 import io.choerodon.agile.api.dto.IssueCommentUpdateDTO;
 import io.choerodon.agile.app.assembler.IssueCommentAssembler;
 import io.choerodon.agile.app.service.IssueCommentService;
+import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.domain.agile.entity.IssueCommentE;
+import io.choerodon.agile.domain.agile.repository.DataLogRepository;
 import io.choerodon.agile.domain.agile.repository.IssueCommentRepository;
 import io.choerodon.agile.infra.dataobject.IssueCommentDO;
 import io.choerodon.agile.infra.mapper.IssueCommentMapper;
@@ -30,12 +32,16 @@ import java.util.List;
 @Transactional(rollbackFor = CommonException.class)
 public class IssueCommentServiceImpl implements IssueCommentService {
 
+    private static final String FILED_COMMENT = "Comment";
+
     @Autowired
     private IssueCommentRepository issueCommentRepository;
     @Autowired
     private IssueCommentAssembler issueCommentAssembler;
     @Autowired
     private IssueCommentMapper issueCommentMapper;
+    @Autowired
+    private DataLogRepository dataLogRepository;
 
     @Override
     public IssueCommentDTO createIssueComment(Long projectId, IssueCommentCreateDTO issueCommentCreateDTO) {
@@ -62,8 +68,22 @@ public class IssueCommentServiceImpl implements IssueCommentService {
         return ConvertHelper.convertList(issueCommentMapper.queryIssueCommentList(projectId, issueId), IssueCommentDTO.class);
     }
 
+    private void dataLogComment(Long projectId, Long commentId) {
+        IssueCommentDO issueCommentDO = issueCommentMapper.selectByPrimaryKey(commentId);
+        if (issueCommentDO == null) {
+            throw new CommonException("error.comment.get");
+        }
+        DataLogE dataLogE = new DataLogE();
+        dataLogE.setProjectId(projectId);
+        dataLogE.setIssueId(issueCommentDO.getIssueId());
+        dataLogE.setFiled(FILED_COMMENT);
+        dataLogE.setOldValue(issueCommentDO.getCommentText());
+        dataLogRepository.create(dataLogE);
+    }
+
     @Override
     public int deleteIssueComment(Long projectId, Long commentId) {
+        dataLogComment(projectId, commentId);
         return issueCommentRepository.delete(projectId, commentId);
     }
 

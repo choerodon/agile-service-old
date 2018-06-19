@@ -561,5 +561,15 @@
         WHERE parent_issue_id = #{issueId} AND project_ID = #{projectId}
     </update>
 
+    <select id="selectLabelNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueLabelDO">
+        SELECT
+            ail.*
+        FROM
+            agile_label_issue_rel alir,
+            agile_issue_label ail
+        WHERE
+            ail.label_id = alir.label_id
+        AND alir.issue_id = #{issueId}
+    </select>
 
 </mapper>

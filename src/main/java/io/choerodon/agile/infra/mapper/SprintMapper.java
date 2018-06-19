@@ -57,4 +57,6 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
     List<Long> queryIssueIdOrderByRankDesc(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
     List<IssueNumDO> queryParentsDoneUnfinishedSubtasks(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+
+    String selectNameBySprintId(@Param("sprintId") Long sprintId);
 }
