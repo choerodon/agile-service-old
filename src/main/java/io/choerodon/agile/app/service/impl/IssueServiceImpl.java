@@ -98,6 +98,10 @@ public class IssueServiceImpl implements IssueService {
     private DataLogRepository dataLogRepository;
     @Autowired
     private DataLogMapper dataLogMapper;
+    @Autowired
+    private VersionIssueRelMapper versionIssueRelMapper;
+    @Autowired
+    private ComponentIssueRelMapper componentIssueRelMapper;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -128,6 +132,8 @@ public class IssueServiceImpl implements IssueService {
     private static final String FILED_RANK = "Rank";
     private static final String RANK_HIGHER = "评级更高";
     private static final String RANK_LOWER = "评级更低";
+    private static final String FILED_LABELS = "labels";
+    private static final String FILED_COMPONENT = "Component";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -731,8 +737,52 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
+    private String getOriginLabelNames(List<IssueLabelDO> originLabels) {
+        StringBuilder originLabelNames = new StringBuilder();
+        int originIdx = 0;
+        for (IssueLabelDO label : originLabels) {
+            if (originIdx == originLabels.size() - 1) {
+                originLabelNames.append(label.getLabelName());
+            } else {
+                originLabelNames.append(label.getLabelName() + " ");
+            }
+        }
+        return originLabelNames.toString();
+    }
+
+    private String getCurrentLabelNames(List<LabelIssueRelDTO> labelIssueRelDTOList) {
+        StringBuilder stringBuilder = new StringBuilder();
+        int idx = 0;
+        for (LabelIssueRelDTO label : labelIssueRelDTOList) {
+            if (idx == labelIssueRelDTOList.size() - 1) {
+                stringBuilder.append(label.getLabelName());
+            } else {
+                stringBuilder.append(label.getLabelName()+" ");
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    private void dataLogLabel(List<IssueLabelDO> originLabels,List<LabelIssueRelDTO> labelIssueRelDTOList, Long issueId) {
+        if (labelIssueRelDTOList != null) {
+            IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(issueDO.getProjectId());
+            dataLogE.setFiled(FILED_LABELS);
+            dataLogE.setIssueId(issueId);
+            if (!labelIssueRelDTOList.isEmpty()) {
+                dataLogE.setOldString(getOriginLabelNames(originLabels));
+                dataLogE.setNewString(getCurrentLabelNames(labelIssueRelDTOList));
+            } else {
+                dataLogE.setOldString(getOriginLabelNames(originLabels));
+            }
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
     private void handleUpdateLabelIssue(List<LabelIssueRelDTO> labelIssueRelDTOList, Long issueId) {
         if (labelIssueRelDTOList != null) {
+            List<IssueLabelDO> originLabels = issueMapper.selectLabelNameByIssueId(issueId);
             if (!labelIssueRelDTOList.isEmpty()) {
                 labelIssueRelRepository.deleteByIssueId(issueId);
                 List<LabelIssueRelE> labelIssueEList = ConvertHelper.convertList(labelIssueRelDTOList, LabelIssueRelE.class);
@@ -743,14 +793,65 @@ public class IssueServiceImpl implements IssueService {
             } else {
                 labelIssueRelRepository.deleteByIssueId(issueId);
             }
+            dataLogLabel(originLabels, labelIssueRelDTOList, issueId);
             //没有issue使用的标签进行垃圾回收
             issueLabelRepository.labelGarbageCollection();
         }
 
     }
 
+    private void dataLogVersion(Long projectId, Long issueId, List<VersionIssueRelDTO> versionIssueRelDTOList) {
+        if (versionIssueRelDTOList != null && !versionIssueRelDTOList.isEmpty() && !"fix".equals(versionIssueRelDTOList.get(0).getRelationType())) {
+            return;
+        }
+        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
+        versionIssueRelDO.setProjectId(projectId);
+        versionIssueRelDO.setIssueId(issueId);
+        List<VersionIssueRelDO> versionIssueRelDOList = versionIssueRelMapper.select(versionIssueRelDO);
+        if (versionIssueRelDOList != null && !versionIssueRelDOList.isEmpty()) {
+            for (VersionIssueRelDO versionIssueRel : versionIssueRelDOList) {
+                int flag = 0;
+                for (VersionIssueRelDTO versionRel : versionIssueRelDTOList) {
+                    if (versionRel.getVersionId().equals(versionIssueRel.getVersionId())) {
+                        flag = 1;
+                    }
+                }
+                if (flag == 0) {
+                    DataLogE dataLogE = new DataLogE();
+                    dataLogE.setProjectId(projectId);
+                    dataLogE.setIssueId(issueId);
+                    dataLogE.setFiled(FILED_FIX_VERSION);
+                    dataLogE.setOldValue(versionIssueRel.getVersionId().toString());
+                    dataLogE.setOldString(productVersionMapper.selectByPrimaryKey(versionIssueRel.getVersionId()).getName());
+                    dataLogRepository.create(dataLogE);
+                }
+            }
+        }
+        if (versionIssueRelDTOList != null && !versionIssueRelDTOList.isEmpty()) {
+            for (VersionIssueRelDTO versionRel : versionIssueRelDTOList) {
+                int flag = 0;
+                for (VersionIssueRelDO versionIssueRel : versionIssueRelDOList) {
+                    if (versionRel.getVersionId().equals(versionIssueRel.getVersionId())) {
+                        flag = 1;
+                    }
+                }
+                if (flag == 0) {
+                    DataLogE dataLogE = new DataLogE();
+                    dataLogE.setProjectId(projectId);
+                    dataLogE.setIssueId(issueId);
+                    dataLogE.setFiled(FILED_FIX_VERSION);
+                    dataLogE.setNewValue(versionRel.getVersionId().toString());
+                    dataLogE.setNewString(productVersionMapper.selectByPrimaryKey(versionRel.getVersionId()).getName());
+                    dataLogRepository.create(dataLogE);
+                }
+            }
+        }
+
+    }
+
     private void handleUpdateVersionIssueRel(List<VersionIssueRelDTO> versionIssueRelDTOList, Long projectId, Long issueId) {
         if (versionIssueRelDTOList != null) {
+            dataLogVersion(projectId, issueId, versionIssueRelDTOList);
             if (!versionIssueRelDTOList.isEmpty()) {
                 versionIssueRelRepository.deleteByIssueId(issueId);
                 handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId);
@@ -761,8 +862,54 @@ public class IssueServiceImpl implements IssueService {
 
     }
 
+    private void dataLogComponent(Long projectId, Long issueId, List<ComponentIssueRelDTO> componentIssueRelDTOList) {
+        ComponentIssueRelDO componentIssueRelDO = new ComponentIssueRelDO();
+        componentIssueRelDO.setProjectId(projectId);
+        componentIssueRelDO.setIssueId(issueId);
+        List<ComponentIssueRelDO> componentIssueRelDOList = componentIssueRelMapper.select(componentIssueRelDO);
+        if (componentIssueRelDOList != null && !componentIssueRelDOList.isEmpty()) {
+            for (ComponentIssueRelDO originRel : componentIssueRelDOList) {
+                int flag = 0;
+                for (ComponentIssueRelDTO curRel : componentIssueRelDTOList) {
+                    if (originRel.getComponentId().equals(curRel.getComponentId())) {
+                        flag = 1;
+                    }
+                }
+                if (flag == 0) {
+                    DataLogE dataLogE = new DataLogE();
+                    dataLogE.setProjectId(projectId);
+                    dataLogE.setIssueId(issueId);
+                    dataLogE.setFiled(FILED_COMPONENT);
+                    dataLogE.setOldValue(originRel.getComponentId().toString());
+                    dataLogE.setOldString(issueComponentMapper.selectByPrimaryKey(originRel.getComponentId()).getName());
+                    dataLogRepository.create(dataLogE);
+                }
+            }
+        }
+        if (componentIssueRelDTOList != null && !componentIssueRelDTOList.isEmpty()) {
+            for (ComponentIssueRelDTO curRel : componentIssueRelDTOList) {
+                int flag = 0;
+                for (ComponentIssueRelDO originRel : componentIssueRelDOList) {
+                    if (originRel.getComponentId().equals(curRel.getComponentId())) {
+                        flag = 1;
+                    }
+                }
+                if (flag == 0) {
+                    DataLogE dataLogE = new DataLogE();
+                    dataLogE.setProjectId(projectId);
+                    dataLogE.setIssueId(issueId);
+                    dataLogE.setFiled(FILED_COMPONENT);
+                    dataLogE.setNewValue(curRel.getComponentId().toString());
+                    dataLogE.setNewString(curRel.getName());
+                    dataLogRepository.create(dataLogE);
+                }
+            }
+        }
+    }
+
     private void handleUpdateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId) {
         if (componentIssueRelDTOList != null) {
+            dataLogComponent(projectId, issueId, componentIssueRelDTOList);
             if (!componentIssueRelDTOList.isEmpty()) {
                 componentIssueRelRepository.deleteByIssueId(issueId);
                 handleComponentIssueRel(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId);
