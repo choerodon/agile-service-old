@@ -96,6 +96,8 @@ public class IssueServiceImpl implements IssueService {
     private IssueLinkService issueLinkService;
     @Autowired
     private DataLogRepository dataLogRepository;
+    @Autowired
+    private DataLogMapper dataLogMapper;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -119,6 +121,13 @@ public class IssueServiceImpl implements IssueService {
     private static final String FILED_STORY_POINTS = "Story Points";
     private static final String FILED_EPIC_LINK = "Epic Link";
     private static final String FILED_TIMEORIGINESTIMATE = "timeoriginalestimate";
+    private static final String FILED_ISSUETYPE = "issuetype";
+    private static final String FILED_EPIC_CHILD = "Epic Child";
+    private static final String FILED_DESCRIPTION_NULL = "[{\"insert\":\"\n\"}]";
+    private static final String FILED_FIX_VERSION = "Fix Version";
+    private static final String FILED_RANK = "Rank";
+    private static final String RANK_HIGHER = "评级更高";
+    private static final String RANK_LOWER = "评级更低";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -194,13 +203,22 @@ public class IssueServiceImpl implements IssueService {
 
     private void dataLogDescription(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
         if (issueUpdateDTO.getDescription() != null) {
-            DataLogE dataLogE = new DataLogE();
-            dataLogE.setProjectId(originIssue.getProjectId());
-            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled(FILED_DESCRIPTION);
-            dataLogE.setOldString(originIssue.getDescription());
-            dataLogE.setNewString(issueUpdateDTO.getDescription());
-            dataLogRepository.create(dataLogE);
+            if (!FILED_DESCRIPTION_NULL.equals(issueUpdateDTO.getDescription())) {
+                DataLogE dataLogE = new DataLogE();
+                dataLogE.setProjectId(originIssue.getProjectId());
+                dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+                dataLogE.setFiled(FILED_DESCRIPTION);
+                dataLogE.setOldString(originIssue.getDescription());
+                dataLogE.setNewString(issueUpdateDTO.getDescription());
+                dataLogRepository.create(dataLogE);
+            } else {
+                DataLogE dataLogE = new DataLogE();
+                dataLogE.setProjectId(originIssue.getProjectId());
+                dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+                dataLogE.setFiled(FILED_DESCRIPTION);
+                dataLogE.setOldString(originIssue.getDescription());
+                dataLogRepository.create(dataLogE);
+            }
         }
     }
 
@@ -287,6 +305,35 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
+    private void dataLogEpicChild(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (originIssue.getEpicId() != null && originIssue.getEpicId() != 0) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setFiled(FILED_EPIC_CHILD);
+            dataLogE.setIssueId(issueUpdateDTO.getEpicId());
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setNewValue(originIssue.getIssueId().toString());
+            dataLogE.setNewString(originIssue.getSummary());
+            dataLogRepository.create(dataLogE);
+            DataLogE removeEpicChild = new DataLogE();
+            removeEpicChild.setProjectId(originIssue.getProjectId());
+            removeEpicChild.setIssueId(originIssue.getEpicId());
+            removeEpicChild.setFiled(FILED_EPIC_CHILD);
+            removeEpicChild.setOldValue(originIssue.getIssueId().toString());
+            removeEpicChild.setOldString(originIssue.getSummary());
+            removeEpicChild.setNewValue(null);
+            removeEpicChild.setNewString(null);
+            dataLogRepository.create(removeEpicChild);
+        } else {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setFiled(FILED_EPIC_CHILD);
+            dataLogE.setIssueId(issueUpdateDTO.getEpicId());
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setNewValue(originIssue.getIssueId().toString());
+            dataLogE.setNewString(originIssue.getSummary());
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
     private void dataLogEpic(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
         if (issueUpdateDTO.getEpicId() != null) {
             DataLogE dataLogE = new DataLogE();
@@ -295,7 +342,7 @@ public class IssueServiceImpl implements IssueService {
             dataLogE.setFiled(FILED_EPIC_LINK);
             if (originIssue.getEpicId() != null && originIssue.getEpicId() != 0) {
                 dataLogE.setOldValue(originIssue.getEpicId().toString());
-                dataLogE.setOldString(originIssue.getSummary());
+                dataLogE.setOldString(issueMapper.selectByPrimaryKey(originIssue.getEpicId()).getSummary());
             }
             if (issueUpdateDTO.getEpicId() != 0) {
                 dataLogE.setNewValue(issueUpdateDTO.getEpicId().toString());
@@ -305,6 +352,7 @@ public class IssueServiceImpl implements IssueService {
                 dataLogE.setNewString(null);
             }
             dataLogRepository.create(dataLogE);
+            dataLogEpicChild(originIssue, issueUpdateDTO);
         }
     }
 
@@ -453,14 +501,27 @@ public class IssueServiceImpl implements IssueService {
         return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>());
     }
 
+    private void dataLogRank(Long projectId, MoveIssueDTO moveIssueDTO, String rankStr) {
+        for (Long issueId : moveIssueDTO.getIssueIds()) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(projectId);
+            dataLogE.setFiled(FILED_RANK);
+            dataLogE.setIssueId(issueId);
+            dataLogE.setNewString(rankStr);
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
     @Override
     public List<IssueSearchDTO> batchIssueToSprint(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO) {
         sprintRule.judgeExist(projectId, sprintId);
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
         if (moveIssueDTO.getBefore()) {
             beforeRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
+            dataLogRank(projectId, moveIssueDTO, RANK_HIGHER);
         } else {
             afterRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
+            dataLogRank(projectId, moveIssueDTO, RANK_LOWER);
         }
         issueRepository.batchIssueToSprint(projectId, sprintId, moveIssueDOS);
         issueRepository.batchSubIssueToSprint(projectId, sprintId, moveIssueDTO.getIssueIds());
@@ -546,7 +607,7 @@ public class IssueServiceImpl implements IssueService {
         String originTypeName = lookupValueMapper.selectNameByValueCode(originType);
         String currentTypeName = lookupValueMapper.selectNameByValueCode(issueUpdateTypeDTO.getTypeCode());
         DataLogE dataLogE = new DataLogE();
-        dataLogE.setFiled("issuetype");
+        dataLogE.setFiled(FILED_ISSUETYPE);
         dataLogE.setIssueId(issueUpdateTypeDTO.getIssueId());
         dataLogE.setProjectId(issueUpdateTypeDTO.getProjectId());
         dataLogE.setOldString(originTypeName);
