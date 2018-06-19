@@ -44,13 +44,9 @@ public interface IssueRepository {
 
     IssueE updateSelective(IssueE issueE);
 
-    int issueToDestination(Long projectId, Long sprintId, Long targetSprintId);
-
     Boolean batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds);
 
     Boolean batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds);
-
-    Boolean batchIssueToSprint(Long projectId, Long sprintId, List<MoveIssueDO> moveIssueDOS);
 
     int batchRemoveVersion(Long projectId, List<Long> issueIds);
 
@@ -63,7 +59,7 @@ public interface IssueRepository {
      */
     int batchUpdateIssueEpicId(Long projectId, Long issueId);
 
-    int subTaskToDestination(Long projectId, Long sprintId, Long targetSprintId);
+    int issueToDestinationByIds(Long projectId, Long sprintId, List<Long> issueIds);
 
     /**
      * 批量更改子issue的冲刺id
@@ -75,5 +71,7 @@ public interface IssueRepository {
      */
     int batchUpdateSubIssueSprintId(Long projectId, Long sprintId, Long issueId);
 
-    Boolean batchSubIssueToSprint(Long projectId, Long sprintId, List<Long> issueIds);
+    int batchUpdateIssueRank(Long projectId, List<MoveIssueDO> moveIssueDOS);
+
+    int removeIssueFromSprintByIds(Long projectId, List<Long> issueIds);
 }

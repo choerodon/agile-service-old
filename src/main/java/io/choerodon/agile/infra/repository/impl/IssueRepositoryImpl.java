@@ -82,11 +82,6 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public int issueToDestination(Long projectId, Long sprintId, Long targetSprintId) {
-        return issueMapper.issueToDestination(projectId, sprintId, targetSprintId);
-    }
-
-    @Override
     public Boolean batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds) {
         issueMapper.batchIssueToVersion(projectId, versionId, issueIds);
         return true;
@@ -95,12 +90,6 @@ public class IssueRepositoryImpl implements IssueRepository {
     @Override
     public Boolean batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds) {
         issueMapper.batchIssueToEpic(projectId, epicId, issueIds);
-        return true;
-    }
-
-    @Override
-    public Boolean batchIssueToSprint(Long projectId, Long sprintId, List<MoveIssueDO> moveIssueDOS) {
-        issueMapper.batchIssueToSprint(projectId, sprintId, moveIssueDOS);
         return true;
     }
 
@@ -115,8 +104,8 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public int subTaskToDestination(Long projectId, Long sprintId, Long targetSprintId) {
-        return issueMapper.subTaskToDestination(projectId, sprintId, targetSprintId);
+    public int issueToDestinationByIds(Long projectId, Long sprintId, List<Long> issueIds) {
+        return issueMapper.issueToDestinationByIds(projectId, sprintId, issueIds);
     }
 
     @Override
@@ -125,8 +114,12 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public Boolean batchSubIssueToSprint(Long projectId, Long sprintId, List<Long> issueIds) {
-        issueMapper.batchSubIssueToSprint(projectId, sprintId, issueIds);
-        return true;
+    public int batchUpdateIssueRank(Long projectId, List<MoveIssueDO> moveIssues) {
+        return issueMapper.batchUpdateIssueRank(projectId, moveIssues);
+    }
+
+    @Override
+    public int removeIssueFromSprintByIds(Long projectId, List<Long> issueIds) {
+        return issueMapper.removeIssueFromSprintByIds(projectId, issueIds);
     }
 }

@@ -2,7 +2,6 @@ package io.choerodon.agile.api.dto;
 
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -50,6 +49,10 @@ public class IssueDTO {
     private Integer storyPoints;
 
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
+
+    private SprintNameDTO activeSprint;
+
+    private List<SprintNameDTO> closeSprint;
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
@@ -373,6 +376,22 @@ public class IssueDTO {
 
     public void setStatusColor(String statusColor) {
         this.statusColor = statusColor;
+    }
+
+    public SprintNameDTO getActiveSprint() {
+        return activeSprint;
+    }
+
+    public void setActiveSprint(SprintNameDTO activeSprint) {
+        this.activeSprint = activeSprint;
+    }
+
+    public List<SprintNameDTO> getCloseSprint() {
+        return closeSprint;
+    }
+
+    public void setCloseSprint(List<SprintNameDTO> closeSprint) {
+        this.closeSprint = closeSprint;
     }
 
     @Override

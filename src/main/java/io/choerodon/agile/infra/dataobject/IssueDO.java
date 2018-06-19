@@ -87,11 +87,6 @@ public class IssueDO extends AuditDomain {
     private Long epicId;
 
     /**
-     * 冲刺id
-     */
-    private Long sprintId;
-
-    /**
      * 父issue的id
      */
     private Long parentIssueId;
@@ -215,14 +210,6 @@ public class IssueDO extends AuditDomain {
 
     public void setEpicId(Long epicId) {
         this.epicId = epicId;
-    }
-
-    public Long getSprintId() {
-        return sprintId;
-    }
-
-    public void setSprintId(Long sprintId) {
-        this.sprintId = sprintId;
     }
 
     public Long getParentIssueId() {

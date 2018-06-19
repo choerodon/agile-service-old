@@ -4,6 +4,7 @@ import io.choerodon.mybatis.common.BaseMapper;
 import io.choerodon.agile.infra.dataobject.*;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -31,15 +32,11 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<IssueSearchDO> searchIssue(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
 
-    int issueToDestination(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("targetSprintId") Long targetSprintId);
-
     Integer queryBacklogIssueCount(@Param("projectId") Long projectId);
 
     int batchIssueToVersion(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("issueIds") List<Long> issueIds);
 
     int batchIssueToEpic(@Param("projectId") Long projectId, @Param("epicId") Long epicId, @Param("issueIds") List<Long> issueIds);
-
-    int batchIssueToSprint(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("moveIssues") List<MoveIssueDO> moveIssues);
 
     List<IssueSearchDO> queryIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
@@ -113,10 +110,18 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      */
     int batchUpdateSubIssueSprintId(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueId") Long issueId);
 
-    int batchSubIssueToSprint(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds);
-
     List<IssueLabelDO> selectLabelNameByIssueId(@Param("issueId") Long issueId);
 
     List<IssueCommonDO> listByOptions(@Param("projectId") Long projectId,
                                       @Param("typeCode") String typeCode);
+
+    List<Long> querySubTaskIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+
+    int issueToDestinationByIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds);
+
+    int batchUpdateIssueRank(@Param("projectId") Long projectId, @Param("moveIssues") List<MoveIssueDO> moveIssues);
+
+    List<Long> querySubIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
+    int removeIssueFromSprintByIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 }

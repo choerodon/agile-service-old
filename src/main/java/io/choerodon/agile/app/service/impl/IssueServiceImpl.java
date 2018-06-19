@@ -163,6 +163,9 @@ public class IssueServiceImpl implements IssueService {
             }
         }
         Long issueId = issueRepository.create(issueE).getIssueId();
+        if (issueE.getSprintId() != null && Objects.equals(issueE.getSprintId(), 0L)) {
+            issueRepository.;
+        }
         if (issueCreateDTO.getIssueLinkCreateDTOList() != null && !issueCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
             issueLinkService.createIssueLinkList(issueCreateDTO.getIssueLinkCreateDTOList(), issueId, issueCreateDTO.getProjectId());
         }
@@ -555,8 +558,11 @@ public class IssueServiceImpl implements IssueService {
             afterRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
             dataLogRank(projectId, moveIssueDTO, RANK_LOWER);
         }
-        issueRepository.batchIssueToSprint(projectId, sprintId, moveIssueDOS);
-        issueRepository.batchSubIssueToSprint(projectId, sprintId, moveIssueDTO.getIssueIds());
+        List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
+        moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
+        issueRepository.removeIssueFromSprintByIds(projectId, moveIssueIds);
+        issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds);
+        issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
         List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds());
         List<Long> assigneeIds = issueSearchDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);

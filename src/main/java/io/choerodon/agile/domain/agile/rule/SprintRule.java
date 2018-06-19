@@ -19,6 +19,7 @@ public class SprintRule {
     private static final String ERROR_COMPLETE_SPRINT = "error.sprint.complete";
     private static final String SPRINT_NOT_FOUND = "error.sprint.notFound";
     private static final String SPRINT_START_CODE = "started";
+    private static final String SPRINT_PLANNING_CODE = "sprint_planning";
     private static final String SPRINT_DATE_ERROR = "error.sprintDate.nullOrStartAfterEndDate";
 
     public void judgeExist(Long projectId, Long sprintId) {
@@ -37,9 +38,21 @@ public class SprintRule {
     }
 
     public void judgeCompleteSprint(Long projectId, Long sprintId, Long targetSprintId) {
-        judgeExist(projectId, targetSprintId);
+        judgePlanningExist(projectId, targetSprintId);
         if (!sprintMapper.queryParentsDoneUnfinishedSubtasks(projectId, sprintId).isEmpty()) {
             throw new CommonException(ERROR_COMPLETE_SPRINT);
+        }
+    }
+
+    private void judgePlanningExist(Long projectId, Long sprintId) {
+        if (sprintId != null && !Objects.equals(sprintId, 0L)) {
+            SprintDO sprintDO = new SprintDO();
+            sprintDO.setProjectId(projectId);
+            sprintDO.setStatusCode(SPRINT_PLANNING_CODE);
+            sprintDO.setSprintId(sprintId);
+            if (sprintMapper.selectOne(sprintDO) == null) {
+                throw new CommonException(SPRINT_NOT_FOUND);
+            }
         }
     }
 
