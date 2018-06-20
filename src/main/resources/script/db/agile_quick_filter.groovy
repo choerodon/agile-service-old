@@ -1,6 +1,6 @@
 package script.db
 databaseChangeLog(logicalFilePath:'agile_quick_filter.groovy') {
-    changeSet(id: '2018-05-14-agile-quick-filter', author: 'fuqianghuang01@gmail.com') {
+    changeSet(id: '2018-06-14-agile-quick-filter', author: 'fuqianghuang01@gmail.com') {
         createTable(tableName: "agile_quick_filter") {
             column(name: 'filter_id', type: 'BIGINT UNSIGNED', autoIncrement: true, remarks: 'board id') {
                 constraints(primaryKey: true)
