@@ -251,8 +251,8 @@ public class IssueServiceImpl implements IssueService {
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
             dataLogE.setFiled(FILED_ASSIGNEE);
-            dataLogE.setOldValue(originIssue.getAssigneeId().toString());
             if (originIssue.getAssigneeId() != null && originIssue.getAssigneeId() != 0) {
+                dataLogE.setOldValue(originIssue.getAssigneeId().toString());
                 dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getAssigneeId(),false));
             }
             if (issueUpdateDTO.getAssigneeId() != 0) {
