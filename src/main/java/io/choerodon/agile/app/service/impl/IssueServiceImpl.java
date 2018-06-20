@@ -444,6 +444,13 @@ public class IssueServiceImpl implements IssueService {
         return epicDataList;
     }
 
+    private void dataLogDeleteByIssueId(Long projectId, Long issueId) {
+        DataLogE dataLogE = new DataLogE();
+        dataLogE.setProjectId(projectId);
+        dataLogE.setIssueId(issueId);
+        dataLogRepository.delete(dataLogE);
+    }
+
     @Override
     public int deleteIssue(Long projectId, Long issueId) {
         IssueE issueE = queryIssueByProjectIdAndIssueId(projectId, issueId);
@@ -469,9 +476,13 @@ public class IssueServiceImpl implements IssueService {
             }
             List<IssueDO> issueDOList = issueMapper.queryIssueSubList(projectId, issueE.getIssueId());
             if (issueDOList != null && !issueDOList.isEmpty()) {
-                issueDOList.forEach(subIssue -> deleteIssue(subIssue.getProjectId(), subIssue.getIssueId()));
+                issueDOList.forEach(subIssue -> {
+                    deleteIssue(subIssue.getProjectId(), subIssue.getIssueId());
+                    dataLogDeleteByIssueId(projectId, subIssue.getIssueId());
+                });
             }
         }
+        dataLogDeleteByIssueId(projectId, issueId);
         return issueRepository.delete(projectId, issueE.getIssueId());
     }
 
