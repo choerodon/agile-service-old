@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.agile.infra.mapper.IssueLinkMapper">
     <delete id="deleteByIssueId">
-        DELETE FROM agile_issue_link ail
-        WHERE ail.issue_id = #{issueId} OR ail.linked_issue_id = #{issueId}
+        DELETE FROM agile_issue_link
+        WHERE issue_id = #{issueId} OR linked_issue_id = #{issueId}
     </delete>
 
     <select id="queryInIssueLinkByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueLinkDO">
