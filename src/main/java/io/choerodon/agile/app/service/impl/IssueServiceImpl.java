@@ -155,16 +155,11 @@ public class IssueServiceImpl implements IssueService {
         List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
         issueE.initializationColor(colorList);
         if (issueE.isIssueRank()) {
-            if (sprintRule.hasIssue(issueE.getProjectId(), issueE.getSprintId())) {
-                String rank = sprintMapper.queryMaxRank(issueE.getProjectId(), issueE.getSprintId());
-                issueE.setRank(RankUtil.genNext(rank));
-            } else {
-                issueE.setRank(RankUtil.mid());
-            }
+            calculationRank(issueE);
         }
         Long issueId = issueRepository.create(issueE).getIssueId();
-        if (issueE.getSprintId() != null && Objects.equals(issueE.getSprintId(), 0L)) {
-            issueRepository.;
+        if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
+            issueRepository.issueToSprint(issueE.getProjectId(), issueE.getSprintId(), issueId);
         }
         if (issueCreateDTO.getIssueLinkCreateDTOList() != null && !issueCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
             issueLinkService.createIssueLinkList(issueCreateDTO.getIssueLinkCreateDTOList(), issueId, issueCreateDTO.getProjectId());
@@ -173,6 +168,15 @@ public class IssueServiceImpl implements IssueService {
         handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
         handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
         return queryIssue(issueCreateDTO.getProjectId(), issueId);
+    }
+
+    private void calculationRank(IssueE issueE) {
+        if (sprintRule.hasIssue(issueE.getProjectId(), issueE.getSprintId())) {
+            String rank = sprintMapper.queryMaxRank(issueE.getProjectId(), issueE.getSprintId());
+            issueE.setRank(RankUtil.genNext(rank));
+        } else {
+            issueE.setRank(RankUtil.mid());
+        }
     }
 
     @Override
@@ -415,10 +419,17 @@ public class IssueServiceImpl implements IssueService {
     public IssueDTO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList) {
         IssueDO originIssue = issueMapper.selectByPrimaryKey(issueUpdateDTO.getIssueId());
         if (fieldList != null && !fieldList.isEmpty()) {
+            IssueE issueE = issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO);
             if (fieldList.contains(SPRINT_ID_FIELD)) {
-                issueRepository.batchUpdateSubIssueSprintId(projectId, issueUpdateDTO.getSprintId(), issueUpdateDTO.getIssueId());
+                List<Long> issueIds = issueMapper.querySubIssueIdsByIssueId(projectId, issueE.getIssueId());
+                issueIds.add(issueE.getIssueId());
+                issueRepository.removeIssueFromSprintByIssueIds(projectId, issueIds);
+                issueRepository.issueToDestinationByIds(projectId, issueE.getSprintId(), issueIds);
+                if (issueE.isIssueRank()) {
+                    calculationRank(issueE);
+                }
             }
-            issueRepository.update(issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO), fieldList.toArray(new String[fieldList.size()]));
+            issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
         }
         dataLog(originIssue, issueUpdateDTO);
         Long issueId = issueUpdateDTO.getIssueId();
@@ -499,6 +510,9 @@ public class IssueServiceImpl implements IssueService {
         //设置issue编号
         initializationIssueNum(subIssueE);
         Long issueId = issueRepository.create(subIssueE).getIssueId();
+        if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
+            issueRepository.issueToSprint(subIssueE.getProjectId(), subIssueE.getSprintId(), issueId);
+        }
         if (issueSubCreateDTO.getIssueLinkCreateDTOList() != null && !issueSubCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
             issueLinkService.createIssueLinkList(issueSubCreateDTO.getIssueLinkCreateDTOList(), issueId, issueSubCreateDTO.getProjectId());
         }
@@ -560,7 +574,7 @@ public class IssueServiceImpl implements IssueService {
         }
         List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
         moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
-        issueRepository.removeIssueFromSprintByIds(projectId, moveIssueIds);
+        issueRepository.removeIssueFromSprintByIssueIds(projectId, moveIssueIds);
         issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds);
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
         List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds());

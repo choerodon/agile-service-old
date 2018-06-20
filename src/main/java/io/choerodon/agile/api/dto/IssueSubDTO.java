@@ -39,8 +39,6 @@ public class IssueSubDTO {
 
     private Long projectId;
 
-    private Long sprintId;
-
     private Long parentIssueId;
 
     private Integer storyPoints;
@@ -179,14 +177,6 @@ public class IssueSubDTO {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
-    }
-
-    public Long getSprintId() {
-        return sprintId;
-    }
-
-    public void setSprintId(Long sprintId) {
-        this.sprintId = sprintId;
     }
 
     public Long getParentIssueId() {

@@ -18,8 +18,10 @@ public class SprintRule {
     private SprintMapper sprintMapper;
     private static final String ERROR_COMPLETE_SPRINT = "error.sprint.complete";
     private static final String SPRINT_NOT_FOUND = "error.sprint.notFound";
+    private static final String SPRINT_ERROR = "error.sprint.notFoundOrIsClosed";
     private static final String SPRINT_START_CODE = "started";
     private static final String SPRINT_PLANNING_CODE = "sprint_planning";
+    private static final String SPRINT_CLOSED_CODE = "closed";
     private static final String SPRINT_DATE_ERROR = "error.sprintDate.nullOrStartAfterEndDate";
 
     public void judgeExist(Long projectId, Long sprintId) {
@@ -27,8 +29,9 @@ public class SprintRule {
             SprintDO sprintDO = new SprintDO();
             sprintDO.setProjectId(projectId);
             sprintDO.setSprintId(sprintId);
-            if (sprintMapper.selectOne(sprintDO) == null) {
-                throw new CommonException(SPRINT_NOT_FOUND);
+            sprintDO = sprintMapper.selectOne(sprintDO);
+            if (sprintDO == null || Objects.equals(sprintDO.getStatusCode(), SPRINT_CLOSED_CODE)) {
+                throw new CommonException(SPRINT_ERROR);
             }
         }
     }

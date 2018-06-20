@@ -109,17 +109,17 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public int batchUpdateSubIssueSprintId(Long projectId, Long sprintId, Long issueId) {
-        return issueMapper.batchUpdateSubIssueSprintId(projectId, sprintId, issueId);
-    }
-
-    @Override
     public int batchUpdateIssueRank(Long projectId, List<MoveIssueDO> moveIssues) {
         return issueMapper.batchUpdateIssueRank(projectId, moveIssues);
     }
 
     @Override
-    public int removeIssueFromSprintByIds(Long projectId, List<Long> issueIds) {
-        return issueMapper.removeIssueFromSprintByIds(projectId, issueIds);
+    public int removeIssueFromSprintByIssueIds(Long projectId, List<Long> issueIds) {
+        return issueMapper.removeIssueFromSprintByIssueIds(projectId, issueIds);
+    }
+
+    @Override
+    public int issueToSprint(Long projectId, Long sprintId, Long issueId) {
+        return issueMapper.issueToSprint(projectId, sprintId, issueId);
     }
 }

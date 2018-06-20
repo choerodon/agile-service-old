@@ -52,4 +52,10 @@ public interface ProductVersionService {
     List<ProductVersionNameDTO> queryNameByProjectId(Long projectId);
 
     List<ProductVersionDTO> listByProjectId(Long projectId);
+
+    ProductVersionDetailDTO archivedVersion(Long projectId, Long versionId);
+
+    ProductVersionDetailDTO revokeArchivedVersion(Long projectId, Long versionId);
+
+    Boolean mergeVersion(Long projectId, ProductVersionMergeDTO productVersionMergeDTO);
 }

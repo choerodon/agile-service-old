@@ -16,7 +16,6 @@
         <id column="assignee_id" property="assigneeId"/>
         <id column="project_id" property="projectId"/>
         <id column="epic_id" property="epicId"/>
-        <id column="sprint_id" property="sprintId"/>
         <id column="parent_issue_id" property="parentIssueId"/>
         <id column="story_points" property="storyPoints"/>
         <id column="estimate_time" property="estimateTime"/>
@@ -230,7 +229,6 @@
             ai.summary,
             ai.description,
             ai.project_id,
-            ai.sprint_id,
             ai.epic_name,
             alv.name AS color,
             ai.object_version_number
@@ -324,7 +322,7 @@
         ai.type_code, ai.summary,
         ai.reporter_id, ai.description,
         ai.assignee_id, ai.project_id,
-        ai.epic_id, ais1.sprint_id,
+        ai.epic_id, asp1.sprint_id,
         ai.story_points, ai.status_id,
         ais.category_code,
         ais.name AS status_name,
@@ -340,10 +338,10 @@
         LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
         LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
-        LEFT JOIN (SELECT aisr.issue_id, ais.sprint_id
-        FROM agile_issue_sprint_rel aisr, agile_sprint ais
-        WHERE aisr.sprint_id = ais.sprint_id AND ais.status_code != 'closed'
-        ) ais1 ON ais1.issue_id = ai.issue_id
+        LEFT JOIN (SELECT aisr.issue_id, asp.sprint_id
+        FROM agile_issue_sprint_rel aisr, agile_sprint asp
+        WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
+        ) asp1 ON asp1.issue_id = ai.issue_id
         LEFT JOIN (SELECT avir.issue_id, avir.version_id, apv.name
         FROM agile_version_issue_rel avir, agile_product_version apv
         WHERE apv.project_id = #{projectId} AND avir.version_id = apv.version_id AND avir.relation_type = 'fix'
@@ -435,7 +433,7 @@
         ai.type_code, ai.summary,
         ai.reporter_id, ai.description,
         ai.assignee_id, ai.project_id,
-        ai.epic_id, ai.sprint_id,
+        ai.epic_id, asp1.sprint_id,
         ai.story_points, ai.status_id,
         ais.category_code,
         ais.name AS status_name,
@@ -451,6 +449,10 @@
         LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
         LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
+        LEFT JOIN (SELECT aisr.issue_id, asp.sprint_id
+        FROM agile_issue_sprint_rel aisr, agile_sprint asp
+        WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
+        ) asp1 ON asp1.issue_id = ai.issue_id
         LEFT JOIN (SELECT avir.issue_id, avir.version_id, apv.name
         FROM agile_version_issue_rel avir, agile_product_version apv
         WHERE apv.project_id = #{projectId} AND avir.version_id = apv.version_id
@@ -573,12 +575,6 @@
               AND ai2.parent_issue_id = ai.issue_id
     </update>
 
-    <update id="batchUpdateSubIssueSprintId">
-        UPDATE agile_issue
-        SET sprint_id = #{sprintId}
-        WHERE parent_issue_id = #{issueId} AND project_ID = #{projectId}
-    </update>
-
     <select id="selectLabelNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueLabelDO">
         SELECT
             ail.*
@@ -616,7 +612,7 @@
               AND ai2.parent_issue_id = ai.issue_id
     </select>
 
-    <delete id="removeIssueFromSprintByIds">
+    <delete id="removeIssueFromSprintByIssueIds">
         DELETE aisr
         FROM agile_issue_sprint_rel aisr, agile_sprint asp
         WHERE aisr.project_id = #{projectId} AND aisr.sprint_id = asp.sprint_id
@@ -635,5 +631,17 @@
             (#{issueId}, #{sprintId}, #{projectId})
         </foreach>
     </insert>
+
+    <insert id="issueToSprint">
+        INSERT IGNORE
+        INTO agile_issue_sprint_rel(issue_id, sprint_id, project_id)
+        VALUES (#{issueId}, #{sprintId}, #{projectId})
+    </insert>
+
+    <select id="querySubIssueIdsByIssueId" resultType="java.lang.Long">
+        SELECT issue_id
+        FROM agile_issue
+        WHERE project_id = #{projectId} AND parent_issue_id = #{issueId}
+    </select>
 
 </mapper>

@@ -69,4 +69,9 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
         versionIssueRelMapper.deleteIncompleteIssueByVersionId(projectId, versionId);
         return true;
     }
+
+    @Override
+    public int deleteByVersionIds(Long projectId, List<Long> versionIds) {
+        return versionIssueRelMapper.deleteByVersionIds(projectId, versionIds);
+    }
 }

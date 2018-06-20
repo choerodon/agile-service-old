@@ -44,6 +44,8 @@ public class ProductVersionController {
     private static final String QUERY_ISSUE_ERROR = "error.issue.query";
     private static final String RELEASE_ERROR = "error.productVersion.release";
     private static final String REVOKE_RELEASE_ERROR = "error.productVersion.revokeRelease";
+    private static final String ARCHIVED_ERROR = "error.productVersion.archived";
+    private static final String REVOKE_ARCHIVED_ERROR = "error.productVersion.revokeArchived";
 
     @Autowired
     private ProductVersionService productVersionService;
@@ -192,6 +194,31 @@ public class ProductVersionController {
     }
 
     @Permission(level = ResourceLevel.PROJECT)
+    @ApiOperation(value = "归档版本")
+    @PostMapping(value = "/{versionId}/archived")
+    public ResponseEntity<ProductVersionDetailDTO> archivedVersion(@ApiParam(value = "项目id", required = true)
+                                                                   @PathVariable(name = "project_id") Long projectId,
+                                                                   @ApiParam(value = "版本id", required = true)
+                                                                   @PathVariable Long versionId) {
+        return Optional.ofNullable(productVersionService.archivedVersion(projectId, versionId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException(ARCHIVED_ERROR));
+    }
+
+
+    @Permission(level = ResourceLevel.PROJECT)
+    @ApiOperation(value = "撤销归档版本")
+    @PostMapping(value = "/{versionId}/revoke_archived")
+    public ResponseEntity<ProductVersionDetailDTO> revokeArchivedVersion(@ApiParam(value = "项目id", required = true)
+                                                                   @PathVariable(name = "project_id") Long projectId,
+                                                                   @ApiParam(value = "版本id", required = true)
+                                                                   @PathVariable Long versionId) {
+        return Optional.ofNullable(productVersionService.revokeArchivedVersion(projectId, versionId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException(REVOKE_ARCHIVED_ERROR));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT)
     @ApiOperation(value = "查询所有版本名及要删除版本issue统计")
     @GetMapping(value = "/{versionId}/names")
     public ResponseEntity<VersionMessageDTO> queryDeleteMessageByVersionId(@ApiParam(value = "项目id", required = true)
@@ -221,5 +248,17 @@ public class ProductVersionController {
         return Optional.ofNullable(productVersionService.listByProjectId(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_ERROR));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT)
+    @ApiOperation(value = "合并版本")
+    @PostMapping(value = "/merge")
+    public ResponseEntity<Boolean> mergeVersion(@ApiParam(value = "项目id", required = true)
+                                                                         @PathVariable(name = "project_id") Long projectId,
+                                                                         @ApiParam(value = "合并版本信息", required = true)
+                                                                         @RequestBody @Valid ProductVersionMergeDTO productVersionMergeDTO) {
+        return Optional.ofNullable(productVersionService.mergeVersion(projectId, productVersionMergeDTO))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException(REVOKE_ARCHIVED_ERROR));
     }
 }

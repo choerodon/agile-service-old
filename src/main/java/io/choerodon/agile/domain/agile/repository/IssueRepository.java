@@ -61,17 +61,9 @@ public interface IssueRepository {
 
     int issueToDestinationByIds(Long projectId, Long sprintId, List<Long> issueIds);
 
-    /**
-     * 批量更改子issue的冲刺id
-     *
-     * @param projectId projectId
-     * @param sprintId  sprintId
-     * @param issueId   issueId
-     * @return int
-     */
-    int batchUpdateSubIssueSprintId(Long projectId, Long sprintId, Long issueId);
-
     int batchUpdateIssueRank(Long projectId, List<MoveIssueDO> moveIssueDOS);
 
-    int removeIssueFromSprintByIds(Long projectId, List<Long> issueIds);
+    int removeIssueFromSprintByIssueIds(Long projectId, List<Long> issueIds);
+
+    int issueToSprint(Long projectId, Long sprintId, Long issueId);
 }

@@ -1,5 +1,6 @@
 package io.choerodon.agile.domain.agile.repository;
 
+import io.choerodon.agile.api.dto.ProductVersionDetailDTO;
 import io.choerodon.agile.domain.agile.entity.ProductVersionE;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
 
@@ -21,5 +22,7 @@ public interface ProductVersionRepository {
 
     Boolean releaseVersion(Long projectId, Long versionId, Date releaseDate);
 
-    ProductVersionE revokeReleaseVersion(Long projectId, Long versionId);
+    ProductVersionE updateVersion(ProductVersionE versionE);
+
+    int deleteByVersionIds(Long projectId, List<Long> versionIds);
 }

@@ -35,8 +35,6 @@ public class IssueDetailDO {
 
     private Long epicId;
 
-    private Long sprintId;
-
     private Long parentIssueId;
 
     private Integer storyPoints;
@@ -169,14 +167,6 @@ public class IssueDetailDO {
 
     public void setEpicId(Long epicId) {
         this.epicId = epicId;
-    }
-
-    public Long getSprintId() {
-        return sprintId;
-    }
-
-    public void setSprintId(Long sprintId) {
-        this.sprintId = sprintId;
     }
 
     public Long getParentIssueId() {

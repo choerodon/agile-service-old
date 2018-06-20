@@ -119,28 +119,30 @@
 
     <select id="hasIssue" resultType="java.lang.Boolean">
         SELECT IF(COUNT(1) = 0, FALSE, TRUE)
-        FROM agile_issue
-        WHERE project_id = #{projectId} AND type_code NOT IN ('sub_task', 'issue_epic')
+        FROM agile_issue ai
+        LEFT JOIN agile_issue_sprint_rel aisr ON aisr.issue_id = ai.issue_id
+        WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_epic')
         <choose>
             <when test="sprintId != null and sprintId != 0">
-                AND sprint_id = #{sprintId}
+                AND aisr.sprint_id = #{sprintId}
             </when>
             <otherwise>
-                AND (sprint_id IS NULL OR sprint_id = 0)
+                AND (aisr.sprint_id IS NULL OR aisr.sprint_id = 0)
             </otherwise>
         </choose>
     </select>
 
     <select id="queryMaxRank" resultType="java.lang.String">
-        SELECT MAX(rank)
-        FROM agile_issue
-        WHERE project_id = #{projectId} AND type_code NOT IN ('sub_task', 'issue_epic')
+        SELECT MAX(ai.rank)
+        FROM agile_issue ai
+        LEFT JOIN agile_issue_sprint_rel aisr ON aisr.issue_id = ai.issue_id
+        WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_epic')
         <choose>
             <when test="sprintId != null and sprintId != 0">
-                AND sprint_id = #{sprintId}
+                AND aisr.sprint_id = #{sprintId}
             </when>
             <otherwise>
-                AND (sprint_id IS NULL OR sprint_id = 0)
+                AND (aisr.sprint_id IS NULL OR aisr.sprint_id = 0)
             </otherwise>
         </choose>
     </select>

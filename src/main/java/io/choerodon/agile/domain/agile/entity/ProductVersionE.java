@@ -15,11 +15,14 @@ public class ProductVersionE {
     private Date startDate;
     private Date releaseDate;
     private String statusCode;
+    private String oldStatusCode;
     private String status;
     private Long projectId;
     private Long objectVersionNumber;
 
     private static final String VERSION_DATE_ERROR = "error.versionDate.startAfterReleaseDate";
+    private static final String VERSION_ARCHIVED_CODE = "archived";
+    private static final String VERSION_STATUS_PLAN_CODE = "version_planning";
 
     public Long getVersionId() {
         return versionId;
@@ -93,9 +96,32 @@ public class ProductVersionE {
         this.objectVersionNumber = objectVersionNumber;
     }
 
+    public String getOldStatusCode() {
+        return oldStatusCode;
+    }
+
+    public void setOldStatusCode(String oldStatusCode) {
+        this.oldStatusCode = oldStatusCode;
+    }
+
     public void checkDate() {
         if (this.startDate != null && this.releaseDate != null && this.startDate.after(this.releaseDate)) {
             throw new CommonException(VERSION_DATE_ERROR);
         }
+    }
+
+    public void archivedVersion() {
+        this.oldStatusCode = this.statusCode;
+        this.statusCode = VERSION_ARCHIVED_CODE;
+    }
+
+    public void revokeArchivedVersion() {
+        this.statusCode = this.oldStatusCode;
+        this.oldStatusCode = VERSION_ARCHIVED_CODE;
+    }
+
+    public void revokeReleaseVersion() {
+        this.oldStatusCode = this.statusCode;
+        this.statusCode = VERSION_STATUS_PLAN_CODE;
     }
 }
