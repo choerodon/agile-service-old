@@ -39,9 +39,9 @@ public class WorkLogServiceImpl implements WorkLogService {
     private static final String NO_SET_PREDICTION_TIME = "no_set_prediction_time";
     private static final String SET_TO = "set_to";
     private static final String REDUCE = "reduce";
-    private static final String FILED_TIMEESTIMATE = "timeestimate";
-    private static final String FILED_TIMESPENT = "timespent";
-    private static final String FILED_WORKLOGID = "WorklogId";
+    private static final String FIELD_TIMEESTIMATE = "timeestimate";
+    private static final String FIELD_TIMESPENT = "timespent";
+    private static final String FIELD_WORKLOGID = "WorklogId";
 
     @Autowired
     private WorkLogRepository workLogRepository;
@@ -96,7 +96,7 @@ public class WorkLogServiceImpl implements WorkLogService {
         DataLogE timeestimateLog = new DataLogE();
         timeestimateLog.setProjectId(projectId);
         timeestimateLog.setIssueId(workLogDTO.getIssueId());
-        timeestimateLog.setFiled(FILED_TIMEESTIMATE);
+        timeestimateLog.setField(FIELD_TIMEESTIMATE);
         BigDecimal zero = new BigDecimal(0);
         if (originIssueDO.getRemainingTime() != null && originIssueDO.getRemainingTime().compareTo(zero) > 0) {
             timeestimateLog.setOldValue(originIssueDO.getRemainingTime().toString());
@@ -113,12 +113,12 @@ public class WorkLogServiceImpl implements WorkLogService {
             }
         }
 
-        DataLogDO dataLogDO = dataLogMapper.selectLastWorkLogById(projectId, workLogDTO.getIssueId(), FILED_TIMESPENT);
+        DataLogDO dataLogDO = dataLogMapper.selectLastWorkLogById(projectId, workLogDTO.getIssueId(), FIELD_TIMESPENT);
         DataLogE timeSpentLog = new DataLogE();
         if (dataLogDO != null) {
             timeSpentLog.setProjectId(projectId);
             timeSpentLog.setIssueId(workLogDTO.getIssueId());
-            timeSpentLog.setFiled(FILED_TIMESPENT);
+            timeSpentLog.setField(FIELD_TIMESPENT);
             timeSpentLog.setOldValue(dataLogDO.getNewValue());
             timeSpentLog.setOldString(dataLogDO.getNewString());
             BigDecimal newValue = new BigDecimal(dataLogDO.getNewValue());
@@ -127,7 +127,7 @@ public class WorkLogServiceImpl implements WorkLogService {
         } else {
             timeSpentLog.setProjectId(projectId);
             timeSpentLog.setIssueId(workLogDTO.getIssueId());
-            timeSpentLog.setFiled(FILED_TIMESPENT);
+            timeSpentLog.setField(FIELD_TIMESPENT);
             timeSpentLog.setNewValue(workLogDTO.getWorkTime().toString());
             timeSpentLog.setNewString(workLogDTO.getWorkTime().toString());
         }
@@ -135,7 +135,7 @@ public class WorkLogServiceImpl implements WorkLogService {
 
         DataLogE workLogIdE = new DataLogE();
         workLogIdE.setProjectId(projectId);
-        workLogIdE.setFiled(FILED_WORKLOGID);
+        workLogIdE.setField(FIELD_WORKLOGID);
         workLogIdE.setIssueId(workLogDTO.getIssueId());
         workLogIdE.setOldValue(workLogE.getLogId().toString());
         workLogIdE.setOldString(workLogE.getLogId().toString());

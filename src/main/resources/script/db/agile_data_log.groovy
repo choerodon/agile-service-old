@@ -8,7 +8,7 @@ databaseChangeLog(logicalFilePath:'agile_data_log.groovy') {
             column(name: 'project_id', type: 'BIGINT UNSIGNED', remarks: 'project id') {
                 constraints(nullable: false)
             }
-            column(name: 'filed', type: 'VARCHAR(255)', remarks: 'filed')
+            column(name: 'field', type: 'VARCHAR(255)', remarks: 'field')
             column(name: 'old_value', type: 'text', remarks: 'old value')
             column(name: 'old_string', type: 'text', remarks: 'old string')
             column(name: 'new_value', type: 'text', remarks: 'new value')

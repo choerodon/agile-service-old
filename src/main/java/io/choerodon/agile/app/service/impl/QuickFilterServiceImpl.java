@@ -6,7 +6,7 @@ import io.choerodon.agile.app.service.QuickFilterService;
 import io.choerodon.agile.domain.agile.entity.QuickFilterE;
 import io.choerodon.agile.domain.agile.repository.QuickFilterRepository;
 import io.choerodon.agile.infra.dataobject.QuickFilterDO;
-import io.choerodon.agile.infra.mapper.QuickFilterFiledMapper;
+import io.choerodon.agile.infra.mapper.QuickFilterFieldMapper;
 import io.choerodon.agile.infra.mapper.QuickFilterMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -29,14 +29,14 @@ public class QuickFilterServiceImpl implements QuickFilterService {
     private QuickFilterMapper quickFilterMapper;
 
     @Autowired
-    private QuickFilterFiledMapper quickFilterFiledMapper;
+    private QuickFilterFieldMapper quickFilterFieldMapper;
 
     private String getSqlQuery(List<QuickFilterValueDTO> quickFilterValueDTOList, List<String> relationOperations) {
         String sqlQuery = "";
         int idx = 0;
         for (QuickFilterValueDTO quickFilterValueDTO : quickFilterValueDTOList) {
-            String filed = quickFilterFiledMapper.selectByPrimaryKey(quickFilterValueDTO.getFiledId()).getFiled();
-            sqlQuery = sqlQuery + filed + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ";
+            String field = quickFilterFieldMapper.selectByPrimaryKey(quickFilterValueDTO.getFieldId()).getField();
+            sqlQuery = sqlQuery + field + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ";
             int length = relationOperations.size();
             if (idx < length && !relationOperations.get(idx).isEmpty()) {
                 sqlQuery = sqlQuery + relationOperations.get(idx) +" ";

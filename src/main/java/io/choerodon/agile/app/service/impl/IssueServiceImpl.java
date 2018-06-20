@@ -117,25 +117,25 @@ public class IssueServiceImpl implements IssueService {
     private static final String SPRINT_ID_FIELD = "sprintId";
     private static final String EPIC_COLOR_TYPE = "epic_color";
     private static final String RELATION_TYPE_FIX = "fix";
-    private static final String FILED_SUMMARY = "summary";
-    private static final String FILED_DESCRIPTION = "description";
-    private static final String FILED_PRIORITY = "priority";
-    private static final String FILED_ASSIGNEE = "assignee";
-    private static final String FILED_REPORTER = "reporter";
-    private static final String FILED_SPRINT = "Sprint";
-    private static final String FILED_STORY_POINTS = "Story Points";
-    private static final String FILED_EPIC_LINK = "Epic Link";
-    private static final String FILED_TIMEESTIMATE = "timeestimate";
-    private static final String FILED_ISSUETYPE = "issuetype";
-    private static final String FILED_EPIC_CHILD = "Epic Child";
-    private static final String FILED_DESCRIPTION_NULL = "[{\"insert\":\"\n\"}]";
-    private static final String FILED_FIX_VERSION = "Fix Version";
-    private static final String FILED_RANK = "Rank";
+    private static final String FIELD_SUMMARY = "summary";
+    private static final String FIELD_DESCRIPTION = "description";
+    private static final String FIELD_PRIORITY = "priority";
+    private static final String FIELD_ASSIGNEE = "assignee";
+    private static final String FIELD_REPORTER = "reporter";
+    private static final String FIELD_SPRINT = "Sprint";
+    private static final String FIELD_STORY_POINTS = "Story Points";
+    private static final String FIELD_EPIC_LINK = "Epic Link";
+    private static final String FIELD_TIMEESTIMATE = "timeestimate";
+    private static final String FIELD_ISSUETYPE = "issuetype";
+    private static final String FIELD_EPIC_CHILD = "Epic Child";
+    private static final String FIELD_DESCRIPTION_NULL = "[{\"insert\":\"\n\"}]";
+    private static final String FIELD_FIX_VERSION = "Fix Version";
+    private static final String FIELD_RANK = "Rank";
     private static final String RANK_HIGHER = "评级更高";
     private static final String RANK_LOWER = "评级更低";
-    private static final String FILED_LABELS = "labels";
-    private static final String FILED_COMPONENT = "Component";
-    private static final String FILED_EPIC_NAME = "Epic Name";
+    private static final String FIELD_LABELS = "labels";
+    private static final String FIELD_COMPONENT = "Component";
+    private static final String FIELD_EPIC_NAME = "Epic Name";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -202,7 +202,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled(FILED_SUMMARY);
+            dataLogE.setField(FIELD_SUMMARY);
             dataLogE.setOldString(originIssue.getSummary());
             dataLogE.setNewString(issueUpdateDTO.getSummary());
             dataLogRepository.create(dataLogE);
@@ -211,11 +211,11 @@ public class IssueServiceImpl implements IssueService {
 
     private void dataLogDescription(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
         if (issueUpdateDTO.getDescription() != null) {
-            if (!FILED_DESCRIPTION_NULL.equals(issueUpdateDTO.getDescription())) {
+            if (!FIELD_DESCRIPTION_NULL.equals(issueUpdateDTO.getDescription())) {
                 DataLogE dataLogE = new DataLogE();
                 dataLogE.setProjectId(originIssue.getProjectId());
                 dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-                dataLogE.setFiled(FILED_DESCRIPTION);
+                dataLogE.setField(FIELD_DESCRIPTION);
                 dataLogE.setOldString(originIssue.getDescription());
                 dataLogE.setNewString(issueUpdateDTO.getDescription());
                 dataLogRepository.create(dataLogE);
@@ -223,7 +223,7 @@ public class IssueServiceImpl implements IssueService {
                 DataLogE dataLogE = new DataLogE();
                 dataLogE.setProjectId(originIssue.getProjectId());
                 dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-                dataLogE.setFiled(FILED_DESCRIPTION);
+                dataLogE.setField(FIELD_DESCRIPTION);
                 dataLogE.setOldString(originIssue.getDescription());
                 dataLogRepository.create(dataLogE);
             }
@@ -235,7 +235,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled(FILED_PRIORITY);
+            dataLogE.setField(FIELD_PRIORITY);
             dataLogE.setOldString(lookupValueMapper.selectNameByValueCode(originIssue.getPriorityCode()));
             dataLogE.setNewString(lookupValueMapper.selectNameByValueCode(issueUpdateDTO.getPriorityCode()));
             dataLogRepository.create(dataLogE);
@@ -247,7 +247,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled(FILED_ASSIGNEE);
+            dataLogE.setField(FIELD_ASSIGNEE);
             if (originIssue.getAssigneeId() != null && originIssue.getAssigneeId() != 0) {
                 dataLogE.setOldValue(originIssue.getAssigneeId().toString());
                 dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getAssigneeId(),false));
@@ -268,7 +268,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled(FILED_REPORTER);
+            dataLogE.setField(FIELD_REPORTER);
             if (originIssue.getReporterId() != null && originIssue.getReporterId() != 0) {
                 dataLogE.setOldValue(originIssue.getReporterId().toString());
                 dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getReporterId(),false));
@@ -286,7 +286,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled(FILED_SPRINT);
+            dataLogE.setField(FIELD_SPRINT);
             dataLogE.setOldValue(originIssue.getSprintId().toString());
             if (originIssue.getSprintId() != null && originIssue.getSprintId() != 0) {
                 dataLogE.setOldString(sprintMapper.selectNameBySprintId(originIssue.getSprintId()));
@@ -307,7 +307,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled(FILED_STORY_POINTS);
+            dataLogE.setField(FIELD_STORY_POINTS);
             if (originIssue.getStoryPoints() != null) {
                 dataLogE.setOldString(originIssue.getStoryPoints().toString());
             }
@@ -319,7 +319,7 @@ public class IssueServiceImpl implements IssueService {
     private void dataLogEpicChild(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
         if (originIssue.getEpicId() != null && originIssue.getEpicId() != 0) {
             DataLogE dataLogE = new DataLogE();
-            dataLogE.setFiled(FILED_EPIC_CHILD);
+            dataLogE.setField(FIELD_EPIC_CHILD);
             dataLogE.setIssueId(issueUpdateDTO.getEpicId());
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setNewValue(originIssue.getIssueId().toString());
@@ -328,7 +328,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE removeEpicChild = new DataLogE();
             removeEpicChild.setProjectId(originIssue.getProjectId());
             removeEpicChild.setIssueId(originIssue.getEpicId());
-            removeEpicChild.setFiled(FILED_EPIC_CHILD);
+            removeEpicChild.setField(FIELD_EPIC_CHILD);
             removeEpicChild.setOldValue(originIssue.getIssueId().toString());
             removeEpicChild.setOldString(originIssue.getSummary());
             removeEpicChild.setNewValue(null);
@@ -336,7 +336,7 @@ public class IssueServiceImpl implements IssueService {
             dataLogRepository.create(removeEpicChild);
         } else {
             DataLogE dataLogE = new DataLogE();
-            dataLogE.setFiled(FILED_EPIC_CHILD);
+            dataLogE.setField(FIELD_EPIC_CHILD);
             dataLogE.setIssueId(issueUpdateDTO.getEpicId());
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setNewValue(originIssue.getIssueId().toString());
@@ -350,7 +350,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled(FILED_EPIC_LINK);
+            dataLogE.setField(FIELD_EPIC_LINK);
             if (originIssue.getEpicId() != null && originIssue.getEpicId() != 0) {
                 dataLogE.setOldValue(originIssue.getEpicId().toString());
                 dataLogE.setOldString(issueMapper.selectByPrimaryKey(originIssue.getEpicId()).getSummary());
@@ -372,7 +372,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled(FILED_TIMEESTIMATE);
+            dataLogE.setField(FIELD_TIMEESTIMATE);
             if (originIssue.getRemainingTime() != null) {
                 dataLogE.setOldValue(originIssue.getRemainingTime().toString());
                 dataLogE.setOldString(originIssue.getRemainingTime().toString());
@@ -388,7 +388,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled(FILED_EPIC_NAME);
+            dataLogE.setField(FIELD_EPIC_NAME);
             dataLogE.setOldString(originIssue.getEpicName());
             dataLogE.setNewString(issueUpdateDTO.getEpicName());
             dataLogRepository.create(dataLogE);
@@ -537,7 +537,7 @@ public class IssueServiceImpl implements IssueService {
         for (Long issueId : moveIssueDTO.getIssueIds()) {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(projectId);
-            dataLogE.setFiled(FILED_RANK);
+            dataLogE.setField(FIELD_RANK);
             dataLogE.setIssueId(issueId);
             dataLogE.setNewString(rankStr);
             dataLogRepository.create(dataLogE);
@@ -639,7 +639,7 @@ public class IssueServiceImpl implements IssueService {
         String originTypeName = lookupValueMapper.selectNameByValueCode(originType);
         String currentTypeName = lookupValueMapper.selectNameByValueCode(issueUpdateTypeDTO.getTypeCode());
         DataLogE dataLogE = new DataLogE();
-        dataLogE.setFiled(FILED_ISSUETYPE);
+        dataLogE.setField(FIELD_ISSUETYPE);
         dataLogE.setIssueId(issueUpdateTypeDTO.getIssueId());
         dataLogE.setProjectId(issueUpdateTypeDTO.getProjectId());
         dataLogE.setOldString(originTypeName);
@@ -794,7 +794,7 @@ public class IssueServiceImpl implements IssueService {
             IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(issueDO.getProjectId());
-            dataLogE.setFiled(FILED_LABELS);
+            dataLogE.setField(FIELD_LABELS);
             dataLogE.setIssueId(issueId);
             if (!labelIssueRelDTOList.isEmpty()) {
                 dataLogE.setOldString(getOriginLabelNames(originLabels));
@@ -846,7 +846,7 @@ public class IssueServiceImpl implements IssueService {
                     DataLogE dataLogE = new DataLogE();
                     dataLogE.setProjectId(projectId);
                     dataLogE.setIssueId(issueId);
-                    dataLogE.setFiled(FILED_FIX_VERSION);
+                    dataLogE.setField(FIELD_FIX_VERSION);
                     dataLogE.setOldValue(versionIssueRel.getVersionId().toString());
                     dataLogE.setOldString(productVersionMapper.selectByPrimaryKey(versionIssueRel.getVersionId()).getName());
                     dataLogRepository.create(dataLogE);
@@ -865,7 +865,7 @@ public class IssueServiceImpl implements IssueService {
                     DataLogE dataLogE = new DataLogE();
                     dataLogE.setProjectId(projectId);
                     dataLogE.setIssueId(issueId);
-                    dataLogE.setFiled(FILED_FIX_VERSION);
+                    dataLogE.setField(FIELD_FIX_VERSION);
                     dataLogE.setNewValue(versionRel.getVersionId().toString());
                     dataLogE.setNewString(productVersionMapper.selectByPrimaryKey(versionRel.getVersionId()).getName());
                     dataLogRepository.create(dataLogE);
@@ -905,7 +905,7 @@ public class IssueServiceImpl implements IssueService {
                     DataLogE dataLogE = new DataLogE();
                     dataLogE.setProjectId(projectId);
                     dataLogE.setIssueId(issueId);
-                    dataLogE.setFiled(FILED_COMPONENT);
+                    dataLogE.setField(FIELD_COMPONENT);
                     dataLogE.setOldValue(originRel.getComponentId().toString());
                     dataLogE.setOldString(issueComponentMapper.selectByPrimaryKey(originRel.getComponentId()).getName());
                     dataLogRepository.create(dataLogE);
@@ -924,7 +924,7 @@ public class IssueServiceImpl implements IssueService {
                     DataLogE dataLogE = new DataLogE();
                     dataLogE.setProjectId(projectId);
                     dataLogE.setIssueId(issueId);
-                    dataLogE.setFiled(FILED_COMPONENT);
+                    dataLogE.setField(FIELD_COMPONENT);
                     dataLogE.setNewValue(curRel.getComponentId().toString());
                     dataLogE.setNewString(curRel.getName());
                     dataLogRepository.create(dataLogE);

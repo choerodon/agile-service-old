@@ -4,22 +4,22 @@ package io.choerodon.agile.domain.agile.entity;
  * Created by HuangFuqiang@choerodon.io on 2018/6/13.
  * Email: fuqianghuang01@gmail.com
  */
-public class QuickFilterFiledE {
+public class QuickFilterFieldE {
 
-    private Long filedId;
+    private Long fieldId;
 
     private String type;
 
     private String name;
 
-    private String filed;
+    private String field;
 
-    public void setFiledId(Long filedId) {
-        this.filedId = filedId;
+    public void setFieldId(Long fieldId) {
+        this.fieldId = fieldId;
     }
 
-    public Long getFiledId() {
-        return filedId;
+    public Long getFieldId() {
+        return fieldId;
     }
 
     public void setType(String type) {
@@ -38,11 +38,11 @@ public class QuickFilterFiledE {
         this.name = name;
     }
 
-    public void setFiled(String filed) {
-        this.filed = filed;
+    public void setField(String field) {
+        this.field = field;
     }
 
-    public String getFiled() {
-        return filed;
+    public String getField() {
+        return field;
     }
 }

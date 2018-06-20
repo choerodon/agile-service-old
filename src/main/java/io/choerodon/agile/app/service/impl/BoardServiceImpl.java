@@ -34,7 +34,7 @@ public class BoardServiceImpl implements BoardService {
     private static final String CONTRAINT_ISSUE_WITHOUT_SUBTASK = "issue_without_sub_task";
     private static final String STORY_POINTS = "story_point";
     private static final String STORY = "story";
-    private static final String FILED_STATUS = "status";
+    private static final String FIELD_STATUS = "status";
 
     @Autowired
     private BoardRepository boardRepository;
@@ -263,7 +263,7 @@ public class BoardServiceImpl implements BoardService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(projectId);
             dataLogE.setIssueId(issueId);
-            dataLogE.setFiled("resolution");
+            dataLogE.setField("resolution");
             if (originStatus.getCompleted()) {
                 dataLogE.setOldValue(originStatus.getId().toString());
                 dataLogE.setOldString(originStatus.getName());
@@ -286,7 +286,7 @@ public class BoardServiceImpl implements BoardService {
         DataLogE dataLogE = new DataLogE();
         dataLogE.setProjectId(originIssue.getProjectId());
         dataLogE.setIssueId(currentIssue.getIssueId());
-        dataLogE.setFiled(FILED_STATUS);
+        dataLogE.setField(FIELD_STATUS);
         dataLogE.setOldValue(originIssue.getStatusId().toString());
         IssueStatusDO originStatus = issueStatusMapper.selectByPrimaryKey(originIssue.getStatusId());
         IssueStatusDO currentStatus = issueStatusMapper.selectByPrimaryKey(currentIssue.getStatusId());

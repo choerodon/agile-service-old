@@ -57,7 +57,7 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
     private void dataLogAttachment(Long projectId, Long issueId, String url, Long attachmentId, String action) {
         DataLogE dataLogE = new DataLogE();
         dataLogE.setProjectId(projectId);
-        dataLogE.setFiled(FIELD_ATTACHMENT);
+        dataLogE.setField(FIELD_ATTACHMENT);
         dataLogE.setIssueId(issueId);
         if (ACTION_UPLOAD.equals(action)) {
             dataLogE.setNewValue(attachmentId.toString());
