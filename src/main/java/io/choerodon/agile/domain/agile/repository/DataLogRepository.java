@@ -10,4 +10,6 @@ public interface DataLogRepository {
 
     DataLogE create(DataLogE dataLogE);
 
+    void delete(DataLogE dataLogE);
+
 }

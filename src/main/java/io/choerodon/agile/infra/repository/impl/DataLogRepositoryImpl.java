@@ -28,4 +28,10 @@ public class DataLogRepositoryImpl implements DataLogRepository {
         return ConvertHelper.convert(dataLogMapper.selectByPrimaryKey(dataLogDO.getLogId()), DataLogE.class);
     }
 
+    @Override
+    public void delete(DataLogE dataLogE) {
+        DataLogDO dataLogDO = ConvertHelper.convert(dataLogE, DataLogDO.class);
+        dataLogMapper.delete(dataLogDO);
+    }
+
 }
