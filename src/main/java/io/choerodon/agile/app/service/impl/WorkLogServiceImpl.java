@@ -114,7 +114,6 @@ public class WorkLogServiceImpl implements WorkLogService {
         }
 
         DataLogDO dataLogDO = dataLogMapper.selectLastWorkLogById(projectId, workLogDTO.getIssueId(), FILED_TIMESPENT);
-        System.out.println("============= " + dataLogDO.getIssueId() + " , == issueId = "+workLogDTO.getIssueId());
         DataLogE timeSpentLog = new DataLogE();
         if (dataLogDO != null) {
             timeSpentLog.setProjectId(projectId);
