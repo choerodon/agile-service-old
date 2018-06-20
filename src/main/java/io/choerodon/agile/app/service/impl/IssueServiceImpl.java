@@ -98,8 +98,6 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private DataLogRepository dataLogRepository;
     @Autowired
-    private DataLogMapper dataLogMapper;
-    @Autowired
     private VersionIssueRelMapper versionIssueRelMapper;
     @Autowired
     private ComponentIssueRelMapper componentIssueRelMapper;
@@ -127,7 +125,6 @@ public class IssueServiceImpl implements IssueService {
     private static final String FILED_SPRINT = "Sprint";
     private static final String FILED_STORY_POINTS = "Story Points";
     private static final String FILED_EPIC_LINK = "Epic Link";
-    private static final String FILED_TIMEORIGINESTIMATE = "timeoriginalestimate";
     private static final String FILED_TIMEESTIMATE = "timeestimate";
     private static final String FILED_ISSUETYPE = "issuetype";
     private static final String FILED_EPIC_CHILD = "Epic Child";
@@ -272,14 +269,15 @@ public class IssueServiceImpl implements IssueService {
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
             dataLogE.setFiled(FILED_REPORTER);
-            dataLogE.setOldValue(originIssue.getReporterId().toString());
             if (originIssue.getReporterId() != null && originIssue.getReporterId() != 0) {
+                dataLogE.setOldValue(originIssue.getReporterId().toString());
                 dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getReporterId(),false));
             }
             if (issueUpdateDTO.getReporterId() != 0) {
                 dataLogE.setNewValue(issueUpdateDTO.getReporterId().toString());
                 dataLogE.setNewString(userRepository.queryUserNameByOption(issueUpdateDTO.getReporterId(), false));
             }
+            dataLogRepository.create(dataLogE);
         }
     }
 
