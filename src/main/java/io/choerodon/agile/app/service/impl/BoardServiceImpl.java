@@ -268,18 +268,21 @@ public class BoardServiceImpl implements BoardService {
                 dataLogE.setOldValue(originStatus.getId().toString());
                 dataLogE.setOldString(originStatus.getName());
                 dataLogE.setNewValue(null);
-                dataLogE.setNewValue(null);
+                dataLogE.setNewString(null);
             } else if (currentStatus.getCompleted()) {
                 dataLogE.setOldValue(null);
                 dataLogE.setOldString(null);
                 dataLogE.setNewValue(currentStatus.getId().toString());
-                dataLogE.setNewValue(currentStatus.getName());
+                dataLogE.setNewString(currentStatus.getName());
             }
             dataLogRepository.create(dataLogE);
         }
     }
 
     private void dataLogStatus(IssueDO originIssue, IssueE currentIssue) {
+        if (originIssue.getStatusId().equals(currentIssue.getStatusId())) {
+            return;
+        }
         DataLogE dataLogE = new DataLogE();
         dataLogE.setProjectId(originIssue.getProjectId());
         dataLogE.setIssueId(currentIssue.getIssueId());
