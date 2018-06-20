@@ -228,9 +228,9 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT)
-    @ApiOperation("对外接口，根据issue类型(type_code)查询issue列表(分页)")
+    @ApiOperation("根据issue类型(type_code)查询issue列表(分页)")
     @CustomPageRequest
-    @GetMapping(value = "/type_code/{typeCode}")
+    @PostMapping(value = "/type_code/{typeCode}")
     public ResponseEntity<Page<IssueCommonDTO>> listByOptions(@ApiParam(value = "项目id", required = true)
                                                                @PathVariable(name = "project_id") Long projectId,
                                                                @ApiParam(value = "typeCode", required = true)
