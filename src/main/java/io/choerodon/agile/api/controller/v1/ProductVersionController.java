@@ -212,4 +212,14 @@ public class ProductVersionController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_VERSION_NAME_ERROR));
     }
+
+    @Permission(level = ResourceLevel.PROJECT)
+    @ApiOperation(value = "根据项目id查找version列表")
+    @GetMapping(value = "/versions")
+    public ResponseEntity<List<ProductVersionDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
+                                                              @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(productVersionService.listByProjectId(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException(QUERY_ERROR));
+    }
 }

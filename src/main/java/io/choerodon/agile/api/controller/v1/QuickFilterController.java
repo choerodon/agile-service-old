@@ -1,6 +1,8 @@
 package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.QuickFilterDTO;
+import io.choerodon.agile.api.dto.QuickFilterFiledDTO;
+import io.choerodon.agile.app.service.QuickFilterFiledService;
 import io.choerodon.agile.app.service.QuickFilterService;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
@@ -25,6 +27,9 @@ public class QuickFilterController {
 
     @Autowired
     private QuickFilterService quickFilterService;
+
+    @Autowired
+    private QuickFilterFiledService quickFilterFiledService;
 
     @Permission(level = ResourceLevel.PROJECT)
     @ApiOperation("创建quick filter")
@@ -83,6 +88,17 @@ public class QuickFilterController {
         return Optional.ofNullable(quickFilterService.listByProjectId(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.quickFilter.list"));
+    }
+
+
+    @Permission(level = ResourceLevel.PROJECT)
+    @ApiOperation("查询quick filter filed列表")
+    @GetMapping("/fields")
+    public ResponseEntity<List<QuickFilterFiledDTO>> list(@ApiParam(value = "项目id", required = true)
+                                                          @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(quickFilterFiledService.list(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.quickFilterFiled.list"));
     }
 
 

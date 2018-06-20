@@ -3,6 +3,7 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.EpicDataAssembler;
+import io.choerodon.agile.app.assembler.IssueCommonAssembler;
 import io.choerodon.agile.app.assembler.IssueSearchAssembler;
 import io.choerodon.agile.app.service.IssueAttachmentService;
 import io.choerodon.agile.app.service.IssueCommentService;
@@ -102,6 +103,8 @@ public class IssueServiceImpl implements IssueService {
     private VersionIssueRelMapper versionIssueRelMapper;
     @Autowired
     private ComponentIssueRelMapper componentIssueRelMapper;
+    @Autowired
+    private IssueCommonAssembler issueCommonAssembler;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -958,6 +961,19 @@ public class IssueServiceImpl implements IssueService {
         Integer max = query.getIssueMaxNum().intValue() + 1;
         issueE.setIssueNum(max.toString());
         projectInfoRepository.updateIssueMaxNum(issueE.getProjectId());
+    }
+
+    @Override
+    public Page<IssueCommonDTO> listByOptions(Long projectId, String typeCode, PageRequest pageRequest) {
+        Page<IssueCommonDO> issueCommonDOPage = PageHelper.doPageAndSort(pageRequest, () -> issueMapper.listByOptions(projectId, typeCode));
+        Page<IssueCommonDTO> issueCommonDTOPage = new Page<>();
+        issueCommonDTOPage.setTotalPages(issueCommonDOPage.getTotalPages());
+        issueCommonDTOPage.setSize(issueCommonDOPage.getSize());
+        issueCommonDTOPage.setTotalElements(issueCommonDOPage.getTotalElements());
+        issueCommonDTOPage.setNumberOfElements(issueCommonDOPage.getNumberOfElements());
+        issueCommonDTOPage.setNumber(issueCommonDOPage.getNumber());
+        issueCommonDTOPage.setContent(issueCommonAssembler.issueCommonToIssueCommonDto(issueCommonDOPage.getContent()));
+        return issueCommonDTOPage;
     }
 
 }

@@ -116,4 +116,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     int batchSubIssueToSprint(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds);
 
     List<IssueLabelDO> selectLabelNameByIssueId(@Param("issueId") Long issueId);
+
+    List<IssueCommonDO> listByOptions(@Param("projectId") Long projectId,
+                                      @Param("typeCode") String typeCode);
 }

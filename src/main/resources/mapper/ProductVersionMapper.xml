@@ -279,4 +279,15 @@
         WHERE project_id = #{projectId} AND status_code != 'archived'
     </select>
 
+    <select id="listByProjectId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionCommonDO">
+        SELECT
+            apv.*,
+            alv.`name` AS status_name
+        FROM
+            agile_product_version apv
+        LEFT JOIN agile_lookup_value alv ON apv.status_code = alv.value_code
+        WHERE
+            apv.project_id = 1
+    </select>
+
 </mapper>
