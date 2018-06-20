@@ -128,6 +128,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String FILED_STORY_POINTS = "Story Points";
     private static final String FILED_EPIC_LINK = "Epic Link";
     private static final String FILED_TIMEORIGINESTIMATE = "timeoriginalestimate";
+    private static final String FILED_TIMEESTIMATE = "timeestimate";
     private static final String FILED_ISSUETYPE = "issuetype";
     private static final String FILED_EPIC_CHILD = "Epic Child";
     private static final String FILED_DESCRIPTION_NULL = "[{\"insert\":\"\n\"}]";
@@ -371,7 +372,7 @@ public class IssueServiceImpl implements IssueService {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setFiled(FILED_TIMEORIGINESTIMATE);
+            dataLogE.setFiled(FILED_TIMEESTIMATE);
             if (originIssue.getRemainingTime() != null) {
                 dataLogE.setOldValue(originIssue.getRemainingTime().toString());
                 dataLogE.setOldString(originIssue.getRemainingTime().toString());
@@ -421,8 +422,7 @@ public class IssueServiceImpl implements IssueService {
         handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId);
         handleUpdateComponentIssueRel(issueUpdateDTO.getComponentIssueRelDTOList(), projectId, issueId);
         handleUpdateVersionIssueRel(issueUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId);
-//        return queryIssue(projectId, issueId);
-        return null;
+        return queryIssue(projectId, issueId);
     }
 
     @Override
