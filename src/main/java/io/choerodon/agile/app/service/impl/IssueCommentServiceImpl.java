@@ -32,7 +32,7 @@ import java.util.List;
 @Transactional(rollbackFor = CommonException.class)
 public class IssueCommentServiceImpl implements IssueCommentService {
 
-    private static final String FILED_COMMENT = "Comment";
+    private static final String FIELD_COMMENT = "Comment";
 
     @Autowired
     private IssueCommentRepository issueCommentRepository;
@@ -76,7 +76,7 @@ public class IssueCommentServiceImpl implements IssueCommentService {
         DataLogE dataLogE = new DataLogE();
         dataLogE.setProjectId(projectId);
         dataLogE.setIssueId(issueCommentDO.getIssueId());
-        dataLogE.setFiled(FILED_COMMENT);
+        dataLogE.setField(FIELD_COMMENT);
         dataLogE.setOldValue(issueCommentDO.getCommentText());
         dataLogRepository.create(dataLogE);
     }

@@ -4,20 +4,20 @@ package io.choerodon.agile.api.dto;
  * Created by HuangFuqiang@choerodon.io on 2018/6/13.
  * Email: fuqianghuang01@gmail.com
  */
-public class QuickFilterFiledDTO {
+public class QuickFilterFieldDTO {
 
-    private Long filedId;
+    private Long fieldId;
 
     private String type;
 
     private String name;
 
-    public void setFiledId(Long filedId) {
-        this.filedId = filedId;
+    public void setFieldId(Long fieldId) {
+        this.fieldId = fieldId;
     }
 
-    public Long getFiledId() {
-        return filedId;
+    public Long getFieldId() {
+        return fieldId;
     }
 
     public void setType(String type) {

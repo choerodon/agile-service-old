@@ -14,25 +14,25 @@ import javax.persistence.Table;
  */
 @ModifyAudit
 @VersionAudit
-@Table(name = "agile_quick_filter_filed")
-public class QuickFilterFiledDO extends AuditDomain {
+@Table(name = "agile_quick_filter_field")
+public class QuickFilterFieldDO extends AuditDomain {
 
     @Id
     @GeneratedValue
-    private Long filedId;
+    private Long fieldId;
 
     private String type;
 
     private String name;
 
-    private String filed;
+    private String field;
 
-    public void setFiledId(Long filedId) {
-        this.filedId = filedId;
+    public void setFieldId(Long fieldId) {
+        this.fieldId = fieldId;
     }
 
-    public Long getFiledId() {
-        return filedId;
+    public Long getFieldId() {
+        return fieldId;
     }
 
     public void setType(String type) {
@@ -51,11 +51,11 @@ public class QuickFilterFiledDO extends AuditDomain {
         this.name = name;
     }
 
-    public void setFiled(String filed) {
-        this.filed = filed;
+    public void setField(String field) {
+        this.field = field;
     }
 
-    public String getFiled() {
-        return filed;
+    public String getField() {
+        return field;
     }
 }

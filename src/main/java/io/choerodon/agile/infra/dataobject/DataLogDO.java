@@ -23,7 +23,7 @@ public class DataLogDO extends AuditDomain {
 
     private Long projectId;
 
-    private String filed;
+    private String field;
 
     private String oldValue;
 
@@ -51,12 +51,12 @@ public class DataLogDO extends AuditDomain {
         this.projectId = projectId;
     }
 
-    public String getFiled() {
-        return filed;
+    public void setField(String field) {
+        this.field = field;
     }
 
-    public void setFiled(String filed) {
-        this.filed = filed;
+    public String getField() {
+        return field;
     }
 
     public String getOldValue() {
