@@ -310,7 +310,9 @@ public class IssueServiceImpl implements IssueService {
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
             dataLogE.setFiled(FILED_STORY_POINTS);
-            dataLogE.setOldString(originIssue.getStoryPoints().toString());
+            if (originIssue.getStoryPoints() != null) {
+                dataLogE.setOldString(originIssue.getStoryPoints().toString());
+            }
             dataLogE.setNewString(issueUpdateDTO.getStoryPoints().toString());
             dataLogRepository.create(dataLogE);
         }
@@ -476,10 +478,7 @@ public class IssueServiceImpl implements IssueService {
             }
             List<IssueDO> issueDOList = issueMapper.queryIssueSubList(projectId, issueE.getIssueId());
             if (issueDOList != null && !issueDOList.isEmpty()) {
-                issueDOList.forEach(subIssue -> {
-                    deleteIssue(subIssue.getProjectId(), subIssue.getIssueId());
-                    dataLogDeleteByIssueId(projectId, subIssue.getIssueId());
-                });
+                issueDOList.forEach(subIssue -> deleteIssue(subIssue.getProjectId(), subIssue.getIssueId()));
             }
         }
         dataLogDeleteByIssueId(projectId, issueId);
