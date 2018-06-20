@@ -122,4 +122,6 @@ public interface IssueService {
      * @return IssueE
      */
     IssueE queryIssueByProjectIdAndIssueId(Long projectId, Long issueId);
+
+    Page<IssueCommonDTO> listByOptions(Long projectId, String typeCode, PageRequest pageRequest);
 }

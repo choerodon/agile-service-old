@@ -427,7 +427,7 @@
         ais.name AS status_name,
         ai.object_version_number, ai.priority_code,
         alv.name AS priority_name,
-        ai1.epic_name AS issue_epic_name,
+        ai1.epic_name AS epic_name,
         alv2.name AS color,
         apv1.version_id AS version_id,
         apv1.name AS version_name
@@ -570,6 +570,24 @@
         WHERE
             ail.label_id = alir.label_id
         AND alir.issue_id = #{issueId}
+    </select>
+
+    <select id="listByOptions" resultType="io.choerodon.agile.infra.dataobject.IssueCommonDO">
+        SELECT
+            ai.issue_id,
+            ai.type_code,
+            ai.summary,
+            ai.priority_code,
+            ai.assignee_id,
+            ai.project_id,
+            alv.name AS priority_name,
+            ais.category_code AS status_code,
+            ais.name AS status_name,
+            CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
+        FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        WHERE ai.project_id = #{projectId} AND ai.type_code = #{typeCode} AND ai.type_code != 'sub_task'
     </select>
 
 </mapper>

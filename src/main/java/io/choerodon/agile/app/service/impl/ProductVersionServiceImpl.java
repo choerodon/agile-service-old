@@ -5,6 +5,7 @@ import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.infra.dataobject.IssueCountDO;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
+import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
@@ -211,5 +212,10 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     @Override
     public List<ProductVersionNameDTO> queryNameByProjectId(Long projectId) {
         return versionStatisticsAssembler.doListToVersionNameDto(productVersionMapper.queryAllVersionNames(projectId));
+    }
+
+    @Override
+    public List<ProductVersionDTO> listByProjectId(Long projectId) {
+        return ConvertHelper.convertList(productVersionMapper.listByProjectId(projectId), ProductVersionDTO.class) ;
     }
 }

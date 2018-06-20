@@ -50,4 +50,6 @@ public interface ProductVersionService {
     VersionMessageDTO queryDeleteMessageByVersionId(Long projectId, Long versionId);
 
     List<ProductVersionNameDTO> queryNameByProjectId(Long projectId);
+
+    List<ProductVersionDTO> listByProjectId(Long projectId);
 }
