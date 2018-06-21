@@ -567,7 +567,7 @@ public class IssueServiceImpl implements IssueService {
     private void dataLogRank(Long projectId, MoveIssueDTO moveIssueDTO, String rankStr, Long sprintId) {
         for (Long issueId : moveIssueDTO.getIssueIds()) {
             SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
-            if (sprintId.equals(activeSprintName.getSprintId())) {
+            if ((sprintId == 0 && activeSprintName == null) || (activeSprintName != null && sprintId.equals(activeSprintName.getSprintId()))) {
                 DataLogE dataLogE = new DataLogE();
                 dataLogE.setProjectId(projectId);
                 dataLogE.setField(FIELD_RANK);
