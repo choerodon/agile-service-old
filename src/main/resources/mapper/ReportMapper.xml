@@ -15,7 +15,7 @@
                               adl.issue_id,
                               adl.new_value
                           FROM agile_data_log adl
-                          WHERE adl.filed = 'Sprint' AND adl.creation_date &lt;= #{sprintDO.startDate}
+                          WHERE adl.field = 'Sprint' AND adl.creation_date &lt;= #{sprintDO.startDate}
                           ORDER BY adl.creation_date DESC
                           LIMIT 1000000000000) adl1
                      GROUP BY
@@ -53,7 +53,7 @@
         FROM
         agile_data_log adl
         WHERE
-        adl.filed = #{filed}
+        adl.field = #{filed}
         AND adl.creation_date &lt; #{sprintDO.startDate}
         AND adl.issue_id IN
         <foreach collection="issueIdList" item="issueId"
@@ -81,7 +81,7 @@
                         FROM
                             agile_data_log adl
                         WHERE
-                            adl.filed = 'Sprint'
+                            adl.field = 'Sprint'
                             AND adl.creation_date &gt; #{sprintDO.startDate}
                             AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
                             AND adl.new_value = #{sprintDO.sprintId}
@@ -107,8 +107,8 @@
         FROM
         agile_data_log adl
         LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
-        AND adl1.filed = #{filed}
-        AND adl1.creation_date &lt;= adl.creation_date WHERE adl.filed = 'Sprint' AND adl.creation_date &gt;
+        AND adl1.field = #{filed}
+        AND adl1.creation_date &lt;= adl.creation_date WHERE adl.field = 'Sprint' AND adl.creation_date &gt;
         #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
         AND adl.new_value = #{sprintDO.sprintId}
@@ -137,7 +137,7 @@
                         FROM
                             agile_data_log adl
                         WHERE
-                            adl.filed = 'Sprint'
+                            adl.field = 'Sprint'
                             AND adl.creation_date &gt; #{sprintDO.startDate}
                             AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
                             AND adl.new_value = '0'
@@ -165,8 +165,8 @@
         FROM
         agile_data_log adl
         LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
-        AND adl1.filed = #{filed}
-        AND adl1.creation_date &lt;= adl.creation_date WHERE adl.filed = 'Sprint' AND adl.creation_date &gt;
+        AND adl1.field = #{filed}
+        AND adl1.creation_date &lt;= adl.creation_date WHERE adl.field = 'Sprint' AND adl.creation_date &gt;
         #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
         AND adl.old_value = #{sprintDO.sprintId}
@@ -199,7 +199,7 @@
         left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON api.project_id =
         ai.project_id
         WHERE
-        adl.filed = 'Sprint'
+        adl.field = 'Sprint'
         AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
         AND adl.new_value = #{sprintDO.sprintId}
@@ -225,7 +225,7 @@
         agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
         api.project_id = ai.project_id
         WHERE
-        adl.filed = 'Sprint'
+        adl.field = 'Sprint'
         AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
         AND adl.old_value = #{sprintDO.sprintId}
@@ -249,7 +249,7 @@
                         FROM
                             agile_data_log adl
                         WHERE
-                            adl.filed = 'resolution'
+                            adl.field = 'resolution'
                             AND adl.creation_date &gt; #{sprintDO.startDate}
                             AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
                             AND adl.new_value != ''
@@ -270,7 +270,7 @@
                         FROM
                             agile_data_log adl
                         WHERE
-                            adl.filed = 'resolution'
+                            adl.field = 'resolution'
                             AND adl.creation_date &gt; #{sprintDO.startDate}
                             AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
                             AND adl.new_value = ''
@@ -297,9 +297,9 @@
         FROM
         agile_data_log adl
         LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
-        AND adl1.filed = #{filed}
+        AND adl1.field = #{filed}
         AND adl1.creation_date &lt;= adl.creation_date WHERE
-        adl.filed = 'resolution' AND adl.creation_date &gt; #{sprintDO.startDate}
+        adl.field = 'resolution' AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
         AND adl.new_value != ''
         AND adl.issue_id IN
@@ -333,11 +333,11 @@
         FROM
         agile_data_log adl
         LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
-        AND adl1.filed = #{filed}
+        AND adl1.field = #{filed}
         AND adl1.creation_date &lt;= adl.creation_date LEFT JOIN agile_issue_status ais ON ais.id = adl.new_value
         LEFT JOIN agile_issue_status ais2 ON ais2.id = adl.old_value
         WHERE
-        adl.filed = 'status' AND adl.creation_date &gt;= #{sprintDO.startDate}
+        adl.field = 'status' AND adl.creation_date &gt;= #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
         AND ais.category_code != 'done'
         and ais2.category_code = 'done'
@@ -364,7 +364,7 @@
         FROM
         agile_data_log adl
         WHERE
-        adl.filed = 'resolution'
+        adl.field = 'resolution'
         AND adl.creation_date &lt; #{sprintDO.startDate}
         AND adl.issue_id IN
         <foreach collection="issueIdList" item="issueId"
@@ -393,7 +393,7 @@
         agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
         api.project_id = ai.project_id
         WHERE
-        adl.filed = 'resolution' AND adl.creation_date &gt;= #{sprintDO.startDate}
+        adl.field = 'resolution' AND adl.creation_date &gt;= #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
         AND adl.old_value = ''
         AND adl.issue_id IN
@@ -419,7 +419,7 @@
         agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
         api.project_id = ai.project_id
         WHERE
-        adl.filed = 'resolution' AND adl.creation_date &gt;= #{sprintDO.startDate}
+        adl.field = 'resolution' AND adl.creation_date &gt;= #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
         and adl.new_value = ''
         AND adl.issue_id IN
@@ -444,7 +444,7 @@
         FROM
         agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
         api.project_id = ai.project_id
-        WHERE adl.filed = #{filed} AND adl.creation_date &gt;
+        WHERE adl.field = #{filed} AND adl.creation_date &gt;
         #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
         AND adl.issue_id IN
