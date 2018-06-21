@@ -45,4 +45,6 @@ public interface VersionIssueRelRepository {
     int deleteByVersionId(Long projectId, Long versionId);
 
     Boolean deleteIncompleteIssueByVersionId(Long projectId, Long versionId);
+
+    int deleteByVersionIds(Long projectId, List<Long> versionIds);
 }

@@ -20,9 +20,7 @@ public class ProductVersionRule {
     private static final String REPEAT_NAME_ERROR = "error.productVersion.repeatName";
     private static final String VERSION_NOT_FOUND = "error.version.notFound";
     private static final String VERSION_STATUS_PLAN_CODE = "version_planning";
-    private static final String VERSION_STATUS_RELEASE_CODE = "released";
     private static final String RELEASE_ERROR = "error.productVersion.release";
-    private static final String REVOKE_RELEASE_ERROR = "error.productVersion.revokeRelease";
 
     public void judgeName(Long projectId, Long versionId, String name) {
         if (versionId != null && !Objects.equals(versionId, 0L) && productVersionMapper.isNotReName(projectId, versionId, name)) {
@@ -53,16 +51,6 @@ public class ProductVersionRule {
         if (productVersionDO == null || !Objects.equals(productVersionDO.getStatusCode(), VERSION_STATUS_PLAN_CODE)
                 || (productVersionDO.getStartDate() != null && productVersionRelease.getReleaseDate() != null && productVersionDO.getStartDate().after(productVersionRelease.getReleaseDate()))) {
             throw new CommonException(RELEASE_ERROR);
-        }
-    }
-
-    public void isRevokeRelease(Long projectId, Long versionId) {
-        ProductVersionDO productVersionDO = new ProductVersionDO();
-        productVersionDO.setProjectId(projectId);
-        productVersionDO.setVersionId(versionId);
-        productVersionDO = productVersionMapper.selectOne(productVersionDO);
-        if (productVersionDO == null || !Objects.equals(productVersionDO.getStatusCode(), VERSION_STATUS_RELEASE_CODE)) {
-            throw new CommonException(REVOKE_RELEASE_ERROR);
         }
     }
 }

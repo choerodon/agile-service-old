@@ -1,9 +1,11 @@
 package io.choerodon.agile.infra.mapper;
 
+import io.choerodon.agile.api.dto.SprintNameDTO;
 import io.choerodon.mybatis.common.BaseMapper;
 import io.choerodon.agile.infra.dataobject.*;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -31,15 +33,11 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<IssueSearchDO> searchIssue(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
 
-    int issueToDestination(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("targetSprintId") Long targetSprintId);
-
     Integer queryBacklogIssueCount(@Param("projectId") Long projectId);
 
     int batchIssueToVersion(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("issueIds") List<Long> issueIds);
 
     int batchIssueToEpic(@Param("projectId") Long projectId, @Param("epicId") Long epicId, @Param("issueIds") List<Long> issueIds);
-
-    int batchIssueToSprint(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("moveIssues") List<MoveIssueDO> moveIssues);
 
     List<IssueSearchDO> queryIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
@@ -89,8 +87,6 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<IssueCountDO> queryTotalEstimateByEpicIds(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds);
 
-    int subTaskToDestination(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("targetSprintId") Long targetSprintId);
-
     /**
      * 分页过滤查询issue列表，不包括子任务
      *
@@ -103,20 +99,28 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                         @Param("searchArgs") Map<String, Object> searchArgs,
                                         @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
 
-    /**
-     * 批量更改子issue的冲刺id
-     *
-     * @param projectId projectId
-     * @param sprintId  sprintId
-     * @param issueId   issueId
-     * @return int
-     */
-    int batchUpdateSubIssueSprintId(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueId") Long issueId);
-
-    int batchSubIssueToSprint(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds);
-
     List<IssueLabelDO> selectLabelNameByIssueId(@Param("issueId") Long issueId);
 
     List<IssueCommonDO> listByOptions(@Param("projectId") Long projectId,
                                       @Param("typeCode") String typeCode);
+
+    List<Long> querySubTaskIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+
+    int issueToDestinationByIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds);
+
+    int batchUpdateIssueRank(@Param("projectId") Long projectId, @Param("moveIssues") List<MoveIssueDO> moveIssues);
+
+    List<Long> querySubIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
+    int removeIssueFromSprintByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
+    int issueToSprint(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueId") Long issueId);
+
+    List<Long> querySubIssueIdsByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+
+    int deleteIssueFromSprintByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+
+    SprintNameDO queryActiveSprintNameByIssueId(@Param("issueId") Long issueId);
+
+    List<SprintNameDO> queryCloseSprintNameByIssueId(@Param("issueId") Long issueId);
 }

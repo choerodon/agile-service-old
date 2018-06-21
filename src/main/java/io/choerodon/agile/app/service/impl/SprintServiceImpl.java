@@ -160,8 +160,8 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
-    public List<SprintNameDTO> queryNameByProjectId(Long projectId) {
-        return sprintNameAssembler.doListToDTO(sprintMapper.queryNameByProjectId(projectId));
+    public List<SprintNameDTO> queryNameByOptions(Long projectId, List<String> sprintStatusCodes) {
+        return sprintNameAssembler.doListToDTO(sprintMapper.queryNameByOptions(projectId, sprintStatusCodes));
     }
 
     @Override
@@ -190,9 +190,7 @@ public class SprintServiceImpl implements SprintService {
         SprintE sprintE = sprintUpdateAssembler.doToEntity(sprintMapper.selectOne(sprintDO));
         sprintE.completeSprint();
         sprintRepository.updateSprint(sprintE);
-        issueRepository.subTaskToDestination(projectId, sprintCompleteDTO.getSprintId(), sprintCompleteDTO.getIncompleteIssuesDestination());
         moveNotDoneIssueToTargetSprint(projectId, sprintCompleteDTO);
-        issueRepository.issueToDestination(projectId, sprintCompleteDTO.getSprintId(), sprintCompleteDTO.getIncompleteIssuesDestination());
         return true;
     }
 
@@ -202,7 +200,10 @@ public class SprintServiceImpl implements SprintService {
         if (moveIssueDOS.isEmpty()) {
             return;
         }
-        issueRepository.batchIssueToSprint(projectId, sprintCompleteDTO.getIncompleteIssuesDestination(), moveIssueDOS);
+        List<Long> moveIssueIds = sprintMapper.queryIssueIds(projectId, sprintCompleteDTO.getSprintId());
+        moveIssueIds.addAll(issueMapper.querySubTaskIds(projectId, sprintCompleteDTO.getSprintId()));
+        issueRepository.issueToDestinationByIds(projectId, sprintCompleteDTO.getIncompleteIssuesDestination(), moveIssueIds);
+        issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
     }
 
     private void beforeRank(Long projectId, Long sprintId, Long targetSprintId, List<MoveIssueDO> moveIssueDOS) {

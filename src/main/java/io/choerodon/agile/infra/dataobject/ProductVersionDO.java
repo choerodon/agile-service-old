@@ -27,6 +27,7 @@ public class ProductVersionDO extends AuditDomain {
     private Date startDate;
     private Date releaseDate;
     private String statusCode;
+    private String oldStatusCode;
     @Transient
     private String status;
     @NotNull
@@ -95,6 +96,14 @@ public class ProductVersionDO extends AuditDomain {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    public String getOldStatusCode() {
+        return oldStatusCode;
+    }
+
+    public void setOldStatusCode(String oldStatusCode) {
+        this.oldStatusCode = oldStatusCode;
     }
 
     @Override

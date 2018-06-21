@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.dataobject.SprintNameDO;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -38,8 +39,6 @@ public class IssueSubDTO {
 
     private Long projectId;
 
-    private Long sprintId;
-
     private Long parentIssueId;
 
     private Integer storyPoints;
@@ -68,7 +67,9 @@ public class IssueSubDTO {
 
     private BigDecimal remainingTime;
 
-    private String sprintName;
+    private SprintNameDTO activeSprint;
+
+    private List<SprintNameDTO> closeSprint;
 
     private String parentIssueNum;
 
@@ -176,14 +177,6 @@ public class IssueSubDTO {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
-    }
-
-    public Long getSprintId() {
-        return sprintId;
-    }
-
-    public void setSprintId(Long sprintId) {
-        this.sprintId = sprintId;
     }
 
     public Long getParentIssueId() {
@@ -298,12 +291,20 @@ public class IssueSubDTO {
         this.remainingTime = remainingTime;
     }
 
-    public String getSprintName() {
-        return sprintName;
+    public SprintNameDTO getActiveSprint() {
+        return activeSprint;
     }
 
-    public void setSprintName(String sprintName) {
-        this.sprintName = sprintName;
+    public void setActiveSprint(SprintNameDTO activeSprint) {
+        this.activeSprint = activeSprint;
+    }
+
+    public List<SprintNameDTO> getCloseSprint() {
+        return closeSprint;
+    }
+
+    public void setCloseSprint(List<SprintNameDTO> closeSprint) {
+        this.closeSprint = closeSprint;
     }
 
     public String getParentIssueNum() {

@@ -9,7 +9,6 @@ public class EpicDataDO {
     private String description;
     private String epicName;
     private Long projectId;
-    private Long sprintId;
     private String color;
     private Long objectVersionNumber;
 
@@ -43,14 +42,6 @@ public class EpicDataDO {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
-    }
-
-    public Long getSprintId() {
-        return sprintId;
-    }
-
-    public void setSprintId(Long sprintId) {
-        this.sprintId = sprintId;
     }
 
     public String getEpicName() {

@@ -13,7 +13,8 @@ public class ProductVersionDeleteDTO {
     private Long projectId;
     @NotNull(message = VERSION_ID_NULL_ERROR)
     private Long versionId;
-    private Long targetVersionId;
+    private Long fixTargetVersionId;
+    private Long influenceTargetVersionId;
 
     public Long getProjectId() {
         return projectId;
@@ -31,12 +32,19 @@ public class ProductVersionDeleteDTO {
         this.versionId = versionId;
     }
 
-    public Long getTargetVersionId() {
-        return targetVersionId;
+    public Long getFixTargetVersionId() {
+        return fixTargetVersionId;
     }
 
-    public void setTargetVersionId(Long targetVersionId) {
-        this.targetVersionId = targetVersionId;
+    public void setFixTargetVersionId(Long fixTargetVersionId) {
+        this.fixTargetVersionId = fixTargetVersionId;
     }
 
+    public Long getInfluenceTargetVersionId() {
+        return influenceTargetVersionId;
+    }
+
+    public void setInfluenceTargetVersionId(Long influenceTargetVersionId) {
+        this.influenceTargetVersionId = influenceTargetVersionId;
+    }
 }

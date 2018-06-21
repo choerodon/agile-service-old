@@ -14,6 +14,9 @@ import java.util.List;
 @Component
 public class SprintNameAssembler {
     public SprintNameDTO doToDTO(SprintNameDO sprintNameDO){
+        if(sprintNameDO == null){
+            return null;
+        }
         SprintNameDTO sprintNameDTO = new SprintNameDTO();
         BeanUtils.copyProperties(sprintNameDO, sprintNameDTO);
         return sprintNameDTO;

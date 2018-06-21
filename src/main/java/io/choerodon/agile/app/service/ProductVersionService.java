@@ -49,7 +49,13 @@ public interface ProductVersionService {
 
     VersionMessageDTO queryDeleteMessageByVersionId(Long projectId, Long versionId);
 
-    List<ProductVersionNameDTO> queryNameByProjectId(Long projectId);
+    List<ProductVersionNameDTO> queryNameByOptions(Long projectId, List<String> statusCodes);
 
     List<ProductVersionDTO> listByProjectId(Long projectId);
+
+    ProductVersionDetailDTO archivedVersion(Long projectId, Long versionId);
+
+    ProductVersionDetailDTO revokeArchivedVersion(Long projectId, Long versionId);
+
+    Boolean mergeVersion(Long projectId, ProductVersionMergeDTO productVersionMergeDTO);
 }

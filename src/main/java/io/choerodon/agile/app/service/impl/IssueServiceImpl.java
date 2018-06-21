@@ -2,9 +2,7 @@ package io.choerodon.agile.app.service.impl;
 
 
 import io.choerodon.agile.api.dto.*;
-import io.choerodon.agile.app.assembler.EpicDataAssembler;
-import io.choerodon.agile.app.assembler.IssueCommonAssembler;
-import io.choerodon.agile.app.assembler.IssueSearchAssembler;
+import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.IssueAttachmentService;
 import io.choerodon.agile.app.service.IssueCommentService;
 import io.choerodon.agile.app.service.IssueLinkService;
@@ -17,7 +15,6 @@ import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
@@ -103,6 +100,8 @@ public class IssueServiceImpl implements IssueService {
     private ComponentIssueRelMapper componentIssueRelMapper;
     @Autowired
     private IssueCommonAssembler issueCommonAssembler;
+    @Autowired
+    private SprintNameAssembler sprintNameAssembler;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -155,14 +154,12 @@ public class IssueServiceImpl implements IssueService {
         List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
         issueE.initializationColor(colorList);
         if (issueE.isIssueRank()) {
-            if (sprintRule.hasIssue(issueE.getProjectId(), issueE.getSprintId())) {
-                String rank = sprintMapper.queryMaxRank(issueE.getProjectId(), issueE.getSprintId());
-                issueE.setRank(RankUtil.genNext(rank));
-            } else {
-                issueE.setRank(RankUtil.mid());
-            }
+            calculationRank(issueE);
         }
         Long issueId = issueRepository.create(issueE).getIssueId();
+        if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
+            issueRepository.issueToSprint(issueE.getProjectId(), issueE.getSprintId(), issueId);
+        }
         if (issueCreateDTO.getIssueLinkCreateDTOList() != null && !issueCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
             issueLinkService.createIssueLinkList(issueCreateDTO.getIssueLinkCreateDTOList(), issueId, issueCreateDTO.getProjectId());
         }
@@ -170,6 +167,15 @@ public class IssueServiceImpl implements IssueService {
         handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
         handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
         return queryIssue(issueCreateDTO.getProjectId(), issueId);
+    }
+
+    private void calculationRank(IssueE issueE) {
+        if (sprintRule.hasIssue(issueE.getProjectId(), issueE.getSprintId())) {
+            String rank = sprintMapper.queryMaxRank(issueE.getProjectId(), issueE.getSprintId());
+            issueE.setRank(RankUtil.genNext(rank));
+        } else {
+            issueE.setRank(RankUtil.mid());
+        }
     }
 
     @Override
@@ -281,23 +287,35 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void dataLogSprint(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
-        if (issueUpdateDTO.getSprintId() != null) {
+    private void dataLogSprint(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO, boolean isRecordSprintLog) {
+        if (isRecordSprintLog) {
+            String oldValue, oldString, newValue, newString;
+            SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(originIssue.getIssueId()));
+            List<SprintNameDTO> closeSprintNames = sprintNameAssembler.doListToDTO(issueMapper.queryCloseSprintNameByIssueId(originIssue.getIssueId()));
+            SprintNameDTO sprintName = sprintNameAssembler.doToDTO(sprintMapper.querySprintNameBySprintId(originIssue.getProjectId(), issueUpdateDTO.getSprintId()));
+            if ((activeSprintName == null && sprintName == null) || (sprintName != null && activeSprintName != null && Objects.equals(sprintName.getSprintId(), activeSprintName.getSprintId()))) {
+                return;
+            }
+            String closeSprintIdStr = closeSprintNames.stream().map(closeSprintName -> closeSprintName.getSprintId().toString()).collect(Collectors.joining(","));
+            String closeSprintNameStr = closeSprintNames.stream().map(closeSprintName -> closeSprintName.getSprintName()).collect(Collectors.joining(","));
+            oldValue = newValue = closeSprintIdStr;
+            oldString = newString = closeSprintNameStr;
+            if (activeSprintName != null) {
+                oldValue = oldValue + "," + activeSprintName.getSprintId().toString();
+                oldString = oldString + "," + activeSprintName.getSprintName();
+            }
+            if (sprintName != null) {
+                newValue = newValue + "," + sprintName.getSprintId().toString();
+                newString = newString + "," + sprintName.getSprintName();
+            }
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
             dataLogE.setField(FIELD_SPRINT);
-            dataLogE.setOldValue(originIssue.getSprintId().toString());
-            if (originIssue.getSprintId() != null && originIssue.getSprintId() != 0) {
-                dataLogE.setOldString(sprintMapper.selectNameBySprintId(originIssue.getSprintId()));
-            }
-            if (issueUpdateDTO.getSprintId() != 0) {
-                dataLogE.setNewValue(issueUpdateDTO.getSprintId().toString());
-                dataLogE.setNewString(sprintMapper.selectNameBySprintId(issueUpdateDTO.getSprintId()));
-            } else {
-                dataLogE.setNewValue(null);
-                dataLogE.setNewString(null);
-            }
+            dataLogE.setOldValue(oldValue);
+            dataLogE.setOldString(oldString);
+            dataLogE.setNewValue(newValue);
+            dataLogE.setNewString(newString);
             dataLogRepository.create(dataLogE);
         }
     }
@@ -395,14 +413,14 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void dataLog(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+    private void dataLog(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO, boolean isRecordSprintLog) {
         dataLogEpicName(originIssue, issueUpdateDTO);
         dataLogSummary(originIssue, issueUpdateDTO);
         dataLogDescription(originIssue, issueUpdateDTO);
         dataLogPriority(originIssue, issueUpdateDTO);
         dataLogAssignee(originIssue, issueUpdateDTO);
         dataLogReporter(originIssue, issueUpdateDTO);
-        dataLogSprint(originIssue, issueUpdateDTO);
+        dataLogSprint(originIssue, issueUpdateDTO, isRecordSprintLog);
         dataLogStoryPoint(originIssue, issueUpdateDTO);
         dataLogEpic(originIssue, issueUpdateDTO);
         dataLogRemainTime(originIssue, issueUpdateDTO);
@@ -411,13 +429,22 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public IssueDTO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList) {
         IssueDO originIssue = issueMapper.selectByPrimaryKey(issueUpdateDTO.getIssueId());
+        dataLog(originIssue, issueUpdateDTO, fieldList.contains(SPRINT_ID_FIELD));
         if (fieldList != null && !fieldList.isEmpty()) {
+            IssueE issueE = issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO);
             if (fieldList.contains(SPRINT_ID_FIELD)) {
-                issueRepository.batchUpdateSubIssueSprintId(projectId, issueUpdateDTO.getSprintId(), issueUpdateDTO.getIssueId());
+                List<Long> issueIds = issueMapper.querySubIssueIdsByIssueId(projectId, issueE.getIssueId());
+                issueIds.add(issueE.getIssueId());
+                issueRepository.removeIssueFromSprintByIssueIds(projectId, issueIds);
+                if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
+                    issueRepository.issueToDestinationByIds(projectId, issueE.getSprintId(), issueIds);
+                }
+                if (issueE.isIssueRank()) {
+                    calculationRank(issueE);
+                }
             }
-            issueRepository.update(issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO), fieldList.toArray(new String[fieldList.size()]));
+            issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
         }
-        dataLog(originIssue, issueUpdateDTO);
         Long issueId = issueUpdateDTO.getIssueId();
         handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId);
         handleUpdateComponentIssueRel(issueUpdateDTO.getComponentIssueRelDTOList(), projectId, issueId);
@@ -464,6 +491,7 @@ public class IssueServiceImpl implements IssueService {
         componentIssueRelRepository.deleteByIssueId(issueE.getIssueId());
         //删除版本关联
         versionIssueRelRepository.deleteByIssueId(issueE.getIssueId());
+        issueRepository.deleteIssueFromSprintByIssueId(projectId, issueId);
         //删除评论信息
         issueCommentService.deleteByIssueId(issueE.getIssueId());
         //删除附件
@@ -496,6 +524,9 @@ public class IssueServiceImpl implements IssueService {
         //设置issue编号
         initializationIssueNum(subIssueE);
         Long issueId = issueRepository.create(subIssueE).getIssueId();
+        if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
+            issueRepository.issueToSprint(subIssueE.getProjectId(), subIssueE.getSprintId(), issueId);
+        }
         if (issueSubCreateDTO.getIssueLinkCreateDTOList() != null && !issueSubCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
             issueLinkService.createIssueLinkList(issueSubCreateDTO.getIssueLinkCreateDTOList(), issueId, issueSubCreateDTO.getProjectId());
         }
@@ -555,8 +586,11 @@ public class IssueServiceImpl implements IssueService {
             afterRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
             dataLogRank(projectId, moveIssueDTO, RANK_LOWER);
         }
-        issueRepository.batchIssueToSprint(projectId, sprintId, moveIssueDOS);
-        issueRepository.batchSubIssueToSprint(projectId, sprintId, moveIssueDTO.getIssueIds());
+        List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
+        moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
+        issueRepository.removeIssueFromSprintByIssueIds(projectId, moveIssueIds);
+        issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds);
+        issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
         List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds());
         List<Long> assigneeIds = issueSearchDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
@@ -783,13 +817,13 @@ public class IssueServiceImpl implements IssueService {
             if (idx == labelIssueRelDTOList.size() - 1) {
                 stringBuilder.append(label.getLabelName());
             } else {
-                stringBuilder.append(label.getLabelName()+" ");
+                stringBuilder.append(label.getLabelName() + " ");
             }
         }
         return stringBuilder.toString();
     }
 
-    private void dataLogLabel(List<IssueLabelDO> originLabels,List<LabelIssueRelDTO> labelIssueRelDTOList, Long issueId) {
+    private void dataLogLabel(List<IssueLabelDO> originLabels, List<LabelIssueRelDTO> labelIssueRelDTOList, Long issueId) {
         if (labelIssueRelDTOList != null) {
             IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
             DataLogE dataLogE = new DataLogE();

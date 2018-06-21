@@ -2,7 +2,6 @@ package io.choerodon.agile.api.dto;
 
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -43,13 +42,15 @@ public class IssueDTO {
 
     private Long epicId;
 
-    private Long sprintId;
-
     private Long parentIssueId;
 
     private Integer storyPoints;
 
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
+
+    private SprintNameDTO activeSprint;
+
+    private List<SprintNameDTO> closeSprint;
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
@@ -173,14 +174,6 @@ public class IssueDTO {
 
     public void setEpicId(Long epicId) {
         this.epicId = epicId;
-    }
-
-    public Long getSprintId() {
-        return sprintId;
-    }
-
-    public void setSprintId(Long sprintId) {
-        this.sprintId = sprintId;
     }
 
     public Long getParentIssueId() {
@@ -373,6 +366,22 @@ public class IssueDTO {
 
     public void setStatusColor(String statusColor) {
         this.statusColor = statusColor;
+    }
+
+    public SprintNameDTO getActiveSprint() {
+        return activeSprint;
+    }
+
+    public void setActiveSprint(SprintNameDTO activeSprint) {
+        this.activeSprint = activeSprint;
+    }
+
+    public List<SprintNameDTO> getCloseSprint() {
+        return closeSprint;
+    }
+
+    public void setCloseSprint(List<SprintNameDTO> closeSprint) {
+        this.closeSprint = closeSprint;
     }
 
     @Override

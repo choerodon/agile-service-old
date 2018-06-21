@@ -83,11 +83,13 @@ public class SprintController {
     }
 
     @Permission(level = ResourceLevel.PROJECT)
-    @ApiOperation(value = "查询未关闭冲刺名")
-    @GetMapping(value = "/names")
-    public ResponseEntity<List<SprintNameDTO>> queryNameByProjectId(@ApiParam(value = "项目id", required = true)
-                                                                    @PathVariable(name = "project_id") Long projectId) {
-        return Optional.ofNullable(sprintService.queryNameByProjectId(projectId))
+    @ApiOperation(value = "查询冲刺名")
+    @PostMapping(value = "/names")
+    public ResponseEntity<List<SprintNameDTO>> queryNameByOptions(@ApiParam(value = "项目id", required = true)
+                                                                  @PathVariable(name = "project_id") Long projectId,
+                                                                  @ApiParam(value = "状态列表", required = false)
+                                                                  @RequestBody List<String> sprintStatusCodes) {
+        return Optional.ofNullable(sprintService.queryNameByOptions(projectId, sprintStatusCodes))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_NAME_ERROR));
     }

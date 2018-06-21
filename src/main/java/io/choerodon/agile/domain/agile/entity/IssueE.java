@@ -266,9 +266,6 @@ public class IssueE {
         if (this.epicId == null) {
             this.epicId = 0L;
         }
-        if (this.sprintId == null) {
-            this.sprintId = 0L;
-        }
     }
 
     public Boolean isIssueRank() {
