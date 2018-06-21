@@ -25,16 +25,13 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_version_issue_rel.groovy') {
             column(name: 'issue_id')
         }
     }
+
     changeSet(id: '2018-05-24-agile-version-issue-rel', author: 'dinghuang123@gmail.com') {
         addColumn(tableName: 'agile_version_issue_rel') {
             column(name: 'relation_type', type: 'VARCHAR(32)', remarks: '版本类型')
         }
     }
-    changeSet(id: '2018-05-24-agile-version-issue-rel', author: 'dinghuang123@gmail.com') {
-        addColumn(tableName: 'agile_version_issue_rel') {
-            column(name: 'relation_type', type: 'VARCHAR(32)', remarks: '版本类型')
-        }
-    }
+
     changeSet(id: '2018-06-05-agile-version-issue-rel', author: 'dinghuang123@gmail.com') {
         dropIndex(tableName: 'agile_version_issue_rel', indexName: 'uk_version_id_issue_id')
         createIndex(schemaName: '', tablespace: '', tableName: 'agile_version_issue_rel', indexName: 'uk_version_id_issue_id_relation_type', unique: true) {

@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.common.utils;
 
 import io.choerodon.core.exception.CommonException;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
@@ -14,17 +15,21 @@ import java.util.*;
 @Component
 public class DateUtil {
 
+    private static final int MONTH_MAX_DAY = 31;
+    private static final int MONTH_MIN_DAY = 1;
+
     /**
      * 通过时间秒毫秒数判断两个时间的间隔
+     *
      * @param date1,start_date date1,start_date
-     * @param date2,end_date  date2,end_date
+     * @param date2,end_date   date2,end_date
      * @return int
      */
-    public int differentDaysByMillisecond(Date date1, Date date2) {
-        int days = (int) ((date2.getTime() - date1.getTime()) / (1000*3600*24));
-        String format ="yyyy-MM-dd HH:mm:ss";
+    public static int differentDaysByMillisecond(Date date1, Date date2) {
+        int days = (int) ((date2.getTime() - date1.getTime()) / (1000 * 3600 * 24));
+        String format = "yyyy-MM-dd HH:mm:ss";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-        return days - getWeekendNum(simpleDateFormat.format(date1.getTime()), simpleDateFormat.format(date2.getTime()),format);
+        return days - getWeekendNum(simpleDateFormat.format(date1.getTime()), simpleDateFormat.format(date2.getTime()), format);
     }
 
     public static int getWeekendNum(String startDate, String endDate, String format) {
@@ -50,13 +55,13 @@ public class DateUtil {
             calendarTemp.add(Calendar.DAY_OF_YEAR, 1);
         }
         Collections.sort(yearMonthDayList);
-        int num=0;
-        int size=yearMonthDayList.size();
-        int week=0;
+        int num = 0;
+        int size = yearMonthDayList.size();
+        int week = 0;
         for (int i = 0; i < size; i++) {
-            String day=(String)yearMonthDayList.get(i);
-            week=getWeek(day, format);
-            if (week==6||week==0) {
+            String day = (String) yearMonthDayList.get(i);
+            week = getWeek(day, format);
+            if (week == 6 || week == 0) {
                 num++;
             }
         }
@@ -71,6 +76,65 @@ public class DateUtil {
             throw new CommonException(e.getMessage());
         }
         return calendarTemp.get(Calendar.DAY_OF_WEEK) - 1;
+    }
+
+    /**
+     * 切割时间段
+     * 支持每月/每天/每小时/每分钟
+     *
+     * @param dateType  交易类型 M/D/H/T -->每月/每天/每小时/每分钟 为空执行默认策略
+     * @param startDate startDate
+     * @param endDate   endDate
+     * @return DateList
+     */
+    public static List<Date> cutDate(String dateType, Date startDate, Date endDate) {
+        if (dateType == null) {
+            Integer a = differentDaysByMillisecond(startDate, endDate);
+            if (a >= MONTH_MAX_DAY) {
+                dateType = "M";
+            } else if (a <= MONTH_MIN_DAY) {
+                dateType = "H";
+            } else {
+                dateType = "D";
+            }
+        }
+        dateType = "D";
+        List<Date> listDate = new ArrayList<>();
+        Calendar calBegin = Calendar.getInstance();
+        calBegin.setTime(startDate);
+        listDate.add(calBegin.getTime());
+        Calendar calEnd = Calendar.getInstance();
+        calEnd.setTime(endDate);
+        while (calEnd.after(calBegin)) {
+            switch (dateType) {
+                case "M":
+                    calBegin.add(Calendar.MONTH, 1);
+                    break;
+                case "D":
+                    calBegin.add(Calendar.DAY_OF_YEAR, 1);
+                    break;
+                case "H":
+                    calBegin.add(Calendar.HOUR, 1);
+                    break;
+                case "T":
+                    calBegin.add(Calendar.MINUTE, 1);
+                    break;
+                default:
+                    calBegin.add(Calendar.DAY_OF_YEAR, 1);
+                    break;
+            }
+            if (calEnd.after(calBegin)) {
+                listDate.add(calBegin.getTime());
+            } else {
+                listDate.add(calEnd.getTime());
+                break;
+            }
+        }
+        return listDate;
+    }
+
+    public Boolean beforeOrEquleDay(Date date1,Date date2){
+        return date1.before(date2) || DateUtils.isSameDay(date1, date2);
     }
 
 }

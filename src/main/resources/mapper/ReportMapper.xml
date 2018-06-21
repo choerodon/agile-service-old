@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.ReportMapper">
+    <select id="queryIssueIdsBeforeSprintStart" resultType="java.lang.Long">
+        SELECT a1.issue_id
+        FROM
+            (
+                SELECT *
+                FROM
+                    (SELECT
+                         adl1.issue_id,
+                         adl1.new_value
+                     FROM
+                         (SELECT
+                              adl.issue_id,
+                              adl.new_value
+                          FROM agile_data_log adl
+                          WHERE adl.field = 'Sprint' AND adl.creation_date &lt;= #{sprintDO.startDate}
+                          ORDER BY adl.creation_date DESC
+                          LIMIT 1000000000000) adl1
+                     GROUP BY
+                         adl1.issue_id) a
+                WHERE a.new_value = #{sprintDO.sprintId}
+
+            ) a1
+        WHERE
+            a1.issue_id NOT IN (SELECT aisr.issue_id
+                                FROM agile_issue_sprint_rel aisr
+                                WHERE aisr.sprint_id = #{sprintDO.sprintId} AND
+                                      aisr.creation_date &lt;= #{sprintDO.startDate})
+        UNION ALL
+        SELECT aisr2.issue_id
+        FROM
+            agile_issue_sprint_rel aisr2
+        WHERE
+            aisr2.creation_date &lt;= #{sprintDO.startDate}
+            AND aisr2.sprint_id = #{sprintDO.sprintId}
+    </select>
+
+    <select id="queryValueCountBeforeSprintStart" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+        SELECT
+        a.new_value,
+        a.issue_id,
+        a.creation_date as date,
+        'startSprint' as type,
+        1 as statistical,
+        0 as old_value,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num
+        FROM (select * from
+        (
+        SELECT
+        adl.new_value, adl.issue_id,adl.creation_date
+        FROM
+        agile_data_log adl
+        WHERE
+        adl.field = #{filed}
+        AND adl.creation_date &lt; #{sprintDO.startDate}
+        AND adl.issue_id IN
+        <foreach collection="issueIdList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        ORDER BY
+        adl.creation_date DESC
+        LIMIT 1000000000000
+        ) adl1
+        GROUP BY
+        adl1.issue_id) a left join agile_issue ai on ai.issue_id = a.issue_id LEFT JOIN agile_project_info api ON
+        api.project_id = ai.project_id
+
+    </select>
+
+    <select id="queryAddIssueIdsDuringSprint" resultType="java.lang.Long">
+        SELECT a1.issue_id
+        FROM
+            (
+                SELECT adl1.issue_id
+                FROM
+                    (
+                        SELECT adl.issue_id
+                        FROM
+                            agile_data_log adl
+                        WHERE
+                            adl.field = 'Sprint'
+                            AND adl.creation_date &gt; #{sprintDO.startDate}
+                            AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+                            AND adl.new_value = #{sprintDO.sprintId}
+                    ) adl1
+                GROUP BY
+                    adl1.issue_id
+            ) a1
+    </select>
+
+    <select id="queryAddIssueValueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+        SELECT
+        a.*,
+        0 as old_value,
+        'addDuringSprint' as type,
+        1 as statistical,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num
+        FROM
+        (
+        SELECT
+        adl.issue_id,
+        adl.creation_date AS date,
+        IFNULL(adl1.new_value,0) AS new_value
+        FROM
+        agile_data_log adl
+        LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
+        AND adl1.field = #{filed}
+        AND adl1.creation_date &lt;= adl.creation_date WHERE adl.field = 'Sprint' AND adl.creation_date &gt;
+        #{sprintDO.startDate}
+        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.new_value = #{sprintDO.sprintId}
+        AND adl.issue_id IN
+        <foreach collection="issueIdAddList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        ORDER BY
+        adl1.creation_date DESC
+        LIMIT 10000000000
+        ) a LEFT JOIN agile_issue ai on ai.issue_id = a.issue_id LEFT JOIN agile_project_info api ON api.project_id =
+        ai.project_id
+        GROUP BY
+        a.date
+    </select>
+
+    <select id="queryRemoveIssueIdsDuringSprint" resultType="java.lang.Long">
+        SELECT a1.issue_id
+        FROM
+            (
+                SELECT adl1.issue_id
+                FROM
+                    (
+                        SELECT adl.issue_id
+                        FROM
+                            agile_data_log adl
+                        WHERE
+                            adl.field = 'Sprint'
+                            AND adl.creation_date &gt; #{sprintDO.startDate}
+                            AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+                            AND adl.new_value = '0'
+                            AND adl.old_value = #{sprintDO.sprintId}
+                    ) adl1
+                GROUP BY
+                    adl1.issue_id
+            ) a1
+    </select>
+
+    <select id="queryRemoveIssueValueDurationSprint"
+            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+        SELECT
+        a.*,
+        0 as old_value,
+        'removeDuringSprint' as type,
+        1 as statistical,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num
+        FROM
+        (
+        SELECT
+        adl.issue_id,
+        adl.creation_date AS date,
+        IFNULL(adl1.new_value,0) AS new_value
+        FROM
+        agile_data_log adl
+        LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
+        AND adl1.field = #{filed}
+        AND adl1.creation_date &lt;= adl.creation_date WHERE adl.field = 'Sprint' AND adl.creation_date &gt;
+        #{sprintDO.startDate}
+        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.old_value = #{sprintDO.sprintId}
+        AND adl.new_value = '0'
+        AND adl.issue_id IN
+        <foreach collection="issueIdRemoveList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        ORDER BY
+        adl1.creation_date DESC
+        LIMIT 10000000000
+        ) a LEFT JOIN agile_issue ai on ai.issue_id = a.issue_id LEFT JOIN agile_project_info api ON api.project_id =
+        ai.project_id
+        GROUP BY
+        a.date
+    </select>
+
+    <select id="queryAddIssueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+        SELECT
+        adl.issue_id,
+        adl.creation_date AS date,
+        'addDuringSprint' as type,
+        0 as old_value,
+        1 as new_value,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+        1 as statistical
+        FROM
+        agile_data_log adl
+        left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON api.project_id =
+        ai.project_id
+        WHERE
+        adl.field = 'Sprint'
+        AND adl.creation_date &gt; #{sprintDO.startDate}
+        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.new_value = #{sprintDO.sprintId}
+        AND adl.issue_id IN
+        <foreach collection="issueIdAddList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        ORDER BY
+        adl.creation_date DESC
+    </select>
+
+    <select id="queryRemoveIssueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+        SELECT
+        adl.issue_id,
+        adl.creation_date AS date,
+        'removeDuringSprint' as type,
+        1 as old_value,
+        0 as new_value,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+        1 as statistical
+        FROM
+        agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
+        api.project_id = ai.project_id
+        WHERE
+        adl.field = 'Sprint'
+        AND adl.creation_date &gt; #{sprintDO.startDate}
+        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.old_value = #{sprintDO.sprintId}
+        AND adl.issue_id IN
+        <foreach collection="issueIdRemoveList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        ORDER BY
+        adl.creation_date DESC
+    </select>
+
+    <select id="queryAddDoneIssueIdsDuringSprint" resultType="java.lang.Long">
+        SELECT a1.issue_id
+        FROM
+            (
+                SELECT adl1.issue_id
+                FROM
+                    (
+                        SELECT adl.issue_id
+                        FROM
+                            agile_data_log adl
+                        WHERE
+                            adl.field = 'resolution'
+                            AND adl.creation_date &gt; #{sprintDO.startDate}
+                            AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+                            AND adl.new_value != ''
+                    ) adl1
+                GROUP BY
+                    adl1.issue_id
+            ) a1
+    </select>
+
+    <select id="queryRemoveDoneIssueIdsDuringSprint" resultType="java.lang.Long">
+        SELECT a1.issue_id
+        FROM
+            (
+                SELECT adl1.issue_id
+                FROM
+                    (
+                        SELECT adl.issue_id
+                        FROM
+                            agile_data_log adl
+                        WHERE
+                            adl.field = 'resolution'
+                            AND adl.creation_date &gt; #{sprintDO.startDate}
+                            AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+                            AND adl.new_value = ''
+                    ) adl1
+                GROUP BY
+                    adl1.issue_id
+            ) a1
+    </select>
+
+    <select id="queryAddIssueDoneValueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+        SELECT
+        a.*,
+        0 as new_value,
+        'addDoneDuringSprint' as type,
+        1 as statistical,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num
+        FROM
+        (
+        SELECT
+        adl.issue_id,
+        adl.creation_date AS date,
+        IFNULL( adl1.new_value, 0 ) AS
+        old_value
+        FROM
+        agile_data_log adl
+        LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
+        AND adl1.field = #{filed}
+        AND adl1.creation_date &lt;= adl.creation_date WHERE
+        adl.field = 'resolution' AND adl.creation_date &gt; #{sprintDO.startDate}
+        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.new_value != ''
+        AND adl.issue_id IN
+        <foreach collection="issueIdAddDoneList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        ORDER BY
+        adl1.creation_date DESC
+        LIMIT 10000000000
+        ) a LEFT JOIN agile_issue ai on ai.issue_id = a.issue_id LEFT JOIN agile_project_info api ON api.project_id =
+        ai.project_id
+        GROUP BY
+        a.date
+    </select>
+
+    <select id="queryRemoveIssueDoneValueDurationSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+        SELECT
+        a.*,
+        0 as old_value,
+        'removeDoneDuringSprint' as type,
+        1 as statistical,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num
+        FROM
+        (
+        SELECT
+        adl.issue_id,
+        adl.creation_date AS date,
+        IFNULL( adl1.new_value, 0 ) AS
+        new_value
+        FROM
+        agile_data_log adl
+        LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
+        AND adl1.field = #{filed}
+        AND adl1.creation_date &lt;= adl.creation_date LEFT JOIN agile_issue_status ais ON ais.id = adl.new_value
+        LEFT JOIN agile_issue_status ais2 ON ais2.id = adl.old_value
+        WHERE
+        adl.field = 'status' AND adl.creation_date &gt;= #{sprintDO.startDate}
+        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND ais.category_code != 'done'
+        and ais2.category_code = 'done'
+        AND adl.issue_id IN
+        <foreach collection="issueIdRemoveDoneList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        ORDER BY
+        adl1.creation_date DESC
+        LIMIT 10000000000
+        ) a LEFT JOIN agile_issue ai on ai.issue_id = a.issue_id LEFT JOIN agile_project_info api ON api.project_id =
+        ai.project_id
+        GROUP BY
+        a.date
+    </select>
+
+    <select id="queryDoneIssueIdsBeforeSprintStart" resultType="java.lang.Long">
+        SELECT adl1.issue_id
+        FROM
+        (
+        SELECT
+        adl.issue_id
+        FROM
+        agile_data_log adl
+        WHERE
+        adl.field = 'resolution'
+        AND adl.creation_date &lt; #{sprintDO.startDate}
+        AND adl.issue_id IN
+        <foreach collection="issueIdList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        AND adl.old_value = ''
+        ORDER BY
+        adl.creation_date DESC
+        LIMIT 1000000000000
+        ) adl1
+        GROUP BY
+        adl1.issue_id
+    </select>
+
+    <select id="queryAddIssueDoneDetailDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+        SELECT
+        adl.issue_id,
+        adl.creation_date AS date,
+        'addDoneDuringSprint' as type,
+        1 as old_value,
+        0 as new_value,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+        1 as statistical
+        FROM
+        agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
+        api.project_id = ai.project_id
+        WHERE
+        adl.field = 'resolution' AND adl.creation_date &gt;= #{sprintDO.startDate}
+        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.old_value = ''
+        AND adl.issue_id IN
+        <foreach collection="issueIdAddDoneList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        GROUP BY
+        date
+    </select>
+
+    <select id="queryRemoveIssueDoneDetailDurationSprint"
+            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+        SELECT
+        adl.issue_id,
+        adl.creation_date AS date,
+        'removeDoneDuringSprint' as type,
+        0 as old_value,
+        1 as new_value,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+        1 as statistical
+        FROM
+        agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
+        api.project_id = ai.project_id
+        WHERE
+        adl.field = 'resolution' AND adl.creation_date &gt;= #{sprintDO.startDate}
+        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        and adl.new_value = ''
+        AND adl.issue_id IN
+        <foreach collection="issueIdRemoveDoneList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        GROUP BY
+        date
+    </select>
+
+    <select id="queryIssueValueDurationSprint"
+            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+        SELECT
+        adl.issue_id,
+        adl.creation_date AS date,
+        adl.old_value,
+        adl.new_value,
+        'valueChange' AS type,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+        1 as statistical
+        FROM
+        agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
+        api.project_id = ai.project_id
+        WHERE adl.field = #{filed} AND adl.creation_date &gt;
+        #{sprintDO.startDate}
+        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.issue_id IN
+        <foreach collection="issueAllList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        GROUP BY
+        date
+    </select>
+
+    <select id="queryAddIssueBeforeDuringSprint"
+            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+        SELECT
+        ai.issue_id,
+        #{sprintDO.startDate} AS date,
+        'startSprint' as type,
+        0 as old_value,
+        1 as new_value,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+        1 as statistical
+        FROM agile_issue ai LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
+        WHERE ai.issue_id IN
+        <foreach collection="issueIdList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+    </select>
+
+</mapper>

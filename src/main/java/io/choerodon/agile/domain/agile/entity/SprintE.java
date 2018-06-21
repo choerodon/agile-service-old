@@ -153,4 +153,14 @@ public class SprintE {
             throw new CommonException(SPRINT_DATE_ERROR);
         }
     }
+
+    public void initStartAndEndTime() {
+        if (this.actualEndDate == null) {
+            if (this.endDate != null) {
+                this.actualEndDate = endDate;
+            } else {
+                this.setActualEndDate(new Date());
+            }
+        }
+    }
 }
