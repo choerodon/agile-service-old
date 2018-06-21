@@ -295,10 +295,17 @@
                AND status_code != 'archived'
     </select>
 
-    <select id="queryAllVersionNames" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
+    <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
         SELECT version_id, name, status_code
         FROM agile_product_version
-        WHERE project_id = #{projectId} AND status_code != 'archived'
+        WHERE project_id = #{projectId}
+              <if test="statusCodes != null and statusCodes.size > 0">
+                  AND status_code IN
+                  <foreach collection="statusCodes" item="statusCode"
+                         open="(" close=")" separator=",">
+                     #{statusCode}
+                  </foreach>
+              </if>
     </select>
 
     <select id="listByProjectId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionCommonDO">

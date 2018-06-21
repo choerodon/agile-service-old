@@ -231,11 +231,14 @@ public class ProductVersionController {
     }
 
     @Permission(level = ResourceLevel.PROJECT)
-    @ApiOperation(value = "查询所有未归档版本名")
-    @GetMapping(value = "/names")
-    public ResponseEntity<List<ProductVersionNameDTO>> queryNameByProjectId(@ApiParam(value = "项目id", required = true)
-                                                                            @PathVariable(name = "project_id") Long projectId) {
-        return Optional.ofNullable(productVersionService.queryNameByProjectId(projectId))
+    @ApiOperation(value = "根据状态查询档版本名")
+    @PostMapping(value = "/names")
+    public ResponseEntity<List<ProductVersionNameDTO>> queryNameByOptions(@ApiParam(value = "项目id", required = true)
+                                                                            @PathVariable(name = "project_id") Long projectId,
+                                                                            @ApiParam(value = "状态列表", required = false)
+                                                                            @RequestBody List<String> statusCodes
+                                                                            ) {
+        return Optional.ofNullable(productVersionService.queryNameByOptions(projectId, statusCodes))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_VERSION_NAME_ERROR));
     }

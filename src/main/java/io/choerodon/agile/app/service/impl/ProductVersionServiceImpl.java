@@ -231,8 +231,8 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     }
 
     @Override
-    public List<ProductVersionNameDTO> queryNameByProjectId(Long projectId) {
-        return versionStatisticsAssembler.doListToVersionNameDto(productVersionMapper.queryAllVersionNames(projectId));
+    public List<ProductVersionNameDTO> queryNameByOptions(Long projectId, List<String> statusCodes) {
+        return versionStatisticsAssembler.doListToVersionNameDto(productVersionMapper.queryNameByOptions(projectId, statusCodes));
     }
 
     @Override
