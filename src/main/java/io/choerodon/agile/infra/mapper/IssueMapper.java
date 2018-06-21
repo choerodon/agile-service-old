@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
+import io.choerodon.agile.api.dto.SprintNameDTO;
 import io.choerodon.mybatis.common.BaseMapper;
 import io.choerodon.agile.infra.dataobject.*;
 import org.apache.ibatis.annotations.Param;
@@ -116,4 +117,10 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     int issueToSprint(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueId") Long issueId);
 
     List<Long> querySubIssueIdsByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+
+    int deleteIssueFromSprintByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+
+    SprintNameDO queryActiveSprintNameByIssueId(@Param("issueId") Long issueId);
+
+    List<SprintNameDO> queryCloseSprintNameByIssueId(@Param("issueId") Long issueId);
 }

@@ -122,4 +122,9 @@ public class IssueRepositoryImpl implements IssueRepository {
     public int issueToSprint(Long projectId, Long sprintId, Long issueId) {
         return issueMapper.issueToSprint(projectId, sprintId, issueId);
     }
+
+    @Override
+    public int deleteIssueFromSprintByIssueId(Long projectId, Long issueId) {
+        return issueMapper.deleteIssueFromSprintByIssueId(projectId, issueId);
+    }
 }

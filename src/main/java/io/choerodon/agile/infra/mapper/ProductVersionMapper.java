@@ -1,6 +1,5 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.api.dto.ProductVersionDTO;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -55,13 +54,13 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
 
     int releaseVersion(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("releaseDate") Date releaseDate);
 
-    int querySimpleIssueCount(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+    int queryIssueCountByRelationType(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("relationType") String relationType);
 
     List<ProductVersionNameDO> queryVersionNames(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
     List<VersionIssueDO> queryIncompleteIssues(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
-    List<VersionIssueDO> queryIssues(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+    List<VersionIssueDO> queryIssuesByRelationType(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("relationType") String relationType);
 
     List<ProductVersionNameDO> queryAllVersionNames(@Param("projectId") Long projectId);
 

@@ -66,4 +66,6 @@ public interface IssueRepository {
     int removeIssueFromSprintByIssueIds(Long projectId, List<Long> issueIds);
 
     int issueToSprint(Long projectId, Long sprintId, Long issueId);
+
+    int deleteIssueFromSprintByIssueId(Long projectId, Long issueId);
 }

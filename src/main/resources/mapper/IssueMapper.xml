@@ -25,7 +25,7 @@
         <id column="epic_color" property="epicColor"/>
         <id column="parent_issue_num" property="parentIssueNum"/>
         <id column="object_version_number" property="objectVersionNumber"/>
-        <association property="activeSprint" column="issue_id" select="queryActiveSprintByIssueId"/>
+        <association property="activeSprint" column="issue_id" select="queryActiveSprintNameByIssueId"/>
         <collection property="versionIssueRelDOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
                     select="queryVersionIssueRelByIssueId"/>
@@ -119,7 +119,7 @@
         WHERE aisr.issue_id = #{issueId} AND aisr.sprint_id = asp.sprint_id AND asp.status_code = 'closed'
     </select>
 
-    <select id="queryActiveSprintByIssueId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+    <select id="queryActiveSprintNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
         SELECT
         asp.sprint_id, asp.sprint_name
         FROM agile_issue_sprint_rel aisr, agile_sprint asp
@@ -621,6 +621,12 @@
                  open="(" separator="," close=")">
             #{issueId}
         </foreach>
+    </delete>
+
+    <delete id="deleteIssueFromSprintByIssueId">
+        DELETE
+        FROM agile_issue_sprint_rel
+        WHERE project_id = #{projectId} AND issue_id = #{issueId}
     </delete>
 
     <insert id="issueToDestinationByIds">

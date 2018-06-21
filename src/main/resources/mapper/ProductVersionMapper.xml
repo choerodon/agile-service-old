@@ -245,10 +245,10 @@
                AND ais.category_code != 'done'
     </select>
 
-    <select id="queryIssues" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+    <select id="queryIssuesByRelationType" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
         SELECT ai.issue_id, avir.relation_type
         FROM agile_version_issue_rel avir, agile_issue ai
-        WHERE avir.version_id = #{versionId} AND ai.project_id = #{projectId} AND avir.relation_type = 'fix'
+        WHERE avir.version_id = #{versionId} AND ai.project_id = #{projectId} AND avir.relation_type = #{relationType}
         AND avir.issue_id = ai.issue_id
     </select>
 
@@ -281,10 +281,10 @@
         WHERE project_id = #{projectId} AND version_id = #{versionId}
     </update>
 
-    <select id="querySimpleIssueCount" resultType="java.lang.Integer">
+    <select id="queryIssueCountByRelationType" resultType="java.lang.Integer">
         SELECT COUNT(1)
         FROM agile_version_issue_rel avir, agile_issue ai
-        WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix'
+        WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = #{relationType}
                AND ai.project_id = #{projectId}
     </select>
 

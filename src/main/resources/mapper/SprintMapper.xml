@@ -65,12 +65,19 @@
         WHERE project_id = #{projectId} AND status_code = 'sprint_planning'
     </select>
 
-    <select id="queryNameByProjectId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+    <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
         SELECT
             sprint_id,
             sprint_name
         FROM agile_sprint
-        WHERE project_id = #{projectId} AND status_code != 'closed'
+        WHERE project_id = #{projectId}
+              <if test="sprintStatusCodes != null and sprintStatusCodes.size > 0">
+                  AND status_code IN
+                  <foreach collection="sprintStatusCodes" item="sprintStatusCode"
+                           open="(" close=")" separator=",">
+                      #{sprintStatusCode}
+                  </foreach>
+              </if>
     </select>
 
     <select id="queryNotDoneIssueCount" resultType="java.lang.Integer">
@@ -290,5 +297,11 @@
         WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
               AND ai.type_code != 'sub_task' AND ai.status_id = ais.id
               AND ais.category_code != 'done'
+    </select>
+
+    <select id="querySprintNameBySprintId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+        SELECT sprint_id, sprint_name
+        FROM agile_sprint
+        WHERE project_id = #{projectId} AND sprint_id = #{sprintId}
     </select>
 </mapper>

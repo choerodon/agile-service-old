@@ -69,6 +69,8 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private static final String VERSION_STATUS_RELEASE_CODE = "released";
     private static final String REVOKE_RELEASE_ERROR = "error.productVersion.revokeRelease";
     private static final String SOURCE_VERSION_ERROR = "error.sourceVersionIds.notNull";
+    private static final String FIX_RELATION_TYPE = "fix";
+    private static final String INFLUENCE_RELATION_TYPE = "influence";
 
     @Override
     public ProductVersionDetailDTO createVersion(Long projectId, ProductVersionCreateDTO versionCreateDTO) {
@@ -88,10 +90,15 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         if (!projectId.equals(productVersionDelete.getProjectId())) {
             throw new CommonException(NOT_EQUAL_ERROR);
         }
-        productVersionRule.judgeExist(projectId, productVersionDelete.getTargetVersionId());
-        if (productVersionDelete.getTargetVersionId() != null && !Objects.equals(productVersionDelete.getTargetVersionId(), 0L)) {
-            List<VersionIssueDO> versionIssues = productVersionMapper.queryIssues(projectId, productVersionDelete.getVersionId());
-            productVersionRepository.issueToDestination(projectId, productVersionDelete.getTargetVersionId(), versionIssues);
+        productVersionRule.judgeExist(projectId, productVersionDelete.getFixTargetVersionId());
+        productVersionRule.judgeExist(projectId, productVersionDelete.getInfluenceTargetVersionId());
+        if (productVersionDelete.getFixTargetVersionId() != null && !Objects.equals(productVersionDelete.getFixTargetVersionId(), 0L)) {
+            List<VersionIssueDO> versionIssues = productVersionMapper.queryIssuesByRelationType(projectId, productVersionDelete.getVersionId(), FIX_RELATION_TYPE);
+            productVersionRepository.issueToDestination(projectId, productVersionDelete.getFixTargetVersionId(), versionIssues);
+        }
+        if (productVersionDelete.getInfluenceTargetVersionId() != null && !Objects.equals(productVersionDelete.getInfluenceTargetVersionId(), 0L)) {
+            List<VersionIssueDO> versionIssues = productVersionMapper.queryIssuesByRelationType(projectId, productVersionDelete.getVersionId(), INFLUENCE_RELATION_TYPE);
+            productVersionRepository.issueToDestination(projectId, productVersionDelete.getInfluenceTargetVersionId(), versionIssues);
         }
         versionIssueRelRepository.deleteByVersionId(projectId, productVersionDelete.getVersionId());
         return simpleDeleteVersion(projectId, productVersionDelete.getVersionId());
@@ -179,7 +186,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     @Override
     public VersionMessageDTO queryReleaseMessageByVersionId(Long projectId, Long versionId) {
         VersionMessageDTO versionReleaseMessage = new VersionMessageDTO();
-        versionReleaseMessage.setIssueCount(productVersionMapper.queryNotDoneIssueCount(projectId, versionId));
+        versionReleaseMessage.setFixIssueCount(productVersionMapper.queryNotDoneIssueCount(projectId, versionId));
         versionReleaseMessage.setVersionNames(versionStatisticsAssembler.doListToVersionNameDto(productVersionMapper.queryPlanVersionNames(projectId, versionId)));
         return versionReleaseMessage;
     }
@@ -217,7 +224,8 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     @Override
     public VersionMessageDTO queryDeleteMessageByVersionId(Long projectId, Long versionId) {
         VersionMessageDTO versionDeleteMessage = new VersionMessageDTO();
-        versionDeleteMessage.setIssueCount(productVersionMapper.querySimpleIssueCount(projectId, versionId));
+        versionDeleteMessage.setFixIssueCount(productVersionMapper.queryIssueCountByRelationType(projectId, versionId, FIX_RELATION_TYPE));
+        versionDeleteMessage.setInfluenceIssueCount(productVersionMapper.queryIssueCountByRelationType(projectId, versionId, INFLUENCE_RELATION_TYPE));
         versionDeleteMessage.setVersionNames(versionStatisticsAssembler.doListToVersionNameDto(productVersionMapper.queryVersionNames(projectId, versionId)));
         return versionDeleteMessage;
     }

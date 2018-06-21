@@ -160,8 +160,8 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
-    public List<SprintNameDTO> queryNameByProjectId(Long projectId) {
-        return sprintNameAssembler.doListToDTO(sprintMapper.queryNameByProjectId(projectId));
+    public List<SprintNameDTO> queryNameByOptions(Long projectId, List<String> sprintStatusCodes) {
+        return sprintNameAssembler.doListToDTO(sprintMapper.queryNameByOptions(projectId, sprintStatusCodes));
     }
 
     @Override
