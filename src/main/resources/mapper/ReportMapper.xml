@@ -53,7 +53,7 @@
         FROM
         agile_data_log adl
         WHERE
-        adl.field = #{filed}
+        adl.field = #{field}
         AND adl.creation_date &lt; #{sprintDO.startDate}
         AND adl.issue_id IN
         <foreach collection="issueIdList" item="issueId"
@@ -107,7 +107,7 @@
         FROM
         agile_data_log adl
         LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
-        AND adl1.field = #{filed}
+        AND adl1.field = #{field}
         AND adl1.creation_date &lt;= adl.creation_date WHERE adl.field = 'Sprint' AND adl.creation_date &gt;
         #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
@@ -165,7 +165,7 @@
         FROM
         agile_data_log adl
         LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
-        AND adl1.field = #{filed}
+        AND adl1.field = #{field}
         AND adl1.creation_date &lt;= adl.creation_date WHERE adl.field = 'Sprint' AND adl.creation_date &gt;
         #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
@@ -297,7 +297,7 @@
         FROM
         agile_data_log adl
         LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
-        AND adl1.field = #{filed}
+        AND adl1.field = #{field}
         AND adl1.creation_date &lt;= adl.creation_date WHERE
         adl.field = 'resolution' AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
@@ -333,7 +333,7 @@
         FROM
         agile_data_log adl
         LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
-        AND adl1.field = #{filed}
+        AND adl1.field = #{field}
         AND adl1.creation_date &lt;= adl.creation_date LEFT JOIN agile_issue_status ais ON ais.id = adl.new_value
         LEFT JOIN agile_issue_status ais2 ON ais2.id = adl.old_value
         WHERE
@@ -444,9 +444,9 @@
         FROM
         agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
         api.project_id = ai.project_id
-        WHERE adl.field = #{filed} AND adl.creation_date &gt;
+        WHERE adl.field = #{field} AND adl.creation_date &gt;
         #{sprintDO.startDate}
-        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
         AND adl.issue_id IN
         <foreach collection="issueAllList" item="issueId"
                  open="(" close=")" separator=",">
@@ -472,6 +472,173 @@
                  open="(" close=")" separator=",">
             #{issueId}
         </foreach>
+    </select>
+
+    <select id="queryIssueAfterSprint"
+            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+        SELECT
+            c.*,
+            CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+            'endSprint'                                    AS type
+        FROM
+            (
+                SELECT
+                    a.issue_id,
+                    IF
+                    (a.new_value IS NULL, 1, 0) AS statistical,
+                    IF
+                    (a.new_value IS NULL, 0, 1) AS old_value,
+                    IF
+                    (a.new_value IS NULL, 1, 0) AS new_value,
+                    #{sprintDO.actualEndDate}   AS date
+                FROM
+                    (
+                        SELECT
+                            aspr.issue_id,
+                            adl.new_value
+                        FROM
+                            agile_issue_sprint_rel aspr
+                            LEFT JOIN agile_data_log adl ON aspr.issue_id = adl.issue_id
+                                                            AND adl.field = 'resolution'
+                                                            AND adl.creation_date &lt; #{sprintDO.actualEndDate}
+                        WHERE
+                            aspr.sprint_id = #{sprintDO.sprintId}
+                        ORDER BY
+                            adl.creation_date DESC
+                        LIMIT 1000000000
+                    ) a
+                GROUP BY
+                    a.issue_id
+            ) c
+            LEFT JOIN agile_issue ai ON c.issue_id = ai.issue_id
+            LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
+    </select>
+
+    <select id="queryIssueValueAfterSprint"
+            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+        SELECT
+            c.*,
+            CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+            'endSprint'                                    AS type,
+            IF
+            (d.new_value IS NULL, 1, 0)                    AS statistical
+        FROM
+            (
+                SELECT
+                    a.issue_id,
+                    IFNULL(a.new_value, 0)    AS new_value,
+                    0                         AS old_value,
+                    #{sprintDO.actualEndDate} AS date
+                FROM
+                    (
+                        SELECT
+                            aspr.issue_id,
+                            adl.new_value,
+                            adl.old_value
+                        FROM
+                            agile_issue_sprint_rel aspr
+                            LEFT JOIN agile_data_log adl ON aspr.issue_id = adl.issue_id
+                                                            AND adl.field = #{field}
+                                                            AND adl.creation_date &lt; #{sprintDO.actualEndDate}
+                        WHERE
+                            aspr.sprint_id = #{sprintDO.sprintId}
+                        ORDER BY
+                            adl.creation_date DESC
+                        LIMIT 1000000000
+                    ) a
+                GROUP BY
+                    a.issue_id
+            ) c
+            LEFT JOIN (
+                          SELECT
+                              e.issue_id,
+                              e.new_value
+                          FROM
+                              (
+                                  SELECT
+                                      aspr1.issue_id,
+                                      adl1.new_value
+                                  FROM
+                                      agile_issue_sprint_rel aspr1
+                                      LEFT JOIN agile_data_log adl1 ON aspr1.issue_id = adl1.issue_id
+                                                                       AND adl1.field = 'resolution'
+                                                                       AND
+                                                                       adl1.creation_date &lt; #{sprintDO.actualEndDate}
+                                  WHERE
+                                      aspr1.sprint_id = #{sprintDO.sprintId}
+                                  ORDER BY
+                                      adl1.creation_date DESC
+                                  LIMIT 10000000000
+                              ) e
+                          GROUP BY
+                              e.issue_id
+                      ) d ON c.issue_id = d.issue_id
+            LEFT JOIN agile_issue ai ON c.issue_id = ai.issue_id
+            LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
+    </select>
+
+    <select id="checkIssueValueIsStatisticalDurationSprint"
+            resultType="java.lang.Boolean">
+        SELECT f.a
+        FROM
+            (
+                SELECT
+                    CASE
+                    WHEN
+                        a.statistical = 1
+                        AND b.new_value = #{sprintId}
+                        THEN
+                            1
+                    WHEN a.statistical = 1
+                         AND b.new_value = ''
+                        THEN
+                            1
+                    ELSE 0
+                    END AS a,
+                    count(1)
+                FROM
+                    (
+                        SELECT IF
+                               (c.new_value IS NULL, 1, 0) AS statistical
+                        FROM
+                            (
+                                SELECT
+                                    adl1.issue_id,
+                                    adl1.new_value
+                                FROM
+                                    agile_data_log adl1
+                                WHERE
+                                    adl1.field = 'resolution'
+                                    AND adl1.creation_date &lt;= #{date}
+                                    AND adl1.issue_id = #{issueId}
+                                ORDER BY
+                                    adl1.creation_date
+                                LIMIT 100000000000
+                            ) c
+                        GROUP BY
+                            c.issue_id
+                    ) a,
+                    (
+                        SELECT *
+                        FROM
+                            (
+                                SELECT
+                                    adl.issue_id,
+                                    adl.new_value
+                                FROM
+                                    agile_data_log adl
+                                WHERE
+                                    adl.field = 'Sprint'
+                                    AND adl.creation_date &lt;= #{date}
+                                    AND adl.issue_id = #{issueId}
+                                ORDER BY
+                                    adl.creation_date
+                                LIMIT 100000000000
+                            ) d
+                        GROUP BY
+                            d.issue_id
+                    ) b
+            ) f
     </select>
 
 </mapper>

@@ -41,6 +41,7 @@ public class ReportServiceImpl implements ReportService {
     private static final String REPORT_SPRINT_ERROR = "error.report.sprintError";
     private static final String FILED_TIMEESTIMATE = "timeestimate";
     private static final String FILED_STORY_POINTS = "Story Points";
+    private static final String SPRINT_CLOSED = "closed";
 
 
     @Override
@@ -120,9 +121,16 @@ public class ReportServiceImpl implements ReportService {
         if (issueRemoveDoneList != null && !issueRemoveDoneList.isEmpty()) {
             reportIssueEList.addAll(issueRemoveDoneList);
         }
+        //获取冲刺结束时的issue(结束前状态为done的issue不计入统计字段设为false)
+        if (sprintDO.getStatusCode().equals(SPRINT_CLOSED)) {
+            List<ReportIssueE> issueAfterSprintList = ConvertHelper.convertList(reportMapper.queryIssueAfterSprint(sprintDO), ReportIssueE.class);
+            if (issueAfterSprintList != null && !issueAfterSprintList.isEmpty()) {
+                reportIssueEList.addAll(issueAfterSprintList);
+            }
+        }
     }
 
-    private void queryStoryPointsOrRemainingEstimatedTime(SprintE sprintE, List<ReportIssueE> reportIssueEList, String filed) {
+    private void queryStoryPointsOrRemainingEstimatedTime(SprintE sprintE, List<ReportIssueE> reportIssueEList, String field) {
         SprintDO sprintDO = sprintConverter.entityToDo(sprintE);
         //==========================================不考虑状态拖动的情况
         //获取冲刺开启前的issue
@@ -132,11 +140,11 @@ public class ReportServiceImpl implements ReportService {
         //获取当前冲刺期间移除的issue
         List<Long> issueIdRemoveList = reportMapper.queryRemoveIssueIdsDuringSprint(sprintDO);
         //获取当前冲刺开启前的issue的变更字段值
-        List<ReportIssueE> issueBeforeList = !issueIdList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryValueCountBeforeSprintStart(issueIdList, sprintDO, filed), ReportIssueE.class) : null;
+        List<ReportIssueE> issueBeforeList = !issueIdList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryValueCountBeforeSprintStart(issueIdList, sprintDO, field), ReportIssueE.class) : null;
         //获取当前冲刺期间加入的issue(包含加入时间、加入时的字段值)
-        List<ReportIssueE> issueAddList = !issueIdAddList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueValueDuringSprint(issueIdAddList, sprintDO, filed), ReportIssueE.class) : null;
+        List<ReportIssueE> issueAddList = !issueIdAddList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueValueDuringSprint(issueIdAddList, sprintDO, field), ReportIssueE.class) : null;
         //获取当前冲刺期间移除的issue(包含移除时间、移除时的字段值)
-        List<ReportIssueE> issueRemoveList = !issueIdRemoveList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryRemoveIssueValueDurationSprint(issueIdRemoveList, sprintDO, filed), ReportIssueE.class) : null;
+        List<ReportIssueE> issueRemoveList = !issueIdRemoveList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryRemoveIssueValueDurationSprint(issueIdRemoveList, sprintDO, field), ReportIssueE.class) : null;
         //==========================================考虑冲刺期间所有issue的值更改情况
         List<Long> issueAllList = new ArrayList<>();
         if (!issueIdList.isEmpty()) {
@@ -149,19 +157,27 @@ public class ReportServiceImpl implements ReportService {
             issueAllList.addAll(issueIdRemoveList);
         }
         issueAllList = issueAllList.stream().distinct().collect(Collectors.toList());
-        List<ReportIssueE> issueChangeList = issueAllList != null && !issueAllList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryIssueValueDurationSprint(issueAllList, sprintDO, filed), ReportIssueE.class) : null;
+        //获取冲刺期间所有的当前值的变更(如果变更时间是在done状态或者是移出冲刺期间，计入统计字段设为false)
+        List<ReportIssueE> issueChangeList = issueAllList != null && !issueAllList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryIssueValueDurationSprint(issueAllList, sprintDO, field), ReportIssueE.class) : null;
+        if (issueChangeList != null && !issueChangeList.isEmpty()) {
+            issueChangeList.parallelStream().forEach(reportIssueE -> {
+                if (!reportMapper.checkIssueValueIsStatisticalDurationSprint(sprintDO.getSprintId(), reportIssueE.getIssueId(), reportIssueE.getDate())) {
+                    reportIssueE.setStatistical(false);
+                }
+            });
+        }
         //==========================================考虑状态拖动的情况
         // 获取当前冲刺期间移动到done状态的issue
         List<Long> issueIdAddDoneList = reportMapper.queryAddDoneIssueIdsDuringSprint(sprintDO);
         // 获取当前冲刺期间移除done状态的issue
         List<Long> issueIdRemoveDoneList = reportMapper.queryRemoveDoneIssueIdsDuringSprint(sprintDO);
         //获取当前冲刺期间移动到done状态的issue
-        List<ReportIssueE> issueAddDoneList = !issueIdAddDoneList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueDoneValueDuringSprint(issueIdAddDoneList, sprintDO, filed), ReportIssueE.class) : null;
+        List<ReportIssueE> issueAddDoneList = !issueIdAddDoneList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueDoneValueDuringSprint(issueIdAddDoneList, sprintDO, field), ReportIssueE.class) : null;
         //获取当前冲刺期间done移动到非done状态的issue
-        List<ReportIssueE> issueRemoveDoneList = !issueIdRemoveDoneList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryRemoveIssueDoneValueDurationSprint(issueIdRemoveDoneList, sprintDO, filed), ReportIssueE.class) : null;
+        List<ReportIssueE> issueRemoveDoneList = !issueIdRemoveDoneList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryRemoveIssueDoneValueDurationSprint(issueIdRemoveDoneList, sprintDO, field), ReportIssueE.class) : null;
         // 获取冲刺开启前状态为done的issue的变更字段总和
         List<Long> doneIssueBeforeSprint = !issueIdList.isEmpty() ? reportMapper.queryDoneIssueIdsBeforeSprintStart(issueIdList, sprintDO) : null;
-        // 计算冲刺开启前的issue字段值总和要减去done状态的字段值总和
+        // 过滤开启冲刺前状态为done的issue，统计字段设为false（表示跳过统计）
         if (issueBeforeList != null) {
             if (doneIssueBeforeSprint != null && !doneIssueBeforeSprint.isEmpty()) {
                 issueBeforeList.stream().filter(reportIssueE -> doneIssueBeforeSprint.contains(reportIssueE.getIssueId())).
@@ -183,6 +199,13 @@ public class ReportServiceImpl implements ReportService {
         }
         if (issueRemoveDoneList != null) {
             reportIssueEList.addAll(issueRemoveDoneList);
+        }
+        //获取冲刺结束时的issue(结束前状态为done的issue计入统计字段设为false)
+        if (sprintDO.getStatusCode().equals(SPRINT_CLOSED)) {
+            List<ReportIssueE> issueAfterSprintList = ConvertHelper.convertList(reportMapper.queryIssueValueAfterSprint(sprintDO, field), ReportIssueE.class);
+            if (issueAfterSprintList != null && !issueAfterSprintList.isEmpty()) {
+                reportIssueEList.addAll(issueAfterSprintList);
+            }
         }
     }
 

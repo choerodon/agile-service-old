@@ -62,6 +62,13 @@ public class IssueLinkDO extends AuditDomain {
     private String statusCode;
 
     @Transient
+    private String statusName;
+
+    @Transient
+    private String priorityName;
+
+
+    @Transient
     private String typeCode;
 
     public Long getIssueId() {
@@ -158,6 +165,22 @@ public class IssueLinkDO extends AuditDomain {
 
     public void setTypeCode(String typeCode) {
         this.typeCode = typeCode;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
+
+    public String getPriorityName() {
+        return priorityName;
+    }
+
+    public void setPriorityName(String priorityName) {
+        this.priorityName = priorityName;
     }
 
     @Override
