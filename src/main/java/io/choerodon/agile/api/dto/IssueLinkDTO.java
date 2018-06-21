@@ -31,9 +31,13 @@ public class IssueLinkDTO {
 
     private String statusCode;
 
-    private String color;
+    private String statusColor;
 
     private String typeCode;
+
+    private String statusName;
+
+    private String priorityName;
 
     public Long getIssueId() {
         return issueId;
@@ -115,12 +119,12 @@ public class IssueLinkDTO {
         this.statusCode = statusCode;
     }
 
-    public String getColor() {
-        return color;
+    public String getStatusColor() {
+        return statusColor;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public void setStatusColor(String statusColor) {
+        this.statusColor = statusColor;
     }
 
     public String getTypeCode() {
@@ -129,6 +133,22 @@ public class IssueLinkDTO {
 
     public void setTypeCode(String typeCode) {
         this.typeCode = typeCode;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
+
+    public String getPriorityName() {
+        return priorityName;
+    }
+
+    public void setPriorityName(String priorityName) {
+        this.priorityName = priorityName;
     }
 
     @Override

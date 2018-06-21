@@ -46,7 +46,7 @@ public class IssueLinkAssembler {
         issueLinkDOList.forEach(issueLinkDO -> {
             IssueLinkDTO issueLinkDTO = new IssueLinkDTO();
             BeanUtils.copyProperties(issueLinkDO, issueLinkDTO);
-            issueLinkDTO.setColor(ColorUtil.initializationStatusColor(issueLinkDTO.getStatusCode(), lookupValueMap));
+            issueLinkDTO.setStatusColor(ColorUtil.initializationStatusColor(issueLinkDTO.getStatusCode(), lookupValueMap));
             issueLinkDTOList.add(issueLinkDTO);
         });
         return issueLinkDTOList;

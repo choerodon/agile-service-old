@@ -164,7 +164,7 @@
             ai.project_id,
             ais.category_code                              AS status_code,
             ais.name                                       AS status_name,
-            alv.name                                       AS priorityName,
+            alv.name                                       AS priority_name,
             CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num
         FROM agile_issue ai LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
             LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
@@ -180,7 +180,7 @@
         ai.priority_code,
         ai.assignee_id,
         ai.project_id,
-        alv.name AS priorityName,
+        alv.name AS priority_name,
         ais.category_code AS status_code,
         ais.name AS status_name,
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
