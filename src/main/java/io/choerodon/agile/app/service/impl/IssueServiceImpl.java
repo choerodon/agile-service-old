@@ -301,12 +301,12 @@ public class IssueServiceImpl implements IssueService {
             oldValue = newValue = closeSprintIdStr;
             oldString = newString = closeSprintNameStr;
             if (activeSprintName != null) {
-                oldValue = oldValue + "," + activeSprintName.getSprintId().toString();
-                oldString = oldString + "," + activeSprintName.getSprintName();
+                oldValue = ("".equals(oldValue) ? activeSprintName.getSprintId().toString() : oldValue + "," + activeSprintName.getSprintId().toString());
+                oldString = ("".equals(oldString) ? activeSprintName.getSprintName() : oldString + "," + activeSprintName.getSprintName());
             }
             if (sprintName != null) {
-                newValue = newValue + "," + sprintName.getSprintId().toString();
-                newString = newString + "," + sprintName.getSprintName();
+                newValue = ("".equals(newValue) ? sprintName.getSprintId().toString() :  newValue + "," + sprintName.getSprintId().toString());
+                newString = ("".equals(newString) ? sprintName.getSprintName() : newString + "," + sprintName.getSprintName());
             }
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
@@ -564,14 +564,17 @@ public class IssueServiceImpl implements IssueService {
         return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>());
     }
 
-    private void dataLogRank(Long projectId, MoveIssueDTO moveIssueDTO, String rankStr) {
+    private void dataLogRank(Long projectId, MoveIssueDTO moveIssueDTO, String rankStr, Long sprintId) {
         for (Long issueId : moveIssueDTO.getIssueIds()) {
-            DataLogE dataLogE = new DataLogE();
-            dataLogE.setProjectId(projectId);
-            dataLogE.setField(FIELD_RANK);
-            dataLogE.setIssueId(issueId);
-            dataLogE.setNewString(rankStr);
-            dataLogRepository.create(dataLogE);
+            SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
+            if (sprintId.equals(activeSprintName.getSprintId())) {
+                DataLogE dataLogE = new DataLogE();
+                dataLogE.setProjectId(projectId);
+                dataLogE.setField(FIELD_RANK);
+                dataLogE.setIssueId(issueId);
+                dataLogE.setNewString(rankStr);
+                dataLogRepository.create(dataLogE);
+            }
         }
     }
 
@@ -581,10 +584,10 @@ public class IssueServiceImpl implements IssueService {
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
         if (moveIssueDTO.getBefore()) {
             beforeRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
-            dataLogRank(projectId, moveIssueDTO, RANK_HIGHER);
+            dataLogRank(projectId, moveIssueDTO, RANK_HIGHER, sprintId);
         } else {
             afterRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
-            dataLogRank(projectId, moveIssueDTO, RANK_LOWER);
+            dataLogRank(projectId, moveIssueDTO, RANK_LOWER, sprintId);
         }
         List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
         moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
