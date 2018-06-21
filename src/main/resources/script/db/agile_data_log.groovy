@@ -1,6 +1,6 @@
 package script.db
 databaseChangeLog(logicalFilePath:'agile_data_log.groovy') {
-    changeSet(id: '2018-05-14-agile-data-log', author: 'fuqianghuang01@gmail.com') {
+    changeSet(id: '2018-06-20-agile-data-log', author: 'fuqianghuang01@gmail.com') {
         createTable(tableName: "agile_data_log") {
             column(name: 'log_id', type: 'BIGINT UNSIGNED', autoIncrement: true, remarks: 'log id') {
                 constraints(primaryKey: true)
