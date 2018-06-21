@@ -2,6 +2,9 @@ package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.mybatis.common.BaseMapper;
 import io.choerodon.agile.infra.dataobject.*;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 
 /**
@@ -10,4 +13,5 @@ import io.choerodon.agile.infra.dataobject.*;
  */
 public interface ComponentIssueRelMapper extends BaseMapper<ComponentIssueRelDO> {
 
+    List<ComponentIssueRelDO> selectByProjectIdAndIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 }

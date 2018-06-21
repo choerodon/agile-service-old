@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.choerodon.agile.infra.mapper.ComponentIssueRelMapper">
+
+    <select id="selectByProjectIdAndIssueId" resultType="io.choerodon.agile.infra.dataobject.ComponentIssueRelDO">
+        SELECT
+            *
+        FROM
+            agile_component_issue_rel acir
+        LEFT JOIN agile_issue_component aic ON acir.component_id = aic.component_id
+        WHERE
+            acir.project_id = #{projectId} AND acir.issue_id = #{issueId}
+    </select>
+
+</mapper>
