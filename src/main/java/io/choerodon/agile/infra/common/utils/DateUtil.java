@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.common.utils;
 
 import io.choerodon.core.exception.CommonException;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
@@ -97,6 +98,7 @@ public class DateUtil {
                 dateType = "D";
             }
         }
+        dateType = "D";
         List<Date> listDate = new ArrayList<>();
         Calendar calBegin = Calendar.getInstance();
         calBegin.setTime(startDate);
@@ -129,6 +131,10 @@ public class DateUtil {
             }
         }
         return listDate;
+    }
+
+    public Boolean beforeOrEquleDay(Date date1,Date date2){
+        return date1.before(date2) || DateUtils.isSameDay(date1, date2);
     }
 
 }

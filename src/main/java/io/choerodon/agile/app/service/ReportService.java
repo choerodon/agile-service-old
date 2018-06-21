@@ -1,7 +1,8 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.BurnDownChangeDTO;
-import io.choerodon.agile.api.dto.CoordinateDTO;
+import io.choerodon.agile.api.dto.ReportIssueDTO;
+
+import java.util.List;
 
 /**
  * @author dinghuang123@gmail.com
@@ -10,22 +11,12 @@ import io.choerodon.agile.api.dto.CoordinateDTO;
 public interface ReportService {
 
     /**
-     * 燃尽图坐标信息
+     * 燃尽图报告信息
      *
      * @param projectId projectId
      * @param sprintId  sprintId
      * @param type      storyPoints、remainingEstimatedTime、originalEstimatedTime、issueCount
-     * @return CoordinateDTO
+     * @return ReportIssueDTO
      */
-    CoordinateDTO queryBurnDownCoordinate(Long projectId, Long sprintId, String type);
-
-    /**
-     * 查询燃尽图报告信息
-     *
-     * @param projectId projectId
-     * @param sprintId  sprintId
-     * @param type      storyPoints、remainingEstimatedTime、originalEstimatedTime、issueCount
-     * @return BurnDownChangeDTO
-     */
-    BurnDownChangeDTO queryBurnDown(Long projectId, Long sprintId, String type);
+    List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type);
 }

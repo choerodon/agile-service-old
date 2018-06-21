@@ -1,7 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.BurnDownChangeDTO;
-import io.choerodon.agile.api.dto.CoordinateDTO;
+import io.choerodon.agile.api.dto.ReportIssueDTO;
 import io.choerodon.agile.app.service.ReportService;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
@@ -13,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,32 +27,17 @@ public class ReportController {
     private ReportService reportService;
 
     @Permission(level = ResourceLevel.PROJECT)
-    @ApiOperation("查询冲刺对应的燃尽图坐标信息")
-    @GetMapping(value = "/{sprintId}/burn_down_coordinate")
-    public ResponseEntity<CoordinateDTO> queryBurnDownCoordinate(@ApiParam(value = "项目id", required = true)
-                                                                 @PathVariable(name = "project_id") Long projectId,
-                                                                 @ApiParam(value = "sprintId", required = true)
-                                                                 @PathVariable Long sprintId,
-                                                                 @ApiParam(value = "类型(storyPoints、remainingEstimatedTime、" +
-                                                                         "originalEstimatedTime、issueCount)", required = true)
-                                                                 @RequestParam String type) {
-        return Optional.ofNullable(reportService.queryBurnDownCoordinate(projectId, sprintId, type))
+    @ApiOperation("查询冲刺对应的燃尽图报告信息")
+    @GetMapping(value = "/{sprintId}/burn_down_report")
+    public ResponseEntity<List<ReportIssueDTO>> queryBurnDownReport(@ApiParam(value = "项目id", required = true)
+                                                                        @PathVariable(name = "project_id") Long projectId,
+                                                                        @ApiParam(value = "sprintId", required = true)
+                                                                        @PathVariable Long sprintId,
+                                                                        @ApiParam(value = "类型(storyPoints、remainingEstimatedTime、issueCount)", required = true)
+                                                                        @RequestParam String type) {
+        return Optional.ofNullable(reportService.queryBurnDownReport(projectId, sprintId, type))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.report.queryBurnDownCoordinate"));
+                .orElseThrow(() -> new CommonException("error.report.queryBurnDownReport"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
-    @ApiOperation("查询冲刺对应的燃尽图变更报告信息")
-    @GetMapping(value = "/{sprintId}/burn_down")
-    public ResponseEntity<BurnDownChangeDTO> queryBurnDown(@ApiParam(value = "项目id", required = true)
-                                                           @PathVariable(name = "project_id") Long projectId,
-                                                           @ApiParam(value = "sprintId", required = true)
-                                                           @PathVariable Long sprintId,
-                                                           @ApiParam(value = "类型(storyPoints、remainingEstimatedTime、" +
-                                                                   "originalEstimatedTime、issueCount)", required = true)
-                                                           @RequestParam String type) {
-        return Optional.ofNullable(reportService.queryBurnDown(projectId, sprintId, type))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.report.queryBurnDown"));
-    }
 }

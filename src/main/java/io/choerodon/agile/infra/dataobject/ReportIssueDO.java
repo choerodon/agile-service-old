@@ -1,4 +1,4 @@
-package io.choerodon.agile.domain.agile.entity;
+package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
@@ -6,9 +6,9 @@ import java.util.Date;
 
 /**
  * @author dinghuang123@gmail.com
- * @since 2018/6/19
+ * @since 2018/6/20
  */
-public class ReportIssueE {
+public class ReportIssueDO {
 
     private String issueNum;
 
@@ -40,6 +40,22 @@ public class ReportIssueE {
         this.date = date;
     }
 
+    public String getIssueNum() {
+        return issueNum;
+    }
+
+    public void setIssueNum(String issueNum) {
+        this.issueNum = issueNum;
+    }
+
+    public Integer getOldValue() {
+        return oldValue;
+    }
+
+    public void setOldValue(Integer oldValue) {
+        this.oldValue = oldValue;
+    }
+
     public String getType() {
         return type;
     }
@@ -54,23 +70,6 @@ public class ReportIssueE {
 
     public void setNewValue(Integer newValue) {
         this.newValue = newValue;
-    }
-
-    public Integer getOldValue() {
-
-        return oldValue;
-    }
-
-    public void setOldValue(Integer oldValue) {
-        this.oldValue = oldValue;
-    }
-
-    public String getIssueNum() {
-        return issueNum;
-    }
-
-    public void setIssueNum(String issueNum) {
-        this.issueNum = issueNum;
     }
 
     public Boolean getStatistical() {
