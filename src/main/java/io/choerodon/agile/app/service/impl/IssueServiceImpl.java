@@ -922,15 +922,16 @@ public class IssueServiceImpl implements IssueService {
 
     }
 
-    private void dataLogComponent(Long projectId, Long issueId, List<ComponentIssueRelDTO> componentIssueRelDTOList) {
-        ComponentIssueRelDO componentIssueRelDO = new ComponentIssueRelDO();
-        componentIssueRelDO.setProjectId(projectId);
-        componentIssueRelDO.setIssueId(issueId);
-        List<ComponentIssueRelDO> componentIssueRelDOList = componentIssueRelMapper.select(componentIssueRelDO);
-        if (componentIssueRelDOList != null && !componentIssueRelDOList.isEmpty()) {
-            for (ComponentIssueRelDO originRel : componentIssueRelDOList) {
+    private List<ComponentIssueRelDO> getComponentIssueRel(Long projectId, Long issueId) {
+        List<ComponentIssueRelDO> componentIssueRelDOList = componentIssueRelMapper.selectByProjectIdAndIssueId(projectId, issueId);
+        return componentIssueRelDOList;
+    }
+
+    private void dataLogComponent(Long projectId, Long issueId, List<ComponentIssueRelDO> originComponentIssueRels, List<ComponentIssueRelDO> curComponentIssueRels) {
+        if (originComponentIssueRels != null && !originComponentIssueRels.isEmpty()) {
+            for (ComponentIssueRelDO originRel : originComponentIssueRels) {
                 int flag = 0;
-                for (ComponentIssueRelDTO curRel : componentIssueRelDTOList) {
+                for (ComponentIssueRelDO curRel : curComponentIssueRels) {
                     if (originRel.getComponentId().equals(curRel.getComponentId())) {
                         flag = 1;
                     }
@@ -946,10 +947,10 @@ public class IssueServiceImpl implements IssueService {
                 }
             }
         }
-        if (componentIssueRelDTOList != null && !componentIssueRelDTOList.isEmpty()) {
-            for (ComponentIssueRelDTO curRel : componentIssueRelDTOList) {
+        if (curComponentIssueRels != null && !curComponentIssueRels.isEmpty()) {
+            for (ComponentIssueRelDO curRel : curComponentIssueRels) {
                 int flag = 0;
-                for (ComponentIssueRelDO originRel : componentIssueRelDOList) {
+                for (ComponentIssueRelDO originRel : originComponentIssueRels) {
                     if (originRel.getComponentId().equals(curRel.getComponentId())) {
                         flag = 1;
                     }
@@ -969,13 +970,15 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleUpdateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId) {
         if (componentIssueRelDTOList != null) {
-            dataLogComponent(projectId, issueId, componentIssueRelDTOList);
+            List<ComponentIssueRelDO> originComponentIssueRels = getComponentIssueRel(projectId, issueId);
             if (!componentIssueRelDTOList.isEmpty()) {
                 componentIssueRelRepository.deleteByIssueId(issueId);
                 handleComponentIssueRel(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId);
             } else {
                 componentIssueRelRepository.deleteByIssueId(issueId);
             }
+            List<ComponentIssueRelDO> curComponentIssueRels = getComponentIssueRel(projectId, issueId);
+            dataLogComponent(projectId, issueId, originComponentIssueRels, curComponentIssueRels);
         }
     }
 
