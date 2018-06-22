@@ -257,7 +257,7 @@ public class IssueServiceImpl implements IssueService {
             dataLogE.setField(FIELD_ASSIGNEE);
             if (originIssue.getAssigneeId() != null && originIssue.getAssigneeId() != 0) {
                 dataLogE.setOldValue(originIssue.getAssigneeId().toString());
-                dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getAssigneeId(),false));
+                dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getAssigneeId(), false));
             }
             if (issueUpdateDTO.getAssigneeId() != 0) {
                 dataLogE.setNewValue(issueUpdateDTO.getAssigneeId().toString());
@@ -278,7 +278,7 @@ public class IssueServiceImpl implements IssueService {
             dataLogE.setField(FIELD_REPORTER);
             if (originIssue.getReporterId() != null && originIssue.getReporterId() != 0) {
                 dataLogE.setOldValue(originIssue.getReporterId().toString());
-                dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getReporterId(),false));
+                dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getReporterId(), false));
             }
             if (issueUpdateDTO.getReporterId() != 0) {
                 dataLogE.setNewValue(issueUpdateDTO.getReporterId().toString());
@@ -593,7 +593,9 @@ public class IssueServiceImpl implements IssueService {
         List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
         moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
         issueRepository.removeIssueFromSprintByIssueIds(projectId, moveIssueIds);
-        issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds);
+        if (sprintId != null && !Objects.equals(sprintId, 0L)) {
+            issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds);
+        }
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
         List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds());
         List<Long> assigneeIds = issueSearchDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDO::getAssigneeId).distinct().collect(Collectors.toList());

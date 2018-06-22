@@ -11,6 +11,7 @@ import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.agile.infra.mapper.QuickFilterMapper;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.domain.agile.entity.SprintE;
@@ -19,6 +20,8 @@ import io.choerodon.agile.domain.agile.repository.SprintRepository;
 import io.choerodon.agile.infra.mapper.SprintMapper;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
+import io.choerodon.mybatis.pagehelper.PageHelper;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,6 +75,11 @@ public class SprintServiceImpl implements SprintService {
     private static final String CATEGORY_DOING_CODE = "doing";
     private static final String PROJECT_NOT_FOUND_ERROR = "error.project.notFound";
     private static final String START_SPRINT_ERROR = "error.sprint.hasStartedSprint";
+    private static final String DONE = "done";
+    private static final String UNFINISHED = "unfinished";
+    private static final String REMOVE = "remove";
+    private static final String SPRINT_REPORT_ERROR = "error.sprint.report";
+    private static final String SPRINT_PLANNING_CODE = "sprint_planning";
 
     @Override
     public SprintDetailDTO createSprint(Long projectId) {
@@ -218,13 +226,16 @@ public class SprintServiceImpl implements SprintService {
 
     private void moveNotDoneIssueToTargetSprint(Long projectId, SprintCompleteDTO sprintCompleteDTO) {
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
+        Long targetSprintId = sprintCompleteDTO.getIncompleteIssuesDestination();
         beforeRank(projectId, sprintCompleteDTO.getSprintId(), sprintCompleteDTO.getIncompleteIssuesDestination(), moveIssueDOS);
         if (moveIssueDOS.isEmpty()) {
             return;
         }
         List<Long> moveIssueIds = sprintMapper.queryIssueIds(projectId, sprintCompleteDTO.getSprintId());
         moveIssueIds.addAll(issueMapper.querySubTaskIds(projectId, sprintCompleteDTO.getSprintId()));
-        issueRepository.issueToDestinationByIds(projectId, sprintCompleteDTO.getIncompleteIssuesDestination(), moveIssueIds);
+        if (targetSprintId != null && !Objects.equals(targetSprintId, 0L)) {
+            issueRepository.issueToDestinationByIds(projectId, targetSprintId, moveIssueIds);
+        }
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
     }
 
@@ -273,5 +284,91 @@ public class SprintServiceImpl implements SprintService {
             sprintDetailDTO.setIssueCount(sprintMapper.queryIssueCount(projectId, sprintId));
         }
         return sprintDetailDTO;
+    }
+
+    @Override
+    public Page<IssueListDTO> queryIssueByOptions(Long projectId, Long sprintId, String status, PageRequest pageRequest) {
+        SprintDO sprintDO = new SprintDO();
+        sprintDO.setProjectId(projectId);
+        sprintDO.setSprintId(sprintId);
+        sprintDO = sprintMapper.selectOne(sprintDO);
+        if (sprintDO == null || Objects.equals(sprintDO.getStatusCode(), SPRINT_PLANNING_CODE)) {
+            throw new CommonException(SPRINT_REPORT_ERROR);
+        }
+        Date actualEndDate = sprintDO.getActualEndDate();
+        List<SprintReportIssueSearchDO> reportSearchIssues;
+        Page<SprintReportIssueSearchDO> reportIssues;
+        switch (status) {
+            case DONE:
+                reportIssues = PageHelper.doPageAndSort(pageRequest,() -> sprintMapper.queryReportSearchIssue(projectId, sprintId, actualEndDate, true));
+                reportSearchIssues = reportIssues.getContent();
+                reportSearchIssues = reportSearchIssues.stream().map(reportSearchIssue -> {
+                    if (reportSearchIssue.getNewStatusId() != null && !Objects.equals(reportSearchIssue.getNewStatusId(), "")) {
+                        if (reportSearchIssue.getNewCompleted()) {
+                            exchangeNewStatus(reportSearchIssue);
+                            return reportSearchIssue;
+                        } else {
+                            return null;
+                        }
+                    } else if (reportSearchIssue.getOldStatusId() != null && !Objects.equals(reportSearchIssue.getOldStatusId(), "")) {
+                        if (reportSearchIssue.getOldCompleted()) {
+                            exchangeOldStatus(reportSearchIssue);
+                            return reportSearchIssue;
+                        } else {
+                            return null;
+                        }
+                    } else if (reportSearchIssue.getCompleted()) {
+                        return reportSearchIssue;
+                    } else {
+                        return null;
+                    }
+                }).collect(Collectors.toList());
+                break;
+            case UNFINISHED:
+                reportIssues = PageHelper.doPageAndSort(pageRequest,() -> sprintMapper.queryReportSearchIssue(projectId, sprintId, actualEndDate, true));
+                reportSearchIssues = reportIssues.getContent();
+                reportSearchIssues = reportSearchIssues.stream().map(reportSearchIssue -> {
+                    if (reportSearchIssue.getNewStatusId() != null && !Objects.equals(reportSearchIssue.getNewStatusId(), "")) {
+                        if (!reportSearchIssue.getNewCompleted()) {
+                            exchangeNewStatus(reportSearchIssue);
+                            return reportSearchIssue;
+                        } else {
+                            return null;
+                        }
+                    } else if (reportSearchIssue.getOldStatusId() != null && !Objects.equals(reportSearchIssue.getOldStatusId(), "")) {
+                        if (!reportSearchIssue.getOldCompleted()) {
+                            exchangeOldStatus(reportSearchIssue);
+                            return reportSearchIssue;
+                        } else {
+                            return null;
+                        }
+                    } else if (!reportSearchIssue.getCompleted()) {
+                        return reportSearchIssue;
+                    } else {
+                        return null;
+                    }
+                }).collect(Collectors.toList());
+                break;
+            case REMOVE:
+                
+                break;
+            default:
+                break;
+        }
+        return null;
+    }
+
+    private void exchangeOldStatus(SprintReportIssueSearchDO reportSearchIssue) {
+        reportSearchIssue.setStatusId(Long.valueOf(reportSearchIssue.getOldStatusId()));
+        reportSearchIssue.setCategoryCode(reportSearchIssue.getOldCategoryCode());
+        reportSearchIssue.setName(reportSearchIssue.getOldName());
+        reportSearchIssue.setCompleted(reportSearchIssue.getOldCompleted());
+    }
+
+    private void exchangeNewStatus(SprintReportIssueSearchDO reportSearchIssue) {
+        reportSearchIssue.setStatusId(Long.valueOf(reportSearchIssue.getNewStatusId()));
+        reportSearchIssue.setCategoryCode(reportSearchIssue.getNewCategoryCode());
+        reportSearchIssue.setName(reportSearchIssue.getNewName());
+        reportSearchIssue.setCompleted(reportSearchIssue.getNewCompleted());
     }
 }

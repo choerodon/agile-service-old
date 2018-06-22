@@ -1,9 +1,14 @@
 package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.agile.app.service.SprintService;
+import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.choerodon.mybatis.pagehelper.domain.Sort;
+import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -11,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -90,7 +96,7 @@ public class SprintController {
     public ResponseEntity<List<SprintNameDTO>> queryNameByOptions(@ApiParam(value = "项目id", required = true)
                                                                   @PathVariable(name = "project_id") Long projectId,
                                                                   @ApiParam(value = "状态列表", required = false)
-                                                                  @RequestBody List<String> sprintStatusCodes) {
+                                                                  @RequestBody(required = false) List<String> sprintStatusCodes) {
         return Optional.ofNullable(sprintService.queryNameByOptions(projectId, sprintStatusCodes))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_NAME_ERROR));
@@ -143,4 +149,24 @@ public class SprintController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_ERROR));
     }
+
+    @Permission(level = ResourceLevel.PROJECT)
+    @CustomPageRequest
+    @ApiOperation(value = "根据状态查已完成冲刺issue信息")
+    @GetMapping(value = "/{sprintId}/issues")
+    public ResponseEntity<Page<IssueListDTO>> queryIssueByOptions(@ApiParam(value = "项目id", required = true)
+                                                                  @PathVariable(name = "project_id") Long projectId,
+                                                                  @ApiParam(value = "冲刺id", required = true)
+                                                                  @PathVariable Long sprintId,
+                                                                  @ApiParam(value = "状态", required = true)
+                                                                  @RequestParam String status,
+                                                                  @ApiParam(value = "分页信息", required = true)
+                                                                  @SortDefault(value = "issue_id", direction = Sort.Direction.DESC)
+                                                                  @ApiIgnore PageRequest pageRequest) {
+        return Optional.ofNullable(sprintService.queryIssueByOptions(projectId, sprintId, status, pageRequest))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException(QUERY_ERROR));
+    }
+
+
 }
