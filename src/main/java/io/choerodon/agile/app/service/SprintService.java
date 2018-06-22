@@ -16,7 +16,7 @@ public interface SprintService {
 
     Boolean deleteSprint(Long projectId, Long sprintId);
 
-    Map<String, Object> queryByProjectId(Long projectId, Map<String, Object> searchParamMap);
+    Map<String, Object> queryByProjectId(Long projectId, Map<String, Object> searchParamMap, List<Long> quickFilterIds);
 
     List<SprintNameDTO> queryNameByOptions(Long projectId, List<String> sprintStatusCodes);
 
