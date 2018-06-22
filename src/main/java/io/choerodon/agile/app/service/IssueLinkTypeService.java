@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.service;
 
+import io.choerodon.agile.api.dto.IssueLinkTypeCreateDTO;
 import io.choerodon.agile.api.dto.IssueLinkTypeDTO;
 
 import java.util.List;
@@ -16,4 +17,29 @@ public interface IssueLinkTypeService {
      * @return IssueLinkTypeDTO
      */
     List<IssueLinkTypeDTO> listIssueLinkType();
+
+    /**
+     * 创建issueLinkType
+     *
+     * @param issueLinkTypeCreateDTO issueLinkTypeCreateDTO
+     * @return IssueLinkTypeDTO
+     */
+    IssueLinkTypeDTO createIssueLinkType(IssueLinkTypeCreateDTO issueLinkTypeCreateDTO);
+
+    /**
+     * 修改issueLinkType
+     *
+     * @param issueLinkTypeDTO issueLinkTypeDTO
+     * @return IssueLinkTypeDTO
+     */
+    IssueLinkTypeDTO updateIssueLinkType(IssueLinkTypeDTO issueLinkTypeDTO);
+
+    /**
+     * 删除IssueLinkType
+     *
+     * @param issueLinkTypeId   issueLinkTypeId
+     * @param toIssueLinkTypeId toIssueLinkTypeId（把这个issueLinkType下的链接转移到另外的issueLink，否则直接删除）
+     * @return int
+     */
+    int deleteIssueLinkType(Long issueLinkTypeId, Long toIssueLinkTypeId);
 }

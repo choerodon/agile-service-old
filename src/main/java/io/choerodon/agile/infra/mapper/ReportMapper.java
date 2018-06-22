@@ -23,7 +23,7 @@ public interface ReportMapper {
      * @param field       filed修改字段
      * @return ReportIssueDO
      */
-    List<ReportIssueDO> queryValueCountBeforeSprintStart(@Param("issueIdList") List<Long> issueIdList, @Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
+    List<ReportIssueDO> queryValueBeforeSprintStart(@Param("issueIdList") List<Long> issueIdList, @Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
 
     /**
      * 获取当前冲刺期间加入的issue(包含加入时间、加入时的字段值)

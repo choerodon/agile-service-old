@@ -2,7 +2,9 @@ package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.IssueLinkTypeE;
 import io.choerodon.agile.domain.agile.repository.IssueLinkTypeRepository;
+import io.choerodon.agile.infra.dataobject.IssueLinkDO;
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
+import io.choerodon.agile.infra.mapper.IssueLinkMapper;
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -23,6 +25,8 @@ public class IssueLinkTypeRepositoryImpl implements IssueLinkTypeRepository {
 
     @Autowired
     private IssueLinkTypeMapper issueLinkTypeMapper;
+    @Autowired
+    private IssueLinkMapper issueLinkMapper;
 
     @Override
     public IssueLinkTypeE update(IssueLinkTypeE issueLinkTypeE) {
@@ -49,5 +53,17 @@ public class IssueLinkTypeRepositoryImpl implements IssueLinkTypeRepository {
         IssueLinkTypeDO issueLinkTypeDO = new IssueLinkTypeDO();
         issueLinkTypeDO.setLinkTypeId(linkTypeId);
         return issueLinkTypeMapper.delete(issueLinkTypeDO);
+    }
+
+    @Override
+    public int deleteIssueLinkTypeRel(Long issueLinkTypeId) {
+        IssueLinkDO issueLinkDO = new IssueLinkDO();
+        issueLinkDO.setLinkTypeId(issueLinkTypeId);
+        return issueLinkMapper.delete(issueLinkDO);
+    }
+
+    @Override
+    public int batchUpdateRelToIssueLinkType(Long issueLinkTypeId, Long toIssueLinkTypeId) {
+        return issueLinkMapper.batchUpdateRelToIssueLinkType(issueLinkTypeId,toIssueLinkTypeId);
     }
 }

@@ -37,23 +37,43 @@
             AND aisr2.sprint_id = #{sprintDO.sprintId}
     </select>
 
-    <select id="queryValueCountBeforeSprintStart" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+    <select id="queryValueBeforeSprintStart" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
         SELECT
-        a.new_value,
-        a.issue_id,
-        a.creation_date as date,
-        'startSprint' as type,
-        1 as statistical,
-        0 as old_value,
-        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num
-        FROM (select * from
+        IFNULL(a.new_value,0) as new_value,
+        d.issue_id,
+        #{sprintDO.startDate} AS date,
+        'startSprint' AS type,
+        1 AS statistical,
+        0 AS old_value,
+        CONCAT_WS( '-', api.project_code, d.issue_num ) AS issue_num
+        FROM
         (
         SELECT
-        adl.new_value, adl.issue_id,adl.creation_date
+        ai.issue_id,
+        ai.issue_num,
+        ai.project_id
+        FROM
+        agile_issue ai
+        WHERE
+        ai.issue_id IN
+        <foreach collection="issueIdList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        ) d
+        LEFT JOIN (
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        adl.new_value,
+        adl.issue_id,
+        adl.creation_date
         FROM
         agile_data_log adl
         WHERE
-        adl.field = #{field}
+        adl.field = 'Story Points'
         AND adl.creation_date &lt; #{sprintDO.startDate}
         AND adl.issue_id IN
         <foreach collection="issueIdList" item="issueId"
@@ -65,9 +85,9 @@
         LIMIT 1000000000000
         ) adl1
         GROUP BY
-        adl1.issue_id) a left join agile_issue ai on ai.issue_id = a.issue_id LEFT JOIN agile_project_info api ON
-        api.project_id = ai.project_id
-
+        adl1.issue_id
+        ) a ON a.issue_id = d.issue_id
+        LEFT JOIN agile_project_info api ON api.project_id = d.project_id
     </select>
 
     <select id="queryAddIssueIdsDuringSprint" resultType="java.lang.Long">

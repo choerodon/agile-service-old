@@ -31,4 +31,21 @@ public interface IssueLinkTypeRepository {
      * @return int
      */
     int delete(Long linkTypeId);
+
+    /**
+     * 删除issue下的link关系
+     *
+     * @param issueLinkTypeId issueLinkTypeId
+     * @return int
+     */
+    int deleteIssueLinkTypeRel(Long issueLinkTypeId);
+
+    /**
+     * 批量修改issue链接关系的类型到新的类型
+     *
+     * @param issueLinkTypeId issueLinkTypeId
+     * @param toIssueLinkTypeId toIssueLinkTypeId
+     * @return int
+     */
+    int batchUpdateRelToIssueLinkType(Long issueLinkTypeId,Long toIssueLinkTypeId);
 }
