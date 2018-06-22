@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * Email: fuqianghuang01@gmail.com
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class WorkLogServiceImpl implements WorkLogService {
 
     private static final String SELF_ADJUSTMENT = "self_adjustment";

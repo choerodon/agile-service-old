@@ -33,7 +33,7 @@ import java.util.List;
  * Email: fuqianghuang01@gmail.com
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class IssueAttachmentServiceImpl implements IssueAttachmentService {
 
     private static final String BACKETNAME = "agile-service";

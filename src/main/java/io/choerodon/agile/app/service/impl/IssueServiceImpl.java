@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * @since 2018-05-14 20:30:48
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class IssueServiceImpl implements IssueService {
 
     @Autowired

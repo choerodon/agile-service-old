@@ -29,7 +29,7 @@ import java.util.List;
  * @since 2018-05-14 21:59:45
  */
 @Service
-@Transactional(rollbackFor = CommonException.class)
+@Transactional(rollbackFor = Exception.class)
 public class IssueCommentServiceImpl implements IssueCommentService {
 
     private static final String FIELD_COMMENT = "Comment";
