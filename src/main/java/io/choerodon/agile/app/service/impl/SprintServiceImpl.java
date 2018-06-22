@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * Created by jian_zhang02@163.com on 2018/5/15.
  */
 @Service
-@Transactional(rollbackFor = CommonException.class)
+@Transactional(rollbackFor = Exception.class)
 public class SprintServiceImpl implements SprintService {
 
     @Autowired

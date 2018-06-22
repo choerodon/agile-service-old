@@ -20,7 +20,6 @@ import java.util.List;
  * @since 2018-05-14 21:04:00
  */
 @Service
-@Transactional(rollbackFor = CommonException.class)
 public class IssueLabelServiceImpl implements IssueLabelService {
 
     @Autowired
