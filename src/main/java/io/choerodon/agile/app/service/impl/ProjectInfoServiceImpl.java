@@ -8,7 +8,6 @@ import io.choerodon.agile.domain.agile.repository.ProjectInfoRepository;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,11 +1,9 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.dto.IssueCommonDTO;
-import io.choerodon.agile.api.dto.IssueListDTO;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.IssueCommonDO;
-import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.dataobject.LookupValueDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.mapper.LookupValueMapper;

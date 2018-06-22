@@ -1,8 +1,6 @@
 package io.choerodon.agile.infra.dataobject;
 
 
-import java.math.BigDecimal;
-
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/6/20.
  * Email: fuqianghuang01@gmail.com
