@@ -29,7 +29,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<EpicDataDO> queryEpicList(@Param("projectId") Long projectId);
 
-    List<IssueSearchDO> searchIssue(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
+    List<IssueSearchDO> searchIssue(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql);
 
     Integer queryBacklogIssueCount(@Param("projectId") Long projectId);
 

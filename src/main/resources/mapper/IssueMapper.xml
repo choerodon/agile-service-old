@@ -368,6 +368,9 @@
             <if test='advancedSearchArgs.onlyStory != "" and advancedSearchArgs.onlyStory == "true"'>
                 AND ai.type_code = 'story'
             </if>
+            <if test='filterSql != null'>
+                AND ai.issue_id IN (${filterSql})
+            </if>
         </if>
         ORDER BY ai.rank ASC
     </select>

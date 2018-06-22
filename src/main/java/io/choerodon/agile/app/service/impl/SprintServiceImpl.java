@@ -10,6 +10,7 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
+import io.choerodon.agile.infra.mapper.QuickFilterMapper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.domain.agile.entity.SprintE;
@@ -58,6 +59,8 @@ public class SprintServiceImpl implements SprintService {
     private IssueAssembler issueAssembler;
     @Autowired
     private SprintRule sprintRule;
+    @Autowired
+    private QuickFilterMapper quickFilterMapper;
 
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String SPRINT_DATA = "sprintData";
@@ -115,14 +118,33 @@ public class SprintServiceImpl implements SprintService {
         return true;
     }
 
+    private String getQuickFilter(List<Long> quickFilterIds) {
+        List<String> sqlQuerys = quickFilterMapper.selectSqlQueryByIds(quickFilterIds);
+        StringBuilder sql = new StringBuilder("select issue_id from agile_issue where ");
+        int idx = 0;
+        for (String filter : sqlQuerys) {
+            if (idx != 0) {
+                sql.append(" and " + filter);
+            } else {
+                sql.append(filter);
+                idx += 1;
+            }
+        }
+        return sql.toString();
+    }
+
     @Override
-    public Map<String, Object> queryByProjectId(Long projectId, Map<String, Object> searchParamMap) {
+    public Map<String, Object> queryByProjectId(Long projectId, Map<String, Object> searchParamMap, List<Long> quickFilterIds) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         Map<String, Object> backlog = new HashMap<>();
         Map<String, Object> result = SearchUtil.setParam(searchParamMap);
         List<SprintSearchDTO> sprintSearchs = new ArrayList<>();
         Long activeSprintId = Long.MIN_VALUE;
-        List<IssueSearchDO> issueSearchDOList = issueMapper.searchIssue(projectId, customUserDetails.getUserId(), StringUtil.cast(result.get(ADVANCED_SEARCH_ARGS)));
+        String filterSql = null;
+        if (quickFilterIds != null && !quickFilterIds.isEmpty()) {
+            filterSql = getQuickFilter(quickFilterIds);
+        }
+        List<IssueSearchDO> issueSearchDOList = issueMapper.searchIssue(projectId, customUserDetails.getUserId(), StringUtil.cast(result.get(ADVANCED_SEARCH_ARGS)), filterSql);
         List<Long> assigneeIds = issueSearchDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         List<IssueSearchDTO> issues = issueSearchAssembler.doListToDTO(issueSearchDOList, usersMap);
