@@ -18,6 +18,7 @@ import io.choerodon.agile.infra.dataobject.IssueComponentDO;
 import io.choerodon.agile.infra.mapper.IssueComponentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
  * Email: fuqianghuang01@gmail.com
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class IssueComponentServiceImpl implements IssueComponentService {
 
     @Autowired

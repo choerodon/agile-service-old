@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * @since 2018/6/19
  */
 @Service
-@Transactional(rollbackFor = CommonException.class)
+@Transactional(rollbackFor = Exception.class)
 public class ReportServiceImpl implements ReportService {
 
     @Autowired

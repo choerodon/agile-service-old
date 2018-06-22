@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * @since 2018-05-14 20:30:48
  */
 @Service
-@Transactional(rollbackFor = CommonException.class)
+@Transactional(rollbackFor = Exception.class)
 public class IssueServiceImpl implements IssueService {
 
     @Autowired
@@ -429,7 +429,6 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public IssueDTO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList) {
         IssueDO originIssue = issueMapper.selectByPrimaryKey(issueUpdateDTO.getIssueId());
-        dataLog(originIssue, issueUpdateDTO, fieldList.contains(SPRINT_ID_FIELD));
         if (fieldList != null && !fieldList.isEmpty()) {
             IssueE issueE = issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO);
             if (fieldList.contains(SPRINT_ID_FIELD)) {
@@ -445,6 +444,7 @@ public class IssueServiceImpl implements IssueService {
             }
             issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
         }
+        dataLog(originIssue, issueUpdateDTO, fieldList.contains(SPRINT_ID_FIELD));
         Long issueId = issueUpdateDTO.getIssueId();
         handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId);
         handleUpdateComponentIssueRel(issueUpdateDTO.getComponentIssueRelDTOList(), projectId, issueId);

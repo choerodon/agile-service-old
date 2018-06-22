@@ -19,6 +19,7 @@ import io.choerodon.agile.domain.agile.entity.BoardE;
 import io.choerodon.agile.infra.dataobject.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -27,6 +28,7 @@ import java.util.*;
  * Email: fuqianghuang01@gmail.com
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class BoardServiceImpl implements BoardService {
 
     private static final String CONTRAINT_NONE = "constraint_none";
