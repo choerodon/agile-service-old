@@ -128,10 +128,8 @@ public class BoardServiceImpl implements BoardService {
     private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds) {
         for (SubStatus status : subStatuses) {
             for (IssueForBoardDO issue : status.getIssues()) {
-                if (issue.getParentIssueId() != null && issue.getParentIssueId() != 0) {
-                    if (!parentIds.contains(issue.getParentIssueId())) {
-                        parentIds.add(issue.getParentIssueId());
-                    }
+                if (issue.getParentIssueId() != null && issue.getParentIssueId() != 0 && !parentIds.contains(issue.getParentIssueId())) {
+                    parentIds.add(issue.getParentIssueId());
                 }
                 if (issue.getAssigneeId() != null && !assigneeIds.contains(issue.getAssigneeId())) {
                     assigneeIds.add(issue.getAssigneeId());
@@ -169,17 +167,17 @@ public class BoardServiceImpl implements BoardService {
 
     private String getQuickFilter(List<Long> quickFilterIds) {
         List<String> sqlQuerys = quickFilterMapper.selectSqlQueryByIds(quickFilterIds);
-        String sql = "select issue_id from agile_issue where ";
+        StringBuilder sql = new StringBuilder("select issue_id from agile_issue where ");
         int idx = 0;
         for (String filter : sqlQuerys) {
             if (idx == 0) {
-                sql = sql + filter;
+                sql.append(filter);
                 idx += 1;
             } else {
-                sql = sql + " and " + filter;
+                sql.append(" and " + filter);
             }
         }
-        return sql;
+        return sql.toString();
     }
 
     @Override

@@ -1,7 +1,6 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
-import io.choerodon.agile.infra.dataobject.SprintNameDO;
 
 import java.math.BigDecimal;
 import java.util.Date;

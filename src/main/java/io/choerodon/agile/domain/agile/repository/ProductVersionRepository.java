@@ -1,6 +1,5 @@
 package io.choerodon.agile.domain.agile.repository;
 
-import io.choerodon.agile.api.dto.ProductVersionDetailDTO;
 import io.choerodon.agile.domain.agile.entity.ProductVersionE;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
 

@@ -34,18 +34,18 @@ public class QuickFilterServiceImpl implements QuickFilterService {
     private QuickFilterFieldMapper quickFilterFieldMapper;
 
     private String getSqlQuery(List<QuickFilterValueDTO> quickFilterValueDTOList, List<String> relationOperations) {
-        String sqlQuery = "";
+        StringBuilder sqlQuery = new StringBuilder();
         int idx = 0;
         for (QuickFilterValueDTO quickFilterValueDTO : quickFilterValueDTOList) {
             String field = quickFilterFieldMapper.selectByPrimaryKey(quickFilterValueDTO.getFieldId()).getField();
-            sqlQuery = sqlQuery + field + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ";
+            sqlQuery.append(field + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ");
             int length = relationOperations.size();
             if (idx < length && !relationOperations.get(idx).isEmpty()) {
-                sqlQuery = sqlQuery + relationOperations.get(idx) +" ";
+                sqlQuery.append(relationOperations.get(idx) +" ");
                 idx ++;
             }
         }
-        return sqlQuery;
+        return sqlQuery.toString();
     }
 
     @Override

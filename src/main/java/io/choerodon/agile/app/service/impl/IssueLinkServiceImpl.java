@@ -8,7 +8,6 @@ import io.choerodon.agile.domain.agile.entity.IssueLinkE;
 import io.choerodon.agile.domain.agile.repository.IssueLinkRepository;
 import io.choerodon.agile.domain.agile.rule.IssueLinkRule;
 import io.choerodon.agile.infra.mapper.IssueLinkMapper;
-import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
