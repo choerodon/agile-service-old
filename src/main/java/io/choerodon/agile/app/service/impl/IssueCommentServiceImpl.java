@@ -68,23 +68,29 @@ public class IssueCommentServiceImpl implements IssueCommentService {
         return ConvertHelper.convertList(issueCommentMapper.queryIssueCommentList(projectId, issueId), IssueCommentDTO.class);
     }
 
-    private void dataLogComment(Long projectId, Long commentId) {
+    private void dataLogComment(Long projectId, IssueCommentDO originIssueComment) {
+        DataLogE dataLogE = new DataLogE();
+        dataLogE.setProjectId(projectId);
+        dataLogE.setIssueId(originIssueComment.getIssueId());
+        dataLogE.setField(FIELD_COMMENT);
+        dataLogE.setOldValue(originIssueComment.getCommentText());
+        dataLogRepository.create(dataLogE);
+    }
+
+    private IssueCommentDO getCommentById(Long commentId) {
         IssueCommentDO issueCommentDO = issueCommentMapper.selectByPrimaryKey(commentId);
         if (issueCommentDO == null) {
             throw new CommonException("error.comment.get");
         }
-        DataLogE dataLogE = new DataLogE();
-        dataLogE.setProjectId(projectId);
-        dataLogE.setIssueId(issueCommentDO.getIssueId());
-        dataLogE.setField(FIELD_COMMENT);
-        dataLogE.setOldValue(issueCommentDO.getCommentText());
-        dataLogRepository.create(dataLogE);
+        return issueCommentDO;
     }
 
     @Override
     public int deleteIssueComment(Long projectId, Long commentId) {
-        dataLogComment(projectId, commentId);
-        return issueCommentRepository.delete(projectId, commentId);
+        IssueCommentDO originIssueComment = getCommentById(commentId);
+        int result = issueCommentRepository.delete(projectId, commentId);
+        dataLogComment(projectId, originIssueComment);
+        return result;
     }
 
     @Override

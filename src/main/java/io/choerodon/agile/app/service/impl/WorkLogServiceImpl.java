@@ -20,6 +20,7 @@ import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
  * Email: fuqianghuang01@gmail.com
  */
 @Service
+@Transactional
 public class WorkLogServiceImpl implements WorkLogService {
 
     private static final String SELF_ADJUSTMENT = "self_adjustment";
