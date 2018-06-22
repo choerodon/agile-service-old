@@ -22,6 +22,8 @@ public class QuickFilterDTO {
 
     private Boolean childIncluded;
 
+    private String description;
+
     private Long objectVersionNumber;
 
     public Long getFilterId() {
@@ -86,5 +88,13 @@ public class QuickFilterDTO {
 
     public Boolean getChildIncluded() {
         return childIncluded;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }
