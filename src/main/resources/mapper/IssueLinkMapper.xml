@@ -83,4 +83,10 @@
         ORDER BY
             a.link_type_name
     </select>
+
+    <update id="batchUpdateRelToIssueLinkType">
+        UPDATE agile_issue_link
+        SET link_type_id = #{toIssueLinkTypeId}
+        WHERE link_type_id = #{issueLinkTypeId}
+    </update>
 </mapper>

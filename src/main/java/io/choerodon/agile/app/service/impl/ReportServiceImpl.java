@@ -140,7 +140,7 @@ public class ReportServiceImpl implements ReportService {
         //获取当前冲刺期间移除的issue
         List<Long> issueIdRemoveList = reportMapper.queryRemoveIssueIdsDuringSprint(sprintDO);
         //获取当前冲刺开启前的issue的变更字段值
-        List<ReportIssueE> issueBeforeList = !issueIdList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryValueCountBeforeSprintStart(issueIdList, sprintDO, field), ReportIssueE.class) : null;
+        List<ReportIssueE> issueBeforeList = !issueIdList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryValueBeforeSprintStart(issueIdList, sprintDO, field), ReportIssueE.class) : null;
         //获取当前冲刺期间加入的issue(包含加入时间、加入时的字段值)
         List<ReportIssueE> issueAddList = !issueIdAddList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueValueDuringSprint(issueIdAddList, sprintDO, field), ReportIssueE.class) : null;
         //获取当前冲刺期间移除的issue(包含移除时间、移除时的字段值)
