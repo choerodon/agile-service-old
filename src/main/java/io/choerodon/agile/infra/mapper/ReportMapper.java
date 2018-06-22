@@ -172,10 +172,9 @@ public interface ReportMapper {
      *
      * @param issueAllList issueAllList
      * @param sprintDO     sprintDO
-     * @param field        field
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryIssueValueDurationSprint(@Param("issueAllList") List<Long> issueAllList, @Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
+    List<ReportIssueDO> queryIssueStoryPointsDurationSprint(@Param("issueAllList") List<Long> issueAllList, @Param("sprintDO") SprintDO sprintDO);
 
     /**
      * 冲刺开启前的issue数量统计信息
@@ -212,4 +211,22 @@ public interface ReportMapper {
      * @return 记录统计true 不计入统计false
      */
     Boolean checkIssueValueIsStatisticalDurationSprint(@Param("sprintId") Long sprintId, @Param("issueId") Long issueId, @Param("date") Date date);
+
+    /**
+     * 冲刺期间的剩余预计时间的变更
+     *
+     * @param issueAllList issueAllList
+     * @param sprintDO     sprintDO
+     * @return ReportIssueDO
+     */
+    List<ReportIssueDO> queryIssueTimeesTimateDurationSprint(@Param("issueAllList") List<Long> issueAllList, @Param("sprintDO") SprintDO sprintDO);
+
+    /**
+     * 查询issue加入冲刺的时间
+     *
+     * @param issueId  issueId
+     * @param sprintId sprintId
+     * @return Date
+     */
+    Date queryAddIssueDuringSprintNoData(@Param("issueId") Long issueId, @Param("sprintId") Long sprintId);
 }

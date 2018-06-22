@@ -24,6 +24,10 @@ public class ReportIssueDO {
 
     private Boolean statistical;
 
+    private String parentIssueId;
+
+    private String parentIssueNum;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -78,6 +82,22 @@ public class ReportIssueDO {
 
     public void setStatistical(Boolean statistical) {
         this.statistical = statistical;
+    }
+
+    public String getParentIssueId() {
+        return parentIssueId;
+    }
+
+    public void setParentIssueId(String parentIssueId) {
+        this.parentIssueId = parentIssueId;
+    }
+
+    public String getParentIssueNum() {
+        return parentIssueNum;
+    }
+
+    public void setParentIssueNum(String parentIssueNum) {
+        this.parentIssueNum = parentIssueNum;
     }
 
     @Override
