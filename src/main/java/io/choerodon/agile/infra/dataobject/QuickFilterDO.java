@@ -33,6 +33,8 @@ public class QuickFilterDO extends AuditDomain {
     @Column(name = "is_child_included")
     private Boolean childIncluded;
 
+    private String description;
+
     public Long getFilterId() {
         return filterId;
     }
@@ -79,5 +81,13 @@ public class QuickFilterDO extends AuditDomain {
 
     public Boolean getChildIncluded() {
         return childIncluded;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

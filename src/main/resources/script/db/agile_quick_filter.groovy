@@ -20,4 +20,10 @@ databaseChangeLog(logicalFilePath:'agile_quick_filter.groovy') {
             column(name: "last_update_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
     }
+
+    changeSet(id: '2018-06-22-agile-quick-filter-add-column', author: 'fuqianghuang01@gmail.com') {
+        addColumn(tableName: 'agile_quick_filter') {
+            column(name: 'description', type: 'VARCHAR(5000)', remarks: '描述')
+        }
+    }
 }
