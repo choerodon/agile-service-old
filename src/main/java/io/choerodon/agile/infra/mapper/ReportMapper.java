@@ -107,18 +107,20 @@ public interface ReportMapper {
     /**
      * 获取冲刺期间issue状态更改为done的issue
      *
-     * @param sprintDO sprintDO
+     * @param sprintDO     sprintDO
+     * @param issueAllList issueAllList
      * @return issueIds
      */
-    List<Long> queryAddDoneIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO);
+    List<Long> queryAddDoneIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO, @Param("issueAllList") List<Long> issueAllList);
 
     /**
      * 获取冲刺期间issue状态从done更改到其他的issue
      *
-     * @param sprintDO sprintDO
+     * @param sprintDO     sprintDO
+     * @param issueAllList issueAllList
      * @return issueIds
      */
-    List<Long> queryRemoveDoneIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO);
+    List<Long> queryRemoveDoneIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO, @Param("issueAllList") List<Long> issueAllList);
 
     /**
      * 获取冲刺期间移动到done状态的字段变更值（包含变更时间）
