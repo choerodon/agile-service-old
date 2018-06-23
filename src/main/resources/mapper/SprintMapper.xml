@@ -305,51 +305,24 @@
         WHERE project_id = #{projectId} AND sprint_id = #{sprintId}
     </select>
 
-    <select id="queryReportDoneIssues" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
-        SELECT
-        ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
-        ai.type_code, ai.status_id,
-
-
-        ais.name AS status_name,
-        ais.category_code AS status_code,
-
-
-        ai.summary, ai.priority_code,
-        alv.name AS priority_name,
-        ai.assignee_id, ai.project_id
-        FROM agile_issue ai
-        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
-        LEFT JOIN (SELECT
-        FROM agile_issue_status ais
-        LEFT JOIN agile_issue ai ON ai.status_id = ais.id
-        WHERE ais.project_id = #{projectId}
-        <if test="reportSearchIssue.">
-
-        </if>
-        )
-        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id
-        AND ai.status_id = ais.id AND ai.issue_id = adl.issue_id
-    </select>
-
     <select id="queryReportSearchIssue" resultType="io.choerodon.agile.infra.dataobject.SprintReportIssueSearchDO">
         SELECT
-                ai.issue_id AS issue_id,             ais.category_code AS category_code,
-                ais.name AS name,                   ais.is_completed AS completed,
+        ai.issue_id AS issue_id, ais.category_code AS category_code,
+        ais.name AS name, ais.is_completed AS completed,
 
-                adl2.new_value AS new_status_id,     adl2.category_code AS new_category_code,
-                adl2.name AS new_name,               adl2.is_completed AS new_completed,
+        adl2.new_value AS new_status_id, adl2.category_code AS new_category_code,
+        adl2.name AS new_name, adl2.is_completed AS new_completed,
 
-                adl4.old_value AS old_status_id,     adl4.category_code AS old_category_code,
-                adl4.name AS old_name,               adl4.is_completed AS old_completed,
+        adl4.old_value AS old_status_id, adl4.category_code AS old_category_code,
+        adl4.name AS old_name, adl4.is_completed AS old_completed,
 
-                adl6.new_string AS story_points,
-                CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
-                ai.type_code AS type_code,            ai.status_id AS status_id,
-                ai.summary AS summary,                ai.priority_code AS priority_code,
-                alv.name AS priority_name,            ai.assignee_id AS assignee_id,
-                ai.project_id AS project_id
+        adl6.new_string AS story_points,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+        ai.type_code AS type_code, ai.status_id AS status_id,
+        ai.summary AS summary, ai.priority_code AS priority_code,
+        alv.name AS priority_name, ai.assignee_id AS assignee_id,
+        ai.project_id AS project_id
+
         FROM agile_issue_sprint_rel aisr
         LEFT JOIN (
         SELECT adl1.issue_id, adl1.new_value, ais1.category_code, ais1.name, ais1.is_completed
@@ -390,16 +363,86 @@
         WHERE aisr.project_id = #{projectId} AND aisr.sprint_id = #{sprintId}
         AND aisr.issue_id = ai.issue_id AND ai.status_id = ais.id
         AND (adl2.new_value IS NOT null AND adl2.new_value != '' AND adl2.is_completed = ${status}
-              OR (
-                   (adl2.new_value IS null OR adl2.new_value = '') AND adl4.old_value IS NOT null
-                   AND adl4.old_value != '' AND adl4.is_completed = ${status}
-                 )
-              OR (
-                    (adl2.new_value IS null OR adl2.new_value = '') AND (adl4.old_value IS null OR adl4.old_value = '')
-                    AND ais.is_completed = ${status}
-                 )
-             )
+        OR (
+        (adl2.new_value IS null OR adl2.new_value = '') AND adl4.old_value IS NOT null
+        AND adl4.old_value != '' AND adl4.is_completed = ${status}
+        )
+        OR (
+        (adl2.new_value IS null OR adl2.new_value = '') AND (adl4.old_value IS null OR adl4.old_value = '')
+        AND ais.is_completed = ${status}
+        )
+        )
         ORDER BY ai.issue_id DESC
     </select>
 
+    <select id="queryReportRemoveIssue" resultType="io.choerodon.agile.infra.dataobject.SprintReportIssueSearchDO">
+        SELECT
+        ai.issue_id AS issue_id, ais.category_code AS category_code,
+        ais.name AS name, ais.is_completed AS completed,
+
+        adl2.new_value AS new_status_id, adl2.category_code AS new_category_code,
+        adl2.name AS new_name, adl2.is_completed AS new_completed,
+
+        adl4.old_value AS old_status_id, adl4.category_code AS old_category_code,
+        adl4.name AS old_name, adl4.is_completed AS old_completed,
+
+        adl6.new_string AS story_points,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+        ai.type_code AS type_code, ai.status_id AS status_id,
+        ai.summary AS summary, ai.priority_code AS priority_code,
+        alv.name AS priority_name, ai.assignee_id AS assignee_id,
+        ai.project_id AS project_id
+
+        FROM agile_issue ai
+        LEFT JOIN (
+                    SELECT adl1.issue_id, adl1.new_value, ais1.category_code, ais1.name, ais1.is_completed
+                    FROM agile_issue_sprint_rel aisr1, agile_data_log adl1, agile_issue_status ais1
+                    WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = #{sprintId}
+                    AND aisr1.issue_id = adl1.issue_id AND adl1.field = 'status'
+                    AND ais1.id = adl1.new_value
+                    <if test="actualEndDate != null">
+                        adl.creation_date &lt; #{actualEndDate}
+                    </if>
+                    ORDER BY adl1.log_id DESC limit 1
+                    ) adl2 ON adl2.issue_id = ai.issue_id
+        LEFT JOIN (
+                    SELECT adl3.issue_id, adl3.old_value, ais2.category_code, ais2.name, ais2.is_completed
+                    FROM agile_data_log adl3, agile_issue_status ais2
+                    WHERE adl3.project_id = #{projectId} AND adl3.field = 'status'
+                    AND ais2.id = adl3.old_value
+                    <if test="actualEndDate != null">
+                        adl3.creation_date > #{actualEndDate}
+                    </if>
+                    AND adl3.issue_id IN
+                    <foreach collection="issueIds" item="issueId"
+                             open="(" close=")" separator=",">
+                        #{issueId}
+                    </foreach>
+                    ORDER BY adl3.log_id ASC limit 1
+                    ) adl4 ON adl4.issue_id = ai.issue_id
+        LEFT JOIN (
+                    SELECT adl5.issue_id, adl5.new_string
+                    FROM agile_data_log adl5
+                    WHERE adl5.project_id = #{projectId} AND adl5.field = 'Story Points'
+                    <if test="actualEndDate != null">
+                        adl5.creation_date > #{actualEndDate}
+                    </if>
+                    AND adl5.issue_id IN
+                    <foreach collection="issueIds" item="issueId"
+                             open="(" close=")" separator=",">
+                        #{issueId}
+                    </foreach>
+                    ORDER BY adl5.log_id DESC limit 1
+                    ) adl6 ON adl6.issue_id = ai.issue_id
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code,
+        agile_issue_status ais
+        WHERE ai.project_id = #{projectId} AND ai.status_id = ais.id
+        AND ai.issue_id IN
+        <foreach collection="issueIds" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        ORDER BY ai.issue_id DESC
+    </select>
 </mapper>

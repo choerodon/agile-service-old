@@ -67,5 +67,5 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     List<SprintReportIssueSearchDO> queryReportSearchIssue(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("actualEndDate") Date actualEndDate, @Param("status") boolean status);
 
-    List queryReportDoneIssues(@Param("projectId") Long projectId, @Param("reportSearchIssue") List<SprintReportIssueSearchDO> reportSearchIssue);
+    List queryReportRemoveIssue(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("actualEndDate") Date actualEndDate);
 }

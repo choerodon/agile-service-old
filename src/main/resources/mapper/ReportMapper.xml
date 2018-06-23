@@ -778,4 +778,47 @@
         WHERE a.issue_id = #{issueId} AND a.sprint_id = #{sprintId}
     </select>
 
+    <select id="queryReportIssueIds" resultType="java.lang.Long">
+        SELECT
+        ai.issue_id
+        FROM agile_issue_sprint_rel aisr
+        LEFT JOIN (
+                    SELECT adl1.issue_id, adl1.new_value, ais1.is_completed
+                    FROM agile_issue_sprint_rel aisr1, agile_data_log adl1, agile_issue_status ais1
+                    WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = #{sprintId}
+                    AND aisr1.issue_id = adl1.issue_id AND adl1.field = 'status'
+                    AND ais1.id = adl1.new_value
+                    <if test="actualEndDate != null">
+                        adl.creation_date &lt; #{actualEndDate}
+                    </if>
+                    ORDER BY adl1.log_id DESC limit 1
+                    ) adl2 ON adl2.issue_id = aisr.issue_id
+        LEFT JOIN (
+                    SELECT adl3.issue_id, adl3.old_value, ais2.is_completed
+                    FROM agile_issue_sprint_rel aisr2, agile_data_log adl3, agile_issue_status ais2
+                    WHERE aisr2.project_id = #{projectId} AND aisr2.sprint_id = #{sprintId}
+                    AND aisr2.issue_id = adl3.issue_id AND adl3.field = 'status'
+                    AND ais2.id = adl3.old_value
+                    <if test="actualEndDate != null">
+                        adl3.creation_date > #{actualEndDate}
+                    </if>
+                    ORDER BY adl3.log_id ASC limit 1
+                    ) adl4 ON adl4.issue_id = aisr.issue_id,
+        agile_issue ai,agile_issue_status ais
+        WHERE aisr.project_id = #{projectId} AND aisr.sprint_id = #{sprintId}
+        AND aisr.issue_id = ai.issue_id AND ai.status_id = ais.id
+        AND (adl2.new_value IS NOT null AND adl2.new_value != '' AND adl2.is_completed = ${status}
+        OR (
+        (adl2.new_value IS null OR adl2.new_value = '') AND adl4.old_value IS NOT null
+        AND adl4.old_value != '' AND adl4.is_completed = ${status}
+        )
+        OR (
+        (adl2.new_value IS null OR adl2.new_value = '') AND (adl4.old_value IS null OR adl4.old_value = '')
+        AND ais.is_completed = ${status}
+        )
+        )
+        ORDER BY ai.issue_id DESC
+    </select>
+
+
 </mapper>

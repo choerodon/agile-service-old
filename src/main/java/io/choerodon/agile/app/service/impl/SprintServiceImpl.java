@@ -8,16 +8,13 @@ import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.common.utils.SearchUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.mapper.IssueMapper;
-import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
-import io.choerodon.agile.infra.mapper.QuickFilterMapper;
+import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.domain.agile.repository.SprintRepository;
-import io.choerodon.agile.infra.mapper.SprintMapper;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
@@ -60,6 +57,8 @@ public class SprintServiceImpl implements SprintService {
     private UserRepository userRepository;
     @Autowired
     private IssueAssembler issueAssembler;
+    @Autowired
+    private ReportMapper reportMapper;
     @Autowired
     private SprintRule sprintRule;
     @Autowired
@@ -297,10 +296,10 @@ public class SprintServiceImpl implements SprintService {
         }
         Date actualEndDate = sprintDO.getActualEndDate();
         List<SprintReportIssueSearchDO> reportSearchIssues;
-        Page<SprintReportIssueSearchDO> reportIssues;
+        Page<Long> reportIssueIds;
         switch (status) {
             case DONE:
-                reportIssues = PageHelper.doPageAndSort(pageRequest,() -> sprintMapper.queryReportSearchIssue(projectId, sprintId, actualEndDate, true));
+                reportIssueIds = PageHelper.doPageAndSort(pageRequest,() -> reportMapper.queryReportIssueIds(projectId, sprintId, actualEndDate, true));
                 reportSearchIssues = reportIssues.getContent();
                 reportSearchIssues = reportSearchIssues.stream().map(reportSearchIssue -> {
                     if (reportSearchIssue.getNewStatusId() != null && !Objects.equals(reportSearchIssue.getNewStatusId(), "")) {
@@ -325,7 +324,7 @@ public class SprintServiceImpl implements SprintService {
                 }).collect(Collectors.toList());
                 break;
             case UNFINISHED:
-                reportIssues = PageHelper.doPageAndSort(pageRequest,() -> sprintMapper.queryReportSearchIssue(projectId, sprintId, actualEndDate, true));
+                reportIssueIds = PageHelper.doPageAndSort(pageRequest,() -> reportMapper.queryReportIssueIds(projectId, sprintId, actualEndDate, true));
                 reportSearchIssues = reportIssues.getContent();
                 reportSearchIssues = reportSearchIssues.stream().map(reportSearchIssue -> {
                     if (reportSearchIssue.getNewStatusId() != null && !Objects.equals(reportSearchIssue.getNewStatusId(), "")) {
@@ -350,7 +349,7 @@ public class SprintServiceImpl implements SprintService {
                 }).collect(Collectors.toList());
                 break;
             case REMOVE:
-                
+                reportIssues = PageHelper.doPageAndSort(pageRequest,() -> sprintMapper.queryReportRemoveIssue(projectId, sprintId, actualEndDate));
                 break;
             default:
                 break;

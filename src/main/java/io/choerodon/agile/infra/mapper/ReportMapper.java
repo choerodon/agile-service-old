@@ -231,4 +231,6 @@ public interface ReportMapper {
      * @return Date
      */
     Date queryAddIssueDuringSprintNoData(@Param("issueId") Long issueId, @Param("sprintId") Long sprintId);
+
+    List queryReportIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("actualEndDate") Date actualEndDate, @Param("status") boolean status);
 }
