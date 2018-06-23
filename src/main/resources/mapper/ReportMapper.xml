@@ -5,7 +5,7 @@
         SELECT a1.issue_id
         FROM
             (
-                SELECT *
+                SELECT a.issue_id
                 FROM
                     (SELECT
                          adl1.issue_id,
@@ -20,7 +20,7 @@
                           LIMIT 1000000000000) adl1
                      GROUP BY
                          adl1.issue_id) a
-                WHERE a.new_value = #{sprintDO.sprintId}
+                WHERE FIND_IN_SET(#{sprintDO.sprintId}, a.new_value)
 
             ) a1
         WHERE
@@ -96,28 +96,56 @@
     </select>
 
     <select id="queryAddIssueIdsDuringSprint" resultType="java.lang.Long">
-        SELECT asd.*
-        FROM (
-                 SELECT adl.issue_id
-                 FROM
-                     agile_data_log adl
-                 WHERE
-                     adl.field = 'Sprint'
-                     AND adl.creation_date &gt; #{sprintDO.startDate}
-                     AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
-                     AND adl.new_value = #{sprintDO.sprintId}
-                 UNION ALL SELECT aisr.issue_id
-                           FROM agile_issue_sprint_rel aisr
-                           WHERE aisr.sprint_id = #{sprintDO.sprintId} AND aisr.creation_date &gt; #{sprintDO.startDate}
-                                 AND aisr.creation_date &lt;= #{sprintDO.actualEndDate}) asd
-        GROUP BY
-            asd.issue_id
+        SELECT aisr2.issue_id
+        FROM agile_issue_sprint_rel aisr2
+        WHERE aisr2.sprint_id = #{sprintDO.sprintId}
+              AND
+              aisr2.issue_id NOT IN
+              (SELECT a1.issue_id
+               FROM
+                   (
+                       SELECT a.issue_id
+                       FROM
+                           (SELECT
+                                adl1.issue_id,
+                                adl1.new_value
+                            FROM
+                                (SELECT
+                                     adl.issue_id,
+                                     adl.new_value
+                                 FROM agile_data_log adl
+                                 WHERE adl.field = 'Sprint' AND
+                                       adl.creation_date &lt;=
+                                       #{sprintDO.startDate}
+                                 ORDER BY adl.creation_date DESC
+                                 LIMIT 1000000000000) adl1
+                            GROUP BY
+                                adl1.issue_id) a
+                       WHERE FIND_IN_SET(#{sprintDO.sprintId}, a.new_value)
+
+                   ) a1
+               WHERE
+                   a1.issue_id NOT IN (SELECT aisr.issue_id
+                                       FROM agile_issue_sprint_rel aisr
+                                       WHERE aisr.sprint_id =
+                                             #{sprintDO.sprintId} AND
+                                             aisr.creation_date &lt;=
+                                             #{sprintDO.startDate})
+               UNION ALL
+               SELECT aisr2.issue_id
+               FROM
+                   agile_issue_sprint_rel aisr2
+               WHERE
+                   aisr2.creation_date &lt;= #{sprintDO.startDate}
+                   AND aisr2.sprint_id = #{sprintDO.sprintId})
 
     </select>
 
     <select id="queryAddIssueValueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
         select
-        bbb.*,
+        aaa.issue_id,
+        bbb.date,
+        bbb.new_value,
         0 as old_value,
         'addDuringSprint' as type,
         1 as statistical,
@@ -141,7 +169,7 @@
         AND adl1.creation_date &lt;= adl.creation_date WHERE adl.field = 'Sprint' AND adl.creation_date &gt;
         #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
-        AND adl.new_value = #{sprintDO.sprintId}
+        AND FIND_IN_SET(#{sprintDO.sprintId},adl.new_value)
         AND adl.issue_id IN
         <foreach collection="issueIdAddList" item="issueId"
                  open="(" close=")" separator=",">
@@ -149,29 +177,49 @@
         </foreach>
         )bbb on bbb.issue_id = aaa.issue_id LEFT JOIN agile_issue ai2 on aaa.parent_issue_id = ai2.issue_id LEFT JOIN
         agile_project_info api2
-        ON api2.project_id = ai2.project_id
+        ON api2.project_id = ai2.project_id LEFT JOIN
+        agile_project_info api
+        ON api.project_id = aaa.project_id
     </select>
 
     <select id="queryRemoveIssueIdsDuringSprint" resultType="java.lang.Long">
-        SELECT a1.issue_id
-        FROM
-            (
-                SELECT adl1.issue_id
-                FROM
-                    (
-                        SELECT adl.issue_id
-                        FROM
-                            agile_data_log adl
-                        WHERE
-                            adl.field = 'Sprint'
-                            AND adl.creation_date &gt; #{sprintDO.startDate}
-                            AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
-                            AND adl.new_value = '0'
-                            AND adl.old_value = #{sprintDO.sprintId}
-                    ) adl1
-                GROUP BY
-                    adl1.issue_id
-            ) a1
+        SELECT *
+        FROM (SELECT a1.issue_id
+              FROM
+                  (
+                      SELECT a.issue_id
+                      FROM
+                          (SELECT
+                               adl1.issue_id,
+                               adl1.new_value
+                           FROM
+                               (SELECT
+                                    adl.issue_id,
+                                    adl.new_value
+                                FROM agile_data_log adl
+                                WHERE adl.field = 'Sprint' AND adl.creation_date &lt;= #{sprintDO.startDate}
+                                ORDER BY adl.creation_date DESC
+                                LIMIT 1000000000000) adl1
+                           GROUP BY
+                               adl1.issue_id) a
+                      WHERE FIND_IN_SET(#{sprintDO.sprintId}, a.new_value)
+
+                  ) a1
+              WHERE
+                  a1.issue_id NOT IN (SELECT aisr.issue_id
+                                      FROM agile_issue_sprint_rel aisr
+                                      WHERE aisr.sprint_id = #{sprintDO.sprintId} AND
+                                            aisr.creation_date &lt;= #{sprintDO.startDate})
+              UNION ALL
+              SELECT aisr2.issue_id
+              FROM
+                  agile_issue_sprint_rel aisr2
+              WHERE
+                  aisr2.creation_date &lt;= #{sprintDO.startDate}
+                  AND aisr2.sprint_id = #{sprintDO.sprintId}) ddd
+        WHERE ddd.issue_id NOT IN (SELECT aisr.issue_id
+                                   FROM agile_issue_sprint_rel aisr
+                                   WHERE aisr.sprint_id = #{sprintDO.sprintId})
     </select>
 
     <select id="queryRemoveIssueValueDurationSprint"
@@ -197,7 +245,7 @@
         AND adl1.creation_date &lt;= adl.creation_date WHERE adl.field = 'Sprint' AND adl.creation_date &gt;
         #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
-        AND adl.old_value = #{sprintDO.sprintId}
+        AND FIND_IN_SET(#{sprintDO.sprintId},adl.old_value)
         AND adl.new_value = '0'
         AND adl.issue_id IN
         <foreach collection="issueIdRemoveList" item="issueId"
@@ -214,23 +262,21 @@
     </select>
 
     <select id="queryAddIssueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
-        SELECT abd.*,CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,CONCAT_WS('-', api2.project_code,
+        SELECT ai.issue_id,abd.date,'addDuringSprint' as type,0 as old_value,
+        1 as new_value,
+        1 as statistical,CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,CONCAT_WS('-', api2.project_code,
         ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_id
         FROM agile_issue ai left join (SELECT
         adl.issue_id,
-        adl.creation_date AS date,
-        'addDuringSprint' as type,
-        0 as old_value,
-        1 as new_value,
-        1 as statistical
+        adl.creation_date AS date
         FROM
         agile_data_log adl
         WHERE
         adl.field = 'Sprint'
         AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
-        AND adl.new_value = #{sprintDO.sprintId}
+        AND FIND_IN_SET(#{sprintDO.sprintId},adl.new_value)
         AND adl.issue_id IN
         <foreach collection="issueIdAddList" item="issueId"
                  open="(" close=")" separator=",">
@@ -238,7 +284,11 @@
         </foreach>)abd on abd.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON api.project_id =
         ai.project_id LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN agile_project_info api2
         ON api2.project_id =
-        ai2.project_id
+        ai2.project_id where ai.issue_id in
+        <foreach collection="issueIdAddList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
     </select>
 
     <select id="queryRemoveIssueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
@@ -261,7 +311,7 @@
         adl.field = 'Sprint'
         AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
-        AND adl.old_value = #{sprintDO.sprintId}
+        AND FIND_IN_SET(#{sprintDO.sprintId},adl.old_value)
         AND adl.issue_id IN
         <foreach collection="issueIdRemoveList" item="issueId"
                  open="(" close=")" separator=",">
@@ -270,45 +320,40 @@
     </select>
 
     <select id="queryAddDoneIssueIdsDuringSprint" resultType="java.lang.Long">
-        SELECT a1.issue_id
+        SELECT adl.issue_id
         FROM
-            (
-                SELECT adl1.issue_id
-                FROM
-                    (
-                        SELECT adl.issue_id
-                        FROM
-                            agile_data_log adl
-                        WHERE
-                            adl.field = 'resolution'
-                            AND adl.creation_date &gt; #{sprintDO.startDate}
-                            AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
-                            AND adl.new_value != ''
-                    ) adl1
-                GROUP BY
-                    adl1.issue_id
-            ) a1
+        agile_data_log adl
+        WHERE
+        adl.field = 'resolution'
+        AND adl.creation_date &gt; #{sprintDO.startDate}
+        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.new_value != ''
+        AND
+        adl.issue_id in
+        <foreach collection="issueAllList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        GROUP BY
+        adl.issue_id
     </select>
 
     <select id="queryRemoveDoneIssueIdsDuringSprint" resultType="java.lang.Long">
-        SELECT a1.issue_id
+        SELECT adl.issue_id
         FROM
-            (
-                SELECT adl1.issue_id
-                FROM
-                    (
-                        SELECT adl.issue_id
-                        FROM
-                            agile_data_log adl
-                        WHERE
-                            adl.field = 'resolution'
-                            AND adl.creation_date &gt; #{sprintDO.startDate}
-                            AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
-                            AND adl.new_value = ''
-                    ) adl1
-                GROUP BY
-                    adl1.issue_id
-            ) a1
+        agile_data_log adl
+        WHERE
+        adl.field = 'resolution'
+        AND adl.creation_date &gt; #{sprintDO.startDate}
+        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.new_value = ''
+        and adl.issue_id in
+        <foreach collection="issueAllList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        GROUP BY
+        adl.issue_id
     </select>
 
     <select id="queryAddIssueDoneValueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
@@ -644,7 +689,7 @@
                     CASE
                     WHEN
                         a.statistical = 1
-                        AND b.new_value = #{sprintId}
+                        AND #{sprintId} IN (b.new_valu)
                         THEN
                             1
                     WHEN a.statistical = 1
