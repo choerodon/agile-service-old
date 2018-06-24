@@ -236,8 +236,7 @@ public class ProductVersionController {
     public ResponseEntity<List<ProductVersionNameDTO>> queryNameByOptions(@ApiParam(value = "项目id", required = true)
                                                                             @PathVariable(name = "project_id") Long projectId,
                                                                             @ApiParam(value = "状态列表", required = false)
-                                                                            @RequestBody List<String> statusCodes
-                                                                            ) {
+                                                                            @RequestBody(required = false) List<String> statusCodes) {
         return Optional.ofNullable(productVersionService.queryNameByOptions(projectId, statusCodes))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_VERSION_NAME_ERROR));

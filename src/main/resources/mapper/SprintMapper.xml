@@ -67,17 +67,17 @@
 
     <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
         SELECT
-            sprint_id,
-            sprint_name
+        sprint_id,
+        sprint_name
         FROM agile_sprint
         WHERE project_id = #{projectId}
-              <if test="sprintStatusCodes != null and sprintStatusCodes.size > 0">
-                  AND status_code IN
-                  <foreach collection="sprintStatusCodes" item="sprintStatusCode"
-                           open="(" close=")" separator=",">
-                      #{sprintStatusCode}
-                  </foreach>
-              </if>
+        <if test="sprintStatusCodes != null and sprintStatusCodes.size > 0">
+            AND status_code IN
+            <foreach collection="sprintStatusCodes" item="sprintStatusCode"
+                     open="(" close=")" separator=",">
+                #{sprintStatusCode}
+            </foreach>
+        </if>
     </select>
 
     <select id="queryNotDoneIssueCount" resultType="java.lang.Integer">
@@ -285,12 +285,6 @@
 
     </select>
 
-    <select id="selectNameBySprintId" resultType="java.lang.String">
-        SELECT sprint_name
-        FROM agile_sprint
-        WHERE sprint_id = #{sprintId}
-    </select>
-
     <select id="queryIssueIds" resultType="java.lang.Long">
         SELECT ai.issue_id
         FROM  agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
@@ -304,4 +298,5 @@
         FROM agile_sprint
         WHERE project_id = #{projectId} AND sprint_id = #{sprintId}
     </select>
+
 </mapper>

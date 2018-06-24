@@ -8,17 +8,17 @@ import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.common.utils.SearchUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.mapper.IssueMapper;
-import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
-import io.choerodon.agile.infra.mapper.QuickFilterMapper;
+import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.domain.agile.repository.SprintRepository;
-import io.choerodon.agile.infra.mapper.SprintMapper;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
+import io.choerodon.mybatis.pagehelper.PageHelper;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +58,8 @@ public class SprintServiceImpl implements SprintService {
     @Autowired
     private IssueAssembler issueAssembler;
     @Autowired
+    private ReportMapper reportMapper;
+    @Autowired
     private SprintRule sprintRule;
     @Autowired
     private QuickFilterMapper quickFilterMapper;
@@ -72,6 +74,11 @@ public class SprintServiceImpl implements SprintService {
     private static final String CATEGORY_DOING_CODE = "doing";
     private static final String PROJECT_NOT_FOUND_ERROR = "error.project.notFound";
     private static final String START_SPRINT_ERROR = "error.sprint.hasStartedSprint";
+    private static final String DONE = "done";
+    private static final String UNFINISHED = "unfinished";
+    private static final String REMOVE = "remove";
+    private static final String SPRINT_REPORT_ERROR = "error.sprint.report";
+    private static final String SPRINT_PLANNING_CODE = "sprint_planning";
 
     @Override
     public SprintDetailDTO createSprint(Long projectId) {
@@ -218,13 +225,16 @@ public class SprintServiceImpl implements SprintService {
 
     private void moveNotDoneIssueToTargetSprint(Long projectId, SprintCompleteDTO sprintCompleteDTO) {
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
+        Long targetSprintId = sprintCompleteDTO.getIncompleteIssuesDestination();
         beforeRank(projectId, sprintCompleteDTO.getSprintId(), sprintCompleteDTO.getIncompleteIssuesDestination(), moveIssueDOS);
         if (moveIssueDOS.isEmpty()) {
             return;
         }
         List<Long> moveIssueIds = sprintMapper.queryIssueIds(projectId, sprintCompleteDTO.getSprintId());
         moveIssueIds.addAll(issueMapper.querySubTaskIds(projectId, sprintCompleteDTO.getSprintId()));
-        issueRepository.issueToDestinationByIds(projectId, sprintCompleteDTO.getIncompleteIssuesDestination(), moveIssueIds);
+        if (targetSprintId != null && !Objects.equals(targetSprintId, 0L)) {
+            issueRepository.issueToDestinationByIds(projectId, targetSprintId, moveIssueIds);
+        }
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
     }
 
@@ -273,5 +283,72 @@ public class SprintServiceImpl implements SprintService {
             sprintDetailDTO.setIssueCount(sprintMapper.queryIssueCount(projectId, sprintId));
         }
         return sprintDetailDTO;
+    }
+
+    @Override
+    public Page<IssueListDTO> queryIssueByOptions(Long projectId, Long sprintId, String status, PageRequest pageRequest) {
+        SprintDO sprintDO = new SprintDO();
+        sprintDO.setProjectId(projectId);
+        sprintDO.setSprintId(sprintId);
+        SprintDO sprint = sprintMapper.selectOne(sprintDO);
+        if (sprint == null || Objects.equals(sprint.getStatusCode(), SPRINT_PLANNING_CODE)) {
+            throw new CommonException(SPRINT_REPORT_ERROR);
+        }
+        Date actualEndDate = sprint.getActualEndDate();
+        Page<Long> reportIssuePage = new Page<>();
+        Page<IssueListDTO> reportPage = new Page<>();
+        pageRequest.resetOrder("ai", new HashMap<>());
+        switch (status) {
+            case DONE:
+                reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryReportIssueIds(projectId, sprintId, actualEndDate, true));
+                break;
+            case UNFINISHED:
+                reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryReportIssueIds(projectId, sprintId, actualEndDate, false));
+                break;
+            case REMOVE:
+                reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryRemoveIssueIdsDuringSprint(sprint));
+                break;
+            default:
+                break;
+        }
+        List<Long> reportIssueIds = reportIssuePage.getContent();
+        if(reportIssueIds.isEmpty()){
+            return reportPage;
+        }
+        //冲刺报告查询的issue
+        List<IssueDO> reportIssues = reportMapper.queryIssueByIssueIds(projectId, reportIssueIds);
+        //冲刺中新添加的issue
+        List<Long> issueIdAddList = reportMapper.queryAddIssueIdsDuringSprint(sprintDO);
+        //冲刺报告中issue的故事点
+        List<SprintReportIssueStatusDO> reportIssueStoryPoints = reportMapper.queryIssueStoryPoints(projectId, reportIssueIds, actualEndDate);
+        Map<Long, SprintReportIssueStatusDO> reportIssueStoryPointsMap = reportIssueStoryPoints.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
+        //冲刺完成前issue的最后变更状态
+        List<SprintReportIssueStatusDO> reportIssueBeforeStatus = reportMapper.queryIssueStatus(projectId, reportIssueIds, actualEndDate, true);
+        Map<Long, SprintReportIssueStatusDO> reportIssueBeforeStatusMap = reportIssueBeforeStatus.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
+        //冲刺完成后issue的最初变更状态
+        reportIssueIds.removeAll(reportIssueBeforeStatusMap.keySet());
+        List<SprintReportIssueStatusDO> reportIssueAfterStatus = reportMapper.queryIssueStatus(projectId, reportIssueIds, actualEndDate, false);
+        Map<Long, SprintReportIssueStatusDO> reportIssueAfterStatusMap = reportIssueAfterStatus.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
+        reportIssues = reportIssues.stream().map(reportIssue -> {
+            SprintReportIssueStatusDO issueStoryPoints = reportIssueStoryPointsMap.get(reportIssue.getIssueId());
+            Integer storyPoints = issueStoryPoints == null ? 0 : Integer.parseInt(issueStoryPoints.getStoryPoints());
+            SprintReportIssueStatusDO issueBeforeStatus = reportIssueBeforeStatusMap.get(reportIssue.getIssueId());
+            SprintReportIssueStatusDO issueAfterStatus = reportIssueAfterStatusMap.get(reportIssue.getIssueId());
+            String statusCode = issueBeforeStatus == null ? (issueAfterStatus == null ? reportIssue.getStatusCode() : issueAfterStatus.getCategoryCode()) : issueBeforeStatus.getCategoryCode();
+            String statusName = issueBeforeStatus == null ? (issueAfterStatus == null ? reportIssue.getStatusName() : issueAfterStatus.getStatusName()) : issueBeforeStatus.getStatusName();
+            reportIssue.setAddIssue(issueIdAddList.contains(reportIssue.getIssueId()));
+            reportIssue.setStoryPoints(storyPoints);
+            reportIssue.setStatusCode(statusCode);
+            reportIssue.setStatusName(statusName);
+            return reportIssue;
+        }).collect(Collectors.toList());
+
+        reportPage.setTotalPages(reportIssuePage.getTotalPages());
+        reportPage.setTotalElements(reportIssuePage.getTotalElements());
+        reportPage.setSize(reportIssuePage.getSize());
+        reportPage.setNumberOfElements(reportIssuePage.getNumberOfElements());
+        reportPage.setNumber(reportIssuePage.getNumber());
+        reportPage.setContent(issueAssembler.issueDoToIssueListDto(reportIssues));
+        return reportPage;
     }
 }
