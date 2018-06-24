@@ -35,6 +35,8 @@ public class IssueListDTO {
 
     private Integer storyPoints;
 
+    private Boolean addIssue;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -145,6 +147,14 @@ public class IssueListDTO {
 
     public void setStoryPoints(Integer storyPoints) {
         this.storyPoints = storyPoints;
+    }
+
+    public Boolean getAddIssue() {
+        return addIssue;
+    }
+
+    public void setAddIssue(Boolean addIssue) {
+        this.addIssue = addIssue;
     }
 
     @Override

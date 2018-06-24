@@ -783,27 +783,27 @@
         ai.issue_id
         FROM agile_issue_sprint_rel aisr
         LEFT JOIN (
-                    SELECT adl1.issue_id, adl1.new_value, ais1.is_completed
-                    FROM agile_issue_sprint_rel aisr1, agile_data_log adl1, agile_issue_status ais1
-                    WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = #{sprintId}
-                    AND aisr1.issue_id = adl1.issue_id AND adl1.field = 'status'
-                    AND ais1.id = adl1.new_value
-                    <if test="actualEndDate != null">
-                        adl.creation_date &lt; #{actualEndDate}
-                    </if>
-                    ORDER BY adl1.log_id DESC limit 1
-                    ) adl2 ON adl2.issue_id = aisr.issue_id
+        SELECT adl1.issue_id, adl1.new_value, ais1.is_completed
+        FROM agile_issue_sprint_rel aisr1, agile_data_log adl1, agile_issue_status ais1
+        WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = #{sprintId}
+        AND aisr1.issue_id = adl1.issue_id AND adl1.field = 'status'
+        AND ais1.id = adl1.new_value
+        <if test="actualEndDate != null">
+            adl1.creation_date &lt; #{actualEndDate}
+        </if>
+        ORDER BY adl1.log_id DESC limit 1
+        ) adl2 ON adl2.issue_id = aisr.issue_id
         LEFT JOIN (
-                    SELECT adl3.issue_id, adl3.old_value, ais2.is_completed
-                    FROM agile_issue_sprint_rel aisr2, agile_data_log adl3, agile_issue_status ais2
-                    WHERE aisr2.project_id = #{projectId} AND aisr2.sprint_id = #{sprintId}
-                    AND aisr2.issue_id = adl3.issue_id AND adl3.field = 'status'
-                    AND ais2.id = adl3.old_value
-                    <if test="actualEndDate != null">
-                        adl3.creation_date > #{actualEndDate}
-                    </if>
-                    ORDER BY adl3.log_id ASC limit 1
-                    ) adl4 ON adl4.issue_id = aisr.issue_id,
+        SELECT adl3.issue_id, adl3.old_value, ais2.is_completed
+        FROM agile_issue_sprint_rel aisr2, agile_data_log adl3, agile_issue_status ais2
+        WHERE aisr2.project_id = #{projectId} AND aisr2.sprint_id = #{sprintId}
+        AND aisr2.issue_id = adl3.issue_id AND adl3.field = 'status'
+        AND ais2.id = adl3.old_value
+        <if test="actualEndDate != null">
+            adl3.creation_date > #{actualEndDate}
+        </if>
+        ORDER BY adl3.log_id ASC limit 1
+        ) adl4 ON adl4.issue_id = aisr.issue_id,
         agile_issue ai,agile_issue_status ais
         WHERE aisr.project_id = #{projectId} AND aisr.sprint_id = #{sprintId}
         AND aisr.issue_id = ai.issue_id AND ai.status_id = ais.id
@@ -817,8 +817,66 @@
         AND ais.is_completed = ${status}
         )
         )
-        ORDER BY ai.issue_id DESC
     </select>
 
+    <select id="queryIssueByIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT
+        ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+        ai.type_code, ai.status_id,
+        ais.name AS status_name,
+        ais.category_code AS status_code,
+        ai.summary, ai.priority_code,
+        alv.name AS priority_name,
+        ai.assignee_id, ai.project_id
+        FROM agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+        , agile_issue_status ais
+        WHERE ai.project_id = #{projectId} AND ai.status_id = ais.id
+        AND ai.issue_id IN
+        <foreach collection="issueIds" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+    </select>
+
+    <select id="queryIssueStoryPoints" resultType="io.choerodon.agile.infra.dataobject.SprintReportIssueStatusDO">
+        SELECT issue_id AS issue_id, new_string AS story_points
+        FROM agile_data_log
+        WHERE project_id = #{projectId} AND field = 'Story Points'
+        <if test="actualEndDate != null">
+            creation_date > #{actualEndDate}
+        </if>
+        AND issue_id IN
+        <foreach collection="issueIds" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        ORDER BY log_id DESC limit 1
+    </select>
+
+    <select id="queryIssueStatus" resultType="io.choerodon.agile.infra.dataobject.SprintReportIssueStatusDO">
+        SELECT adl.issue_id AS issue_id, ais.category_code AS category_code, ais.name AS status_name
+        FROM agile_data_log adl, agile_issue_status ais
+        WHERE adl.project_id = #{projectId} AND adl.field = 'status'
+        AND ais.id = adl.old_value
+        AND adl.issue_id IN
+        <foreach collection="issueIds" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        <if test="isBefore = true">
+            <if test="actualEndDate != null">
+                adl.creation_date &lt; #{actualEndDate}
+            </if>
+            ORDER BY adl.log_id DESC limit 1
+        </if>
+        <if test="isBefore = false">
+            <if test="actualEndDate != null">
+                adl.creation_date > #{actualEndDate}
+            </if>
+            ORDER BY adl.log_id ASC limit 1
+        </if>
+    </select>
 
 </mapper>

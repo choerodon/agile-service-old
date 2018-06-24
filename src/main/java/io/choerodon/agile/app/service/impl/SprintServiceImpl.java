@@ -290,84 +290,65 @@ public class SprintServiceImpl implements SprintService {
         SprintDO sprintDO = new SprintDO();
         sprintDO.setProjectId(projectId);
         sprintDO.setSprintId(sprintId);
-        sprintDO = sprintMapper.selectOne(sprintDO);
-        if (sprintDO == null || Objects.equals(sprintDO.getStatusCode(), SPRINT_PLANNING_CODE)) {
+        SprintDO sprint = sprintMapper.selectOne(sprintDO);
+        if (sprint == null || Objects.equals(sprint.getStatusCode(), SPRINT_PLANNING_CODE)) {
             throw new CommonException(SPRINT_REPORT_ERROR);
         }
-        Date actualEndDate = sprintDO.getActualEndDate();
-        List<SprintReportIssueSearchDO> reportSearchIssues;
-        Page<Long> reportIssueIds;
+        Date actualEndDate = sprint.getActualEndDate();
+        Page<Long> reportIssuePage = new Page<>();
+        Page<IssueListDTO> reportPage = new Page<>();
+        pageRequest.resetOrder("ai", new HashMap<>());
         switch (status) {
             case DONE:
-                reportIssueIds = PageHelper.doPageAndSort(pageRequest,() -> reportMapper.queryReportIssueIds(projectId, sprintId, actualEndDate, true));
-                reportSearchIssues = reportIssues.getContent();
-                reportSearchIssues = reportSearchIssues.stream().map(reportSearchIssue -> {
-                    if (reportSearchIssue.getNewStatusId() != null && !Objects.equals(reportSearchIssue.getNewStatusId(), "")) {
-                        if (reportSearchIssue.getNewCompleted()) {
-                            exchangeNewStatus(reportSearchIssue);
-                            return reportSearchIssue;
-                        } else {
-                            return null;
-                        }
-                    } else if (reportSearchIssue.getOldStatusId() != null && !Objects.equals(reportSearchIssue.getOldStatusId(), "")) {
-                        if (reportSearchIssue.getOldCompleted()) {
-                            exchangeOldStatus(reportSearchIssue);
-                            return reportSearchIssue;
-                        } else {
-                            return null;
-                        }
-                    } else if (reportSearchIssue.getCompleted()) {
-                        return reportSearchIssue;
-                    } else {
-                        return null;
-                    }
-                }).collect(Collectors.toList());
+                reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryReportIssueIds(projectId, sprintId, actualEndDate, true));
                 break;
             case UNFINISHED:
-                reportIssueIds = PageHelper.doPageAndSort(pageRequest,() -> reportMapper.queryReportIssueIds(projectId, sprintId, actualEndDate, true));
-                reportSearchIssues = reportIssues.getContent();
-                reportSearchIssues = reportSearchIssues.stream().map(reportSearchIssue -> {
-                    if (reportSearchIssue.getNewStatusId() != null && !Objects.equals(reportSearchIssue.getNewStatusId(), "")) {
-                        if (!reportSearchIssue.getNewCompleted()) {
-                            exchangeNewStatus(reportSearchIssue);
-                            return reportSearchIssue;
-                        } else {
-                            return null;
-                        }
-                    } else if (reportSearchIssue.getOldStatusId() != null && !Objects.equals(reportSearchIssue.getOldStatusId(), "")) {
-                        if (!reportSearchIssue.getOldCompleted()) {
-                            exchangeOldStatus(reportSearchIssue);
-                            return reportSearchIssue;
-                        } else {
-                            return null;
-                        }
-                    } else if (!reportSearchIssue.getCompleted()) {
-                        return reportSearchIssue;
-                    } else {
-                        return null;
-                    }
-                }).collect(Collectors.toList());
+                reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryReportIssueIds(projectId, sprintId, actualEndDate, false));
                 break;
             case REMOVE:
-                reportIssues = PageHelper.doPageAndSort(pageRequest,() -> sprintMapper.queryReportRemoveIssue(projectId, sprintId, actualEndDate));
+                reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryRemoveIssueIdsDuringSprint(sprint));
                 break;
             default:
                 break;
         }
-        return null;
-    }
+        List<Long> reportIssueIds = reportIssuePage.getContent();
+        if(reportIssueIds.isEmpty()){
+            return reportPage;
+        }
+        //冲刺报告查询的issue
+        List<IssueDO> reportIssues = reportMapper.queryIssueByIssueIds(projectId, reportIssueIds);
+        //冲刺中新添加的issue
+        List<Long> issueIdAddList = reportMapper.queryAddIssueIdsDuringSprint(sprintDO);
+        //冲刺报告中issue的故事点
+        List<SprintReportIssueStatusDO> reportIssueStoryPoints = reportMapper.queryIssueStoryPoints(projectId, reportIssueIds, actualEndDate);
+        Map<Long, SprintReportIssueStatusDO> reportIssueStoryPointsMap = reportIssueStoryPoints.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
+        //冲刺完成前issue的最后变更状态
+        List<SprintReportIssueStatusDO> reportIssueBeforeStatus = reportMapper.queryIssueStatus(projectId, reportIssueIds, actualEndDate, true);
+        Map<Long, SprintReportIssueStatusDO> reportIssueBeforeStatusMap = reportIssueBeforeStatus.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
+        //冲刺完成后issue的最初变更状态
+        reportIssueIds.removeAll(reportIssueBeforeStatusMap.keySet());
+        List<SprintReportIssueStatusDO> reportIssueAfterStatus = reportMapper.queryIssueStatus(projectId, reportIssueIds, actualEndDate, false);
+        Map<Long, SprintReportIssueStatusDO> reportIssueAfterStatusMap = reportIssueAfterStatus.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
+        reportIssues = reportIssues.stream().map(reportIssue -> {
+            SprintReportIssueStatusDO issueStoryPoints = reportIssueStoryPointsMap.get(reportIssue.getIssueId());
+            Integer storyPoints = issueStoryPoints == null ? 0 : Integer.parseInt(issueStoryPoints.getStoryPoints());
+            SprintReportIssueStatusDO issueBeforeStatus = reportIssueBeforeStatusMap.get(reportIssue.getIssueId());
+            SprintReportIssueStatusDO issueAfterStatus = reportIssueAfterStatusMap.get(reportIssue.getIssueId());
+            String statusCode = issueBeforeStatus == null ? (issueAfterStatus == null ? reportIssue.getStatusCode() : issueAfterStatus.getCategoryCode()) : issueBeforeStatus.getCategoryCode();
+            String statusName = issueBeforeStatus == null ? (issueAfterStatus == null ? reportIssue.getStatusName() : issueAfterStatus.getStatusName()) : issueBeforeStatus.getStatusName();
+            reportIssue.setAddIssue(issueIdAddList.contains(reportIssue.getIssueId()));
+            reportIssue.setStoryPoints(storyPoints);
+            reportIssue.setStatusCode(statusCode);
+            reportIssue.setStatusName(statusName);
+            return reportIssue;
+        }).collect(Collectors.toList());
 
-    private void exchangeOldStatus(SprintReportIssueSearchDO reportSearchIssue) {
-        reportSearchIssue.setStatusId(Long.valueOf(reportSearchIssue.getOldStatusId()));
-        reportSearchIssue.setCategoryCode(reportSearchIssue.getOldCategoryCode());
-        reportSearchIssue.setName(reportSearchIssue.getOldName());
-        reportSearchIssue.setCompleted(reportSearchIssue.getOldCompleted());
-    }
-
-    private void exchangeNewStatus(SprintReportIssueSearchDO reportSearchIssue) {
-        reportSearchIssue.setStatusId(Long.valueOf(reportSearchIssue.getNewStatusId()));
-        reportSearchIssue.setCategoryCode(reportSearchIssue.getNewCategoryCode());
-        reportSearchIssue.setName(reportSearchIssue.getNewName());
-        reportSearchIssue.setCompleted(reportSearchIssue.getNewCompleted());
+        reportPage.setTotalPages(reportIssuePage.getTotalPages());
+        reportPage.setTotalElements(reportIssuePage.getTotalElements());
+        reportPage.setSize(reportIssuePage.getSize());
+        reportPage.setNumberOfElements(reportIssuePage.getNumberOfElements());
+        reportPage.setNumber(reportIssuePage.getNumber());
+        reportPage.setContent(issueAssembler.issueDoToIssueListDto(reportIssues));
+        return reportPage;
     }
 }

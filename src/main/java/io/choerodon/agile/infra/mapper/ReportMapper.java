@@ -1,8 +1,10 @@
 package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.domain.agile.entity.SprintE;
+import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.dataobject.ReportIssueDO;
 import io.choerodon.agile.infra.dataobject.SprintDO;
+import io.choerodon.agile.infra.dataobject.SprintReportIssueStatusDO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -232,5 +234,11 @@ public interface ReportMapper {
      */
     Date queryAddIssueDuringSprintNoData(@Param("issueId") Long issueId, @Param("sprintId") Long sprintId);
 
-    List queryReportIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("actualEndDate") Date actualEndDate, @Param("status") boolean status);
+    List<Long> queryReportIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("actualEndDate") Date actualEndDate, @Param("status") Boolean status);
+
+    List<IssueDO> queryIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
+    List<SprintReportIssueStatusDO> queryIssueStoryPoints(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("actualEndDate") Date actualEndDate);
+
+    List<SprintReportIssueStatusDO> queryIssueStatus(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("actualEndDate") Date actualEndDate, @Param("isBefore") boolean isBefore);
 }

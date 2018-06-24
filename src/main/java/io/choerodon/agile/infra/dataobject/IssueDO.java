@@ -110,6 +110,9 @@ public class IssueDO extends AuditDomain {
     @Transient
     private String color;
 
+    @Transient
+    private Boolean addIssue;
+
     private BigDecimal estimateTime;
 
     private BigDecimal remainingTime;
@@ -290,6 +293,14 @@ public class IssueDO extends AuditDomain {
 
     public void setColorCode(String colorCode) {
         this.colorCode = colorCode;
+    }
+
+    public Boolean getAddIssue() {
+        return addIssue;
+    }
+
+    public void setAddIssue(Boolean addIssue) {
+        this.addIssue = addIssue;
     }
 
     @Override
