@@ -119,6 +119,13 @@
         WHERE aisr.issue_id = #{issueId} AND aisr.sprint_id = asp.sprint_id AND asp.status_code = 'closed'
     </select>
 
+    <select id="querySprintNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+        SELECT
+        asp.sprint_id, asp.sprint_name
+        FROM agile_issue_sprint_rel aisr, agile_sprint asp
+        WHERE aisr.issue_id = #{issueId} AND aisr.sprint_id = asp.sprint_id
+    </select>
+
     <select id="queryActiveSprintNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
         SELECT
         asp.sprint_id, asp.sprint_name
