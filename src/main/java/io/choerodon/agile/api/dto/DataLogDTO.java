@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import java.util.Date;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/6/14.
  * Email: fuqianghuang01@gmail.com
@@ -22,6 +24,10 @@ public class DataLogDTO {
     private String newString;
 
     private Long issueId;
+
+    private Long lastUpdateBy;
+
+    private Date lastUpdateDate;
 
     public Long getLogId() {
         return logId;
@@ -85,5 +91,21 @@ public class DataLogDTO {
 
     public void setIssueId(Long issueId) {
         this.issueId = issueId;
+    }
+
+    public Long getLastUpdateBy() {
+        return lastUpdateBy;
+    }
+
+    public void setLastUpdateBy(Long lastUpdateBy) {
+        this.lastUpdateBy = lastUpdateBy;
+    }
+
+    public Date getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
+    public void setLastUpdateDate(Date lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
     }
 }
