@@ -38,7 +38,7 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     int queryIssueCount(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    int queryStoryPoint(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("userId") Long userId, @Param("categoryCode") String categoryCode, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
+    int queryStoryPoint(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("userId") Long userId, @Param("categoryCode") String categoryCode, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql);
 
     List<IssueCountDO> queryIssueCountMap(@Param("projectId") Long projectId, @Param("sprintIds") List<Long> sprintIds);
 
@@ -50,9 +50,9 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     int queryNotDoneIssueCount(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    List<AssigneeIssueDO> queryAssigneeIssueCount(@Param("projectId") Long projectId, @Param("sprintIds") List<Long> sprintIds,  @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
+    List<AssigneeIssueDO> queryAssigneeIssueCount(@Param("projectId") Long projectId, @Param("sprintIds") List<Long> sprintIds,  @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql);
 
-    List<AssigneeIssueDO> queryAssigneeIssueCountById(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId,  @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
+    List<AssigneeIssueDO> queryAssigneeIssueCountById(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId,  @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql);
 
     List<Long> queryIssueIdOrderByRankDesc(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
@@ -61,4 +61,6 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
     List<Long> queryIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
     SprintNameDO querySprintNameBySprintId(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+
+    List<Long> queryAllRankIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 }
