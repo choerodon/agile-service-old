@@ -250,4 +250,14 @@ public interface ReportMapper {
     List<SprintReportIssueStatusDO> queryIssueStoryPoints(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("actualEndDate") Date actualEndDate);
 
     List<SprintReportIssueStatusDO> queryIssueStatus(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("actualEndDate") Date actualEndDate, @Param("isBefore") boolean isBefore);
+
+    /**
+     * 获取快捷创建的issue的字段值
+     *
+     * @param issueId issueId
+     * @param date    date
+     * @param field   field
+     * @return Integer
+     */
+    Integer queryAddIssueValueDuringSprintNoData(@Param("issueId")Long issueId,@Param("date") Date date, @Param("field")String field);
 }
