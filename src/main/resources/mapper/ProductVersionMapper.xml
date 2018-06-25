@@ -306,6 +306,7 @@
                      #{statusCode}
                   </foreach>
               </if>
+              ORDER BY version_id DESC
     </select>
 
     <select id="listByProjectId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionCommonDO">

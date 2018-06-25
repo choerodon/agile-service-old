@@ -407,7 +407,7 @@ public class SprintServiceImpl implements SprintService {
                 break;
         }
         List<Long> reportIssueIds = reportIssuePage.getContent();
-        if(reportIssueIds.isEmpty()){
+        if (reportIssueIds.isEmpty()) {
             return reportPage;
         }
         //冲刺报告查询的issue
@@ -422,7 +422,10 @@ public class SprintServiceImpl implements SprintService {
         Map<Long, SprintReportIssueStatusDO> reportIssueBeforeStatusMap = reportIssueBeforeStatus.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
         //冲刺完成后issue的最初变更状态
         reportIssueIds.removeAll(reportIssueBeforeStatusMap.keySet());
-        List<SprintReportIssueStatusDO> reportIssueAfterStatus = reportMapper.queryIssueStatus(projectId, reportIssueIds, actualEndDate, false);
+        List<SprintReportIssueStatusDO> reportIssueAfterStatus = new ArrayList<>();
+        if (!reportIssueIds.isEmpty()) {
+            reportIssueAfterStatus = reportMapper.queryIssueStatus(projectId, reportIssueIds, actualEndDate, false);
+        }
         Map<Long, SprintReportIssueStatusDO> reportIssueAfterStatusMap = reportIssueAfterStatus.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
         reportIssues = reportIssues.stream().map(reportIssue -> {
             SprintReportIssueStatusDO issueStoryPoints = reportIssueStoryPointsMap.get(reportIssue.getIssueId());
@@ -437,7 +440,6 @@ public class SprintServiceImpl implements SprintService {
             reportIssue.setStatusName(statusName);
             return reportIssue;
         }).collect(Collectors.toList());
-
         reportPage.setTotalPages(reportIssuePage.getTotalPages());
         reportPage.setTotalElements(reportIssuePage.getTotalElements());
         reportPage.setSize(reportIssuePage.getSize());
