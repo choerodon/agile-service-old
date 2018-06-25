@@ -608,8 +608,8 @@ public class IssueServiceImpl implements IssueService {
                 }
             }
             if (sprintDO != null) {
-                newSprintIdStr = "".equals(newSprintIdStr) ? sprintDO.getSprintId().toString() : "," + newSprintIdStr + sprintDO.getSprintId().toString();
-                newSprintNameStr = "".equals(newSprintNameStr) ? sprintDO.getSprintName() : "," + newSprintNameStr + sprintDO.getSprintName();
+                newSprintIdStr = "".equals(newSprintIdStr) ? sprintDO.getSprintId().toString() : newSprintIdStr + "," + sprintDO.getSprintId().toString();
+                newSprintNameStr = "".equals(newSprintNameStr) ? sprintDO.getSprintName() :  newSprintNameStr + "," + sprintDO.getSprintName();
             }
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(projectId);
