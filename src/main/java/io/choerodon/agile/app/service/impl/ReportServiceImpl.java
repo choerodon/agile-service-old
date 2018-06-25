@@ -287,7 +287,11 @@ public class ReportServiceImpl implements ReportService {
         List<ReportIssueE> issueAddList = issueIdAddList != null && !issueIdAddList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueValueDuringSprint(issueIdAddList, sprintDO, field), ReportIssueE.class) : null;
         //在冲刺开始期间创建的，没有生成加入冲刺日志时间，要处理
         if (issueAddList != null && !issueAddList.isEmpty()) {
-            issueAddList.stream().filter(reportIssueE -> reportIssueE.getDate() == null).forEach(reportIssueE -> reportIssueE.setDate(reportMapper.queryAddIssueDuringSprintNoData(reportIssueE.getIssueId(), sprintDO.getSprintId())));
+            issueAddList.stream().filter(reportIssueE -> reportIssueE.getDate() == null).forEach(reportIssueE -> {
+                Date date = reportMapper.queryAddIssueDuringSprintNoData(reportIssueE.getIssueId(), sprintDO.getSprintId());
+                reportIssueE.setDate(date);
+                reportIssueE.setNewValue(reportMapper.queryAddIssueValueDuringSprintNoData(reportIssueE.getIssueId(),date,field));
+            });
         }
         if (issueAddList != null) {
             reportIssueEList.addAll(issueAddList);
