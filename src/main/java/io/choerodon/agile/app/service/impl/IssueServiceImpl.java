@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.choerodon.mybatis.constant.InsertOrUpdateConstant.OBJECT_VERSION_NUMBER;
+
 /**
  * 敏捷开发Issue
  *
@@ -113,6 +115,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String EPIC_ID_FIELD = "epicId";
     private static final String SPRINT_ID_FIELD = "sprintId";
     private static final String STATUS_ID = "statusId";
+    private static final String ISSUE_ID = "issueId";
     private static final String EPIC_COLOR_TYPE = "epic_color";
     private static final String RELATION_TYPE_FIX = "fix";
     private static final String FIELD_SUMMARY = "summary";
@@ -467,7 +470,8 @@ public class IssueServiceImpl implements IssueService {
                     IssueE dataLogIssueSub = new IssueE();
                     dataLogIssueSub.setStatusId(issueUpdateDTO.getStatusId());
                     dataLogIssueSub.setIssueId(sub.getIssueId());
-                    issueRepository.update(dataLogIssueSub, new String[]{STATUS_ID});
+                    dataLogIssueSub.setObjectVersionNumber(sub.getObjectVersionNumber());
+                    issueRepository.update(dataLogIssueSub, new String[]{STATUS_ID, ISSUE_ID, OBJECT_VERSION_NUMBER});
                     boardService.dataLogStatus(sub, dataLogIssueSub);
                 });
             }
@@ -617,7 +621,7 @@ public class IssueServiceImpl implements IssueService {
                 if (idx == 0) {
                     newSprintNameStr = sprintName.getSprintName();
                     newSprintIdStr = sprintName.getSprintId().toString();
-                    idx ++;
+                    idx++;
                 } else {
                     newSprintNameStr = newSprintNameStr + "," + sprintName.getSprintName();
                     newSprintIdStr = newSprintIdStr + "," + sprintName.getSprintId().toString();
@@ -625,7 +629,7 @@ public class IssueServiceImpl implements IssueService {
             }
             if (sprintDO != null) {
                 newSprintIdStr = "".equals(newSprintIdStr) ? sprintDO.getSprintId().toString() : newSprintIdStr + "," + sprintDO.getSprintId().toString();
-                newSprintNameStr = "".equals(newSprintNameStr) ? sprintDO.getSprintName() :  newSprintNameStr + "," + sprintDO.getSprintName();
+                newSprintNameStr = "".equals(newSprintNameStr) ? sprintDO.getSprintName() : newSprintNameStr + "," + sprintDO.getSprintName();
             }
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(projectId);
@@ -659,7 +663,7 @@ public class IssueServiceImpl implements IssueService {
         }
         List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
         moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
-        List<DataLogE> dataLogEList =  getSprintDataLogByMove(projectId, sprintId, moveIssueDTO);
+        List<DataLogE> dataLogEList = getSprintDataLogByMove(projectId, sprintId, moveIssueDTO);
         issueRepository.removeIssueFromSprintByIssueIds(projectId, moveIssueIds);
         if (sprintId != null && !Objects.equals(sprintId, 0L)) {
             issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds);
