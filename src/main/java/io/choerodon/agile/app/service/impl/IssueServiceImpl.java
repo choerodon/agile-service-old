@@ -595,7 +595,7 @@ public class IssueServiceImpl implements IssueService {
             String newSprintNameStr = "";
             int idx = 0;
             for (SprintNameDTO sprintName : sprintNames) {
-                if (activeSprintName != null && sprintId.equals(activeSprintName.getSprintId())) {
+                if (activeSprintName != null && activeSprintName.getSprintId().equals(sprintName.getSprintId())) {
                     continue;
                 }
                 if (idx == 0) {
