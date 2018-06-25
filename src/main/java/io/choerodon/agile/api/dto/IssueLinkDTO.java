@@ -39,6 +39,8 @@ public class IssueLinkDTO {
 
     private String priorityName;
 
+    private Long linkId;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -149,6 +151,14 @@ public class IssueLinkDTO {
 
     public void setPriorityName(String priorityName) {
         this.priorityName = priorityName;
+    }
+
+    public Long getLinkId() {
+        return linkId;
+    }
+
+    public void setLinkId(Long linkId) {
+        this.linkId = linkId;
     }
 
     @Override
