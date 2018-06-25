@@ -51,8 +51,14 @@ public class QuickFilterServiceImpl implements QuickFilterService {
                 case "sprint_id":
                     sqlQuery.append(" issue_id in ( select issue_id from agile_issue_sprint_rel where " + field + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ) ");
                     break;
+                case "creation_date":
+                    sqlQuery.append(" unix_timestamp(" + field + ")" + quickFilterValueDTO.getOperation() + "unix_timestamp('" + quickFilterValueDTO.getValue()+"')");
+                    break;
+                case "last_update_date":
+                    sqlQuery.append(" unix_timestamp(" + field + ")" + quickFilterValueDTO.getOperation() + "unix_timestamp('" + quickFilterValueDTO.getValue()+"')");
+                    break;
                 default:
-                    sqlQuery.append(field + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ");
+                    sqlQuery.append(" " + field + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ");
                     break;
             }
             int length = relationOperations.size();
