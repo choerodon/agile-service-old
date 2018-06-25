@@ -129,7 +129,7 @@ public class SprintServiceImpl implements SprintService {
             if (idx == 0) {
                 newSprintIdStr = sprintName.getSprintId().toString();
                 newSprintNameStr = sprintName.getSprintName();
-                idx ++;
+                idx++;
             } else {
                 newSprintIdStr = newSprintIdStr + "," + sprintName.getSprintId().toString();
                 newSprintNameStr = newSprintNameStr + "," + sprintName.getSprintName();
@@ -413,7 +413,8 @@ public class SprintServiceImpl implements SprintService {
         //冲刺报告查询的issue
         List<IssueDO> reportIssues = reportMapper.queryIssueByIssueIds(projectId, reportIssueIds);
         //冲刺中新添加的issue
-        List<Long> issueIdAddList = reportMapper.queryAddIssueIdsDuringSprint(sprintDO);
+        List<Long> issueIdBeforeSprintList = reportMapper.queryIssueIdsBeforeSprintStart(sprintDO);
+        List<Long> issueIdAddList = reportMapper.queryAddIssueIdsDuringSprint(sprintDO, issueIdBeforeSprintList);
         //冲刺报告中issue的故事点
         List<SprintReportIssueStatusDO> reportIssueStoryPoints = reportMapper.queryIssueStoryPoints(projectId, reportIssueIds, actualEndDate);
         Map<Long, SprintReportIssueStatusDO> reportIssueStoryPointsMap = reportIssueStoryPoints.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));

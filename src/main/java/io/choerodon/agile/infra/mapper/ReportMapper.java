@@ -75,10 +75,11 @@ public interface ReportMapper {
     /**
      * 获取冲刺期间加入的issue
      *
-     * @param sprintDO sprintDO
+     * @param sprintDO                sprintDO
+     * @param issueIdBeforeSprintList issueIdBeforeSprintList
      * @return issueIdList
      */
-    List<Long> queryAddIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO);
+    List<Long> queryAddIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO, @Param("issueIdBeforeSprintList") List<Long> issueIdBeforeSprintList);
 
     /**
      * 获取冲刺期间移除的issue
@@ -87,6 +88,14 @@ public interface ReportMapper {
      * @return issueIdList
      */
     List<Long> queryRemoveIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO);
+
+    /**
+     * 获取冲刺关系中的的issue
+     *
+     * @param sprintId sprintId
+     * @return issueIdList
+     */
+    List<Long> queryIssueIdsBySprintId(@Param("sprintId") Long sprintId);
 
     /**
      * 查询在冲刺期间添加的issue，包含issue加入的时间

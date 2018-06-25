@@ -120,18 +120,6 @@ public class IssueAssembler {
     }
 
     /**
-     * IssueSubUpdateDTO转换到IssueE
-     *
-     * @param issueSubUpdateDTO issueSubUpdateDTO
-     * @return IssueE
-     */
-    public IssueE issueSubUpdateDtoToEntity(IssueSubUpdateDTO issueSubUpdateDTO) {
-        IssueE issueE = new IssueE();
-        BeanUtils.copyProperties(issueSubUpdateDTO, issueE);
-        return issueE;
-    }
-
-    /**
      * issueCreateDTO转换到IssueE
      *
      * @param issueCreateDTO issueCreateDTO

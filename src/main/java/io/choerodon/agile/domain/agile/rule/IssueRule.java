@@ -23,9 +23,7 @@ public class IssueRule {
     @Autowired
     private IssueMapper issueMapper;
     @Autowired
-    private IssueLinkTypeMapper issueLinkTypeMapper;
-    @Autowired
-    private SprintMapper sprintMapper;
+    private IssueStatusMapper issueStatusMapper;
     @Autowired
     private IssueService issueService;
     @Autowired
@@ -39,6 +37,8 @@ public class IssueRule {
     private static final String COLOR = "color";
     private static final String EPIC_NAME = "epicName";
     private static final String ISSUE_EPIC = "issue_epic";
+    private static final String SUB_TASK = "sub_task";
+    private static final String STATUS_ID = "status_id";
     private static final String ERROR_ISSUE_ID_NOT_FOUND = "error.IssueRule.issueId";
 
     public void verifyCreateData(IssueCreateDTO issueCreateDTO, Long projectId) {
@@ -79,6 +79,10 @@ public class IssueRule {
         if (issueUpdate.get(EPIC_NAME) != null && !ISSUE_EPIC.equals(issueDO.getTypeCode())) {
             throw new CommonException("error.IssueRule.EpicName");
         }
+        //修改状态要有当前状态
+        if (issueUpdate.get(STATUS_ID) != null && issueStatusMapper.selectByPrimaryKey(Long.parseLong(issueUpdate.get(STATUS_ID).toString())) == null) {
+            throw new CommonException("error.IssueRule.statusId");
+        }
     }
 
     public void verifySubCreateData(IssueSubCreateDTO issueSubCreateDTO, Long projectId) {
@@ -93,13 +97,6 @@ public class IssueRule {
             issueSubCreateDTO.setProjectId(projectId);
         } else {
             throw new CommonException("error.IssueRule.issueNoFound");
-        }
-    }
-
-    public void verifyImportIssue(Long sprintId, Long projectId) {
-        SprintDO sprintDO = sprintMapper.queryByProjectIdAndSprintId(projectId, sprintId);
-        if (sprintDO == null) {
-            throw new CommonException("error.IssueRule.sprintNoFound");
         }
     }
 
@@ -150,6 +147,9 @@ public class IssueRule {
         }
         if (issueUpdateTypeDTO.getTypeCode().equals(issueE.getTypeCode())) {
             throw new CommonException("error.IssueRule.sameTypeCode");
+        }
+        if (issueE.getTypeCode().equals(SUB_TASK)) {
+            throw new CommonException("error.IssueRule.subTask");
         }
         return issueE;
     }

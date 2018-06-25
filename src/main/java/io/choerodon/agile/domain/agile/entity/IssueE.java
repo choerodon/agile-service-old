@@ -230,11 +230,10 @@ public class IssueE {
      * 初始化创建子任务
      *
      * @param issueSub issueSub
-     * @param statusId statusId
      * @return IssueE
      */
-    public IssueE initializationSubIssue(IssueE issueSub, Long statusId) {
-        issueSub.setStatusId(statusId);
+    public IssueE initializationSubIssue(IssueE issueSub) {
+        issueSub.setStatusId(this.statusId);
         issueSub.setReporterId(DetailsHelper.getUserDetails().getUserId());
         issueSub.setParentIssueId(this.issueId);
         issueSub.setSprintId(this.sprintId);

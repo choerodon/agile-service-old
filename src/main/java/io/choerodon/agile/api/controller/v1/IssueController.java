@@ -71,21 +71,6 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT)
-    @ApiOperation("更新issue子任务")
-    @PutMapping(value = "/sub_issue")
-    public ResponseEntity<IssueSubDTO> updateSubIssue(@ApiParam(value = "项目id", required = true)
-                                                      @PathVariable(name = "project_id") Long projectId,
-                                                      @ApiParam(value = "更新issueSub对象", required = true)
-                                                      @RequestBody JSONObject issueSubUpdate) {
-        issueRule.verifyUpdateData(issueSubUpdate, projectId);
-        IssueSubUpdateDTO issueSubUpdateDTO = new IssueSubUpdateDTO();
-        List<String> fieldList = verifyUpdateUtil.verifyUpdateData(issueSubUpdate, issueSubUpdateDTO);
-        return Optional.ofNullable(issueService.updateSubIssue(projectId, issueSubUpdateDTO, fieldList))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
-                .orElseThrow(() -> new CommonException("error.Issue.updateSubIssue"));
-    }
-
-    @Permission(level = ResourceLevel.PROJECT)
     @ApiOperation("更新issue")
     @PutMapping
     public ResponseEntity<IssueDTO> updateIssue(@ApiParam(value = "项目id", required = true)
