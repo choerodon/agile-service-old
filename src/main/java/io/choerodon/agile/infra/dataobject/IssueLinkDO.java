@@ -67,7 +67,6 @@ public class IssueLinkDO extends AuditDomain {
     @Transient
     private String priorityName;
 
-
     @Transient
     private String typeCode;
 
