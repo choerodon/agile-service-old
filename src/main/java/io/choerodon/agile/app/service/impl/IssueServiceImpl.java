@@ -591,6 +591,10 @@ public class IssueServiceImpl implements IssueService {
             SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
             String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
             String oldSprintNameStr = sprintNames.stream().map(sprintName -> sprintName.getSprintName()).collect(Collectors.joining(","));
+            if (activeSprintName != null) {
+                oldSprintIdStr = "".equals(oldSprintIdStr) ? activeSprintName.getSprintId().toString() : oldSprintIdStr + "," + activeSprintName.getSprintId().toString();
+                oldSprintNameStr = "".equals(oldSprintNameStr) ? activeSprintName.getSprintName() : oldSprintNameStr + "," + activeSprintName.getSprintName();
+            }
             String newSprintIdStr = "";
             String newSprintNameStr = "";
             int idx = 0;
