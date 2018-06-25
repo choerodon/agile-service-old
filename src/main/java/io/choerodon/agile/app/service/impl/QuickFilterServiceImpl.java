@@ -38,7 +38,23 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         int idx = 0;
         for (QuickFilterValueDTO quickFilterValueDTO : quickFilterValueDTOList) {
             String field = quickFilterFieldMapper.selectByPrimaryKey(quickFilterValueDTO.getFieldId()).getField();
-            sqlQuery.append(field + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ");
+            switch (field) {
+                case "component_id":
+                    sqlQuery.append(" issue_id in ( select issue_id from agile_component_issue_rel where " + field + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ) ");
+                    break;
+                case "version_id":
+                    sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ) ");
+                    break;
+                case "label_id":
+                    sqlQuery.append(" issue_id in ( select issue_id from agile_label_issue_rel where " + field + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ) ");
+                    break;
+                case "sprint_id":
+                    sqlQuery.append(" issue_id in ( select issue_id from agile_issue_sprint_rel where " + field + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ) ");
+                    break;
+                default:
+                    sqlQuery.append(field + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ");
+                    break;
+            }
             int length = relationOperations.size();
             if (idx < length && !relationOperations.get(idx).isEmpty()) {
                 sqlQuery.append(relationOperations.get(idx) +" ");
