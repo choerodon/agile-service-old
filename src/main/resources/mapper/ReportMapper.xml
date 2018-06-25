@@ -859,19 +859,20 @@
         SELECT adl.issue_id AS issue_id, ais.category_code AS category_code, ais.name AS status_name
         FROM agile_data_log adl, agile_issue_status ais
         WHERE adl.project_id = #{projectId} AND adl.field = 'status'
-        AND ais.id = adl.old_value
         AND adl.issue_id IN
         <foreach collection="issueIds" item="issueId"
                  open="(" close=")" separator=",">
             #{issueId}
         </foreach>
         <if test="isBefore == true">
+            AND ais.id = adl.new_value
             <if test="actualEndDate != null">
                 AND adl.creation_date &lt; #{actualEndDate}
             </if>
             ORDER BY adl.log_id DESC limit 1
         </if>
         <if test="isBefore == false">
+            AND ais.id = adl.old_value
             <if test="actualEndDate != null">
                 AND adl.creation_date > #{actualEndDate}
             </if>
