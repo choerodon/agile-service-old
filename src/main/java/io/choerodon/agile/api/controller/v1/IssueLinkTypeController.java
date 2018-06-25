@@ -31,13 +31,27 @@ public class IssueLinkTypeController {
     private IssueLinkTypeRule issueLinkTypeRule;
 
     @Permission(level = ResourceLevel.PROJECT)
-    @ApiOperation("根据issueId查询issueLink")
+    @ApiOperation("根据项目id查询issueLinkType")
     @GetMapping
     public ResponseEntity<List<IssueLinkTypeDTO>> listIssueLinkType(@ApiParam(value = "项目id", required = true)
-                                                                    @PathVariable(name = "project_id") Long projectId) {
-        return Optional.ofNullable(issueLinkTypeService.listIssueLinkType())
+                                                                    @PathVariable(name = "project_id") Long projectId,
+                                                                    @ApiParam(value = "不包含的issueLinkTypeId")
+                                                                    @RequestParam(required = false) Long issueLinkTypeId) {
+        return Optional.ofNullable(issueLinkTypeService.listIssueLinkType(projectId, issueLinkTypeId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.listIssueLinkType"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT)
+    @ApiOperation("根据issueLinkTypeId查询issueLinkType")
+    @GetMapping(value = "/{linkTypeId}")
+    public ResponseEntity<IssueLinkTypeDTO> queryIssueLinkType(@ApiParam(value = "项目id", required = true)
+                                                               @PathVariable(name = "project_id") Long projectId,
+                                                               @ApiParam(value = "linkTypeId", required = true)
+                                                               @PathVariable(name = "linkTypeId") Long linkTypeId) {
+        return Optional.ofNullable(issueLinkTypeService.queryIssueLinkType(projectId, linkTypeId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.IssueLinkType.queryIssueLinkType"));
     }
 
     @Permission(level = ResourceLevel.PROJECT)
@@ -47,7 +61,7 @@ public class IssueLinkTypeController {
                                                                 @PathVariable(name = "project_id") Long projectId,
                                                                 @ApiParam(value = "创建issueLinkType对象", required = true)
                                                                 @RequestBody IssueLinkTypeCreateDTO issueLinkTypeCreateDTO) {
-        issueLinkTypeRule.verifyCreateData(issueLinkTypeCreateDTO);
+        issueLinkTypeRule.verifyCreateData(issueLinkTypeCreateDTO, projectId);
         return Optional.ofNullable(issueLinkTypeService.createIssueLinkType(issueLinkTypeCreateDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.createIssueLinkType"));
@@ -60,6 +74,7 @@ public class IssueLinkTypeController {
                                                                 @PathVariable(name = "project_id") Long projectId,
                                                                 @ApiParam(value = "issueLinkType", required = true)
                                                                 @RequestBody IssueLinkTypeDTO issueLinkTypeDTO) {
+        issueLinkTypeRule.verifyUpdateData(issueLinkTypeDTO, projectId);
         return Optional.ofNullable(issueLinkTypeService.updateIssueLinkType(issueLinkTypeDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.updateIssueLinkType"));
@@ -74,8 +89,8 @@ public class IssueLinkTypeController {
                                               @PathVariable(name = "issueLinkTypeId") Long issueLinkTypeId,
                                               @ApiParam(value = "转移到其他的类型上，如果为空则不转移，直接删除")
                                               @RequestParam(required = false) Long toIssueLinkTypeId) {
-        issueLinkTypeRule.verifyDeleteData(issueLinkTypeId, toIssueLinkTypeId);
-        issueLinkTypeService.deleteIssueLinkType(issueLinkTypeId, toIssueLinkTypeId);
+        issueLinkTypeRule.verifyDeleteData(issueLinkTypeId, toIssueLinkTypeId, projectId);
+        issueLinkTypeService.deleteIssueLinkType(issueLinkTypeId, toIssueLinkTypeId, projectId);
         return new ResponseEntity(HttpStatus.OK);
     }
 }

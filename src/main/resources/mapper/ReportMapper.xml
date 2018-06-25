@@ -14,11 +14,10 @@
                            FROM
                                (SELECT
                                     adl.issue_id,
-                                    adl.new_value
+                                    adl.new_value,
+                                    MAX(adl.log_id)
                                 FROM agile_data_log adl
-                                WHERE adl.field = 'Sprint' AND adl.creation_date &lt;= #{sprintDO.startDate}
-                                ORDER BY adl.creation_date DESC
-                                LIMIT 1000000000000) adl1
+                                WHERE adl.field = 'Sprint' AND adl.creation_date &lt;= #{sprintDO.startDate}) adl1
                            GROUP BY
                                adl1.issue_id) a
                       WHERE FIND_IN_SET(#{sprintDO.sprintId}, a.new_value)
@@ -87,7 +86,8 @@
         SELECT
         adl.new_string,
         adl.issue_id,
-        adl.creation_date
+        adl.creation_date,
+        MAX(adl.log_id)
         FROM
         agile_data_log adl
         WHERE
@@ -98,9 +98,6 @@
                  open="(" close=")" separator=",">
             #{issueId}
         </foreach>
-        ORDER BY
-        adl.creation_date DESC
-        LIMIT 1000000000000
         ) adl1
         GROUP BY
         adl1.issue_id
@@ -178,11 +175,10 @@
                                  FROM
                                      (SELECT
                                           adl.issue_id,
-                                          adl.new_value
+                                          adl.new_value,
+                                          MAX(adl.log_id)
                                       FROM agile_data_log adl
-                                      WHERE adl.field = 'Sprint' AND adl.creation_date &lt;= #{sprintDO.startDate}
-                                      ORDER BY adl.creation_date DESC
-                                      LIMIT 1000000000000) adl1
+                                      WHERE adl.field = 'Sprint' AND adl.creation_date &lt;= #{sprintDO.startDate}) adl1
                                  GROUP BY
                                      adl1.issue_id) a
                             WHERE FIND_IN_SET(#{sprintDO.sprintId}, a.new_value)
@@ -241,7 +237,8 @@
         SELECT
         adl.issue_id,
         adl.creation_date AS date,
-        IFNULL(adl1.new_string,0) AS new_value
+        IFNULL(adl1.new_string,0) AS new_value,
+        MAX(adl1.log_id)
         FROM
         agile_data_log adl
         LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
@@ -256,9 +253,6 @@
                  open="(" close=")" separator=",">
             #{issueId}
         </foreach>
-        ORDER BY
-        adl1.creation_date DESC
-        LIMIT 10000000000
         ) a LEFT JOIN agile_issue ai on ai.issue_id = a.issue_id LEFT JOIN agile_project_info api ON api.project_id =
         ai.project_id LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN agile_project_info api2
         ON api2.project_id =
@@ -375,6 +369,7 @@
         adl.issue_id,
         adl.creation_date AS date,
         IFNULL( adl1.new_string, 0 ) AS old_value,
+        MAX(adl1.log_id),
         adl.log_id
         FROM
         agile_data_log adl
@@ -389,9 +384,6 @@
                  open="(" close=")" separator=",">
             #{issueId}
         </foreach>
-        ORDER BY
-        adl1.creation_date DESC
-        LIMIT 10000000000
         ) b GROUP BY
         b.log_id)a LEFT JOIN agile_issue ai on ai.issue_id = a.issue_id LEFT JOIN agile_project_info api ON
         api.project_id =
@@ -416,6 +408,7 @@
         adl.creation_date AS date,
         IFNULL( adl1.new_string, 0 ) AS
         new_value,
+        MAX(adl1.log_id),
         adl.log_id
         FROM
         agile_data_log adl
@@ -431,9 +424,6 @@
                  open="(" close=")" separator=",">
             #{issueId}
         </foreach>
-        ORDER BY
-        adl1.creation_date DESC
-        LIMIT 10000000000
         )b GROUP BY
         b.log_id) a
         LEFT JOIN agile_issue ai on ai.issue_id = a.issue_id LEFT JOIN agile_project_info api ON api.project_id =
@@ -448,7 +438,8 @@
         FROM
         (
         SELECT
-        adl.issue_id
+        adl.issue_id,
+        MAX(adl.log_id)
         FROM
         agile_data_log adl
         WHERE
@@ -460,9 +451,6 @@
             #{issueId}
         </foreach>
         AND adl.old_value = ''
-        ORDER BY
-        adl.creation_date DESC
-        LIMIT 1000000000000
         ) adl1
         GROUP BY
         adl1.issue_id
@@ -595,7 +583,8 @@
                     (
                         SELECT
                             aspr.issue_id,
-                            adl.new_value
+                            adl.new_value,
+                            MAX(adl.log_id)
                         FROM
                             agile_issue_sprint_rel aspr
                             LEFT JOIN agile_data_log adl ON aspr.issue_id = adl.issue_id
@@ -603,9 +592,6 @@
                                                             AND adl.creation_date &lt; #{sprintDO.actualEndDate}
                         WHERE
                             aspr.sprint_id = #{sprintDO.sprintId}
-                        ORDER BY
-                            adl.creation_date DESC
-                        LIMIT 1000000000
                     ) a
                 GROUP BY
                     a.issue_id
@@ -638,7 +624,8 @@
                         SELECT
                             aspr.issue_id,
                             adl.new_string AS new_value,
-                            adl.old_string AS old_value
+                            adl.old_string AS old_value,
+                            MAX(adl.log_id)
                         FROM
                             agile_issue_sprint_rel aspr
                             LEFT JOIN agile_data_log adl ON aspr.issue_id = adl.issue_id
@@ -646,9 +633,6 @@
                                                             AND adl.creation_date &lt; #{sprintDO.actualEndDate}
                         WHERE
                             aspr.sprint_id = #{sprintDO.sprintId}
-                        ORDER BY
-                            adl.creation_date DESC
-                        LIMIT 1000000000
                     ) a
                 GROUP BY
                     a.issue_id
@@ -661,7 +645,8 @@
                               (
                                   SELECT
                                       aspr1.issue_id,
-                                      adl1.new_value
+                                      adl1.new_value,
+                                      MAX(adl1.log_id)
                                   FROM
                                       agile_issue_sprint_rel aspr1
                                       LEFT JOIN agile_data_log adl1 ON aspr1.issue_id = adl1.issue_id
@@ -670,9 +655,6 @@
                                                                        adl1.creation_date &lt; #{sprintDO.actualEndDate}
                                   WHERE
                                       aspr1.sprint_id = #{sprintDO.sprintId}
-                                  ORDER BY
-                                      adl1.creation_date DESC
-                                  LIMIT 10000000000
                               ) e
                           GROUP BY
                               e.issue_id
@@ -717,16 +699,14 @@
                              FROM (
                                       SELECT
                                           adl1.issue_id,
-                                          adl1.new_value
+                                          adl1.new_value,
+                                          MAX(adl1.log_Id)
                                       FROM
                                           agile_data_log adl1
                                       WHERE
                                           adl1.field = 'resolution'
                                           AND adl1.creation_date &lt;= #{date}
                                           AND adl1.issue_id = #{issueId}
-                                      ORDER BY
-                                          adl1.log_id
-                                      LIMIT 100000000000
                                   ) c
                              GROUP BY
                                  c.issue_id) bbb
@@ -737,16 +717,14 @@
                             (
                                 SELECT
                                     adl.issue_id,
-                                    adl.new_value
+                                    adl.new_value,
+                                    MAX(adl.log_id)
                                 FROM
                                     agile_data_log adl
                                 WHERE
                                     adl.field = 'Sprint'
                                     AND adl.creation_date &lt;= #{date}
                                     AND adl.issue_id = #{issueId}
-                                ORDER BY
-                                    adl.log_id
-                                LIMIT 100000000000
                             ) d
                         GROUP BY
                             d.issue_id

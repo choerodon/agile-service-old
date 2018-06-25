@@ -2,4 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.agile.infra.mapper.IssueLinkTypeMapper">
 
+    <select id="queryIssueLinkTypeByProjectId" resultType="io.choerodon.agile.infra.dataobject.IssueLinkTypeDO">
+        select * from agile_issue_link_type where project_id = #{projectId}
+        <if test='issueLinkTypeId != null'>
+            and link_type_id != #{issueLinkTypeId}
+        </if>
+    </select>
 </mapper>

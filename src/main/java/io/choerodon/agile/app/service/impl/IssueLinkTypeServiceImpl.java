@@ -6,6 +6,7 @@ import io.choerodon.agile.app.assembler.IssueLinkTypeAssembler;
 import io.choerodon.agile.app.service.IssueLinkTypeService;
 import io.choerodon.agile.domain.agile.entity.IssueLinkTypeE;
 import io.choerodon.agile.domain.agile.repository.IssueLinkTypeRepository;
+import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,8 @@ public class IssueLinkTypeServiceImpl implements IssueLinkTypeService {
     private IssueLinkTypeAssembler issueLinkTypeAssembler;
 
     @Override
-    public List<IssueLinkTypeDTO> listIssueLinkType() {
-        return ConvertHelper.convertList(issueLinkTypeMapper.selectAll(), IssueLinkTypeDTO.class);
+    public List<IssueLinkTypeDTO> listIssueLinkType(Long projectId,Long issueLinkTypeId) {
+        return ConvertHelper.convertList(issueLinkTypeMapper.queryIssueLinkTypeByProjectId(projectId,issueLinkTypeId), IssueLinkTypeDTO.class);
     }
 
     @Override
@@ -46,12 +47,36 @@ public class IssueLinkTypeServiceImpl implements IssueLinkTypeService {
     }
 
     @Override
-    public int deleteIssueLinkType(Long issueLinkTypeId, Long toIssueLinkTypeId) {
-        if(toIssueLinkTypeId!=null){
-            issueLinkTypeRepository.batchUpdateRelToIssueLinkType(issueLinkTypeId,toIssueLinkTypeId);
-        }else{
+    public int deleteIssueLinkType(Long issueLinkTypeId, Long toIssueLinkTypeId, Long projectId) {
+        if (toIssueLinkTypeId != null) {
+            issueLinkTypeRepository.batchUpdateRelToIssueLinkType(issueLinkTypeId, toIssueLinkTypeId);
+        } else {
             issueLinkTypeRepository.deleteIssueLinkTypeRel(issueLinkTypeId);
         }
-        return issueLinkTypeRepository.delete(issueLinkTypeId);
+        return issueLinkTypeRepository.delete(issueLinkTypeId, projectId);
+    }
+
+    @Override
+    public IssueLinkTypeDTO queryIssueLinkType(Long projectId, Long linkTypeId) {
+        IssueLinkTypeDO issueLinkTypeDO = new IssueLinkTypeDO();
+        issueLinkTypeDO.setProjectId(projectId);
+        issueLinkTypeDO.setLinkTypeId(linkTypeId);
+        return ConvertHelper.convert(issueLinkTypeMapper.selectOne(issueLinkTypeDO), IssueLinkTypeDTO.class);
+    }
+
+    @Override
+    public void initIssueLinkType(Long projectId) {
+        IssueLinkTypeE duplicate = new IssueLinkTypeE();
+        duplicate.initDuplicate(projectId);
+        IssueLinkTypeE blocks = new IssueLinkTypeE();
+        blocks.initBlocks(projectId);
+        IssueLinkTypeE clones = new IssueLinkTypeE();
+        clones.initClones(projectId);
+        IssueLinkTypeE relates = new IssueLinkTypeE();
+        relates.initRelates(projectId);
+        issueLinkTypeRepository.create(duplicate);
+        issueLinkTypeRepository.create(blocks);
+        issueLinkTypeRepository.create(clones);
+        issueLinkTypeRepository.create(relates);
     }
 }

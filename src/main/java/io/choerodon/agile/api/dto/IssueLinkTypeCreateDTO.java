@@ -14,6 +14,8 @@ public class IssueLinkTypeCreateDTO {
 
     private String outWard;
 
+    private Long projectId;
+
     public String getLinkName() {
         return linkName;
     }
@@ -36,6 +38,14 @@ public class IssueLinkTypeCreateDTO {
 
     public void setOutWard(String outWard) {
         this.outWard = outWard;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 
     @Override
