@@ -279,7 +279,8 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
-    private void dataLogStatus(IssueDO originIssue, IssueE currentIssue) {
+    @Override
+    public void dataLogStatus(IssueDO originIssue, IssueE currentIssue) {
         if (originIssue.getStatusId().equals(currentIssue.getStatusId())) {
             return;
         }

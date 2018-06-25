@@ -3,9 +3,7 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
-import io.choerodon.agile.app.service.IssueAttachmentService;
-import io.choerodon.agile.app.service.IssueCommentService;
-import io.choerodon.agile.app.service.IssueLinkService;
+import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
@@ -15,7 +13,6 @@ import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
@@ -101,6 +98,8 @@ public class IssueServiceImpl implements IssueService {
     private IssueCommonAssembler issueCommonAssembler;
     @Autowired
     private SprintNameAssembler sprintNameAssembler;
+    @Autowired
+    private BoardService boardService;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -113,6 +112,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String COLOR_CODE_FIELD = "colorCode";
     private static final String EPIC_ID_FIELD = "epicId";
     private static final String SPRINT_ID_FIELD = "sprintId";
+    private static final String STATUS_ID = "statusId";
     private static final String EPIC_COLOR_TYPE = "epic_color";
     private static final String RELATION_TYPE_FIX = "fix";
     private static final String FIELD_SUMMARY = "summary";
@@ -306,7 +306,7 @@ public class IssueServiceImpl implements IssueService {
                 oldString = ("".equals(oldString) ? activeSprintName.getSprintName() : oldString + "," + activeSprintName.getSprintName());
             }
             if (sprintName != null) {
-                newValue = ("".equals(newValue) ? sprintName.getSprintId().toString() :  newValue + "," + sprintName.getSprintId().toString());
+                newValue = ("".equals(newValue) ? sprintName.getSprintId().toString() : newValue + "," + sprintName.getSprintId().toString());
                 newString = ("".equals(newString) ? sprintName.getSprintName() : newString + "," + sprintName.getSprintName());
             }
             DataLogE dataLogE = new DataLogE();
@@ -444,14 +444,38 @@ public class IssueServiceImpl implements IssueService {
                 }
             }
             issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
+            //日志记录
+            dataLogStatus(fieldList, issueUpdateDTO, originIssue);
+            dataLog(originIssue, issueUpdateDTO, fieldList.contains(SPRINT_ID_FIELD));
         }
-        dataLog(originIssue, issueUpdateDTO, fieldList.contains(SPRINT_ID_FIELD));
         Long issueId = issueUpdateDTO.getIssueId();
         handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId);
         handleUpdateComponentIssueRel(issueUpdateDTO.getComponentIssueRelDTOList(), projectId, issueId);
         handleUpdateVersionIssueRel(issueUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId);
         return queryIssue(projectId, issueId);
     }
+
+    private void dataLogStatus(List<String> fieldList, IssueUpdateDTO issueUpdateDTO, IssueDO originIssue) {
+        if (fieldList.contains(STATUS_ID)) {
+            IssueE dataLogIssue = new IssueE();
+            dataLogIssue.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogIssue.setStatusId(issueUpdateDTO.getStatusId());
+            dataLogIssue.setStatusId(originIssue.getProjectId());
+            boardService.dataLogStatus(originIssue, dataLogIssue);
+            if (!originIssue.getTypeCode().equals(SUB_TASK)) {
+                List<IssueDO> subIssueList = issueMapper.queryIssueSubList(originIssue.getProjectId(), originIssue.getIssueId());
+                //子任务记录日志
+                subIssueList.forEach(sub -> {
+                    IssueE dataLogIssueSub = new IssueE();
+                    dataLogIssueSub.setStatusId(issueUpdateDTO.getStatusId());
+                    dataLogIssueSub.setIssueId(sub.getIssueId());
+                    issueRepository.update(dataLogIssueSub, new String[]{STATUS_ID});
+                    boardService.dataLogStatus(sub, dataLogIssueSub);
+                });
+            }
+        }
+    }
+
 
     @Override
     public List<EpicDataDTO> listEpic(Long projectId) {
@@ -515,17 +539,22 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO) {
         IssueE subIssueE = issueAssembler.issueSubCreateDtoToEntity(issueSubCreateDTO);
-        IssueE issueE = queryIssueByProjectIdAndIssueId(subIssueE.getProjectId(), subIssueE.getParentIssueId());
-        //设置初始状态,如果有todo，就用todo，否则为doing，最后为done
-        List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(issueE.getProjectId());
+        IssueE parentIssueE = queryIssueByProjectIdAndIssueId(subIssueE.getProjectId(), subIssueE.getParentIssueId());
+        //设置初始状态,跟随父类状态
+        subIssueE = parentIssueE.initializationSubIssue(subIssueE);
+        //日志记录
+        IssueDO issueDO = new IssueDO();
+        List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(subIssueE.getProjectId());
         Long statusId = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
                 issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
                         issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(new IssueStatusCreateDO()))).getId();
-        subIssueE = issueE.initializationSubIssue(subIssueE, statusId);
+        issueDO.setProjectId(subIssueE.getProjectId());
+        issueDO.setStatusId(statusId);
+        boardService.dataLogStatus(issueDO, subIssueE);
         //设置issue编号
         initializationIssueNum(subIssueE);
         Long issueId = issueRepository.create(subIssueE).getIssueId();
-        if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
+        if (parentIssueE.getSprintId() != null && !Objects.equals(parentIssueE.getSprintId(), 0L)) {
             issueRepository.issueToSprint(subIssueE.getProjectId(), subIssueE.getSprintId(), issueId);
         }
         if (issueSubCreateDTO.getIssueLinkCreateDTOList() != null && !issueSubCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
@@ -534,17 +563,6 @@ public class IssueServiceImpl implements IssueService {
         handleCreateLabelIssue(issueSubCreateDTO.getLabelIssueRelDTOList(), issueId);
         handleCreateVersionIssueRel(issueSubCreateDTO.getVersionIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
         return queryIssueSub(subIssueE.getProjectId(), issueId);
-    }
-
-    @Override
-    public IssueSubDTO updateSubIssue(Long projectId, IssueSubUpdateDTO issueSubUpdateDTO, List<String> fieldList) {
-        if (fieldList != null && !fieldList.isEmpty()) {
-            issueRepository.update(issueAssembler.issueSubUpdateDtoToEntity(issueSubUpdateDTO), fieldList.toArray(new String[fieldList.size()]));
-        }
-        Long issueId = issueSubUpdateDTO.getIssueId();
-        handleUpdateLabelIssue(issueSubUpdateDTO.getLabelIssueRelDTOList(), issueId);
-        handleUpdateVersionIssueRel(issueSubUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId);
-        return queryIssueSub(projectId, issueId);
     }
 
     @Override
@@ -985,8 +1003,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private List<ComponentIssueRelDO> getComponentIssueRel(Long projectId, Long issueId) {
-        List<ComponentIssueRelDO> componentIssueRelDOList = componentIssueRelMapper.selectByProjectIdAndIssueId(projectId, issueId);
-        return componentIssueRelDOList;
+        return componentIssueRelMapper.selectByProjectIdAndIssueId(projectId, issueId);
     }
 
     private void dataLogComponent(Long projectId, Long issueId, List<ComponentIssueRelDO> originComponentIssueRels, List<ComponentIssueRelDO> curComponentIssueRels) {

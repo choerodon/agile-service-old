@@ -19,4 +19,5 @@ public interface ReportService {
      * @return ReportIssueDTO
      */
     List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type);
+
 }
