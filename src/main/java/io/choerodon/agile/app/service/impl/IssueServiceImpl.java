@@ -591,10 +591,6 @@ public class IssueServiceImpl implements IssueService {
             SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
             String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
             String oldSprintNameStr = sprintNames.stream().map(sprintName -> sprintName.getSprintName()).collect(Collectors.joining(","));
-            if (activeSprintName != null) {
-                oldSprintIdStr = "".equals(oldSprintIdStr) ? activeSprintName.getSprintId().toString() : oldSprintIdStr + "," + activeSprintName.getSprintId().toString();
-                oldSprintNameStr = "".equals(oldSprintNameStr) ? activeSprintName.getSprintName() : oldSprintNameStr + "," + activeSprintName.getSprintName();
-            }
             String newSprintIdStr = "";
             String newSprintNameStr = "";
             int idx = 0;
@@ -647,9 +643,12 @@ public class IssueServiceImpl implements IssueService {
         }
         List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
         moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
+        List<DataLogE> dataLogEList = new ArrayList<>();
+        if (sprintId != null && !Objects.equals(sprintId, 0L)) {
+            dataLogEList = getSprintDataLogByMove(projectId, sprintId, moveIssueDTO);
+        }
         issueRepository.removeIssueFromSprintByIssueIds(projectId, moveIssueIds);
         if (sprintId != null && !Objects.equals(sprintId, 0L)) {
-            List<DataLogE> dataLogEList = getSprintDataLogByMove(projectId, sprintId, moveIssueDTO);
             issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds);
             dataLogSprintByMove(dataLogEList);
         }
