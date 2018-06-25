@@ -88,6 +88,10 @@ public class IssueDTO {
 
     private String statusColor;
 
+    private String assigneeImageUrl;
+
+    private String reporterImageUrl;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -382,6 +386,22 @@ public class IssueDTO {
 
     public void setCloseSprint(List<SprintNameDTO> closeSprint) {
         this.closeSprint = closeSprint;
+    }
+
+    public String getAssigneeImageUrl() {
+        return assigneeImageUrl;
+    }
+
+    public void setAssigneeImageUrl(String assigneeImageUrl) {
+        this.assigneeImageUrl = assigneeImageUrl;
+    }
+
+    public String getReporterImageUrl() {
+        return reporterImageUrl;
+    }
+
+    public void setReporterImageUrl(String reporterImageUrl) {
+        this.reporterImageUrl = reporterImageUrl;
     }
 
     @Override

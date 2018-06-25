@@ -52,7 +52,7 @@ public class IssueLinkTypeRepositoryImpl implements IssueLinkTypeRepository {
     public int delete(Long linkTypeId, Long projectId) {
         IssueLinkTypeDO issueLinkTypeDO = new IssueLinkTypeDO();
         issueLinkTypeDO.setLinkTypeId(linkTypeId);
-        issueLinkTypeDO.setLinkTypeId(projectId);
+        issueLinkTypeDO.setProjectId(projectId);
         return issueLinkTypeMapper.delete(issueLinkTypeDO);
     }
 

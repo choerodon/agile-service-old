@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.assembler;
 
+import com.google.common.collect.Lists;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
@@ -11,10 +12,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -53,8 +51,15 @@ public class IssueAssembler {
         issueDTO.setIssueCommentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueCommentDOList(), IssueCommentDTO.class));
         issueDTO.setStatusColor(ColorUtil.initializationStatusColor(issueDTO.getStatusCode(), lookupValueMap));
         issueDTO.setSubIssueDTOList(issueDoToSubIssueDto(issueDetailDO.getSubIssueDOList(), lookupValueMap));
-        issueDTO.setAssigneeName(userRepository.queryUserNameByOption(issueDTO.getAssigneeId(), true));
-        issueDTO.setReporterName(userRepository.queryUserNameByOption(issueDTO.getReporterId(), true));
+        List<Long> assigneeIdList = Arrays.asList(issueDetailDO.getAssigneeId(), issueDetailDO.getReporterId());
+        Map<Long, UserMessageDO> userMessageDOMap = userRepository.queryUsersMap(
+                assigneeIdList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
+        String assigneeName = userMessageDOMap.get(issueDTO.getAssigneeId()) != null ? userMessageDOMap.get(issueDTO.getAssigneeId()).getName() : null;
+        String reporterName = userMessageDOMap.get(issueDTO.getReporterId()) != null ? userMessageDOMap.get(issueDTO.getReporterId()).getName() : null;
+        issueDTO.setAssigneeName(assigneeName);
+        issueDTO.setAssigneeImageUrl(assigneeName != null ? userMessageDOMap.get(issueDTO.getAssigneeId()).getImageUrl() : null);
+        issueDTO.setReporterName(reporterName);
+        issueDTO.setReporterImageUrl(reporterName != null ? userMessageDOMap.get(issueDTO.getReporterId()).getImageUrl() : null);
         return issueDTO;
     }
 
