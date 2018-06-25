@@ -78,6 +78,7 @@
                 #{sprintStatusCode}
             </foreach>
         </if>
+        ORDER BY last_update_date DESC
     </select>
 
     <select id="queryNotDoneIssueCount" resultType="java.lang.Integer">
