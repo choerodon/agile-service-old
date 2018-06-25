@@ -267,10 +267,10 @@ public class ProductVersionServiceImpl implements ProductVersionService {
 
     @Override
     public Boolean mergeVersion(Long projectId, ProductVersionMergeDTO productVersionMergeDTO) {
+        productVersionMergeDTO.getSourceVersionIds().remove(productVersionMergeDTO.getTargetVersionId());
         if(productVersionMergeDTO.getSourceVersionIds().isEmpty()){
             throw new CommonException(SOURCE_VERSION_ERROR);
         }
-        productVersionMergeDTO.getSourceVersionIds().remove(productVersionMergeDTO.getTargetVersionId());
         List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         versionIssueRelRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         productVersionRepository.issueToDestination(projectId, productVersionMergeDTO.getTargetVersionId(), versionIssues);

@@ -375,9 +375,9 @@
             <if test='advancedSearchArgs.onlyStory != "" and advancedSearchArgs.onlyStory == "true"'>
                 AND ai.type_code = 'story'
             </if>
-            <if test='filterSql != null'>
-                AND ai.issue_id IN (${filterSql})
-            </if>
+        </if>
+        <if test='filterSql != null'>
+            AND ai.issue_id IN (${filterSql})
         </if>
         ORDER BY ai.rank ASC
     </select>
@@ -534,7 +534,10 @@
     <select id="queryRightRank" resultType="java.lang.String">
         SELECT MIN(ai.rank)
         FROM agile_issue ai
-        LEFT JOIN agile_issue_sprint_rel aisr ON aisr.issue_id = ai.issue_id
+        LEFT JOIN (SELECT aisr1.sprint_id, aisr1.issue_id
+                    FROM agile_issue_sprint_rel aisr1, agile_sprint asp
+                    WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = asp.sprint_id
+                    AND asp.status_code != 'closed') aisr ON aisr.issue_id = ai.issue_id
         WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_epic') AND ai.rank > #{leftRank}
         <choose>
             <when test="sprintId != null and sprintId != 0">
@@ -549,7 +552,10 @@
     <select id="queryLeftRank" resultType="java.lang.String">
         SELECT MAX(ai.rank)
         FROM agile_issue ai
-        LEFT JOIN agile_issue_sprint_rel aisr ON aisr.issue_id = ai.issue_id
+        LEFT JOIN (SELECT aisr1.sprint_id, aisr1.issue_id
+                    FROM agile_issue_sprint_rel aisr1, agile_sprint asp
+                    WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = asp.sprint_id
+                    AND asp.status_code != 'closed') aisr ON aisr.issue_id = ai.issue_id
         WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_epic') AND ai.rank &lt;
         #{rightRank}
         <choose>
@@ -565,7 +571,10 @@
     <select id="queryRank" resultType="java.lang.String">
         SELECT ai.rank
         FROM agile_issue ai
-        LEFT JOIN agile_issue_sprint_rel aisr ON aisr.issue_id = ai.issue_id
+        LEFT JOIN (SELECT aisr1.sprint_id, aisr1.issue_id
+                    FROM agile_issue_sprint_rel aisr1, agile_sprint asp
+                    WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = asp.sprint_id
+                    AND asp.status_code != 'closed') aisr ON aisr.issue_id = ai.issue_id
         WHERE ai.project_id = #{projectId} AND ai.issue_id = #{outsetIssueId}
         <choose>
             <when test="sprintId != null and sprintId != 0">
