@@ -144,7 +144,7 @@ public class SprintServiceImpl implements SprintService {
         dataLogE.setOldValue("".equals(oldValue) ? null : oldValue);
         dataLogE.setOldString("".equals(oldString) ? null : oldString);
         dataLogE.setNewValue("".equals(newSprintIdStr) ? null : newSprintIdStr);
-        dataLogE.setNewString("".equals(newSprintNameStr)? null : newSprintNameStr);
+        dataLogE.setNewString("".equals(newSprintNameStr) ? null : newSprintNameStr);
         return dataLogE;
     }
 
@@ -426,7 +426,7 @@ public class SprintServiceImpl implements SprintService {
         List<IssueDO> reportIssues = reportMapper.queryIssueByIssueIds(projectId, reportIssueIds);
         //冲刺中新添加的issue
         List<Long> issueIdBeforeSprintList = reportMapper.queryIssueIdsBeforeSprintStart(sprintDO);
-        List<Long> issueIdAddList = reportMapper.queryAddIssueIdsDuringSprint(sprintDO, issueIdBeforeSprintList);
+        List<Long> issueIdAddList = issueIdBeforeSprintList.isEmpty() ? new ArrayList<>() : reportMapper.queryAddIssueIdsDuringSprint(sprintDO, issueIdBeforeSprintList);
         //冲刺报告中issue的故事点
         List<SprintReportIssueStatusDO> reportIssueStoryPoints = reportMapper.queryIssueStoryPoints(projectId, reportIssueIds, actualEndDate);
         Map<Long, SprintReportIssueStatusDO> reportIssueStoryPointsMap = reportIssueStoryPoints.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
@@ -435,10 +435,7 @@ public class SprintServiceImpl implements SprintService {
         Map<Long, SprintReportIssueStatusDO> reportIssueBeforeStatusMap = reportIssueBeforeStatus.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
         //冲刺完成后issue的最初变更状态
         reportIssueIds.removeAll(reportIssueBeforeStatusMap.keySet());
-        List<SprintReportIssueStatusDO> reportIssueAfterStatus = new ArrayList<>();
-        if (!reportIssueIds.isEmpty()) {
-            reportIssueAfterStatus = reportMapper.queryAfterIssueStatus(projectId, reportIssueIds, actualEndDate);
-        }
+        List<SprintReportIssueStatusDO> reportIssueAfterStatus = reportIssueIds.isEmpty() ? new ArrayList<>() : reportMapper.queryAfterIssueStatus(projectId, reportIssueIds, actualEndDate);
         Map<Long, SprintReportIssueStatusDO> reportIssueAfterStatusMap = reportIssueAfterStatus.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
         reportIssues = reportIssues.stream().map(reportIssue -> {
             SprintReportIssueStatusDO issueStoryPoints = reportIssueStoryPointsMap.get(reportIssue.getIssueId());

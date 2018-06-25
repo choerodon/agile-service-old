@@ -107,7 +107,6 @@
                  open="(" close=")" separator=",">
             #{issueId}
         </foreach>
-
     </select>
 
     <select id="queryAddIssueValueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
