@@ -25,7 +25,7 @@ public class DataLogDTO {
 
     private Long issueId;
 
-    private Long lastUpdateBy;
+    private Long lastUpdatedBy;
 
     private Date lastUpdateDate;
 
@@ -93,12 +93,12 @@ public class DataLogDTO {
         this.issueId = issueId;
     }
 
-    public Long getLastUpdateBy() {
-        return lastUpdateBy;
+    public void setLastUpdatedBy(Long lastUpdatedBy) {
+        this.lastUpdatedBy = lastUpdatedBy;
     }
 
-    public void setLastUpdateBy(Long lastUpdateBy) {
-        this.lastUpdateBy = lastUpdateBy;
+    public Long getLastUpdatedBy() {
+        return lastUpdatedBy;
     }
 
     public Date getLastUpdateDate() {
