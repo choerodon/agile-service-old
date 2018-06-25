@@ -68,6 +68,4 @@ ribbon:
 services:
   attachment:
     url: example.com
-logging:
-  level.io.choerodon.agile.infra.mapper.ReportMapper: debug
 
