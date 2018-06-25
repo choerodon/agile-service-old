@@ -141,10 +141,10 @@ public class SprintServiceImpl implements SprintService {
         dataLogE.setProjectId(projectId);
         dataLogE.setField(FIEID_SPRINT);
         dataLogE.setIssueId(issueId);
-        dataLogE.setOldValue(oldValue);
-        dataLogE.setOldString(oldString);
-        dataLogE.setNewValue(newSprintIdStr);
-        dataLogE.setNewString(newSprintNameStr);
+        dataLogE.setOldValue("".equals(oldValue) ? null : oldValue);
+        dataLogE.setOldString("".equals(oldString) ? null : oldString);
+        dataLogE.setNewValue("".equals(newSprintIdStr) ? null : newSprintIdStr);
+        dataLogE.setNewString("".equals(newSprintNameStr)? null : newSprintNameStr);
         return dataLogE;
     }
 
@@ -300,10 +300,10 @@ public class SprintServiceImpl implements SprintService {
         result.setProjectId(projectId);
         result.setField(FIEID_SPRINT);
         result.setIssueId(issueId);
-        result.setOldValue(oldValue);
-        result.setOldString(oldString);
-        result.setNewValue(newValue);
-        result.setNewString(newString);
+        result.setOldValue("".equals(oldValue) ? null : oldValue);
+        result.setOldString("".equals(oldString) ? null : oldString);
+        result.setNewValue("".equals(newValue) ? null : newValue);
+        result.setNewString("".equals(newString) ? null : newString);
         return result;
     }
 

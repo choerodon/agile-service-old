@@ -313,10 +313,10 @@ public class IssueServiceImpl implements IssueService {
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
             dataLogE.setField(FIELD_SPRINT);
-            dataLogE.setOldValue(oldValue);
-            dataLogE.setOldString(oldString);
-            dataLogE.setNewValue(newValue);
-            dataLogE.setNewString(newString);
+            dataLogE.setOldValue("".equals(oldValue) ? null : oldValue);
+            dataLogE.setOldString("".equals(oldString) ? null : oldString);
+            dataLogE.setNewValue("".equals(newValue) ? null : newValue);
+            dataLogE.setNewString("".equals(newString) ? null : newString);
             dataLogRepository.create(dataLogE);
         }
     }
@@ -587,12 +587,12 @@ public class IssueServiceImpl implements IssueService {
         SprintDO sprintDO = getSprintById(sprintId);
         List<DataLogE> dataLogEList = new ArrayList<>();
         for (Long issueId : moveIssueDTO.getIssueIds()) {
+            String newSprintIdStr = "";
+            String newSprintNameStr = "";
             List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
             SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
             String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
             String oldSprintNameStr = sprintNames.stream().map(sprintName -> sprintName.getSprintName()).collect(Collectors.joining(","));
-            String newSprintIdStr = "";
-            String newSprintNameStr = "";
             int idx = 0;
             for (SprintNameDTO sprintName : sprintNames) {
                 if (activeSprintName != null && activeSprintName.getSprintId().equals(sprintName.getSprintId())) {
@@ -615,10 +615,10 @@ public class IssueServiceImpl implements IssueService {
             dataLogE.setProjectId(projectId);
             dataLogE.setIssueId(issueId);
             dataLogE.setField(FIELD_SPRINT);
-            dataLogE.setOldValue(oldSprintIdStr);
-            dataLogE.setOldString(oldSprintNameStr);
-            dataLogE.setNewValue(newSprintIdStr);
-            dataLogE.setNewString(newSprintNameStr);
+            dataLogE.setOldValue("".equals(oldSprintIdStr) ? null : oldSprintIdStr);
+            dataLogE.setOldString("".equals(oldSprintNameStr) ? null : oldSprintNameStr);
+            dataLogE.setNewValue("".equals(newSprintIdStr) ? null : newSprintIdStr);
+            dataLogE.setNewString("".equals(newSprintNameStr) ? null : newSprintNameStr);
             dataLogEList.add(dataLogE);
         }
         return dataLogEList;
@@ -643,15 +643,12 @@ public class IssueServiceImpl implements IssueService {
         }
         List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
         moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
-        List<DataLogE> dataLogEList = new ArrayList<>();
-        if (sprintId != null && !Objects.equals(sprintId, 0L)) {
-            dataLogEList = getSprintDataLogByMove(projectId, sprintId, moveIssueDTO);
-        }
+        List<DataLogE> dataLogEList =  getSprintDataLogByMove(projectId, sprintId, moveIssueDTO);
         issueRepository.removeIssueFromSprintByIssueIds(projectId, moveIssueIds);
         if (sprintId != null && !Objects.equals(sprintId, 0L)) {
             issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds);
-            dataLogSprintByMove(dataLogEList);
         }
+        dataLogSprintByMove(dataLogEList);
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
         List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds());
         List<Long> assigneeIds = issueSearchDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDO::getAssigneeId).distinct().collect(Collectors.toList());
