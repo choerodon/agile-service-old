@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.eventhandler;
 
 import io.choerodon.agile.app.service.BoardService;
+import io.choerodon.agile.app.service.IssueLinkTypeService;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.domain.agile.event.ProjectEvent;
 import io.choerodon.core.event.EventPayload;
@@ -24,6 +25,8 @@ public class AgileEventHandler {
     private BoardService boardService;
     @Autowired
     private ProjectInfoService projectInfoService;
+    @Autowired
+    private IssueLinkTypeService issueLinkTypeService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgileEventHandler.class);
 
@@ -44,6 +47,7 @@ public class AgileEventHandler {
         loggerInfo(projectEvent);
         boardService.initBoard(projectEvent.getProjectId(), projectEvent.getProjectName() + BOARD);
         projectInfoService.initializationProjectInfo(projectEvent);
+        issueLinkTypeService.initIssueLinkType(projectEvent.getProjectId());
     }
 
 }

@@ -49,9 +49,10 @@ public class IssueLinkTypeRepositoryImpl implements IssueLinkTypeRepository {
     }
 
     @Override
-    public int delete(Long linkTypeId) {
+    public int delete(Long linkTypeId, Long projectId) {
         IssueLinkTypeDO issueLinkTypeDO = new IssueLinkTypeDO();
         issueLinkTypeDO.setLinkTypeId(linkTypeId);
+        issueLinkTypeDO.setLinkTypeId(projectId);
         return issueLinkTypeMapper.delete(issueLinkTypeDO);
     }
 
@@ -64,6 +65,6 @@ public class IssueLinkTypeRepositoryImpl implements IssueLinkTypeRepository {
 
     @Override
     public int batchUpdateRelToIssueLinkType(Long issueLinkTypeId, Long toIssueLinkTypeId) {
-        return issueLinkMapper.batchUpdateRelToIssueLinkType(issueLinkTypeId,toIssueLinkTypeId);
+        return issueLinkMapper.batchUpdateRelToIssueLinkType(issueLinkTypeId, toIssueLinkTypeId);
     }
 }
