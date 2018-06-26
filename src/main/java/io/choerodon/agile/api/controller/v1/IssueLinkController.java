@@ -4,6 +4,7 @@ import io.choerodon.agile.api.dto.IssueLinkCreateDTO;
 import io.choerodon.agile.api.dto.IssueLinkDTO;
 import io.choerodon.agile.app.service.IssueLinkService;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
@@ -27,7 +28,7 @@ public class IssueLinkController {
     @Autowired
     private IssueLinkService issueLinkService;
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("创建issueLink")
     @PostMapping(value = "/{issueId}")
     public ResponseEntity<List<IssueLinkDTO>> createIssueLinkList(@ApiParam(value = "项目id", required = true)
@@ -41,7 +42,7 @@ public class IssueLinkController {
                 .orElseThrow(() -> new CommonException("error.IssueLink.createIssueLink"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("删除issueLink")
     @DeleteMapping(value = "/{issueLinkId}")
     public ResponseEntity deleteIssueLink(@ApiParam(value = "项目id", required = true)
@@ -52,7 +53,7 @@ public class IssueLinkController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("根据issueId查询issueLink")
     @GetMapping(value = "/{issueId}")
     public ResponseEntity<List<IssueLinkDTO>> listIssueLinkByIssueId(@ApiParam(value = "项目id", required = true)

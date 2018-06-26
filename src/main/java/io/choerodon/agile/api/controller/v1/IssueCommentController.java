@@ -6,6 +6,7 @@ import io.choerodon.agile.app.service.IssueCommentService;
 import io.choerodon.agile.domain.agile.rule.IssueCommentRule;
 import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
@@ -35,7 +36,7 @@ public class IssueCommentController {
     @Autowired
     private VerifyUpdateUtil verifyUpdateUtil;
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("创建issue评论")
     @PostMapping
     public ResponseEntity<IssueCommentDTO> createIssueComment(@ApiParam(value = "项目id", required = true)
@@ -48,7 +49,7 @@ public class IssueCommentController {
                 .orElseThrow(() -> new CommonException("error.IssueComment.createIssueComment"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("更新issue评论")
     @PostMapping(value = "/update")
     public ResponseEntity<IssueCommentDTO> updateIssueComment(@ApiParam(value = "项目id", required = true)
@@ -63,7 +64,7 @@ public class IssueCommentController {
                 .orElseThrow(() -> new CommonException("error.IssueComment.updateIssueComment"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("通过issueId查询issue评论列表")
     @GetMapping(value = "/{issueId}")
     public ResponseEntity<List<IssueCommentDTO>> queryIssueCommentList(@ApiParam(value = "项目id", required = true)
@@ -75,7 +76,7 @@ public class IssueCommentController {
                 .orElseThrow(() -> new CommonException("error.IssueComment.queryIssueCommentList"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("通过commentId删除")
     @DeleteMapping(value = "/{commentId}")
     public ResponseEntity deleteIssueComment(@ApiParam(value = "项目id", required = true)

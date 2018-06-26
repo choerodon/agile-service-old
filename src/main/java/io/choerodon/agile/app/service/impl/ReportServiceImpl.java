@@ -106,7 +106,7 @@ public class ReportServiceImpl implements ReportService {
         //获取当前冲刺期间加入的issue
         List<Long> issueIdAddList = !issueIdBeforeSprintList.isEmpty() ? reportMapper.queryAddIssueIdsDuringSprint(sprintDO, issueIdBeforeSprintList) : null;
         //获取当前冲刺期间移除的issue
-        List<Long> issueIdRemoveList = queryRemoveIssueIdsDuringSprint(sprintDO.getSprintId(), issueIdBeforeSprintList);
+        List<Long> issueIdRemoveList = !issueIdBeforeSprintList.isEmpty() ? queryRemoveIssueIdsDuringSprint(sprintDO.getSprintId(), issueIdBeforeSprintList) : null;
         //获取当前冲刺开启前的issue的变更字段值(包含子任务)
         handleIssueValueBeforeSprint(sprintDO, reportIssueEList, issueIdBeforeSprintList, field);
         //获取当前冲刺期间加入的issue(包含加入时间、加入时的字段值)(包含子任务)
@@ -290,7 +290,7 @@ public class ReportServiceImpl implements ReportService {
             issueAddList.stream().filter(reportIssueE -> reportIssueE.getDate() == null).forEach(reportIssueE -> {
                 Date date = reportMapper.queryAddIssueDuringSprintNoData(reportIssueE.getIssueId(), sprintDO.getSprintId());
                 reportIssueE.setDate(date);
-                reportIssueE.setNewValue(reportMapper.queryAddIssueValueDuringSprintNoData(reportIssueE.getIssueId(),date,field));
+                reportIssueE.setNewValue(reportMapper.queryAddIssueValueDuringSprintNoData(reportIssueE.getIssueId(), date, field));
             });
         }
         if (issueAddList != null) {

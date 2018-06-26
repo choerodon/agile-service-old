@@ -82,12 +82,12 @@ public interface ReportMapper {
     List<Long> queryAddIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO, @Param("issueIdBeforeSprintList") List<Long> issueIdBeforeSprintList);
 
     /**
-     * 获取冲刺期间移除的issue
+     * 获取冲刺期间移除的issue(不包含子任务和epic)
      *
      * @param sprintDO sprintDO
      * @return issueIdList
      */
-    List<Long> queryRemoveIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO);
+    List<Long> queryRemoveIssueIdsDuringSprintWithOutSubEpicIssue(@Param("sprintDO") SprintDO sprintDO);
 
     /**
      * 获取冲刺关系中的的issue
@@ -257,7 +257,7 @@ public interface ReportMapper {
      * @param field   field
      * @return Integer
      */
-    Integer queryAddIssueValueDuringSprintNoData(@Param("issueId")Long issueId,@Param("date") Date date, @Param("field")String field);
+    Integer queryAddIssueValueDuringSprintNoData(@Param("issueId") Long issueId, @Param("date") Date date, @Param("field") String field);
 
     List<SprintReportIssueStatusDO> queryBeforeIssueStatus(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("actualEndDate") Date actualEndDate);
 

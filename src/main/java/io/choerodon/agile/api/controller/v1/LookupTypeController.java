@@ -3,6 +3,7 @@ package io.choerodon.agile.api.controller.v1;
 import io.choerodon.agile.api.dto.LookupTypeDTO;
 import io.choerodon.agile.app.service.LookupTypeService;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
@@ -29,7 +30,7 @@ public class LookupTypeController {
     @Autowired
     private LookupTypeService lookupTypeService;
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("查询所有lookup type类型")
     @GetMapping
     public ResponseEntity<List<LookupTypeDTO>> listLookupType(@ApiParam(value = "项目id", required = true)
