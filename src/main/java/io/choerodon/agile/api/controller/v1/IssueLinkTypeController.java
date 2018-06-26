@@ -5,6 +5,7 @@ import io.choerodon.agile.api.dto.IssueLinkTypeDTO;
 import io.choerodon.agile.app.service.IssueLinkTypeService;
 import io.choerodon.agile.domain.agile.rule.IssueLinkTypeRule;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
@@ -30,7 +31,7 @@ public class IssueLinkTypeController {
     @Autowired
     private IssueLinkTypeRule issueLinkTypeRule;
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("根据项目id查询issueLinkType")
     @GetMapping
     public ResponseEntity<List<IssueLinkTypeDTO>> listIssueLinkType(@ApiParam(value = "项目id", required = true)
@@ -42,7 +43,7 @@ public class IssueLinkTypeController {
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.listIssueLinkType"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("根据issueLinkTypeId查询issueLinkType")
     @GetMapping(value = "/{linkTypeId}")
     public ResponseEntity<IssueLinkTypeDTO> queryIssueLinkType(@ApiParam(value = "项目id", required = true)
@@ -54,7 +55,7 @@ public class IssueLinkTypeController {
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.queryIssueLinkType"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("创建issueLinkType")
     @PostMapping
     public ResponseEntity<IssueLinkTypeDTO> createIssueLinkType(@ApiParam(value = "项目id", required = true)
@@ -67,7 +68,7 @@ public class IssueLinkTypeController {
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.createIssueLinkType"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("修改issueLink")
     @PutMapping
     public ResponseEntity<IssueLinkTypeDTO> updateIssueLinkType(@ApiParam(value = "项目id", required = true)
@@ -80,7 +81,7 @@ public class IssueLinkTypeController {
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.updateIssueLinkType"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("删除issueLink")
     @DeleteMapping(value = "/{issueLinkTypeId}")
     public ResponseEntity deleteIssueLinkType(@ApiParam(value = "项目id", required = true)

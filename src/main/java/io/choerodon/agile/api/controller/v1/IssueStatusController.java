@@ -5,6 +5,7 @@ import io.choerodon.agile.api.dto.StatusAndIssuesDTO;
 import io.choerodon.agile.api.dto.StatusMoveDTO;
 import io.choerodon.agile.app.service.IssueStatusService;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
@@ -30,7 +31,7 @@ public class IssueStatusController {
     @Autowired
     private IssueStatusService issueStatusService;
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("status创建")
     @PostMapping
     public ResponseEntity<IssueStatusDTO> createStatus(@ApiParam(value = "项目id", required = true)
@@ -42,7 +43,7 @@ public class IssueStatusController {
                 .orElseThrow(() -> new CommonException("error.status.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("查询项目下未对应的状态")
     @GetMapping(value = "/list_by_options")
     public ResponseEntity<List<StatusAndIssuesDTO>> listUnCorrespondStatus(@ApiParam(value = "项目id", required = true)
@@ -54,7 +55,7 @@ public class IssueStatusController {
                 .orElseThrow(() -> new CommonException(ERROR_STATUS_GET));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("状态移动至列中")
     @PostMapping(value = "/{id}/move_to_column")
     public ResponseEntity<IssueStatusDTO> moveStatusToColumn(@ApiParam(value = "项目id", required = true)
@@ -68,7 +69,7 @@ public class IssueStatusController {
                 .orElseThrow(() -> new CommonException(ERROR_STATUS_GET));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("状态移动至未对应")
     @PostMapping(value = "/{id}/move_to_uncorrespond")
     public ResponseEntity<IssueStatusDTO> moveStatusToUnCorrespond(@ApiParam(value = "项目id", required = true)
@@ -82,7 +83,7 @@ public class IssueStatusController {
                 .orElseThrow(() -> new CommonException(ERROR_STATUS_GET));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("删除未对应的状态")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity deleteStatus(@ApiParam(value = "项目id", required = true)
@@ -93,7 +94,7 @@ public class IssueStatusController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("查询项目下的issue状态")
     @GetMapping(value = "/list")
     public ResponseEntity<List<IssueStatusDTO>> listStatusByProjectId(@ApiParam(value = "项目id", required = true)
@@ -103,7 +104,7 @@ public class IssueStatusController {
                 .orElseThrow(() -> new CommonException("error.status.queryIssueStatusList"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("更新状态")
     @PutMapping(value = "/{id}")
     public ResponseEntity<IssueStatusDTO> updateStatus(@ApiParam(value = "项目id", required = true)

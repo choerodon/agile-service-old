@@ -402,6 +402,9 @@ public class SprintServiceImpl implements SprintService {
             throw new CommonException(SPRINT_REPORT_ERROR);
         }
         Date actualEndDate = sprint.getActualEndDate();
+        if (actualEndDate == null) {
+            sprint.setActualEndDate(new Date());
+        }
         Page<Long> reportIssuePage = new Page<>();
         Page<IssueListDTO> reportPage = new Page<>();
         pageRequest.resetOrder("ai", new HashMap<>());
@@ -413,7 +416,7 @@ public class SprintServiceImpl implements SprintService {
                 reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryReportIssueIds(projectId, sprintId, actualEndDate, false));
                 break;
             case REMOVE:
-                reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryRemoveIssueIdsDuringSprint(sprint));
+                reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryRemoveIssueIdsDuringSprintWithOutSubEpicIssue(sprint));
                 break;
             default:
                 break;
@@ -425,8 +428,8 @@ public class SprintServiceImpl implements SprintService {
         //冲刺报告查询的issue
         List<IssueDO> reportIssues = reportMapper.queryIssueByIssueIds(projectId, reportIssueIds);
         //冲刺中新添加的issue
-        List<Long> issueIdBeforeSprintList = reportMapper.queryIssueIdsBeforeSprintStart(sprintDO);
-        List<Long> issueIdAddList = issueIdBeforeSprintList.isEmpty() ? new ArrayList<>() : reportMapper.queryAddIssueIdsDuringSprint(sprintDO, issueIdBeforeSprintList);
+        List<Long> issueIdBeforeSprintList = reportMapper.queryIssueIdsBeforeSprintStart(sprint);
+        List<Long> issueIdAddList = issueIdBeforeSprintList.isEmpty() ? new ArrayList<>() : reportMapper.queryAddIssueIdsDuringSprint(sprint, issueIdBeforeSprintList);
         //冲刺报告中issue的故事点
         List<SprintReportIssueStatusDO> reportIssueStoryPoints = reportMapper.queryIssueStoryPoints(projectId, reportIssueIds, actualEndDate);
         Map<Long, SprintReportIssueStatusDO> reportIssueStoryPointsMap = reportIssueStoryPoints.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));

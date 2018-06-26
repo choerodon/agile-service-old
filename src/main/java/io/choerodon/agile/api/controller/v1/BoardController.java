@@ -5,6 +5,7 @@ import io.choerodon.agile.api.dto.IssueMoveDTO;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.dto.BoardDTO;
 import io.choerodon.agile.app.service.BoardService;
+import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
@@ -28,7 +29,7 @@ public class BoardController {
     @Autowired
     private BoardService boardService;
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("创建scrum board,创建默认列，关联项目状态")
     @PostMapping
     public ResponseEntity createScrumBoard(@ApiParam(value = "项目id", required = true)
@@ -39,7 +40,7 @@ public class BoardController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("更新scrum board")
     @PutMapping(value = "/{boardId}")
     public ResponseEntity<BoardDTO> updateScrumBoard(@ApiParam(value = "项目id", required = true)
@@ -53,7 +54,7 @@ public class BoardController {
                 .orElseThrow(() -> new CommonException("error.board.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("删除scrum board")
     @DeleteMapping(value = "/{boardId}")
     public ResponseEntity deleteScrumBoard(@ApiParam(value = "项目id", required = true)
@@ -64,7 +65,7 @@ public class BoardController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("根据id查询scrum board")
     @GetMapping(value = "/{boardId}")
     public ResponseEntity<BoardDTO> queryScrumBoardById(@ApiParam(value = "项目id", required = true)
@@ -76,7 +77,7 @@ public class BoardController {
                 .orElseThrow(() -> new CommonException("error.board.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("all data")
     @GetMapping(value = "/{boardId}/all_data")
     public ResponseEntity<JSONObject> queryByOptions(@ApiParam(value = "项目id", required = true)
@@ -94,7 +95,7 @@ public class BoardController {
                 .orElseThrow(() -> new CommonException("error.board.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("init board,勿调用")
     @PostMapping(value = "/init_board")
     public ResponseEntity initBoard(@ApiParam(value = "项目id", required = true)
@@ -105,7 +106,7 @@ public class BoardController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("移动issue")
     @PostMapping(value = "/issue/{issueId}/move")
     public ResponseEntity<IssueMoveDTO> move(@ApiParam(value = "项目id", required = true)
@@ -119,7 +120,7 @@ public class BoardController {
                 .orElseThrow(() -> new CommonException("error.issue.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("根据projectId查询项目下的board")
     @GetMapping
     public ResponseEntity<List<BoardDTO>> queryByProjectId(@ApiParam(value = "项目id", required = true)

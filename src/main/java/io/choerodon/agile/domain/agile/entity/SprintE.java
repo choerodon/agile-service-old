@@ -156,11 +156,7 @@ public class SprintE {
 
     public void initStartAndEndTime() {
         if (this.actualEndDate == null) {
-            if (this.endDate != null) {
-                this.actualEndDate = endDate;
-            } else {
-                this.setActualEndDate(new Date());
-            }
+            this.setActualEndDate(new Date());
         }
     }
 }

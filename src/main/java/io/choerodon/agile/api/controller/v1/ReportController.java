@@ -3,6 +3,7 @@ package io.choerodon.agile.api.controller.v1;
 import io.choerodon.agile.api.dto.ReportIssueDTO;
 import io.choerodon.agile.app.service.ReportService;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
@@ -26,7 +27,7 @@ public class ReportController {
     @Autowired
     private ReportService reportService;
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
     @ApiOperation("查询冲刺对应的燃尽图报告信息")
     @GetMapping(value = "/{sprintId}/burn_down_report")
     public ResponseEntity<List<ReportIssueDTO>> queryBurnDownReport(@ApiParam(value = "项目id", required = true)
