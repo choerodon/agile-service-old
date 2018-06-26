@@ -89,9 +89,9 @@ public class ProductVersionController {
                                                  @PathVariable(name = "project_id") Long projectId,
                                                  @ApiParam(value = "versionId", required = true)
                                                  @PathVariable Long versionId,
-                                                 @ApiParam(value = "修复版本issue目标版本", required = true)
+                                                 @ApiParam(value = "修复版本issue目标版本", required = false)
                                                  @RequestParam(required = false, name = "fixTargetVersionId") Long fixTargetVersionId,
-                                                 @ApiParam(value = "影响版本issue目标版本", required = true)
+                                                 @ApiParam(value = "影响版本issue目标版本", required = false)
                                                  @RequestParam(required = false, name = "influenceTargetVersionId") Long influenceTargetVersionId) {
         return Optional.ofNullable(productVersionService.deleteVersion(projectId, versionId, fixTargetVersionId, influenceTargetVersionId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.NO_CONTENT))
