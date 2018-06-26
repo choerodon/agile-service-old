@@ -86,22 +86,19 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     }
 
     @Override
-    public Boolean deleteVersion(Long projectId, ProductVersionDeleteDTO productVersionDelete) {
-        if (!projectId.equals(productVersionDelete.getProjectId())) {
-            throw new CommonException(NOT_EQUAL_ERROR);
+    public Boolean deleteVersion(Long projectId, Long versionId, Long fixTargetVersionId, Long influenceTargetVersionId) {
+        productVersionRule.judgeExist(projectId, fixTargetVersionId);
+        productVersionRule.judgeExist(projectId, influenceTargetVersionId);
+        if (fixTargetVersionId != null && !Objects.equals(fixTargetVersionId, 0L)) {
+            List<VersionIssueDO> versionIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, FIX_RELATION_TYPE);
+            productVersionRepository.issueToDestination(projectId, fixTargetVersionId, versionIssues);
         }
-        productVersionRule.judgeExist(projectId, productVersionDelete.getFixTargetVersionId());
-        productVersionRule.judgeExist(projectId, productVersionDelete.getInfluenceTargetVersionId());
-        if (productVersionDelete.getFixTargetVersionId() != null && !Objects.equals(productVersionDelete.getFixTargetVersionId(), 0L)) {
-            List<VersionIssueDO> versionIssues = productVersionMapper.queryIssuesByRelationType(projectId, productVersionDelete.getVersionId(), FIX_RELATION_TYPE);
-            productVersionRepository.issueToDestination(projectId, productVersionDelete.getFixTargetVersionId(), versionIssues);
+        if (influenceTargetVersionId != null && !Objects.equals(influenceTargetVersionId, 0L)) {
+            List<VersionIssueDO> versionIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, INFLUENCE_RELATION_TYPE);
+            productVersionRepository.issueToDestination(projectId, influenceTargetVersionId, versionIssues);
         }
-        if (productVersionDelete.getInfluenceTargetVersionId() != null && !Objects.equals(productVersionDelete.getInfluenceTargetVersionId(), 0L)) {
-            List<VersionIssueDO> versionIssues = productVersionMapper.queryIssuesByRelationType(projectId, productVersionDelete.getVersionId(), INFLUENCE_RELATION_TYPE);
-            productVersionRepository.issueToDestination(projectId, productVersionDelete.getInfluenceTargetVersionId(), versionIssues);
-        }
-        versionIssueRelRepository.deleteByVersionId(projectId, productVersionDelete.getVersionId());
-        return simpleDeleteVersion(projectId, productVersionDelete.getVersionId());
+        versionIssueRelRepository.deleteByVersionId(projectId, versionId);
+        return simpleDeleteVersion(projectId, versionId);
     }
 
     private Boolean simpleDeleteVersion(Long projectId, Long versionId) {

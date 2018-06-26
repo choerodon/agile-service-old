@@ -340,7 +340,7 @@ public class SprintServiceImpl implements SprintService {
             for (Long issueId : moveIssueIds) {
                 newDataLogs.add(getNewDataLog(projectId, issueId, sprintCompleteDTO.getIncompleteIssuesDestination()));
             }
-            issueRepository.issueToDestinationByIds(projectId, targetSprintId, moveIssueIds);
+            issueRepository.issueToDestinationByIds(projectId, targetSprintId, moveIssueIds, new Date());
             dataLogCompleteSprint(newDataLogs);
         }
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
