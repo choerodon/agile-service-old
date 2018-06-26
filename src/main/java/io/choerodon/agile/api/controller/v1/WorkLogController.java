@@ -27,7 +27,7 @@ public class WorkLogController {
     @Autowired
     private WorkLogService workLogService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建work log")
     @PostMapping
     public ResponseEntity<WorkLogDTO> createWorkLog(@ApiParam(value = "项目id", required = true)
@@ -39,7 +39,7 @@ public class WorkLogController {
                 .orElseThrow(() -> new CommonException("error.workLog.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("修改work log")
     @PatchMapping(value = "/{logId}")
     public ResponseEntity<WorkLogDTO> updateWorkLog(@ApiParam(value = "项目id", required = true)
@@ -53,7 +53,7 @@ public class WorkLogController {
                 .orElseThrow(() -> new CommonException("error.workLog.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("删除work log")
     @DeleteMapping(value = "/{logId}")
     public ResponseEntity deleteWorkLog(@ApiParam(value = "项目id", required = true)
@@ -64,7 +64,7 @@ public class WorkLogController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据logId查询work log")
     @GetMapping(value = "/{logId}")
     public ResponseEntity queryWorkLogById(@ApiParam(value = "项目id", required = true)
@@ -76,7 +76,7 @@ public class WorkLogController {
                 .orElseThrow(() -> new CommonException("error.workLog.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据issue id查询work log列表")
     @GetMapping(value = "/issue/{issueId}")
     public ResponseEntity<List<WorkLogDTO>> queryWorkLogListByIssueId(@ApiParam(value = "项目id", required = true)

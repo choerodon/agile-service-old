@@ -68,7 +68,7 @@ public class IssueComponentController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据id查询component")
     @GetMapping(value = "/{id}")
     public ResponseEntity<IssueComponentDTO> queryComponentById(@ApiParam(value = "项目id", required = true)
@@ -80,7 +80,7 @@ public class IssueComponentController {
                 .orElseThrow(() -> new CommonException("error.component.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据project id查询component")
     @GetMapping
     public ResponseEntity<List<ComponentForListDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
@@ -92,7 +92,7 @@ public class IssueComponentController {
                 .orElseThrow(() -> new CommonException("error.componentList.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据id查询component下的issues")
     @GetMapping(value = "/{id}/issues")
     public ResponseEntity<List<IssueDTO>> listByOptions(@ApiParam(value = "项目id", required = true)

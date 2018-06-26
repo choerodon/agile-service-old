@@ -50,7 +50,7 @@ public class IssueStatusController {
                 .orElseThrow(() -> new CommonException("error.status.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询项目下未对应的状态")
     @GetMapping(value = "/list_by_options")
     public ResponseEntity<List<StatusAndIssuesDTO>> listUnCorrespondStatus(@ApiParam(value = "项目id", required = true)
@@ -101,7 +101,7 @@ public class IssueStatusController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询项目下的issue状态")
     @GetMapping(value = "/list")
     public ResponseEntity<List<IssueStatusDTO>> listStatusByProjectId(@ApiParam(value = "项目id", required = true)

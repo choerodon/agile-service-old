@@ -28,7 +28,7 @@ public class IssueLinkController {
     @Autowired
     private IssueLinkService issueLinkService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建issueLink")
     @PostMapping(value = "/{issueId}")
     public ResponseEntity<List<IssueLinkDTO>> createIssueLinkList(@ApiParam(value = "项目id", required = true)
@@ -42,7 +42,7 @@ public class IssueLinkController {
                 .orElseThrow(() -> new CommonException("error.IssueLink.createIssueLink"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("删除issueLink")
     @DeleteMapping(value = "/{issueLinkId}")
     public ResponseEntity deleteIssueLink(@ApiParam(value = "项目id", required = true)
@@ -53,7 +53,7 @@ public class IssueLinkController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据issueId查询issueLink")
     @GetMapping(value = "/{issueId}")
     public ResponseEntity<List<IssueLinkDTO>> listIssueLinkByIssueId(@ApiParam(value = "项目id", required = true)

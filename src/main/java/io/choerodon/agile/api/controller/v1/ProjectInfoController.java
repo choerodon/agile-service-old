@@ -42,7 +42,7 @@ public class ProjectInfoController {
                 .orElseThrow(() -> new CommonException("error.projectInfo.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据项目id查询projectInfo")
     @GetMapping
     public ResponseEntity<ProjectInfoDTO> queryProjectInfoByProjectId(@ApiParam(value = "项目id", required = true)
@@ -52,7 +52,7 @@ public class ProjectInfoController {
                 .orElseThrow(() -> new CommonException("error.projectInfo.queryProjectInfoByProjectId"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("项目code重名校验")
     @PostMapping("check")
     public ResponseEntity<Boolean> checkProjectCode(@ApiParam(value = "项目id", required = true)

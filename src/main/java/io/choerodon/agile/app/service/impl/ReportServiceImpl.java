@@ -143,7 +143,7 @@ public class ReportServiceImpl implements ReportService {
 
     private void handleIssueCountAfterSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList) {
         if (sprintDO.getStatusCode().equals(SPRINT_CLOSED)) {
-            List<ReportIssueE> issueAfterSprintList = ConvertHelper.convertList(reportMapper.queryIssueAfterSprint(sprintDO), ReportIssueE.class);
+            List<ReportIssueE> issueAfterSprintList = ConvertHelper.convertList(reportMapper.queryIssueCountAfterSprint(sprintDO), ReportIssueE.class);
             if (issueAfterSprintList != null && !issueAfterSprintList.isEmpty()) {
                 reportIssueEList.addAll(issueAfterSprintList);
             }
@@ -249,9 +249,10 @@ public class ReportServiceImpl implements ReportService {
                 }
                 //如果统计剩余预计时间，要考虑到工作日志的登记，要去除这一部分(todo 暂时还没有好的解决方案)
                 if (reportIssueE.getType().equals(FILED_TIMEESTIMATE) && issueChangeList.stream().filter(reportIssueE2 ->
-                        reportIssueE2.getDate().before(reportIssueE.getDate()) && reportIssueE2.getType().equals(FILED_TIME_SPENT)
+                        (reportIssueE2.getDate().equals(reportIssueE.getDate()) || reportIssueE2.getDate().after(reportIssueE.getDate())) && reportIssueE2.getType().equals(FILED_TIME_SPENT)
                                 && (reportIssueE2.getNewValue() - reportIssueE2.getOldValue())
-                                == (reportIssueE.getOldValue() - reportIssueE.getNewValue())).collect(Collectors.toList()).size() == 1) {
+                                == (reportIssueE.getOldValue() - reportIssueE.getNewValue()) &&
+                                reportIssueE2.getIssueId().equals(reportIssueE.getIssueId())).collect(Collectors.toList()).size() == 1) {
                     reportIssueE.setStatistical(false);
                 }
             });
@@ -290,7 +291,8 @@ public class ReportServiceImpl implements ReportService {
             issueAddList.stream().filter(reportIssueE -> reportIssueE.getDate() == null).forEach(reportIssueE -> {
                 Date date = reportMapper.queryAddIssueDuringSprintNoData(reportIssueE.getIssueId(), sprintDO.getSprintId());
                 reportIssueE.setDate(date);
-                reportIssueE.setNewValue(reportMapper.queryAddIssueValueDuringSprintNoData(reportIssueE.getIssueId(), date, field));
+                Integer value = reportMapper.queryAddIssueValueDuringSprintNoData(reportIssueE.getIssueId(), date, field);
+                reportIssueE.setNewValue(value == null ? 0 : value);
             });
         }
         if (issueAddList != null) {

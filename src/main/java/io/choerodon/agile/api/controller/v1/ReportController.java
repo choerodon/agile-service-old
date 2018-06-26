@@ -27,7 +27,7 @@ public class ReportController {
     @Autowired
     private ReportService reportService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询冲刺对应的燃尽图报告信息")
     @GetMapping(value = "/{sprintId}/burn_down_report")
     public ResponseEntity<List<ReportIssueDTO>> queryBurnDownReport(@ApiParam(value = "项目id", required = true)
