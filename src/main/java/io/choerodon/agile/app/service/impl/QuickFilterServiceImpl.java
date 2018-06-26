@@ -41,25 +41,25 @@ public class QuickFilterServiceImpl implements QuickFilterService {
             String value = "'null'".equals(quickFilterValueDTO.getValue()) ? "null" : quickFilterValueDTO.getValue();
             switch (field) {
                 case "component_id":
-                    sqlQuery.append(" issue_id in ( select issue_id from agile_component_issue_rel where " + field + quickFilterValueDTO.getOperation() + value + " ) ");
+                    sqlQuery.append(" issue_id in ( select issue_id from agile_component_issue_rel where " + field +" " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
                     break;
                 case "version_id":
-                    sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + quickFilterValueDTO.getOperation() + value + " ) ");
+                    sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
                     break;
                 case "label_id":
-                    sqlQuery.append(" issue_id in ( select issue_id from agile_label_issue_rel where " + field + quickFilterValueDTO.getOperation() + value + " ) ");
+                    sqlQuery.append(" issue_id in ( select issue_id from agile_label_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
                     break;
                 case "sprint_id":
-                    sqlQuery.append(" issue_id in ( select issue_id from agile_issue_sprint_rel where " + field + quickFilterValueDTO.getOperation() + value + " ) ");
+                    sqlQuery.append(" issue_id in ( select issue_id from agile_issue_sprint_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
                     break;
                 case "creation_date":
-                    sqlQuery.append(" unix_timestamp(" + field + ")" + quickFilterValueDTO.getOperation() + "unix_timestamp('" + value+"') ");
+                    sqlQuery.append(" unix_timestamp(" + field + ")" + " " + quickFilterValueDTO.getOperation() + " " + "unix_timestamp('" + value+"') ");
                     break;
                 case "last_update_date":
-                    sqlQuery.append(" unix_timestamp(" + field + ")" + quickFilterValueDTO.getOperation() + "unix_timestamp('" + value+"') ");
+                    sqlQuery.append(" unix_timestamp(" + field + ")" + " " + quickFilterValueDTO.getOperation() + " " + "unix_timestamp('" + value+"') ");
                     break;
                 default:
-                    sqlQuery.append(" " + field + quickFilterValueDTO.getOperation() + value + " ");
+                    sqlQuery.append(" " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " ");
                     break;
             }
             int length = relationOperations.size();
