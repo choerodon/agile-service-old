@@ -71,5 +71,24 @@
         WHERE project_id = #{projectId} AND LOWER(`name`) = LOWER(#{statusName})
     </select>
 
+    <select id="listByProjectId" resultType="io.choerodon.agile.infra.dataobject.StatusDO">
+        SELECT
+            ais.id,
+            ais.project_id,
+            ais.name,
+            ais.category_code,
+            alv_category.name AS category_name,
+            COUNT(ai.issue_id) AS issue_num_count,
+            ais.object_version_number
+        FROM
+            agile_issue_status ais
+        LEFT JOIN agile_issue ai ON ais.id = ai.status_id
+        LEFT JOIN agile_lookup_value alv_category ON alv_category.value_code = ais.category_code
+        WHERE
+            ais.project_id = #{projectId}
+        GROUP BY
+            ais.id
+    </select>
+
 
 </mapper>

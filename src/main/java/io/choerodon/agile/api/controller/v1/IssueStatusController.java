@@ -2,10 +2,16 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.IssueStatusDTO;
 import io.choerodon.agile.api.dto.StatusAndIssuesDTO;
+import io.choerodon.agile.api.dto.StatusDTO;
 import io.choerodon.agile.api.dto.StatusMoveDTO;
 import io.choerodon.agile.app.service.IssueStatusService;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.choerodon.mybatis.pagehelper.domain.Sort;
+import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -13,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 import java.util.Optional;
@@ -113,5 +120,19 @@ public class IssueStatusController {
         return Optional.ofNullable(issueStatusService.updateStatus(projectId, issueStatusDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.status.update"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT)
+    @ApiOperation("根据项目id查询状态列表")
+    @CustomPageRequest
+    @GetMapping(value = "/statuses")
+    public ResponseEntity<Page<StatusDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
+                                                            @PathVariable(name = "project_id") Long projectId,
+                                                            @ApiIgnore
+                                                            @ApiParam(value = "分页信息", required = true)
+                                                            @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
+        return Optional.ofNullable(issueStatusService.listByProjectId(projectId, pageRequest))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.statusList.get"));
     }
 }
