@@ -37,7 +37,7 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         StringBuilder sqlQuery = new StringBuilder();
         int idx = 0;
         for (QuickFilterValueDTO quickFilterValueDTO : quickFilterValueDTOList) {
-            String field = quickFilterFieldMapper.selectByPrimaryKey(quickFilterValueDTO.getFieldId()).getField();
+            String field = quickFilterFieldMapper.selectByPrimaryKey(quickFilterValueDTO.getFieldCode()).getField();
             switch (field) {
                 case "component_id":
                     sqlQuery.append(" issue_id in ( select issue_id from agile_component_issue_rel where " + field + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ) ");

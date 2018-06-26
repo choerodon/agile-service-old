@@ -6,18 +6,18 @@ package io.choerodon.agile.api.dto;
  */
 public class QuickFilterValueDTO {
 
-    private Long fieldId;
+    private String fieldCode;
 
     private String operation;
 
     private String value;
 
-    public void setFieldId(Long fieldId) {
-        this.fieldId = fieldId;
+    public void setFieldCode(String fieldCode) {
+        this.fieldCode = fieldCode;
     }
 
-    public Long getFieldId() {
-        return fieldId;
+    public String getFieldCode() {
+        return fieldCode;
     }
 
     public String getOperation() {

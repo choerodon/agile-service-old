@@ -19,7 +19,7 @@ public class QuickFilterFieldDO extends AuditDomain {
 
     @Id
     @GeneratedValue
-    private Long fieldId;
+    private String fieldCode;
 
     private String type;
 
@@ -27,12 +27,12 @@ public class QuickFilterFieldDO extends AuditDomain {
 
     private String field;
 
-    public void setFieldId(Long fieldId) {
-        this.fieldId = fieldId;
+    public void setFieldCode(String fieldCode) {
+        this.fieldCode = fieldCode;
     }
 
-    public Long getFieldId() {
-        return fieldId;
+    public String getFieldCode() {
+        return fieldCode;
     }
 
     public void setType(String type) {

@@ -6,7 +6,7 @@ package io.choerodon.agile.domain.agile.entity;
  */
 public class QuickFilterFieldE {
 
-    private Long fieldId;
+    private String fieldCode;
 
     private String type;
 
@@ -14,12 +14,12 @@ public class QuickFilterFieldE {
 
     private String field;
 
-    public void setFieldId(Long fieldId) {
-        this.fieldId = fieldId;
+    public void setFieldCode(String fieldCode) {
+        this.fieldCode = fieldCode;
     }
 
-    public Long getFieldId() {
-        return fieldId;
+    public String getFieldCode() {
+        return fieldCode;
     }
 
     public void setType(String type) {
