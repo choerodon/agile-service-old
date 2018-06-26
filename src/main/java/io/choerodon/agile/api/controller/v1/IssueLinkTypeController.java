@@ -31,7 +31,7 @@ public class IssueLinkTypeController {
     @Autowired
     private IssueLinkTypeRule issueLinkTypeRule;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据项目id查询issueLinkType")
     @GetMapping
     public ResponseEntity<List<IssueLinkTypeDTO>> listIssueLinkType(@ApiParam(value = "项目id", required = true)
@@ -43,7 +43,7 @@ public class IssueLinkTypeController {
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.listIssueLinkType"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据issueLinkTypeId查询issueLinkType")
     @GetMapping(value = "/{linkTypeId}")
     public ResponseEntity<IssueLinkTypeDTO> queryIssueLinkType(@ApiParam(value = "项目id", required = true)

@@ -28,7 +28,7 @@ public class BoardColumnController {
     @Autowired
     private BoardColumnService boardColumnService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建BoardColumn")
     @PostMapping
     public ResponseEntity<BoardColumnDTO> createBoardColumn(@ApiParam(value = "项目id", required = true)
@@ -42,7 +42,7 @@ public class BoardColumnController {
                 .orElseThrow(() -> new CommonException("error.BoardColumn.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更新BoardColumn")
     @PutMapping(value = "/{columnId}")
     public ResponseEntity<BoardColumnDTO> updateBoardColumn(@ApiParam(value = "项目id", required = true)

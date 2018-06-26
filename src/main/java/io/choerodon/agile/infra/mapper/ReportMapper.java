@@ -204,7 +204,7 @@ public interface ReportMapper {
      * @param sprintDO sprintDO
      * @return ReportIssueDO
      */
-    List<ReportIssueDO> queryIssueAfterSprint(@Param("sprintDO") SprintDO sprintDO);
+    List<ReportIssueDO> queryIssueCountAfterSprint(@Param("sprintDO") SprintDO sprintDO);
 
     /**
      * 查询冲刺结束后的字段value统计信息

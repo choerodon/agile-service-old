@@ -27,7 +27,7 @@ public class DataLogController {
     @Autowired
     private DataLogService dataLogService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建DataLog")
     @PostMapping
     public ResponseEntity<DataLogDTO> createDataLog(@ApiParam(value = "项目id", required = true)
@@ -39,7 +39,7 @@ public class DataLogController {
                 .orElseThrow(() -> new CommonException("error.dataLog.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询DataLog列表")
     @GetMapping
     public ResponseEntity<List<DataLogDTO>> listByIssueId(@ApiParam(value = "项目id", required = true)

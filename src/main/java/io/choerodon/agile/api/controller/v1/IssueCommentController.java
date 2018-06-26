@@ -36,7 +36,7 @@ public class IssueCommentController {
     @Autowired
     private VerifyUpdateUtil verifyUpdateUtil;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建issue评论")
     @PostMapping
     public ResponseEntity<IssueCommentDTO> createIssueComment(@ApiParam(value = "项目id", required = true)
@@ -49,7 +49,7 @@ public class IssueCommentController {
                 .orElseThrow(() -> new CommonException("error.IssueComment.createIssueComment"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更新issue评论")
     @PostMapping(value = "/update")
     public ResponseEntity<IssueCommentDTO> updateIssueComment(@ApiParam(value = "项目id", required = true)
@@ -64,7 +64,7 @@ public class IssueCommentController {
                 .orElseThrow(() -> new CommonException("error.IssueComment.updateIssueComment"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("通过issueId查询issue评论列表")
     @GetMapping(value = "/{issueId}")
     public ResponseEntity<List<IssueCommentDTO>> queryIssueCommentList(@ApiParam(value = "项目id", required = true)
@@ -76,7 +76,7 @@ public class IssueCommentController {
                 .orElseThrow(() -> new CommonException("error.IssueComment.queryIssueCommentList"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("通过commentId删除")
     @DeleteMapping(value = "/{commentId}")
     public ResponseEntity deleteIssueComment(@ApiParam(value = "项目id", required = true)

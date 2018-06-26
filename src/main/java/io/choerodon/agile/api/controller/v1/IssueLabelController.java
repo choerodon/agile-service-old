@@ -29,7 +29,7 @@ public class IssueLabelController {
     @Autowired
     private IssueLabelService issueLabelService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询issue标签列表")
     @GetMapping
     public ResponseEntity<List<IssueLabelDTO>> listIssueLabel(@ApiParam(value = "项目id", required = true)

@@ -30,7 +30,7 @@ public class LookupTypeController {
     @Autowired
     private LookupTypeService lookupTypeService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_MEMBER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询所有lookup type类型")
     @GetMapping
     public ResponseEntity<List<LookupTypeDTO>> listLookupType(@ApiParam(value = "项目id", required = true)
