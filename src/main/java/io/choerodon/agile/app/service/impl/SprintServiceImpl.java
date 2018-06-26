@@ -118,7 +118,7 @@ public class SprintServiceImpl implements SprintService {
     private DataLogE getAllDataLogByDelete(Long projectId, Long sprintId, Long issueId) {
         List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
         String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
-        String oldSprintNameStr = sprintNames.stream().map(sprintName -> sprintName.getSprintName()).collect(Collectors.joining(","));
+        String oldSprintNameStr = sprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
         String newSprintIdStr = "";
         String newSprintNameStr = "";
         int idx = 0;
@@ -299,7 +299,7 @@ public class SprintServiceImpl implements SprintService {
         List<SprintNameDTO> closeSprintNames = sprintNameAssembler.doListToDTO(issueMapper.queryCloseSprintNameByIssueId(issueId));
         SprintNameDTO sprintName = sprintNameAssembler.doToDTO(sprintMapper.querySprintNameBySprintId(projectId, destinationSprintId));
         String closeSprintIdStr = closeSprintNames.stream().map(closeSprintName -> closeSprintName.getSprintId().toString()).collect(Collectors.joining(","));
-        String closeSprintNameStr = closeSprintNames.stream().map(closeSprintName -> closeSprintName.getSprintName()).collect(Collectors.joining(","));
+        String closeSprintNameStr = closeSprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
         newValue = closeSprintIdStr;
         newString = closeSprintNameStr;
         oldValue = closeSprintIdStr;
@@ -459,8 +459,18 @@ public class SprintServiceImpl implements SprintService {
         Integer storyPoints = issueStoryPoints == null ? 0 : Integer.parseInt(issueStoryPoints.getStoryPoints());
         SprintReportIssueStatusDO issueBeforeStatus = reportIssueBeforeStatusMap.get(reportIssue.getIssueId());
         SprintReportIssueStatusDO issueAfterStatus = reportIssueAfterStatusMap.get(reportIssue.getIssueId());
-        String statusCode = issueBeforeStatus == null ? (issueAfterStatus == null ? reportIssue.getStatusCode() : issueAfterStatus.getCategoryCode()) : issueBeforeStatus.getCategoryCode();
-        String statusName = issueBeforeStatus == null ? (issueAfterStatus == null ? reportIssue.getStatusName() : issueAfterStatus.getStatusName()) : issueBeforeStatus.getStatusName();
+        String statusCode;
+        String statusName;
+        if (issueBeforeStatus != null) {
+            statusCode = issueBeforeStatus.getCategoryCode();
+            statusName = issueBeforeStatus.getStatusName();
+        } else if (issueAfterStatus != null) {
+            statusCode = issueAfterStatus.getCategoryCode();
+            statusName = issueAfterStatus.getStatusName();
+        } else {
+            statusCode = reportIssue.getStatusCode();
+            statusName = reportIssue.getStatusName();
+        }
         reportIssue.setAddIssue(issueIdAddList.contains(reportIssue.getIssueId()));
         reportIssue.setStoryPoints(storyPoints);
         reportIssue.setStatusCode(statusCode);
