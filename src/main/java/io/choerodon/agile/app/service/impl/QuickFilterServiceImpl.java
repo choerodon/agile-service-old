@@ -33,7 +33,7 @@ public class QuickFilterServiceImpl implements QuickFilterService {
     @Autowired
     private QuickFilterFieldMapper quickFilterFieldMapper;
 
-    private String getSqlQuery(List<QuickFilterValueDTO> quickFilterValueDTOList, List<String> relationOperations) {
+    private String getSqlQuery(List<QuickFilterValueDTO> quickFilterValueDTOList, List<String> relationOperations, Boolean childIncluded) {
         StringBuilder sqlQuery = new StringBuilder();
         int idx = 0;
         for (QuickFilterValueDTO quickFilterValueDTO : quickFilterValueDTOList) {
@@ -52,10 +52,10 @@ public class QuickFilterServiceImpl implements QuickFilterService {
                     sqlQuery.append(" issue_id in ( select issue_id from agile_issue_sprint_rel where " + field + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ) ");
                     break;
                 case "creation_date":
-                    sqlQuery.append(" unix_timestamp(" + field + ")" + quickFilterValueDTO.getOperation() + "unix_timestamp('" + quickFilterValueDTO.getValue()+"')");
+                    sqlQuery.append(" unix_timestamp(" + field + ")" + quickFilterValueDTO.getOperation() + "unix_timestamp('" + quickFilterValueDTO.getValue()+"') ");
                     break;
                 case "last_update_date":
-                    sqlQuery.append(" unix_timestamp(" + field + ")" + quickFilterValueDTO.getOperation() + "unix_timestamp('" + quickFilterValueDTO.getValue()+"')");
+                    sqlQuery.append(" unix_timestamp(" + field + ")" + quickFilterValueDTO.getOperation() + "unix_timestamp('" + quickFilterValueDTO.getValue()+"') ");
                     break;
                 default:
                     sqlQuery.append(" " + field + quickFilterValueDTO.getOperation() + quickFilterValueDTO.getValue() + " ");
@@ -67,6 +67,9 @@ public class QuickFilterServiceImpl implements QuickFilterService {
                 idx ++;
             }
         }
+        if (!childIncluded) {
+            sqlQuery.append(" and type_code != 'sub_task' ");
+        }
         return sqlQuery.toString();
     }
 
@@ -75,7 +78,7 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         if (!projectId.equals(quickFilterDTO.getProjectId())) {
             throw new CommonException("error.projectId.notEqual");
         }
-        String sqlQuery = getSqlQuery(quickFilterDTO.getQuickFilterValueDTOList(), quickFilterDTO.getRelationOperations());
+        String sqlQuery = getSqlQuery(quickFilterDTO.getQuickFilterValueDTOList(), quickFilterDTO.getRelationOperations(), quickFilterDTO.getChildIncluded());
         QuickFilterE quickFilterE = ConvertHelper.convert(quickFilterDTO, QuickFilterE.class);
         quickFilterE.setSqlQuery(sqlQuery);
         return ConvertHelper.convert(quickFilterRepository.create(quickFilterE), QuickFilterDTO.class);

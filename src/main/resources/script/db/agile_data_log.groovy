@@ -22,4 +22,16 @@ databaseChangeLog(logicalFilePath:'agile_data_log.groovy') {
             column(name: "last_update_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
     }
+
+    changeSet(id: '2018-06-26-agile-data-log-add-index', author: 'fuqianghuang01@gmail.com') {
+        createIndex(tableName: "agile_data_log", indexName: "idx_project_id") {
+            column(name: "project_id")
+        }
+        createIndex(tableName: "agile_data_log", indexName: "idx_issue_id") {
+            column(name: "issue_id")
+        }
+        createIndex(tableName: "agile_data_log", indexName: "idx_field") {
+            column(name: "field")
+        }
+    }
 }
