@@ -137,6 +137,10 @@ public class IssueServiceImpl implements IssueService {
     private static final String FIELD_LABELS = "labels";
     private static final String FIELD_COMPONENT = "Component";
     private static final String FIELD_EPIC_NAME = "Epic Name";
+    private static final String NEW_STRING = "newString";
+    private static final String NEW_VALUE = "newValue";
+    private static final String OLD_STRING = "oldString";
+    private static final String OLD_VALUE = "oldValue";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -290,36 +294,51 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void dataLogSprint(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO, boolean isRecordSprintLog) {
-        if (isRecordSprintLog) {
-            String oldValue, oldString, newValue, newString;
-            SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(originIssue.getIssueId()));
-            List<SprintNameDTO> closeSprintNames = sprintNameAssembler.doListToDTO(issueMapper.queryCloseSprintNameByIssueId(originIssue.getIssueId()));
-            SprintNameDTO sprintName = sprintNameAssembler.doToDTO(sprintMapper.querySprintNameBySprintId(originIssue.getProjectId(), issueUpdateDTO.getSprintId()));
-            if ((activeSprintName == null && sprintName == null) || (sprintName != null && activeSprintName != null && Objects.equals(sprintName.getSprintId(), activeSprintName.getSprintId()))) {
-                return;
-            }
-            String closeSprintIdStr = closeSprintNames.stream().map(closeSprintName -> closeSprintName.getSprintId().toString()).collect(Collectors.joining(","));
-            String closeSprintNameStr = closeSprintNames.stream().map(closeSprintName -> closeSprintName.getSprintName()).collect(Collectors.joining(","));
-            oldValue = newValue = closeSprintIdStr;
-            oldString = newString = closeSprintNameStr;
-            if (activeSprintName != null) {
-                oldValue = ("".equals(oldValue) ? activeSprintName.getSprintId().toString() : oldValue + "," + activeSprintName.getSprintId().toString());
-                oldString = ("".equals(oldString) ? activeSprintName.getSprintName() : oldString + "," + activeSprintName.getSprintName());
-            }
-            if (sprintName != null) {
-                newValue = ("".equals(newValue) ? sprintName.getSprintId().toString() : newValue + "," + sprintName.getSprintId().toString());
-                newString = ("".equals(newString) ? sprintName.getSprintName() : newString + "," + sprintName.getSprintName());
-            }
-            DataLogE dataLogE = new DataLogE();
-            dataLogE.setProjectId(originIssue.getProjectId());
-            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            dataLogE.setField(FIELD_SPRINT);
-            dataLogE.setOldValue("".equals(oldValue) ? null : oldValue);
-            dataLogE.setOldString("".equals(oldString) ? null : oldString);
-            dataLogE.setNewValue("".equals(newValue) ? null : newValue);
-            dataLogE.setNewString("".equals(newString) ? null : newString);
-            dataLogRepository.create(dataLogE);
+        if (!isRecordSprintLog) {
+            return;
         }
+        SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(originIssue.getIssueId()));
+        List<SprintNameDTO> closeSprintNames = sprintNameAssembler.doListToDTO(issueMapper.queryCloseSprintNameByIssueId(originIssue.getIssueId()));
+        SprintNameDTO sprintName = sprintNameAssembler.doToDTO(sprintMapper.querySprintNameBySprintId(originIssue.getProjectId(), issueUpdateDTO.getSprintId()));
+        if ((activeSprintName == null && sprintName == null) || (sprintName != null && activeSprintName != null && Objects.equals(sprintName.getSprintId(), activeSprintName.getSprintId()))) {
+            return;
+        }
+        Map<String, String> valuesMap = dealSprint(closeSprintNames, activeSprintName, sprintName);
+        DataLogE dataLogE = new DataLogE();
+        dataLogE.setProjectId(originIssue.getProjectId());
+        dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+        dataLogE.setField(FIELD_SPRINT);
+        dataLogE.setOldValue("".equals(valuesMap.get(OLD_VALUE)) ? null : valuesMap.get(OLD_VALUE));
+        dataLogE.setOldString("".equals(valuesMap.get(OLD_STRING)) ? null : valuesMap.get(OLD_STRING));
+        dataLogE.setNewValue("".equals(valuesMap.get(NEW_VALUE)) ? null : valuesMap.get(NEW_VALUE));
+        dataLogE.setNewString("".equals(valuesMap.get(NEW_STRING)) ? null : valuesMap.get(NEW_STRING));
+        dataLogRepository.create(dataLogE);
+
+    }
+
+    private Map<String, String> dealSprint(List<SprintNameDTO> closeSprintNames, SprintNameDTO activeSprintName, SprintNameDTO sprintName) {
+        Map<String, String> valuesMap = new HashMap<>();
+        String oldValue;
+        String oldString;
+        String newValue;
+        String newString;
+        String closeSprintIdStr = closeSprintNames.stream().map(closeSprintName -> closeSprintName.getSprintId().toString()).collect(Collectors.joining(","));
+        String closeSprintNameStr = closeSprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
+        oldValue = newValue = closeSprintIdStr;
+        oldString = newString = closeSprintNameStr;
+        if (activeSprintName != null) {
+            oldValue = ("".equals(oldValue) ? activeSprintName.getSprintId().toString() : oldValue + "," + activeSprintName.getSprintId().toString());
+            oldString = ("".equals(oldString) ? activeSprintName.getSprintName() : oldString + "," + activeSprintName.getSprintName());
+        }
+        if (sprintName != null) {
+            newValue = ("".equals(newValue) ? sprintName.getSprintId().toString() : newValue + "," + sprintName.getSprintId().toString());
+            newString = ("".equals(newString) ? sprintName.getSprintName() : newString + "," + sprintName.getSprintName());
+        }
+        valuesMap.put(OLD_VALUE, oldValue);
+        valuesMap.put(OLD_STRING, oldString);
+        valuesMap.put(NEW_VALUE, newValue);
+        valuesMap.put(NEW_STRING, newString);
+        return valuesMap;
     }
 
     private void dataLogStoryPoint(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
@@ -612,7 +631,7 @@ public class IssueServiceImpl implements IssueService {
             List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
             SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
             String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
-            String oldSprintNameStr = sprintNames.stream().map(sprintName -> sprintName.getSprintName()).collect(Collectors.joining(","));
+            String oldSprintNameStr = sprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
             int idx = 0;
             for (SprintNameDTO sprintName : sprintNames) {
                 if (activeSprintName != null && activeSprintName.getSprintId().equals(sprintName.getSprintId())) {
