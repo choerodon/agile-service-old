@@ -17,6 +17,7 @@ service:
   port: 8378
 
 preJob:
+  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.5.2
   preConfig:
     configFile: application.yml
     mysql:
