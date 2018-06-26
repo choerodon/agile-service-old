@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.DataLogDTO;
+import io.choerodon.agile.app.assembler.DataLogAssembler;
 import io.choerodon.agile.app.service.DataLogService;
 import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.domain.agile.repository.DataLogRepository;
@@ -27,6 +28,9 @@ public class DataLogServiceImpl implements DataLogService {
     @Autowired
     private DataLogMapper dataLogMapper;
 
+    @Autowired
+    private DataLogAssembler dataLogAssembler;
+
     @Override
     public DataLogDTO create(Long projectId, DataLogDTO dataLogDTO) {
         if (!projectId.equals(dataLogDTO.getProjectId())) {
@@ -37,7 +41,7 @@ public class DataLogServiceImpl implements DataLogService {
 
     @Override
     public List<DataLogDTO> listByIssueId(Long projectId, Long issueId) {
-        return ConvertHelper.convertList(dataLogMapper.selectByIssueId(projectId, issueId), DataLogDTO.class);
+        return dataLogAssembler.dataLogDOToDTO(dataLogMapper.selectByIssueId(projectId, issueId));
     }
 
 }

@@ -29,6 +29,10 @@ public class DataLogDTO {
 
     private Date lastUpdateDate;
 
+    private String name;
+
+    private String imageUrl;
+
     public Long getLogId() {
         return logId;
     }
@@ -107,5 +111,21 @@ public class DataLogDTO {
 
     public void setLastUpdateDate(Date lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 }
