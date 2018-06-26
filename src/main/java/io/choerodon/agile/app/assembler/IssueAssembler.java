@@ -1,6 +1,5 @@
 package io.choerodon.agile.app.assembler;
 
-import com.google.common.collect.Lists;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.ColorUtil;

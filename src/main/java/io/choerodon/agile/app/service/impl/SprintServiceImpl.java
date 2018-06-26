@@ -402,6 +402,7 @@ public class SprintServiceImpl implements SprintService {
             throw new CommonException(SPRINT_REPORT_ERROR);
         }
         Date actualEndDate = sprint.getActualEndDate();
+        Date startDate = sprint.getStartDate();
         if (actualEndDate == null) {
             sprint.setActualEndDate(new Date());
         }
@@ -410,10 +411,10 @@ public class SprintServiceImpl implements SprintService {
         pageRequest.resetOrder("ai", new HashMap<>());
         switch (status) {
             case DONE:
-                reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryReportIssueIds(projectId, sprintId, actualEndDate, true));
+                reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryReportIssueIds(projectId, sprintId, startDate, actualEndDate, true));
                 break;
             case UNFINISHED:
-                reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryReportIssueIds(projectId, sprintId, actualEndDate, false));
+                reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryReportIssueIds(projectId, sprintId, startDate, actualEndDate, false));
                 break;
             case REMOVE:
                 reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryRemoveIssueIdsDuringSprintWithOutSubEpicIssue(sprint));
@@ -434,23 +435,14 @@ public class SprintServiceImpl implements SprintService {
         List<SprintReportIssueStatusDO> reportIssueStoryPoints = reportMapper.queryIssueStoryPoints(projectId, reportIssueIds, actualEndDate);
         Map<Long, SprintReportIssueStatusDO> reportIssueStoryPointsMap = reportIssueStoryPoints.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
         //冲刺完成前issue的最后变更状态
-        List<SprintReportIssueStatusDO> reportIssueBeforeStatus = reportMapper.queryBeforeIssueStatus(projectId, reportIssueIds, actualEndDate);
+        List<SprintReportIssueStatusDO> reportIssueBeforeStatus = reportMapper.queryBeforeIssueStatus(projectId, reportIssueIds, startDate, actualEndDate);
         Map<Long, SprintReportIssueStatusDO> reportIssueBeforeStatusMap = reportIssueBeforeStatus.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
         //冲刺完成后issue的最初变更状态
         reportIssueIds.removeAll(reportIssueBeforeStatusMap.keySet());
         List<SprintReportIssueStatusDO> reportIssueAfterStatus = reportIssueIds.isEmpty() ? new ArrayList<>() : reportMapper.queryAfterIssueStatus(projectId, reportIssueIds, actualEndDate);
         Map<Long, SprintReportIssueStatusDO> reportIssueAfterStatusMap = reportIssueAfterStatus.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
         reportIssues = reportIssues.stream().map(reportIssue -> {
-            SprintReportIssueStatusDO issueStoryPoints = reportIssueStoryPointsMap.get(reportIssue.getIssueId());
-            Integer storyPoints = issueStoryPoints == null ? 0 : Integer.parseInt(issueStoryPoints.getStoryPoints());
-            SprintReportIssueStatusDO issueBeforeStatus = reportIssueBeforeStatusMap.get(reportIssue.getIssueId());
-            SprintReportIssueStatusDO issueAfterStatus = reportIssueAfterStatusMap.get(reportIssue.getIssueId());
-            String statusCode = issueBeforeStatus == null ? (issueAfterStatus == null ? reportIssue.getStatusCode() : issueAfterStatus.getCategoryCode()) : issueBeforeStatus.getCategoryCode();
-            String statusName = issueBeforeStatus == null ? (issueAfterStatus == null ? reportIssue.getStatusName() : issueAfterStatus.getStatusName()) : issueBeforeStatus.getStatusName();
-            reportIssue.setAddIssue(issueIdAddList.contains(reportIssue.getIssueId()));
-            reportIssue.setStoryPoints(storyPoints);
-            reportIssue.setStatusCode(statusCode);
-            reportIssue.setStatusName(statusName);
+            updateReportIssue(reportIssue, reportIssueStoryPointsMap, reportIssueBeforeStatusMap, reportIssueAfterStatusMap, issueIdAddList);
             return reportIssue;
         }).collect(Collectors.toList());
         reportPage.setTotalPages(reportIssuePage.getTotalPages());
@@ -460,5 +452,18 @@ public class SprintServiceImpl implements SprintService {
         reportPage.setNumber(reportIssuePage.getNumber());
         reportPage.setContent(issueAssembler.issueDoToIssueListDto(reportIssues));
         return reportPage;
+    }
+
+    private void updateReportIssue(IssueDO reportIssue, Map<Long, SprintReportIssueStatusDO> reportIssueStoryPointsMap, Map<Long, SprintReportIssueStatusDO> reportIssueBeforeStatusMap, Map<Long, SprintReportIssueStatusDO> reportIssueAfterStatusMap, List<Long> issueIdAddList) {
+        SprintReportIssueStatusDO issueStoryPoints = reportIssueStoryPointsMap.get(reportIssue.getIssueId());
+        Integer storyPoints = issueStoryPoints == null ? 0 : Integer.parseInt(issueStoryPoints.getStoryPoints());
+        SprintReportIssueStatusDO issueBeforeStatus = reportIssueBeforeStatusMap.get(reportIssue.getIssueId());
+        SprintReportIssueStatusDO issueAfterStatus = reportIssueAfterStatusMap.get(reportIssue.getIssueId());
+        String statusCode = issueBeforeStatus == null ? (issueAfterStatus == null ? reportIssue.getStatusCode() : issueAfterStatus.getCategoryCode()) : issueBeforeStatus.getCategoryCode();
+        String statusName = issueBeforeStatus == null ? (issueAfterStatus == null ? reportIssue.getStatusName() : issueAfterStatus.getStatusName()) : issueBeforeStatus.getStatusName();
+        reportIssue.setAddIssue(issueIdAddList.contains(reportIssue.getIssueId()));
+        reportIssue.setStoryPoints(storyPoints);
+        reportIssue.setStatusCode(statusCode);
+        reportIssue.setStatusName(statusName);
     }
 }

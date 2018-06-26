@@ -3,7 +3,6 @@ package io.choerodon.agile.app.assembler;
 import io.choerodon.agile.api.dto.DataLogDTO;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.DataLogDO;
-import io.choerodon.agile.infra.dataobject.IssueCommonDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
