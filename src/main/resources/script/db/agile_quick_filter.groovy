@@ -26,4 +26,9 @@ databaseChangeLog(logicalFilePath:'agile_quick_filter.groovy') {
             column(name: 'description', type: 'VARCHAR(5000)', remarks: '描述')
         }
     }
+    changeSet(id: '2018-06-26-agile-quick-filter-add-index', author: 'fuqianghuang01@gmail.com') {
+        createIndex(tableName: "agile_quick_filter", indexName: "idx_project_id") {
+            column(name: "project_id")
+        }
+    }
 }
