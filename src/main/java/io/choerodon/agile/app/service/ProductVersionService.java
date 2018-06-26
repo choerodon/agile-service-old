@@ -20,14 +20,7 @@ public interface ProductVersionService {
      */
     ProductVersionDetailDTO createVersion(Long projectId, ProductVersionCreateDTO versionCreateDTO);
 
-    /**
-     * 删除指定version
-     *
-     * @param projectId            projectId
-     * @param productVersionDelete productVersionDelete
-     * @return Boolean
-     */
-    Boolean deleteVersion(Long projectId, ProductVersionDeleteDTO productVersionDelete);
+    Boolean deleteVersion(Long projectId, Long versionId, Long fixTargetVersionId, Long influenceTargetVersionId);
 
     ProductVersionDetailDTO updateVersion(Long projectId, Long versionId, ProductVersionUpdateDTO versionUpdateDTO, List<String> fieldList);
 

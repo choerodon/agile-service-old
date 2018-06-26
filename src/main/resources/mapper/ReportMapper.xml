@@ -201,7 +201,7 @@
                                          WHERE
                                              aisr.sprint_id = #{sprintDO.sprintId})) aca LEFT JOIN agile_issue aiii
                 ON aiii.issue_id = aca.issue_id
-        WHERE aiii.type_code != 'sub_task' AND aiii.type_code != 'issue_epic'
+        WHERE aiii.type_code != 'sub_task'
     </select>
 
     <select id="queryIssueIdsBySprintId" resultType="java.lang.Long">
@@ -768,6 +768,7 @@
         agile_issue ai,agile_issue_status ais
         WHERE aisr.project_id = #{projectId} AND aisr.sprint_id = #{sprintId}
         AND aisr.issue_id = ai.issue_id AND ai.status_id = ais.id
+        AND ai.type_code != 'sub_task'
         AND (adl2.new_value IS NOT null AND adl2.new_value != '' AND adl2.is_completed = ${status}
         OR (
         (adl2.new_value IS null OR adl2.new_value = '') AND adl4.old_value IS NOT null

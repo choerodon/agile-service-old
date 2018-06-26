@@ -160,7 +160,7 @@ public class IssueServiceImpl implements IssueService {
         }
         Long issueId = issueRepository.create(issueE).getIssueId();
         if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
-            issueRepository.issueToSprint(issueE.getProjectId(), issueE.getSprintId(), issueId);
+            issueRepository.issueToSprint(issueE.getProjectId(), issueE.getSprintId(), issueId, new Date());
         }
         if (issueCreateDTO.getIssueLinkCreateDTOList() != null && !issueCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
             issueLinkService.createIssueLinkList(issueCreateDTO.getIssueLinkCreateDTOList(), issueId, issueCreateDTO.getProjectId());
@@ -438,7 +438,7 @@ public class IssueServiceImpl implements IssueService {
                 issueIds.add(issueE.getIssueId());
                 issueRepository.removeIssueFromSprintByIssueIds(projectId, issueIds);
                 if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
-                    issueRepository.issueToDestinationByIds(projectId, issueE.getSprintId(), issueIds);
+                    issueRepository.issueToDestinationByIds(projectId, issueE.getSprintId(), issueIds, new Date());
                 }
                 if (issueE.isIssueRank()) {
                     calculationRank(issueE);
@@ -557,7 +557,7 @@ public class IssueServiceImpl implements IssueService {
         initializationIssueNum(subIssueE);
         Long issueId = issueRepository.create(subIssueE).getIssueId();
         if (parentIssueE.getSprintId() != null && !Objects.equals(parentIssueE.getSprintId(), 0L)) {
-            issueRepository.issueToSprint(subIssueE.getProjectId(), subIssueE.getSprintId(), issueId);
+            issueRepository.issueToSprint(subIssueE.getProjectId(), subIssueE.getSprintId(), issueId, new Date());
         }
         if (issueSubCreateDTO.getIssueLinkCreateDTOList() != null && !issueSubCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
             issueLinkService.createIssueLinkList(issueSubCreateDTO.getIssueLinkCreateDTOList(), issueId, issueSubCreateDTO.getProjectId());
@@ -666,7 +666,7 @@ public class IssueServiceImpl implements IssueService {
         List<DataLogE> dataLogEList = getSprintDataLogByMove(projectId, sprintId, moveIssueDTO);
         issueRepository.removeIssueFromSprintByIssueIds(projectId, moveIssueIds);
         if (sprintId != null && !Objects.equals(sprintId, 0L)) {
-            issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds);
+            issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds, new Date());
         }
         dataLogSprintByMove(dataLogEList);
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);

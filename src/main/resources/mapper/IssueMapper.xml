@@ -650,17 +650,17 @@
 
     <insert id="issueToDestinationByIds">
         INSERT IGNORE INTO agile_issue_sprint_rel
-        (issue_id, sprint_id, project_id) VALUES
+        (issue_id, sprint_id, project_id, creation_date, last_update_date) VALUES
         <foreach collection="issueIds" item="issueId" index="index"
                  separator=",">
-            (#{issueId}, #{sprintId}, #{projectId})
+            (#{issueId}, #{sprintId}, #{projectId}, #{date}, #{date})
         </foreach>
     </insert>
 
     <insert id="issueToSprint">
         INSERT IGNORE
-        INTO agile_issue_sprint_rel(issue_id, sprint_id, project_id)
-        VALUES (#{issueId}, #{sprintId}, #{projectId})
+        INTO agile_issue_sprint_rel(issue_id, sprint_id, project_id, creation_date, last_update_date)
+        VALUES (#{issueId}, #{sprintId}, #{projectId}, #{date}, #{date})
     </insert>
 
     <select id="querySubIssueIdsByIssueId" resultType="java.lang.Long">

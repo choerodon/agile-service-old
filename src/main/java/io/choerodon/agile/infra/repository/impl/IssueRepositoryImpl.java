@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -104,8 +105,8 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public int issueToDestinationByIds(Long projectId, Long sprintId, List<Long> issueIds) {
-        return issueMapper.issueToDestinationByIds(projectId, sprintId, issueIds);
+    public int issueToDestinationByIds(Long projectId, Long sprintId, List<Long> issueIds, Date date) {
+        return issueMapper.issueToDestinationByIds(projectId, sprintId, issueIds, date);
     }
 
     @Override
@@ -119,8 +120,8 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public int issueToSprint(Long projectId, Long sprintId, Long issueId) {
-        return issueMapper.issueToSprint(projectId, sprintId, issueId);
+    public int issueToSprint(Long projectId, Long sprintId, Long issueId, Date date) {
+        return issueMapper.issueToSprint(projectId, sprintId, issueId, date);
     }
 
     @Override

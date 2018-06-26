@@ -84,12 +84,16 @@ public class ProductVersionController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("根据id删除version")
-    @PostMapping(value = "/version")
+    @DeleteMapping(value = "/{versionId}")
     public ResponseEntity<Boolean> deleteVersion(@ApiParam(value = "项目id", required = true)
                                                  @PathVariable(name = "project_id") Long projectId,
-                                                 @ApiParam(value = "删除版本信息", required = true)
-                                                 @RequestBody @Valid ProductVersionDeleteDTO productVersionDelete) {
-        return Optional.ofNullable(productVersionService.deleteVersion(projectId, productVersionDelete))
+                                                 @ApiParam(value = "versionId", required = true)
+                                                 @PathVariable Long versionId,
+                                                 @ApiParam(value = "修复版本issue目标版本", required = true)
+                                                 @RequestParam(required = false, name = "fixTargetVersionId") Long fixTargetVersionId,
+                                                 @ApiParam(value = "影响版本issue目标版本", required = true)
+                                                 @RequestParam(required = false, name = "influenceTargetVersionId") Long influenceTargetVersionId) {
+        return Optional.ofNullable(productVersionService.deleteVersion(projectId, versionId, fixTargetVersionId, influenceTargetVersionId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.NO_CONTENT))
                 .orElseThrow(() -> new CommonException(DELETE_ERROR));
     }
