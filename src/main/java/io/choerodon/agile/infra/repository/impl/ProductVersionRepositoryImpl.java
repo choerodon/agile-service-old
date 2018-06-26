@@ -28,8 +28,6 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     private static final String INSERT_ERROR = "error.version.insert";
     private static final String DELETE_ERROR = "error.version.delete";
     private static final String UPDATE_ERROR = "error.version.update";
-    private static final String VERSION_STATUS_PLAN_CODE = "version_planning";
-    private static final String REVOKE_RELEASE_ERROR = "error.productVersion.revokeRelease";
 
     @Override
     public ProductVersionE createVersion(ProductVersionE versionE) {

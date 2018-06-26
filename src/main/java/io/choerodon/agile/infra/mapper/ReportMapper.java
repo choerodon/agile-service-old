@@ -243,7 +243,7 @@ public interface ReportMapper {
      */
     Date queryAddIssueDuringSprintNoData(@Param("issueId") Long issueId, @Param("sprintId") Long sprintId);
 
-    List<Long> queryReportIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("actualEndDate") Date actualEndDate, @Param("status") Boolean status);
+    List<Long> queryReportIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("startDate") Date startDate, @Param("actualEndDate") Date actualEndDate, @Param("status") Boolean status);
 
     List<IssueDO> queryIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
@@ -259,7 +259,7 @@ public interface ReportMapper {
      */
     Integer queryAddIssueValueDuringSprintNoData(@Param("issueId") Long issueId, @Param("date") Date date, @Param("field") String field);
 
-    List<SprintReportIssueStatusDO> queryBeforeIssueStatus(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("actualEndDate") Date actualEndDate);
+    List<SprintReportIssueStatusDO> queryBeforeIssueStatus(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("startDate") Date startDate, @Param("actualEndDate") Date actualEndDate);
 
     List<SprintReportIssueStatusDO> queryAfterIssueStatus(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("actualEndDate") Date actualEndDate);
 }

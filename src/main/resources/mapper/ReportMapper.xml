@@ -738,30 +738,32 @@
         ai.issue_id
         FROM agile_issue_sprint_rel aisr
         LEFT JOIN (
-        SELECT adl.issue_id, adl.new_value, ais.is_completed
-        FROM agile_data_log adl, agile_issue_status ais, (
-        SELECT MAX(adl1.log_id) AS log_id
-        FROM agile_issue_sprint_rel aisr1, agile_data_log adl1
-        WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = #{sprintId}
-        AND aisr1.issue_id = adl1.issue_id AND adl1.field = 'status'
-        <if test="actualEndDate != null">
-            AND adl1.creation_date &lt; #{actualEndDate}
-        </if>
-        GROUP BY adl1.issue_id
-        ) a
-        WHERE adl.log_id = a.log_id AND ais.id = adl.new_value
+            SELECT adl.issue_id, adl.new_value, ais.is_completed
+            FROM agile_data_log adl, agile_issue_status ais, (
+                SELECT MAX(adl1.log_id) AS log_id
+                FROM agile_issue_sprint_rel aisr1, agile_data_log adl1, agile_issue_status ais1
+                WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = #{sprintId}
+                AND aisr1.issue_id = adl1.issue_id AND adl1.field = 'status'
+                AND ais1.id = adl1.new_value AND ais1.is_completed IS NOT NULL
+                AND adl1.creation_date > #{startDate}
+                <if test="actualEndDate != null">
+                    AND adl1.creation_date &lt; #{actualEndDate}
+                </if>
+                GROUP BY adl1.issue_id
+            ) a
+            WHERE adl.log_id = a.log_id AND ais.id = adl.new_value
         ) adl2 ON adl2.issue_id = aisr.issue_id
         LEFT JOIN (
-        SELECT adl.issue_id, adl.old_value, ais.is_completed
-        from agile_data_log adl, agile_issue_status ais, (
-        SELECT MIN(adl3.log_id) AS log_id
-        FROM agile_issue_sprint_rel aisr2, agile_data_log adl3
-        WHERE aisr2.project_id = #{projectId} AND aisr2.sprint_id = #{sprintId}
-        AND aisr2.issue_id = adl3.issue_id AND adl3.field = 'status'
-        <if test="actualEndDate != null">
-            AND adl3.creation_date > #{actualEndDate}
-        </if>
-        GROUP BY adl3.issue_id
+            SELECT adl.issue_id, adl.old_value, ais.is_completed
+            from agile_data_log adl, agile_issue_status ais, (
+                SELECT MIN(adl3.log_id) AS log_id
+                FROM agile_issue_sprint_rel aisr2, agile_data_log adl3
+                WHERE aisr2.project_id = #{projectId} AND aisr2.sprint_id = #{sprintId}
+                AND aisr2.issue_id = adl3.issue_id AND adl3.field = 'status'
+                <if test="actualEndDate != null">
+                    AND adl3.creation_date > #{actualEndDate}
+                </if>
+                GROUP BY adl3.issue_id
         ) a
         WHERE adl.log_id = a.log_id AND ais.id = adl.old_value
         ) adl4 ON adl4.issue_id = aisr.issue_id,
@@ -826,18 +828,20 @@
         FROM agile_data_log adl,
         agile_issue_status ais,
         (
-        SELECT MAX(log_id) AS log_id
-        FROM agile_data_log
-        WHERE project_id = #{projectId} AND field = 'status'
-        AND issue_id IN
+        SELECT MAX(adl1.log_id) AS log_id
+        FROM agile_data_log adl1, agile_issue_status ais1
+        WHERE adl1.project_id = #{projectId} AND adl1.field = 'status'
+        AND ais1.id = adl1.new_value AND ais1.is_completed IS NOT NULL
+        AND adl1.issue_id IN
         <foreach collection="issueIds" item="issueId"
                  open="(" close=")" separator=",">
             #{issueId}
         </foreach>
+        AND adl1.creation_date > #{startDate}
         <if test="actualEndDate != null">
-            AND creation_date &lt; #{actualEndDate}
+            AND adl1.creation_date &lt; #{actualEndDate}
         </if>
-        GROUP BY issue_id
+        GROUP BY adl1.issue_id
         ) a
         WHERE adl.log_id = a.log_id AND ais.id = adl.new_value
     </select>

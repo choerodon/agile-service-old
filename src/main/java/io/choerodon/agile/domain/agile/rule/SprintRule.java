@@ -19,7 +19,6 @@ public class SprintRule {
     private static final String ERROR_COMPLETE_SPRINT = "error.sprint.complete";
     private static final String SPRINT_NOT_FOUND = "error.sprint.notFound";
     private static final String SPRINT_ERROR = "error.sprint.notFoundOrIsClosed";
-    private static final String SPRINT_REPORT_ERROR = "error.sprint.report";
     private static final String SPRINT_START_CODE = "started";
     private static final String SPRINT_PLANNING_CODE = "sprint_planning";
     private static final String SPRINT_CLOSED_CODE = "closed";
