@@ -75,29 +75,22 @@ public class IssueLinkTypeE {
 
     public void initDuplicate(Long projectId) {
         this.projectId = projectId;
-        this.inWard = "is duplicated by";
-        this.outWard = "duplicates";
-        this.linkName = "Duplicate";
+        this.inWard = "被复制";
+        this.outWard = "复制";
+        this.linkName = "复制";
     }
 
     public void initBlocks(Long projectId) {
         this.projectId = projectId;
-        this.inWard = "is blocked by";
-        this.outWard = "blocks";
-        this.linkName = "Blocks";
-    }
-
-    public void initClones(Long projectId) {
-        this.projectId = projectId;
-        this.inWard = "is cloned by";
-        this.outWard = "clones";
-        this.linkName = "Clones";
+        this.inWard = "被阻塞";
+        this.outWard = "阻塞";
+        this.linkName = "阻塞";
     }
 
     public void initRelates(Long projectId) {
         this.projectId = projectId;
-        this.inWard = "relates to";
-        this.outWard = "relates to";
-        this.linkName = "Relates";
+        this.inWard = "关联";
+        this.outWard = "关联";
+        this.linkName = "关联";
     }
 }

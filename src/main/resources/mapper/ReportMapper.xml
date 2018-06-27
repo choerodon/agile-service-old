@@ -252,9 +252,11 @@
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_id
         FROM
-        ( SELECT dcd2.issue_id,
-        dcd2.creation_date AS date,
+        ( SELECT dcd.issue_id,
+        dcd.creation_date AS date,
         IFNULL(dcd2.new_string,0) AS new_value FROM (SELECT
+        adl.issue_id,
+        adl.creation_date,
         MAX(adl1.log_id) as log_id
         FROM
         agile_data_log adl
@@ -382,9 +384,11 @@
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_Id
         FROM
-        ( select dcd2.issue_id,
-        dcd2.creation_date AS date,
+        ( select dcd.issue_id,
+        dcd.creation_date AS date,
         IFNULL( dcd2.new_string, 0 ) AS old_value from (SELECT
+        adl.issue_id,
+        adl.creation_date,
         MAX(adl1.log_id) as log_id
         FROM
         agile_data_log adl
@@ -409,8 +413,8 @@
 
     <select id="queryRemoveIssueDoneValueDurationSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
         SELECT
-        b.issue_id,
-        b.creation_date AS date,
+        a.issue_id,
+        a.creation_date AS date,
         IFNULL( b.new_string, 0 ) AS
         new_value,
         0 as old_value,
@@ -422,6 +426,8 @@
         FROM
         (
         SELECT
+        adl.issue_id,
+        adl.creation_date,
         MAX(adl1.log_id) as log_id
         FROM
         agile_data_log adl
