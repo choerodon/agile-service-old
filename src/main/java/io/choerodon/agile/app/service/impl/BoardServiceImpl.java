@@ -158,7 +158,7 @@ public class BoardServiceImpl implements BoardService {
             boardSprintDTO.setSprintId(activeSprint.getSprintId());
             boardSprintDTO.setSprintName(activeSprint.getSprintName());
             if (activeSprint.getEndDate() != null) {
-                boardSprintDTO.setDayRemain(dateUtil.differentDaysByMillisecond(new Date(),activeSprint.getEndDate()));
+                boardSprintDTO.setDayRemain(dateUtil.differentDaysByMillisecond(new Date(), activeSprint.getEndDate()));
             }
             return boardSprintDTO;
         }
@@ -167,6 +167,9 @@ public class BoardServiceImpl implements BoardService {
 
     private String getQuickFilter(List<Long> quickFilterIds) {
         List<String> sqlQuerys = quickFilterMapper.selectSqlQueryByIds(quickFilterIds);
+        if (sqlQuerys.isEmpty()) {
+            return null;
+        }
         StringBuilder sql = new StringBuilder("select issue_id from agile_issue where ");
         int idx = 0;
         for (String filter : sqlQuerys) {
@@ -206,7 +209,7 @@ public class BoardServiceImpl implements BoardService {
             issueForBoardDO.setImageUrl(imageUrl);
         })));
         jsonObject.put("columnsData", putColumnData(columns));
-        jsonObject.put("currentSprint",putCurrentSprint(activeSprint));
+        jsonObject.put("currentSprint", putCurrentSprint(activeSprint));
         return jsonObject;
     }
 
@@ -305,7 +308,7 @@ public class BoardServiceImpl implements BoardService {
         Long boardId = issueMoveDTO.getBoardId();
         IssueDO issueDO = issueMapper.selectByPrimaryKey(issueMoveDTO.getIssueId());
         BoardDO boardDO = boardMapper.selectByPrimaryKey(boardId);
-        checkColumnContraint(projectId, issueMoveDTO, boardDO.getColumnConstraint(),issueDO.getStatusId());
+        checkColumnContraint(projectId, issueMoveDTO, boardDO.getColumnConstraint(), issueDO.getStatusId());
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
         dataLogStatus(issueDO, issueE);
         return ConvertHelper.convert(issueRepository.updateSelective(issueE), IssueMoveDTO.class);
