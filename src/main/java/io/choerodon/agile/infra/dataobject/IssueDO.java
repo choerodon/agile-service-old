@@ -100,6 +100,9 @@ public class IssueDO extends AuditDomain {
     private String priorityName;
 
     @Transient
+    private Long sprintId;
+
+    @Transient
     private String statusCode;
 
     @Transient
@@ -301,6 +304,14 @@ public class IssueDO extends AuditDomain {
 
     public void setAddIssue(Boolean addIssue) {
         this.addIssue = addIssue;
+    }
+
+    public Long getSprintId() {
+        return sprintId;
+    }
+
+    public void setSprintId(Long sprintId) {
+        this.sprintId = sprintId;
     }
 
     @Override

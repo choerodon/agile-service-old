@@ -474,6 +474,19 @@
         </foreach>
     </select>
 
+    <select id="queryIssueByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT
+        ai.issue_id, asp1.sprint_id,
+        ai.status_id
+        FROM agile_issue ai
+        LEFT JOIN (SELECT aisr.issue_id, asp.sprint_id
+        FROM agile_issue_sprint_rel aisr, agile_sprint asp
+        WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
+              AND aisr.issue_id = #{issueId}
+        ) asp1 ON asp1.issue_id = ai.issue_id
+        WHERE ai.project_id = #{projectId} AND ai.issue_id = #{issueId}
+    </select>
+
     <select id="queryIssueSubList" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
         SELECT *
         FROM

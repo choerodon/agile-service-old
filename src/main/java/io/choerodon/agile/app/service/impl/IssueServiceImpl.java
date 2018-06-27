@@ -560,7 +560,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO) {
         IssueE subIssueE = issueAssembler.issueSubCreateDtoToEntity(issueSubCreateDTO);
-        IssueE parentIssueE = queryIssueByProjectIdAndIssueId(subIssueE.getProjectId(), subIssueE.getParentIssueId());
+        IssueE parentIssueE =  ConvertHelper.convert(issueMapper.queryIssueByIssueId(subIssueE.getProjectId(), subIssueE.getParentIssueId()), IssueE.class);
         //设置初始状态,跟随父类状态
         subIssueE = parentIssueE.initializationSubIssue(subIssueE);
         //日志记录
