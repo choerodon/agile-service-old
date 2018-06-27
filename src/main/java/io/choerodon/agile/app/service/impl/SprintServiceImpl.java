@@ -404,11 +404,9 @@ public class SprintServiceImpl implements SprintService {
         if (sprint == null || Objects.equals(sprint.getStatusCode(), SPRINT_PLANNING_CODE)) {
             throw new CommonException(SPRINT_REPORT_ERROR);
         }
-        Date actualEndDate = sprint.getActualEndDate();
+        Date actualEndDate = sprint.getActualEndDate() == null ? new Date() : sprint.getActualEndDate();
+        sprint.setActualEndDate(actualEndDate);
         Date startDate = sprint.getStartDate();
-        if (actualEndDate == null) {
-            sprint.setActualEndDate(new Date());
-        }
         Page<Long> reportIssuePage = new Page<>();
         Page<IssueListDTO> reportPage = new Page<>();
         pageRequest.resetOrder("ai", new HashMap<>());
