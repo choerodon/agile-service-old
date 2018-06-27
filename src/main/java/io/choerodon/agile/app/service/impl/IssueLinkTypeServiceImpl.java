@@ -70,13 +70,10 @@ public class IssueLinkTypeServiceImpl implements IssueLinkTypeService {
         duplicate.initDuplicate(projectId);
         IssueLinkTypeE blocks = new IssueLinkTypeE();
         blocks.initBlocks(projectId);
-        IssueLinkTypeE clones = new IssueLinkTypeE();
-        clones.initClones(projectId);
         IssueLinkTypeE relates = new IssueLinkTypeE();
         relates.initRelates(projectId);
         issueLinkTypeRepository.create(duplicate);
         issueLinkTypeRepository.create(blocks);
-        issueLinkTypeRepository.create(clones);
         issueLinkTypeRepository.create(relates);
     }
 }
