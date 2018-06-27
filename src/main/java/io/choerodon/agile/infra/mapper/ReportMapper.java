@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.dataobject.ReportIssueDO;
@@ -262,4 +263,13 @@ public interface ReportMapper {
      * @return Long
      */
     List<Long> queryAddIssueIdsDuringSprintNoBefore(@Param("sprintDO") SprintDO sprintDO);
+
+    /**
+     * issue在当前日期状态是否为done
+     *
+     * @param issueId issueId
+     * @param date    date
+     * @return 为done返回true，否返回false
+     */
+    Boolean checkIssueDoneStatus(@Param("issueId") Long issueId, @Param("date") Date date);
 }
