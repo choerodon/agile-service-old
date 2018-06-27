@@ -161,7 +161,7 @@ public class IssueServiceImpl implements IssueService {
         List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
         issueE.initializationColor(colorList);
         if (issueE.isIssueRank()) {
-            calculationRank(issueE);
+            calculationRank(issueE.getProjectId(), issueE);
         }
         Long issueId = issueRepository.create(issueE).getIssueId();
         if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
@@ -176,9 +176,9 @@ public class IssueServiceImpl implements IssueService {
         return queryIssue(issueCreateDTO.getProjectId(), issueId);
     }
 
-    private void calculationRank(IssueE issueE) {
-        if (sprintRule.hasIssue(issueE.getProjectId(), issueE.getSprintId())) {
-            String rank = sprintMapper.queryMaxRank(issueE.getProjectId(), issueE.getSprintId());
+    private void calculationRank(Long projectId, IssueE issueE) {
+        if (sprintRule.hasIssue(projectId, issueE.getSprintId())) {
+            String rank = sprintMapper.queryMaxRank(projectId, issueE.getSprintId());
             issueE.setRank(RankUtil.genNext(rank));
         } else {
             issueE.setRank(RankUtil.mid());
@@ -463,7 +463,7 @@ public class IssueServiceImpl implements IssueService {
                     issueRepository.issueToDestinationByIds(projectId, issueE.getSprintId(), issueIds, new Date());
                 }
                 if (issueE.isIssueRank() || (issueE.getTypeCode() == null && oldIssue.isIssueRank())) {
-                    calculationRank(issueE);
+                    calculationRank(projectId, issueE);
                     fieldList.add(RANK_FIELD);
                 }
             }
