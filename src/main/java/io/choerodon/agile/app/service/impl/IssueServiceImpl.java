@@ -575,7 +575,7 @@ public class IssueServiceImpl implements IssueService {
         //设置issue编号
         initializationIssueNum(subIssueE);
         Long issueId = issueRepository.create(subIssueE).getIssueId();
-        if (parentIssueE.getSprintId() != null && !Objects.equals(parentIssueE.getSprintId(), 0L)) {
+        if (subIssueE.getSprintId() != null && !Objects.equals(subIssueE.getSprintId(), 0L)) {
             issueRepository.issueToSprint(subIssueE.getProjectId(), subIssueE.getSprintId(), issueId, new Date());
         }
         if (issueSubCreateDTO.getIssueLinkCreateDTOList() != null && !issueSubCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
