@@ -80,7 +80,7 @@ public class ReportServiceImpl implements ReportService {
         //获取冲刺开启前的issue统计
         handleIssueCountBeforeSprint(sprintDO, reportIssueEList, issueIdBeforeSprintList);
         //获取当前冲刺期间加入的issue
-        List<Long> issueIdAddList = !issueIdBeforeSprintList.isEmpty() ? reportMapper.queryAddIssueIdsDuringSprint(sprintDO, issueIdBeforeSprintList) : null;
+        List<Long> issueIdAddList = !issueIdBeforeSprintList.isEmpty() ? reportMapper.queryAddIssueIdsDuringSprint(sprintDO, issueIdBeforeSprintList) : reportMapper.queryAddIssueIdsDuringSprintNoBefore(sprintDO);
         //获取当前冲刺期间加入的issue(包含加入时间)
         handleAddIssueCountDuringSprint(sprintDO, reportIssueEList, issueIdAddList);
         //获取当前冲刺期间移除的issue
@@ -104,9 +104,9 @@ public class ReportServiceImpl implements ReportService {
         //获取冲刺开启前的issue
         List<Long> issueIdBeforeSprintList = reportMapper.queryIssueIdsBeforeSprintStart(sprintDO);
         //获取当前冲刺期间加入的issue
-        List<Long> issueIdAddList = !issueIdBeforeSprintList.isEmpty() ? reportMapper.queryAddIssueIdsDuringSprint(sprintDO, issueIdBeforeSprintList) : null;
+        List<Long> issueIdAddList = !issueIdBeforeSprintList.isEmpty() ? reportMapper.queryAddIssueIdsDuringSprint(sprintDO, issueIdBeforeSprintList) : reportMapper.queryAddIssueIdsDuringSprintNoBefore(sprintDO);
         //获取当前冲刺期间移除的issue
-        List<Long> issueIdRemoveList = !issueIdBeforeSprintList.isEmpty() ? queryRemoveIssueIdsDuringSprint(sprintDO.getSprintId(), issueIdBeforeSprintList) : null;
+        List<Long> issueIdRemoveList = queryRemoveIssueIdsDuringSprint(sprintDO.getSprintId(), issueIdBeforeSprintList);
         //获取当前冲刺开启前的issue的变更字段值(包含子任务)
         handleIssueValueBeforeSprint(sprintDO, reportIssueEList, issueIdBeforeSprintList, field);
         //获取当前冲刺期间加入的issue(包含加入时间、加入时的字段值)(包含子任务)

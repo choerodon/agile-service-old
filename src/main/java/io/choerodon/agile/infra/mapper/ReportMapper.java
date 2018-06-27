@@ -262,4 +262,12 @@ public interface ReportMapper {
     List<SprintReportIssueStatusDO> queryBeforeIssueStatus(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("startDate") Date startDate, @Param("actualEndDate") Date actualEndDate);
 
     List<SprintReportIssueStatusDO> queryAfterIssueStatus(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("actualEndDate") Date actualEndDate);
+
+    /**
+     * 查询冲刺期间添加的issue，冲刺前没有issue
+     *
+     * @param sprintDO sprintDO
+     * @return Long
+     */
+    List<Long> queryAddIssueIdsDuringSprintNoBefore(@Param("sprintDO")SprintDO sprintDO);
 }

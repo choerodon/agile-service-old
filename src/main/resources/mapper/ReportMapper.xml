@@ -607,7 +607,7 @@
                                      WHERE adl.field = 'resolution'
                                            AND adl.creation_date &lt; #{sprintDO.actualEndDate}
                                      GROUP BY issue_id) bb LEFT JOIN agile_data_log
-                                                                     adl4 ON ald4.log_id = bb.log_id
+                                                                     adl4 ON adl4.log_id = bb.log_id
                               ) cc ON aspr.issue_id = cc.issue_id
                 WHERE
                     aspr.sprint_id = #{sprintDO.sprintId}
@@ -917,6 +917,13 @@
               WHERE adl.issue_id = #{issueId} AND adl.field = #{field}
                     AND adl.creation_date &lt;= #{date}
               GROUP BY adl.issue_id) cd LEFT JOIN agile_data_log adl2 ON cd.log_id = adl2.log_id
+    </select>
+
+    <select id="queryAddIssueIdsDuringSprintNoBefore" resultType="java.lang.Long">
+        SELECT issue_id
+        FROM agile_issue_sprint_rel
+        WHERE sprint_id = #{sprintDO.sprintId} AND creation_date &gt; #{sprintDO.startDate}
+              AND creation_date &lt; #{sprintDO.actualEndDate}
     </select>
 
 
