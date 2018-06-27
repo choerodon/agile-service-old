@@ -32,7 +32,7 @@ public class QuickFilterController {
     @Autowired
     private QuickFilterFieldService quickFilterFieldService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("创建quick filter")
     @PostMapping
     public ResponseEntity<QuickFilterDTO> create(@ApiParam(value = "项目id", required = true)
