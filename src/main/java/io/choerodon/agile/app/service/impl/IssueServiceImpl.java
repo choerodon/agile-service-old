@@ -626,10 +626,13 @@ public class IssueServiceImpl implements IssueService {
         SprintDO sprintDO = getSprintById(sprintId);
         List<DataLogE> dataLogEList = new ArrayList<>();
         for (Long issueId : moveIssueDTO.getIssueIds()) {
+            SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
+            if (activeSprintName != null && sprintId.equals(activeSprintName.getSprintId())) {
+                continue;
+            }
             String newSprintIdStr = "";
             String newSprintNameStr = "";
             List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
-            SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
             String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
             String oldSprintNameStr = sprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
             int idx = 0;
