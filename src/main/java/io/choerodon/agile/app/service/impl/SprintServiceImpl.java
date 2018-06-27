@@ -195,6 +195,9 @@ public class SprintServiceImpl implements SprintService {
 
     private String getQuickFilter(List<Long> quickFilterIds) {
         List<String> sqlQuerys = quickFilterMapper.selectSqlQueryByIds(quickFilterIds);
+        if (sqlQuerys.isEmpty()) {
+            return null;
+        }
         StringBuilder sql = new StringBuilder("select issue_id from agile_issue where ");
         int idx = 0;
         for (String filter : sqlQuerys) {
