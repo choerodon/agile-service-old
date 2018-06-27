@@ -44,7 +44,11 @@ public class QuickFilterServiceImpl implements QuickFilterService {
                     sqlQuery.append(" issue_id in ( select issue_id from agile_component_issue_rel where " + field +" " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
                     break;
                 case "version_id":
-                    sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
+                    if ("fix_version".equals(quickFilterValueDTO.getFieldCode())) {
+                        sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " and relation_type = 'fix' ) ");
+                    } else if ("influence_version".equals(quickFilterValueDTO.getFieldCode())) {
+                        sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " and relation_type = 'influence' ) ");
+                    }
                     break;
                 case "label_id":
                     sqlQuery.append(" issue_id in ( select issue_id from agile_label_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
