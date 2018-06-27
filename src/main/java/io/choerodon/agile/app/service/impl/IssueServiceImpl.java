@@ -453,9 +453,11 @@ public class IssueServiceImpl implements IssueService {
     public IssueDTO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList) {
         IssueDO originIssue = issueMapper.selectByPrimaryKey(issueUpdateDTO.getIssueId());
         if (fieldList != null && !fieldList.isEmpty()) {
+            //日志记录
+            dataLog(fieldList, originIssue, issueUpdateDTO, fieldList.contains(SPRINT_ID_FIELD));
             IssueE issueE = issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO);
             if (fieldList.contains(SPRINT_ID_FIELD)) {
-                IssueE oldIssue = queryIssueByProjectIdAndIssueId(projectId, issueUpdateDTO.getIssueId());
+                IssueE oldIssue = ConvertHelper.convert(originIssue, IssueE.class);
                 List<Long> issueIds = issueMapper.querySubIssueIdsByIssueId(projectId, issueE.getIssueId());
                 issueIds.add(issueE.getIssueId());
                 issueRepository.removeIssueFromSprintByIssueIds(projectId, issueIds);
@@ -468,8 +470,6 @@ public class IssueServiceImpl implements IssueService {
                 }
             }
             issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
-            //日志记录
-            dataLog(fieldList, originIssue, issueUpdateDTO, fieldList.contains(SPRINT_ID_FIELD));
         }
         Long issueId = issueUpdateDTO.getIssueId();
         handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId);
