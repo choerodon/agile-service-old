@@ -57,6 +57,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         if (!projectId.equals(issueStatusDTO.getProjectId())) {
             throw new CommonException("error.projectId.notEqual");
         }
+        issueStatusDTO.setCompleted(false);
         IssueStatusE issueStatusE = ConvertHelper.convert(issueStatusDTO, IssueStatusE.class);
         return ConvertHelper.convert(issueStatusRepository.create(issueStatusE), IssueStatusDTO.class);
     }
@@ -143,6 +144,10 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     @Override
     public void deleteStatus(Long projectId, Long id) {
         checkIssueNumOfStatus(projectId, id);
+        ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
+        columnStatusRelE.setProjectId(projectId);
+        columnStatusRelE.setStatusId(id);
+        columnStatusRelRepository.delete(columnStatusRelE);
         IssueStatusE issueStatusE = new IssueStatusE();
         issueStatusE.setProjectId(projectId);
         issueStatusE.setId(id);
