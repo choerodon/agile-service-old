@@ -23,6 +23,8 @@ public class IssueSubCreateDTO {
 
     private Long projectId;
 
+    private Long sprintId;
+
     private Long parentIssueId;
 
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
@@ -129,6 +131,14 @@ public class IssueSubCreateDTO {
 
     public void setEstimateTime(BigDecimal estimateTime) {
         this.estimateTime = estimateTime;
+    }
+
+    public Long getSprintId() {
+        return sprintId;
+    }
+
+    public void setSprintId(Long sprintId) {
+        this.sprintId = sprintId;
     }
 
     @Override
