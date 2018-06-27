@@ -434,7 +434,7 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void dataLog(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO, boolean isRecordSprintLog) {
+    private void dataLog(List<String> fieldList, IssueDO originIssue, IssueUpdateDTO issueUpdateDTO, boolean isRecordSprintLog) {
         dataLogEpicName(originIssue, issueUpdateDTO);
         dataLogSummary(originIssue, issueUpdateDTO);
         dataLogDescription(originIssue, issueUpdateDTO);
@@ -445,6 +445,7 @@ public class IssueServiceImpl implements IssueService {
         dataLogStoryPoint(originIssue, issueUpdateDTO);
         dataLogEpic(originIssue, issueUpdateDTO);
         dataLogRemainTime(originIssue, issueUpdateDTO);
+        dataLogStatus(fieldList, issueUpdateDTO, originIssue);
     }
 
     @Override
@@ -465,8 +466,7 @@ public class IssueServiceImpl implements IssueService {
             }
             issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
             //日志记录
-            dataLogStatus(fieldList, issueUpdateDTO, originIssue);
-            dataLog(originIssue, issueUpdateDTO, fieldList.contains(SPRINT_ID_FIELD));
+            dataLog(fieldList, originIssue, issueUpdateDTO, fieldList.contains(SPRINT_ID_FIELD));
         }
         Long issueId = issueUpdateDTO.getIssueId();
         handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId);
@@ -480,7 +480,7 @@ public class IssueServiceImpl implements IssueService {
             IssueE dataLogIssue = new IssueE();
             dataLogIssue.setIssueId(issueUpdateDTO.getIssueId());
             dataLogIssue.setStatusId(issueUpdateDTO.getStatusId());
-            dataLogIssue.setStatusId(originIssue.getProjectId());
+            dataLogIssue.setProjectId(originIssue.getProjectId());
             boardService.dataLogStatus(originIssue, dataLogIssue);
             if (!originIssue.getTypeCode().equals(SUB_TASK)) {
                 List<IssueDO> subIssueList = issueMapper.queryIssueSubList(originIssue.getProjectId(), originIssue.getIssueId());

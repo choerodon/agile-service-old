@@ -445,7 +445,7 @@
         </foreach>
         GROUP BY
         adl1.issue_id) a LEFT JOIN agile_data_log b on a.log_id = b.log_id
-        LEFT JOIN agile_issue ai on ai.issue_id = b.issue_id LEFT JOIN agile_project_info api ON api.project_id =
+        LEFT JOIN agile_issue ai on ai.issue_id = a.issue_id LEFT JOIN agile_project_info api ON api.project_id =
         ai.project_id LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN agile_project_info api2
         ON api2.project_id =
         ai2.project_id
@@ -453,12 +453,11 @@
     </select>
 
     <select id="queryDoneIssueIdsBeforeSprintStart" resultType="java.lang.Long">
-        SELECT adl1.issue_id
+        SELECT adl2.issue_id
         FROM
         (
         SELECT
-        adl.issue_id,
-        MAX(adl.log_id)
+        MAX(adl.log_id) as log_id
         FROM
         agile_data_log adl
         WHERE
@@ -469,9 +468,9 @@
                  open="(" close=")" separator=",">
             #{issueId}
         </foreach>
-        AND adl.old_value is NULL GROUP BY
+        GROUP BY
         adl.issue_id
-        ) adl1
+        ) adl1 left join agile_data_log adl2 on adl2.log_id = adl1.log_id where adl2.new_value is not null
     </select>
 
     <select id="queryAddIssueDoneDetailDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
@@ -529,7 +528,7 @@
         </foreach>
     </select>
 
-    <select id="queryIssueStoryPointsDurationSprint"
+    <select id="queryIssueChangeValueDurationSprint"
             resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
         SELECT
         adl.issue_id,
@@ -546,7 +545,7 @@
         api.project_id = ai.project_id left join agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN
         agile_project_info api2 ON
         api2.project_id = ai2.project_id
-        WHERE adl.field = 'Story Points' AND adl.creation_date &gt;
+        WHERE adl.field = #{field} AND adl.creation_date &gt;
         #{sprintDO.startDate}
         AND adl.creation_date &lt; #{sprintDO.actualEndDate}
         AND adl.issue_id IN
@@ -740,33 +739,6 @@
 
                     ) b ON a.issue_id = b.issue_id
             ) f
-    </select>
-
-    <select id="queryIssueTimeesTimateDurationSprint"
-            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
-        SELECT
-        adl.issue_id,
-        adl.creation_date AS date,
-        ifnull(adl.old_string,0) as old_value,
-        ifnull(adl.new_string,0) as new_value,
-        adl.field AS type,
-        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
-        CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
-        ai2.issue_id as parent_issue_id,
-        1 as statistical
-        FROM
-        agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
-        api.project_id = ai.project_id left join agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN
-        agile_project_info api2 ON
-        api2.project_id = ai2.project_id
-        WHERE (adl.field = 'timeestimate' or adl.field = 'timespent') AND adl.creation_date &gt;
-        #{sprintDO.startDate}
-        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
-        AND adl.issue_id IN
-        <foreach collection="issueAllList" item="issueId"
-                 open="(" close=")" separator=",">
-            #{issueId}
-        </foreach>
     </select>
 
     <select id="queryAddIssueDuringSprintNoData"
