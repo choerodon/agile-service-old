@@ -170,17 +170,19 @@ public class ReportServiceImpl implements ReportService {
     private void handleRemoveCountDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueIdRemoveList) {
         List<ReportIssueE> issueRemoveList = issueIdRemoveList != null && !issueIdRemoveList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryRemoveIssueDuringSprint(issueIdRemoveList, sprintDO), ReportIssueE.class) : null;
         if (issueRemoveList != null && !issueRemoveList.isEmpty()) {
+            //移除时，状态为done的不计入统计
+            issueRemoveList.parallelStream().forEach(this::handleDoneStatusIssue);
             reportIssueEList.addAll(issueRemoveList);
         }
     }
 
     private void handleAddIssueCountDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueIdAddList) {
         List<ReportIssueE> issueAddList = issueIdAddList != null && !issueIdAddList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueDuringSprint(issueIdAddList, sprintDO), ReportIssueE.class) : null;
-        //在冲刺开始期间创建的，没有生成加入冲刺日志时间，要处理
         if (issueAddList != null && !issueAddList.isEmpty()) {
+            //在冲刺开始期间创建的，没有生成加入冲刺日志时间，要处理
             issueAddList.stream().filter(reportIssueE -> reportIssueE.getDate() == null).forEach(reportIssueE -> reportIssueE.setDate(reportMapper.queryAddIssueDuringSprintNoData(reportIssueE.getIssueId(), sprintDO.getSprintId())));
-        }
-        if (issueAddList != null && !issueAddList.isEmpty()) {
+            //添加时，状态为done的不计入统计
+            issueAddList.parallelStream().forEach(this::handleDoneStatusIssue);
             reportIssueEList.addAll(issueAddList);
         }
     }
@@ -245,23 +247,32 @@ public class ReportServiceImpl implements ReportService {
 
     private void handleRemoveIssueValueDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueIdRemoveList, String field) {
         List<ReportIssueE> issueRemoveList = issueIdRemoveList != null && !issueIdRemoveList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryRemoveIssueValueDurationSprint(issueIdRemoveList, sprintDO, field), ReportIssueE.class) : null;
-        if (issueRemoveList != null) {
+        if (issueRemoveList != null && !issueRemoveList.isEmpty()) {
+            //移除时，状态为done的不计入统计
+            issueRemoveList.parallelStream().forEach(this::handleDoneStatusIssue);
             reportIssueEList.addAll(issueRemoveList);
+        }
+
+    }
+
+    private void handleDoneStatusIssue(ReportIssueE reportIssueE) {
+        if (reportMapper.checkIssueDoneStatus(reportIssueE.getIssueId(), reportIssueE.getDate())) {
+            reportIssueE.setStatistical(false);
         }
     }
 
     private void handleAddIssueValueDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueIdAddList, String field) {
         List<ReportIssueE> issueAddList = issueIdAddList != null && !issueIdAddList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueValueDuringSprint(issueIdAddList, sprintDO, field), ReportIssueE.class) : null;
-        //在冲刺开始期间创建的，没有生成加入冲刺日志时间，要处理
         if (issueAddList != null && !issueAddList.isEmpty()) {
+            //在冲刺开始期间创建的，没有生成加入冲刺日志时间，要处理
             issueAddList.stream().filter(reportIssueE -> reportIssueE.getDate() == null).forEach(reportIssueE -> {
                 Date date = reportMapper.queryAddIssueDuringSprintNoData(reportIssueE.getIssueId(), sprintDO.getSprintId());
                 reportIssueE.setDate(date);
                 Integer value = reportMapper.queryAddIssueValueDuringSprintNoData(reportIssueE.getIssueId(), date, field);
                 reportIssueE.setNewValue(value == null ? 0 : value);
             });
-        }
-        if (issueAddList != null) {
+            //添加时，状态为done的不计入统计
+            issueAddList.parallelStream().forEach(this::handleDoneStatusIssue);
             reportIssueEList.addAll(issueAddList);
         }
     }

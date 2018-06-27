@@ -898,5 +898,18 @@
               AND creation_date &lt; #{sprintDO.actualEndDate}
     </select>
 
+    <select id="checkIssueDoneStatus" resultType="java.lang.Boolean">
+        SELECT count(*)
+        FROM (SELECT MAX(adl.log_id) AS log_id
+              FROM
+                  agile_data_log adl
+              WHERE
+                  adl.issue_id = #{issueId}
+                  AND adl.creation_date &lt;= #{date}
+                  AND adl.field = 'resolution'
+              GROUP BY adl.issue_id) a LEFT JOIN agile_data_log adl2 ON adl2.log_id = a.log_id
+        WHERE adl2.new_value IS NOT NULL
+    </select>
+
 
 </mapper>
