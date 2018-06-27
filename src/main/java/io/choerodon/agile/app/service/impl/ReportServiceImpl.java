@@ -37,7 +37,6 @@ public class ReportServiceImpl implements ReportService {
     private static final String SPRINT_PLANNING_CODE = "sprint_planning";
     private static final String REPORT_SPRINT_ERROR = "error.report.sprintError";
     private static final String FILED_TIMEESTIMATE = "timeestimate";
-    private static final String FILED_TIME_SPENT = "timespent";
     private static final String FILED_STORY_POINTS = "Story Points";
     private static final String SPRINT_CLOSED = "closed";
 
