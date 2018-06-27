@@ -262,7 +262,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     private void dataLogResolution(Long projectId, Long issueId, IssueStatusDO originStatus, IssueStatusDO currentStatus) {
-        if (!(originStatus.getCompleted() && currentStatus.getCompleted())) {
+        if ((originStatus.getCompleted() == null || !originStatus.getCompleted()) || (currentStatus.getCompleted() == null || !currentStatus.getCompleted())) {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(projectId);
             dataLogE.setIssueId(issueId);
@@ -298,7 +298,7 @@ public class BoardServiceImpl implements BoardService {
         dataLogE.setNewValue(currentIssue.getStatusId().toString());
         dataLogE.setNewString(currentStatus.getName());
         dataLogRepository.create(dataLogE);
-        if (originStatus.getCompleted() || currentStatus.getCompleted()) {
+        if ((originStatus.getCompleted() != null && originStatus.getCompleted()) || (currentStatus.getCompleted() != null && currentStatus.getCompleted())) {
             dataLogResolution(originIssue.getProjectId(), currentIssue.getIssueId(), originStatus, currentStatus);
         }
     }
