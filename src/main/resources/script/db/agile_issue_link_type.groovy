@@ -46,20 +46,11 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue_link_type.groovy') {
 
     changeSet(id: '2018-06-27-agile-issue-link-type-init-data-update', author: 'dinghuang123@gmail.com') {
         sql(stripComments: true, splitStatements: true, endDelimiter: ';') {
-            "INSERT INTO agile_issue_link_type ( link_name, in_ward, out_ward, project_id ) SELECT 'Blocks','is blocked by','blocks',agile_project_info.project_id FROM agile_project_info;\n" +
-                    "UPDATE agile_issue_link_type set link_name = '阻塞',in_ward = '被阻塞',out_ward = '阻塞' where link_name = 'Blocks';\n" +
+            "UPDATE agile_issue_link_type set link_name = '阻塞',in_ward = '被阻塞',out_ward = '阻塞' where link_name = 'Blocks';\n" +
                     "UPDATE agile_issue_link_type set link_name = '复制',in_ward = '被复制',out_ward = '复制' where link_name = 'Duplicate';\n" +
                     "UPDATE agile_issue_link_type set link_name = '关联',in_ward = '关联',out_ward = '关联' where link_name = 'Relates';\n" +
                     "DELETE FROM agile_issue_link_type where link_name = 'Clones';"
         }
     }
-    changeSet(id: '2018-06-27-agile-issue-link-type-init-data-update-fix', author: 'dinghuang123@gmail.com') {
-        sql(stripComments: true, splitStatements: true, endDelimiter: ';') {
-            "DELETE t1 \n" +
-                    "FROM\n" +
-                    "\tagile_issue_link_type t1 \n" +
-                    "WHERE\n" +
-                    "\tt1.link_type_id IN (select a.id from ( SELECT t2.link_type_id as id FROM agile_issue_link_type t2 WHERE t2.link_name = '阻塞' group by t2.project_id)a );"
-        }
-    }
+
 }

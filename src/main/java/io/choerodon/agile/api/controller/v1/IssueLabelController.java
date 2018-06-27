@@ -23,7 +23,7 @@ import java.util.Optional;
  * @since 2018-05-14 21:04:00
  */
 @RestController
-@RequestMapping(value = "/v1/project/{project_id}/issue_labels")
+@RequestMapping(value = "/v1/projects/{project_id}/issue_labels")
 public class IssueLabelController {
 
     @Autowired

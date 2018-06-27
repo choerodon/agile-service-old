@@ -23,7 +23,7 @@ import java.util.Optional;
  * @since 2018-05-15 10:13:37
  */
 @RestController
-@RequestMapping(value = "/v1/project/{project_id}/lookup_types")
+@RequestMapping(value = "/v1/projects/{project_id}/lookup_types")
 public class LookupTypeController {
 
 

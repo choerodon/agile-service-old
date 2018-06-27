@@ -21,7 +21,7 @@ import java.util.Optional;
  * Email: fuqianghuang01@gmail.com
  */
 @RestController
-@RequestMapping(value = "/v1/project/{project_id}/data_log")
+@RequestMapping(value = "/v1/projects/{project_id}/data_log")
 public class DataLogController {
 
     @Autowired

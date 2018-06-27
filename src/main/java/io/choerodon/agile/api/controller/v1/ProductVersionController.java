@@ -30,7 +30,7 @@ import java.util.Optional;
  * Created by jian_zhang02@163.com on 2018/5/14.
  */
 @RestController
-@RequestMapping(value = "/v1/project/{project_id}/product_version")
+@RequestMapping(value = "/v1/projects/{project_id}/product_version")
 public class ProductVersionController {
 
     private static final String CREATE_ERROR = "error.version.create";

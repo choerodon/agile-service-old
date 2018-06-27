@@ -26,7 +26,7 @@ import java.util.Optional;
  * @since 2018-05-14 21:59:45
  */
 @RestController
-@RequestMapping(value = "/v1/project/{project_id}/issue_comment")
+@RequestMapping(value = "/v1/projects/{project_id}/issue_comment")
 public class IssueCommentController {
 
     @Autowired

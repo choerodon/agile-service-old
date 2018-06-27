@@ -33,7 +33,7 @@ import java.util.Optional;
  * @since 2018-05-14 20:30:48
  */
 @RestController
-@RequestMapping(value = "/v1/project/{project_id}/issues")
+@RequestMapping(value = "/v1/projects/{project_id}/issues")
 public class IssueController {
 
     @Autowired

@@ -20,7 +20,7 @@ import java.util.Optional;
  * Email: fuqianghuang01@gmail.com
  */
 @RestController
-@RequestMapping(value = "/v1/project/{project_id}/issue_branch")
+@RequestMapping(value = "/v1/projects/{project_id}/issue_branch")
 public class IssueBranchController {
 
     @Autowired
