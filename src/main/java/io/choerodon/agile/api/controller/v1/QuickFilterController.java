@@ -23,7 +23,7 @@ import java.util.Optional;
  * Email: fuqianghuang01@gmail.com
  */
 @RestController
-@RequestMapping(value = "/v1/project/{project_id}/quick_filter")
+@RequestMapping(value = "/v1/projects/{project_id}/quick_filter")
 public class QuickFilterController {
 
     @Autowired

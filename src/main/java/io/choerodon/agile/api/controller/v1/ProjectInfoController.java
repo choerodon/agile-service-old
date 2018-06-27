@@ -21,7 +21,7 @@ import java.util.Optional;
  * @since 2018/6/15
  */
 @RestController
-@RequestMapping(value = "/v1/project/{project_id}/project_info")
+@RequestMapping(value = "/v1/projects/{project_id}/project_info")
 public class ProjectInfoController {
 
     @Autowired

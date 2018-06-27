@@ -30,7 +30,7 @@ import java.util.Optional;
  * Email: fuqianghuang01@gmail.com
  */
 @RestController
-@RequestMapping(value = "/v1/project/{project_id}/issue_status")
+@RequestMapping(value = "/v1/projects/{project_id}/issue_status")
 public class IssueStatusController {
 
     private static final String ERROR_STATUS_GET = "error.status.get";

@@ -22,7 +22,7 @@ import java.util.Optional;
  * Email: fuqianghuang01@gmail.com
  */
 @RestController
-@RequestMapping(value = "/v1/project/{project_id}/issue_attachment")
+@RequestMapping(value = "/v1/projects/{project_id}/issue_attachment")
 public class IssueAttachmentController {
 
     @Autowired
