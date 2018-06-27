@@ -10,7 +10,7 @@
         WHERE
             project_id = #{projectId}
         AND issue_id = #{issueId}
-        ORDER BY last_update_date,created_by
+        ORDER BY last_update_date DESC,created_by
     </select>
 
     <select id="selectLastWorkLogById" resultType="io.choerodon.agile.infra.dataobject.DataLogDO">
