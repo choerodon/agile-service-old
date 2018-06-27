@@ -445,7 +445,7 @@
         </foreach>
         GROUP BY
         adl1.issue_id) a LEFT JOIN agile_data_log b on a.log_id = b.log_id
-        LEFT JOIN agile_issue ai on ai.issue_id = b.issue_id LEFT JOIN agile_project_info api ON api.project_id =
+        LEFT JOIN agile_issue ai on ai.issue_id = a.issue_id LEFT JOIN agile_project_info api ON api.project_id =
         ai.project_id LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN agile_project_info api2
         ON api2.project_id =
         ai2.project_id
@@ -453,12 +453,11 @@
     </select>
 
     <select id="queryDoneIssueIdsBeforeSprintStart" resultType="java.lang.Long">
-        SELECT adl1.issue_id
+        SELECT adl2.issue_id
         FROM
         (
         SELECT
-        adl.issue_id,
-        MAX(adl.log_id)
+        MAX(adl.log_id) as log_id
         FROM
         agile_data_log adl
         WHERE
@@ -469,9 +468,9 @@
                  open="(" close=")" separator=",">
             #{issueId}
         </foreach>
-        AND adl.old_value is NULL GROUP BY
+        GROUP BY
         adl.issue_id
-        ) adl1
+        ) adl1 left join agile_data_log adl2 on adl2.log_id = adl1.log_id where adl2.new_value is not null
     </select>
 
     <select id="queryAddIssueDoneDetailDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
