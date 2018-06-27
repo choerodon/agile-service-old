@@ -230,43 +230,10 @@ public class ReportServiceImpl implements ReportService {
 
     private void handleChangeIssueValueDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueAllList, String field) {
         //获取冲刺期间所有的当前值的变更
-        if (field.equals(FILED_STORY_POINTS)) {
-            handleChangeIssueValueByStoryPoints(reportIssueEList, issueAllList, sprintDO);
-        } else if (field.equals(FILED_TIMEESTIMATE)) {
-            handleChangeIssueValueByTimesTimate(reportIssueEList, issueAllList, sprintDO);
-        }
-
-    }
-
-    private void handleChangeIssueValueByTimesTimate(List<ReportIssueE> reportIssueEList, List<Long> issueAllList, SprintDO sprintDO) {
-        //统计剩余预计时间，要考虑到工作日志的登记的变更
-        List<ReportIssueE> issueChangeList = issueAllList != null && !issueAllList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryIssueTimeesTimateDurationSprint(issueAllList, sprintDO), ReportIssueE.class) : null;
+        List<ReportIssueE> issueChangeList = issueAllList != null && !issueAllList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryIssueChangeValueDurationSprint(issueAllList, sprintDO, field), ReportIssueE.class) : null;
         if (issueChangeList != null && !issueChangeList.isEmpty()) {
             issueChangeList.parallelStream().forEach(reportIssueE -> {
-                //(如果变更时间是在done状态或者是移出冲刺期间，计入统计字段设为false) todo 还没有比较好的解决方案
-                if (!reportMapper.checkIssueValueIsStatisticalDurationSprint(sprintDO.getSprintId(), reportIssueE.getIssueId(), reportIssueE.getDate())) {
-                    reportIssueE.setStatistical(false);
-                }
-                //如果统计剩余预计时间，要考虑到工作日志的登记，要去除这一部分(todo 暂时还没有好的解决方案)
-                if (reportIssueE.getType().equals(FILED_TIMEESTIMATE) && issueChangeList.stream().filter(reportIssueE2 ->
-                        (reportIssueE2.getDate().equals(reportIssueE.getDate()) || reportIssueE2.getDate().after(reportIssueE.getDate())) && reportIssueE2.getType().equals(FILED_TIME_SPENT)
-                                && (reportIssueE2.getNewValue() - reportIssueE2.getOldValue())
-                                == (reportIssueE.getOldValue() - reportIssueE.getNewValue()) &&
-                                reportIssueE2.getIssueId().equals(reportIssueE.getIssueId())).collect(Collectors.toList()).size() == 1) {
-                    reportIssueE.setStatistical(false);
-                }
-            });
-        }
-        if (issueChangeList != null) {
-            reportIssueEList.addAll(issueChangeList);
-        }
-    }
-
-    private void handleChangeIssueValueByStoryPoints(List<ReportIssueE> reportIssueEList, List<Long> issueAllList, SprintDO sprintDO) {
-        List<ReportIssueE> issueChangeList = issueAllList != null && !issueAllList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryIssueStoryPointsDurationSprint(issueAllList, sprintDO), ReportIssueE.class) : null;
-        if (issueChangeList != null && !issueChangeList.isEmpty()) {
-            issueChangeList.parallelStream().forEach(reportIssueE -> {
-                //(如果变更时间是在done状态或者是移出冲刺期间，计入统计字段设为false) todo 还没有比较好的解决方案
+                //(如果变更时间是在done状态或者是移出冲刺期间，计入统计字段设为false)
                 if (!reportMapper.checkIssueValueIsStatisticalDurationSprint(sprintDO.getSprintId(), reportIssueE.getIssueId(), reportIssueE.getDate())) {
                     reportIssueE.setStatistical(false);
                 }
