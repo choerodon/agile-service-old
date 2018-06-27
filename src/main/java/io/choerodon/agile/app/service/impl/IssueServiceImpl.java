@@ -141,6 +141,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String NEW_VALUE = "newValue";
     private static final String OLD_STRING = "oldString";
     private static final String OLD_VALUE = "oldValue";
+    private static final String RANK_FIELD = "rank";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -454,14 +455,16 @@ public class IssueServiceImpl implements IssueService {
         if (fieldList != null && !fieldList.isEmpty()) {
             IssueE issueE = issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO);
             if (fieldList.contains(SPRINT_ID_FIELD)) {
+                IssueE oldIssue = queryIssueByProjectIdAndIssueId(projectId, issueUpdateDTO.getIssueId());
                 List<Long> issueIds = issueMapper.querySubIssueIdsByIssueId(projectId, issueE.getIssueId());
                 issueIds.add(issueE.getIssueId());
                 issueRepository.removeIssueFromSprintByIssueIds(projectId, issueIds);
                 if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
                     issueRepository.issueToDestinationByIds(projectId, issueE.getSprintId(), issueIds, new Date());
                 }
-                if (issueE.isIssueRank()) {
+                if (issueE.isIssueRank() || (issueE.getTypeCode() == null && oldIssue.isIssueRank())) {
                     calculationRank(issueE);
+                    fieldList.add(RANK_FIELD);
                 }
             }
             issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
@@ -560,7 +563,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO) {
         IssueE subIssueE = issueAssembler.issueSubCreateDtoToEntity(issueSubCreateDTO);
-        IssueE parentIssueE =  ConvertHelper.convert(issueMapper.queryIssueByIssueId(subIssueE.getProjectId(), subIssueE.getParentIssueId()), IssueE.class);
+        IssueE parentIssueE = ConvertHelper.convert(issueMapper.queryIssueByIssueId(subIssueE.getProjectId(), subIssueE.getParentIssueId()), IssueE.class);
         //设置初始状态,跟随父类状态
         subIssueE = parentIssueE.initializationSubIssue(subIssueE);
         //日志记录
