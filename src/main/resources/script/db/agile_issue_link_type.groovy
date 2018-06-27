@@ -53,4 +53,13 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue_link_type.groovy') {
                     "DELETE FROM agile_issue_link_type where link_name = 'Clones';"
         }
     }
+    changeSet(id: '2018-06-27-agile-issue-link-type-init-data-update-fix', author: 'dinghuang123@gmail.com') {
+        sql(stripComments: true, splitStatements: true, endDelimiter: ';') {
+            "DELETE t1 \n" +
+                    "FROM\n" +
+                    "\tagile_issue_link_type t1 \n" +
+                    "WHERE\n" +
+                    "\tt1.link_type_id IN (select a.id from ( SELECT t2.link_type_id as id FROM agile_issue_link_type t2 WHERE t2.link_name = '阻塞' group by t2.project_id)a );"
+        }
+    }
 }
