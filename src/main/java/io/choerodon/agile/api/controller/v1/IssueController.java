@@ -8,6 +8,7 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
+import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
@@ -32,7 +33,7 @@ import java.util.Optional;
  * @since 2018-05-14 20:30:48
  */
 @RestController
-@RequestMapping(value = "/v1/project/{project_id}/issues")
+@RequestMapping(value = "/v1/projects/{project_id}/issues")
 public class IssueController {
 
     @Autowired
@@ -44,7 +45,7 @@ public class IssueController {
     @Autowired
     private VerifyUpdateUtil verifyUpdateUtil;
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建issue")
     @PostMapping
     public ResponseEntity<IssueDTO> createIssue(@ApiParam(value = "项目id", required = true)
@@ -57,7 +58,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.createIssue"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建issue子任务")
     @PostMapping(value = "/sub_issue")
     public ResponseEntity<IssueSubDTO> createSubIssue(@ApiParam(value = "项目id", required = true)
@@ -70,22 +71,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.createSubIssue"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
-    @ApiOperation("更新issue子任务")
-    @PutMapping(value = "/sub_issue")
-    public ResponseEntity<IssueSubDTO> updateSubIssue(@ApiParam(value = "项目id", required = true)
-                                                      @PathVariable(name = "project_id") Long projectId,
-                                                      @ApiParam(value = "更新issueSub对象", required = true)
-                                                      @RequestBody JSONObject issueSubUpdate) {
-        issueRule.verifyUpdateData(issueSubUpdate, projectId);
-        IssueSubUpdateDTO issueSubUpdateDTO = new IssueSubUpdateDTO();
-        List<String> fieldList = verifyUpdateUtil.verifyUpdateData(issueSubUpdate, issueSubUpdateDTO);
-        return Optional.ofNullable(issueService.updateSubIssue(projectId, issueSubUpdateDTO, fieldList))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
-                .orElseThrow(() -> new CommonException("error.Issue.updateSubIssue"));
-    }
-
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更新issue")
     @PutMapping
     public ResponseEntity<IssueDTO> updateIssue(@ApiParam(value = "项目id", required = true)
@@ -100,7 +86,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.updateIssue"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询单个issue")
     @GetMapping(value = "/{issueId}")
     public ResponseEntity<IssueDTO> queryIssue(@ApiParam(value = "项目id", required = true)
@@ -112,7 +98,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssue"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询单个子任务issue")
     @GetMapping(value = "/sub_issue/{issueId}")
     public ResponseEntity<IssueSubDTO> queryIssueSub(@ApiParam(value = "项目id", required = true)
@@ -124,7 +110,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssueSub"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("分页过滤查询issue列表(不包含子任务)")
     @CustomPageRequest
     @PostMapping(value = "/no_sub")
@@ -138,10 +124,30 @@ public class IssueController {
                                                                   @RequestBody(required = false) SearchDTO searchDTO) {
         return Optional.ofNullable(issueService.listIssueWithoutSub(projectId, searchDTO, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.Issue.createIssue"));
+                .orElseThrow(() -> new CommonException("error.Issue.listIssueWithoutSub"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("分页搜索查询issue列表(不包含子任务、自身)")
+    @CustomPageRequest
+    @GetMapping(value = "/{issueId}/summary")
+    public ResponseEntity<Page<IssueNumDTO>> queryIssueByOption(@ApiIgnore
+                                                                @ApiParam(value = "分页信息", required = true)
+                                                                @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
+                                                                        PageRequest pageRequest,
+                                                                @ApiParam(value = "项目id", required = true)
+                                                                @PathVariable(name = "project_id") Long projectId,
+                                                                @ApiParam(value = "issueId", required = true)
+                                                                @PathVariable Long issueId,
+                                                                @ApiParam(value = "搜索内容", required = false)
+                                                                @RequestParam(required = false) String content) {
+        return Optional.ofNullable(issueService.queryIssueByOption(projectId, issueId, content, pageRequest))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.Issue.query"));
+    }
+
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询epic")
     @GetMapping(value = "/epics")
     public ResponseEntity<List<EpicDataDTO>> listEpic(@ApiParam(value = "项目id", required = true)
@@ -151,7 +157,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Epic.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("通过issueId删除")
     @DeleteMapping(value = "/{issueId}")
     public ResponseEntity deleteIssue(@ApiParam(value = "项目id", required = true)
@@ -162,7 +168,7 @@ public class IssueController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("issue批量加入版本")
     @PostMapping(value = "/to_version/{versionId}")
     public ResponseEntity<List<IssueSearchDTO>> batchIssueToVersion(@ApiParam(value = "项目id", required = true)
@@ -176,7 +182,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issue.batchToVersion"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("issue批量加入epic")
     @PostMapping(value = "/to_epic/{epicId}")
     public ResponseEntity<List<IssueSearchDTO>> batchIssueToEpic(@ApiParam(value = "项目id", required = true)
@@ -190,7 +196,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issue.batchToEpic"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("issue批量加入冲刺")
     @PostMapping(value = "/to_sprint/{sprintId}")
     public ResponseEntity<List<IssueSearchDTO>> batchIssueToSprint(@ApiParam(value = "项目id", required = true)
@@ -204,7 +210,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issue.batchToSprint"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询当前项目下的epic，提供给列表下拉")
     @GetMapping(value = "/epics/select_data")
     public ResponseEntity<List<IssueEpicDTO>> listEpicSelectData(@ApiParam(value = "项目id", required = true)
@@ -214,7 +220,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssueEpicList"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更改issue状态")
     @PostMapping("/update_type")
     public ResponseEntity<IssueDTO> updateIssueTypeCode(@ApiParam(value = "项目id", required = true)
@@ -225,6 +231,22 @@ public class IssueController {
         return Optional.ofNullable(issueService.updateIssueTypeCode(issueE, issueUpdateTypeDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.batchToSprint"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("根据issue类型(type_code)查询issue列表(分页)")
+    @CustomPageRequest
+    @PostMapping(value = "/type_code/{typeCode}")
+    public ResponseEntity<Page<IssueCommonDTO>> listByOptions(@ApiParam(value = "项目id", required = true)
+                                                              @PathVariable(name = "project_id") Long projectId,
+                                                              @ApiParam(value = "typeCode", required = true)
+                                                              @PathVariable String typeCode,
+                                                              @ApiIgnore
+                                                              @ApiParam(value = "分页信息", required = true)
+                                                              @SortDefault(value = "issueId", direction = Sort.Direction.DESC) PageRequest pageRequest) {
+        return Optional.ofNullable(issueService.listByOptions(projectId, typeCode, pageRequest))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.IssueList.get"));
     }
 
 }

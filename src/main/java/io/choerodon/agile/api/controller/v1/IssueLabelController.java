@@ -3,6 +3,7 @@ package io.choerodon.agile.api.controller.v1;
 import io.choerodon.agile.api.dto.IssueLabelDTO;
 import io.choerodon.agile.app.service.IssueLabelService;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
@@ -22,13 +23,13 @@ import java.util.Optional;
  * @since 2018-05-14 21:04:00
  */
 @RestController
-@RequestMapping(value = "/v1/project/{project_id}/issue_labels")
+@RequestMapping(value = "/v1/projects/{project_id}/issue_labels")
 public class IssueLabelController {
 
     @Autowired
     private IssueLabelService issueLabelService;
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询issue标签列表")
     @GetMapping
     public ResponseEntity<List<IssueLabelDTO>> listIssueLabel(@ApiParam(value = "项目id", required = true)

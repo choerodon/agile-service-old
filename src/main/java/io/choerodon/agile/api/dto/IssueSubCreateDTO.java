@@ -23,13 +23,15 @@ public class IssueSubCreateDTO {
 
     private Long projectId;
 
+    private Long sprintId;
+
     private Long parentIssueId;
 
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
-    private List<IssueLinkDTO> issueLinkDTOList;
+    private List<IssueLinkCreateDTO> issueLinkCreateDTOList;
 
     private BigDecimal remainingTime;
 
@@ -107,12 +109,12 @@ public class IssueSubCreateDTO {
         this.labelIssueRelDTOList = labelIssueRelDTOList;
     }
 
-    public List<IssueLinkDTO> getIssueLinkDTOList() {
-        return issueLinkDTOList;
+    public List<IssueLinkCreateDTO> getIssueLinkCreateDTOList() {
+        return issueLinkCreateDTOList;
     }
 
-    public void setIssueLinkDTOList(List<IssueLinkDTO> issueLinkDTOList) {
-        this.issueLinkDTOList = issueLinkDTOList;
+    public void setIssueLinkCreateDTOList(List<IssueLinkCreateDTO> issueLinkCreateDTOList) {
+        this.issueLinkCreateDTOList = issueLinkCreateDTOList;
     }
 
     public BigDecimal getRemainingTime() {
@@ -129,6 +131,14 @@ public class IssueSubCreateDTO {
 
     public void setEstimateTime(BigDecimal estimateTime) {
         this.estimateTime = estimateTime;
+    }
+
+    public Long getSprintId() {
+        return sprintId;
+    }
+
+    public void setSprintId(Long sprintId) {
+        this.sprintId = sprintId;
     }
 
     @Override

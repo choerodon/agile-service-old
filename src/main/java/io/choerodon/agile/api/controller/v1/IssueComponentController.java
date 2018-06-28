@@ -5,6 +5,7 @@ import io.choerodon.agile.api.dto.IssueDTO;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.dto.IssueComponentDTO;
 import io.choerodon.agile.app.service.IssueComponentService;
+import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
@@ -22,13 +23,13 @@ import java.util.Optional;
  * Email: fuqianghuang01@gmail.com
  */
 @RestController
-@RequestMapping(value = "/v1/project/{project_id}/component")
+@RequestMapping(value = "/v1/projects/{project_id}/component")
 public class IssueComponentController {
 
     @Autowired
     private IssueComponentService issueComponentService;
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("创建component")
     @PostMapping
     public ResponseEntity<IssueComponentDTO> createComponent(@ApiParam(value = "项目id", required = true)
@@ -40,7 +41,7 @@ public class IssueComponentController {
                 .orElseThrow(() -> new CommonException("error.component.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("修改component")
     @PutMapping(value = "/{id}")
     public ResponseEntity<IssueComponentDTO> updateComponent(@ApiParam(value = "项目id", required = true)
@@ -54,7 +55,7 @@ public class IssueComponentController {
                 .orElseThrow(() -> new CommonException("error.component.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("删除component")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity deleteComponent(@ApiParam(value = "项目id", required = true)
@@ -67,7 +68,7 @@ public class IssueComponentController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据id查询component")
     @GetMapping(value = "/{id}")
     public ResponseEntity<IssueComponentDTO> queryComponentById(@ApiParam(value = "项目id", required = true)
@@ -79,7 +80,7 @@ public class IssueComponentController {
                 .orElseThrow(() -> new CommonException("error.component.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据project id查询component")
     @GetMapping
     public ResponseEntity<List<ComponentForListDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
@@ -91,7 +92,7 @@ public class IssueComponentController {
                 .orElseThrow(() -> new CommonException("error.componentList.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据id查询component下的issues")
     @GetMapping(value = "/{id}/issues")
     public ResponseEntity<List<IssueDTO>> listByOptions(@ApiParam(value = "项目id", required = true)

@@ -14,17 +14,19 @@ import java.util.*;
 @Component
 public class DateUtil {
 
+
     /**
      * 通过时间秒毫秒数判断两个时间的间隔
+     *
      * @param date1,start_date date1,start_date
-     * @param date2,end_date  date2,end_date
+     * @param date2,end_date   date2,end_date
      * @return int
      */
-    public int differentDaysByMillisecond(Date date1, Date date2) {
-        int days = (int) ((date2.getTime() - date1.getTime()) / (1000*3600*24));
-        String format ="yyyy-MM-dd HH:mm:ss";
+    public static int differentDaysByMillisecond(Date date1, Date date2) {
+        int days = (int) ((date2.getTime() - date1.getTime()) / (1000 * 3600 * 24));
+        String format = "yyyy-MM-dd HH:mm:ss";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-        return days - getWeekendNum(simpleDateFormat.format(date1.getTime()), simpleDateFormat.format(date2.getTime()),format);
+        return days - getWeekendNum(simpleDateFormat.format(date1.getTime()), simpleDateFormat.format(date2.getTime()), format);
     }
 
     public static int getWeekendNum(String startDate, String endDate, String format) {
@@ -50,13 +52,13 @@ public class DateUtil {
             calendarTemp.add(Calendar.DAY_OF_YEAR, 1);
         }
         Collections.sort(yearMonthDayList);
-        int num=0;
-        int size=yearMonthDayList.size();
-        int week=0;
+        int num = 0;
+        int size = yearMonthDayList.size();
+        int week = 0;
         for (int i = 0; i < size; i++) {
-            String day=(String)yearMonthDayList.get(i);
-            week=getWeek(day, format);
-            if (week==6||week==0) {
+            String day = (String) yearMonthDayList.get(i);
+            week = getWeek(day, format);
+            if (week == 6 || week == 0) {
                 num++;
             }
         }

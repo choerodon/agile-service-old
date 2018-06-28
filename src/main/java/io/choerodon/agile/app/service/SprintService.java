@@ -2,6 +2,8 @@ package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.infra.dataobject.SprintDO;
+import io.choerodon.core.domain.Page;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -16,9 +18,9 @@ public interface SprintService {
 
     Boolean deleteSprint(Long projectId, Long sprintId);
 
-    Map<String, Object> queryByProjectId(Long projectId, Map<String, Object> searchParamMap);
+    Map<String, Object> queryByProjectId(Long projectId, Map<String, Object> searchParamMap, List<Long> quickFilterIds);
 
-    List<SprintNameDTO> queryNameByProjectId(Long projectId);
+    List<SprintNameDTO> queryNameByOptions(Long projectId, List<String> sprintStatusCodes);
 
     SprintDetailDTO startSprint(Long projectId, SprintUpdateDTO sprintUpdateDTO);
 
@@ -29,4 +31,6 @@ public interface SprintService {
     SprintDO getActiveSprint(Long projectId);
 
     SprintDetailDTO querySprintById(Long projectId, Long sprintId);
+
+    Page<IssueListDTO> queryIssueByOptions(Long projectId, Long sprintId, String status, PageRequest pageRequest);
 }

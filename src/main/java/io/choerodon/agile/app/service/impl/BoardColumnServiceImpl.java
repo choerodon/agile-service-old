@@ -29,7 +29,7 @@ import java.util.List;
  * Email: fuqianghuang01@gmail.com
  */
 @Service
-@Transactional(rollbackFor = CommonException.class)
+@Transactional(rollbackFor = Exception.class)
 public class BoardColumnServiceImpl implements BoardColumnService {
 
     private static final String TODO = "待处理";

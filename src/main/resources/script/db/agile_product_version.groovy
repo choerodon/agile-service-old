@@ -38,4 +38,10 @@ databaseChangeLog(logicalFilePath:'script/db/agile_product_version.groovy') {
             column(name: 'process')
         }
     }
+
+    changeSet(id: '2018-06-20-add-column', author: 'jian_zhang02@163.com') {
+        addColumn(tableName: 'agile_product_version') {
+            column(name: 'old_status_code', type: 'VARCHAR(255)', remarks: 'old status code')
+        }
+    }
 }

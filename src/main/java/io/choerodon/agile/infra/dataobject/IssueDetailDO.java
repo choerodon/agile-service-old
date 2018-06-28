@@ -35,8 +35,6 @@ public class IssueDetailDO {
 
     private Long epicId;
 
-    private Long sprintId;
-
     private Long parentIssueId;
 
     private Integer storyPoints;
@@ -50,6 +48,10 @@ public class IssueDetailDO {
     private List<ComponentIssueRelDO> componentIssueRelDOList;
 
     private List<IssueLinkDO> issueLinkDOList;
+
+    private SprintNameDO activeSprint;
+
+    private List<SprintNameDO> closeSprint;
 
     private List<IssueCommentDO> issueCommentDOList;
 
@@ -76,8 +78,6 @@ public class IssueDetailDO {
     private String epicColor;
 
     private String rank;
-
-    private String sprintName;
 
     private String parentIssueNum;
 
@@ -167,14 +167,6 @@ public class IssueDetailDO {
 
     public void setEpicId(Long epicId) {
         this.epicId = epicId;
-    }
-
-    public Long getSprintId() {
-        return sprintId;
-    }
-
-    public void setSprintId(Long sprintId) {
-        this.sprintId = sprintId;
     }
 
     public Long getParentIssueId() {
@@ -345,20 +337,28 @@ public class IssueDetailDO {
         this.rank = rank;
     }
 
-    public String getSprintName() {
-        return sprintName;
-    }
-
-    public void setSprintName(String sprintName) {
-        this.sprintName = sprintName;
-    }
-
     public String getParentIssueNum() {
         return parentIssueNum;
     }
 
     public void setParentIssueNum(String parentIssueNum) {
         this.parentIssueNum = parentIssueNum;
+    }
+
+    public SprintNameDO getActiveSprint() {
+        return activeSprint;
+    }
+
+    public void setActiveSprint(SprintNameDO activeSprint) {
+        this.activeSprint = activeSprint;
+    }
+
+    public List<SprintNameDO> getCloseSprint() {
+        return closeSprint;
+    }
+
+    public void setCloseSprint(List<SprintNameDO> closeSprint) {
+        this.closeSprint = closeSprint;
     }
 
     @Override

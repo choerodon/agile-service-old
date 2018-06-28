@@ -54,13 +54,19 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
 
     int releaseVersion(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("releaseDate") Date releaseDate);
 
-    int querySimpleIssueCount(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+    int queryIssueCountByRelationType(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("relationType") String relationType);
 
     List<ProductVersionNameDO> queryVersionNames(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
     List<VersionIssueDO> queryIncompleteIssues(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
-    List<VersionIssueDO> queryIssues(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+    List<VersionIssueDO> queryIssuesByRelationType(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("relationType") String relationType);
 
-    List<ProductVersionNameDO> queryAllVersionNames(@Param("projectId") Long projectId);
+    List<ProductVersionNameDO> queryNameByOptions(@Param("projectId") Long projectId, @Param("statusCodes") List<String> statusCodes);
+
+    List<ProductVersionCommonDO> listByProjectId(@Param("projectId") Long projectId);
+
+    List<VersionIssueDO> queryIssueByVersionIds(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds);
+
+    int deleteByVersionIds(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds);
 }

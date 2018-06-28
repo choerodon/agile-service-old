@@ -16,7 +16,6 @@
         <id column="assignee_id" property="assigneeId"/>
         <id column="project_id" property="projectId"/>
         <id column="epic_id" property="epicId"/>
-        <id column="sprint_id" property="sprintId"/>
         <id column="parent_issue_id" property="parentIssueId"/>
         <id column="story_points" property="storyPoints"/>
         <id column="estimate_time" property="estimateTime"/>
@@ -24,21 +23,21 @@
         <id column="issue_epic_name" property="epicName"/>
         <id column="color" property="color"/>
         <id column="epic_color" property="epicColor"/>
-        <id column="sprint_name" property="sprintName"/>
         <id column="parent_issue_num" property="parentIssueNum"/>
         <id column="object_version_number" property="objectVersionNumber"/>
+        <association property="activeSprint" column="issue_id" select="queryActiveSprintNameByIssueId"/>
         <collection property="versionIssueRelDOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
                     select="queryVersionIssueRelByIssueId"/>
+        <collection property="closeSprint" column="issue_id"
+                    ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
+                    select="queryCloseSprintNameByIssueId"/>
         <collection property="labelIssueRelDOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
                     select="queryLabelIssueByIssueId"/>
         <collection property="componentIssueRelDOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
                     select="queryComponentIssueRelByIssueId"/>
-        <collection property="issueLinkDOList" column="issue_id"
-                    ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
-                    select="queryIssueLinkByIssueId"/>
         <collection property="issueCommentDOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
                     select="queryIssueCommentByIssueId"/>
@@ -78,11 +77,11 @@
         </collection>
     </resultMap>
 
-    <update id="removeFromSprint">
-        UPDATE agile_issue
-        SET sprint_id = 0
+    <delete id="removeFromSprint">
+        DELETE
+        FROM agile_issue_sprint_rel
         WHERE project_id = #{projectId} AND sprint_id = #{sprintId}
-    </update>
+    </delete>
 
     <select id="queryIssueDetail" resultMap="issueDetail">
         SELECT
@@ -93,7 +92,6 @@
             ai2.epic_name                                                                    AS issue_epic_name,
             alv2.name                                                                        AS epic_color,
             alv3.name                                                                        AS color_value,
-            as1.sprint_name                                                                  AS sprint_name,
             IF(ai3.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai3.issue_num)) AS parent_issue_num,
             CONCAT_WS('-', api.project_code, ai.issue_num)                                   AS issue_num_splicing
         FROM agile_issue ai LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
@@ -101,7 +99,6 @@
             LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
             LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code
             LEFT JOIN agile_lookup_value alv3 ON ai.color_code = alv3.value_code
-            LEFT JOIN agile_sprint as1 ON as1.sprint_id = ai.sprint_id
             LEFT JOIN agile_issue ai3 ON ai3.issue_id = ai.parent_issue_id
             LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         WHERE ai.issue_id = #{issueId} AND ai.project_id = #{projectId}
@@ -113,6 +110,27 @@
             apr.name
         FROM agile_version_issue_rel avir LEFT JOIN agile_product_version apr ON avir.version_id = apr.version_id
         WHERE avir.issue_id = #{issueId}
+    </select>
+
+    <select id="queryCloseSprintNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+        SELECT
+        asp.sprint_id, asp.sprint_name
+        FROM agile_issue_sprint_rel aisr, agile_sprint asp
+        WHERE aisr.issue_id = #{issueId} AND aisr.sprint_id = asp.sprint_id AND asp.status_code = 'closed'
+    </select>
+
+    <select id="querySprintNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+        SELECT
+        asp.sprint_id, asp.sprint_name
+        FROM agile_issue_sprint_rel aisr, agile_sprint asp
+        WHERE aisr.issue_id = #{issueId} AND aisr.sprint_id = asp.sprint_id
+    </select>
+
+    <select id="queryActiveSprintNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+        SELECT
+        asp.sprint_id, asp.sprint_name
+        FROM agile_issue_sprint_rel aisr, agile_sprint asp
+        WHERE aisr.issue_id = #{issueId} AND aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
     </select>
 
     <select id="queryLabelIssueByIssueId" resultType="io.choerodon.agile.infra.dataobject.LabelIssueRelDO">
@@ -129,14 +147,6 @@
             aic.name
         FROM agile_component_issue_rel acir LEFT JOIN agile_issue_component aic ON aic.component_id = acir.component_id
         WHERE acir.issue_id = #{issueId}
-    </select>
-
-    <select id="queryIssueLinkByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueLinkDO">
-        SELECT
-            ail.*,
-            ai.summary
-        FROM agile_issue_link ail LEFT JOIN agile_issue ai ON ail.linked_issue_id = ail.issue_id
-        WHERE ail.issue_id = #{issueId}
     </select>
 
     <select id="queryIssueCommentByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueCommentDO">
@@ -161,7 +171,7 @@
             ai.project_id,
             ais.category_code                              AS status_code,
             ais.name                                       AS status_name,
-            alv.name                                       AS priorityName,
+            alv.name                                       AS priority_name,
             CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num
         FROM agile_issue ai LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
             LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
@@ -177,7 +187,7 @@
         ai.priority_code,
         ai.assignee_id,
         ai.project_id,
-        alv.name AS priorityName,
+        alv.name AS priority_name,
         ais.category_code AS status_code,
         ais.name AS status_name,
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
@@ -220,13 +230,26 @@
         </if>
     </select>
 
+    <select id="queryIssueByOption" resultType="io.choerodon.agile.infra.dataobject.IssueNumDO">
+        SELECT
+        ai.issue_id,   ai.summary,
+        ai.project_id, ai.type_code,
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
+        FROM agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task'
+        AND ai.issue_id != #{issueId}
+        <if test='content != null'>
+            AND (ai.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR ai.summary LIKE CONCAT(CONCAT('%', #{content}), '%'))
+        </if>
+    </select>
+
     <select id="queryEpicList" resultType="io.choerodon.agile.infra.dataobject.EpicDataDO">
         SELECT
             ai.issue_id,
             ai.summary,
             ai.description,
             ai.project_id,
-            ai.sprint_id,
             ai.epic_name,
             alv.name AS color,
             ai.object_version_number
@@ -320,7 +343,7 @@
         ai.type_code, ai.summary,
         ai.reporter_id, ai.description,
         ai.assignee_id, ai.project_id,
-        ai.epic_id, ai.sprint_id,
+        ai.epic_id, asp1.sprint_id,
         ai.story_points, ai.status_id,
         ais.category_code,
         ais.name AS status_name,
@@ -336,6 +359,10 @@
         LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
         LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
+        LEFT JOIN (SELECT aisr.issue_id, asp.sprint_id
+        FROM agile_issue_sprint_rel aisr, agile_sprint asp
+        WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
+        ) asp1 ON asp1.issue_id = ai.issue_id
         LEFT JOIN (SELECT avir.issue_id, avir.version_id, apv.name
         FROM agile_version_issue_rel avir, agile_product_version apv
         WHERE apv.project_id = #{projectId} AND avir.version_id = apv.version_id AND avir.relation_type = 'fix'
@@ -350,7 +377,8 @@
                 AND ai.epic_id = #{advancedSearchArgs.epicId}
             </if>
             <if test='advancedSearchArgs.noVersion != "" and advancedSearchArgs.noVersion == "true"'>
-                AND ai.issue_id NOT IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id != 0 AND relation_type = 'fix')
+                AND ai.issue_id NOT IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id != 0 AND
+                relation_type = 'fix')
             </if>
             <if test='advancedSearchArgs.noEpic != "" and advancedSearchArgs.noEpic == "true"'>
                 AND (ai.epic_id IS NULL OR ai.epic_id = 0)
@@ -362,22 +390,20 @@
                 AND ai.type_code = 'story'
             </if>
         </if>
+        <if test='filterSql != null'>
+            AND ai.issue_id IN (${filterSql})
+        </if>
         ORDER BY ai.rank ASC
     </select>
 
-    <update id="issueToDestination">
-        UPDATE agile_issue ai, agile_issue_status ais
-        SET ai.sprint_id = #{targetSprintId}
-        WHERE ai.project_id = #{projectId} AND ai.sprint_id = #{sprintId}
-              AND ai.type_code != 'sub_task' AND ai.status_id = ais.id
-              AND ais.category_code != 'done'
-    </update>
-
     <select id="queryBacklogIssueCount" resultType="java.lang.Integer">
         SELECT COUNT(1)
-        FROM agile_issue
-        WHERE project_id = #{projectId} AND (sprint_id IS NULL OR sprint_id = 0) AND type_code != 'sub_task' AND
-              type_code != 'issue_epic'
+        FROM agile_issue ai
+        LEFT JOIN agile_issue_sprint_rel aisr ON aisr.issue_id = ai.issue_id,
+        agile_issue_status ais
+        WHERE ai.project_id = #{projectId} AND (aisr.sprint_id IS NULL OR aisr.sprint_id = 0)
+              AND ai.status_id = ais.id AND ais.category_code != 'done'
+              AND ai.type_code NOT IN ('sub_task', 'issue_epic')
     </select>
 
     <insert id="batchIssueToVersion">
@@ -399,10 +425,9 @@
         </foreach>
     </update>
 
-    <update id="batchIssueToSprint">
+    <update id="batchUpdateIssueRank">
         UPDATE agile_issue
         <trim prefix="set" suffixOverrides=",">
-            sprint_id = #{sprintId},
             <trim prefix="rank =case" suffix="end,">
                 <foreach collection="moveIssues" item="moveIssue">
                     when issue_id = #{moveIssue.issueId} then #{moveIssue.rank}
@@ -416,15 +441,15 @@
         </foreach>
     </update>
 
-    <update id="batchSubIssueToSprint">
-        UPDATE agile_issue
-        SET sprint_id = #{sprintId}
+    <select id="querySubIssueIds" resultType="java.lang.Long">
+        SELECT issue_id
+        FROM agile_issue
         WHERE project_id = #{projectId} AND parent_issue_id IN
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
             #{issueId}
         </foreach>
-    </update>
+    </select>
 
     <select id="queryIssueByIssueIds" resultMap="issueSearch">
         SELECT
@@ -432,13 +457,13 @@
         ai.type_code, ai.summary,
         ai.reporter_id, ai.description,
         ai.assignee_id, ai.project_id,
-        ai.epic_id, ai.sprint_id,
+        ai.epic_id, asp1.sprint_id,
         ai.story_points, ai.status_id,
         ais.category_code,
         ais.name AS status_name,
         ai.object_version_number, ai.priority_code,
         alv.name AS priority_name,
-        ai1.epic_name AS issue_epic_name,
+        ai1.epic_name AS epic_name,
         alv2.name AS color,
         apv1.version_id AS version_id,
         apv1.name AS version_name
@@ -448,6 +473,10 @@
         LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
         LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
+        LEFT JOIN (SELECT aisr.issue_id, asp.sprint_id
+        FROM agile_issue_sprint_rel aisr, agile_sprint asp
+        WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
+        ) asp1 ON asp1.issue_id = ai.issue_id
         LEFT JOIN (SELECT avir.issue_id, avir.version_id, apv.name
         FROM agile_version_issue_rel avir, agile_product_version apv
         WHERE apv.project_id = #{projectId} AND avir.version_id = apv.version_id
@@ -457,6 +486,19 @@
                  separator="," close=")">
             #{issueId}
         </foreach>
+    </select>
+
+    <select id="queryIssueByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT
+        ai.issue_id, asp1.sprint_id,
+        ai.status_id
+        FROM agile_issue ai
+        LEFT JOIN (SELECT aisr.issue_id, asp.sprint_id
+        FROM agile_issue_sprint_rel aisr, agile_sprint asp
+        WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
+              AND aisr.issue_id = #{issueId}
+        ) asp1 ON asp1.issue_id = ai.issue_id
+        WHERE ai.project_id = #{projectId} AND ai.issue_id = #{issueId}
     </select>
 
     <select id="queryIssueSubList" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
@@ -517,43 +559,56 @@
     </select>
 
     <select id="queryRightRank" resultType="java.lang.String">
-        SELECT MIN(rank)
-        FROM agile_issue
-        WHERE project_id = #{projectId} AND type_code NOT IN ('sub_task', 'issue_epic') AND rank > #{leftRank}
+        SELECT MIN(ai.rank)
+        FROM agile_issue ai
+        LEFT JOIN (SELECT aisr1.sprint_id, aisr1.issue_id
+        FROM agile_issue_sprint_rel aisr1, agile_sprint asp
+        WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = asp.sprint_id
+        AND asp.status_code != 'closed') aisr ON aisr.issue_id = ai.issue_id
+        WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_epic') AND ai.rank > #{leftRank}
         <choose>
             <when test="sprintId != null and sprintId != 0">
-                AND sprint_id = #{sprintId}
+                AND aisr.sprint_id = #{sprintId}
             </when>
             <otherwise>
-                AND (sprint_id IS NULL OR sprint_id = 0)
+                AND (aisr.sprint_id IS NULL OR aisr.sprint_id = 0)
             </otherwise>
         </choose>
     </select>
 
     <select id="queryLeftRank" resultType="java.lang.String">
-        SELECT MAX(rank)
-        FROM agile_issue
-        WHERE project_id = #{projectId} AND type_code NOT IN ('sub_task', 'issue_epic') AND rank &lt; #{rightRank}
+        SELECT MAX(ai.rank)
+        FROM agile_issue ai
+        LEFT JOIN (SELECT aisr1.sprint_id, aisr1.issue_id
+        FROM agile_issue_sprint_rel aisr1, agile_sprint asp
+        WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = asp.sprint_id
+        AND asp.status_code != 'closed') aisr ON aisr.issue_id = ai.issue_id
+        WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_epic') AND ai.rank &lt;
+        #{rightRank}
         <choose>
             <when test="sprintId != null and sprintId != 0">
-                AND sprint_id = #{sprintId}
+                AND aisr.sprint_id = #{sprintId}
             </when>
             <otherwise>
-                AND (sprint_id IS NULL OR sprint_id = 0)
+                AND (aisr.sprint_id IS NULL OR aisr.sprint_id = 0)
             </otherwise>
         </choose>
     </select>
 
     <select id="queryRank" resultType="java.lang.String">
-        SELECT rank
-        FROM agile_issue
-        WHERE project_id = #{projectId} AND issue_id = #{outsetIssueId}
+        SELECT ai.rank
+        FROM agile_issue ai
+        LEFT JOIN (SELECT aisr1.sprint_id, aisr1.issue_id
+        FROM agile_issue_sprint_rel aisr1, agile_sprint asp
+        WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = asp.sprint_id
+        AND asp.status_code != 'closed') aisr ON aisr.issue_id = ai.issue_id
+        WHERE ai.project_id = #{projectId} AND ai.issue_id = #{outsetIssueId}
         <choose>
             <when test="sprintId != null and sprintId != 0">
-                AND sprint_id = #{sprintId}
+                AND aisr.sprint_id = #{sprintId}
             </when>
             <otherwise>
-                AND (sprint_id IS NULL OR sprint_id = 0)
+                AND (aisr.sprint_id IS NULL OR aisr.sprint_id = 0)
             </otherwise>
         </choose>
     </select>
@@ -566,11 +621,79 @@
               AND ai2.parent_issue_id = ai.issue_id
     </update>
 
-    <update id="batchUpdateSubIssueSprintId">
-        UPDATE agile_issue
-        SET sprint_id = #{sprintId}
-        WHERE parent_issue_id = #{issueId} AND project_ID = #{projectId}
-    </update>
+    <select id="selectLabelNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueLabelDO">
+        SELECT
+            ail.*
+        FROM
+            agile_label_issue_rel alir,
+            agile_issue_label ail
+        WHERE
+            ail.label_id = alir.label_id
+        AND alir.issue_id = #{issueId}
+    </select>
 
+    <select id="listByOptions" resultType="io.choerodon.agile.infra.dataobject.IssueCommonDO">
+        SELECT
+            ai.issue_id,
+            ai.type_code,
+            ai.summary,
+            ai.priority_code,
+            ai.assignee_id,
+            ai.project_id,
+            alv.name AS priority_name,
+            ais.category_code AS status_code,
+            ais.name AS status_name,
+            CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
+        FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        WHERE ai.project_id = #{projectId} AND ai.type_code = #{typeCode} AND ai.type_code != 'sub_task'
+    </select>
+
+    <select id="querySubTaskIds" resultType="java.lang.Long">
+        SELECT ai2.issue_id
+        FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr, agile_issue ai2
+        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
+              AND ai.status_id = ais.id AND ais.category_code != 'done'
+              AND ai2.parent_issue_id = ai.issue_id
+    </select>
+
+    <delete id="removeIssueFromSprintByIssueIds">
+        DELETE aisr
+        FROM agile_issue_sprint_rel aisr, agile_sprint asp
+        WHERE aisr.project_id = #{projectId} AND aisr.sprint_id = asp.sprint_id
+        AND asp.status_code != 'closed' AND aisr.issue_id IN
+        <foreach collection="issueIds" item="issueId"
+                 open="(" separator="," close=")">
+            #{issueId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteIssueFromSprintByIssueId">
+        DELETE
+        FROM agile_issue_sprint_rel
+        WHERE project_id = #{projectId} AND issue_id = #{issueId}
+    </delete>
+
+    <insert id="issueToDestinationByIds">
+        INSERT IGNORE INTO agile_issue_sprint_rel
+        (issue_id, sprint_id, project_id, creation_date, last_update_date) VALUES
+        <foreach collection="issueIds" item="issueId" index="index"
+                 separator=",">
+            (#{issueId}, #{sprintId}, #{projectId}, #{date}, #{date})
+        </foreach>
+    </insert>
+
+    <insert id="issueToSprint">
+        INSERT IGNORE
+        INTO agile_issue_sprint_rel(issue_id, sprint_id, project_id, creation_date, last_update_date)
+        VALUES (#{issueId}, #{sprintId}, #{projectId}, #{date}, #{date})
+    </insert>
+
+    <select id="querySubIssueIdsByIssueId" resultType="java.lang.Long">
+        SELECT issue_id
+        FROM agile_issue
+        WHERE project_id = #{projectId} AND parent_issue_id = #{issueId}
+    </select>
 
 </mapper>

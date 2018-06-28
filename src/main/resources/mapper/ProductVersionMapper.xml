@@ -245,24 +245,46 @@
                AND ais.category_code != 'done'
     </select>
 
-    <select id="queryIssues" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+    <select id="queryIssuesByRelationType" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
         SELECT ai.issue_id, avir.relation_type
         FROM agile_version_issue_rel avir, agile_issue ai
-        WHERE avir.version_id = #{versionId} AND ai.project_id = #{projectId} AND avir.relation_type = 'fix'
+        WHERE avir.version_id = #{versionId} AND ai.project_id = #{projectId} AND avir.relation_type = #{relationType}
         AND avir.issue_id = ai.issue_id
     </select>
+
+    <select id="queryIssueByVersionIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+        SELECT ai.issue_id, avir.relation_type
+        FROM agile_version_issue_rel avir, agile_issue ai
+        WHERE ai.project_id = #{projectId} AND avir.issue_id = ai.issue_id
+               AND avir.version_id IN
+               <foreach collection="versionIds" item="versionId" index="index"
+                        open="(" close=")" separator=",">
+                   #{versionId}
+               </foreach>
+    </select>
+
+    <delete id="deleteByVersionIds">
+        DELETE
+        FROM agile_product_version
+        WHERE project_id = #{projectId} AND version_id IN
+        <foreach collection="versionIds" item="versionId" index="index"
+                 open="(" close=")" separator=",">
+            #{versionId}
+        </foreach>
+    </delete>
 
     <update id="releaseVersion">
         UPDATE agile_product_version
         SET status_code = 'released',
-             release_date = #{releaseDate}
+             release_date = #{releaseDate},
+             old_status_code = 'version_planning'
         WHERE project_id = #{projectId} AND version_id = #{versionId}
     </update>
 
-    <select id="querySimpleIssueCount" resultType="java.lang.Integer">
+    <select id="queryIssueCountByRelationType" resultType="java.lang.Integer">
         SELECT COUNT(1)
         FROM agile_version_issue_rel avir, agile_issue ai
-        WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix'
+        WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = #{relationType}
                AND ai.project_id = #{projectId}
     </select>
 
@@ -273,10 +295,29 @@
                AND status_code != 'archived'
     </select>
 
-    <select id="queryAllVersionNames" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
+    <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
         SELECT version_id, name, status_code
         FROM agile_product_version
-        WHERE project_id = #{projectId} AND status_code != 'archived'
+        WHERE project_id = #{projectId}
+              <if test="statusCodes != null and statusCodes.size > 0">
+                  AND status_code IN
+                  <foreach collection="statusCodes" item="statusCode"
+                         open="(" close=")" separator=",">
+                     #{statusCode}
+                  </foreach>
+              </if>
+              ORDER BY version_id DESC
+    </select>
+
+    <select id="listByProjectId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionCommonDO">
+        SELECT
+            apv.*,
+            alv.`name` AS status_name
+        FROM
+            agile_product_version apv
+        LEFT JOIN agile_lookup_value alv ON apv.status_code = alv.value_code
+        WHERE
+            apv.project_id = #{projectId}
     </select>
 
 </mapper>

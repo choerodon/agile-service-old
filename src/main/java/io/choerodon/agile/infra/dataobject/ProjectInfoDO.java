@@ -3,6 +3,7 @@ package io.choerodon.agile.infra.dataobject;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.mybatis.annotation.ModifyAudit;
 import io.choerodon.mybatis.annotation.VersionAudit;
+import io.choerodon.mybatis.domain.AuditDomain;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -15,7 +16,7 @@ import javax.persistence.Table;
 @ModifyAudit
 @VersionAudit
 @Table(name = "agile_project_info")
-public class ProjectInfoDO {
+public class ProjectInfoDO extends AuditDomain {
 
     @Id
     @GeneratedValue

@@ -230,11 +230,10 @@ public class IssueE {
      * 初始化创建子任务
      *
      * @param issueSub issueSub
-     * @param statusId statusId
      * @return IssueE
      */
-    public IssueE initializationSubIssue(IssueE issueSub, Long statusId) {
-        issueSub.setStatusId(statusId);
+    public IssueE initializationSubIssue(IssueE issueSub) {
+        issueSub.setStatusId(this.statusId);
         issueSub.setReporterId(DetailsHelper.getUserDetails().getUserId());
         issueSub.setParentIssueId(this.issueId);
         issueSub.setSprintId(this.sprintId);
@@ -266,12 +265,18 @@ public class IssueE {
         if (this.epicId == null) {
             this.epicId = 0L;
         }
-        if (this.sprintId == null) {
-            this.sprintId = 0L;
-        }
     }
 
     public Boolean isIssueRank() {
-        return !Objects.equals(this.typeCode, SUB_TASK) && !Objects.equals(this.typeCode, ISSUE_EPIC);
+        return this.typeCode != null && !Objects.equals(this.typeCode, SUB_TASK) && !Objects.equals(this.typeCode, ISSUE_EPIC);
+    }
+
+    public void initializationIssue() {
+        if (this.reporterId != null && this.reporterId == 0) {
+            this.reporterId = null;
+        }
+        if (this.assigneeId != null && this.assigneeId == 0) {
+            this.assigneeId = null;
+        }
     }
 }

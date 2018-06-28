@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.infra.dataobject.IssueStatusCreateDO;
+import io.choerodon.agile.infra.dataobject.StatusDO;
 import io.choerodon.mybatis.common.BaseMapper;
 import io.choerodon.agile.infra.dataobject.IssueStatusDO;
 import org.apache.ibatis.annotations.Param;
@@ -33,4 +34,6 @@ public interface IssueStatusMapper extends BaseMapper<IssueStatusDO> {
     List<IssueStatusCreateDO> queryIssueStatus(@Param("projectId") Long projectId);
 
     Integer checkSameStatus(@Param("projectId") Long projectId, @Param("statusName") String statusName);
+
+    List<StatusDO> listByProjectId(@Param("projectId") Long projectId);
 }

@@ -16,10 +16,28 @@ import java.util.List;
 public interface IssueLinkMapper extends BaseMapper<IssueLinkDO> {
 
     /**
-     * 批量创建issueLink
+     * 根据issueId删除
      *
-     * @param issueLinkDOList issueLinkDOList
-     * @param issueId         issueId
+     * @param issueId issueId
+     * @return int
      */
-    void batchCreateIssueLink(@Param("issueLinkDOList") List<IssueLinkDO> issueLinkDOList, @Param("issueId") Long issueId);
+    int deleteByIssueId(@Param("issueId") Long issueId);
+
+    /**
+     * 根据IssueId查询issueLink
+     *
+     * @param issueId   issueId
+     * @param projectId projectId
+     * @return IssueLinkDO
+     */
+    List<IssueLinkDO> queryIssueLinkByIssueId(@Param("issueId") Long issueId, @Param("projectId") Long projectId);
+
+    /**
+     * 批量更新issue链接关系到别的issueLinkType
+     *
+     * @param issueLinkTypeId   issueLinkTypeId
+     * @param toIssueLinkTypeId toIssueLinkTypeId
+     * @return int
+     */
+    int batchUpdateRelToIssueLinkType(@Param("issueLinkTypeId") Long issueLinkTypeId, @Param("toIssueLinkTypeId") Long toIssueLinkTypeId);
 }

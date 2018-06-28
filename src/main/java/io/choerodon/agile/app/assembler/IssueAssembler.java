@@ -11,10 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -27,6 +24,8 @@ public class IssueAssembler {
     private UserRepository userRepository;
     @Autowired
     private LookupValueMapper lookupValueMapper;
+    @Autowired
+    private SprintNameAssembler sprintNameAssembler;
 
     private static final String ISSUE_STATUS_COLOR = "issue_status_color";
 
@@ -43,15 +42,23 @@ public class IssueAssembler {
         IssueDTO issueDTO = new IssueDTO();
         BeanUtils.copyProperties(issueDetailDO, issueDTO);
         issueDTO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
-        issueDTO.setIssueLinkDTOList(ConvertHelper.convertList(issueDetailDO.getIssueLinkDOList(), IssueLinkDTO.class));
+        issueDTO.setActiveSprint(sprintNameAssembler.doToDTO(issueDetailDO.getActiveSprint()));
+        issueDTO.setCloseSprint(sprintNameAssembler.doListToDTO(issueDetailDO.getCloseSprint()));
         issueDTO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
         issueDTO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
         issueDTO.setIssueAttachmentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueAttachmentDOList(), IssueAttachmentDTO.class));
         issueDTO.setIssueCommentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueCommentDOList(), IssueCommentDTO.class));
         issueDTO.setStatusColor(ColorUtil.initializationStatusColor(issueDTO.getStatusCode(), lookupValueMap));
         issueDTO.setSubIssueDTOList(issueDoToSubIssueDto(issueDetailDO.getSubIssueDOList(), lookupValueMap));
-        issueDTO.setAssigneeName(userRepository.queryUserNameByOption(issueDTO.getAssigneeId(), true));
-        issueDTO.setReporterName(userRepository.queryUserNameByOption(issueDTO.getReporterId(), true));
+        List<Long> assigneeIdList = Arrays.asList(issueDetailDO.getAssigneeId(), issueDetailDO.getReporterId());
+        Map<Long, UserMessageDO> userMessageDOMap = userRepository.queryUsersMap(
+                assigneeIdList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
+        String assigneeName = userMessageDOMap.get(issueDTO.getAssigneeId()) != null ? userMessageDOMap.get(issueDTO.getAssigneeId()).getName() : null;
+        String reporterName = userMessageDOMap.get(issueDTO.getReporterId()) != null ? userMessageDOMap.get(issueDTO.getReporterId()).getName() : null;
+        issueDTO.setAssigneeName(assigneeName);
+        issueDTO.setAssigneeImageUrl(assigneeName != null ? userMessageDOMap.get(issueDTO.getAssigneeId()).getImageUrl() : null);
+        issueDTO.setReporterName(reporterName);
+        issueDTO.setReporterImageUrl(reporterName != null ? userMessageDOMap.get(issueDTO.getReporterId()).getImageUrl() : null);
         return issueDTO;
     }
 
@@ -117,18 +124,6 @@ public class IssueAssembler {
     }
 
     /**
-     * IssueSubUpdateDTO转换到IssueE
-     *
-     * @param issueSubUpdateDTO issueSubUpdateDTO
-     * @return IssueE
-     */
-    public IssueE issueSubUpdateDtoToEntity(IssueSubUpdateDTO issueSubUpdateDTO) {
-        IssueE issueE = new IssueE();
-        BeanUtils.copyProperties(issueSubUpdateDTO, issueE);
-        return issueE;
-    }
-
-    /**
      * issueCreateDTO转换到IssueE
      *
      * @param issueCreateDTO issueCreateDTO
@@ -182,6 +177,8 @@ public class IssueAssembler {
         BeanUtils.copyProperties(issueDetailDO, issueSubDTO);
         issueSubDTO.setIssueLinkDTOList(ConvertHelper.convertList(issueDetailDO.getIssueLinkDOList(), IssueLinkDTO.class));
         issueSubDTO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
+        issueSubDTO.setActiveSprint(sprintNameAssembler.doToDTO(issueDetailDO.getActiveSprint()));
+        issueSubDTO.setCloseSprint(sprintNameAssembler.doListToDTO(issueDetailDO.getCloseSprint()));
         issueSubDTO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
         issueSubDTO.setIssueAttachmentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueAttachmentDOList(), IssueAttachmentDTO.class));
         issueSubDTO.setIssueCommentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueCommentDOList(), IssueCommentDTO.class));

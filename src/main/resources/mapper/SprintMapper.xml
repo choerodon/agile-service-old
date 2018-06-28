@@ -7,16 +7,17 @@
         asp.sprint_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
         FROM agile_sprint asp
         LEFT JOIN (
-        SELECT ai.sprint_id AS sprint_id, COUNT(1) AS issue_count
-        FROM agile_issue ai, agile_issue_status ais
-        WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_epic')
+        SELECT aisr.sprint_id AS sprint_id, COUNT(1) AS issue_count
+        FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
+        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND ai.type_code NOT IN ('sub_task',
+        'issue_epic')
         AND ai.status_id = ais.id AND ais.category_code != 'done'
-        AND ai.sprint_id IN
+        AND aisr.sprint_id IN
         <foreach collection="sprintIds" item="sprintId"
                  open="(" close=")" separator=",">
             #{sprintId}
         </foreach>
-        GROUP BY ai.sprint_id
+        GROUP BY aisr.sprint_id
         ) ic ON ic.sprint_id = asp.sprint_id
         WHERE asp.project_id = #{projectId} AND asp.sprint_id IN
         <foreach collection="sprintIds" item="sprintId"
@@ -27,20 +28,23 @@
 
     <select id="queryStoryPoint" resultType="java.lang.Integer">
         SELECT IFNULL(SUM(ai.story_points), 0)
-        FROM agile_issue ai, agile_issue_status ais
-        WHERE ai.project_id = #{projectId} AND ai.sprint_id = #{sprintId}
+        FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
+        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
         AND ai.type_code = 'story' AND ai.status_id = ais.id AND ais.category_code = #{categoryCode}
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.ownIssue != "" and advancedSearchArgs.ownIssue == "true"'>
                 AND ai.assignee_id = #{userId}
             </if>
         </if>
+        <if test='filterSql != null'>
+            AND ai.issue_id IN (${filterSql})
+        </if>
     </select>
 
     <select id="queryIssueCount" resultType="java.lang.Integer">
         SELECT COUNT(1)
-        FROM agile_issue
-        WHERE project_id = #{projectId} AND sprint_id = #{sprintId}
+        FROM agile_issue ai, agile_issue_sprint_rel aisr
+        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
         AND type_code NOT IN ('sub_task', 'issue_epic')
     </select>
 
@@ -64,26 +68,34 @@
         WHERE project_id = #{projectId} AND status_code = 'sprint_planning'
     </select>
 
-    <select id="queryNameByProjectId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+    <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
         SELECT
-            sprint_id,
-            sprint_name
+        sprint_id,
+        sprint_name
         FROM agile_sprint
-        WHERE project_id = #{projectId} AND status_code != 'closed'
+        WHERE project_id = #{projectId}
+        <if test="sprintStatusCodes != null and sprintStatusCodes.size > 0">
+            AND status_code IN
+            <foreach collection="sprintStatusCodes" item="sprintStatusCode"
+                     open="(" close=")" separator=",">
+                #{sprintStatusCode}
+            </foreach>
+        </if>
+        ORDER BY last_update_date DESC
     </select>
 
     <select id="queryNotDoneIssueCount" resultType="java.lang.Integer">
         SELECT COUNT(1)
-        FROM agile_issue ai, agile_issue_status ais
-        WHERE ai.project_id = #{projectId} AND ai.sprint_id = #{sprintId}
+        FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
+        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
         AND ai.type_code NOT IN ('sub_task', 'issue_epic')
         AND ai.status_id = ais.id AND ais.category_code != 'done'
     </select>
 
     <select id="queryDoneIssueCount" resultType="java.lang.Integer">
         SELECT COUNT(1)
-        FROM agile_issue ai, agile_issue_status ais
-        WHERE ai.project_id = #{projectId} AND ai.sprint_id = #{sprintId}
+        FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
+        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
         AND ai.type_code NOT IN ('sub_task', 'issue_epic')
         AND ai.status_id = ais.id AND ais.category_code = 'done'
     </select>
@@ -118,28 +130,33 @@
 
     <select id="hasIssue" resultType="java.lang.Boolean">
         SELECT IF(COUNT(1) = 0, FALSE, TRUE)
-        FROM agile_issue
-        WHERE project_id = #{projectId} AND type_code NOT IN ('sub_task', 'issue_epic')
+        FROM agile_issue ai
+        LEFT JOIN agile_issue_sprint_rel aisr ON aisr.issue_id = ai.issue_id
+        WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_epic')
         <choose>
             <when test="sprintId != null and sprintId != 0">
-                AND sprint_id = #{sprintId}
+                AND aisr.sprint_id = #{sprintId}
             </when>
             <otherwise>
-                AND (sprint_id IS NULL OR sprint_id = 0)
+                AND (aisr.sprint_id IS NULL OR aisr.sprint_id = 0)
             </otherwise>
         </choose>
     </select>
 
     <select id="queryMaxRank" resultType="java.lang.String">
-        SELECT MAX(rank)
-        FROM agile_issue
-        WHERE project_id = #{projectId} AND type_code NOT IN ('sub_task', 'issue_epic')
+        SELECT MAX(ai.rank)
+        FROM agile_issue ai
+        LEFT JOIN (SELECT aisr1.sprint_id, aisr1.issue_id
+                    FROM agile_issue_sprint_rel aisr1, agile_sprint asp
+                    WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = asp.sprint_id
+                    AND asp.status_code != 'closed') aisr ON aisr.issue_id = ai.issue_id
+        WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_epic')
         <choose>
             <when test="sprintId != null and sprintId != 0">
-                AND sprint_id = #{sprintId}
+                AND aisr.sprint_id = #{sprintId}
             </when>
             <otherwise>
-                AND (sprint_id IS NULL OR sprint_id = 0)
+                AND (aisr.sprint_id IS NULL OR aisr.sprint_id = 0)
             </otherwise>
         </choose>
     </select>
@@ -155,15 +172,19 @@
     </select>
 
     <select id="queryMinRank" resultType="java.lang.String">
-        SELECT MIN(rank)
-        FROM agile_issue
-        WHERE project_id = #{projectId} AND type_code NOT IN ('sub_task', 'issue_epic')
+        SELECT MIN(ai.rank)
+        FROM agile_issue ai
+        LEFT JOIN (SELECT aisr1.sprint_id, aisr1.issue_id
+                    FROM agile_issue_sprint_rel aisr1, agile_sprint asp
+                    WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = asp.sprint_id
+                           AND asp.status_code != 'closed') aisr ON aisr.issue_id = ai.issue_id
+        WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_epic')
         <choose>
             <when test="sprintId != null and sprintId != 0">
-                AND sprint_id = #{sprintId}
+                AND aisr.sprint_id = #{sprintId}
             </when>
             <otherwise>
-                AND (sprint_id IS NULL OR sprint_id = 0)
+                AND (aisr.sprint_id IS NULL OR aisr.sprint_id = 0)
             </otherwise>
         </choose>
     </select>
@@ -180,13 +201,14 @@
 
     <select id="queryAssigneeIssueCount" resultType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
         SELECT
-        ai.sprint_id, ai.assignee_id,
+        aisr.sprint_id, ai.assignee_id,
         SUM(ai.story_points) AS total_story_points,
         SUM(ai.remaining_time) AS total_remaining_time,
         COUNT(1) AS issue_count
-        FROM agile_issue ai, agile_issue_status ais
-        WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_epic')
-        AND ai.status_id = ais.id AND ais.category_code != 'done' AND ai.sprint_id IN
+        FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
+        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND ai.type_code NOT IN ('sub_task',
+        'issue_epic')
+        AND ai.status_id = ais.id AND ais.category_code != 'done' AND aisr.sprint_id IN
         <foreach collection="sprintIds" item="sprintId" open="("
                  separator="," close=")">
             #{sprintId}
@@ -212,17 +234,20 @@
                 AND ai.type_code = 'story'
             </if>
         </if>
-        GROUP BY ai.sprint_id, ai.assignee_id
+        <if test='filterSql != null'>
+            AND ai.issue_id IN (${filterSql})
+        </if>
+        GROUP BY aisr.sprint_id, ai.assignee_id
     </select>
 
     <select id="queryAssigneeIssueCountById" resultType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
         SELECT
-        ai.sprint_id, ai.assignee_id,
+        aisr.sprint_id, ai.assignee_id,
         SUM(ai.story_points) AS total_story_points,
         SUM(ai.remaining_time) AS total_remaining_time,
         COUNT(1) AS issue_count
-        FROM agile_issue ai
-        WHERE ai.project_id = #{projectId} AND ai.sprint_id = #{sprintId}
+        FROM agile_issue ai, agile_issue_sprint_rel aisr
+        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
         AND ai.type_code NOT IN ('sub_task', 'issue_epic')
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.versionId != null'>
@@ -245,15 +270,26 @@
                 AND ai.type_code = 'story'
             </if>
         </if>
-        GROUP BY ai.sprint_id, ai.assignee_id
+        <if test='filterSql != null'>
+            AND ai.issue_id IN (${filterSql})
+        </if>
+        GROUP BY aisr.sprint_id, ai.assignee_id
     </select>
 
     <select id="queryIssueIdOrderByRankDesc" resultType="java.lang.Long">
         SELECT ai.issue_id
-        FROM agile_issue ai, agile_issue_status ais
-        WHERE ai.project_id = #{projectId} AND ai.sprint_id = #{sprintId}
+        FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
+        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
         AND ai.type_code NOT IN ('sub_task', 'issue_epic')
         AND ai.status_id = ais.id AND ais.category_code != 'done'
+        ORDER BY rank DESC
+    </select>
+
+    <select id="queryAllRankIssueIds" resultType="java.lang.Long">
+        SELECT ai.issue_id
+        FROM agile_issue ai, agile_issue_sprint_rel aisr
+        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
+        AND ai.type_code NOT IN ('sub_task', 'issue_epic')
         ORDER BY rank DESC
     </select>
 
@@ -261,16 +297,30 @@
         SELECT ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num, ai.project_id
         FROM agile_issue ai
               LEFT JOIN agile_project_info api ON ai.project_id = api.project_id,
-              agile_issue_status ais
-        WHERE ai.project_id = #{projectId} AND ai.sprint_id = #{sprintId}
+              agile_issue_status ais, agile_issue_sprint_rel aisr
+        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
                AND ai.status_id = ais.id AND ais.category_code = 'done'
                AND ai.issue_id IN (SELECT ai2.parent_issue_id
-                                    FROM agile_issue ai2, agile_issue_status ais2
-                                    WHERE ai2.project_id = #{projectId} AND ai2.sprint_id = #{sprintId}
+                                    FROM agile_issue ai2, agile_issue_status ais2, agile_issue_sprint_rel aisr2
+                                    WHERE ai2.project_id = #{projectId} AND aisr2.issue_id = ai2.issue_id AND aisr2.sprint_id = #{sprintId}
 				                    AND ai2.type_code = 'sub_task'
                                     AND ai2.status_id = ais2.id AND ais2.category_code != 'done'
                                     )
 
+    </select>
+
+    <select id="queryIssueIds" resultType="java.lang.Long">
+        SELECT ai.issue_id
+        FROM  agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
+        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
+              AND ai.type_code != 'sub_task' AND ai.status_id = ais.id
+              AND ais.category_code != 'done'
+    </select>
+
+    <select id="querySprintNameBySprintId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+        SELECT sprint_id, sprint_name
+        FROM agile_sprint
+        WHERE project_id = #{projectId} AND sprint_id = #{sprintId}
     </select>
 
 </mapper>

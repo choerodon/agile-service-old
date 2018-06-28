@@ -33,6 +33,10 @@ public class IssueListDTO {
 
     private String statusColor;
 
+    private Integer storyPoints;
+
+    private Boolean addIssue;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -135,6 +139,22 @@ public class IssueListDTO {
 
     public void setStatusColor(String statusColor) {
         this.statusColor = statusColor;
+    }
+
+    public Integer getStoryPoints() {
+        return storyPoints;
+    }
+
+    public void setStoryPoints(Integer storyPoints) {
+        this.storyPoints = storyPoints;
+    }
+
+    public Boolean getAddIssue() {
+        return addIssue;
+    }
+
+    public void setAddIssue(Boolean addIssue) {
+        this.addIssue = addIssue;
     }
 
     @Override

@@ -87,11 +87,6 @@ public class IssueDO extends AuditDomain {
     private Long epicId;
 
     /**
-     * 冲刺id
-     */
-    private Long sprintId;
-
-    /**
      * 父issue的id
      */
     private Long parentIssueId;
@@ -105,6 +100,9 @@ public class IssueDO extends AuditDomain {
     private String priorityName;
 
     @Transient
+    private Long sprintId;
+
+    @Transient
     private String statusCode;
 
     @Transient
@@ -114,6 +112,9 @@ public class IssueDO extends AuditDomain {
 
     @Transient
     private String color;
+
+    @Transient
+    private Boolean addIssue;
 
     private BigDecimal estimateTime;
 
@@ -217,14 +218,6 @@ public class IssueDO extends AuditDomain {
         this.epicId = epicId;
     }
 
-    public Long getSprintId() {
-        return sprintId;
-    }
-
-    public void setSprintId(Long sprintId) {
-        this.sprintId = sprintId;
-    }
-
     public Long getParentIssueId() {
         return parentIssueId;
     }
@@ -303,6 +296,22 @@ public class IssueDO extends AuditDomain {
 
     public void setColorCode(String colorCode) {
         this.colorCode = colorCode;
+    }
+
+    public Boolean getAddIssue() {
+        return addIssue;
+    }
+
+    public void setAddIssue(Boolean addIssue) {
+        this.addIssue = addIssue;
+    }
+
+    public Long getSprintId() {
+        return sprintId;
+    }
+
+    public void setSprintId(Long sprintId) {
+        this.sprintId = sprintId;
     }
 
     @Override

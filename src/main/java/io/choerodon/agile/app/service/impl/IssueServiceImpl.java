@@ -2,10 +2,8 @@ package io.choerodon.agile.app.service.impl;
 
 
 import io.choerodon.agile.api.dto.*;
-import io.choerodon.agile.app.assembler.EpicDataAssembler;
-import io.choerodon.agile.app.assembler.IssueSearchAssembler;
-import io.choerodon.agile.app.service.IssueAttachmentService;
-import io.choerodon.agile.app.service.IssueCommentService;
+import io.choerodon.agile.app.assembler.*;
+import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
@@ -15,10 +13,7 @@ import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.agile.app.assembler.IssueAssembler;
-import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.core.domain.Page;
-import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.choerodon.mybatis.constant.InsertOrUpdateConstant.OBJECT_VERSION_NUMBER;
+
 /**
  * 敏捷开发Issue
  *
@@ -36,7 +33,7 @@ import java.util.stream.Collectors;
  * @since 2018-05-14 20:30:48
  */
 @Service
-@Transactional(rollbackFor = CommonException.class)
+@Transactional(rollbackFor = Exception.class)
 public class IssueServiceImpl implements IssueService {
 
     @Autowired
@@ -91,6 +88,20 @@ public class IssueServiceImpl implements IssueService {
     private UserRepository userRepository;
     @Autowired
     private LookupValueMapper lookupValueMapper;
+    @Autowired
+    private IssueLinkService issueLinkService;
+    @Autowired
+    private DataLogRepository dataLogRepository;
+    @Autowired
+    private VersionIssueRelMapper versionIssueRelMapper;
+    @Autowired
+    private ComponentIssueRelMapper componentIssueRelMapper;
+    @Autowired
+    private IssueCommonAssembler issueCommonAssembler;
+    @Autowired
+    private SprintNameAssembler sprintNameAssembler;
+    @Autowired
+    private BoardService boardService;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -103,8 +114,34 @@ public class IssueServiceImpl implements IssueService {
     private static final String COLOR_CODE_FIELD = "colorCode";
     private static final String EPIC_ID_FIELD = "epicId";
     private static final String SPRINT_ID_FIELD = "sprintId";
+    private static final String STATUS_ID = "statusId";
+    private static final String ISSUE_ID = "issueId";
     private static final String EPIC_COLOR_TYPE = "epic_color";
     private static final String RELATION_TYPE_FIX = "fix";
+    private static final String FIELD_SUMMARY = "summary";
+    private static final String FIELD_DESCRIPTION = "description";
+    private static final String FIELD_PRIORITY = "priority";
+    private static final String FIELD_ASSIGNEE = "assignee";
+    private static final String FIELD_REPORTER = "reporter";
+    private static final String FIELD_SPRINT = "Sprint";
+    private static final String FIELD_STORY_POINTS = "Story Points";
+    private static final String FIELD_EPIC_LINK = "Epic Link";
+    private static final String FIELD_TIMEESTIMATE = "timeestimate";
+    private static final String FIELD_ISSUETYPE = "issuetype";
+    private static final String FIELD_EPIC_CHILD = "Epic Child";
+    private static final String FIELD_DESCRIPTION_NULL = "[{\"insert\":\"\n\"}]";
+    private static final String FIELD_FIX_VERSION = "Fix Version";
+    private static final String FIELD_RANK = "Rank";
+    private static final String RANK_HIGHER = "评级更高";
+    private static final String RANK_LOWER = "评级更低";
+    private static final String FIELD_LABELS = "labels";
+    private static final String FIELD_COMPONENT = "Component";
+    private static final String FIELD_EPIC_NAME = "Epic Name";
+    private static final String NEW_STRING = "newString";
+    private static final String NEW_VALUE = "newValue";
+    private static final String OLD_STRING = "oldString";
+    private static final String OLD_VALUE = "oldValue";
+    private static final String RANK_FIELD = "rank";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -120,23 +157,49 @@ public class IssueServiceImpl implements IssueService {
         //设置issue编号
         initializationIssueNum(issueE);
         issueE.initializationIssue(statusId);
+        issueE.initializationIssue();
         //如果是epic，初始化颜色
         List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
         issueE.initializationColor(colorList);
         if (issueE.isIssueRank()) {
-            if (sprintRule.hasIssue(issueE.getProjectId(), issueE.getSprintId())) {
-                String rank = sprintMapper.queryMaxRank(issueE.getProjectId(), issueE.getSprintId());
-                issueE.setRank(RankUtil.genNext(rank));
-            } else {
-                issueE.setRank(RankUtil.mid());
-            }
+            calculationRank(issueE.getProjectId(), issueE);
         }
         Long issueId = issueRepository.create(issueE).getIssueId();
-        handleCreateIssueLink(issueCreateDTO.getIssueLinkDTOList(), issueId);
+        if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
+            issueRepository.issueToSprint(issueE.getProjectId(), issueE.getSprintId(), issueId, new Date());
+        }
+        if (issueCreateDTO.getIssueLinkCreateDTOList() != null && !issueCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
+            issueLinkService.createIssueLinkList(issueCreateDTO.getIssueLinkCreateDTOList(), issueId, issueCreateDTO.getProjectId());
+        }
         handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
         handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
         handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
+        if (issueE.getSprintId() != null && issueE.getSprintId() != 0) {
+            handleCreateSprintRel(issueId, issueE.getSprintId(), issueE.getProjectId());
+        }
         return queryIssue(issueCreateDTO.getProjectId(), issueId);
+    }
+
+    private void handleCreateSprintRel(Long issueId, Long sprintId, Long projectId) {
+        DataLogE dataLogE = new DataLogE();
+        dataLogE.setProjectId(projectId);
+        dataLogE.setIssueId(issueId);
+        dataLogE.setField(FIELD_SPRINT);
+        dataLogE.setOldValue(null);
+        dataLogE.setOldString(null);
+        dataLogE.setNewValue(sprintId.toString());
+        SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
+        dataLogE.setNewString(sprintDO.getSprintName());
+        dataLogRepository.create(dataLogE);
+    }
+
+    private void calculationRank(Long projectId, IssueE issueE) {
+        if (sprintRule.hasIssue(projectId, issueE.getSprintId())) {
+            String rank = sprintMapper.queryMaxRank(projectId, issueE.getSprintId());
+            issueE.setRank(RankUtil.genNext(rank));
+        } else {
+            issueE.setRank(RankUtil.mid());
+        }
     }
 
     @Override
@@ -164,21 +227,299 @@ public class IssueServiceImpl implements IssueService {
         return issueListDTOPage;
     }
 
+    private void dataLogSummary(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getSummary() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setField(FIELD_SUMMARY);
+            dataLogE.setOldString(originIssue.getSummary());
+            dataLogE.setNewString(issueUpdateDTO.getSummary());
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLogDescription(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getDescription() != null) {
+            if (!FIELD_DESCRIPTION_NULL.equals(issueUpdateDTO.getDescription())) {
+                DataLogE dataLogE = new DataLogE();
+                dataLogE.setProjectId(originIssue.getProjectId());
+                dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+                dataLogE.setField(FIELD_DESCRIPTION);
+                dataLogE.setOldString(originIssue.getDescription());
+                dataLogE.setNewString(issueUpdateDTO.getDescription());
+                dataLogRepository.create(dataLogE);
+            } else {
+                DataLogE dataLogE = new DataLogE();
+                dataLogE.setProjectId(originIssue.getProjectId());
+                dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+                dataLogE.setField(FIELD_DESCRIPTION);
+                dataLogE.setOldString(originIssue.getDescription());
+                dataLogRepository.create(dataLogE);
+            }
+        }
+    }
+
+    private void dataLogPriority(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getPriorityCode() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setField(FIELD_PRIORITY);
+            dataLogE.setOldString(lookupValueMapper.selectNameByValueCode(originIssue.getPriorityCode()));
+            dataLogE.setNewString(lookupValueMapper.selectNameByValueCode(issueUpdateDTO.getPriorityCode()));
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLogAssignee(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getAssigneeId() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setField(FIELD_ASSIGNEE);
+            if (originIssue.getAssigneeId() != null && originIssue.getAssigneeId() != 0) {
+                dataLogE.setOldValue(originIssue.getAssigneeId().toString());
+                dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getAssigneeId(), false));
+            }
+            if (issueUpdateDTO.getAssigneeId() != 0) {
+                dataLogE.setNewValue(issueUpdateDTO.getAssigneeId().toString());
+                dataLogE.setNewString(userRepository.queryUserNameByOption(issueUpdateDTO.getAssigneeId(), false));
+            } else {
+                dataLogE.setNewValue(null);
+                dataLogE.setNewString(null);
+            }
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLogReporter(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getReporterId() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setField(FIELD_REPORTER);
+            if (originIssue.getReporterId() != null && originIssue.getReporterId() != 0) {
+                dataLogE.setOldValue(originIssue.getReporterId().toString());
+                dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getReporterId(), false));
+            }
+            if (issueUpdateDTO.getReporterId() != 0) {
+                dataLogE.setNewValue(issueUpdateDTO.getReporterId().toString());
+                dataLogE.setNewString(userRepository.queryUserNameByOption(issueUpdateDTO.getReporterId(), false));
+            }
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLogSprint(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO, boolean isRecordSprintLog) {
+        if (!isRecordSprintLog) {
+            return;
+        }
+        SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(originIssue.getIssueId()));
+        List<SprintNameDTO> closeSprintNames = sprintNameAssembler.doListToDTO(issueMapper.queryCloseSprintNameByIssueId(originIssue.getIssueId()));
+        SprintNameDTO sprintName = sprintNameAssembler.doToDTO(sprintMapper.querySprintNameBySprintId(originIssue.getProjectId(), issueUpdateDTO.getSprintId()));
+        if ((activeSprintName == null && sprintName == null) || (sprintName != null && activeSprintName != null && Objects.equals(sprintName.getSprintId(), activeSprintName.getSprintId()))) {
+            return;
+        }
+        Map<String, String> valuesMap = dealSprint(closeSprintNames, activeSprintName, sprintName);
+        DataLogE dataLogE = new DataLogE();
+        dataLogE.setProjectId(originIssue.getProjectId());
+        dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+        dataLogE.setField(FIELD_SPRINT);
+        dataLogE.setOldValue("".equals(valuesMap.get(OLD_VALUE)) ? null : valuesMap.get(OLD_VALUE));
+        dataLogE.setOldString("".equals(valuesMap.get(OLD_STRING)) ? null : valuesMap.get(OLD_STRING));
+        dataLogE.setNewValue("".equals(valuesMap.get(NEW_VALUE)) ? null : valuesMap.get(NEW_VALUE));
+        dataLogE.setNewString("".equals(valuesMap.get(NEW_STRING)) ? null : valuesMap.get(NEW_STRING));
+        dataLogRepository.create(dataLogE);
+
+    }
+
+    private Map<String, String> dealSprint(List<SprintNameDTO> closeSprintNames, SprintNameDTO activeSprintName, SprintNameDTO sprintName) {
+        Map<String, String> valuesMap = new HashMap<>();
+        String oldValue;
+        String oldString;
+        String newValue;
+        String newString;
+        String closeSprintIdStr = closeSprintNames.stream().map(closeSprintName -> closeSprintName.getSprintId().toString()).collect(Collectors.joining(","));
+        String closeSprintNameStr = closeSprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
+        oldValue = newValue = closeSprintIdStr;
+        oldString = newString = closeSprintNameStr;
+        if (activeSprintName != null) {
+            oldValue = ("".equals(oldValue) ? activeSprintName.getSprintId().toString() : oldValue + "," + activeSprintName.getSprintId().toString());
+            oldString = ("".equals(oldString) ? activeSprintName.getSprintName() : oldString + "," + activeSprintName.getSprintName());
+        }
+        if (sprintName != null) {
+            newValue = ("".equals(newValue) ? sprintName.getSprintId().toString() : newValue + "," + sprintName.getSprintId().toString());
+            newString = ("".equals(newString) ? sprintName.getSprintName() : newString + "," + sprintName.getSprintName());
+        }
+        valuesMap.put(OLD_VALUE, oldValue);
+        valuesMap.put(OLD_STRING, oldString);
+        valuesMap.put(NEW_VALUE, newValue);
+        valuesMap.put(NEW_STRING, newString);
+        return valuesMap;
+    }
+
+    private void dataLogStoryPoint(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getStoryPoints() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setField(FIELD_STORY_POINTS);
+            if (originIssue.getStoryPoints() != null) {
+                dataLogE.setOldString(originIssue.getStoryPoints().toString());
+            }
+            dataLogE.setNewString(issueUpdateDTO.getStoryPoints().toString());
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLogEpicChild(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (originIssue.getEpicId() != null && originIssue.getEpicId() != 0) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setField(FIELD_EPIC_CHILD);
+            dataLogE.setIssueId(issueUpdateDTO.getEpicId());
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setNewValue(originIssue.getIssueId().toString());
+            dataLogE.setNewString(originIssue.getSummary());
+            dataLogRepository.create(dataLogE);
+            DataLogE removeEpicChild = new DataLogE();
+            removeEpicChild.setProjectId(originIssue.getProjectId());
+            removeEpicChild.setIssueId(originIssue.getEpicId());
+            removeEpicChild.setField(FIELD_EPIC_CHILD);
+            removeEpicChild.setOldValue(originIssue.getIssueId().toString());
+            removeEpicChild.setOldString(originIssue.getSummary());
+            removeEpicChild.setNewValue(null);
+            removeEpicChild.setNewString(null);
+            dataLogRepository.create(removeEpicChild);
+        } else {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setField(FIELD_EPIC_CHILD);
+            dataLogE.setIssueId(issueUpdateDTO.getEpicId());
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setNewValue(originIssue.getIssueId().toString());
+            dataLogE.setNewString(originIssue.getSummary());
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLogEpic(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getEpicId() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setField(FIELD_EPIC_LINK);
+            if (originIssue.getEpicId() != null && originIssue.getEpicId() != 0) {
+                dataLogE.setOldValue(originIssue.getEpicId().toString());
+                dataLogE.setOldString(issueMapper.selectByPrimaryKey(originIssue.getEpicId()).getSummary());
+            }
+            if (issueUpdateDTO.getEpicId() != 0) {
+                dataLogE.setNewValue(issueUpdateDTO.getEpicId().toString());
+                dataLogE.setNewString(issueMapper.selectByPrimaryKey(issueUpdateDTO.getEpicId()).getSummary());
+            } else {
+                dataLogE.setNewValue(null);
+                dataLogE.setNewString(null);
+            }
+            dataLogRepository.create(dataLogE);
+            dataLogEpicChild(originIssue, issueUpdateDTO);
+        }
+    }
+
+    private void dataLogRemainTime(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getRemainingTime() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setField(FIELD_TIMEESTIMATE);
+            if (originIssue.getRemainingTime() != null) {
+                dataLogE.setOldValue(originIssue.getRemainingTime().toString());
+                dataLogE.setOldString(originIssue.getRemainingTime().toString());
+            }
+            dataLogE.setNewValue(issueUpdateDTO.getRemainingTime().toString());
+            dataLogE.setNewString(issueUpdateDTO.getRemainingTime().toString());
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLogEpicName(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
+        if (issueUpdateDTO.getEpicName() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(originIssue.getProjectId());
+            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogE.setField(FIELD_EPIC_NAME);
+            dataLogE.setOldString(originIssue.getEpicName());
+            dataLogE.setNewString(issueUpdateDTO.getEpicName());
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLog(List<String> fieldList, IssueDO originIssue, IssueUpdateDTO issueUpdateDTO, boolean isRecordSprintLog) {
+        dataLogEpicName(originIssue, issueUpdateDTO);
+        dataLogSummary(originIssue, issueUpdateDTO);
+        dataLogDescription(originIssue, issueUpdateDTO);
+        dataLogPriority(originIssue, issueUpdateDTO);
+        dataLogAssignee(originIssue, issueUpdateDTO);
+        dataLogReporter(originIssue, issueUpdateDTO);
+        dataLogSprint(originIssue, issueUpdateDTO, isRecordSprintLog);
+        dataLogStoryPoint(originIssue, issueUpdateDTO);
+        dataLogEpic(originIssue, issueUpdateDTO);
+        dataLogRemainTime(originIssue, issueUpdateDTO);
+        dataLogStatus(fieldList, issueUpdateDTO, originIssue);
+    }
+
     @Override
     public IssueDTO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList) {
+        IssueDO originIssue = issueMapper.selectByPrimaryKey(issueUpdateDTO.getIssueId());
         if (fieldList != null && !fieldList.isEmpty()) {
+            //日志记录
+            dataLog(fieldList, originIssue, issueUpdateDTO, fieldList.contains(SPRINT_ID_FIELD));
+            IssueE issueE = issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO);
+            issueE.initializationIssue();
             if (fieldList.contains(SPRINT_ID_FIELD)) {
-                issueRepository.batchUpdateSubIssueSprintId(projectId, issueUpdateDTO.getSprintId(), issueUpdateDTO.getIssueId());
+                IssueE oldIssue = ConvertHelper.convert(originIssue, IssueE.class);
+                List<Long> issueIds = issueMapper.querySubIssueIdsByIssueId(projectId, issueE.getIssueId());
+                issueIds.add(issueE.getIssueId());
+                issueRepository.removeIssueFromSprintByIssueIds(projectId, issueIds);
+                if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
+                    issueRepository.issueToDestinationByIds(projectId, issueE.getSprintId(), issueIds, new Date());
+                }
+                if (issueE.isIssueRank() || (issueE.getTypeCode() == null && oldIssue.isIssueRank())) {
+                    calculationRank(projectId, issueE);
+                    fieldList.add(RANK_FIELD);
+                }
             }
-            issueRepository.update(issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO), fieldList.toArray(new String[fieldList.size()]));
+            issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
         }
         Long issueId = issueUpdateDTO.getIssueId();
-        handleUpdateIssueLink(issueUpdateDTO.getIssueLinkDTOList(), issueId);
         handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId);
         handleUpdateComponentIssueRel(issueUpdateDTO.getComponentIssueRelDTOList(), projectId, issueId);
-        handleUpdateVersionIssueRel(issueUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId);
+        if (issueUpdateDTO.getVersionType() != null) {
+            handleUpdateVersionIssueRel(issueUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId, issueUpdateDTO.getVersionType());
+        }
         return queryIssue(projectId, issueId);
     }
+
+    private void dataLogStatus(List<String> fieldList, IssueUpdateDTO issueUpdateDTO, IssueDO originIssue) {
+        if (fieldList.contains(STATUS_ID)) {
+            IssueE dataLogIssue = new IssueE();
+            dataLogIssue.setIssueId(issueUpdateDTO.getIssueId());
+            dataLogIssue.setStatusId(issueUpdateDTO.getStatusId());
+            dataLogIssue.setProjectId(originIssue.getProjectId());
+            boardService.dataLogStatus(originIssue, dataLogIssue);
+            if (!originIssue.getTypeCode().equals(SUB_TASK)) {
+                List<IssueDO> subIssueList = issueMapper.queryIssueSubList(originIssue.getProjectId(), originIssue.getIssueId());
+                //子任务记录日志
+                subIssueList.forEach(sub -> {
+                    IssueE dataLogIssueSub = new IssueE();
+                    dataLogIssueSub.setStatusId(issueUpdateDTO.getStatusId());
+                    dataLogIssueSub.setIssueId(sub.getIssueId());
+                    dataLogIssueSub.setObjectVersionNumber(sub.getObjectVersionNumber());
+                    issueRepository.update(dataLogIssueSub, new String[]{STATUS_ID, ISSUE_ID, OBJECT_VERSION_NUMBER});
+                    boardService.dataLogStatus(sub, dataLogIssueSub);
+                });
+            }
+        }
+    }
+
 
     @Override
     public List<EpicDataDTO> listEpic(Long projectId) {
@@ -199,6 +540,13 @@ public class IssueServiceImpl implements IssueService {
         return epicDataList;
     }
 
+    private void dataLogDeleteByIssueId(Long projectId, Long issueId) {
+        DataLogE dataLogE = new DataLogE();
+        dataLogE.setProjectId(projectId);
+        dataLogE.setIssueId(issueId);
+        dataLogRepository.delete(dataLogE);
+    }
+
     @Override
     public int deleteIssue(Long projectId, Long issueId) {
         IssueE issueE = queryIssueByProjectIdAndIssueId(projectId, issueId);
@@ -212,6 +560,7 @@ public class IssueServiceImpl implements IssueService {
         componentIssueRelRepository.deleteByIssueId(issueE.getIssueId());
         //删除版本关联
         versionIssueRelRepository.deleteByIssueId(issueE.getIssueId());
+        issueRepository.deleteIssueFromSprintByIssueId(projectId, issueId);
         //删除评论信息
         issueCommentService.deleteByIssueId(issueE.getIssueId());
         //删除附件
@@ -227,38 +576,41 @@ public class IssueServiceImpl implements IssueService {
                 issueDOList.forEach(subIssue -> deleteIssue(subIssue.getProjectId(), subIssue.getIssueId()));
             }
         }
+        dataLogDeleteByIssueId(projectId, issueId);
         return issueRepository.delete(projectId, issueE.getIssueId());
     }
 
     @Override
     public IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO) {
         IssueE subIssueE = issueAssembler.issueSubCreateDtoToEntity(issueSubCreateDTO);
-        IssueE issueE = queryIssueByProjectIdAndIssueId(subIssueE.getProjectId(), subIssueE.getParentIssueId());
-        //设置初始状态,如果有todo，就用todo，否则为doing，最后为done
-        List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(issueE.getProjectId());
+        IssueE parentIssueE = ConvertHelper.convert(issueMapper.queryIssueByIssueId(subIssueE.getProjectId(), subIssueE.getParentIssueId()), IssueE.class);
+        //设置初始状态,跟随父类状态
+        subIssueE = parentIssueE.initializationSubIssue(subIssueE);
+        //日志记录
+        IssueDO issueDO = new IssueDO();
+        List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(subIssueE.getProjectId());
         Long statusId = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
                 issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
                         issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(new IssueStatusCreateDO()))).getId();
-        subIssueE = issueE.initializationSubIssue(subIssueE, statusId);
+        issueDO.setProjectId(subIssueE.getProjectId());
+        issueDO.setStatusId(statusId);
+        boardService.dataLogStatus(issueDO, subIssueE);
         //设置issue编号
         initializationIssueNum(subIssueE);
+        subIssueE.initializationIssue();
         Long issueId = issueRepository.create(subIssueE).getIssueId();
-        handleCreateIssueLink(issueSubCreateDTO.getIssueLinkDTOList(), issueId);
+        if (subIssueE.getSprintId() != null && !Objects.equals(subIssueE.getSprintId(), 0L)) {
+            issueRepository.issueToSprint(subIssueE.getProjectId(), subIssueE.getSprintId(), issueId, new Date());
+        }
+        if (issueSubCreateDTO.getIssueLinkCreateDTOList() != null && !issueSubCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
+            issueLinkService.createIssueLinkList(issueSubCreateDTO.getIssueLinkCreateDTOList(), issueId, issueSubCreateDTO.getProjectId());
+        }
         handleCreateLabelIssue(issueSubCreateDTO.getLabelIssueRelDTOList(), issueId);
         handleCreateVersionIssueRel(issueSubCreateDTO.getVersionIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
-        return queryIssueSub(subIssueE.getProjectId(), issueId);
-    }
-
-    @Override
-    public IssueSubDTO updateSubIssue(Long projectId, IssueSubUpdateDTO issueSubUpdateDTO, List<String> fieldList) {
-        if (fieldList != null && !fieldList.isEmpty()) {
-            issueRepository.update(issueAssembler.issueSubUpdateDtoToEntity(issueSubUpdateDTO), fieldList.toArray(new String[fieldList.size()]));
+        if (subIssueE.getSprintId() != null) {
+            handleCreateSprintRel(issueId, subIssueE.getSprintId(), subIssueE.getProjectId());
         }
-        Long issueId = issueSubUpdateDTO.getIssueId();
-        handleUpdateIssueLink(issueSubUpdateDTO.getIssueLinkDTOList(), issueId);
-        handleUpdateLabelIssue(issueSubUpdateDTO.getLabelIssueRelDTOList(), issueId);
-        handleUpdateVersionIssueRel(issueSubUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId);
-        return queryIssueSub(projectId, issueId);
+        return queryIssueSub(subIssueE.getProjectId(), issueId);
     }
 
     @Override
@@ -279,17 +631,94 @@ public class IssueServiceImpl implements IssueService {
         return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>());
     }
 
+    private void dataLogRank(Long projectId, MoveIssueDTO moveIssueDTO, String rankStr, Long sprintId) {
+        for (Long issueId : moveIssueDTO.getIssueIds()) {
+            SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
+            if ((sprintId == 0 && activeSprintName == null) || (activeSprintName != null && sprintId.equals(activeSprintName.getSprintId()))) {
+                DataLogE dataLogE = new DataLogE();
+                dataLogE.setProjectId(projectId);
+                dataLogE.setField(FIELD_RANK);
+                dataLogE.setIssueId(issueId);
+                dataLogE.setNewString(rankStr);
+                dataLogRepository.create(dataLogE);
+            }
+        }
+    }
+
+    private SprintDO getSprintById(Long sprintId) {
+        return sprintMapper.selectByPrimaryKey(sprintId);
+    }
+
+    private List<DataLogE> getSprintDataLogByMove(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO) {
+        SprintDO sprintDO = getSprintById(sprintId);
+        List<DataLogE> dataLogEList = new ArrayList<>();
+        for (Long issueId : moveIssueDTO.getIssueIds()) {
+            SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
+            if (activeSprintName != null && sprintId.equals(activeSprintName.getSprintId())) {
+                continue;
+            }
+            String newSprintIdStr = "";
+            String newSprintNameStr = "";
+            List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
+            String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
+            String oldSprintNameStr = sprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
+            int idx = 0;
+            for (SprintNameDTO sprintName : sprintNames) {
+                if (activeSprintName != null && activeSprintName.getSprintId().equals(sprintName.getSprintId())) {
+                    continue;
+                }
+                if (idx == 0) {
+                    newSprintNameStr = sprintName.getSprintName();
+                    newSprintIdStr = sprintName.getSprintId().toString();
+                    idx++;
+                } else {
+                    newSprintNameStr = newSprintNameStr + "," + sprintName.getSprintName();
+                    newSprintIdStr = newSprintIdStr + "," + sprintName.getSprintId().toString();
+                }
+            }
+            if (sprintDO != null) {
+                newSprintIdStr = "".equals(newSprintIdStr) ? sprintDO.getSprintId().toString() : newSprintIdStr + "," + sprintDO.getSprintId().toString();
+                newSprintNameStr = "".equals(newSprintNameStr) ? sprintDO.getSprintName() : newSprintNameStr + "," + sprintDO.getSprintName();
+            }
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(projectId);
+            dataLogE.setIssueId(issueId);
+            dataLogE.setField(FIELD_SPRINT);
+            dataLogE.setOldValue("".equals(oldSprintIdStr) ? null : oldSprintIdStr);
+            dataLogE.setOldString("".equals(oldSprintNameStr) ? null : oldSprintNameStr);
+            dataLogE.setNewValue("".equals(newSprintIdStr) ? null : newSprintIdStr);
+            dataLogE.setNewString("".equals(newSprintNameStr) ? null : newSprintNameStr);
+            dataLogEList.add(dataLogE);
+        }
+        return dataLogEList;
+    }
+
+    private void dataLogSprintByMove(List<DataLogE> dataLogEList) {
+        for (DataLogE dataLogE : dataLogEList) {
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
     @Override
     public List<IssueSearchDTO> batchIssueToSprint(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO) {
         sprintRule.judgeExist(projectId, sprintId);
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
         if (moveIssueDTO.getBefore()) {
             beforeRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
+            dataLogRank(projectId, moveIssueDTO, RANK_HIGHER, sprintId);
         } else {
             afterRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
+            dataLogRank(projectId, moveIssueDTO, RANK_LOWER, sprintId);
         }
-        issueRepository.batchIssueToSprint(projectId, sprintId, moveIssueDOS);
-        issueRepository.batchSubIssueToSprint(projectId, sprintId, moveIssueDTO.getIssueIds());
+        List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
+        moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
+        List<DataLogE> dataLogEList = getSprintDataLogByMove(projectId, sprintId, moveIssueDTO);
+        issueRepository.removeIssueFromSprintByIssueIds(projectId, moveIssueIds);
+        if (sprintId != null && !Objects.equals(sprintId, 0L)) {
+            issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds, new Date());
+        }
+        dataLogSprintByMove(dataLogEList);
+        issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
         List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds());
         List<Long> assigneeIds = issueSearchDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
@@ -368,8 +797,21 @@ public class IssueServiceImpl implements IssueService {
         return issueAssembler.issueDetailDoToIssueSubDto(issue);
     }
 
+    private void dataLogIssueType(String originType, IssueUpdateTypeDTO issueUpdateTypeDTO) {
+        String originTypeName = lookupValueMapper.selectNameByValueCode(originType);
+        String currentTypeName = lookupValueMapper.selectNameByValueCode(issueUpdateTypeDTO.getTypeCode());
+        DataLogE dataLogE = new DataLogE();
+        dataLogE.setField(FIELD_ISSUETYPE);
+        dataLogE.setIssueId(issueUpdateTypeDTO.getIssueId());
+        dataLogE.setProjectId(issueUpdateTypeDTO.getProjectId());
+        dataLogE.setOldString(originTypeName);
+        dataLogE.setNewString(currentTypeName);
+        dataLogRepository.create(dataLogE);
+    }
+
     @Override
     public IssueDTO updateIssueTypeCode(IssueE issueE, IssueUpdateTypeDTO issueUpdateTypeDTO) {
+        String originType = issueE.getTypeCode();
         if (issueUpdateTypeDTO.getTypeCode().equals(ISSUE_EPIC)) {
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
             issueE.setEpicName(issueUpdateTypeDTO.getEpicName());
@@ -388,6 +830,7 @@ public class IssueServiceImpl implements IssueService {
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
             issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD});
         }
+        dataLogIssueType(originType, issueUpdateTypeDTO);
         return queryIssue(issueE.getProjectId(), issueE.getIssueId());
     }
 
@@ -412,15 +855,16 @@ public class IssueServiceImpl implements IssueService {
     private void handleCreateVersionIssueRel(List<VersionIssueRelDTO> versionIssueRelDTOList, Long projectId, Long issueId) {
         if (versionIssueRelDTOList != null && !versionIssueRelDTOList.isEmpty()) {
             //创建版本默认为fix
-            versionIssueRelDTOList.forEach(versionIssueRelDTO -> versionIssueRelDTO.setRelationType(RELATION_TYPE_FIX));
-            handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId);
+//            versionIssueRelDTOList.forEach(versionIssueRelDTO -> versionIssueRelDTO.setRelationType(RELATION_TYPE_FIX));
+            handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId, "fix");
         }
     }
 
-    private void handleVersionIssueRel(List<VersionIssueRelE> versionIssueRelEList, Long projectId, Long issueId) {
+    private void handleVersionIssueRel(List<VersionIssueRelE> versionIssueRelEList, Long projectId, Long issueId, String versionType) {
         versionIssueRelEList.forEach(versionIssueRelE -> {
             versionIssueRelE.setIssueId(issueId);
             versionIssueRelE.setProjectId(projectId);
+            versionIssueRelE.setRelationType(versionType);
             issueRule.verifyVersionIssueRelData(versionIssueRelE);
             if (versionIssueRelE.getName() != null && versionIssueRelE.getVersionId() == null) {
                 //重名校验
@@ -436,18 +880,6 @@ public class IssueServiceImpl implements IssueService {
                 versionIssueRelRepository.create(versionIssueRelE);
             }
         });
-    }
-
-    private void handleCreateIssueLink(List<IssueLinkDTO> issueLinkDTOList, Long issueId) {
-        if (issueLinkDTOList != null && !issueLinkDTOList.isEmpty()) {
-            List<IssueLinkDO> issueLinkDOList = ConvertHelper.convertList(issueLinkDTOList, IssueLinkDO.class);
-            issueLinkDOList.forEach(issueLinkDO -> {
-                issueLinkDO.setIssueId(issueId);
-                issueRule.verifyIssueLinkData(issueLinkDO);
-            });
-            //SQL批量创建提高性能
-            issueLinkRepository.batchCreateIssueLink(issueLinkDOList, issueId);
-        }
     }
 
     private void handleCreateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId) {
@@ -494,8 +926,52 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
+    private String getOriginLabelNames(List<IssueLabelDO> originLabels) {
+        StringBuilder originLabelNames = new StringBuilder();
+        int originIdx = 0;
+        for (IssueLabelDO label : originLabels) {
+            if (originIdx == originLabels.size() - 1) {
+                originLabelNames.append(label.getLabelName());
+            } else {
+                originLabelNames.append(label.getLabelName() + " ");
+            }
+        }
+        return originLabelNames.toString();
+    }
+
+    private String getCurrentLabelNames(List<LabelIssueRelDTO> labelIssueRelDTOList) {
+        StringBuilder stringBuilder = new StringBuilder();
+        int idx = 0;
+        for (LabelIssueRelDTO label : labelIssueRelDTOList) {
+            if (idx == labelIssueRelDTOList.size() - 1) {
+                stringBuilder.append(label.getLabelName());
+            } else {
+                stringBuilder.append(label.getLabelName() + " ");
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    private void dataLogLabel(List<IssueLabelDO> originLabels, List<LabelIssueRelDTO> labelIssueRelDTOList, Long issueId) {
+        if (labelIssueRelDTOList != null) {
+            IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(issueDO.getProjectId());
+            dataLogE.setField(FIELD_LABELS);
+            dataLogE.setIssueId(issueId);
+            if (!labelIssueRelDTOList.isEmpty()) {
+                dataLogE.setOldString(getOriginLabelNames(originLabels));
+                dataLogE.setNewString(getCurrentLabelNames(labelIssueRelDTOList));
+            } else {
+                dataLogE.setOldString(getOriginLabelNames(originLabels));
+            }
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
     private void handleUpdateLabelIssue(List<LabelIssueRelDTO> labelIssueRelDTOList, Long issueId) {
         if (labelIssueRelDTOList != null) {
+            List<IssueLabelDO> originLabels = issueMapper.selectLabelNameByIssueId(issueId);
             if (!labelIssueRelDTOList.isEmpty()) {
                 labelIssueRelRepository.deleteByIssueId(issueId);
                 List<LabelIssueRelE> labelIssueEList = ConvertHelper.convertList(labelIssueRelDTOList, LabelIssueRelE.class);
@@ -506,50 +982,139 @@ public class IssueServiceImpl implements IssueService {
             } else {
                 labelIssueRelRepository.deleteByIssueId(issueId);
             }
+            dataLogLabel(originLabels, labelIssueRelDTOList, issueId);
             //没有issue使用的标签进行垃圾回收
             issueLabelRepository.labelGarbageCollection();
         }
 
     }
 
-    private void handleUpdateVersionIssueRel(List<VersionIssueRelDTO> versionIssueRelDTOList, Long projectId, Long issueId) {
-        if (versionIssueRelDTOList != null) {
-            if (!versionIssueRelDTOList.isEmpty()) {
-                versionIssueRelRepository.deleteByIssueId(issueId);
-                handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId);
-            } else {
-                versionIssueRelRepository.deleteByIssueId(issueId);
+    private void dataLogVersion(Long projectId, Long issueId, List<VersionIssueRelDO> versionIssueRelDOList, List<VersionIssueRelDTO> versionIssueRelDTOList, String versionType) {
+        if (!"fix".equals(versionType)) {
+            return;
+        }
+        if (versionIssueRelDOList != null && !versionIssueRelDOList.isEmpty()) {
+            for (VersionIssueRelDO versionIssueRel : versionIssueRelDOList) {
+                int flag = 0;
+                for (VersionIssueRelDTO versionRel : versionIssueRelDTOList) {
+                    if (versionRel.getVersionId().equals(versionIssueRel.getVersionId())) {
+                        flag = 1;
+                    }
+                }
+                if (flag == 0) {
+                    DataLogE dataLogE = new DataLogE();
+                    dataLogE.setProjectId(projectId);
+                    dataLogE.setIssueId(issueId);
+                    dataLogE.setField(FIELD_FIX_VERSION);
+                    dataLogE.setOldValue(versionIssueRel.getVersionId().toString());
+                    dataLogE.setOldString(productVersionMapper.selectByPrimaryKey(versionIssueRel.getVersionId()).getName());
+                    dataLogRepository.create(dataLogE);
+                }
+            }
+        }
+        if (versionIssueRelDTOList != null && !versionIssueRelDTOList.isEmpty()) {
+            for (VersionIssueRelDTO versionRel : versionIssueRelDTOList) {
+                int flag = 0;
+                for (VersionIssueRelDO versionIssueRel : versionIssueRelDOList) {
+                    if (versionRel.getVersionId().equals(versionIssueRel.getVersionId())) {
+                        flag = 1;
+                    }
+                }
+                if (flag == 0) {
+                    DataLogE dataLogE = new DataLogE();
+                    dataLogE.setProjectId(projectId);
+                    dataLogE.setIssueId(issueId);
+                    dataLogE.setField(FIELD_FIX_VERSION);
+                    dataLogE.setNewValue(versionRel.getVersionId().toString());
+                    dataLogE.setNewString(productVersionMapper.selectByPrimaryKey(versionRel.getVersionId()).getName());
+                    dataLogRepository.create(dataLogE);
+                }
             }
         }
 
     }
 
-    private void handleUpdateIssueLink(List<IssueLinkDTO> issueLinkDTOList, Long issueId) {
-        if (issueLinkDTOList != null) {
-            if (!issueLinkDTOList.isEmpty()) {
-                issueLinkRepository.deleteByIssueId(issueId);
-                List<IssueLinkDO> issueLinkDOList = ConvertHelper.convertList(issueLinkDTOList, IssueLinkDO.class);
-                issueLinkDOList.forEach(issueLinkDO -> {
-                    issueLinkDO.setIssueId(issueId);
-                    issueRule.verifyIssueLinkData(issueLinkDO);
-                });
-                //SQL批量创建提高性能
-                issueLinkRepository.batchCreateIssueLink(issueLinkDOList, issueId);
-            } else {
-                issueLinkRepository.deleteByIssueId(issueId);
+    public List<VersionIssueRelDO> getVersionIssueRels(Long projectId, Long issueId) {
+        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
+        versionIssueRelDO.setProjectId(projectId);
+        versionIssueRelDO.setIssueId(issueId);
+        versionIssueRelDO.setRelationType("fix");
+        return versionIssueRelMapper.select(versionIssueRelDO);
+    }
 
+    private void handleUpdateVersionIssueRel(List<VersionIssueRelDTO> versionIssueRelDTOList, Long projectId, Long issueId, String versionType) {
+        if (versionIssueRelDTOList != null) {
+            List<VersionIssueRelDO> originVersionIssueRels = getVersionIssueRels(projectId, issueId);
+            List<VersionIssueRelDTO> versionIssueRelDTOS = null;
+            if (!versionIssueRelDTOList.isEmpty()) {
+                versionIssueRelRepository.deleteByIssueIdAndType(issueId, versionType);
+                handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId, versionType);
+                versionIssueRelDTOS = ConvertHelper.convertList(getVersionIssueRels(projectId, issueId), VersionIssueRelDTO.class);
+            } else {
+                versionIssueRelRepository.deleteByIssueIdAndType(issueId, versionType);
+                versionIssueRelDTOS = new ArrayList<>();
+            }
+            dataLogVersion(projectId, issueId, originVersionIssueRels, versionIssueRelDTOS, versionType);
+        }
+
+    }
+
+    private List<ComponentIssueRelDO> getComponentIssueRel(Long projectId, Long issueId) {
+        return componentIssueRelMapper.selectByProjectIdAndIssueId(projectId, issueId);
+    }
+
+    private void dataLogComponent(Long projectId, Long issueId, List<ComponentIssueRelDO> originComponentIssueRels, List<ComponentIssueRelDO> curComponentIssueRels) {
+        if (originComponentIssueRels != null && !originComponentIssueRels.isEmpty()) {
+            for (ComponentIssueRelDO originRel : originComponentIssueRels) {
+                int flag = 0;
+                for (ComponentIssueRelDO curRel : curComponentIssueRels) {
+                    if (originRel.getComponentId().equals(curRel.getComponentId())) {
+                        flag = 1;
+                    }
+                }
+                if (flag == 0) {
+                    DataLogE dataLogE = new DataLogE();
+                    dataLogE.setProjectId(projectId);
+                    dataLogE.setIssueId(issueId);
+                    dataLogE.setField(FIELD_COMPONENT);
+                    dataLogE.setOldValue(originRel.getComponentId().toString());
+                    dataLogE.setOldString(issueComponentMapper.selectByPrimaryKey(originRel.getComponentId()).getName());
+                    dataLogRepository.create(dataLogE);
+                }
+            }
+        }
+        if (curComponentIssueRels != null && !curComponentIssueRels.isEmpty()) {
+            for (ComponentIssueRelDO curRel : curComponentIssueRels) {
+                int flag = 0;
+                for (ComponentIssueRelDO originRel : originComponentIssueRels) {
+                    if (originRel.getComponentId().equals(curRel.getComponentId())) {
+                        flag = 1;
+                    }
+                }
+                if (flag == 0) {
+                    DataLogE dataLogE = new DataLogE();
+                    dataLogE.setProjectId(projectId);
+                    dataLogE.setIssueId(issueId);
+                    dataLogE.setField(FIELD_COMPONENT);
+                    dataLogE.setNewValue(curRel.getComponentId().toString());
+                    dataLogE.setNewString(curRel.getName());
+                    dataLogRepository.create(dataLogE);
+                }
             }
         }
     }
 
     private void handleUpdateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId) {
         if (componentIssueRelDTOList != null) {
+            List<ComponentIssueRelDO> originComponentIssueRels = getComponentIssueRel(projectId, issueId);
             if (!componentIssueRelDTOList.isEmpty()) {
                 componentIssueRelRepository.deleteByIssueId(issueId);
                 handleComponentIssueRel(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId);
             } else {
                 componentIssueRelRepository.deleteByIssueId(issueId);
             }
+            List<ComponentIssueRelDO> curComponentIssueRels = getComponentIssueRel(projectId, issueId);
+            dataLogComponent(projectId, issueId, originComponentIssueRels, curComponentIssueRels);
         }
     }
 
@@ -577,6 +1142,35 @@ public class IssueServiceImpl implements IssueService {
         Integer max = query.getIssueMaxNum().intValue() + 1;
         issueE.setIssueNum(max.toString());
         projectInfoRepository.updateIssueMaxNum(issueE.getProjectId());
+    }
+
+    @Override
+    public Page<IssueCommonDTO> listByOptions(Long projectId, String typeCode, PageRequest pageRequest) {
+        Page<IssueCommonDO> issueCommonDOPage = PageHelper.doPageAndSort(pageRequest, () -> issueMapper.listByOptions(projectId, typeCode));
+        Page<IssueCommonDTO> issueCommonDTOPage = new Page<>();
+        issueCommonDTOPage.setTotalPages(issueCommonDOPage.getTotalPages());
+        issueCommonDTOPage.setSize(issueCommonDOPage.getSize());
+        issueCommonDTOPage.setTotalElements(issueCommonDOPage.getTotalElements());
+        issueCommonDTOPage.setNumberOfElements(issueCommonDOPage.getNumberOfElements());
+        issueCommonDTOPage.setNumber(issueCommonDOPage.getNumber());
+        issueCommonDTOPage.setContent(issueCommonAssembler.issueCommonToIssueCommonDto(issueCommonDOPage.getContent()));
+        return issueCommonDTOPage;
+    }
+
+    @Override
+    public Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String content, PageRequest pageRequest) {
+        //连表查询需要设置主表别名
+        pageRequest.resetOrder("ai", new HashMap<>());
+        Page<IssueNumDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
+                issueMapper.queryIssueByOption(projectId, issueId, content));
+        Page<IssueNumDTO> issueListDTOPage = new Page<>();
+        issueListDTOPage.setNumber(issueDOPage.getNumber());
+        issueListDTOPage.setNumberOfElements(issueDOPage.getNumberOfElements());
+        issueListDTOPage.setSize(issueDOPage.getSize());
+        issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
+        issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
+        issueListDTOPage.setContent(issueAssembler.issueNumDOToIssueNumDTO(issueDOPage.getContent()));
+        return issueListDTOPage;
     }
 
 }

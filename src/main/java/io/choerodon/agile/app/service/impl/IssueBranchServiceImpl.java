@@ -10,12 +10,14 @@ import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/19.
  * Email: fuqianghuang01@gmail.com
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class IssueBranchServiceImpl implements IssueBranchService {
 
     @Autowired

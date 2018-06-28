@@ -3,6 +3,7 @@ package io.choerodon.agile.domain.agile.repository;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.infra.dataobject.MoveIssueDO;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -44,13 +45,9 @@ public interface IssueRepository {
 
     IssueE updateSelective(IssueE issueE);
 
-    int issueToDestination(Long projectId, Long sprintId, Long targetSprintId);
-
     Boolean batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds);
 
     Boolean batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds);
-
-    Boolean batchIssueToSprint(Long projectId, Long sprintId, List<MoveIssueDO> moveIssueDOS);
 
     int batchRemoveVersion(Long projectId, List<Long> issueIds);
 
@@ -63,17 +60,13 @@ public interface IssueRepository {
      */
     int batchUpdateIssueEpicId(Long projectId, Long issueId);
 
-    int subTaskToDestination(Long projectId, Long sprintId, Long targetSprintId);
+    int issueToDestinationByIds(Long projectId, Long sprintId, List<Long> issueIds, Date date);
 
-    /**
-     * 批量更改子issue的冲刺id
-     *
-     * @param projectId projectId
-     * @param sprintId  sprintId
-     * @param issueId   issueId
-     * @return int
-     */
-    int batchUpdateSubIssueSprintId(Long projectId, Long sprintId, Long issueId);
+    int batchUpdateIssueRank(Long projectId, List<MoveIssueDO> moveIssueDOS);
 
-    Boolean batchSubIssueToSprint(Long projectId, Long sprintId, List<Long> issueIds);
+    int removeIssueFromSprintByIssueIds(Long projectId, List<Long> issueIds);
+
+    int issueToSprint(Long projectId, Long sprintId, Long issueId, Date date);
+
+    int deleteIssueFromSprintByIssueId(Long projectId, Long issueId);
 }

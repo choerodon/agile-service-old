@@ -2,7 +2,6 @@ package io.choerodon.agile.api.dto;
 
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -43,19 +42,19 @@ public class IssueDTO {
 
     private Long epicId;
 
-    private Long sprintId;
-
     private Long parentIssueId;
 
     private Integer storyPoints;
 
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
+    private SprintNameDTO activeSprint;
+
+    private List<SprintNameDTO> closeSprint;
+
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
     private List<ComponentIssueRelDTO> componentIssueRelDTOList;
-
-    private List<IssueLinkDTO> issueLinkDTOList;
 
     private List<IssueCommentDTO> issueCommentDTOList;
 
@@ -88,6 +87,10 @@ public class IssueDTO {
     private String parentIssueNum;
 
     private String statusColor;
+
+    private String assigneeImageUrl;
+
+    private String reporterImageUrl;
 
     public Long getIssueId() {
         return issueId;
@@ -177,14 +180,6 @@ public class IssueDTO {
         this.epicId = epicId;
     }
 
-    public Long getSprintId() {
-        return sprintId;
-    }
-
-    public void setSprintId(Long sprintId) {
-        this.sprintId = sprintId;
-    }
-
     public Long getParentIssueId() {
         return parentIssueId;
     }
@@ -231,14 +226,6 @@ public class IssueDTO {
 
     public void setComponentIssueRelDTOList(List<ComponentIssueRelDTO> componentIssueRelDTOList) {
         this.componentIssueRelDTOList = componentIssueRelDTOList;
-    }
-
-    public List<IssueLinkDTO> getIssueLinkDTOList() {
-        return issueLinkDTOList;
-    }
-
-    public void setIssueLinkDTOList(List<IssueLinkDTO> issueLinkDTOList) {
-        this.issueLinkDTOList = issueLinkDTOList;
     }
 
     public List<IssueCommentDTO> getIssueCommentDTOList() {
@@ -383,6 +370,38 @@ public class IssueDTO {
 
     public void setStatusColor(String statusColor) {
         this.statusColor = statusColor;
+    }
+
+    public SprintNameDTO getActiveSprint() {
+        return activeSprint;
+    }
+
+    public void setActiveSprint(SprintNameDTO activeSprint) {
+        this.activeSprint = activeSprint;
+    }
+
+    public List<SprintNameDTO> getCloseSprint() {
+        return closeSprint;
+    }
+
+    public void setCloseSprint(List<SprintNameDTO> closeSprint) {
+        this.closeSprint = closeSprint;
+    }
+
+    public String getAssigneeImageUrl() {
+        return assigneeImageUrl;
+    }
+
+    public void setAssigneeImageUrl(String assigneeImageUrl) {
+        this.assigneeImageUrl = assigneeImageUrl;
+    }
+
+    public String getReporterImageUrl() {
+        return reporterImageUrl;
+    }
+
+    public void setReporterImageUrl(String reporterImageUrl) {
+        this.reporterImageUrl = reporterImageUrl;
     }
 
     @Override

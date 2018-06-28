@@ -21,5 +21,7 @@ public interface ProductVersionRepository {
 
     Boolean releaseVersion(Long projectId, Long versionId, Date releaseDate);
 
-    ProductVersionE revokeReleaseVersion(Long projectId, Long versionId);
+    ProductVersionE updateVersion(ProductVersionE versionE);
+
+    int deleteByVersionIds(Long projectId, List<Long> versionIds);
 }

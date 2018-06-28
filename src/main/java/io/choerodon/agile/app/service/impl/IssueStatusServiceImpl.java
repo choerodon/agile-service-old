@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.IssueStatusDTO;
 import io.choerodon.agile.api.dto.StatusAndIssuesDTO;
+import io.choerodon.agile.api.dto.StatusDTO;
 import io.choerodon.agile.api.dto.StatusMoveDTO;
 import io.choerodon.agile.app.service.IssueStatusService;
 import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
@@ -14,9 +15,13 @@ import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.IssueStatusMapper;
 import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.mybatis.pagehelper.PageHelper;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +31,7 @@ import java.util.List;
  * Email: fuqianghuang01@gmail.com
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class IssueStatusServiceImpl implements IssueStatusService {
 
     @Autowired
@@ -51,6 +57,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         if (!projectId.equals(issueStatusDTO.getProjectId())) {
             throw new CommonException("error.projectId.notEqual");
         }
+        issueStatusDTO.setCompleted(false);
         IssueStatusE issueStatusE = ConvertHelper.convert(issueStatusDTO, IssueStatusE.class);
         return ConvertHelper.convert(issueStatusRepository.create(issueStatusE), IssueStatusDTO.class);
     }
@@ -137,6 +144,10 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     @Override
     public void deleteStatus(Long projectId, Long id) {
         checkIssueNumOfStatus(projectId, id);
+        ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
+        columnStatusRelE.setProjectId(projectId);
+        columnStatusRelE.setStatusId(id);
+        columnStatusRelRepository.delete(columnStatusRelE);
         IssueStatusE issueStatusE = new IssueStatusE();
         issueStatusE.setProjectId(projectId);
         issueStatusE.setId(id);
@@ -157,5 +168,18 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         }
         IssueStatusE issueStatusE = ConvertHelper.convert(issueStatusDTO, IssueStatusE.class);
         return ConvertHelper.convert(issueStatusRepository.update(issueStatusE), IssueStatusDTO.class);
+    }
+
+    @Override
+    public Page<StatusDTO> listByProjectId(Long projectId, PageRequest pageRequest) {
+        Page<StatusDO> statusDOPage = PageHelper.doPageAndSort(pageRequest, () -> issueStatusMapper.listByProjectId(projectId));
+        Page<StatusDTO> statusDTOPage = new Page<>();
+        statusDTOPage.setTotalPages(statusDOPage.getTotalPages());
+        statusDTOPage.setNumber(statusDOPage.getNumber());
+        statusDTOPage.setNumberOfElements(statusDOPage.getNumberOfElements());
+        statusDTOPage.setTotalElements(statusDOPage.getTotalElements());
+        statusDTOPage.setSize(statusDOPage.getSize());
+        statusDTOPage.setContent(ConvertHelper.convertList(statusDOPage.getContent(), StatusDTO.class));
+        return statusDTOPage;
     }
 }

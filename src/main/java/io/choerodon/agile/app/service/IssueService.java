@@ -72,16 +72,6 @@ public interface IssueService {
      */
     IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO);
 
-    /**
-     * 更新子任务
-     *
-     * @param projectId         projectId
-     * @param issueSubUpdateDTO issueSubUpdateDTO
-     * @param fieldList         fieldList
-     * @return IssueSubDTO
-     */
-    IssueSubDTO updateSubIssue(Long projectId, IssueSubUpdateDTO issueSubUpdateDTO, List<String> fieldList);
-
     List<IssueSearchDTO> batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds);
 
     List<IssueSearchDTO> batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds);
@@ -122,4 +112,8 @@ public interface IssueService {
      * @return IssueE
      */
     IssueE queryIssueByProjectIdAndIssueId(Long projectId, Long issueId);
+
+    Page<IssueCommonDTO> listByOptions(Long projectId, String typeCode, PageRequest pageRequest);
+
+    Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String content, PageRequest pageRequest);
 }

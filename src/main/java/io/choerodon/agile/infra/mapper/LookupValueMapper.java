@@ -14,4 +14,5 @@ public interface LookupValueMapper extends BaseMapper<LookupValueDO> {
 
     LookupTypeWithValuesDO queryLookupValueByCode(String typeCode);
 
+    String selectNameByValueCode(String valueCode);
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.choerodon.agile.infra.mapper.DataLogMapper">
+
+    <select id="selectByIssueId" resultType="io.choerodon.agile.infra.dataobject.DataLogDO">
+        SELECT
+            *
+        FROM
+            agile_data_log
+        WHERE
+            project_id = #{projectId}
+        AND issue_id = #{issueId}
+        ORDER BY last_update_date DESC,created_by
+    </select>
+
+    <select id="selectLastWorkLogById" resultType="io.choerodon.agile.infra.dataobject.DataLogDO">
+        SELECT
+            *
+        FROM
+            agile_data_log
+        WHERE
+            project_id = #{projectId}
+        AND issue_id = #{issueId}
+        AND field = #{field}
+        ORDER BY
+            log_id DESC
+        LIMIT 1
+    </select>
+
+</mapper>

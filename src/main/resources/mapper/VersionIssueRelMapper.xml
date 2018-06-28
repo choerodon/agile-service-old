@@ -10,4 +10,14 @@
         AND ais.category_code != 'done'
     </delete>
 
+    <delete id="deleteByVersionIds">
+        DELETE
+        FROM agile_version_issue_rel
+        WHERE project_id = #{projectId} AND version_id IN
+        <foreach collection="versionIds" item="versionId" index="index"
+                 open="(" close=")" separator=",">
+            #{versionId}
+        </foreach>
+    </delete>
+
 </mapper>

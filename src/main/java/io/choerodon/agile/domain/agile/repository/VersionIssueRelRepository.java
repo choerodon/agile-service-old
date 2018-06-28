@@ -35,6 +35,8 @@ public interface VersionIssueRelRepository {
      */
     int deleteByIssueId(Long issueId);
 
+    int deleteByIssueIdAndType(Long issueId, String versionType);
+
     /**
      * 根据id删除
      *
@@ -45,4 +47,6 @@ public interface VersionIssueRelRepository {
     int deleteByVersionId(Long projectId, Long versionId);
 
     Boolean deleteIncompleteIssueByVersionId(Long projectId, Long versionId);
+
+    int deleteByVersionIds(Long projectId, List<Long> versionIds);
 }

@@ -28,8 +28,6 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     private static final String INSERT_ERROR = "error.version.insert";
     private static final String DELETE_ERROR = "error.version.delete";
     private static final String UPDATE_ERROR = "error.version.update";
-    private static final String VERSION_STATUS_PLAN_CODE = "version_planning";
-    private static final String REVOKE_RELEASE_ERROR = "error.productVersion.revokeRelease";
 
     @Override
     public ProductVersionE createVersion(ProductVersionE versionE) {
@@ -72,16 +70,17 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     }
 
     @Override
-    public ProductVersionE revokeReleaseVersion(Long projectId, Long versionId) {
-        ProductVersionDO productVersionDO  = new ProductVersionDO();
-        productVersionDO.setProjectId(projectId);
-        productVersionDO.setVersionId(versionId);
-        productVersionDO = versionMapper.selectOne(productVersionDO);
-        productVersionDO.setStatusCode(VERSION_STATUS_PLAN_CODE);
-        if(versionMapper.updateByPrimaryKey(productVersionDO) != 1){
-            throw new CommonException(REVOKE_RELEASE_ERROR);
+    public ProductVersionE updateVersion(ProductVersionE versionE) {
+        ProductVersionDO version = versionConverter.entityToDo(versionE);
+        if(versionMapper.updateByPrimaryKeySelective(version) != 1){
+            throw new CommonException(UPDATE_ERROR);
         }
-        return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(productVersionDO.getVersionId()));
+        return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(version.getVersionId()));
+    }
+
+    @Override
+    public int deleteByVersionIds(Long projectId, List<Long> versionIds) {
+        return versionMapper.deleteByVersionIds(projectId, versionIds);
     }
 
 }

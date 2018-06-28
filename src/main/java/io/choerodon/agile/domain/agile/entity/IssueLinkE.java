@@ -11,9 +11,11 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class IssueLinkE {
 
+    private Long linkId;
+
     private Long issueId;
 
-    private String issueLinkTypeCode;
+    private Long linkTypeId;
 
     private Long linkedIssueId;
 
@@ -27,12 +29,20 @@ public class IssueLinkE {
         this.issueId = issueId;
     }
 
-    public String getIssueLinkTypeCode() {
-        return issueLinkTypeCode;
+    public Long getLinkId() {
+        return linkId;
     }
 
-    public void setIssueLinkTypeCode(String issueLinkTypeCode) {
-        this.issueLinkTypeCode = issueLinkTypeCode;
+    public void setLinkId(Long linkId) {
+        this.linkId = linkId;
+    }
+
+    public Long getLinkTypeId() {
+        return linkTypeId;
+    }
+
+    public void setLinkTypeId(Long linkTypeId) {
+        this.linkTypeId = linkTypeId;
     }
 
     public Long getLinkedIssueId() {

@@ -7,6 +7,8 @@ public class IssueNumDO {
     private Long issueId;
     private String issueNum;
     private Long projectId;
+    private String summary;
+    private String typeCode;
 
     public Long getIssueId() {
         return issueId;
@@ -30,5 +32,21 @@ public class IssueNumDO {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public String getTypeCode() {
+        return typeCode;
+    }
+
+    public void setTypeCode(String typeCode) {
+        this.typeCode = typeCode;
     }
 }

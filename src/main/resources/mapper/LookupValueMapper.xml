@@ -28,4 +28,13 @@
 			alt.type_code = #{typeCode}
 	</select>
 
+	<select id="selectNameByValueCode" resultType="java.lang.String">
+		SELECT
+			NAME
+		FROM
+			agile_lookup_value
+		WHERE
+			value_code = #{valueCode}
+	</select>
+
 </mapper>

@@ -3,6 +3,7 @@ package io.choerodon.agile.api.controller.v1;
 import io.choerodon.agile.api.dto.IssueBranchDTO;
 import io.choerodon.agile.app.service.IssueBranchService;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
@@ -19,13 +20,13 @@ import java.util.Optional;
  * Email: fuqianghuang01@gmail.com
  */
 @RestController
-@RequestMapping(value = "/v1/project/{project_id}/issue_branch")
+@RequestMapping(value = "/v1/projects/{project_id}/issue_branch")
 public class IssueBranchController {
 
     @Autowired
     private IssueBranchService issueBranchService;
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建branch")
     @PostMapping
     public ResponseEntity<IssueBranchDTO> createIssueBranch(@ApiParam(value = "项目id", required = true)
@@ -37,7 +38,7 @@ public class IssueBranchController {
                 .orElseThrow(() -> new CommonException("error.issueBranch.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("修改branch")
     @PatchMapping(value = "/{branchId}")
     public ResponseEntity<IssueBranchDTO> updateIssueBranch(@ApiParam(value = "项目id", required = true)
@@ -51,7 +52,7 @@ public class IssueBranchController {
                 .orElseThrow(() -> new CommonException("error.issueBranch.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("删除branch")
     @DeleteMapping(value = "/{branchId}")
     public ResponseEntity deleteIssueBranch(@ApiParam(value = "项目id", required = true)
@@ -62,7 +63,7 @@ public class IssueBranchController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据branchId查询branch")
     @GetMapping(value = "/{branchId}")
     public ResponseEntity<IssueBranchDTO> queryIssueBranchById(@ApiParam(value = "项目id", required = true)

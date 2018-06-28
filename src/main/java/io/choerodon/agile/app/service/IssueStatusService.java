@@ -2,7 +2,10 @@ package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.IssueStatusDTO;
 import io.choerodon.agile.api.dto.StatusAndIssuesDTO;
+import io.choerodon.agile.api.dto.StatusDTO;
 import io.choerodon.agile.api.dto.StatusMoveDTO;
+import io.choerodon.core.domain.Page;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
 import java.util.List;
 
@@ -31,4 +34,6 @@ public interface IssueStatusService {
     List<IssueStatusDTO> queryIssueStatusList(Long projectId);
 
     IssueStatusDTO updateStatus(Long projectId, IssueStatusDTO issueStatusDTO);
+
+    Page<StatusDTO> listByProjectId(Long projectId, PageRequest pageRequest);
 }

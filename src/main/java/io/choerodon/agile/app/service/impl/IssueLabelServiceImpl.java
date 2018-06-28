@@ -6,10 +6,8 @@ import io.choerodon.agile.app.service.IssueLabelService;
 import io.choerodon.agile.infra.dataobject.IssueLabelDO;
 import io.choerodon.agile.infra.mapper.IssueLabelMapper;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,7 +18,6 @@ import java.util.List;
  * @since 2018-05-14 21:04:00
  */
 @Service
-@Transactional(rollbackFor = CommonException.class)
 public class IssueLabelServiceImpl implements IssueLabelService {
 
     @Autowired

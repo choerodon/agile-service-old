@@ -9,7 +9,6 @@ public class EpicDataDTO {
     private String description;
     private String epicName;
     private Long projectId;
-    private Long sprintId;
     private Integer issueCount;
     private Integer doneIssueCount;
     private Integer notEstimate;
@@ -47,14 +46,6 @@ public class EpicDataDTO {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
-    }
-
-    public Long getSprintId() {
-        return sprintId;
-    }
-
-    public void setSprintId(Long sprintId) {
-        this.sprintId = sprintId;
     }
 
     public Integer getIssueCount() {

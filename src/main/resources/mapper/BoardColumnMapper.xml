@@ -51,14 +51,20 @@
         agile_board_column abc
         LEFT JOIN agile_board_column_status_rel abcsr ON abc.column_id = abcsr.column_id
         LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.id
-        LEFT JOIN agile_issue ai ON ai.sprint_id = #{activeSprintId} AND ai.status_id = ais.id AND ai.type_code !=
-        'issue_epic'
-        <if test='onlyStory != null and onlyStory == true'>
-            AND ai.type_code = 'story'
-        </if>
-        <if test='assigneeId != null'>
-            AND ai.assignee_id = #{assigneeId}
-        </if>
+        LEFT JOIN (SELECT ai1.*
+                    from agile_issue ai1, agile_issue_sprint_rel aisr
+                    WHERE aisr.sprint_id = #{activeSprintId} AND ai1.issue_id = aisr.issue_id
+                            AND ai1.type_code != 'issue_epic'
+                            <if test='onlyStory != null and onlyStory == true'>
+                                AND ai1.type_code = 'story'
+                            </if>
+                            <if test='assigneeId != null'>
+                                AND ai1.assignee_id = #{assigneeId}
+                            </if>
+                            <if test='filterSql != null'>
+                                AND ai1.issue_id IN (${filterSql})
+                            </if>
+                    ) ai ON ai.status_id = ais.id
         LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
         LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
         LEFT JOIN agile_lookup_value alv1 ON abc.color_code = alv1.value_code
@@ -172,9 +178,11 @@
             agile_board_column abc
             LEFT JOIN agile_board_column_status_rel abcsr ON abc.column_id = abcsr.column_id
             LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.id
-            LEFT JOIN agile_issue ai ON ai.sprint_id = #{activeSprintId}
-                                        AND ai.status_id = ais.id
-                                        AND ai.type_code != 'issue_epic'
+            LEFT JOIN (SELECT ai1.issue_id, ai1.status_id
+                        from agile_issue ai1, agile_issue_sprint_rel aisr
+                        WHERE aisr.sprint_id = #{activeSprintId} AND ai1.issue_id = aisr.issue_id
+                               AND ai1.type_code != 'issue_epic'
+                        ) ai ON ai.status_id = ais.id
         WHERE
             abc.column_id = #{columnId}
     </select>
@@ -188,9 +196,11 @@
             agile_board_column abc
             LEFT JOIN agile_board_column_status_rel abcsr ON abc.column_id = abcsr.column_id
             LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.id
-            LEFT JOIN agile_issue ai ON ai.sprint_id = #{activeSprintId}
-                                        AND ai.status_id = ais.id
-                                        AND ai.type_code != 'issue_epic'
+            LEFT JOIN (SELECT ai1.issue_id, ai1.status_id
+                        from agile_issue ai1, agile_issue_sprint_rel aisr
+                        WHERE aisr.sprint_id = #{activeSprintId} AND ai1.issue_id = aisr.issue_id
+                               AND ai1.type_code != 'issue_epic'
+                        ) ai ON ai.status_id = ais.id
         WHERE
             abc.column_id = #{columnId}
     </select>
@@ -223,12 +233,12 @@
     </update>
 
     <select id="queryAssigneeIdsBySprintId" resultType="java.lang.Long">
-        SELECT DISTINCT assignee_id
+        SELECT DISTINCT ai.assignee_id
         FROM
-            agile_issue
+            agile_issue ai, agile_issue_sprint_rel aisr
         WHERE
-            project_id = #{projectId}
-            AND sprint_id = #{activeSprintId}
+            ai.project_id = #{projectId} AND ai.issue_id = aisr.issue_id
+            AND aisr.sprint_id = #{activeSprintId}
     </select>
 
 </mapper>

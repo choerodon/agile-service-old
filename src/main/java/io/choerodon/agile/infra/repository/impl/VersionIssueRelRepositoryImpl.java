@@ -57,6 +57,14 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
     }
 
     @Override
+    public int deleteByIssueIdAndType(Long issueId, String versionType) {
+        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
+        versionIssueRelDO.setIssueId(issueId);
+        versionIssueRelDO.setRelationType(versionType);
+        return versionIssueRelMapper.delete(versionIssueRelDO);
+    }
+
+    @Override
     public int deleteByVersionId(Long projectId,Long versionId) {
         VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
         versionIssueRelDO.setProjectId(projectId);
@@ -68,5 +76,10 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
     public Boolean deleteIncompleteIssueByVersionId(Long projectId, Long versionId) {
         versionIssueRelMapper.deleteIncompleteIssueByVersionId(projectId, versionId);
         return true;
+    }
+
+    @Override
+    public int deleteByVersionIds(Long projectId, List<Long> versionIds) {
+        return versionIssueRelMapper.deleteByVersionIds(projectId, versionIds);
     }
 }
