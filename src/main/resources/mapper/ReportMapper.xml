@@ -85,20 +85,25 @@
     </select>
 
     <select id="queryAddIssueIdsDuringSprint" resultType="java.lang.Long">
-        SELECT adl2.issue_id
-        FROM agile_data_log adl2
-        WHERE
-            adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
-            adl2.creation_date &lt;= #{sprintDO.actualEndDate}
-            AND FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) AND
-            (FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) IS NULL OR
-             FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) = 0)
-            AND adl2.issue_id
+        SELECT bb.issue_id
+        FROM (SELECT adl2.issue_id
+              FROM agile_data_log adl2
+              WHERE
+                  adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
+                  adl2.creation_date &lt;= #{sprintDO.actualEndDate}
+                  AND FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) AND
+                  (FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) IS NULL OR
+                   FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) = 0)
+                  AND adl2.issue_id) bb
+        GROUP BY bb.issue_id
+
     </select>
 
     <select id="queryAddIssueValueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
         select
-        bbb.*,
+        ifnull(bbb.new_value,0) AS new_value,
+        bbb.issue_id as issue_id,
+        bbb.date as date,
         0 as old_value,
         'addDuringSprint' as type,
         1 as statistical,
@@ -109,8 +114,8 @@
         SELECT
         adl.issue_id,
         adl.creation_date as date,
-        IFNULL((select adl2.new_value from agile_data_log adl2 where adl2.field = #{field} and adl2.issue_id =
-        adl.issue_id and adl2.creation_date &gt;= adl.creation_date order by adl2.creation_date limit 1) ,0)as new_value
+        (select adl2.new_value from agile_data_log adl2 where adl2.field = #{field} and adl2.issue_id =
+        adl.issue_id and adl2.creation_date &lt;= adl.creation_date order by adl2.creation_date limit 1) as new_value
         FROM
         agile_data_log adl
         WHERE
@@ -169,7 +174,7 @@
         adl.issue_id,
         adl.creation_date as date,
         IFNULL((select adl2.new_value from agile_data_log adl2 where adl2.field = #{field} and adl2.issue_id =
-        adl.issue_id and adl2.creation_date &gt;= adl.creation_date order by adl2.creation_date limit 1) ,0)as old_value
+        adl.issue_id and adl2.creation_date &lt;= adl.creation_date order by adl2.creation_date limit 1) ,0)as old_value
         FROM
         agile_data_log adl
         WHERE
@@ -777,14 +782,17 @@
     </select>
 
     <select id="queryRemoveIssueIdsDuringSprint" resultType="java.lang.Long">
-        SELECT adl2.issue_id
-        FROM agile_data_log adl2
-        WHERE
-            adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
-            adl2.creation_date &lt;= #{sprintDO.actualEndDate}
-            AND FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) AND
-            (FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) IS NULL OR
-             FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) = 0)
+        SELECT bb.issue_id
+        FROM (SELECT adl2.issue_id
+              FROM agile_data_log adl2
+              WHERE
+                  adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
+                  adl2.creation_date &lt;= #{sprintDO.actualEndDate}
+                  AND FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) AND
+                  (FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) IS NULL OR
+                   FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) = 0)) bb
+        GROUP BY bb.issue_id
+
     </select>
 
 
