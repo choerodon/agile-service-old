@@ -272,4 +272,5 @@ public interface ReportMapper {
      * @return 为done返回true，否返回false
      */
     Boolean checkIssueDoneStatus(@Param("issueId") Long issueId, @Param("date") Date date);
+
 }
