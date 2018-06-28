@@ -132,46 +132,16 @@
     </select>
 
     <select id="queryRemoveIssueIdsDuringSprintWithOutSubEpicIssue" resultType="java.lang.Long">
-        SELECT *
-        FROM (SELECT *
-              FROM (SELECT *
-                    FROM (SELECT a1.issue_id
-                          FROM
-                              (
-                                  SELECT a.issue_id
-                                  FROM
-                                      (SELECT
-                                           adl5.issue_id,
-                                           adl5.new_value
-                                       FROM (SELECT MAX(adl.log_id) AS log_id
-                                             FROM agile_data_log adl
-                                             WHERE
-                                                 adl.field = 'Sprint' AND adl.creation_date &lt;= #{sprintDO.startDate}
-                                             GROUP BY
-                                                 adl.issue_id) acc LEFT JOIN agile_data_log adl5
-                                               ON acc.log_id = adl5.log_id) a
-                                  WHERE FIND_IN_SET(#{sprintDO.sprintId}, a.new_value)
-                              ) a1
-                          WHERE
-                              a1.issue_id NOT IN (SELECT aisr.issue_id
-                                                  FROM agile_issue_sprint_rel aisr
-                                                  WHERE aisr.sprint_id = #{sprintDO.sprintId} AND
-                                                        aisr.creation_date &lt;= #{sprintDO.startDate})
-                          UNION ALL
-                          SELECT aisr2.issue_id
-                          FROM
-                              agile_issue_sprint_rel aisr2
-                          WHERE
-                              aisr2.creation_date &lt;= #{sprintDO.startDate}
-                              AND aisr2.sprint_id = #{sprintDO.sprintId}
-                         ) cd
-                    GROUP BY cd.issue_id) cdc
-              WHERE cdc.issue_id NOT IN (SELECT aisr.issue_id
-                                         FROM
-                                             agile_issue_sprint_rel aisr
-                                         WHERE
-                                             aisr.sprint_id = #{sprintDO.sprintId})) aca LEFT JOIN agile_issue ai
-                ON ai.issue_id = aca.issue_id
+        SELECT ai.issue_id
+        FROM (SELECT adl2.issue_id
+              FROM agile_data_log adl2
+              WHERE
+                  adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
+                  adl2.creation_date &lt;= #{sprintDO.actualEndDate}
+                  AND FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) AND
+                  (FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) IS NULL OR
+                   FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) = 0)) aa LEFT JOIN agile_issue ai
+                ON ai.issue_id = aa.issue_id
         WHERE ai.type_code != 'sub_task'
     </select>
 
@@ -610,69 +580,6 @@
             LEFT JOIN agile_project_info api2 ON api2.project_id = ai2.project_id
     </select>
 
-    <select id="checkIssueValueIsStatisticalDurationSprint"
-            resultType="java.lang.Boolean">
-        SELECT f.a
-        FROM
-            (
-                SELECT
-                    CASE
-                    WHEN
-                        a.statistical = 1
-                        AND
-                        FIND_IN_SET(#{sprintId}, b.new_value)
-                        THEN
-                            1
-                    WHEN a.statistical = 1 AND b.new_value IS NULL AND b.issue_id IS NULL
-                        THEN 1
-                    ELSE 0
-                    END AS a,
-                    count(1)
-                FROM
-                    (
-                        SELECT
-                            CASE WHEN ac.new_value IS NULL AND ac.count = 0
-                                THEN 1
-                            ELSE 0 END AS statistical,
-                            ac.issue_id
-                        FROM (SELECT
-                                  bbb.new_value,
-                                  bbb.issue_id,
-                                  count(*) AS count
-                              FROM
-                                  (SELECT
-                                       adl5.issue_id,
-                                       adl5.new_value
-                                   FROM (SELECT MAX(adl1.log_id) AS log_id
-                                         FROM
-                                             agile_data_log adl1
-                                         WHERE
-                                             adl1.field = 'resolution'
-                                             AND adl1.creation_date &lt;= #{date}
-                                             AND adl1.issue_id = #{issueId}
-                                        ) ada LEFT JOIN agile_data_log adl5
-                                           ON adl5.log_id = ada.log_id
-
-                                  ) bbb) ac
-                    ) a,
-                    (
-                        SELECT
-                            ad3.issue_id,
-                            ad3.new_value,
-                            count(*) AS count
-                        FROM (SELECT MAX(adl.log_id) AS log_id
-                              FROM
-                                  agile_data_log adl
-                              WHERE
-                                  adl.field = 'Sprint'
-                                  AND adl.creation_date &lt;= #{date}
-                                  AND adl.issue_id = #{issueId}
-                             ) gg LEFT JOIN agile_data_log ad3 ON ad3.log_id = gg.log_id
-
-                    ) b
-            ) f
-    </select>
-
     <select id="queryAddIssueDuringSprintNoData"
             resultType="java.util.Date">
         SELECT a.creation_date
@@ -847,6 +754,28 @@
                     LIMIT 1) bbb) c
     </select>
 
+    <select id="checkIssueRemove" resultType="java.lang.Boolean">
+        SELECT CASE WHEN c.issue_id IS NULL AND c.new_value IS NULL
+            THEN 0
+               WHEN c.issue_id IS NOT NULL AND FIND_IN_SET(#{sprintId}, c.new_value)
+                   THEN 1
+               ELSE 0 END
+        FROM (SELECT
+                  bbb.issue_id,
+                  bbb.new_value
+              FROM (SELECT
+                        adl.new_value,
+                        adl.issue_id
+                    FROM
+                        agile_data_log adl
+                    WHERE
+                        adl.issue_id = #{issueId}
+                        AND adl.creation_date &lt;= #{date}
+                        AND adl.field = 'Sprint'
+                    ORDER BY adl.creation_date DESC
+                    LIMIT 1) bbb) c
+    </select>
+
     <select id="queryRemoveIssueIdsDuringSprint" resultType="java.lang.Long">
         SELECT adl2.issue_id
         FROM agile_data_log adl2
@@ -856,7 +785,6 @@
             AND FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) AND
             (FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) IS NULL OR
              FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) = 0)
-            AND adl2.issue_id
     </select>
 
 

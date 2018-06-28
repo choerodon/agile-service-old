@@ -235,13 +235,21 @@ public class ReportServiceImpl implements ReportService {
         if (issueChangeList != null && !issueChangeList.isEmpty()) {
             issueChangeList.parallelStream().forEach(reportIssueE -> {
                 //(如果变更时间是在done状态或者是移出冲刺期间，计入统计字段设为false)
-                if (!reportMapper.checkIssueValueIsStatisticalDurationSprint(sprintDO.getSprintId(), reportIssueE.getIssueId(), reportIssueE.getDate())) {
-                    reportIssueE.setStatistical(false);
-                }
+                handleDoneStatusIssue(reportIssueE);
+                handleRemoveIssue(reportIssueE, sprintDO.getSprintId());
             });
         }
         if (issueChangeList != null) {
             reportIssueEList.addAll(issueChangeList);
+        }
+    }
+
+    private void handleRemoveIssue(ReportIssueE reportIssueE, Long sprintId) {
+        Boolean result = reportMapper.checkIssueRemove(reportIssueE.getIssueId(), reportIssueE.getDate(), sprintId);
+        if (result != null && !result) {
+            reportIssueE.setStatistical(false);
+        } else if (result == null) {
+            reportIssueE.setStatistical(false);
         }
     }
 
@@ -257,7 +265,7 @@ public class ReportServiceImpl implements ReportService {
 
     private void handleDoneStatusIssue(ReportIssueE reportIssueE) {
         Boolean result = reportMapper.checkIssueDoneStatus(reportIssueE.getIssueId(), reportIssueE.getDate());
-        if (result != null && result) {
+        if (result != null && !result) {
             reportIssueE.setStatistical(false);
         }
     }
