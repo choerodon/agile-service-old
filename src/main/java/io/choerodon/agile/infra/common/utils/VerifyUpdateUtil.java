@@ -35,9 +35,9 @@ public class VerifyUpdateUtil {
                 Boolean flag = false;
                 if (field.getType() == String.class) {
                     if(!k.equals("versionType")){
-                        field.set(objectUpdate, v);
                         flag = true;
                     }
+                    field.set(objectUpdate, v);
                 } else if (field.getType() == Long.class) {
                     field.set(objectUpdate, Long.valueOf(v.toString()));
                     flag = true;
