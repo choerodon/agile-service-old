@@ -986,15 +986,10 @@ public class IssueServiceImpl implements IssueService {
 
     }
 
-    private void dataLogVersion(Long projectId, Long issueId, List<VersionIssueRelDTO> versionIssueRelDTOList, String versionType) {
+    private void dataLogVersion(Long projectId, Long issueId,List<VersionIssueRelDO> versionIssueRelDOList, List<VersionIssueRelDTO> versionIssueRelDTOList, String versionType) {
         if (!"fix".equals(versionType)) {
             return;
         }
-        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
-        versionIssueRelDO.setProjectId(projectId);
-        versionIssueRelDO.setIssueId(issueId);
-        versionIssueRelDO.setRelationType("fix");
-        List<VersionIssueRelDO> versionIssueRelDOList = versionIssueRelMapper.select(versionIssueRelDO);
         if (versionIssueRelDOList != null && !versionIssueRelDOList.isEmpty()) {
             for (VersionIssueRelDO versionIssueRel : versionIssueRelDOList) {
                 int flag = 0;
@@ -1036,15 +1031,27 @@ public class IssueServiceImpl implements IssueService {
 
     }
 
+    public List<VersionIssueRelDO> getVersionIssueRels(Long projectId, Long issueId) {
+        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
+        versionIssueRelDO.setProjectId(projectId);
+        versionIssueRelDO.setIssueId(issueId);
+        versionIssueRelDO.setRelationType("fix");
+        return versionIssueRelMapper.select(versionIssueRelDO);
+    }
+
     private void handleUpdateVersionIssueRel(List<VersionIssueRelDTO> versionIssueRelDTOList, Long projectId, Long issueId, String versionType) {
         if (versionIssueRelDTOList != null) {
-            dataLogVersion(projectId, issueId, versionIssueRelDTOList, versionType);
+            List<VersionIssueRelDO> originVersionIssueRels = getVersionIssueRels(projectId, issueId);
+            List<VersionIssueRelDTO> versionIssueRelDTOS = null;
             if (!versionIssueRelDTOList.isEmpty()) {
                 versionIssueRelRepository.deleteByIssueIdAndType(issueId, versionType);
                 handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId, versionType);
+                versionIssueRelDTOS = ConvertHelper.convertList(getVersionIssueRels(projectId, issueId), VersionIssueRelDTO.class);
             } else {
                 versionIssueRelRepository.deleteByIssueIdAndType(issueId, versionType);
+                versionIssueRelDTOS = new ArrayList<>();
             }
+            dataLogVersion(projectId, issueId,originVersionIssueRels, versionIssueRelDTOS, versionType);
         }
 
     }
