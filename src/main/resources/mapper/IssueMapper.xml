@@ -230,6 +230,20 @@
         </if>
     </select>
 
+    <select id="queryIssueByOption" resultType="io.choerodon.agile.infra.dataobject.IssueNumDO">
+        SELECT
+        ai.issue_id, ai.summary,
+        ai.project_id,
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
+        FROM agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task'
+        AND ai.issue_id != #{issueId}
+        <if test='content != null'>
+            AND (ai.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR ai.summary LIKE CONCAT(CONCAT('%', #{content}), '%'))
+        </if>
+    </select>
+
     <select id="queryEpicList" resultType="io.choerodon.agile.infra.dataobject.EpicDataDO">
         SELECT
             ai.issue_id,
@@ -548,9 +562,9 @@
         SELECT MIN(ai.rank)
         FROM agile_issue ai
         LEFT JOIN (SELECT aisr1.sprint_id, aisr1.issue_id
-                    FROM agile_issue_sprint_rel aisr1, agile_sprint asp
-                    WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = asp.sprint_id
-                    AND asp.status_code != 'closed') aisr ON aisr.issue_id = ai.issue_id
+        FROM agile_issue_sprint_rel aisr1, agile_sprint asp
+        WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = asp.sprint_id
+        AND asp.status_code != 'closed') aisr ON aisr.issue_id = ai.issue_id
         WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_epic') AND ai.rank > #{leftRank}
         <choose>
             <when test="sprintId != null and sprintId != 0">
@@ -566,9 +580,9 @@
         SELECT MAX(ai.rank)
         FROM agile_issue ai
         LEFT JOIN (SELECT aisr1.sprint_id, aisr1.issue_id
-                    FROM agile_issue_sprint_rel aisr1, agile_sprint asp
-                    WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = asp.sprint_id
-                    AND asp.status_code != 'closed') aisr ON aisr.issue_id = ai.issue_id
+        FROM agile_issue_sprint_rel aisr1, agile_sprint asp
+        WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = asp.sprint_id
+        AND asp.status_code != 'closed') aisr ON aisr.issue_id = ai.issue_id
         WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_epic') AND ai.rank &lt;
         #{rightRank}
         <choose>
@@ -585,9 +599,9 @@
         SELECT ai.rank
         FROM agile_issue ai
         LEFT JOIN (SELECT aisr1.sprint_id, aisr1.issue_id
-                    FROM agile_issue_sprint_rel aisr1, agile_sprint asp
-                    WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = asp.sprint_id
-                    AND asp.status_code != 'closed') aisr ON aisr.issue_id = ai.issue_id
+        FROM agile_issue_sprint_rel aisr1, agile_sprint asp
+        WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = asp.sprint_id
+        AND asp.status_code != 'closed') aisr ON aisr.issue_id = ai.issue_id
         WHERE ai.project_id = #{projectId} AND ai.issue_id = #{outsetIssueId}
         <choose>
             <when test="sprintId != null and sprintId != 0">

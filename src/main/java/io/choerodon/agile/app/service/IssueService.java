@@ -114,4 +114,6 @@ public interface IssueService {
     IssueE queryIssueByProjectIdAndIssueId(Long projectId, Long issueId);
 
     Page<IssueCommonDTO> listByOptions(Long projectId, String typeCode, PageRequest pageRequest);
+
+    Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String content, PageRequest pageRequest);
 }

@@ -1143,4 +1143,20 @@ public class IssueServiceImpl implements IssueService {
         return issueCommonDTOPage;
     }
 
+    @Override
+    public Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String content, PageRequest pageRequest) {
+        //连表查询需要设置主表别名
+        pageRequest.resetOrder("ai", new HashMap<>());
+        Page<IssueNumDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
+                issueMapper.queryIssueByOption(projectId, issueId, content));
+        Page<IssueNumDTO> issueListDTOPage = new Page<>();
+        issueListDTOPage.setNumber(issueDOPage.getNumber());
+        issueListDTOPage.setNumberOfElements(issueDOPage.getNumberOfElements());
+        issueListDTOPage.setSize(issueDOPage.getSize());
+        issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
+        issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
+        issueListDTOPage.setContent(issueAssembler.issueNumDOToIssueNumDTO(issueDOPage.getContent()));
+        return issueListDTOPage;
+    }
+
 }
