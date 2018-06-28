@@ -157,6 +157,7 @@ public class IssueServiceImpl implements IssueService {
         //设置issue编号
         initializationIssueNum(issueE);
         issueE.initializationIssue(statusId);
+        issueE.initializationIssue();
         //如果是epic，初始化颜色
         List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
         issueE.initializationColor(colorList);
@@ -472,6 +473,7 @@ public class IssueServiceImpl implements IssueService {
             //日志记录
             dataLog(fieldList, originIssue, issueUpdateDTO, fieldList.contains(SPRINT_ID_FIELD));
             IssueE issueE = issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO);
+            issueE.initializationIssue();
             if (fieldList.contains(SPRINT_ID_FIELD)) {
                 IssueE oldIssue = ConvertHelper.convert(originIssue, IssueE.class);
                 List<Long> issueIds = issueMapper.querySubIssueIdsByIssueId(projectId, issueE.getIssueId());
@@ -595,6 +597,7 @@ public class IssueServiceImpl implements IssueService {
         boardService.dataLogStatus(issueDO, subIssueE);
         //设置issue编号
         initializationIssueNum(subIssueE);
+        subIssueE.initializationIssue();
         Long issueId = issueRepository.create(subIssueE).getIssueId();
         if (subIssueE.getSprintId() != null && !Objects.equals(subIssueE.getSprintId(), 0L)) {
             issueRepository.issueToSprint(subIssueE.getProjectId(), subIssueE.getSprintId(), issueId, new Date());
@@ -986,15 +989,10 @@ public class IssueServiceImpl implements IssueService {
 
     }
 
-    private void dataLogVersion(Long projectId, Long issueId, List<VersionIssueRelDTO> versionIssueRelDTOList, String versionType) {
+    private void dataLogVersion(Long projectId, Long issueId, List<VersionIssueRelDO> versionIssueRelDOList, List<VersionIssueRelDTO> versionIssueRelDTOList, String versionType) {
         if (!"fix".equals(versionType)) {
             return;
         }
-        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
-        versionIssueRelDO.setProjectId(projectId);
-        versionIssueRelDO.setIssueId(issueId);
-        versionIssueRelDO.setRelationType("fix");
-        List<VersionIssueRelDO> versionIssueRelDOList = versionIssueRelMapper.select(versionIssueRelDO);
         if (versionIssueRelDOList != null && !versionIssueRelDOList.isEmpty()) {
             for (VersionIssueRelDO versionIssueRel : versionIssueRelDOList) {
                 int flag = 0;
@@ -1036,15 +1034,27 @@ public class IssueServiceImpl implements IssueService {
 
     }
 
+    public List<VersionIssueRelDO> getVersionIssueRels(Long projectId, Long issueId) {
+        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
+        versionIssueRelDO.setProjectId(projectId);
+        versionIssueRelDO.setIssueId(issueId);
+        versionIssueRelDO.setRelationType("fix");
+        return versionIssueRelMapper.select(versionIssueRelDO);
+    }
+
     private void handleUpdateVersionIssueRel(List<VersionIssueRelDTO> versionIssueRelDTOList, Long projectId, Long issueId, String versionType) {
         if (versionIssueRelDTOList != null) {
-            dataLogVersion(projectId, issueId, versionIssueRelDTOList, versionType);
+            List<VersionIssueRelDO> originVersionIssueRels = getVersionIssueRels(projectId, issueId);
+            List<VersionIssueRelDTO> versionIssueRelDTOS = null;
             if (!versionIssueRelDTOList.isEmpty()) {
                 versionIssueRelRepository.deleteByIssueIdAndType(issueId, versionType);
                 handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId, versionType);
+                versionIssueRelDTOS = ConvertHelper.convertList(getVersionIssueRels(projectId, issueId), VersionIssueRelDTO.class);
             } else {
                 versionIssueRelRepository.deleteByIssueIdAndType(issueId, versionType);
+                versionIssueRelDTOS = new ArrayList<>();
             }
+            dataLogVersion(projectId, issueId, originVersionIssueRels, versionIssueRelDTOS, versionType);
         }
 
     }

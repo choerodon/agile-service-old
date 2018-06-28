@@ -270,4 +270,13 @@ public class IssueE {
     public Boolean isIssueRank() {
         return this.typeCode != null && !Objects.equals(this.typeCode, SUB_TASK) && !Objects.equals(this.typeCode, ISSUE_EPIC);
     }
+
+    public void initializationIssue() {
+        if (this.reporterId != null && this.reporterId == 0) {
+            this.reporterId = null;
+        }
+        if (this.assigneeId != null && this.assigneeId == 0) {
+            this.assigneeId = null;
+        }
+    }
 }

@@ -76,7 +76,7 @@ public interface ReportMapper {
     /**
      * 获取冲刺期间加入的issue
      *
-     * @param sprintDO                sprintDO
+     * @param sprintDO sprintDO
      * @return issueIdList
      */
     List<Long> queryAddIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO);
@@ -217,16 +217,6 @@ public interface ReportMapper {
     List<ReportIssueDO> queryIssueValueAfterSprint(@Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
 
     /**
-     * 判断当前时间的issue的修改是否记录统计
-     *
-     * @param sprintId sprintId
-     * @param issueId  issueId
-     * @param date     date
-     * @return 记录统计true 不计入统计false
-     */
-    Boolean checkIssueValueIsStatisticalDurationSprint(@Param("sprintId") Long sprintId, @Param("issueId") Long issueId, @Param("date") Date date);
-
-    /**
      * 查询issue加入冲刺的时间
      *
      * @param issueId  issueId
@@ -271,4 +261,14 @@ public interface ReportMapper {
      * @return Long
      */
     List<Long> queryRemoveIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO);
+
+    /**
+     * 判断issue是否在冲刺外
+     *
+     * @param issueId  issueId
+     * @param date     date
+     * @param sprintId sprintId
+     * @return Boolean
+     */
+    Boolean checkIssueRemove(@Param("issueId") Long issueId, @Param("date") Date date, @Param("sprintId") Long sprintId);
 }

@@ -76,7 +76,7 @@ public class IssueStatusController {
                 .orElseThrow(() -> new CommonException(ERROR_STATUS_GET));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("状态移动至未对应")
     @PostMapping(value = "/{id}/move_to_uncorrespond")
     public ResponseEntity<IssueStatusDTO> moveStatusToUnCorrespond(@ApiParam(value = "项目id", required = true)
@@ -128,10 +128,10 @@ public class IssueStatusController {
     @CustomPageRequest
     @GetMapping(value = "/statuses")
     public ResponseEntity<Page<StatusDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
-                                                            @PathVariable(name = "project_id") Long projectId,
-                                                            @ApiIgnore
-                                                            @ApiParam(value = "分页信息", required = true)
-                                                            @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
+                                                           @PathVariable(name = "project_id") Long projectId,
+                                                           @ApiIgnore
+                                                           @ApiParam(value = "分页信息", required = true)
+                                                           @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
         return Optional.ofNullable(issueStatusService.listByProjectId(projectId, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.statusList.get"));

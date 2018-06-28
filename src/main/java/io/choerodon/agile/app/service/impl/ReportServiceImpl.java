@@ -145,6 +145,13 @@ public class ReportServiceImpl implements ReportService {
             List<ReportIssueE> issueAfterSprintList = ConvertHelper.convertList(reportMapper.queryIssueCountAfterSprint(sprintDO), ReportIssueE.class);
             if (issueAfterSprintList != null && !issueAfterSprintList.isEmpty()) {
                 reportIssueEList.addAll(issueAfterSprintList);
+            } else {
+                ReportIssueE reportIssueE = new ReportIssueE();
+                reportIssueE.setDate(sprintDO.getActualEndDate());
+                reportIssueE.setType("endSprint");
+                reportIssueE.setNewValue(0);
+                reportIssueE.setOldValue(0);
+                reportIssueEList.add(reportIssueE);
             }
         }
     }
@@ -199,6 +206,13 @@ public class ReportServiceImpl implements ReportService {
                         .forEach(reportIssueE -> reportIssueE.setStatistical(false));
             }
             reportIssueEList.addAll(issueBeforeSprintList);
+        } else {
+            ReportIssueE reportIssueE = new ReportIssueE();
+            reportIssueE.setDate(sprintDO.getStartDate());
+            reportIssueE.setType("startSprint");
+            reportIssueE.setNewValue(0);
+            reportIssueE.setOldValue(0);
+            reportIssueEList.add(reportIssueE);
         }
     }
 
@@ -207,6 +221,13 @@ public class ReportServiceImpl implements ReportService {
             List<ReportIssueE> issueAfterSprintList = ConvertHelper.convertList(reportMapper.queryIssueValueAfterSprint(sprintDO, field), ReportIssueE.class);
             if (issueAfterSprintList != null && !issueAfterSprintList.isEmpty()) {
                 reportIssueEList.addAll(issueAfterSprintList);
+            } else {
+                ReportIssueE reportIssueE = new ReportIssueE();
+                reportIssueE.setDate(sprintDO.getEndDate());
+                reportIssueE.setType("endSprint");
+                reportIssueE.setNewValue(0);
+                reportIssueE.setOldValue(0);
+                reportIssueEList.add(reportIssueE);
             }
         }
     }
@@ -235,13 +256,21 @@ public class ReportServiceImpl implements ReportService {
         if (issueChangeList != null && !issueChangeList.isEmpty()) {
             issueChangeList.parallelStream().forEach(reportIssueE -> {
                 //(如果变更时间是在done状态或者是移出冲刺期间，计入统计字段设为false)
-                if (!reportMapper.checkIssueValueIsStatisticalDurationSprint(sprintDO.getSprintId(), reportIssueE.getIssueId(), reportIssueE.getDate())) {
-                    reportIssueE.setStatistical(false);
-                }
+                handleDoneStatusIssue(reportIssueE);
+                handleRemoveIssue(reportIssueE, sprintDO.getSprintId());
             });
         }
         if (issueChangeList != null) {
             reportIssueEList.addAll(issueChangeList);
+        }
+    }
+
+    private void handleRemoveIssue(ReportIssueE reportIssueE, Long sprintId) {
+        Boolean result = reportMapper.checkIssueRemove(reportIssueE.getIssueId(), reportIssueE.getDate(), sprintId);
+        if (result != null && !result) {
+            reportIssueE.setStatistical(false);
+        } else if (result == null) {
+            reportIssueE.setStatistical(false);
         }
     }
 
@@ -256,7 +285,8 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void handleDoneStatusIssue(ReportIssueE reportIssueE) {
-        if (reportMapper.checkIssueDoneStatus(reportIssueE.getIssueId(), reportIssueE.getDate())) {
+        Boolean result = reportMapper.checkIssueDoneStatus(reportIssueE.getIssueId(), reportIssueE.getDate());
+        if (result != null && !result) {
             reportIssueE.setStatistical(false);
         }
     }
@@ -264,13 +294,6 @@ public class ReportServiceImpl implements ReportService {
     private void handleAddIssueValueDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueIdAddList, String field) {
         List<ReportIssueE> issueAddList = issueIdAddList != null && !issueIdAddList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueValueDuringSprint(issueIdAddList, sprintDO, field), ReportIssueE.class) : null;
         if (issueAddList != null && !issueAddList.isEmpty()) {
-            //在冲刺开始期间创建的，没有生成加入冲刺日志时间，要处理
-            issueAddList.stream().filter(reportIssueE -> reportIssueE.getDate() == null).forEach(reportIssueE -> {
-                Date date = reportMapper.queryAddIssueDuringSprintNoData(reportIssueE.getIssueId(), sprintDO.getSprintId());
-                reportIssueE.setDate(date);
-                Integer value = reportMapper.queryAddIssueValueDuringSprintNoData(reportIssueE.getIssueId(), date, field);
-                reportIssueE.setNewValue(value == null ? 0 : value);
-            });
             //添加时，状态为done的不计入统计
             issueAddList.parallelStream().forEach(this::handleDoneStatusIssue);
             reportIssueEList.addAll(issueAddList);
@@ -288,6 +311,13 @@ public class ReportServiceImpl implements ReportService {
                         forEach(reportIssueE -> reportIssueE.setStatistical(false));
             }
             reportIssueEList.addAll(issueBeforeList);
+        } else {
+            ReportIssueE reportIssueE = new ReportIssueE();
+            reportIssueE.setDate(sprintDO.getStartDate());
+            reportIssueE.setType("startSprint");
+            reportIssueE.setNewValue(0);
+            reportIssueE.setOldValue(0);
+            reportIssueEList.add(reportIssueE);
         }
     }
 
