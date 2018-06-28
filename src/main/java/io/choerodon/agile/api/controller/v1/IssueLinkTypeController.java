@@ -69,7 +69,7 @@ public class IssueLinkTypeController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
-    @ApiOperation("修改issueLink")
+    @ApiOperation("修改issueLinkType")
     @PutMapping
     public ResponseEntity<IssueLinkTypeDTO> updateIssueLinkType(@ApiParam(value = "项目id", required = true)
                                                                 @PathVariable(name = "project_id") Long projectId,

@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.agile.infra.mapper.ReportMapper">
     <select id="queryIssueIdsBeforeSprintStart" resultType="java.lang.Long">
+
         SELECT *
         FROM (SELECT a1.issue_id
               FROM
@@ -30,32 +31,6 @@
               WHERE
                   aisr2.creation_date &lt;= #{sprintDO.startDate}
                   AND aisr2.sprint_id = #{sprintDO.sprintId}
-              UNION ALL
-              SELECT aaa.issue_id
-              FROM (
-                       SELECT
-                           adl2.issue_id,
-                           MIN(adl2.log_id)
-                       FROM agile_data_log adl2
-                       WHERE
-                           adl2.field = 'Sprint' AND adl2.creation_date &gt;
-                                                     #{sprintDO.startDate} AND
-                           adl2.creation_date &lt;= #{sprintDO.actualEndDate}
-                           AND FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) AND
-                           (FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) IS NULL OR
-                            FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) = 0)
-                       GROUP BY adl2.issue_id) aaa LEFT JOIN (SELECT
-                                                                  adl3.issue_id,
-                                                                  MAX(adl3.log_id)
-                                                              FROM agile_data_log adl3
-                                                              WHERE adl3.field = 'Sprint' AND
-                                                                    adl3.creation_date &lt;=
-                                                                    #{sprintDO.startDate} AND
-                                                                    adl3.old_value IS NULL AND
-                                                                    adl3.new_value = #{sprintDO.sprintId}
-                                                              GROUP BY adl3.issue_id) adsa
-                      ON adsa.issue_id = aaa.issue_id
-              WHERE adsa.issue_id IS NULL
              ) cd
         GROUP BY cd.issue_id
     </select>
@@ -111,15 +86,15 @@
     </select>
 
     <select id="queryAddIssueIdsDuringSprint" resultType="java.lang.Long">
-        SELECT aisr2.issue_id
-        FROM agile_issue_sprint_rel aisr2
-        WHERE aisr2.sprint_id = #{sprintDO.sprintId}
-        AND
-        aisr2.issue_id NOT IN
-        <foreach collection="issueIdBeforeSprintList" item="issueId"
-                 open="(" close=")" separator=",">
-            #{issueId}
-        </foreach>
+        SELECT adl2.issue_id
+        FROM agile_data_log adl2
+        WHERE
+            adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
+            adl2.creation_date &lt;= #{sprintDO.actualEndDate}
+            AND FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) AND
+            (FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) IS NULL OR
+             FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) = 0)
+            AND adl2.issue_id
     </select>
 
     <select id="queryAddIssueValueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
@@ -273,6 +248,7 @@
         #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
         AND FIND_IN_SET(#{sprintDO.sprintId},adl.old_value)
+        AND
         (FIND_IN_SET(#{sprintDO.sprintId}, adl.new_value) IS NULL OR
         FIND_IN_SET(#{sprintDO.sprintId}, adl.new_value) = 0)
         AND adl.issue_id IN
@@ -909,13 +885,6 @@
               GROUP BY adl.issue_id) cd LEFT JOIN agile_data_log adl2 ON cd.log_id = adl2.log_id
     </select>
 
-    <select id="queryAddIssueIdsDuringSprintNoBefore" resultType="java.lang.Long">
-        SELECT issue_id
-        FROM agile_issue_sprint_rel
-        WHERE sprint_id = #{sprintDO.sprintId} AND creation_date &gt; #{sprintDO.startDate}
-              AND creation_date &lt; #{sprintDO.actualEndDate}
-    </select>
-
     <select id="checkIssueDoneStatus" resultType="java.lang.Boolean">
         SELECT CASE WHEN c.count = 0 AND c.new_value IS NULL
             THEN 0
@@ -940,6 +909,18 @@
                           ORDER BY adl.creation_date DESC
                           LIMIT 1000000000000000000) aaa
                     GROUP BY aaa.issue_id) bbb) c
+    </select>
+
+    <select id="queryRemoveIssueIdsDuringSprint" resultType="java.lang.Long">
+        SELECT adl2.issue_id
+        FROM agile_data_log adl2
+        WHERE
+            adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
+            adl2.creation_date &lt;= #{sprintDO.actualEndDate}
+            AND FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) AND
+            (FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) IS NULL OR
+             FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) = 0)
+            AND adl2.issue_id
     </select>
 
 

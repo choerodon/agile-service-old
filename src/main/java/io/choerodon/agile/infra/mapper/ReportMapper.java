@@ -77,10 +77,9 @@ public interface ReportMapper {
      * 获取冲刺期间加入的issue
      *
      * @param sprintDO                sprintDO
-     * @param issueIdBeforeSprintList issueIdBeforeSprintList
      * @return issueIdList
      */
-    List<Long> queryAddIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO, @Param("issueIdBeforeSprintList") List<Long> issueIdBeforeSprintList);
+    List<Long> queryAddIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO);
 
     /**
      * 获取冲刺期间移除的issue(不包含子任务和epic)
@@ -257,14 +256,6 @@ public interface ReportMapper {
     List<SprintReportIssueStatusDO> queryAfterIssueStatus(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("actualEndDate") Date actualEndDate);
 
     /**
-     * 查询冲刺期间添加的issue，冲刺前没有issue
-     *
-     * @param sprintDO sprintDO
-     * @return Long
-     */
-    List<Long> queryAddIssueIdsDuringSprintNoBefore(@Param("sprintDO") SprintDO sprintDO);
-
-    /**
      * issue在当前日期状态是否为done
      *
      * @param issueId issueId
@@ -273,4 +264,11 @@ public interface ReportMapper {
      */
     Boolean checkIssueDoneStatus(@Param("issueId") Long issueId, @Param("date") Date date);
 
+    /**
+     * 冲刺期间移出的issue
+     *
+     * @param sprintDO sprintDO
+     * @return Long
+     */
+    List<Long> queryRemoveIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO);
 }
