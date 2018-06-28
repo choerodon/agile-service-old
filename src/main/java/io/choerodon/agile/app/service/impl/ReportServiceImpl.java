@@ -147,7 +147,7 @@ public class ReportServiceImpl implements ReportService {
                 reportIssueEList.addAll(issueAfterSprintList);
             } else {
                 ReportIssueE reportIssueE = new ReportIssueE();
-                reportIssueE.setDate(sprintDO.getStartDate());
+                reportIssueE.setDate(sprintDO.getActualEndDate());
                 reportIssueE.setType("endSprint");
                 reportIssueE.setNewValue(0);
                 reportIssueE.setOldValue(0);
@@ -223,7 +223,7 @@ public class ReportServiceImpl implements ReportService {
                 reportIssueEList.addAll(issueAfterSprintList);
             } else {
                 ReportIssueE reportIssueE = new ReportIssueE();
-                reportIssueE.setDate(sprintDO.getStartDate());
+                reportIssueE.setDate(sprintDO.getEndDate());
                 reportIssueE.setType("endSprint");
                 reportIssueE.setNewValue(0);
                 reportIssueE.setOldValue(0);
