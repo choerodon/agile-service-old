@@ -490,7 +490,9 @@ public class IssueServiceImpl implements IssueService {
         Long issueId = issueUpdateDTO.getIssueId();
         handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId);
         handleUpdateComponentIssueRel(issueUpdateDTO.getComponentIssueRelDTOList(), projectId, issueId);
-        handleUpdateVersionIssueRel(issueUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId);
+        if (issueUpdateDTO.getVersionType() != null) {
+            handleUpdateVersionIssueRel(issueUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId, issueUpdateDTO.getVersionType());
+        }
         return queryIssue(projectId, issueId);
     }
 
@@ -850,15 +852,16 @@ public class IssueServiceImpl implements IssueService {
     private void handleCreateVersionIssueRel(List<VersionIssueRelDTO> versionIssueRelDTOList, Long projectId, Long issueId) {
         if (versionIssueRelDTOList != null && !versionIssueRelDTOList.isEmpty()) {
             //创建版本默认为fix
-            versionIssueRelDTOList.forEach(versionIssueRelDTO -> versionIssueRelDTO.setRelationType(RELATION_TYPE_FIX));
-            handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId);
+//            versionIssueRelDTOList.forEach(versionIssueRelDTO -> versionIssueRelDTO.setRelationType(RELATION_TYPE_FIX));
+            handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId, "fix");
         }
     }
 
-    private void handleVersionIssueRel(List<VersionIssueRelE> versionIssueRelEList, Long projectId, Long issueId) {
+    private void handleVersionIssueRel(List<VersionIssueRelE> versionIssueRelEList, Long projectId, Long issueId, String versionType) {
         versionIssueRelEList.forEach(versionIssueRelE -> {
             versionIssueRelE.setIssueId(issueId);
             versionIssueRelE.setProjectId(projectId);
+            versionIssueRelE.setRelationType(versionType);
             issueRule.verifyVersionIssueRelData(versionIssueRelE);
             if (versionIssueRelE.getName() != null && versionIssueRelE.getVersionId() == null) {
                 //重名校验
@@ -983,8 +986,8 @@ public class IssueServiceImpl implements IssueService {
 
     }
 
-    private void dataLogVersion(Long projectId, Long issueId, List<VersionIssueRelDTO> versionIssueRelDTOList) {
-        if (versionIssueRelDTOList != null && !versionIssueRelDTOList.isEmpty() && !"fix".equals(versionIssueRelDTOList.get(0).getRelationType())) {
+    private void dataLogVersion(Long projectId, Long issueId, List<VersionIssueRelDTO> versionIssueRelDTOList, String versionType) {
+        if (!"fix".equals(versionType)) {
             return;
         }
         VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
@@ -1032,14 +1035,14 @@ public class IssueServiceImpl implements IssueService {
 
     }
 
-    private void handleUpdateVersionIssueRel(List<VersionIssueRelDTO> versionIssueRelDTOList, Long projectId, Long issueId) {
+    private void handleUpdateVersionIssueRel(List<VersionIssueRelDTO> versionIssueRelDTOList, Long projectId, Long issueId, String versionType) {
         if (versionIssueRelDTOList != null) {
-            dataLogVersion(projectId, issueId, versionIssueRelDTOList);
+            dataLogVersion(projectId, issueId, versionIssueRelDTOList, versionType);
             if (!versionIssueRelDTOList.isEmpty()) {
-                versionIssueRelRepository.deleteByIssueId(issueId);
-                handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId);
+                versionIssueRelRepository.deleteByIssueIdAndType(issueId, versionType);
+                handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId, versionType);
             } else {
-                versionIssueRelRepository.deleteByIssueId(issueId);
+                versionIssueRelRepository.deleteByIssueIdAndType(issueId, versionType);
             }
         }
 
