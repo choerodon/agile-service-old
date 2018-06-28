@@ -242,7 +242,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         versionDO.setProjectId(projectId);
         versionDO.setVersionId(versionId);
         ProductVersionE versionE = productVersionCreateAssembler.doToEntity(productVersionMapper.selectOne(versionDO));
-        if(versionE == null || Objects.equals(versionE.getStatusCode(), VERSION_ARCHIVED_CODE)){
+        if (versionE == null || Objects.equals(versionE.getStatusCode(), VERSION_ARCHIVED_CODE)) {
             throw new CommonException(ARCHIVED_ERROR);
         }
         versionE.archivedVersion();
@@ -255,7 +255,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         versionDO.setProjectId(projectId);
         versionDO.setVersionId(versionId);
         ProductVersionE versionE = productVersionCreateAssembler.doToEntity(productVersionMapper.selectOne(versionDO));
-        if(versionE == null || !Objects.equals(versionE.getStatusCode(), VERSION_ARCHIVED_CODE)){
+        if (versionE == null || !Objects.equals(versionE.getStatusCode(), VERSION_ARCHIVED_CODE)) {
             throw new CommonException(REVOKE_ARCHIVED_ERROR);
         }
         versionE.revokeArchivedVersion();
@@ -265,12 +265,14 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     @Override
     public Boolean mergeVersion(Long projectId, ProductVersionMergeDTO productVersionMergeDTO) {
         productVersionMergeDTO.getSourceVersionIds().remove(productVersionMergeDTO.getTargetVersionId());
-        if(productVersionMergeDTO.getSourceVersionIds().isEmpty()){
+        if (productVersionMergeDTO.getSourceVersionIds().isEmpty()) {
             throw new CommonException(SOURCE_VERSION_ERROR);
         }
         List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         versionIssueRelRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
-        productVersionRepository.issueToDestination(projectId, productVersionMergeDTO.getTargetVersionId(), versionIssues);
+        if (!versionIssues.isEmpty()) {
+            productVersionRepository.issueToDestination(projectId, productVersionMergeDTO.getTargetVersionId(), versionIssues);
+        }
         productVersionRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         return true;
     }
