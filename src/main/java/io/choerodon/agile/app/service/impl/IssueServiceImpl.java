@@ -157,6 +157,7 @@ public class IssueServiceImpl implements IssueService {
         //设置issue编号
         initializationIssueNum(issueE);
         issueE.initializationIssue(statusId);
+        issueE.initializationIssue();
         //如果是epic，初始化颜色
         List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
         issueE.initializationColor(colorList);
@@ -472,6 +473,7 @@ public class IssueServiceImpl implements IssueService {
             //日志记录
             dataLog(fieldList, originIssue, issueUpdateDTO, fieldList.contains(SPRINT_ID_FIELD));
             IssueE issueE = issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO);
+            issueE.initializationIssue();
             if (fieldList.contains(SPRINT_ID_FIELD)) {
                 IssueE oldIssue = ConvertHelper.convert(originIssue, IssueE.class);
                 List<Long> issueIds = issueMapper.querySubIssueIdsByIssueId(projectId, issueE.getIssueId());
@@ -595,6 +597,7 @@ public class IssueServiceImpl implements IssueService {
         boardService.dataLogStatus(issueDO, subIssueE);
         //设置issue编号
         initializationIssueNum(subIssueE);
+        subIssueE.initializationIssue();
         Long issueId = issueRepository.create(subIssueE).getIssueId();
         if (subIssueE.getSprintId() != null && !Objects.equals(subIssueE.getSprintId(), 0L)) {
             issueRepository.issueToSprint(subIssueE.getProjectId(), subIssueE.getSprintId(), issueId, new Date());
@@ -986,7 +989,7 @@ public class IssueServiceImpl implements IssueService {
 
     }
 
-    private void dataLogVersion(Long projectId, Long issueId,List<VersionIssueRelDO> versionIssueRelDOList, List<VersionIssueRelDTO> versionIssueRelDTOList, String versionType) {
+    private void dataLogVersion(Long projectId, Long issueId, List<VersionIssueRelDO> versionIssueRelDOList, List<VersionIssueRelDTO> versionIssueRelDTOList, String versionType) {
         if (!"fix".equals(versionType)) {
             return;
         }
@@ -1051,7 +1054,7 @@ public class IssueServiceImpl implements IssueService {
                 versionIssueRelRepository.deleteByIssueIdAndType(issueId, versionType);
                 versionIssueRelDTOS = new ArrayList<>();
             }
-            dataLogVersion(projectId, issueId,originVersionIssueRels, versionIssueRelDTOS, versionType);
+            dataLogVersion(projectId, issueId, originVersionIssueRels, versionIssueRelDTOS, versionType);
         }
 
     }

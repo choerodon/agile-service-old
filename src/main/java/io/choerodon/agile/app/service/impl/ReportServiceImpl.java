@@ -256,7 +256,8 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void handleDoneStatusIssue(ReportIssueE reportIssueE) {
-        if (reportMapper.checkIssueDoneStatus(reportIssueE.getIssueId(), reportIssueE.getDate())) {
+        Boolean result = reportMapper.checkIssueDoneStatus(reportIssueE.getIssueId(), reportIssueE.getDate());
+        if (result != null && result) {
             reportIssueE.setStatistical(false);
         }
     }
@@ -264,13 +265,6 @@ public class ReportServiceImpl implements ReportService {
     private void handleAddIssueValueDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueIdAddList, String field) {
         List<ReportIssueE> issueAddList = issueIdAddList != null && !issueIdAddList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueValueDuringSprint(issueIdAddList, sprintDO, field), ReportIssueE.class) : null;
         if (issueAddList != null && !issueAddList.isEmpty()) {
-            //在冲刺开始期间创建的，没有生成加入冲刺日志时间，要处理
-            issueAddList.stream().filter(reportIssueE -> reportIssueE.getDate() == null).forEach(reportIssueE -> {
-                Date date = reportMapper.queryAddIssueDuringSprintNoData(reportIssueE.getIssueId(), sprintDO.getSprintId());
-                reportIssueE.setDate(date);
-                Integer value = reportMapper.queryAddIssueValueDuringSprintNoData(reportIssueE.getIssueId(), date, field);
-                reportIssueE.setNewValue(value == null ? 0 : value);
-            });
             //添加时，状态为done的不计入统计
             issueAddList.parallelStream().forEach(this::handleDoneStatusIssue);
             reportIssueEList.addAll(issueAddList);
