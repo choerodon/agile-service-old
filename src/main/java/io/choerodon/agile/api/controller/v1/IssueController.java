@@ -130,7 +130,7 @@ public class IssueController {
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("分页搜索查询issue列表(不包含子任务、自身)")
     @CustomPageRequest
-    @GetMapping(value = "/{issueId}/issues")
+    @GetMapping(value = "/{issueId}/summary")
     public ResponseEntity<Page<IssueNumDTO>> queryIssueByOption(@ApiIgnore
                                                                 @ApiParam(value = "分页信息", required = true)
                                                                 @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
