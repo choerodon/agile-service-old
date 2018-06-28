@@ -49,7 +49,11 @@ public class QuickFilterServiceImpl implements QuickFilterService {
                             sqlQuery.append(" issue_id in ( select issue_id from agile_component_issue_rel )  ");
                         }
                     } else {
-                        sqlQuery.append(" issue_id in ( select issue_id from agile_component_issue_rel where " + field +" " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
+                        if ("not in".equals(operation)) {
+                            sqlQuery.append(" issue_id not in ( select issue_id from agile_component_issue_rel where issue_id in " + value + " ) ");
+                        } else {
+                            sqlQuery.append(" issue_id in ( select issue_id from agile_component_issue_rel where " + field +" " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
+                        }
                     }
                     break;
                 case "version_id":
@@ -61,7 +65,11 @@ public class QuickFilterServiceImpl implements QuickFilterService {
                                 sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where relation_type = 'fix' ) ");
                             }
                         } else {
-                            sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " and relation_type = 'fix' ) ");
+                            if ("not in".equals(operation)) {
+                                sqlQuery.append(" issue_id not in ( select issue_id from agile_version_issue_rel where version_id in " + value + " and relation_type = 'fix' ) ");
+                            } else {
+                                sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " and relation_type = 'fix' ) ");
+                            }
                         }
                     } else if ("influence_version".equals(quickFilterValueDTO.getFieldCode())) {
                         if ("null".equals(value)) {
@@ -71,7 +79,11 @@ public class QuickFilterServiceImpl implements QuickFilterService {
                                 sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where relation_type = 'influence' ) ");
                             }
                         } else {
-                            sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " and relation_type = 'influence' ) ");
+                            if ("not in".equals(operation)) {
+                                sqlQuery.append(" issue_id not in ( select issue_id from agile_version_issue_rel where version_id in " + value + " and relation_type = 'influence' ) ");
+                            } else {
+                                sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " and relation_type = 'influence' ) ");
+                            }
                         }
                     }
                     break;
@@ -83,7 +95,11 @@ public class QuickFilterServiceImpl implements QuickFilterService {
                             sqlQuery.append(" issue_id in ( select issue_id from agile_label_issue_rel ) ");
                         }
                     } else {
-                        sqlQuery.append(" issue_id in ( select issue_id from agile_label_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
+                        if ("not in".equals(operation)) {
+                            sqlQuery.append(" issue_id not in ( select issue_id from agile_label_issue_rel where label_id in " + value + " ) ");
+                        } else {
+                            sqlQuery.append(" issue_id in ( select issue_id from agile_label_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
+                        }
                     }
                     break;
                 case "sprint_id":
@@ -94,7 +110,11 @@ public class QuickFilterServiceImpl implements QuickFilterService {
                             sqlQuery.append(" issue_id in ( select issue_id from agile_issue_sprint_rel ) ");
                         }
                     } else {
-                        sqlQuery.append(" issue_id in ( select issue_id from agile_issue_sprint_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
+                        if ("not in".equals(operation)) {
+                            sqlQuery.append(" issue_id not in ( select issue_id from agile_issue_sprint_rel where sprint_id in " + value + " ) ");
+                        } else {
+                            sqlQuery.append(" issue_id in ( select issue_id from agile_issue_sprint_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
+                        }
                     }
                     break;
                 case "creation_date":
