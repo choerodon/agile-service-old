@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
  * @author dinghuang123@gmail.com
  */
 @EnableFeignClients("io.choerodon")
-@EnableChoerodonResourceServer
+//@EnableChoerodonResourceServer
 @EnableAsync
 @EnableEurekaClient
 @SpringBootApplication
