@@ -8,6 +8,7 @@ public class IssueNumDTO {
     private String issueNum;
     private Long projectId;
     private String summary;
+    private String typeCode;
 
     public Long getIssueId() {
         return issueId;
@@ -39,5 +40,13 @@ public class IssueNumDTO {
 
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    public String getTypeCode() {
+        return typeCode;
+    }
+
+    public void setTypeCode(String typeCode) {
+        this.typeCode = typeCode;
     }
 }
