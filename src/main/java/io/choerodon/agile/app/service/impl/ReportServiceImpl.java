@@ -79,11 +79,11 @@ public class ReportServiceImpl implements ReportService {
         //获取冲刺开启前的issue统计
         handleIssueCountBeforeSprint(sprintDO, reportIssueEList, issueIdBeforeSprintList);
         //获取当前冲刺期间加入的issue
-        List<Long> issueIdAddList = !issueIdBeforeSprintList.isEmpty() ? reportMapper.queryAddIssueIdsDuringSprint(sprintDO, issueIdBeforeSprintList) : reportMapper.queryAddIssueIdsDuringSprintNoBefore(sprintDO);
+        List<Long> issueIdAddList = reportMapper.queryAddIssueIdsDuringSprint(sprintDO);
         //获取当前冲刺期间加入的issue(包含加入时间)
         handleAddIssueCountDuringSprint(sprintDO, reportIssueEList, issueIdAddList);
         //获取当前冲刺期间移除的issue
-        List<Long> issueIdRemoveList = queryRemoveIssueIdsDuringSprint(sprintDO.getSprintId(), issueIdBeforeSprintList);
+        List<Long> issueIdRemoveList = reportMapper.queryRemoveIssueIdsDuringSprint(sprintDO);
         //获取当前冲刺期间移除的issue(包含移除时间)
         handleRemoveCountDuringSprint(sprintDO, reportIssueEList, issueIdRemoveList);
         //获取冲刺结束时的issue(结束前状态为done的issue不计入统计字段设为false)(包含子任务)
@@ -103,9 +103,9 @@ public class ReportServiceImpl implements ReportService {
         //获取冲刺开启前的issue
         List<Long> issueIdBeforeSprintList = reportMapper.queryIssueIdsBeforeSprintStart(sprintDO);
         //获取当前冲刺期间加入的issue
-        List<Long> issueIdAddList = !issueIdBeforeSprintList.isEmpty() ? reportMapper.queryAddIssueIdsDuringSprint(sprintDO, issueIdBeforeSprintList) : reportMapper.queryAddIssueIdsDuringSprintNoBefore(sprintDO);
+        List<Long> issueIdAddList = reportMapper.queryAddIssueIdsDuringSprint(sprintDO);
         //获取当前冲刺期间移除的issue
-        List<Long> issueIdRemoveList = queryRemoveIssueIdsDuringSprint(sprintDO.getSprintId(), issueIdBeforeSprintList);
+        List<Long> issueIdRemoveList = reportMapper.queryRemoveIssueIdsDuringSprint(sprintDO);
         //获取当前冲刺开启前的issue的变更字段值(包含子任务)
         handleIssueValueBeforeSprint(sprintDO, reportIssueEList, issueIdBeforeSprintList, field);
         //获取当前冲刺期间加入的issue(包含加入时间、加入时的字段值)(包含子任务)
@@ -289,11 +289,6 @@ public class ReportServiceImpl implements ReportService {
             }
             reportIssueEList.addAll(issueBeforeList);
         }
-    }
-
-    private List<Long> queryRemoveIssueIdsDuringSprint(Long sprintId, List<Long> issueIdBeforeSprintList) {
-        List<Long> issueId = reportMapper.queryIssueIdsBySprintId(sprintId);
-        return issueId != null && !issueId.isEmpty() ? issueIdBeforeSprintList.stream().filter(id -> !issueId.contains(id)).collect(Collectors.toList()) : null;
     }
 
 }

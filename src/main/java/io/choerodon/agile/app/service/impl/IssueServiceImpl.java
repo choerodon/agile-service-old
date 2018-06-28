@@ -173,7 +173,23 @@ public class IssueServiceImpl implements IssueService {
         handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
         handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
         handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
+        if (issueE.getSprintId() != null) {
+            handleCreateSprintRel(issueId, issueE.getSprintId(), issueE.getProjectId());
+        }
         return queryIssue(issueCreateDTO.getProjectId(), issueId);
+    }
+
+    private void handleCreateSprintRel(Long issueId, Long sprintId, Long projectId) {
+        DataLogE dataLogE = new DataLogE();
+        dataLogE.setProjectId(projectId);
+        dataLogE.setIssueId(issueId);
+        dataLogE.setField(FIELD_SPRINT);
+        dataLogE.setOldValue(null);
+        dataLogE.setOldString(null);
+        dataLogE.setNewValue(sprintId.toString());
+        SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
+        dataLogE.setNewString(sprintDO.getSprintName());
+        dataLogRepository.create(dataLogE);
     }
 
     private void calculationRank(Long projectId, IssueE issueE) {
@@ -586,6 +602,9 @@ public class IssueServiceImpl implements IssueService {
         }
         handleCreateLabelIssue(issueSubCreateDTO.getLabelIssueRelDTOList(), issueId);
         handleCreateVersionIssueRel(issueSubCreateDTO.getVersionIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
+        if (subIssueE.getSprintId() != null) {
+            handleCreateSprintRel(issueId, subIssueE.getSprintId(), subIssueE.getProjectId());
+        }
         return queryIssueSub(subIssueE.getProjectId(), issueId);
     }
 
