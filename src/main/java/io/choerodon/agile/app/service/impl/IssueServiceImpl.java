@@ -993,6 +993,7 @@ public class IssueServiceImpl implements IssueService {
         VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
         versionIssueRelDO.setProjectId(projectId);
         versionIssueRelDO.setIssueId(issueId);
+        versionIssueRelDO.setRelationType("fix");
         List<VersionIssueRelDO> versionIssueRelDOList = versionIssueRelMapper.select(versionIssueRelDO);
         if (versionIssueRelDOList != null && !versionIssueRelDOList.isEmpty()) {
             for (VersionIssueRelDO versionIssueRel : versionIssueRelDOList) {
