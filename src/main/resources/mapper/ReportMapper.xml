@@ -115,7 +115,8 @@
         adl.issue_id,
         adl.creation_date as date,
         (select adl2.new_value from agile_data_log adl2 where adl2.field = #{field} and adl2.issue_id =
-        adl.issue_id and adl2.creation_date &lt;= adl.creation_date order by adl2.creation_date limit 1) as new_value
+        adl.issue_id and adl2.creation_date &lt;= adl.creation_date order by adl2.creation_date desc limit 1) as
+        new_value
         FROM
         agile_data_log adl
         WHERE
@@ -174,7 +175,8 @@
         adl.issue_id,
         adl.creation_date as date,
         IFNULL((select adl2.new_value from agile_data_log adl2 where adl2.field = #{field} and adl2.issue_id =
-        adl.issue_id and adl2.creation_date &lt;= adl.creation_date order by adl2.creation_date limit 1) ,0)as old_value
+        adl.issue_id and adl2.creation_date &lt;= adl.creation_date order by adl2.creation_date desc limit 1) ,0)as
+        old_value
         FROM
         agile_data_log adl
         WHERE
@@ -306,7 +308,8 @@
         adl.issue_id,
         adl.creation_date as date,
         IFNULL((select adl2.new_value from agile_data_log adl2 where adl2.field = #{field} and adl2.issue_id =
-        adl.issue_id and adl2.creation_date &gt;= adl.creation_date order by adl2.creation_date limit 1) ,0)as old_value
+        adl.issue_id and adl2.creation_date &lt;= adl.creation_date order by adl2.creation_date desc limit 1) ,0)as
+        old_value
         FROM
         agile_data_log adl
         WHERE
@@ -340,7 +343,8 @@
         adl.issue_id,
         adl.creation_date as date,
         IFNULL((select adl2.new_value from agile_data_log adl2 where adl2.field = #{field} and adl2.issue_id =
-        adl.issue_id and adl2.creation_date &gt;= adl.creation_date order by adl2.creation_date limit 1) ,0)as new_value
+        adl.issue_id and adl2.creation_date &lt;= adl.creation_date order by adl2.creation_date desc limit 1) ,0)as
+        new_value
         FROM
         agile_data_log adl
         WHERE

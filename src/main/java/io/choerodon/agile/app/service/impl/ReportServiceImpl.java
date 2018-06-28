@@ -145,6 +145,13 @@ public class ReportServiceImpl implements ReportService {
             List<ReportIssueE> issueAfterSprintList = ConvertHelper.convertList(reportMapper.queryIssueCountAfterSprint(sprintDO), ReportIssueE.class);
             if (issueAfterSprintList != null && !issueAfterSprintList.isEmpty()) {
                 reportIssueEList.addAll(issueAfterSprintList);
+            } else {
+                ReportIssueE reportIssueE = new ReportIssueE();
+                reportIssueE.setDate(sprintDO.getStartDate());
+                reportIssueE.setType("endSprint");
+                reportIssueE.setNewValue(0);
+                reportIssueE.setOldValue(0);
+                reportIssueEList.add(reportIssueE);
             }
         }
     }
@@ -199,6 +206,13 @@ public class ReportServiceImpl implements ReportService {
                         .forEach(reportIssueE -> reportIssueE.setStatistical(false));
             }
             reportIssueEList.addAll(issueBeforeSprintList);
+        } else {
+            ReportIssueE reportIssueE = new ReportIssueE();
+            reportIssueE.setDate(sprintDO.getStartDate());
+            reportIssueE.setType("startSprint");
+            reportIssueE.setNewValue(0);
+            reportIssueE.setOldValue(0);
+            reportIssueEList.add(reportIssueE);
         }
     }
 
@@ -207,6 +221,13 @@ public class ReportServiceImpl implements ReportService {
             List<ReportIssueE> issueAfterSprintList = ConvertHelper.convertList(reportMapper.queryIssueValueAfterSprint(sprintDO, field), ReportIssueE.class);
             if (issueAfterSprintList != null && !issueAfterSprintList.isEmpty()) {
                 reportIssueEList.addAll(issueAfterSprintList);
+            } else {
+                ReportIssueE reportIssueE = new ReportIssueE();
+                reportIssueE.setDate(sprintDO.getStartDate());
+                reportIssueE.setType("endSprint");
+                reportIssueE.setNewValue(0);
+                reportIssueE.setOldValue(0);
+                reportIssueEList.add(reportIssueE);
             }
         }
     }
@@ -290,6 +311,13 @@ public class ReportServiceImpl implements ReportService {
                         forEach(reportIssueE -> reportIssueE.setStatistical(false));
             }
             reportIssueEList.addAll(issueBeforeList);
+        } else {
+            ReportIssueE reportIssueE = new ReportIssueE();
+            reportIssueE.setDate(sprintDO.getStartDate());
+            reportIssueE.setType("startSprint");
+            reportIssueE.setNewValue(0);
+            reportIssueE.setOldValue(0);
+            reportIssueEList.add(reportIssueE);
         }
     }
 
