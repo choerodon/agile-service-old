@@ -369,7 +369,9 @@
 
     <select id="queryAddIssueDoneValueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
         SELECT
-        a.*,
+        a.issue_id,
+        a.creation_date as date,
+        a.old_value,
         0 as new_value,
         'addDoneDuringSprint' as type,
         1 as statistical,
@@ -377,26 +379,20 @@
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_Id
         FROM
-        ( select dcd.issue_id,
-        dcd.creation_date AS date,
-        IFNULL( dcd2.new_string, 0 ) AS old_value from (SELECT
-        adl.issue_id,
-        adl.creation_date,
-        MAX(adl1.log_id) as log_id
-        FROM
-        agile_data_log adl
-        LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
-        AND adl1.field = #{field}
-        AND adl1.creation_date &lt;= adl.creation_date WHERE
+        (
+        select dd.creation_date,dd.issue_id,dd.old_value from (select aa.log_id,aa.creation_date,aa.issue_id,
+        IFNULL( cc.new_value, 0 ) AS old_value from (select adl.issue_id,adl.creation_date,adl.log_id from
+        agile_data_log adl WHERE
         adl.field = 'resolution' AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
-        AND adl.new_value != ''
+        AND adl.new_value IS not null
         AND adl.issue_id IN
         <foreach collection="issueIdAddDoneList" item="issueId"
                  open="(" close=")" separator=",">
             #{issueId}
-        </foreach>
-        GROUP BY adl1.issue_id)dcd left join agile_data_log dcd2 on dcd.log_id = dcd2.log_id
+        </foreach>)aa left join (select * from agile_data_log adl2 where adl2.field = #{field})cc on aa.issue_id =
+        cc.issue_id and aa.creation_date &gt;= cc.creation_date order by cc.creation_date desc limit 100000000000000) dd
+        GROUP BY dd.log_id
         )a LEFT JOIN agile_issue ai on ai.issue_id = a.issue_id LEFT JOIN agile_project_info api ON
         api.project_id =
         ai.project_id LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN agile_project_info api2
@@ -408,8 +404,7 @@
         SELECT
         a.issue_id,
         a.creation_date AS date,
-        IFNULL( b.new_string, 0 ) AS
-        new_value,
+        a.new_value,
         0 as old_value,
         'removeDoneDuringSprint' as type,
         1 as statistical,
@@ -418,26 +413,20 @@
         ai2.issue_id as parent_issue_id
         FROM
         (
-        SELECT
-        adl.issue_id,
-        adl.creation_date,
-        MAX(adl1.log_id) as log_id
-        FROM
-        agile_data_log adl
-        LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
-        AND adl1.field = #{field}
-        AND adl1.creation_date &lt;= adl.creation_date
-        WHERE
+        select dd.creation_date,dd.issue_id,dd.new_value from (select aa.log_id,aa.creation_date,aa.issue_id,
+        IFNULL( cc.new_value, 0 ) AS new_value from (select adl.issue_id,adl.creation_date,adl.log_id from
+        agile_data_log adl WHERE
         adl.field = 'resolution' AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
-        AND adl.new_value is NULL
+        AND adl.new_value IS null
         AND adl.issue_id IN
         <foreach collection="issueIdRemoveDoneList" item="issueId"
                  open="(" close=")" separator=",">
             #{issueId}
-        </foreach>
-        GROUP BY
-        adl1.issue_id) a LEFT JOIN agile_data_log b on a.log_id = b.log_id
+        </foreach>)aa left join (select * from agile_data_log adl2 where adl2.field = #{field})cc on aa.issue_id =
+        cc.issue_id and aa.creation_date &gt;= cc.creation_date order by cc.creation_date desc limit 100000000000000) dd
+        GROUP BY dd.log_id
+        ) a
         LEFT JOIN agile_issue ai on ai.issue_id = a.issue_id LEFT JOIN agile_project_info api ON api.project_id =
         ai.project_id LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN agile_project_info api2
         ON api2.project_id =
