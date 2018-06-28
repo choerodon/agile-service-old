@@ -139,15 +139,9 @@
             #{issueId}
         </foreach>
         )aaa left join (
-        SELECT
-        adl.issue_id,
-        adl.creation_date AS date,
-        IFNULL(adl1.new_string,0) AS new_value
-        FROM
-        agile_data_log adl
-        LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
-        AND adl1.field = #{field}
-        AND adl1.creation_date &lt;= adl.creation_date WHERE adl.field = 'Sprint' AND adl.creation_date &gt;
+        select * from (select bcb.log_id,bcb.issue_id,bcb.creation_date as date,IFNULL(adl2.new_string,0) AS new_value
+        from ( select adl.log_id,adl.issue_id,adl.creation_date from agile_data_log adl where adl.field = 'Sprint' AND
+        adl.creation_date &gt;
         #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
         AND FIND_IN_SET(#{sprintDO.sprintId},adl.new_value)
@@ -156,6 +150,9 @@
                  open="(" close=")" separator=",">
             #{issueId}
         </foreach>
+        )bcb left join agile_data_log adl2 on adl2.issue_id = bcb.issue_id and adl2.field = #{field} and
+        bcb.creation_date > adl2.creation_date order by adl2.creation_date desc limit 1000000000000000)ssg
+        group by ssg.log_id
         )bbb on bbb.issue_id = aaa.issue_id LEFT JOIN agile_issue ai2 on aaa.parent_issue_id = ai2.issue_id LEFT JOIN
         agile_project_info api2
         ON api2.project_id = ai2.project_id LEFT JOIN
@@ -252,27 +249,47 @@
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_id
         FROM
-        ( SELECT dcd.issue_id,
-        dcd.creation_date AS date,
-        IFNULL(dcd2.new_string,0) AS new_value FROM (SELECT
+        (
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        bcb.log_id,
+        bcb.issue_id,
+        bcb.creation_date AS date,
+        IFNULL( adl2.new_string, 0 ) AS new_value
+        FROM
+        (
+        SELECT
+        adl.log_id,
         adl.issue_id,
-        adl.creation_date,
-        MAX(adl1.log_id) as log_id
+        adl.creation_date
         FROM
         agile_data_log adl
-        LEFT JOIN agile_data_log adl1 ON adl1.issue_id = adl.issue_id
-        AND adl1.field = #{field}
-        AND adl1.creation_date &lt;= adl.creation_date WHERE adl.field = 'Sprint' AND adl.creation_date &gt;
+        WHERE
+        adl.field = 'Sprint'
+        AND adl.creation_date &gt;
         #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
         AND FIND_IN_SET(#{sprintDO.sprintId},adl.old_value)
-        AND !FIND_IN_SET(#{sprintDO.sprintId},adl.new_value)
+        (FIND_IN_SET(#{sprintDO.sprintId}, adl.new_value) IS NULL OR
+        FIND_IN_SET(#{sprintDO.sprintId}, adl.new_value) = 0)
         AND adl.issue_id IN
         <foreach collection="issueIdRemoveList" item="issueId"
                  open="(" close=")" separator=",">
             #{issueId}
         </foreach>
-        GROUP BY adl1.issue_id)dcd left join agile_data_log dcd2 on dcd.log_id = dcd2.log_id
+        ) bcb
+        LEFT JOIN agile_data_log adl2 ON adl2.issue_id = bcb.issue_id
+        AND adl2.field = #{field}
+        AND bcb.creation_date > adl2.creation_date
+        ORDER BY
+        adl2.creation_date DESC
+        LIMIT 1000000000000000
+        ) ssg
+        GROUP BY
+        ssg.log_id
         ) a LEFT JOIN agile_issue ai on ai.issue_id = a.issue_id LEFT JOIN agile_project_info api ON api.project_id =
         ai.project_id LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN agile_project_info api2
         ON api2.project_id =
@@ -690,43 +707,44 @@
                         FIND_IN_SET(#{sprintId}, b.new_value)
                         THEN
                             1
-                    WHEN a.statistical = 1 AND b.new_value IS NULL
+                    WHEN a.statistical = 1 AND b.new_value IS NULL AND b.issue_id IS NULL
                         THEN 1
-                    WHEN a.statistical = 1
-                         AND b.new_value = ''
-                        THEN
-                            1
                     ELSE 0
                     END AS a,
                     count(1)
                 FROM
                     (
                         SELECT
-                            CASE WHEN bbb.new_value IS NULL
+                            CASE WHEN ac.new_value IS NULL AND ac.count = 0
                                 THEN 1
                             ELSE 0 END AS statistical,
-                            bbb.issue_id,
-                            count(1)
-                        FROM
-                            (SELECT
-                                 adl5.issue_id,
-                                 adl5.new_value
-                             FROM (SELECT MAX(adl1.log_id) AS log_id
-                                   FROM
-                                       agile_data_log adl1
-                                   WHERE
-                                       adl1.field = 'resolution'
-                                       AND adl1.creation_date &lt;= #{date}
-                                       AND adl1.issue_id = #{issueId}
-                                   GROUP BY
-                                       adl1.issue_id) ada LEFT JOIN agile_data_log adl5 ON adl5.log_id = ada.log_id
+                            ac.issue_id
+                        FROM (SELECT
+                                  bbb.new_value,
+                                  bbb.issue_id,
+                                  count(*) AS count
+                              FROM
+                                  (SELECT
+                                       adl5.issue_id,
+                                       adl5.new_value
+                                   FROM (SELECT MAX(adl1.log_id) AS log_id
+                                         FROM
+                                             agile_data_log adl1
+                                         WHERE
+                                             adl1.field = 'resolution'
+                                             AND adl1.creation_date &lt;= #{date}
+                                             AND adl1.issue_id = #{issueId}
+                                         GROUP BY
+                                             adl1.issue_id) ada LEFT JOIN agile_data_log adl5
+                                           ON adl5.log_id = ada.log_id
 
-                            ) bbb
-                    ) a LEFT JOIN
+                                  ) bbb) ac
+                    ) a,
                     (
                         SELECT
                             ad3.issue_id,
-                            ad3.new_value
+                            ad3.new_value,
+                            count(*) AS count
                         FROM (SELECT MAX(adl.log_id) AS log_id
                               FROM
                                   agile_data_log adl
@@ -737,7 +755,7 @@
                               GROUP BY
                                   adl.issue_id) gg LEFT JOIN agile_data_log ad3 ON ad3.log_id = gg.log_id
 
-                    ) b ON a.issue_id = b.issue_id
+                    ) b
             ) f
     </select>
 
@@ -899,16 +917,29 @@
     </select>
 
     <select id="checkIssueDoneStatus" resultType="java.lang.Boolean">
-        SELECT count(*)
-        FROM (SELECT MAX(adl.log_id) AS log_id
-              FROM
-                  agile_data_log adl
-              WHERE
-                  adl.issue_id = #{issueId}
-                  AND adl.creation_date &lt;= #{date}
-                  AND adl.field = 'resolution'
-              GROUP BY adl.issue_id) a LEFT JOIN agile_data_log adl2 ON adl2.log_id = a.log_id
-        WHERE adl2.new_value IS NOT NULL
+        SELECT CASE WHEN c.count = 0 AND c.new_value IS NULL
+            THEN 0
+               WHEN c.count != 0 AND c.new_value IS NOT NULL
+                   THEN 0
+               WHEN c.count != 0 AND new_value IS NULL
+                   THEN 1
+               ELSE 0 END
+        FROM (SELECT
+                  count(*) AS count,
+                  bbb.new_value
+              FROM (SELECT *
+                    FROM (SELECT
+                              adl.new_value,
+                              adl.issue_id
+                          FROM
+                              agile_data_log adl
+                          WHERE
+                              adl.issue_id = #{issueId}
+                              AND adl.creation_date &lt; #{date}
+                              AND adl.field = 'resolution'
+                          ORDER BY adl.creation_date DESC
+                          LIMIT 1000000000000000000) aaa
+                    GROUP BY aaa.issue_id) bbb) c
     </select>
 
 

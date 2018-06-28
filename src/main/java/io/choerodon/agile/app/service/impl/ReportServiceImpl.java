@@ -224,7 +224,7 @@ public class ReportServiceImpl implements ReportService {
         // 获取当前冲刺期间移动到done状态的issue
         List<Long> issueIdAddDoneList = issueAllList != null && !issueAllList.isEmpty() ? reportMapper.queryAddDoneIssueIdsDuringSprint(sprintDO, issueAllList) : null;
         List<ReportIssueE> issueAddDoneList = issueIdAddDoneList != null && !issueIdAddDoneList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueDoneValueDuringSprint(issueIdAddDoneList, sprintDO, field), ReportIssueE.class) : null;
-        if (issueAddDoneList != null) {
+        if (issueAddDoneList != null && !issueIdAddDoneList.isEmpty()) {
             reportIssueEList.addAll(issueAddDoneList);
         }
     }

@@ -12,6 +12,8 @@ public class IssueLinkCreateDTO {
 
     private Long linkedIssueId;
 
+    private Long issueId;
+
     public Long getLinkTypeId() {
         return linkTypeId;
     }
@@ -26,6 +28,14 @@ public class IssueLinkCreateDTO {
 
     public void setLinkedIssueId(Long linkedIssueId) {
         this.linkedIssueId = linkedIssueId;
+    }
+
+    public Long getIssueId() {
+        return issueId;
+    }
+
+    public void setIssueId(Long issueId) {
+        this.issueId = issueId;
     }
 
     @Override

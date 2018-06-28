@@ -123,7 +123,7 @@ public class IssueStatusController {
                 .orElseThrow(() -> new CommonException("error.status.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT)
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据项目id查询状态列表")
     @CustomPageRequest
     @GetMapping(value = "/statuses")
