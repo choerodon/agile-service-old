@@ -35,6 +35,8 @@ public class IssueUpdateDTO {
 
     private Integer storyPoints;
 
+    private String versionType;
+
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
@@ -229,6 +231,14 @@ public class IssueUpdateDTO {
 
     public void setRemainingTime(BigDecimal remainingTime) {
         this.remainingTime = remainingTime;
+    }
+
+    public void setVersionType(String versionType) {
+        this.versionType = versionType;
+    }
+
+    public String getVersionType() {
+        return versionType;
     }
 
     @Override

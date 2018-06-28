@@ -57,6 +57,14 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
     }
 
     @Override
+    public int deleteByIssueIdAndType(Long issueId, String versionType) {
+        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
+        versionIssueRelDO.setIssueId(issueId);
+        versionIssueRelDO.setRelationType(versionType);
+        return versionIssueRelMapper.delete(versionIssueRelDO);
+    }
+
+    @Override
     public int deleteByVersionId(Long projectId,Long versionId) {
         VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
         versionIssueRelDO.setProjectId(projectId);

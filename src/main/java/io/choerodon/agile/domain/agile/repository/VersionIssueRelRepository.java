@@ -35,6 +35,8 @@ public interface VersionIssueRelRepository {
      */
     int deleteByIssueId(Long issueId);
 
+    int deleteByIssueIdAndType(Long issueId, String versionType);
+
     /**
      * 根据id删除
      *
