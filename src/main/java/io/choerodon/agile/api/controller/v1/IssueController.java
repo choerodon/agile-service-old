@@ -128,6 +128,26 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("分页搜索查询issue列表(不包含子任务、自身)")
+    @CustomPageRequest
+    @GetMapping(value = "/{issueId}/issues")
+    public ResponseEntity<Page<IssueNumDTO>> queryIssueByOption(@ApiIgnore
+                                                                @ApiParam(value = "分页信息", required = true)
+                                                                @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
+                                                                        PageRequest pageRequest,
+                                                                @ApiParam(value = "项目id", required = true)
+                                                                @PathVariable(name = "project_id") Long projectId,
+                                                                @ApiParam(value = "issueId", required = true)
+                                                                @PathVariable Long issueId,
+                                                                @ApiParam(value = "搜索内容", required = false)
+                                                                @RequestParam(required = false) String content) {
+        return Optional.ofNullable(issueService.queryIssueByOption(projectId, issueId, content, pageRequest))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.Issue.query"));
+    }
+
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询epic")
     @GetMapping(value = "/epics")
     public ResponseEntity<List<EpicDataDTO>> listEpic(@ApiParam(value = "项目id", required = true)
