@@ -50,7 +50,7 @@ public class QuickFilterServiceImpl implements QuickFilterService {
                         }
                     } else {
                         if ("not in".equals(operation)) {
-                            sqlQuery.append(" issue_id not in ( select issue_id from agile_component_issue_rel where issue_id in " + value + " ) ");
+                            sqlQuery.append(" issue_id not in ( select issue_id from agile_component_issue_rel where component_id in " + value + " ) ");
                         } else {
                             sqlQuery.append(" issue_id in ( select issue_id from agile_component_issue_rel where " + field +" " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
                         }
