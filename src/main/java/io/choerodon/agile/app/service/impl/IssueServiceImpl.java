@@ -173,7 +173,7 @@ public class IssueServiceImpl implements IssueService {
         handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
         handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
         handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
-        if (issueE.getSprintId() != null) {
+        if (issueE.getSprintId() != null && issueE.getSprintId() != 0) {
             handleCreateSprintRel(issueId, issueE.getSprintId(), issueE.getProjectId());
         }
         return queryIssue(issueCreateDTO.getProjectId(), issueId);
