@@ -217,7 +217,7 @@
             resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
         SELECT
         a.*,
-        0 as old_value,
+        0 as new_value,
         'removeDuringSprint' as type,
         1 as statistical,
         CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
@@ -233,7 +233,7 @@
         bcb.log_id,
         bcb.issue_id,
         bcb.creation_date AS date,
-        IFNULL( adl2.new_string, 0 ) AS new_value
+        IFNULL( adl2.new_string, 0 ) AS old_value
         FROM
         (
         SELECT

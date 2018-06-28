@@ -124,7 +124,7 @@ public class IssueController {
                                                                   @RequestBody(required = false) SearchDTO searchDTO) {
         return Optional.ofNullable(issueService.listIssueWithoutSub(projectId, searchDTO, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.Issue.createIssue"));
+                .orElseThrow(() -> new CommonException("error.Issue.listIssueWithoutSub"));
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
