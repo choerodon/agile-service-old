@@ -202,9 +202,9 @@ public class SprintServiceImpl implements SprintService {
         int idx = 0;
         for (String filter : sqlQuerys) {
             if (idx != 0) {
-                sql.append(" and " + filter);
+                sql.append(" and " + " ( " + filter + " ) ");
             } else {
-                sql.append(filter);
+                sql.append(" ( " +filter + " ) ");
                 idx += 1;
             }
         }

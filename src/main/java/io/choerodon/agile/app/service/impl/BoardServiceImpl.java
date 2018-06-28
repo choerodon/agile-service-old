@@ -174,10 +174,10 @@ public class BoardServiceImpl implements BoardService {
         int idx = 0;
         for (String filter : sqlQuerys) {
             if (idx == 0) {
-                sql.append(filter);
+                sql.append(" ( " + filter + " ) ");
                 idx += 1;
             } else {
-                sql.append(" and " + filter);
+                sql.append(" and " + " ( " + filter + " ) ");
             }
         }
         return sql.toString();
