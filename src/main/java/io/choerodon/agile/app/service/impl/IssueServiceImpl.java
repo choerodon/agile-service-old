@@ -331,7 +331,22 @@ public class IssueServiceImpl implements IssueService {
         dataLogE.setNewValue("".equals(valuesMap.get(NEW_VALUE)) ? null : valuesMap.get(NEW_VALUE));
         dataLogE.setNewString("".equals(valuesMap.get(NEW_STRING)) ? null : valuesMap.get(NEW_STRING));
         dataLogRepository.create(dataLogE);
+        dataLogSubIssueSprint(issueUpdateDTO.getIssueId(), originIssue.getProjectId(), valuesMap);
+    }
 
+    private void dataLogSubIssueSprint(Long issueId, Long projectId, Map<String, String> valuesMap) {
+        List<IssueE> issueEList = ConvertHelper.convertList(issueMapper.queryIssueSubList(projectId, issueId), IssueE.class);
+        issueEList.forEach(issueE -> {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(projectId);
+            dataLogE.setIssueId(issueE.getIssueId());
+            dataLogE.setField(FIELD_SPRINT);
+            dataLogE.setOldValue("".equals(valuesMap.get(OLD_VALUE)) ? null : valuesMap.get(OLD_VALUE));
+            dataLogE.setOldString("".equals(valuesMap.get(OLD_STRING)) ? null : valuesMap.get(OLD_STRING));
+            dataLogE.setNewValue("".equals(valuesMap.get(NEW_VALUE)) ? null : valuesMap.get(NEW_VALUE));
+            dataLogE.setNewString("".equals(valuesMap.get(NEW_STRING)) ? null : valuesMap.get(NEW_STRING));
+            dataLogRepository.create(dataLogE);
+        });
     }
 
     private Map<String, String> dealSprint(List<SprintNameDTO> closeSprintNames, SprintNameDTO activeSprintName, SprintNameDTO sprintName) {
@@ -505,18 +520,18 @@ public class IssueServiceImpl implements IssueService {
             dataLogIssue.setStatusId(issueUpdateDTO.getStatusId());
             dataLogIssue.setProjectId(originIssue.getProjectId());
             boardService.dataLogStatus(originIssue, dataLogIssue);
-            if (!originIssue.getTypeCode().equals(SUB_TASK)) {
-                List<IssueDO> subIssueList = issueMapper.queryIssueSubList(originIssue.getProjectId(), originIssue.getIssueId());
-                //子任务记录日志
-                subIssueList.forEach(sub -> {
-                    IssueE dataLogIssueSub = new IssueE();
-                    dataLogIssueSub.setStatusId(issueUpdateDTO.getStatusId());
-                    dataLogIssueSub.setIssueId(sub.getIssueId());
-                    dataLogIssueSub.setObjectVersionNumber(sub.getObjectVersionNumber());
-                    issueRepository.update(dataLogIssueSub, new String[]{STATUS_ID, ISSUE_ID, OBJECT_VERSION_NUMBER});
-                    boardService.dataLogStatus(sub, dataLogIssueSub);
-                });
-            }
+//            if (!originIssue.getTypeCode().equals(SUB_TASK)) {
+//                List<IssueDO> subIssueList = issueMapper.queryIssueSubList(originIssue.getProjectId(), originIssue.getIssueId());
+//                //子任务记录日志
+//                subIssueList.forEach(sub -> {
+//                    IssueE dataLogIssueSub = new IssueE();
+//                    dataLogIssueSub.setStatusId(issueUpdateDTO.getStatusId());
+//                    dataLogIssueSub.setIssueId(sub.getIssueId());
+//                    dataLogIssueSub.setObjectVersionNumber(sub.getObjectVersionNumber());
+//                    issueRepository.update(dataLogIssueSub, new String[]{STATUS_ID, ISSUE_ID, OBJECT_VERSION_NUMBER});
+//                    boardService.dataLogStatus(sub, dataLogIssueSub);
+//                });
+//            }
         }
     }
 
