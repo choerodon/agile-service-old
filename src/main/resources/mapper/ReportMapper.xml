@@ -146,7 +146,10 @@
                   adl2.creation_date &lt;= #{sprintDO.actualEndDate}
                   AND FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) AND
                   (FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) IS NULL OR
-                   FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) = 0)) aa LEFT JOIN agile_issue ai
+                   FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) = 0)
+                  AND adl2.issue_id NOT IN (SELECT ais.issue_id
+                                            FROM agile_issue_sprint_rel ais
+                                            WHERE ais.sprint_id = #{sprintDO.sprintId})) aa LEFT JOIN agile_issue ai
                 ON ai.issue_id = aa.issue_id
         WHERE ai.type_code != 'sub_task'
     </select>
