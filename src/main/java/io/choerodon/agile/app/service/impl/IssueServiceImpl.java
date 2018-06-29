@@ -331,7 +331,22 @@ public class IssueServiceImpl implements IssueService {
         dataLogE.setNewValue("".equals(valuesMap.get(NEW_VALUE)) ? null : valuesMap.get(NEW_VALUE));
         dataLogE.setNewString("".equals(valuesMap.get(NEW_STRING)) ? null : valuesMap.get(NEW_STRING));
         dataLogRepository.create(dataLogE);
+        dataLogSubIssueSprint(issueUpdateDTO.getIssueId(), originIssue.getProjectId(), valuesMap);
+    }
 
+    private void dataLogSubIssueSprint(Long issueId, Long projectId, Map<String, String> valuesMap) {
+        List<IssueE> issueEList = ConvertHelper.convertList(issueMapper.queryIssueSubList(projectId, issueId), IssueE.class);
+        issueEList.forEach(issueE -> {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(projectId);
+            dataLogE.setIssueId(issueE.getIssueId());
+            dataLogE.setField(FIELD_SPRINT);
+            dataLogE.setOldValue("".equals(valuesMap.get(OLD_VALUE)) ? null : valuesMap.get(OLD_VALUE));
+            dataLogE.setOldString("".equals(valuesMap.get(OLD_STRING)) ? null : valuesMap.get(OLD_STRING));
+            dataLogE.setNewValue("".equals(valuesMap.get(NEW_VALUE)) ? null : valuesMap.get(NEW_VALUE));
+            dataLogE.setNewString("".equals(valuesMap.get(NEW_STRING)) ? null : valuesMap.get(NEW_STRING));
+            dataLogRepository.create(dataLogE);
+        });
     }
 
     private Map<String, String> dealSprint(List<SprintNameDTO> closeSprintNames, SprintNameDTO activeSprintName, SprintNameDTO sprintName) {
