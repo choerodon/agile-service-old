@@ -33,4 +33,6 @@ public interface SprintService {
     SprintDetailDTO querySprintById(Long projectId, Long sprintId);
 
     Page<IssueListDTO> queryIssueByOptions(Long projectId, Long sprintId, String status, PageRequest pageRequest);
+
+    String getQuickFilter(List<Long> quickFilterIds);
 }

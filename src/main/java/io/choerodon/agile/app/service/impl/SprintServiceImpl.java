@@ -193,7 +193,8 @@ public class SprintServiceImpl implements SprintService {
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
     }
 
-    private String getQuickFilter(List<Long> quickFilterIds) {
+    @Override
+    public String getQuickFilter(List<Long> quickFilterIds) {
         List<String> sqlQuerys = quickFilterMapper.selectSqlQueryByIds(quickFilterIds);
         if (sqlQuerys.isEmpty()) {
             return null;

@@ -207,7 +207,7 @@
         1 as statistical,CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,CONCAT_WS('-', api2.project_code,
         ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_id
-        FROM agile_issue ai left join (SELECT
+        FROM (SELECT
         adl.issue_id,
         adl.creation_date AS date
         FROM
@@ -221,14 +221,11 @@
         <foreach collection="issueIdAddList" item="issueId"
                  open="(" close=")" separator=",">
             #{issueId}
-        </foreach>)abd on abd.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON api.project_id =
+        </foreach>)abd left join agile_issue ai on abd.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
+        api.project_id =
         ai.project_id LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN agile_project_info api2
         ON api2.project_id =
-        ai2.project_id where ai.issue_id in
-        <foreach collection="issueIdAddList" item="issueId"
-                 open="(" close=")" separator=",">
-            #{issueId}
-        </foreach>
+        ai2.project_id
     </select>
 
     <select id="queryRemoveIssueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
@@ -800,6 +797,87 @@
                    FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) = 0)) bb
         GROUP BY bb.issue_id
 
+    </select>
+
+
+    <select id="queryAllIssueIdsByFilter" resultType="java.lang.Long">
+        select * from agile_issue ai where ai.project_id = #{projectId}
+        <if test='filterSql != null'>
+            AND ai.issue_id IN (${filterSql})
+        </if>
+    </select>
+
+    <select id="queryAddIssueDuringDate" resultType="io.choerodon.agile.infra.dataobject.ColumnChangeDO">
+        SELECT
+        abb.*,
+        ( SELECT abcsr.column_id FROM agile_board_column_status_rel abcsr WHERE abcsr.status_id = abb.status_id AND
+        abcsr.column_id IN
+        <foreach collection="columnIds" item="columnId"
+                 open="(" close=")" separator=",">
+            #{columnId}
+        </foreach>) ) AS column_to
+        FROM
+        (
+        SELECT
+        ai.issue_id,
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,
+        ai.creation_date AS date,
+        (
+        SELECT
+        adl.old_value
+        FROM
+        agile_data_log adl
+        WHERE
+        adl.field = 'status'
+        AND adl.issue_id = ai.issue_id
+        ORDER BY
+        adl.creation_date ASC
+        LIMIT 1
+        ) AS status_id
+        FROM
+        agile_issue ai
+        LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
+        WHERE
+        ai.issue_id IN
+        <foreach collection="allIssueIds" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        AND ai.creation_date &gt;= #{startDate}
+        AND ai.creation_date &lt;= #{endDate}
+        ) abb
+    </select>
+
+
+    <select id="queryChangeIssueDuringDate" resultType="io.choerodon.agile.infra.dataobject.ColumnChangeDO">
+        SELECT
+        adl.issue_id,
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,
+        abcsr.column_id AS column_from,
+        abcsr2.column_id AS column_to
+        FROM
+        agile_data_log adl
+        LEFT JOIN agile_board_column_status_rel abcsr ON abcsr.status_id = adl.old_value and abcsr.column_id in
+        <foreach collection="columnIds" item="columnId"
+                 open="(" close=")" separator=",">
+            #{columnId}
+        </foreach>
+        LEFT JOIN agile_board_column_status_rel abcsr2 ON abcsr2.status_id = adl.new_value and abcsr2.column_id in
+        <foreach collection="columnIds" item="columnId"
+                 open="(" close=")" separator=",">
+            #{columnId}
+        </foreach>
+        LEFT JOIN agile_issue ai ON ai.issue_id = adl.issue_id
+        LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
+        WHERE
+        adl.field = 'status'
+        AND adl.issue_id IN
+        <foreach collection="allIssueIds" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        AND adl.creation_date &gt;= #{startDate}
+        AND adl.creation_date &lt;= #{endDate}
     </select>
 
 

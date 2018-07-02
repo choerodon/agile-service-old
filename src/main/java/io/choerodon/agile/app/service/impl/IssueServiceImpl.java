@@ -520,18 +520,6 @@ public class IssueServiceImpl implements IssueService {
             dataLogIssue.setStatusId(issueUpdateDTO.getStatusId());
             dataLogIssue.setProjectId(originIssue.getProjectId());
             boardService.dataLogStatus(originIssue, dataLogIssue);
-//            if (!originIssue.getTypeCode().equals(SUB_TASK)) {
-//                List<IssueDO> subIssueList = issueMapper.queryIssueSubList(originIssue.getProjectId(), originIssue.getIssueId());
-//                //子任务记录日志
-//                subIssueList.forEach(sub -> {
-//                    IssueE dataLogIssueSub = new IssueE();
-//                    dataLogIssueSub.setStatusId(issueUpdateDTO.getStatusId());
-//                    dataLogIssueSub.setIssueId(sub.getIssueId());
-//                    dataLogIssueSub.setObjectVersionNumber(sub.getObjectVersionNumber());
-//                    issueRepository.update(dataLogIssueSub, new String[]{STATUS_ID, ISSUE_ID, OBJECT_VERSION_NUMBER});
-//                    boardService.dataLogStatus(sub, dataLogIssueSub);
-//                });
-//            }
         }
     }
 

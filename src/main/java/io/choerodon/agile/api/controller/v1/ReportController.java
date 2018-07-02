@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
+import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO;
+import io.choerodon.agile.api.dto.CumulativeFlowFilterDTO;
 import io.choerodon.agile.api.dto.ReportIssueDTO;
 import io.choerodon.agile.app.service.ReportService;
 import io.choerodon.core.exception.CommonException;
@@ -31,14 +33,26 @@ public class ReportController {
     @ApiOperation("查询冲刺对应的燃尽图报告信息")
     @GetMapping(value = "/{sprintId}/burn_down_report")
     public ResponseEntity<List<ReportIssueDTO>> queryBurnDownReport(@ApiParam(value = "项目id", required = true)
-                                                                        @PathVariable(name = "project_id") Long projectId,
-                                                                        @ApiParam(value = "sprintId", required = true)
-                                                                        @PathVariable Long sprintId,
-                                                                        @ApiParam(value = "类型(storyPoints、remainingEstimatedTime、issueCount)", required = true)
-                                                                        @RequestParam String type) {
+                                                                    @PathVariable(name = "project_id") Long projectId,
+                                                                    @ApiParam(value = "sprintId", required = true)
+                                                                    @PathVariable Long sprintId,
+                                                                    @ApiParam(value = "类型(storyPoints、remainingEstimatedTime、issueCount)", required = true)
+                                                                    @RequestParam String type) {
         return Optional.ofNullable(reportService.queryBurnDownReport(projectId, sprintId, type))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.report.queryBurnDownReport"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("查看项目累积流量图")
+    @PostMapping(value = "/cumulative_flow_diagram")
+    public ResponseEntity<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(@ApiParam(value = "项目id", required = true)
+                                                                                     @PathVariable(name = "project_id") Long projectId,
+                                                                                     @ApiParam(value = "过滤条件", required = true)
+                                                                                     @RequestBody CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
+        return Optional.ofNullable(reportService.queryCumulativeFlowDiagram(projectId, cumulativeFlowFilterDTO))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.report.queryCumulativeFlowDiagram"));
     }
 
 }
