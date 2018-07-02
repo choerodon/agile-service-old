@@ -463,7 +463,7 @@
         ais.name AS status_name,
         ai.object_version_number, ai.priority_code,
         alv.name AS priority_name,
-        ai1.epic_name AS epic_name,
+        ai1.epic_name AS issue_epic_name,
         alv2.name AS color,
         apv1.version_id AS version_id,
         apv1.name AS version_name
