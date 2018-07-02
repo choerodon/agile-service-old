@@ -239,7 +239,7 @@ public class BoardServiceImpl implements BoardService {
             throw new CommonException("error.minNum.cannotReduce");
         }
         if (currentMaxNum != null && !originStatusId.equals(currentStatusId) && currentIssueCount >= currentMaxNum) {
-            throw new CommonException("error.manNum.cannotAdd");
+            throw new CommonException("error.maxNum.cannotAdd");
         }
     }
 
