@@ -35,7 +35,7 @@ public class BoardServiceImpl implements BoardService {
     private static final String CONTRAINT_ISSUE = "issue";
     private static final String CONTRAINT_ISSUE_WITHOUT_SUBTASK = "issue_without_sub_task";
     private static final String STORY_POINTS = "story_point";
-    private static final String STORY = "story";
+    private static final String PARENT_CHILD = "parent_child";
     private static final String FIELD_STATUS = "status";
 
     @Autowired
@@ -220,7 +220,7 @@ public class BoardServiceImpl implements BoardService {
         boardE.setDayInColumn(false);
         boardE.setEstimationStatistic(STORY_POINTS);
         boardE.setName(boardName);
-        boardE.setSwimlaneBasedCode(STORY);
+        boardE.setSwimlaneBasedCode(PARENT_CHILD);
         return boardRepository.create(boardE);
     }
 
