@@ -171,6 +171,7 @@
 
     <select id="selectColumnByColumnId" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDO">
         SELECT
+            abc.name,
             abc.min_num,
             abc.max_num,
             COUNT(ai.issue_id) AS issue_count

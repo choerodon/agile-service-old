@@ -236,10 +236,10 @@ public class BoardServiceImpl implements BoardService {
         Long originMinNum = originBoardColumnCheckDO.getMinNum();
         Long originIssueCount = originBoardColumnCheckDO.getIssueCount();
         if (originMinNum != null && !originStatusId.equals(currentStatusId) && originIssueCount <= originMinNum) {
-            throw new CommonException("error.minNum.cannotReduce");
+            throw new CommonException("error.minNum.cannotReduce", originBoardColumnCheckDO.getName());
         }
         if (currentMaxNum != null && !originStatusId.equals(currentStatusId) && currentIssueCount >= currentMaxNum) {
-            throw new CommonException("error.maxNum.cannotAdd");
+            throw new CommonException("error.maxNum.cannotAdd", boardColumnCheckDO.getName());
         }
     }
 
