@@ -18,11 +18,11 @@ public class ProjectInfoDTO {
 
     private Long objectVersionNumber;
 
-    private Long lead;
+    private Long defaultAssigneeId;
 
-    private String assigneeType;
+    private String defaultAssigneeType;
 
-    private String issueDefaultPriorityCode;
+    private String defaultPriorityCode;
 
     private Date creationDate;
 
@@ -58,28 +58,28 @@ public class ProjectInfoDTO {
         this.objectVersionNumber = objectVersionNumber;
     }
 
-    public Long getLead() {
-        return lead;
+    public Long getDefaultAssigneeId() {
+        return defaultAssigneeId;
     }
 
-    public void setLead(Long lead) {
-        this.lead = lead;
+    public void setDefaultAssigneeId(Long defaultAssigneeId) {
+        this.defaultAssigneeId = defaultAssigneeId;
     }
 
-    public String getAssigneeType() {
-        return assigneeType;
+    public String getDefaultAssigneeType() {
+        return defaultAssigneeType;
     }
 
-    public void setAssigneeType(String assigneeType) {
-        this.assigneeType = assigneeType;
+    public void setDefaultAssigneeType(String defaultAssigneeType) {
+        this.defaultAssigneeType = defaultAssigneeType;
     }
 
-    public String getIssueDefaultPriorityCode() {
-        return issueDefaultPriorityCode;
+    public String getDefaultPriorityCode() {
+        return defaultPriorityCode;
     }
 
-    public void setIssueDefaultPriorityCode(String issueDefaultPriorityCode) {
-        this.issueDefaultPriorityCode = issueDefaultPriorityCode;
+    public void setDefaultPriorityCode(String defaultPriorityCode) {
+        this.defaultPriorityCode = defaultPriorityCode;
     }
 
     public Date getCreationDate() {
