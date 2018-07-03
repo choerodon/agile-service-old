@@ -35,7 +35,7 @@ public class BoardServiceImpl implements BoardService {
     private static final String CONTRAINT_ISSUE = "issue";
     private static final String CONTRAINT_ISSUE_WITHOUT_SUBTASK = "issue_without_sub_task";
     private static final String STORY_POINTS = "story_point";
-    private static final String STORY = "story";
+    private static final String PARENT_CHILD = "parent_child";
     private static final String FIELD_STATUS = "status";
 
     @Autowired
@@ -220,7 +220,7 @@ public class BoardServiceImpl implements BoardService {
         boardE.setDayInColumn(false);
         boardE.setEstimationStatistic(STORY_POINTS);
         boardE.setName(boardName);
-        boardE.setSwimlaneBasedCode(STORY);
+        boardE.setSwimlaneBasedCode(PARENT_CHILD);
         return boardRepository.create(boardE);
     }
 
@@ -236,10 +236,10 @@ public class BoardServiceImpl implements BoardService {
         Long originMinNum = originBoardColumnCheckDO.getMinNum();
         Long originIssueCount = originBoardColumnCheckDO.getIssueCount();
         if (originMinNum != null && !originStatusId.equals(currentStatusId) && originIssueCount <= originMinNum) {
-            throw new CommonException("error.minNum.cannotReduce");
+            throw new CommonException("error.minNum.cannotReduce", originBoardColumnCheckDO.getName());
         }
         if (currentMaxNum != null && !originStatusId.equals(currentStatusId) && currentIssueCount >= currentMaxNum) {
-            throw new CommonException("error.manNum.cannotAdd");
+            throw new CommonException("error.maxNum.cannotAdd", boardColumnCheckDO.getName());
         }
     }
 

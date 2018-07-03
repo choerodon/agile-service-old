@@ -6,6 +6,8 @@ package io.choerodon.agile.infra.dataobject;
  */
 public class BoardColumnCheckDO {
 
+    private String name;
+
     private Long minNum;
 
     private Long maxNum;
@@ -13,6 +15,14 @@ public class BoardColumnCheckDO {
     private Long issueCount;
 
     private Long issueCountOrigin;
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     public Long getMinNum() {
         return minNum;
