@@ -1,10 +1,18 @@
 package io.choerodon.agile.app.service.impl;
 
+import io.choerodon.agile.api.dto.ColumnChangeDTO;
+import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO;
+import io.choerodon.agile.api.dto.CumulativeFlowFilterDTO;
 import io.choerodon.agile.api.dto.ReportIssueDTO;
+import io.choerodon.agile.app.assembler.ReportAssembler;
 import io.choerodon.agile.app.service.ReportService;
 import io.choerodon.agile.domain.agile.converter.SprintConverter;
-import io.choerodon.agile.domain.agile.entity.*;
+import io.choerodon.agile.domain.agile.entity.ReportIssueE;
+import io.choerodon.agile.domain.agile.entity.SprintE;
+import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO;
 import io.choerodon.agile.infra.dataobject.SprintDO;
+import io.choerodon.agile.infra.mapper.BoardColumnMapper;
+import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper;
 import io.choerodon.agile.infra.mapper.ReportMapper;
 import io.choerodon.agile.infra.mapper.SprintMapper;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -13,7 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -27,15 +37,24 @@ public class ReportServiceImpl implements ReportService {
     @Autowired
     private SprintMapper sprintMapper;
     @Autowired
+    private SprintServiceImpl sprintService;
+    @Autowired
     private ReportMapper reportMapper;
     @Autowired
     private SprintConverter sprintConverter;
+    @Autowired
+    private ColumnStatusRelMapper columnStatusRelMapper;
+    @Autowired
+    private BoardColumnMapper boardColumnMapper;
+    @Autowired
+    private ReportAssembler reportAssembler;
 
     private static final String STORY_POINTS = "storyPoints";
     private static final String REMAINING_ESTIMATED_TIME = "remainingEstimatedTime";
     private static final String ISSUE_COUNT = "issueCount";
     private static final String SPRINT_PLANNING_CODE = "sprint_planning";
     private static final String REPORT_SPRINT_ERROR = "error.report.sprintError";
+    private static final String REPORT_FILTER_ERROR = "error.cumulativeFlowDiagram.filter";
     private static final String FILED_TIMEESTIMATE = "timeestimate";
     private static final String FILED_STORY_POINTS = "Story Points";
     private static final String SPRINT_CLOSED = "closed";
@@ -71,55 +90,100 @@ public class ReportServiceImpl implements ReportService {
                 sorted(Comparator.comparing(ReportIssueE::getDate)).collect(Collectors.toList()), ReportIssueDTO.class);
     }
 
+    @Override
+    public CumulativeFlowDiagramDTO queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
+        //获取当前符合条件的所有issueIds
+        CumulativeFlowDiagramDTO cumulativeFlowDiagramDTO = new CumulativeFlowDiagramDTO();
+        cumulativeFlowDiagramDTO.setColumnDTOList(new ArrayList<>());
+        cumulativeFlowDiagramDTO.setColumnChangeDTOList(new ArrayList<>());
+        String filterSql = null;
+        if (cumulativeFlowFilterDTO.getQuickFilterIds() != null && !cumulativeFlowFilterDTO.getQuickFilterIds().isEmpty()) {
+            filterSql = sprintService.getQuickFilter(cumulativeFlowFilterDTO.getQuickFilterIds());
+        }
+        List<Long> allIssueIds = reportMapper.queryAllIssueIdsByFilter(projectId, filterSql);
+        if (allIssueIds != null && !allIssueIds.isEmpty() && cumulativeFlowFilterDTO.getColumnIds() != null && !cumulativeFlowFilterDTO.getColumnIds().isEmpty()) {
+            List<ColumnChangeDTO> result = new ArrayList<>();
+            //所有在当前时间内创建的issue
+            handleCumulativeFlowAddDuringDate(allIssueIds, result, cumulativeFlowFilterDTO);
+            //所有在当前时间内状态改变的issue
+            List<ColumnChangeDTO> changeIssueDuringDate = reportAssembler.columnChangeListDoToDto(reportMapper.queryChangeIssueDuringDate(cumulativeFlowFilterDTO.getStartDate(),
+                    cumulativeFlowFilterDTO.getEndDate(), allIssueIds, cumulativeFlowFilterDTO.getColumnIds()));
+            if (changeIssueDuringDate != null && !changeIssueDuringDate.isEmpty()) {
+                result.addAll(changeIssueDuringDate);
+            }
+            cumulativeFlowDiagramDTO.getColumnChangeDTOList().addAll(result.stream().sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList()));
+            cumulativeFlowDiagramDTO.setColumnDTOList(reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(cumulativeFlowFilterDTO.getColumnIds())));
+            return cumulativeFlowDiagramDTO;
+        } else {
+            throw new CommonException(REPORT_FILTER_ERROR);
+        }
+    }
+
+    private void handleCumulativeFlowAddDuringDate(List<Long> allIssueIds, List<ColumnChangeDTO> result, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
+        List<ColumnChangeDTO> addIssueDuringDate = reportAssembler.columnChangeListDoToDto(reportMapper.queryAddIssueDuringDate(cumulativeFlowFilterDTO.getStartDate(),
+                cumulativeFlowFilterDTO.getEndDate(), allIssueIds, cumulativeFlowFilterDTO.getColumnIds()));
+        if (addIssueDuringDate != null && !addIssueDuringDate.isEmpty()) {
+            List<ColumnChangeDTO> resultRemove = new ArrayList<>();
+            addIssueDuringDate.stream().filter(columnChangeDTO -> columnChangeDTO.getStatusTo() == null).forEach(columnChangeDTO -> {
+                ColumnStatusRelDO columnStatusRelDO = columnStatusRelMapper.queryByIssueIdAndColumnIds(columnChangeDTO.getIssueId(), cumulativeFlowFilterDTO.getColumnIds());
+                if (columnStatusRelDO == null) {
+                    resultRemove.add(columnChangeDTO);
+                } else {
+                    columnChangeDTO.setColumnTo(columnStatusRelDO.getColumnId().toString());
+                    columnChangeDTO.setStatusTo(columnStatusRelDO.getStatusId().toString());
+                }
+            });
+            result.addAll(addIssueDuringDate);
+            if (!resultRemove.isEmpty()) {
+                result.removeAll(resultRemove);
+            }
+        }
+    }
+
     private void queryIssueCount(SprintE sprintE, List<ReportIssueE> reportIssueEList) {
         SprintDO sprintDO = sprintConverter.entityToDo(sprintE);
-        //==========================================不考虑状态拖动的情况(包含子任务)
         //获取冲刺开启前的issue
         List<Long> issueIdBeforeSprintList = reportMapper.queryIssueIdsBeforeSprintStart(sprintDO);
         //获取冲刺开启前的issue统计
         handleIssueCountBeforeSprint(sprintDO, reportIssueEList, issueIdBeforeSprintList);
         //获取当前冲刺期间加入的issue
         List<Long> issueIdAddList = reportMapper.queryAddIssueIdsDuringSprint(sprintDO);
-        //获取当前冲刺期间加入的issue(包含加入时间)
+        //获取当前冲刺期间加入的issue
         handleAddIssueCountDuringSprint(sprintDO, reportIssueEList, issueIdAddList);
         //获取当前冲刺期间移除的issue
         List<Long> issueIdRemoveList = reportMapper.queryRemoveIssueIdsDuringSprint(sprintDO);
-        //获取当前冲刺期间移除的issue(包含移除时间)
+        //获取当前冲刺期间移除的issue
         handleRemoveCountDuringSprint(sprintDO, reportIssueEList, issueIdRemoveList);
-        //获取冲刺结束时的issue(结束前状态为done的issue不计入统计字段设为false)(包含子任务)
+        //获取冲刺结束时的issue
         handleIssueCountAfterSprint(sprintDO, reportIssueEList);
-        //==========================================考虑状态拖动的情况(包含子任务)
         //获取冲刺期间所有操作到的issue
         List<Long> issueAllList = getAllIssueDuringSprint(issueIdBeforeSprintList, issueIdAddList, issueIdRemoveList);
-        //获取当前冲刺期间移动到done状态的issue(包含移动到done的时间)(包含子任务)
+        //获取当前冲刺期间移动到done状态的issue
         handleAddDoneIssueCountDuringSprint(sprintDO, reportIssueEList, issueAllList);
-        //获取当前冲刺期间done移动到非done状态的issue(包含移动到非done的时间)(包含子任务)
+        //获取当前冲刺期间移出done状态的issue
         handleRemoveDoneIssueCountDuringSprint(sprintDO, reportIssueEList, issueAllList);
     }
 
     private void queryStoryPointsOrRemainingEstimatedTime(SprintE sprintE, List<ReportIssueE> reportIssueEList, String field) {
         SprintDO sprintDO = sprintConverter.entityToDo(sprintE);
-        //==========================================不考虑状态拖动的情况(包含子任务)
         //获取冲刺开启前的issue
         List<Long> issueIdBeforeSprintList = reportMapper.queryIssueIdsBeforeSprintStart(sprintDO);
         //获取当前冲刺期间加入的issue
         List<Long> issueIdAddList = reportMapper.queryAddIssueIdsDuringSprint(sprintDO);
         //获取当前冲刺期间移除的issue
         List<Long> issueIdRemoveList = reportMapper.queryRemoveIssueIdsDuringSprint(sprintDO);
-        //获取当前冲刺开启前的issue的变更字段值(包含子任务)
+        //获取当前冲刺开启前的issue信息
         handleIssueValueBeforeSprint(sprintDO, reportIssueEList, issueIdBeforeSprintList, field);
-        //获取当前冲刺期间加入的issue(包含加入时间、加入时的字段值)(包含子任务)
+        //获取当前冲刺期间加入的issue信息
         handleAddIssueValueDuringSprint(sprintDO, reportIssueEList, issueIdAddList, field);
-        //获取当前冲刺期间移除的issue(包含移除时间、移除时的字段值)(包含子任务)
+        //获取当前冲刺期间移除的issue信息
         handleRemoveIssueValueDuringSprint(sprintDO, reportIssueEList, issueIdRemoveList, field);
-        //==========================================考虑冲刺期间所有issue的值更改情况
-        //获取冲刺期间所有操作到的issue
+        //获取冲刺期间所有操作到的issue变更信息
         List<Long> issueAllList = getAllIssueDuringSprint(issueIdBeforeSprintList, issueIdAddList, issueIdRemoveList);
         handleChangeIssueValueDuringSprint(sprintDO, reportIssueEList, issueAllList, field);
-        //==========================================考虑状态拖动的情况
-        //获取当前冲刺期间移动到done状态的issue
+        //获取当前冲刺期间移动到done状态的issue信息
         handleAddDoneIssueValueDuringSprint(sprintDO, reportIssueEList, field, issueAllList);
-        //获取当前冲刺期间done移动到非done状态的issue
+        //获取当前冲刺期间移出done状态的issue信息
         handleRemoveDoneIssueValueDuringSprint(sprintDO, reportIssueEList, field, issueAllList);
         //获取冲刺结束时的issue(结束前状态为done的issue计入统计字段设为false)
         handleIssueValueAfterSprint(sprintDO, reportIssueEList, field);
@@ -147,10 +211,7 @@ public class ReportServiceImpl implements ReportService {
                 reportIssueEList.addAll(issueAfterSprintList);
             } else {
                 ReportIssueE reportIssueE = new ReportIssueE();
-                reportIssueE.setDate(sprintDO.getActualEndDate());
-                reportIssueE.setType("endSprint");
-                reportIssueE.setNewValue(0);
-                reportIssueE.setOldValue(0);
+                reportIssueE.initEndSprint(sprintDO.getActualEndDate());
                 reportIssueEList.add(reportIssueE);
             }
         }
@@ -186,8 +247,6 @@ public class ReportServiceImpl implements ReportService {
     private void handleAddIssueCountDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueIdAddList) {
         List<ReportIssueE> issueAddList = issueIdAddList != null && !issueIdAddList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueDuringSprint(issueIdAddList, sprintDO), ReportIssueE.class) : null;
         if (issueAddList != null && !issueAddList.isEmpty()) {
-            //在冲刺开始期间创建的，没有生成加入冲刺日志时间，要处理
-            issueAddList.stream().filter(reportIssueE -> reportIssueE.getDate() == null).forEach(reportIssueE -> reportIssueE.setDate(reportMapper.queryAddIssueDuringSprintNoData(reportIssueE.getIssueId(), sprintDO.getSprintId())));
             //添加时，状态为done的不计入统计
             issueAddList.parallelStream().forEach(this::handleDoneStatusIssue);
             reportIssueEList.addAll(issueAddList);
@@ -208,10 +267,7 @@ public class ReportServiceImpl implements ReportService {
             reportIssueEList.addAll(issueBeforeSprintList);
         } else {
             ReportIssueE reportIssueE = new ReportIssueE();
-            reportIssueE.setDate(sprintDO.getStartDate());
-            reportIssueE.setType("startSprint");
-            reportIssueE.setNewValue(0);
-            reportIssueE.setOldValue(0);
+            reportIssueE.initStartSprint(sprintDO.getStartDate());
             reportIssueEList.add(reportIssueE);
         }
     }
@@ -223,20 +279,17 @@ public class ReportServiceImpl implements ReportService {
                 reportIssueEList.addAll(issueAfterSprintList);
             } else {
                 ReportIssueE reportIssueE = new ReportIssueE();
-                reportIssueE.setDate(sprintDO.getEndDate());
-                reportIssueE.setType("endSprint");
-                reportIssueE.setNewValue(0);
-                reportIssueE.setOldValue(0);
+                reportIssueE.initEndSprint(sprintDO.getEndDate());
                 reportIssueEList.add(reportIssueE);
             }
         }
     }
 
     private void handleRemoveDoneIssueValueDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, String field, List<Long> issueAllList) {
-        // 获取当前冲刺期间移除done状态的issue
+        // 获取当前冲刺期间移出done状态的issue
         List<Long> issueIdRemoveDoneList = issueAllList != null && !issueAllList.isEmpty() ? reportMapper.queryRemoveDoneIssueIdsDuringSprint(sprintDO, issueAllList) : null;
         List<ReportIssueE> issueRemoveDoneList = issueIdRemoveDoneList != null && !issueIdRemoveDoneList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryRemoveIssueDoneValueDurationSprint(issueIdRemoveDoneList, sprintDO, field), ReportIssueE.class) : null;
-        if (issueRemoveDoneList != null) {
+        if (issueRemoveDoneList != null && !issueRemoveDoneList.isEmpty()) {
             reportIssueEList.addAll(issueRemoveDoneList);
         }
     }
@@ -255,21 +308,19 @@ public class ReportServiceImpl implements ReportService {
         List<ReportIssueE> issueChangeList = issueAllList != null && !issueAllList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryIssueChangeValueDurationSprint(issueAllList, sprintDO, field), ReportIssueE.class) : null;
         if (issueChangeList != null && !issueChangeList.isEmpty()) {
             issueChangeList.parallelStream().forEach(reportIssueE -> {
-                //(如果变更时间是在done状态或者是移出冲刺期间，计入统计字段设为false)
+                //变更时间是在done状态，计入统计字段设为false
                 handleDoneStatusIssue(reportIssueE);
+                //变更时间是在移出冲刺期间，计入统计字段设为false
                 handleRemoveIssue(reportIssueE, sprintDO.getSprintId());
             });
-        }
-        if (issueChangeList != null) {
             reportIssueEList.addAll(issueChangeList);
         }
     }
 
     private void handleRemoveIssue(ReportIssueE reportIssueE, Long sprintId) {
         Boolean result = reportMapper.checkIssueRemove(reportIssueE.getIssueId(), reportIssueE.getDate(), sprintId);
-        if (result != null && !result) {
-            reportIssueE.setStatistical(false);
-        } else if (result == null) {
+        result = (result != null && !result) || result == null;
+        if (result) {
             reportIssueE.setStatistical(false);
         }
     }
@@ -313,10 +364,7 @@ public class ReportServiceImpl implements ReportService {
             reportIssueEList.addAll(issueBeforeList);
         } else {
             ReportIssueE reportIssueE = new ReportIssueE();
-            reportIssueE.setDate(sprintDO.getStartDate());
-            reportIssueE.setType("startSprint");
-            reportIssueE.setNewValue(0);
-            reportIssueE.setOldValue(0);
+            reportIssueE.initStartSprint(sprintDO.getStartDate());
             reportIssueEList.add(reportIssueE);
         }
     }

@@ -143,7 +143,7 @@ public class IssueController {
                                                                 @RequestParam(required = false) String content) {
         return Optional.ofNullable(issueService.queryIssueByOption(projectId, issueId, content, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.Issue.query"));
+                .orElseThrow(() -> new CommonException("error.Issue.queryIssueByOption"));
     }
 
 
@@ -154,7 +154,7 @@ public class IssueController {
                                                       @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(issueService.listEpic(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
-                .orElseThrow(() -> new CommonException("error.Epic.get"));
+                .orElseThrow(() -> new CommonException("error.Epic.listEpic"));
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
@@ -230,7 +230,7 @@ public class IssueController {
         IssueE issueE = issueRule.verifyUpdateTypeData(projectId, issueUpdateTypeDTO);
         return Optional.ofNullable(issueService.updateIssueTypeCode(issueE, issueUpdateTypeDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
-                .orElseThrow(() -> new CommonException("error.issue.batchToSprint"));
+                .orElseThrow(() -> new CommonException("error.issue.updateIssueTypeCode"));
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
@@ -246,7 +246,7 @@ public class IssueController {
                                                               @SortDefault(value = "issueId", direction = Sort.Direction.DESC) PageRequest pageRequest) {
         return Optional.ofNullable(issueService.listByOptions(projectId, typeCode, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.IssueList.get"));
+                .orElseThrow(() -> new CommonException("error.IssueList.listByOptions"));
     }
 
 }

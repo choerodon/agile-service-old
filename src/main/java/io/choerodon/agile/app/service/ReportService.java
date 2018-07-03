@@ -1,5 +1,7 @@
 package io.choerodon.agile.app.service;
 
+import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO;
+import io.choerodon.agile.api.dto.CumulativeFlowFilterDTO;
 import io.choerodon.agile.api.dto.ReportIssueDTO;
 
 import java.util.List;
@@ -20,4 +22,12 @@ public interface ReportService {
      */
     List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type);
 
+    /**
+     * 查看累积流量图
+     *
+     * @param projectId               projectId
+     * @param cumulativeFlowFilterDTO cumulativeFlowFilterDTO
+     * @return CumulativeFlowDiagramDTO
+     */
+   CumulativeFlowDiagramDTO queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO);
 }

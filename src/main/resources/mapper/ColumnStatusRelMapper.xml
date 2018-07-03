@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.choerodon.agile.infra.mapper.ColumnStatusRelMapper">
+
+    <select id="queryByIssueIdAndColumnIds" resultType="io.choerodon.agile.infra.dataobject.ColumnStatusRelDO">
+        SELECT
+        ai.status_id,
+        avcsr.column_id
+        FROM agile_issue ai LEFT JOIN agile_board_column_status_rel avcsr ON ai.status_id = avcsr.status_id
+        WHERE ai.issue_id = #{issueId} AND avcsr.column_id IN
+        <foreach collection="columnIds" item="columnId"
+                 open="(" close=")" separator=",">
+            #{columnId}
+        </foreach>
+    </select>
+
+</mapper>

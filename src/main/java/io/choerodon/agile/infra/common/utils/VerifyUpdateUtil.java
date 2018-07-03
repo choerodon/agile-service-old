@@ -34,7 +34,8 @@ public class VerifyUpdateUtil {
                 field.setAccessible(true);
                 Boolean flag = false;
                 if (field.getType() == String.class) {
-                    if(!k.equals("versionType")){
+                    if (!"versionType".equals(k)) {
+                        //todo 优化成注解过滤
                         flag = true;
                     }
                     field.set(objectUpdate, v);

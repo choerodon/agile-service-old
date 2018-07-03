@@ -2,6 +2,7 @@ package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
 import io.choerodon.agile.infra.dataobject.BoardColumnCheckDO;
+import io.choerodon.agile.infra.dataobject.ColumnDO;
 import io.choerodon.mybatis.common.BaseMapper;
 import io.choerodon.agile.infra.dataobject.BoardColumnDO;
 import org.apache.ibatis.annotations.Param;
@@ -67,4 +68,11 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
      * @return Long
      */
     List<Long> queryAssigneeIdsBySprintId(@Param("projectId") Long projectId, @Param("activeSprintId")Long activeSprintId);
+
+    /**
+     * 根据列id获取列对象
+     * @param columnIds columnIds
+     * @return ColumnDO
+     */
+    List<ColumnDO> queryColumnByColumnIds(@Param("columnIds")List<Long> columnIds);
 }
