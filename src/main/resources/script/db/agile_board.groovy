@@ -32,4 +32,10 @@ databaseChangeLog(logicalFilePath:'agile_board.groovyoovy') {
             column(name: "last_update_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
     }
+
+    changeSet(id: '2018-07-02-agile-board-update-data', author: 'fuqianghuang01@gmail.com') {
+        sql(stripComments: true, splitStatements: true, endDelimiter: ';') {
+            "UPDATE agile_board SET swimlane_based_code = 'parent_child' WHERE swimlane_based_code = 'story';"
+        }
+    }
 }
