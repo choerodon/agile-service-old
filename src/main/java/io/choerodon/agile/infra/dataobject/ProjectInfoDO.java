@@ -28,6 +28,21 @@ public class ProjectInfoDO extends AuditDomain {
 
     private Long issueMaxNum;
 
+    /**
+     * 项目负责人
+     */
+    private Long lead;
+
+    /**
+     * 经办人策略
+     */
+    private String assigneeType;
+
+    /**
+     * 经办人策略
+     */
+    private String issueDefaultPriorityCode;
+
     public Long getInfoId() {
         return infoId;
     }
@@ -58,6 +73,30 @@ public class ProjectInfoDO extends AuditDomain {
 
     public void setIssueMaxNum(Long issueMaxNum) {
         this.issueMaxNum = issueMaxNum;
+    }
+
+    public Long getLead() {
+        return lead;
+    }
+
+    public void setLead(Long lead) {
+        this.lead = lead;
+    }
+
+    public String getAssigneeType() {
+        return assigneeType;
+    }
+
+    public void setAssigneeType(String assigneeType) {
+        this.assigneeType = assigneeType;
+    }
+
+    public String getIssueDefaultPriorityCode() {
+        return issueDefaultPriorityCode;
+    }
+
+    public void setIssueDefaultPriorityCode(String issueDefaultPriorityCode) {
+        this.issueDefaultPriorityCode = issueDefaultPriorityCode;
     }
 
     @Override

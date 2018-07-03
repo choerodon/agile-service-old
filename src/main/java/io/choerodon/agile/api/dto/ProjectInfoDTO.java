@@ -2,6 +2,8 @@ package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import java.util.Date;
+
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/6/15
@@ -15,6 +17,14 @@ public class ProjectInfoDTO {
     private String projectCode;
 
     private Long objectVersionNumber;
+
+    private Long lead;
+
+    private String assigneeType;
+
+    private String issueDefaultPriorityCode;
+
+    private Date creationDate;
 
     public Long getInfoId() {
         return infoId;
@@ -46,6 +56,38 @@ public class ProjectInfoDTO {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Long getLead() {
+        return lead;
+    }
+
+    public void setLead(Long lead) {
+        this.lead = lead;
+    }
+
+    public String getAssigneeType() {
+        return assigneeType;
+    }
+
+    public void setAssigneeType(String assigneeType) {
+        this.assigneeType = assigneeType;
+    }
+
+    public String getIssueDefaultPriorityCode() {
+        return issueDefaultPriorityCode;
+    }
+
+    public void setIssueDefaultPriorityCode(String issueDefaultPriorityCode) {
+        this.issueDefaultPriorityCode = issueDefaultPriorityCode;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
     @Override

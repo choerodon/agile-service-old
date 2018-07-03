@@ -18,6 +18,12 @@ public class ProjectInfoE {
 
     private Long objectVersionNumber;
 
+    private Long lead;
+
+    private String assigneeType;
+
+    private String issueDefaultPriorityCode;
+
     public Long getInfoId() {
         return infoId;
     }
@@ -56,6 +62,30 @@ public class ProjectInfoE {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Long getLead() {
+        return lead;
+    }
+
+    public void setLead(Long lead) {
+        this.lead = lead;
+    }
+
+    public String getAssigneeType() {
+        return assigneeType;
+    }
+
+    public void setAssigneeType(String assigneeType) {
+        this.assigneeType = assigneeType;
+    }
+
+    public String getIssueDefaultPriorityCode() {
+        return issueDefaultPriorityCode;
+    }
+
+    public void setIssueDefaultPriorityCode(String issueDefaultPriorityCode) {
+        this.issueDefaultPriorityCode = issueDefaultPriorityCode;
     }
 
     @Override

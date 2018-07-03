@@ -21,11 +21,10 @@ public class ProjectInfoRule {
         if (projectInfoDTO.getInfoId() == null) {
             throw new CommonException("error.projectInfo.infoId");
         }
-        if (projectInfoDTO.getProjectCode() == null) {
-            throw new CommonException("error.projectInfo.projectCode");
-        }
-        if (projectInfoService.checkProjectCode(projectInfoDTO.getProjectCode())) {
-            throw new CommonException("error.projectInfo.checkProjectCode");
+        if (projectInfoDTO.getProjectCode() != null) {
+            if (projectInfoService.checkProjectCode(projectInfoDTO.getProjectCode())) {
+                throw new CommonException("error.projectInfo.checkProjectCode");
+            }
         }
     }
 }
