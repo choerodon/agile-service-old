@@ -269,7 +269,7 @@ public interface ReportMapper {
     Boolean checkIssueRemove(@Param("issueId") Long issueId, @Param("date") Date date, @Param("sprintId") Long sprintId);
 
     /**
-     * 获取积累流量图符合条件的所有issue
+     * 获取累积流量图符合条件的所有issue
      *
      * @param projectId projectId
      * @param filterSql filterSql
@@ -278,7 +278,7 @@ public interface ReportMapper {
     List<Long> queryAllIssueIdsByFilter(@Param("projectId") Long projectId, @Param("filterSql") String filterSql);
 
     /**
-     * 获取积累流量图符合条件的所有issue
+     * 获取累积流量图符合条件的所有issue
      *
      * @param startDate   startDate
      * @param endDate     endDate
@@ -289,7 +289,7 @@ public interface ReportMapper {
     List<ColumnChangeDO> queryAddIssueDuringDate(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("allIssueIds") List<Long> allIssueIds, @Param("columnIds") List<Long> columnIds);
 
     /**
-     * 查询时间范围内的列变化（积累流图）
+     * 查询时间范围内的列变化（累积流图）
      *
      * @param startDate   startDate
      * @param endDate     endDate

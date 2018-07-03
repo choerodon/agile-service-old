@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.dataobject;
 
+import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.mybatis.annotation.ModifyAudit;
 import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
@@ -53,5 +54,10 @@ public class ColumnStatusRelDO extends AuditDomain {
 
     public Long getProjectId() {
         return projectId;
+    }
+
+    @Override
+    public String toString() {
+        return StringUtil.getToString(this);
     }
 }

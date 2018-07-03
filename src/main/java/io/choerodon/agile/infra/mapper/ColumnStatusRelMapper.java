@@ -13,7 +13,7 @@ import java.util.List;
 public interface ColumnStatusRelMapper extends BaseMapper<ColumnStatusRelDO> {
 
     /**
-     * 根据issueId和列id集合查询columnStatus关系，用于统计积累流图
+     * 根据issueId和列id集合查询columnStatus关系，用于统计累积流图
      *
      * @param issueId   issueId
      * @param columnIds columnIds

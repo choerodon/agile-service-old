@@ -7,7 +7,8 @@ import io.choerodon.agile.api.dto.ReportIssueDTO;
 import io.choerodon.agile.app.assembler.ReportAssembler;
 import io.choerodon.agile.app.service.ReportService;
 import io.choerodon.agile.domain.agile.converter.SprintConverter;
-import io.choerodon.agile.domain.agile.entity.*;
+import io.choerodon.agile.domain.agile.entity.ReportIssueE;
+import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO;
 import io.choerodon.agile.infra.dataobject.SprintDO;
 import io.choerodon.agile.infra.mapper.BoardColumnMapper;
@@ -20,7 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +54,7 @@ public class ReportServiceImpl implements ReportService {
     private static final String ISSUE_COUNT = "issueCount";
     private static final String SPRINT_PLANNING_CODE = "sprint_planning";
     private static final String REPORT_SPRINT_ERROR = "error.report.sprintError";
+    private static final String REPORT_FILTER_ERROR = "error.cumulativeFlowDiagram.filter";
     private static final String FILED_TIMEESTIMATE = "timeestimate";
     private static final String FILED_STORY_POINTS = "Story Points";
     private static final String SPRINT_CLOSED = "closed";
@@ -90,24 +94,17 @@ public class ReportServiceImpl implements ReportService {
     public CumulativeFlowDiagramDTO queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
         //获取当前符合条件的所有issueIds
         CumulativeFlowDiagramDTO cumulativeFlowDiagramDTO = new CumulativeFlowDiagramDTO();
+        cumulativeFlowDiagramDTO.setColumnDTOList(new ArrayList<>());
+        cumulativeFlowDiagramDTO.setColumnChangeDTOList(new ArrayList<>());
         String filterSql = null;
         if (cumulativeFlowFilterDTO.getQuickFilterIds() != null && !cumulativeFlowFilterDTO.getQuickFilterIds().isEmpty()) {
             filterSql = sprintService.getQuickFilter(cumulativeFlowFilterDTO.getQuickFilterIds());
         }
         List<Long> allIssueIds = reportMapper.queryAllIssueIdsByFilter(projectId, filterSql);
         if (allIssueIds != null && !allIssueIds.isEmpty() && cumulativeFlowFilterDTO.getColumnIds() != null && !cumulativeFlowFilterDTO.getColumnIds().isEmpty()) {
-            //所有在当前时间内创建的issue
             List<ColumnChangeDTO> result = new ArrayList<>();
-            List<ColumnChangeDTO> addIssueDuringDate = reportAssembler.columnChangeListDoToDto(reportMapper.queryAddIssueDuringDate(cumulativeFlowFilterDTO.getStartDate(),
-                    cumulativeFlowFilterDTO.getEndDate(), allIssueIds, cumulativeFlowFilterDTO.getColumnIds()));
-            if (addIssueDuringDate != null && !addIssueDuringDate.isEmpty()) {
-                addIssueDuringDate.stream().filter(columnChangeDTO -> columnChangeDTO.getStatusTo() == null).forEach(columnChangeDTO -> {
-                    ColumnStatusRelDO columnStatusRelDO = columnStatusRelMapper.queryByIssueIdAndColumnIds(columnChangeDTO.getIssueId(), cumulativeFlowFilterDTO.getColumnIds());
-                    columnChangeDTO.setColumnTo(columnStatusRelDO.getColumnId().toString());
-                    columnChangeDTO.setStatusTo(columnStatusRelDO.getStatusId().toString());
-                });
-                result.addAll(addIssueDuringDate);
-            }
+            //所有在当前时间内创建的issue
+            handleCumulativeFlowAddDuringDate(allIssueIds, result, cumulativeFlowFilterDTO);
             //所有在当前时间内状态改变的issue
             List<ColumnChangeDTO> changeIssueDuringDate = reportAssembler.columnChangeListDoToDto(reportMapper.queryChangeIssueDuringDate(cumulativeFlowFilterDTO.getStartDate(),
                     cumulativeFlowFilterDTO.getEndDate(), allIssueIds, cumulativeFlowFilterDTO.getColumnIds()));
@@ -118,7 +115,28 @@ public class ReportServiceImpl implements ReportService {
             cumulativeFlowDiagramDTO.setColumnDTOList(reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(cumulativeFlowFilterDTO.getColumnIds())));
             return cumulativeFlowDiagramDTO;
         } else {
-            return null;
+            throw new CommonException(REPORT_FILTER_ERROR);
+        }
+    }
+
+    private void handleCumulativeFlowAddDuringDate(List<Long> allIssueIds, List<ColumnChangeDTO> result, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
+        List<ColumnChangeDTO> addIssueDuringDate = reportAssembler.columnChangeListDoToDto(reportMapper.queryAddIssueDuringDate(cumulativeFlowFilterDTO.getStartDate(),
+                cumulativeFlowFilterDTO.getEndDate(), allIssueIds, cumulativeFlowFilterDTO.getColumnIds()));
+        if (addIssueDuringDate != null && !addIssueDuringDate.isEmpty()) {
+            List<ColumnChangeDTO> resultRemove = new ArrayList<>();
+            addIssueDuringDate.stream().filter(columnChangeDTO -> columnChangeDTO.getStatusTo() == null).forEach(columnChangeDTO -> {
+                ColumnStatusRelDO columnStatusRelDO = columnStatusRelMapper.queryByIssueIdAndColumnIds(columnChangeDTO.getIssueId(), cumulativeFlowFilterDTO.getColumnIds());
+                if (columnStatusRelDO == null) {
+                    resultRemove.add(columnChangeDTO);
+                } else {
+                    columnChangeDTO.setColumnTo(columnStatusRelDO.getColumnId().toString());
+                    columnChangeDTO.setStatusTo(columnStatusRelDO.getStatusId().toString());
+                }
+            });
+            result.addAll(addIssueDuringDate);
+            if (!resultRemove.isEmpty()) {
+                result.removeAll(resultRemove);
+            }
         }
     }
 
