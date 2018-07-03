@@ -154,13 +154,15 @@ public class IssueServiceImpl implements IssueService {
         Long statusId = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
                 issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
                         issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(new IssueStatusCreateDO()))).getId();
-        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectByPrimaryKey(issueCreateDTO.getProjectId()), ProjectInfoE.class);
         //如果是epic，初始化颜色
         if (ISSUE_EPIC.equals(issueE.getTypeCode())) {
             List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
             issueE.initializationColor(colorList);
         }
         //初始化创建issue设置issue编号、项目默认设置
+        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+        projectInfoDO.setProjectId(issueCreateDTO.getProjectId());
+        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
         issueE.initializationIssue(statusId, projectInfoE);
         projectInfoRepository.updateIssueMaxNum(issueE.getProjectId());
         //初始化排序
@@ -220,7 +222,7 @@ public class IssueServiceImpl implements IssueService {
         //连表查询需要设置主表别名
         pageRequest.resetOrder("ai", new HashMap<>());
         Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
-                issueMapper.queryIssueListWithoutSub(projectId, searchDTO.getSearchArgs(), searchDTO.getAdvancedSearchArgs(),searchDTO.getOtherArgs()));
+                issueMapper.queryIssueListWithoutSub(projectId, searchDTO.getSearchArgs(), searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs()));
         Page<IssueListDTO> issueListDTOPage = new Page<>();
         issueListDTOPage.setNumber(issueDOPage.getNumber());
         issueListDTOPage.setNumberOfElements(issueDOPage.getNumberOfElements());
@@ -601,8 +603,10 @@ public class IssueServiceImpl implements IssueService {
         issueDO.setProjectId(subIssueE.getProjectId());
         issueDO.setStatusId(statusId);
         boardService.dataLogStatus(issueDO, subIssueE);
-        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectByPrimaryKey(subIssueE.getProjectId()), ProjectInfoE.class);
         //设置初始状态,跟随父类状态
+        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+        projectInfoDO.setProjectId(subIssueE.getProjectId());
+        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
         subIssueE = parentIssueE.initializationSubIssue(subIssueE, projectInfoE);
         projectInfoRepository.updateIssueMaxNum(subIssueE.getProjectId());
         //创建issue
