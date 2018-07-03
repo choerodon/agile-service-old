@@ -27,4 +27,12 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_project_info.groovy') {
         }
     }
 
+    changeSet(id: '2018-07-03-agile-project-info-add-column', author: 'dinghuang123@gmail.com') {
+        addColumn(tableName: 'agile_project_info') {
+            column(name: "default_assignee_id", type: "BIGINT UNSIGNED")
+            column(name: "default_assignee_type", type: "VARCHAR(32)")
+            column(name: "default_priority_code", type: "VARCHAR(32)")
+        }
+    }
+
 }

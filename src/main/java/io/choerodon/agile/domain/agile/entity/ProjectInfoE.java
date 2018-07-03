@@ -18,6 +18,12 @@ public class ProjectInfoE {
 
     private Long objectVersionNumber;
 
+    private Long defaultAssigneeId;
+
+    private String defaultAssigneeType;
+
+    private String defaultPriorityCode;
+
     public Long getInfoId() {
         return infoId;
     }
@@ -56,6 +62,30 @@ public class ProjectInfoE {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Long getDefaultAssigneeId() {
+        return defaultAssigneeId;
+    }
+
+    public void setDefaultAssigneeId(Long defaultAssigneeId) {
+        this.defaultAssigneeId = defaultAssigneeId;
+    }
+
+    public String getDefaultAssigneeType() {
+        return defaultAssigneeType;
+    }
+
+    public void setDefaultAssigneeType(String defaultAssigneeType) {
+        this.defaultAssigneeType = defaultAssigneeType;
+    }
+
+    public String getDefaultPriorityCode() {
+        return defaultPriorityCode;
+    }
+
+    public void setDefaultPriorityCode(String defaultPriorityCode) {
+        this.defaultPriorityCode = defaultPriorityCode;
     }
 
     @Override

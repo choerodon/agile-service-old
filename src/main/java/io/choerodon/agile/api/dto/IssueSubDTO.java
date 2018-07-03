@@ -52,6 +52,8 @@ public class IssueSubDTO {
 
     private List<IssueAttachmentDTO> issueAttachmentDTOList;
 
+    private List<ComponentIssueRelDTO> componentIssueRelDTOList;
+
     private Long objectVersionNumber;
 
     private Date creationDate;
@@ -320,6 +322,14 @@ public class IssueSubDTO {
 
     public void setStatusColor(String statusColor) {
         this.statusColor = statusColor;
+    }
+
+    public List<ComponentIssueRelDTO> getComponentIssueRelDTOList() {
+        return componentIssueRelDTOList;
+    }
+
+    public void setComponentIssueRelDTOList(List<ComponentIssueRelDTO> componentIssueRelDTOList) {
+        this.componentIssueRelDTOList = componentIssueRelDTOList;
     }
 
     @Override

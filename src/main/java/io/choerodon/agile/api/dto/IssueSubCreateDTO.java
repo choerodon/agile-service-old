@@ -31,6 +31,8 @@ public class IssueSubCreateDTO {
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
+    private List<ComponentIssueRelDTO> componentIssueRelDTOList;
+
     private List<IssueLinkCreateDTO> issueLinkCreateDTOList;
 
     private BigDecimal remainingTime;
@@ -139,6 +141,14 @@ public class IssueSubCreateDTO {
 
     public void setSprintId(Long sprintId) {
         this.sprintId = sprintId;
+    }
+
+    public List<ComponentIssueRelDTO> getComponentIssueRelDTOList() {
+        return componentIssueRelDTOList;
+    }
+
+    public void setComponentIssueRelDTOList(List<ComponentIssueRelDTO> componentIssueRelDTOList) {
+        this.componentIssueRelDTOList = componentIssueRelDTOList;
     }
 
     @Override

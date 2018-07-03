@@ -176,6 +176,7 @@ public class IssueAssembler {
         IssueSubDTO issueSubDTO = new IssueSubDTO();
         BeanUtils.copyProperties(issueDetailDO, issueSubDTO);
         issueSubDTO.setIssueLinkDTOList(ConvertHelper.convertList(issueDetailDO.getIssueLinkDOList(), IssueLinkDTO.class));
+        issueSubDTO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
         issueSubDTO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
         issueSubDTO.setActiveSprint(sprintNameAssembler.doToDTO(issueDetailDO.getActiveSprint()));
         issueSubDTO.setCloseSprint(sprintNameAssembler.doListToDTO(issueDetailDO.getCloseSprint()));

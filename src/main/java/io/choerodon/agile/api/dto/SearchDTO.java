@@ -20,6 +20,11 @@ public class SearchDTO {
      */
     private Map<String, Object> advancedSearchArgs;
 
+    /**
+     * 关联查询参数
+     */
+    private Map<String, Object> otherArgs;
+
     public Map<String, Object> getSearchArgs() {
         return searchArgs;
     }
@@ -34,6 +39,14 @@ public class SearchDTO {
 
     public void setAdvancedSearchArgs(Map<String, Object> advancedSearchArgs) {
         this.advancedSearchArgs = advancedSearchArgs;
+    }
+
+    public Map<String, Object> getOtherArgs() {
+        return otherArgs;
+    }
+
+    public void setOtherArgs(Map<String, Object> otherArgs) {
+        this.otherArgs = otherArgs;
     }
 
     @Override

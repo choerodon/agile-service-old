@@ -154,16 +154,20 @@ public class IssueServiceImpl implements IssueService {
         Long statusId = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
                 issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
                         issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(new IssueStatusCreateDO()))).getId();
-        //设置issue编号
-        initializationIssueNum(issueE);
-        issueE.initializationIssue(statusId);
-        issueE.initializationIssue();
+        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectByPrimaryKey(issueCreateDTO.getProjectId()), ProjectInfoE.class);
         //如果是epic，初始化颜色
-        List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
-        issueE.initializationColor(colorList);
+        if (ISSUE_EPIC.equals(issueE.getTypeCode())) {
+            List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
+            issueE.initializationColor(colorList);
+        }
+        //初始化创建issue设置issue编号、项目默认设置
+        issueE.initializationIssue(statusId, projectInfoE);
+        projectInfoRepository.updateIssueMaxNum(issueE.getProjectId());
+        //初始化排序
         if (issueE.isIssueRank()) {
             calculationRank(issueE.getProjectId(), issueE);
         }
+        //创建issue
         Long issueId = issueRepository.create(issueE).getIssueId();
         if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
             issueRepository.issueToSprint(issueE.getProjectId(), issueE.getSprintId(), issueId, new Date());
@@ -216,7 +220,7 @@ public class IssueServiceImpl implements IssueService {
         //连表查询需要设置主表别名
         pageRequest.resetOrder("ai", new HashMap<>());
         Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
-                issueMapper.queryIssueListWithoutSub(projectId, searchDTO.getSearchArgs(), searchDTO.getAdvancedSearchArgs()));
+                issueMapper.queryIssueListWithoutSub(projectId, searchDTO.getSearchArgs(), searchDTO.getAdvancedSearchArgs(),searchDTO.getOtherArgs()));
         Page<IssueListDTO> issueListDTOPage = new Page<>();
         issueListDTOPage.setNumber(issueDOPage.getNumber());
         issueListDTOPage.setNumberOfElements(issueDOPage.getNumberOfElements());
@@ -488,7 +492,8 @@ public class IssueServiceImpl implements IssueService {
             //日志记录
             dataLog(fieldList, originIssue, issueUpdateDTO, fieldList.contains(SPRINT_ID_FIELD));
             IssueE issueE = issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO);
-            issueE.initializationIssue();
+            //处理用户，前端可能会传0，处理为null
+            issueE.initializationIssueUser();
             if (fieldList.contains(SPRINT_ID_FIELD)) {
                 IssueE oldIssue = ConvertHelper.convert(originIssue, IssueE.class);
                 List<Long> issueIds = issueMapper.querySubIssueIdsByIssueId(projectId, issueE.getIssueId());
@@ -587,8 +592,6 @@ public class IssueServiceImpl implements IssueService {
     public IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO) {
         IssueE subIssueE = issueAssembler.issueSubCreateDtoToEntity(issueSubCreateDTO);
         IssueE parentIssueE = ConvertHelper.convert(issueMapper.queryIssueByIssueId(subIssueE.getProjectId(), subIssueE.getParentIssueId()), IssueE.class);
-        //设置初始状态,跟随父类状态
-        subIssueE = parentIssueE.initializationSubIssue(subIssueE);
         //日志记录
         IssueDO issueDO = new IssueDO();
         List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(subIssueE.getProjectId());
@@ -598,9 +601,11 @@ public class IssueServiceImpl implements IssueService {
         issueDO.setProjectId(subIssueE.getProjectId());
         issueDO.setStatusId(statusId);
         boardService.dataLogStatus(issueDO, subIssueE);
-        //设置issue编号
-        initializationIssueNum(subIssueE);
-        subIssueE.initializationIssue();
+        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectByPrimaryKey(subIssueE.getProjectId()), ProjectInfoE.class);
+        //设置初始状态,跟随父类状态
+        subIssueE = parentIssueE.initializationSubIssue(subIssueE, projectInfoE);
+        projectInfoRepository.updateIssueMaxNum(subIssueE.getProjectId());
+        //创建issue
         Long issueId = issueRepository.create(subIssueE).getIssueId();
         if (subIssueE.getSprintId() != null && !Objects.equals(subIssueE.getSprintId(), 0L)) {
             issueRepository.issueToSprint(subIssueE.getProjectId(), subIssueE.getSprintId(), issueId, new Date());
@@ -609,6 +614,7 @@ public class IssueServiceImpl implements IssueService {
             issueLinkService.createIssueLinkList(issueSubCreateDTO.getIssueLinkCreateDTOList(), issueId, issueSubCreateDTO.getProjectId());
         }
         handleCreateLabelIssue(issueSubCreateDTO.getLabelIssueRelDTOList(), issueId);
+        handleCreateComponentIssueRel(issueSubCreateDTO.getComponentIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
         handleCreateVersionIssueRel(issueSubCreateDTO.getVersionIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
         if (subIssueE.getSprintId() != null) {
             handleCreateSprintRel(issueId, subIssueE.getSprintId(), subIssueE.getProjectId());
@@ -1136,15 +1142,6 @@ public class IssueServiceImpl implements IssueService {
         if (issueRule.existLabelIssue(labelIssueRelE)) {
             labelIssueRelRepository.create(labelIssueRelE);
         }
-    }
-
-    private void initializationIssueNum(IssueE issueE) {
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        projectInfoDO.setProjectId(issueE.getProjectId());
-        ProjectInfoDO query = projectInfoMapper.selectOne(projectInfoDO);
-        Integer max = query.getIssueMaxNum().intValue() + 1;
-        issueE.setIssueNum(max.toString());
-        projectInfoRepository.updateIssueMaxNum(issueE.getProjectId());
     }
 
     @Override

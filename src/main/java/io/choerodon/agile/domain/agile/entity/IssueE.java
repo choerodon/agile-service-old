@@ -20,6 +20,8 @@ public class IssueE {
 
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
+    private static final String DEFAULT_ASSIGNEE = "default_assignee";
+    private static final String CURRENT_USER = "current_user";
 
     private Long issueId;
 
@@ -229,17 +231,20 @@ public class IssueE {
     /**
      * 初始化创建子任务
      *
-     * @param issueSub issueSub
+     * @param subIssueE subIssueE
      * @return IssueE
      */
-    public IssueE initializationSubIssue(IssueE issueSub) {
-        issueSub.setStatusId(this.statusId);
-        issueSub.setReporterId(DetailsHelper.getUserDetails().getUserId());
-        issueSub.setParentIssueId(this.issueId);
-        issueSub.setSprintId(this.sprintId);
-        issueSub.setTypeCode(SUB_TASK);
-        issueSub.setEpicId(0L);
-        return issueSub;
+    public IssueE initializationSubIssue(IssueE subIssueE, ProjectInfoE projectInfoE) {
+        subIssueE.setStatusId(this.statusId);
+        subIssueE.setParentIssueId(this.issueId);
+        subIssueE.setSprintId(this.sprintId);
+        subIssueE.setTypeCode(SUB_TASK);
+        subIssueE.setEpicId(0L);
+        subIssueE.initializationReporter();
+        subIssueE.initializationIssueNum(projectInfoE);
+        subIssueE.initializationIssueUser();
+        subIssueE.initializationDefaultSetting(projectInfoE);
+        return subIssueE;
     }
 
     /**
@@ -248,9 +253,7 @@ public class IssueE {
      * @param lookupValueDOList lookupValueDOList
      */
     public void initializationColor(List<LookupValueDO> lookupValueDOList) {
-        if (ISSUE_EPIC.equals(this.typeCode)) {
-            this.colorCode = lookupValueDOList.get(new Random().nextInt(lookupValueDOList.size())).getValueCode();
-        }
+        this.colorCode = lookupValueDOList.get(new Random().nextInt(lookupValueDOList.size())).getValueCode();
     }
 
     /**
@@ -258,12 +261,31 @@ public class IssueE {
      *
      * @param statusId statusId
      */
-    public void initializationIssue(Long statusId) {
+    public void initializationIssue(Long statusId, ProjectInfoE projectInfoE) {
         this.statusId = statusId;
         this.parentIssueId = 0L;
-        this.reporterId = DetailsHelper.getUserDetails().getUserId();
         if (this.epicId == null) {
             this.epicId = 0L;
+        }
+        //处理报告人
+        initializationReporter();
+        initializationIssueUser();
+        //项目默认设置
+        initializationDefaultSetting(projectInfoE);
+        //编号设置
+        initializationIssueNum(projectInfoE);
+    }
+
+    private void initializationDefaultSetting(ProjectInfoE projectInfoE) {
+        if (this.assigneeId == null && projectInfoE.getDefaultAssigneeType() != null) {
+            if (DEFAULT_ASSIGNEE.equals(projectInfoE.getDefaultAssigneeType())) {
+                this.assigneeId = projectInfoE.getDefaultAssigneeId();
+            } else if (CURRENT_USER.equals(projectInfoE.getDefaultAssigneeType())) {
+                this.assigneeId = DetailsHelper.getUserDetails().getUserId();
+            }
+        }
+        if (this.priorityCode == null && projectInfoE.getDefaultPriorityCode() != null) {
+            this.priorityCode = projectInfoE.getDefaultPriorityCode();
         }
     }
 
@@ -271,12 +293,18 @@ public class IssueE {
         return this.typeCode != null && !Objects.equals(this.typeCode, SUB_TASK) && !Objects.equals(this.typeCode, ISSUE_EPIC);
     }
 
-    public void initializationIssue() {
-        if (this.reporterId != null && this.reporterId == 0) {
-            this.reporterId = null;
-        }
+    public void initializationIssueUser() {
         if (this.assigneeId != null && this.assigneeId == 0) {
             this.assigneeId = null;
         }
+    }
+
+    private void initializationReporter() {
+        this.reporterId = DetailsHelper.getUserDetails().getUserId();
+    }
+
+    private void initializationIssueNum(ProjectInfoE projectInfoE) {
+        Integer max = projectInfoE.getIssueMaxNum().intValue() + 1;
+        this.issueNum = max.toString();
     }
 }
