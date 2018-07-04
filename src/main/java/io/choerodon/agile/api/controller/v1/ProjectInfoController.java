@@ -1,5 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
+import io.choerodon.agile.api.dto.ProjectDefaultSettingDTO;
 import io.choerodon.agile.api.dto.ProjectInfoDTO;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.domain.agile.rule.ProjectInfoRule;
@@ -50,6 +51,16 @@ public class ProjectInfoController {
         return Optional.ofNullable(projectInfoService.queryProjectInfoByProjectId(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.projectInfo.queryProjectInfoByProjectId"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("根据项目id查询项目默认设置")
+    @GetMapping(value = "/default_setting")
+    public ResponseEntity<ProjectDefaultSettingDTO> queryProjectDefaultSettingByProjectId(@ApiParam(value = "项目id", required = true)
+                                                                                          @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(projectInfoService.queryProjectDefaultSettingByProjectId(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.projectInfo.queryProjectDefaultSettingByProjectId"));
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})

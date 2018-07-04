@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -106,16 +107,41 @@ public class ReportServiceImpl implements ReportService {
             //所有在当前时间内创建的issue
             handleCumulativeFlowAddDuringDate(allIssueIds, result, cumulativeFlowFilterDTO);
             //所有在当前时间内状态改变的issue
-            List<ColumnChangeDTO> changeIssueDuringDate = reportAssembler.columnChangeListDoToDto(reportMapper.queryChangeIssueDuringDate(cumulativeFlowFilterDTO.getStartDate(),
-                    cumulativeFlowFilterDTO.getEndDate(), allIssueIds, cumulativeFlowFilterDTO.getColumnIds()));
-            if (changeIssueDuringDate != null && !changeIssueDuringDate.isEmpty()) {
-                result.addAll(changeIssueDuringDate);
+            handleCumulativeFlowChangeDuringDate(cumulativeFlowFilterDTO, allIssueIds, result);
+            //过滤并排序
+            List<ColumnChangeDTO> columnChangeDTOList = result.stream().filter(columnChangeDTO ->
+                    columnChangeDTO.getColumnTo() != null && !columnChangeDTO.getColumnFrom().equals(columnChangeDTO.getColumnTo()))
+                    .sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList());
+            //对传入时间点的数据给与坐标
+            if (columnChangeDTOList.get(0).getDate().after(cumulativeFlowFilterDTO.getStartDate())) {
+                ColumnChangeDTO columnChangeDTO = new ColumnChangeDTO();
+                columnChangeDTO.setDate(cumulativeFlowFilterDTO.getStartDate());
+                columnChangeDTO.setColumnTo("0");
+                columnChangeDTO.setColumnFrom("0");
+                columnChangeDTOList.add(0, columnChangeDTO);
             }
-            cumulativeFlowDiagramDTO.getColumnChangeDTOList().addAll(result.stream().sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList()));
+            if (!columnChangeDTOList.get(columnChangeDTOList.size() - 1).getDate().before(cumulativeFlowFilterDTO.getStartDate())) {
+                ColumnChangeDTO columnChangeDTO = new ColumnChangeDTO();
+                columnChangeDTO.setDate(cumulativeFlowFilterDTO.getEndDate());
+                columnChangeDTO.setColumnTo("0");
+                columnChangeDTO.setColumnFrom("0");
+                columnChangeDTOList.add(columnChangeDTOList.size(), columnChangeDTO);
+            }
+            cumulativeFlowDiagramDTO.getColumnChangeDTOList().addAll(columnChangeDTOList);
             cumulativeFlowDiagramDTO.setColumnDTOList(reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(cumulativeFlowFilterDTO.getColumnIds())));
             return cumulativeFlowDiagramDTO;
-        } else {
+        } else if (cumulativeFlowFilterDTO.getColumnIds() == null || cumulativeFlowFilterDTO.getColumnIds().isEmpty()) {
             throw new CommonException(REPORT_FILTER_ERROR);
+        } else {
+            return cumulativeFlowDiagramDTO;
+        }
+    }
+
+    private void handleCumulativeFlowChangeDuringDate(CumulativeFlowFilterDTO cumulativeFlowFilterDTO, List<Long> allIssueIds, List<ColumnChangeDTO> result) {
+        List<ColumnChangeDTO> changeIssueDuringDate = reportAssembler.columnChangeListDoToDto(reportMapper.queryChangeIssueDuringDate(cumulativeFlowFilterDTO.getStartDate(),
+                cumulativeFlowFilterDTO.getEndDate(), allIssueIds, cumulativeFlowFilterDTO.getColumnIds()));
+        if (changeIssueDuringDate != null && !changeIssueDuringDate.isEmpty()) {
+            result.addAll(changeIssueDuringDate);
         }
     }
 
@@ -144,20 +170,19 @@ public class ReportServiceImpl implements ReportService {
         List<ColumnChangeDTO> addIssueDuringDate = reportAssembler.columnChangeListDoToDto(reportMapper.queryAddIssueDuringDate(cumulativeFlowFilterDTO.getStartDate(),
                 cumulativeFlowFilterDTO.getEndDate(), allIssueIds, cumulativeFlowFilterDTO.getColumnIds()));
         if (addIssueDuringDate != null && !addIssueDuringDate.isEmpty()) {
-            List<ColumnChangeDTO> resultRemove = new ArrayList<>();
-            addIssueDuringDate.stream().filter(columnChangeDTO -> columnChangeDTO.getStatusTo() == null).forEach(columnChangeDTO -> {
-                ColumnStatusRelDO columnStatusRelDO = columnStatusRelMapper.queryByIssueIdAndColumnIds(columnChangeDTO.getIssueId(), cumulativeFlowFilterDTO.getColumnIds());
-                if (columnStatusRelDO == null) {
-                    resultRemove.add(columnChangeDTO);
-                } else {
-                    columnChangeDTO.setColumnTo(columnStatusRelDO.getColumnId().toString());
-                    columnChangeDTO.setStatusTo(columnStatusRelDO.getStatusId().toString());
+            List<Long> statusToNullIssueIds = addIssueDuringDate.stream().filter(columnChangeDTO -> columnChangeDTO.getStatusTo() == null).map(ColumnChangeDTO::getIssueId).collect(Collectors.toList());
+            Map<Long, ColumnStatusRelDO> columnStatusRelMap = columnStatusRelMapper.queryByIssueIdAndColumnIds(statusToNullIssueIds, cumulativeFlowFilterDTO.getColumnIds())
+                    .stream().collect(Collectors.toMap(ColumnStatusRelDO::getIssueId, Function.identity()));
+            addIssueDuringDate.parallelStream().forEach(columnChangeDTO -> {
+                if (statusToNullIssueIds.contains(columnChangeDTO.getIssueId())) {
+                    ColumnStatusRelDO columnStatusRelDO = columnStatusRelMap.get(columnChangeDTO.getIssueId());
+                    if (columnStatusRelDO != null) {
+                        columnChangeDTO.setColumnTo(columnStatusRelDO.getColumnId().toString());
+                        columnChangeDTO.setStatusTo(columnStatusRelDO.getStatusId().toString());
+                    }
                 }
             });
             result.addAll(addIssueDuringDate);
-            if (!resultRemove.isEmpty()) {
-                result.removeAll(resultRemove);
-            }
         }
     }
 

@@ -20,8 +20,7 @@ public class IssueE {
 
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
-    private static final String DEFAULT_ASSIGNEE = "default_assignee";
-    private static final String CURRENT_USER = "current_user";
+
 
     private Long issueId;
 
@@ -243,7 +242,6 @@ public class IssueE {
         subIssueE.initializationReporter();
         subIssueE.initializationIssueNum(projectInfoE);
         subIssueE.initializationIssueUser();
-        subIssueE.initializationDefaultSetting(projectInfoE);
         return subIssueE;
     }
 
@@ -270,23 +268,8 @@ public class IssueE {
         //处理报告人
         initializationReporter();
         initializationIssueUser();
-        //项目默认设置
-        initializationDefaultSetting(projectInfoE);
         //编号设置
         initializationIssueNum(projectInfoE);
-    }
-
-    private void initializationDefaultSetting(ProjectInfoE projectInfoE) {
-        if (this.assigneeId == null && projectInfoE.getDefaultAssigneeType() != null) {
-            if (DEFAULT_ASSIGNEE.equals(projectInfoE.getDefaultAssigneeType())) {
-                this.assigneeId = projectInfoE.getDefaultAssigneeId();
-            } else if (CURRENT_USER.equals(projectInfoE.getDefaultAssigneeType())) {
-                this.assigneeId = DetailsHelper.getUserDetails().getUserId();
-            }
-        }
-        if (this.priorityCode == null && projectInfoE.getDefaultPriorityCode() != null) {
-            this.priorityCode = projectInfoE.getDefaultPriorityCode();
-        }
     }
 
     public Boolean isIssueRank() {

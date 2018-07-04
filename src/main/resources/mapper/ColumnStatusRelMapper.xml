@@ -5,9 +5,15 @@
     <select id="queryByIssueIdAndColumnIds" resultType="io.choerodon.agile.infra.dataobject.ColumnStatusRelDO">
         SELECT
         ai.status_id,
+        ai.issue_id,
         avcsr.column_id
         FROM agile_issue ai LEFT JOIN agile_board_column_status_rel avcsr ON ai.status_id = avcsr.status_id
-        WHERE ai.issue_id = #{issueId} AND avcsr.column_id IN
+        WHERE ai.issue_id in
+        <foreach collection="statusToNullIssueIds" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        AND avcsr.column_id IN
         <foreach collection="columnIds" item="columnId"
                  open="(" close=")" separator=",">
             #{columnId}

@@ -4,10 +4,7 @@ import io.choerodon.mybatis.annotation.ModifyAudit;
 import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
@@ -36,6 +33,9 @@ public class BoardDO extends AuditDomain {
     private String swimlaneBasedCode;
 
     private String estimationStatistic;
+
+    @Transient
+    private Boolean userDefault;
 
     public Long getBoardId() {
         return boardId;
@@ -99,5 +99,13 @@ public class BoardDO extends AuditDomain {
 
     public void setEstimationStatistic(String estimationStatistic) {
         this.estimationStatistic = estimationStatistic;
+    }
+
+    public Boolean getUserDefault() {
+        return userDefault;
+    }
+
+    public void setUserDefault(Boolean userDefault) {
+        this.userDefault = userDefault;
     }
 }
