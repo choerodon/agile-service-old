@@ -23,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
 
@@ -249,4 +251,27 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.IssueList.listByOptions"));
     }
 
+    @ResponseBody
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("导出issue列表")
+    @GetMapping(value = "/export")
+    public void exportIssues(@ApiParam(value = "项目id", required = true)
+                             @PathVariable(name = "project_id") Long projectId,
+                             HttpServletRequest request,
+                             HttpServletResponse response) {
+        issueService.exportIssues(projectId, request, response);
+    }
+
+    @ResponseBody
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("导出issue详情")
+    @GetMapping(value = "/export/{issueId}")
+    public void exportIssue(@ApiParam(value = "项目id", required = true)
+                             @PathVariable(name = "project_id") Long projectId,
+                             @ApiParam(value = "issueId", required = true)
+                             @PathVariable(name = "issueId") Long issueId,
+                             HttpServletRequest request,
+                             HttpServletResponse response) {
+        issueService.exportIssue(projectId, issueId, request, response);
+    }
 }

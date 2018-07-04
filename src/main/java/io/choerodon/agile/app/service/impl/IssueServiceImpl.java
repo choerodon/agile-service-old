@@ -14,13 +14,37 @@ import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
+import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.oauth.CustomClientDetails;
+import io.choerodon.core.oauth.CustomUserDetails;
+import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -117,7 +141,6 @@ public class IssueServiceImpl implements IssueService {
     private static final String STATUS_ID = "statusId";
     private static final String ISSUE_ID = "issueId";
     private static final String EPIC_COLOR_TYPE = "epic_color";
-    private static final String RELATION_TYPE_FIX = "fix";
     private static final String FIELD_SUMMARY = "summary";
     private static final String FIELD_DESCRIPTION = "description";
     private static final String FIELD_PRIORITY = "priority";
@@ -142,6 +165,11 @@ public class IssueServiceImpl implements IssueService {
     private static final String OLD_STRING = "oldString";
     private static final String OLD_VALUE = "oldValue";
     private static final String RANK_FIELD = "rank";
+    private static final String FIX_RELATION_TYPE = "fix";
+    private static final String INFLUENCE_RELATION_TYPE = "influence";
+    private static final String[] COLUMN_NAMES = {"编码", "概述", "类型", "所属项目", "经办人", "报告人", "状态", "描述", "关注", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "初始预估", "剩余预估", "版本"};
+    private static final String[] SUB_COLUMN_NAMES = {"关键字", "概述", "类型", "状态", "经办人"};
+    private static final String EXPORT_ERROR = "error.issue.export";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -1175,6 +1203,330 @@ public class IssueServiceImpl implements IssueService {
         issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
         issueListDTOPage.setContent(issueAssembler.issueNumDOToIssueNumDTO(issueDOPage.getContent()));
         return issueListDTOPage;
+    }
+
+    @Override
+    public void exportIssues(Long projectId, HttpServletRequest request, HttpServletResponse response) {
+        String charsetName = "UTF-8";
+        if (request.getHeader("User-Agent").contains("Firefox")) {
+            charsetName = "GB2312";
+        }
+        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+        projectInfoDO.setProjectId(projectId);
+        projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
+        List<ExportIssuesDTO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId));
+        List<Long> issueIds = exportIssues.stream().map(ExportIssuesDTO::getIssueId).collect(Collectors.toList());
+        if (!issueIds.isEmpty()) {
+            Map<Long, List<SprintNameDO>> closeSprintNames = issueMapper.querySprintNameByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(SprintNameDO::getIssueId));
+            Map<Long, List<VersionIssueRelDO>> fixVersionNames = issueMapper.queryVersionNameByIssueIds(projectId, issueIds, FIX_RELATION_TYPE).stream().collect(Collectors.groupingBy(VersionIssueRelDO::getIssueId));
+            Map<Long, List<VersionIssueRelDO>> influenceVersionNames = issueMapper.queryVersionNameByIssueIds(projectId, issueIds, INFLUENCE_RELATION_TYPE).stream().collect(Collectors.groupingBy(VersionIssueRelDO::getIssueId));
+            exportIssues = exportIssues.stream().map(exportIssue -> {
+                String closeSprintName = closeSprintNames.get(exportIssue.getIssueId()) != null ? closeSprintNames.get(exportIssue.getIssueId()).stream().map(SprintNameDO::getSprintName).collect(Collectors.joining(",")) : "";
+                String fixVersionName = fixVersionNames.get(exportIssue.getIssueId()) != null ? fixVersionNames.get(exportIssue.getIssueId()).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(",")) : "";
+                String influenceVersionName = influenceVersionNames.get(exportIssue.getIssueId()) != null ? influenceVersionNames.get(exportIssue.getIssueId()).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(",")) : "";
+                exportIssue.setCloseSprintName(closeSprintName);
+                exportIssue.setFixVersionName(fixVersionName);
+                exportIssue.setInfluenceVersionName(influenceVersionName);
+                return exportIssue;
+            }).collect(Collectors.toList());
+        }
+        HSSFWorkbook workbook = exportIssuesXls(projectInfoDO, exportIssues);
+        String fileName = projectInfoDO.getProjectCode();
+        dowloadExcel(workbook, fileName, charsetName, response);
+    }
+
+    @Override
+    public void exportIssue(Long projectId, Long issueId, HttpServletRequest request, HttpServletResponse response) {
+        String charsetName = "UTF-8";
+        if (request.getHeader("User-Agent").contains("Firefox")) {
+            charsetName = "GB2312";
+        }
+        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+        projectInfoDO.setProjectId(projectId);
+        projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
+        ExportIssuesDTO exportIssue = issueAssembler.exportIssuesDOToExportIssuesDTO(issueMapper.queryExportIssue(projectId, issueId));
+        List<ExportIssuesDTO> subIssues = new ArrayList<>();
+        if (exportIssue != null) {
+            String componentName = issueMapper.queryComponentNameByIssueId(projectId, issueId).stream().collect(Collectors.joining(","));
+            String labelName = issueMapper.queryLabelNameByIssueId(projectId, issueId).stream().collect(Collectors.joining(","));
+            subIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.querySubIssuesByIssueId(projectId, issueId));
+            String closeSprintName = issueMapper.querySprintNameByIssueId(issueId).stream().map(SprintNameDO::getSprintName).collect(Collectors.joining(","));
+            String fixVersionName = issueMapper.queryVersionNameByIssueId(projectId, issueId, FIX_RELATION_TYPE).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(","));
+            String influenceVersionName = issueMapper.queryVersionNameByIssueId(projectId, issueId, INFLUENCE_RELATION_TYPE).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(","));
+            exportIssue.setComponentName(componentName);
+            exportIssue.setComponentName(labelName);
+            exportIssue.setCloseSprintName(closeSprintName);
+            exportIssue.setFixVersionName(fixVersionName);
+            exportIssue.setInfluenceVersionName(influenceVersionName);
+        }
+        HSSFWorkbook workbook = exportIssueXls(projectInfoDO, exportIssue, subIssues);
+        String fileName = projectInfoDO.getProjectCode() + "-" + exportIssue.getIssueNum();
+        dowloadExcel(workbook, fileName, charsetName, response);
+    }
+
+    private void dowloadExcel(HSSFWorkbook workbook, String fileName, String charsetName, HttpServletResponse response) {
+        // 设置response参数，可以打开下载页面
+        response.reset();
+        response.setContentType("application/ms-excel;charset=utf-8");
+        try {
+            fileName = URLEncoder.encode(fileName, "UTF-8");
+            response.setHeader("Content-Disposition", "attachment;filename="
+                    + new String((fileName + ".xls").getBytes(charsetName),
+                    "ISO-8859-1"));
+        } catch (UnsupportedEncodingException e1) {
+            throw new CommonException(EXPORT_ERROR);
+        }
+        response.setCharacterEncoding("utf-8");
+        ServletOutputStream out = null;
+        try {
+            out = response.getOutputStream();
+            workbook.write(out);
+        } catch (final IOException e) {
+            throw new CommonException(EXPORT_ERROR);
+        } finally {
+            try {
+                out.flush();
+                out.close();
+            } catch (IOException e) {
+                throw new CommonException(EXPORT_ERROR);
+            }
+        }
+    }
+
+    private HSSFWorkbook exportIssueXls(ProjectInfoDO projectInfoDO, ExportIssuesDTO exportIssue, List<ExportIssuesDTO> subIssues) {
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        String issueNum = projectInfoDO.getProjectCode() + "-" + exportIssue.getIssueNum();
+        HSSFSheet sheet = workbook.createSheet(issueNum);
+        int lastRow = subIssues.size() + 14;
+        sheet.addMergedRegion(new CellRangeAddress(14, lastRow, 0, 0));
+
+        HSSFRow row = sheet.createRow(0);
+        HSSFCell cell = row.createCell(0);
+        cell.setCellValue(issueNum);
+        cell = row.createCell(1);
+        cell.setCellValue(exportIssue.getSummary());
+        cell = row.createCell(2);
+        cell.setCellValue("创建日期:" + dateFormat.format(exportIssue.getCreationDate()));
+        cell = row.createCell(3);
+        cell.setCellValue("更新日期:" + dateFormat.format(exportIssue.getLastUpdateDate()));
+
+        row = sheet.createRow(1);
+        cell = row.createCell(0);
+        cell.setCellValue("状态:");
+        cell = row.createCell(1);
+        cell.setCellValue(exportIssue.getStatusName());
+
+        row = sheet.createRow(2);
+        cell = row.createCell(0);
+        cell.setCellValue("项目:");
+        cell = row.createCell(1);
+        cell.setCellValue(projectInfoDO.getProjectCode());
+
+        row = sheet.createRow(3);
+        cell = row.createCell(0);
+        cell.setCellValue("模块:");
+        cell = row.createCell(1);
+        cell.setCellValue(exportIssue.getComponentName());
+
+        row = sheet.createRow(4);
+        cell = row.createCell(0);
+        cell.setCellValue("影响版本:");
+        cell = row.createCell(1);
+        cell.setCellValue(exportIssue.getInfluenceVersionName());
+
+        row = sheet.createRow(5);
+        cell = row.createCell(0);
+        cell.setCellValue("修复的版本:");
+        cell = row.createCell(1);
+        cell.setCellValue(exportIssue.getFixVersionName());
+
+        sheet.createRow(6);
+
+        row = sheet.createRow(7);
+        cell = row.createCell(0);
+        cell.setCellValue("类型:");
+        cell = row.createCell(1);
+        cell.setCellValue(exportIssue.getTypeName());
+        cell = row.createCell(2);
+        cell.setCellValue("优先级:");
+        cell = row.createCell(3);
+        cell.setCellValue(exportIssue.getPriorityName());
+
+        row = sheet.createRow(8);
+        cell = row.createCell(0);
+        cell.setCellValue("报告人:");
+        cell = row.createCell(1);
+        cell.setCellValue(exportIssue.getReporterName());
+        cell = row.createCell(2);
+        cell.setCellValue("经办人:");
+        cell = row.createCell(3);
+        cell.setCellValue(exportIssue.getAssigneeName());
+
+        row = sheet.createRow(9);
+        cell = row.createCell(0);
+        cell.setCellValue("解决结果:");
+        cell = row.createCell(1);
+        cell.setCellValue(exportIssue.getSolution());
+
+        row = sheet.createRow(10);
+        cell = row.createCell(0);
+        cell.setCellValue("标签:");
+        cell = row.createCell(1);
+        cell.setCellValue(exportIssue.getLabelName());
+
+        row = sheet.createRow(11);
+        cell = row.createCell(0);
+        cell.setCellValue("Σ预估剩余时间:");
+        cell = row.createCell(1);
+        cell.setCellValue(exportIssue.getSumRemainingTime() != null ? exportIssue.getSumRemainingTime().toString() : "");
+        cell = row.createCell(2);
+        cell.setCellValue("剩余的估算:");
+        cell = row.createCell(3);
+        cell.setCellValue(exportIssue.getRemainingTime() != null ? exportIssue.getRemainingTime().toString() : "");
+
+        row = sheet.createRow(12);
+        cell = row.createCell(0);
+        cell.setCellValue("Σ原预估时间:");
+        cell = row.createCell(1);
+        cell.setCellValue(exportIssue.getSumEstimateTime() != null ? exportIssue.getSumEstimateTime().toString() : "");
+        cell = row.createCell(2);
+        cell.setCellValue("初始预估:");
+        cell = row.createCell(3);
+        cell.setCellValue(exportIssue.getEstimateTime() != null ? exportIssue.getEstimateTime().toString() : "");
+
+        sheet.createRow(13);
+
+        row = sheet.createRow(14);
+        cell = row.createCell(0);
+        cell.setCellValue("子任务:");
+
+        for (int i = 0; i < SUB_COLUMN_NAMES.length; i++) {
+            cell = row.createCell(i + 1);
+            cell.setCellValue(SUB_COLUMN_NAMES[i]);
+        }
+
+        for (int i = 0; i < subIssues.size(); i++) {
+            row = sheet.createRow(i + 15);
+            for (int j = 0; j < SUB_COLUMN_NAMES.length; j++) {
+                cell = row.createCell(j + 1);
+                switch (SUB_COLUMN_NAMES[j]) {
+                    case "关键字":
+                        cell.setCellValue(projectInfoDO.getProjectCode() + "-" + subIssues.get(i).getIssueNum());
+                        break;
+                    case "概述":
+                        cell.setCellValue(subIssues.get(i).getSummary());
+                        break;
+                    case "类型":
+                        cell.setCellValue(subIssues.get(i).getTypeName());
+                        break;
+                    case "状态":
+                        cell.setCellValue(subIssues.get(i).getStatusName());
+                        break;
+                    case "经办人":
+                        cell.setCellValue(subIssues.get(i).getAssigneeName());
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        row = sheet.createRow(lastRow + 1);
+        cell = row.createCell(0);
+        cell.setCellValue("Epic Link:");
+        cell = row.createCell(1);
+        cell.setCellValue(exportIssue.getEpicName());
+
+        row = sheet.createRow(lastRow + 2);
+        cell = row.createCell(0);
+        cell.setCellValue("Sprint:");
+        cell = row.createCell(1);
+        String sprintName = exportIssue.getSprintName() != null ? "正在使用冲刺:" + exportIssue.getSprintName() + " " : "";
+        sprintName = sprintName + (!Objects.equals(exportIssue.getCloseSprintName(), "") ? "已关闭冲刺:" + exportIssue.getCloseSprintName() : "");
+        cell.setCellValue(sprintName);
+
+        row = sheet.createRow(lastRow + 3);
+        cell = row.createCell(0);
+        cell.setCellValue(customUserDetails.getUsername() + "于" + dateFormat.format(new Date()) + "导出");
+        return workbook;
+    }
+
+    private HSSFWorkbook exportIssuesXls(ProjectInfoDO projectInfoDO, List<ExportIssuesDTO> exportIssues) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet sheet = workbook.createSheet(projectInfoDO.getProjectCode());
+        HSSFRow row = sheet.createRow(0);
+
+        for (int i = 0; i < COLUMN_NAMES.length; i++) {
+            HSSFCell cell = row.createCell(i);
+            cell.setCellValue(COLUMN_NAMES[i]);
+        }
+
+        for (int i = 0; i < exportIssues.size(); i++) {
+            row = sheet.createRow(i + 1);
+            for (int j = 0; j < COLUMN_NAMES.length; j++) {
+                HSSFCell cell = row.createCell(j);
+                switch (COLUMN_NAMES[j]) {
+                    case "编码":
+                        cell.setCellValue(exportIssues.get(i).getIssueNum());
+                        break;
+                    case "概述":
+                        cell.setCellValue(exportIssues.get(i).getSummary());
+                        break;
+                    case "类型":
+                        cell.setCellValue(exportIssues.get(i).getTypeName());
+                        break;
+                    case "所属项目":
+                        cell.setCellValue(projectInfoDO.getProjectCode());
+                        break;
+                    case "经办人":
+                        cell.setCellValue(exportIssues.get(i).getAssigneeName());
+                        break;
+                    case "报告人":
+                        cell.setCellValue(exportIssues.get(i).getReporterName());
+                        break;
+                    case "状态":
+                        cell.setCellValue(exportIssues.get(i).getStatusName());
+                        break;
+                    case "描述":
+                        cell.setCellValue(exportIssues.get(i).getDescription());
+                        break;
+                    case "冲刺":
+                        String sprintName = exportIssues.get(i).getSprintName() != null ? "正在使用冲刺:" + exportIssues.get(i).getSprintName() + " " : "";
+                        sprintName = sprintName + (!Objects.equals(exportIssues.get(i).getCloseSprintName(), "") ? "已关闭冲刺:" + exportIssues.get(i).getCloseSprintName() : "");
+                        cell.setCellValue(sprintName);
+                        break;
+                    case "创建时间":
+                        cell.setCellValue(dateFormat.format(exportIssues.get(i).getCreationDate()));
+                        break;
+                    case "最后更新时间":
+                        cell.setCellValue(dateFormat.format(exportIssues.get(i).getLastUpdateDate()));
+                        break;
+                    case "优先级":
+                        cell.setCellValue(exportIssues.get(i).getPriorityName());
+                        break;
+                    case "是否子任务":
+                        cell.setCellValue(exportIssues.get(i).getSubTask());
+                        break;
+                    case "初始预估":
+                        cell.setCellValue(exportIssues.get(i).getEstimateTime() != null ? exportIssues.get(i).getEstimateTime().toString() : "");
+                        break;
+                    case "剩余预估":
+                        cell.setCellValue(exportIssues.get(i).getRemainingTime() != null ? exportIssues.get(i).getRemainingTime().toString() : "");
+                        break;
+                    case "版本":
+                        String versionName = !Objects.equals(exportIssues.get(i).getFixVersionName(), "") ? "修复的版本:" + exportIssues.get(i).getFixVersionName() + "" : "";
+                        versionName = versionName + (!Objects.equals(exportIssues.get(i).getInfluenceVersionName(), "") ? "影响的版本:" + exportIssues.get(i).getInfluenceVersionName() : "");
+                        cell.setCellValue(versionName);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        return workbook;
     }
 
 }

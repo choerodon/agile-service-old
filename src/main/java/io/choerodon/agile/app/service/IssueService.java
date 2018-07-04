@@ -6,6 +6,8 @@ import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -116,4 +118,8 @@ public interface IssueService {
     Page<IssueCommonDTO> listByOptions(Long projectId, String typeCode, PageRequest pageRequest);
 
     Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String content, PageRequest pageRequest);
+
+    void exportIssues(Long projectId, HttpServletRequest request, HttpServletResponse response);
+
+    void exportIssue(Long projectId, Long issueId, HttpServletRequest request, HttpServletResponse response);
 }

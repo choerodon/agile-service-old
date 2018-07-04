@@ -189,6 +189,41 @@ public class IssueAssembler {
         return issueSubDTO;
     }
 
+    public List<ExportIssuesDTO> exportIssuesDOListToExportIssuesDTO(List<ExportIssuesDO> exportIssues) {
+        List<ExportIssuesDTO> exportIssuesDTOS = new ArrayList<>();
+        List<Long> userIds = exportIssues.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(ExportIssuesDO::getAssigneeId).distinct().collect(Collectors.toList());
+        userIds.addAll(exportIssues.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(ExportIssuesDO::getReporterId).distinct().collect(Collectors.toList()));
+        userIds = userIds.stream().distinct().collect(Collectors.toList());
+        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(userIds, true);
+        exportIssues.forEach(issueDO -> {
+            String assigneeName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getName() : null;
+            String reportName = usersMap.get(issueDO.getReporterId()) != null ? usersMap.get(issueDO.getReporterId()).getName() : null;
+            ExportIssuesDTO exportIssuesDTO = new ExportIssuesDTO();
+            BeanUtils.copyProperties(issueDO, exportIssuesDTO);
+            exportIssuesDTO.setAssigneeName(assigneeName);
+            exportIssuesDTO.setReporterName(reportName);
+            exportIssuesDTOS.add(exportIssuesDTO);
+        });
+        return exportIssuesDTOS;
+    }
+
+    public ExportIssuesDTO exportIssuesDOToExportIssuesDTO(ExportIssuesDO exportIssue) {
+        ExportIssuesDTO exportIssuesDTO = new ExportIssuesDTO();
+        List<Long> userIds = new ArrayList<>();
+        userIds.add(exportIssue.getAssigneeId());
+        if (!Objects.equals(exportIssue.getAssigneeId(), exportIssue.getReporterId())) {
+            userIds.add(exportIssue.getReporterId());
+        }
+        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(userIds, true);
+        String assigneeName = usersMap.get(exportIssue.getAssigneeId()) != null ? usersMap.get(exportIssue.getAssigneeId()).getName() : null;
+        String reportName = usersMap.get(exportIssue.getReporterId()) != null ? usersMap.get(exportIssue.getReporterId()).getName() : null;
+        BeanUtils.copyProperties(exportIssue, exportIssuesDTO);
+        exportIssuesDTO.setAssigneeName(assigneeName);
+        exportIssuesDTO.setReporterName(reportName);
+        return exportIssuesDTO;
+    }
+
+
     public List<IssueNumDTO> issueNumDOToIssueNumDTO(List<IssueNumDO> issueNumDOList) {
         List<IssueNumDTO> issueNumDTOList = new ArrayList<>();
         issueNumDOList.forEach(issueNumDO -> {
