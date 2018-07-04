@@ -1289,7 +1289,7 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private HSSFWorkbook exportIssueXls(HSSFWorkbook workbook, ProjectInfoDO projectInfoDO, ExportIssuesDTO exportIssue, List<ExportIssuesDTO> subIssues) {
+    private void exportIssueXls(HSSFWorkbook workbook, ProjectInfoDO projectInfoDO, ExportIssuesDTO exportIssue, List<ExportIssuesDTO> subIssues) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String issueNum = projectInfoDO.getProjectCode() + "-" + exportIssue.getIssueNum();
@@ -1447,7 +1447,6 @@ public class IssueServiceImpl implements IssueService {
         row = sheet.createRow(lastRow + 3);
         cell = row.createCell(0);
         cell.setCellValue(customUserDetails.getUsername() + "于" + dateFormat.format(new Date()) + "导出");
-        return workbook;
     }
 
     private HSSFWorkbook exportIssuesXls(ProjectInfoDO projectInfoDO, List<ExportIssuesDTO> exportIssues) {

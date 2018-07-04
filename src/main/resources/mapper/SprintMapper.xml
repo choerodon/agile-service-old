@@ -237,7 +237,14 @@
         <if test='filterSql != null'>
             AND ai.issue_id IN (${filterSql})
         </if>
-        GROUP BY aisr.sprint_id, ai.assignee_id
+        <if test="assigned == false">
+            AND (ai.assignee_id IS NULL OR ai.assignee_id = 0)
+            GROUP BY aisr.sprint_id
+        </if>
+        <if test="assigned == true">
+            AND ai.assignee_id IS NOT NULL AND ai.assignee_id != 0
+            GROUP BY aisr.sprint_id, ai.assignee_id
+        </if>
     </select>
 
     <select id="queryAssigneeIssueCountById" resultType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
@@ -273,7 +280,14 @@
         <if test='filterSql != null'>
             AND ai.issue_id IN (${filterSql})
         </if>
-        GROUP BY aisr.sprint_id, ai.assignee_id
+        <if test="assigned == false">
+            AND (ai.assignee_id IS NULL OR ai.assignee_id = 0)
+            GROUP BY aisr.sprint_id
+        </if>
+        <if test="assigned == true">
+            AND ai.assignee_id IS NOT NULL AND ai.assignee_id != 0
+            GROUP BY aisr.sprint_id, ai.assignee_id
+        </if>
     </select>
 
     <select id="queryIssueIdOrderByRankDesc" resultType="java.lang.Long">

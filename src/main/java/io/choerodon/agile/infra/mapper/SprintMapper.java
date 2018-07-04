@@ -50,9 +50,9 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     int queryNotDoneIssueCount(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    List<AssigneeIssueDO> queryAssigneeIssueCount(@Param("projectId") Long projectId, @Param("sprintIds") List<Long> sprintIds,  @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql);
+    List<AssigneeIssueDO> queryAssigneeIssueCount(@Param("projectId") Long projectId, @Param("sprintIds") List<Long> sprintIds,  @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql, @Param("assigned") Boolean assigned);
 
-    List<AssigneeIssueDO> queryAssigneeIssueCountById(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId,  @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql);
+    List<AssigneeIssueDO> queryAssigneeIssueCountById(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId,  @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql, @Param("assigned") Boolean assigned);
 
     List<Long> queryIssueIdOrderByRankDesc(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
