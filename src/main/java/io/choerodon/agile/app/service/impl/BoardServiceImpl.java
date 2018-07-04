@@ -129,11 +129,13 @@ public class BoardServiceImpl implements BoardService {
         return columnsData;
     }
 
-    private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds) {
+    private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids) {
         for (SubStatus status : subStatuses) {
             for (IssueForBoardDO issue : status.getIssues()) {
                 if (issue.getParentIssueId() != null && issue.getParentIssueId() != 0 && !parentIds.contains(issue.getParentIssueId())) {
                     parentIds.add(issue.getParentIssueId());
+                } else {
+                    ids.add(issue.getIssueId());
                 }
                 if (issue.getAssigneeId() != null && !assigneeIds.contains(issue.getAssigneeId())) {
                     assigneeIds.add(issue.getAssigneeId());
@@ -142,11 +144,24 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
-    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds) {
+    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId) {
+        //子任务经办人为自己，父任务经办人不为自己的情况
+        List<Long> issueIds = new ArrayList<>();
         for (ColumnAndIssueDO column : columns) {
             List<SubStatus> subStatuses = column.getSubStatuses();
-            getDatas(subStatuses, parentIds, assigneeIds);
+            getDatas(subStatuses, parentIds, assigneeIds, issueIds);
             Collections.sort(subStatuses, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
+        }
+        if (parentIds != null && !parentIds.isEmpty()) {
+            List<Long> subNoParentIds = new ArrayList<>();
+            parentIds.forEach(id -> {
+                if (!issueIds.contains(id)) {
+                    subNoParentIds.add(id);
+                }
+            });
+            if (!subNoParentIds.isEmpty()) {
+                columns.addAll(boardColumnMapper.queryColumnsByIssueIds(subNoParentIds, boardId));
+            }
         }
         Collections.sort(parentIds);
         Collections.sort(assigneeIds);
@@ -202,7 +217,7 @@ public class BoardServiceImpl implements BoardService {
         List<Long> assigneeIds = new ArrayList<>();
         List<Long> parentIds = new ArrayList<>();
         List<ColumnAndIssueDO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory, filterSql);
-        putDatasAndSort(columns, parentIds, assigneeIds);
+        putDatasAndSort(columns, parentIds, assigneeIds, boardId);
         jsonObject.put("parentIds", parentIds);
         jsonObject.put("assigneeIds", assigneeIds);
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);

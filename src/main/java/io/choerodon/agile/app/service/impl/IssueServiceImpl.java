@@ -619,12 +619,12 @@ public class IssueServiceImpl implements IssueService {
                         issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(new IssueStatusCreateDO()))).getId();
         issueDO.setProjectId(subIssueE.getProjectId());
         issueDO.setStatusId(statusId);
-        boardService.dataLogStatus(issueDO, subIssueE);
         //设置初始状态,跟随父类状态
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(subIssueE.getProjectId());
         ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
         subIssueE = parentIssueE.initializationSubIssue(subIssueE, projectInfoE);
+        boardService.dataLogStatus(issueDO, subIssueE);
         projectInfoRepository.updateIssueMaxNum(subIssueE.getProjectId());
         //创建issue
         Long issueId = issueRepository.create(subIssueE).getIssueId();
