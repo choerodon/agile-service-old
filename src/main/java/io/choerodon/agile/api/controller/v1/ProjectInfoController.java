@@ -55,7 +55,7 @@ public class ProjectInfoController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据项目id查询项目默认设置")
-    @GetMapping
+    @GetMapping(value = "/default_setting")
     public ResponseEntity<ProjectDefaultSettingDTO> queryProjectDefaultSettingByProjectId(@ApiParam(value = "项目id", required = true)
                                                                                           @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(projectInfoService.queryProjectDefaultSettingByProjectId(projectId))

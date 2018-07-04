@@ -4,9 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.BoardSprintDTO;
 import io.choerodon.agile.api.dto.IssueMoveDTO;
 import io.choerodon.agile.app.service.SprintService;
-import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
-import io.choerodon.agile.domain.agile.entity.DataLogE;
-import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.mapper.*;
@@ -15,8 +13,8 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.dto.BoardDTO;
 import io.choerodon.agile.app.service.BoardColumnService;
 import io.choerodon.agile.app.service.BoardService;
-import io.choerodon.agile.domain.agile.entity.BoardE;
 import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.core.oauth.DetailsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,6 +77,12 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private DataLogRepository dataLogRepository;
+
+    @Autowired
+    private UserSettingMapper userSettingMapper;
+
+    @Autowired
+    private UserSettingRepository userSettingRepository;
 
 
     @Override
@@ -210,7 +214,23 @@ public class BoardServiceImpl implements BoardService {
         })));
         jsonObject.put("columnsData", putColumnData(columns));
         jsonObject.put("currentSprint", putCurrentSprint(activeSprint));
+        //处理用户默认看板设置，保存最近一次的浏览
+        handleUserSetting(boardId, projectId);
         return jsonObject;
+    }
+
+    private void handleUserSetting(Long boardId, Long projectId) {
+        UserSettingDO userSettingDO = new UserSettingDO();
+        userSettingDO.setProjectId(projectId);
+        userSettingDO.setUserId(DetailsHelper.getUserDetails().getUserId());
+        UserSettingDO query = userSettingMapper.selectOne(userSettingDO);
+        if (query == null) {
+            userSettingDO.setDefaultBoardId(boardId);
+            userSettingRepository.create(ConvertHelper.convert(userSettingDO, UserSettingE.class));
+        } else if (query.getDefaultBoardId() != null && !query.getDefaultBoardId().equals(boardId)) {
+            query.setDefaultBoardId(boardId);
+            userSettingRepository.update(ConvertHelper.convert(query, UserSettingE.class));
+        }
     }
 
     private BoardE createBoard(Long projectId, String boardName) {
@@ -316,8 +336,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public List<BoardDTO> queryByProjectId(Long projectId) {
-        BoardDO boardDO = new BoardDO();
-        boardDO.setProjectId(projectId);
-        return ConvertHelper.convertList(boardMapper.select(boardDO), BoardDTO.class);
+        Long userId = DetailsHelper.getUserDetails().getUserId();
+        return ConvertHelper.convertList(boardMapper.queryByProjectIdWithUser(userId, projectId), BoardDTO.class);
     }
 }

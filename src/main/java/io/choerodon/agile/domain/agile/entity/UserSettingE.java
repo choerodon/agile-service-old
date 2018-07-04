@@ -1,5 +1,7 @@
 package io.choerodon.agile.domain.agile.entity;
 
+import io.choerodon.core.oauth.DetailsHelper;
+
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/7/4
@@ -54,5 +56,10 @@ public class UserSettingE {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public void initUserSetting(Long projectId) {
+        this.projectId = projectId;
+        this.userId = DetailsHelper.getUserDetails().getUserId();
     }
 }

@@ -5,10 +5,10 @@
         SELECT adl5.issue_id
         FROM agile_data_log adl5
         WHERE adl5.log_id IN (SELECT MAX(adl.log_id) AS log_id
-                                FROM agile_data_log adl
-                                WHERE adl.field = 'Sprint' AND adl.creation_date &lt;= #{sprintDO.startDate}
-                                GROUP BY
-                                    adl.issue_id) AND FIND_IN_SET(#{sprintDO.sprintId}, adl5.new_value)
+                              FROM agile_data_log adl
+                              WHERE adl.field = 'Sprint' AND adl.creation_date &lt;= #{sprintDO.startDate}
+                              GROUP BY
+                                  adl.issue_id) AND FIND_IN_SET(#{sprintDO.sprintId}, adl5.new_value)
         UNION
         SELECT aisr2.issue_id
         FROM
@@ -790,7 +790,8 @@
                  open="(" close=")" separator=",">
             #{columnId}
         </foreach>
-        ) AS column_to
+        ) AS column_to,
+        0 AS column_from
         FROM
         (
         SELECT
@@ -825,11 +826,11 @@
 
 
     <select id="queryChangeIssueDuringDate" resultType="io.choerodon.agile.infra.dataobject.ColumnChangeDO">
-        SELECT
+        SELECT a.* from (SELECT
         adl.issue_id,
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,
-        abcsr.column_id AS column_from,
-        abcsr2.column_id AS column_to,
+        ifnull(abcsr.column_id,0) AS column_from,
+        ifnull(abcsr2.column_id,0) AS column_to,
         adl.new_value AS status_to,
         adl.creation_date AS date
         FROM
@@ -854,7 +855,8 @@
             #{issueId}
         </foreach>
         AND adl.creation_date &gt;= #{startDate}
-        AND adl.creation_date &lt;= #{endDate}
+        AND adl.creation_date &lt;= #{endDate})a WHERE a.column_from != a.column_to and a.column_to!=0
+
     </select>
 
     <select id="queryReportIssues" resultType="io.choerodon.agile.infra.dataobject.IssueDO">

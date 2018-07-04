@@ -6,6 +6,7 @@ import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
 
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/15.
@@ -23,6 +24,9 @@ public class ColumnStatusRelDO extends AuditDomain {
     private Long columnId;
 
     private Long projectId;
+
+    @Transient
+    private Long issueId;
 
     public Integer getPosition() {
         return position;
@@ -54,6 +58,14 @@ public class ColumnStatusRelDO extends AuditDomain {
 
     public Long getProjectId() {
         return projectId;
+    }
+
+    public Long getIssueId() {
+        return issueId;
+    }
+
+    public void setIssueId(Long issueId) {
+        this.issueId = issueId;
     }
 
     @Override

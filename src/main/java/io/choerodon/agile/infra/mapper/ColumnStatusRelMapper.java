@@ -13,11 +13,11 @@ import java.util.List;
 public interface ColumnStatusRelMapper extends BaseMapper<ColumnStatusRelDO> {
 
     /**
-     * 根据issueId和列id集合查询columnStatus关系，用于统计累积流图
+     * 根据statusTo为null的issueId集合和列id集合查询columnStatus关系，用于统计累积流图
      *
-     * @param issueId   issueId
-     * @param columnIds columnIds
+     * @param statusToNullIssueIds statusToNullIssueIds
+     * @param columnIds            columnIds
      * @return ColumnStatusRelDO
      */
-    ColumnStatusRelDO queryByIssueIdAndColumnIds(@Param("issueId") Long issueId, @Param("columnIds")List<Long> columnIds);
+    List<ColumnStatusRelDO> queryByIssueIdAndColumnIds(@Param("statusToNullIssueIds") List<Long> statusToNullIssueIds, @Param("columnIds") List<Long> columnIds);
 }

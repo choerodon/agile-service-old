@@ -5,6 +5,8 @@ import io.choerodon.mybatis.annotation.ModifyAudit;
 import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
@@ -16,6 +18,8 @@ import javax.persistence.Table;
 @Table(name = "agile_user_setting")
 public class UserSettingDO extends AuditDomain {
 
+    @Id
+    @GeneratedValue
     private Long settingId;
 
     private Long userId;

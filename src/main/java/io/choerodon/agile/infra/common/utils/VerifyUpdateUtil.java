@@ -29,7 +29,7 @@ public class VerifyUpdateUtil {
     public List<String> verifyUpdateData(JSONObject updateMap, Object objectUpdate) {
         List<String> fieldList = new ArrayList<>();
         Class objectClass = objectUpdate.getClass();
-        updateMap.forEach((k, v) -> {
+        updateMap.forEach((String k, Object v) -> {
             try {
                 Field field = objectClass.getDeclaredField(k);
                 field.setAccessible(true);
