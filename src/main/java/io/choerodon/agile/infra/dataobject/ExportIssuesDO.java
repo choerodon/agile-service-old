@@ -2,7 +2,6 @@ package io.choerodon.agile.infra.dataobject;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by jian_zhang02@163.com on 2018/6/12.

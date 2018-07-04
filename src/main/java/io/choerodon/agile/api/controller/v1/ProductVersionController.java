@@ -236,7 +236,7 @@ public class ProductVersionController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation(value = "根据状态查询档版本名")
+    @ApiOperation(value = "根据状态查询版本名")
     @PostMapping(value = "/names")
     public ResponseEntity<List<ProductVersionNameDTO>> queryNameByOptions(@ApiParam(value = "项目id", required = true)
                                                                           @PathVariable(name = "project_id") Long projectId,

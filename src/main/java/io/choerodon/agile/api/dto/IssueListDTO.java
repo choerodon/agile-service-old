@@ -31,6 +31,10 @@ public class IssueListDTO {
 
     private String statusName;
 
+    private String typeName;
+
+    private String epicName;
+
     private String statusColor;
 
     private Integer storyPoints;
@@ -155,6 +159,22 @@ public class IssueListDTO {
 
     public void setAddIssue(Boolean addIssue) {
         this.addIssue = addIssue;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
+
+    public String getEpicName() {
+        return epicName;
+    }
+
+    public void setEpicName(String epicName) {
+        this.epicName = epicName;
     }
 
     @Override
