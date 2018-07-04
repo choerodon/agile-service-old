@@ -6,6 +6,7 @@ package io.choerodon.agile.infra.dataobject;
 public class SprintNameDO {
     private Long sprintId;
     private String sprintName;
+    private Long issueId;
 
     public Long getSprintId() {
         return sprintId;
@@ -21,5 +22,13 @@ public class SprintNameDO {
 
     public void setSprintName(String sprintName) {
         this.sprintName = sprintName;
+    }
+
+    public Long getIssueId() {
+        return issueId;
+    }
+
+    public void setIssueId(Long issueId) {
+        this.issueId = issueId;
     }
 }

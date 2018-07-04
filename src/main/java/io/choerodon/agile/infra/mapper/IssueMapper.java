@@ -130,4 +130,20 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     IssueDO queryIssueByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
     List queryIssueByOption(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("content") String content);
+
+    List<ExportIssuesDO> queryExportIssues(@Param("projectId") Long projectId);
+
+    List<SprintNameDO> querySprintNameByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
+    List<VersionIssueRelDO> queryVersionNameByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("relationType") String relationType);
+
+    ExportIssuesDO queryExportIssue(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+
+    List<VersionIssueRelDO> queryVersionNameByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("relationType") String fixRelationType);
+
+    List<String> queryComponentNameByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+
+    List<String> queryLabelNameByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+
+    List<ExportIssuesDO> querySubIssuesByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 }
