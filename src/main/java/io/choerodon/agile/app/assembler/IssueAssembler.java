@@ -208,6 +208,9 @@ public class IssueAssembler {
     }
 
     public ExportIssuesDTO exportIssuesDOToExportIssuesDTO(ExportIssuesDO exportIssue) {
+        if (exportIssue == null) {
+            return null;
+        }
         ExportIssuesDTO exportIssuesDTO = new ExportIssuesDTO();
         List<Long> userIds = new ArrayList<>();
         userIds.add(exportIssue.getAssigneeId());

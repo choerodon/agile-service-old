@@ -2,7 +2,10 @@ package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO;
 import io.choerodon.agile.api.dto.CumulativeFlowFilterDTO;
+import io.choerodon.agile.api.dto.IssueListDTO;
 import io.choerodon.agile.api.dto.ReportIssueDTO;
+import io.choerodon.core.domain.Page;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
 import java.util.List;
 
@@ -30,4 +33,6 @@ public interface ReportService {
      * @return CumulativeFlowDiagramDTO
      */
    CumulativeFlowDiagramDTO queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO);
+
+    Page<IssueListDTO> queryIssueByOptions(Long projectId, Long versionId, String status, PageRequest pageRequest);
 }

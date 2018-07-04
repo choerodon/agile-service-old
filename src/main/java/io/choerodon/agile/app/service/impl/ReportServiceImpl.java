@@ -1,29 +1,24 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.ColumnChangeDTO;
-import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO;
-import io.choerodon.agile.api.dto.CumulativeFlowFilterDTO;
-import io.choerodon.agile.api.dto.ReportIssueDTO;
+import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.assembler.ReportAssembler;
 import io.choerodon.agile.app.service.ReportService;
 import io.choerodon.agile.domain.agile.converter.SprintConverter;
 import io.choerodon.agile.domain.agile.entity.ReportIssueE;
 import io.choerodon.agile.domain.agile.entity.SprintE;
-import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO;
-import io.choerodon.agile.infra.dataobject.SprintDO;
-import io.choerodon.agile.infra.mapper.BoardColumnMapper;
-import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper;
-import io.choerodon.agile.infra.mapper.ReportMapper;
-import io.choerodon.agile.infra.mapper.SprintMapper;
+import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.mybatis.pagehelper.PageHelper;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -48,6 +43,10 @@ public class ReportServiceImpl implements ReportService {
     private BoardColumnMapper boardColumnMapper;
     @Autowired
     private ReportAssembler reportAssembler;
+    @Autowired
+    private ProductVersionMapper versionMapper;
+    @Autowired
+    private IssueAssembler issueAssembler;
 
     private static final String STORY_POINTS = "storyPoints";
     private static final String REMAINING_ESTIMATED_TIME = "remainingEstimatedTime";
@@ -58,7 +57,8 @@ public class ReportServiceImpl implements ReportService {
     private static final String FILED_TIMEESTIMATE = "timeestimate";
     private static final String FILED_STORY_POINTS = "Story Points";
     private static final String SPRINT_CLOSED = "closed";
-
+    private static final String VERSION_ARCHIVED_CODE = "archived";
+    private static final String VERSION_REPORT_ERROR = "error.report.version";
 
     @Override
     public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
@@ -117,6 +117,27 @@ public class ReportServiceImpl implements ReportService {
         } else {
             throw new CommonException(REPORT_FILTER_ERROR);
         }
+    }
+
+    @Override
+    public Page<IssueListDTO> queryIssueByOptions(Long projectId, Long versionId, String status, PageRequest pageRequest) {
+        ProductVersionDO versionDO = new ProductVersionDO();
+        versionDO.setProjectId(projectId);
+        versionDO.setVersionId(versionId);
+        versionDO = versionMapper.selectOne(versionDO);
+        if (versionDO == null || Objects.equals(versionDO.getStatusCode(), VERSION_ARCHIVED_CODE)) {
+            throw new CommonException(VERSION_REPORT_ERROR);
+        }
+        pageRequest.resetOrder("ai", new HashMap<>());
+        Page<IssueDO> reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryReportIssues(projectId, versionId, status));
+        Page<IssueListDTO> reportPage = new Page<>();
+        reportPage.setTotalPages(reportIssuePage.getTotalPages());
+        reportPage.setTotalElements(reportIssuePage.getTotalElements());
+        reportPage.setSize(reportIssuePage.getSize());
+        reportPage.setNumberOfElements(reportIssuePage.getNumberOfElements());
+        reportPage.setNumber(reportIssuePage.getNumber());
+        reportPage.setContent(issueAssembler.issueDoToIssueListDto(reportIssuePage.getContent()));
+        return reportPage;
     }
 
     private void handleCumulativeFlowAddDuringDate(List<Long> allIssueIds, List<ColumnChangeDTO> result, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {

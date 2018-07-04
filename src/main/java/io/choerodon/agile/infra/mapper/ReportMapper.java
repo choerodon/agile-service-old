@@ -298,4 +298,6 @@ public interface ReportMapper {
      * @return ColumnChangeDO
      */
     List<ColumnChangeDO> queryChangeIssueDuringDate(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("allIssueIds") List<Long> allIssueIds, @Param("columnIds") List<Long> columnIds);
+
+    List queryReportIssues(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("status") String status);
 }

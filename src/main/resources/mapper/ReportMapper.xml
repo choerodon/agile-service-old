@@ -857,5 +857,40 @@
         AND adl.creation_date &lt;= #{endDate}
     </select>
 
+    <select id="queryReportIssues" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT
+        ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+        ai.type_code,  alv1.name AS type_name,
+        ai.status_id,  ais.name AS status_name,
+        ais.category_code AS status_code,
+        ai.summary, ai.priority_code,
+        alv.name AS priority_name,
+        ai.assignee_id, ai.project_id,
+        ai1.epic_name,  ai.story_points
+        FROM agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+        LEFT JOIN agile_lookup_value alv1 ON ai.type_code = alv1.value_code
+        LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
+        , agile_version_issue_rel avir, agile_issue_status ais
+        WHERE avir.project_id = #{projectId} AND avir.version_id = #{versionId}
+               AND avir.issue_id = ai.issue_id AND ai.status_id = ais.id
+               <choose>
+                   <when test='status == "done"'>
+                       AND ai.type_code != 'sub_task' AND ais.is_completed = TRUE
+                   </when>
+                   <when test='status == "unfinished"'>
+                       AND ais.is_completed = FALSE AND ((ai.type_code = 'story' AND ai.story_points IS NOT NULL)
+                       OR ai.type_code IN ('task', 'bug', 'issue_epic'))
+                   </when>
+                   <when test='status == "unfinishedUnestimated"'>
+                       AND ais.is_completed = FALSE AND ai.type_code = 'story'
+                       AND ai.story_points IS NULL
+                   </when>
+                   <otherwise>
+                      AND FALSE
+                   </otherwise>
+               </choose>
+    </select>
 
 </mapper>

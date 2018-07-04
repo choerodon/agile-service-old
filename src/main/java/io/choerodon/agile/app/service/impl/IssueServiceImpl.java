@@ -15,7 +15,6 @@ import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.core.oauth.CustomClientDetails;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
@@ -33,22 +32,12 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static io.choerodon.mybatis.constant.InsertOrUpdateConstant.OBJECT_VERSION_NUMBER;
 
 /**
  * 敏捷开发Issue
@@ -139,7 +128,6 @@ public class IssueServiceImpl implements IssueService {
     private static final String EPIC_ID_FIELD = "epicId";
     private static final String SPRINT_ID_FIELD = "sprintId";
     private static final String STATUS_ID = "statusId";
-    private static final String ISSUE_ID = "issueId";
     private static final String EPIC_COLOR_TYPE = "epic_color";
     private static final String FIELD_SUMMARY = "summary";
     private static final String FIELD_DESCRIPTION = "description";
@@ -170,6 +158,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String[] COLUMN_NAMES = {"编码", "概述", "类型", "所属项目", "经办人", "报告人", "状态", "描述", "关注", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "初始预估", "剩余预估", "版本"};
     private static final String[] SUB_COLUMN_NAMES = {"关键字", "概述", "类型", "状态", "经办人"};
     private static final String EXPORT_ERROR = "error.issue.export";
+    private static final String PROJECT_ERROR = "error.project.notFound";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -1214,6 +1203,9 @@ public class IssueServiceImpl implements IssueService {
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
         projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
+        if(projectInfoDO == null){
+            throw new CommonException(PROJECT_ERROR);
+        }
         List<ExportIssuesDTO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId));
         List<Long> issueIds = exportIssues.stream().map(ExportIssuesDTO::getIssueId).collect(Collectors.toList());
         if (!issueIds.isEmpty()) {
@@ -1244,12 +1236,16 @@ public class IssueServiceImpl implements IssueService {
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
         projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
+        if(projectInfoDO == null){
+            throw new CommonException(PROJECT_ERROR);
+        }
         ExportIssuesDTO exportIssue = issueAssembler.exportIssuesDOToExportIssuesDTO(issueMapper.queryExportIssue(projectId, issueId));
-        List<ExportIssuesDTO> subIssues = new ArrayList<>();
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        String fileName = projectInfoDO.getProjectCode();
         if (exportIssue != null) {
             String componentName = issueMapper.queryComponentNameByIssueId(projectId, issueId).stream().collect(Collectors.joining(","));
             String labelName = issueMapper.queryLabelNameByIssueId(projectId, issueId).stream().collect(Collectors.joining(","));
-            subIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.querySubIssuesByIssueId(projectId, issueId));
+            List<ExportIssuesDTO> subIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.querySubIssuesByIssueId(projectId, issueId));
             String closeSprintName = issueMapper.querySprintNameByIssueId(issueId).stream().map(SprintNameDO::getSprintName).collect(Collectors.joining(","));
             String fixVersionName = issueMapper.queryVersionNameByIssueId(projectId, issueId, FIX_RELATION_TYPE).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(","));
             String influenceVersionName = issueMapper.queryVersionNameByIssueId(projectId, issueId, INFLUENCE_RELATION_TYPE).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(","));
@@ -1258,9 +1254,9 @@ public class IssueServiceImpl implements IssueService {
             exportIssue.setCloseSprintName(closeSprintName);
             exportIssue.setFixVersionName(fixVersionName);
             exportIssue.setInfluenceVersionName(influenceVersionName);
+            exportIssueXls(workbook, projectInfoDO, exportIssue, subIssues);
+            fileName = fileName + "-" + exportIssue.getIssueNum();
         }
-        HSSFWorkbook workbook = exportIssueXls(projectInfoDO, exportIssue, subIssues);
-        String fileName = projectInfoDO.getProjectCode() + "-" + exportIssue.getIssueNum();
         dowloadExcel(workbook, fileName, charsetName, response);
     }
 
@@ -1293,15 +1289,16 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private HSSFWorkbook exportIssueXls(ProjectInfoDO projectInfoDO, ExportIssuesDTO exportIssue, List<ExportIssuesDTO> subIssues) {
+    private HSSFWorkbook exportIssueXls(HSSFWorkbook workbook, ProjectInfoDO projectInfoDO, ExportIssuesDTO exportIssue, List<ExportIssuesDTO> subIssues) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        HSSFWorkbook workbook = new HSSFWorkbook();
         String issueNum = projectInfoDO.getProjectCode() + "-" + exportIssue.getIssueNum();
         HSSFSheet sheet = workbook.createSheet(issueNum);
-        int lastRow = subIssues.size() + 14;
-        sheet.addMergedRegion(new CellRangeAddress(14, lastRow, 0, 0));
-
+        int lastRow = 13;
+        if (!subIssues.isEmpty()) {
+            lastRow = subIssues.size() + 14;
+            sheet.addMergedRegion(new CellRangeAddress(14, lastRow, 0, 0));
+        }
         HSSFRow row = sheet.createRow(0);
         HSSFCell cell = row.createCell(0);
         cell.setCellValue(issueNum);
@@ -1398,37 +1395,37 @@ public class IssueServiceImpl implements IssueService {
 
         sheet.createRow(13);
 
-        row = sheet.createRow(14);
-        cell = row.createCell(0);
-        cell.setCellValue("子任务:");
-
-        for (int i = 0; i < SUB_COLUMN_NAMES.length; i++) {
-            cell = row.createCell(i + 1);
-            cell.setCellValue(SUB_COLUMN_NAMES[i]);
-        }
-
-        for (int i = 0; i < subIssues.size(); i++) {
-            row = sheet.createRow(i + 15);
-            for (int j = 0; j < SUB_COLUMN_NAMES.length; j++) {
-                cell = row.createCell(j + 1);
-                switch (SUB_COLUMN_NAMES[j]) {
-                    case "关键字":
-                        cell.setCellValue(projectInfoDO.getProjectCode() + "-" + subIssues.get(i).getIssueNum());
-                        break;
-                    case "概述":
-                        cell.setCellValue(subIssues.get(i).getSummary());
-                        break;
-                    case "类型":
-                        cell.setCellValue(subIssues.get(i).getTypeName());
-                        break;
-                    case "状态":
-                        cell.setCellValue(subIssues.get(i).getStatusName());
-                        break;
-                    case "经办人":
-                        cell.setCellValue(subIssues.get(i).getAssigneeName());
-                        break;
-                    default:
-                        break;
+        if (!subIssues.isEmpty()) {
+            row = sheet.createRow(14);
+            cell = row.createCell(0);
+            cell.setCellValue("子任务:");
+            for (int i = 0; i < SUB_COLUMN_NAMES.length; i++) {
+                cell = row.createCell(i + 1);
+                cell.setCellValue(SUB_COLUMN_NAMES[i]);
+            }
+            for (int i = 0; i < subIssues.size(); i++) {
+                row = sheet.createRow(i + 15);
+                for (int j = 0; j < SUB_COLUMN_NAMES.length; j++) {
+                    cell = row.createCell(j + 1);
+                    switch (SUB_COLUMN_NAMES[j]) {
+                        case "关键字":
+                            cell.setCellValue(projectInfoDO.getProjectCode() + "-" + subIssues.get(i).getIssueNum());
+                            break;
+                        case "概述":
+                            cell.setCellValue(subIssues.get(i).getSummary());
+                            break;
+                        case "类型":
+                            cell.setCellValue(subIssues.get(i).getTypeName());
+                            break;
+                        case "状态":
+                            cell.setCellValue(subIssues.get(i).getStatusName());
+                            break;
+                        case "经办人":
+                            cell.setCellValue(subIssues.get(i).getAssigneeName());
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
         }
@@ -1494,9 +1491,9 @@ public class IssueServiceImpl implements IssueService {
                         cell.setCellValue(exportIssues.get(i).getDescription());
                         break;
                     case "冲刺":
-                        String sprintName = exportIssues.get(i).getSprintName() != null ? "正在使用冲刺:" + exportIssues.get(i).getSprintName() + " " : "";
-                        sprintName = sprintName + (!Objects.equals(exportIssues.get(i).getCloseSprintName(), "") ? "已关闭冲刺:" + exportIssues.get(i).getCloseSprintName() : "");
-                        cell.setCellValue(sprintName);
+                        StringBuilder sprintName = new StringBuilder(exportIssues.get(i).getSprintName() != null ? "正在使用冲刺:" + exportIssues.get(i).getSprintName() + " " : "");
+                        sprintName.append(!Objects.equals(exportIssues.get(i).getCloseSprintName(), "") ? "已关闭冲刺:" + exportIssues.get(i).getCloseSprintName() : "");
+                        cell.setCellValue(sprintName.toString());
                         break;
                     case "创建时间":
                         cell.setCellValue(dateFormat.format(exportIssues.get(i).getCreationDate()));
@@ -1517,9 +1514,9 @@ public class IssueServiceImpl implements IssueService {
                         cell.setCellValue(exportIssues.get(i).getRemainingTime() != null ? exportIssues.get(i).getRemainingTime().toString() : "");
                         break;
                     case "版本":
-                        String versionName = !Objects.equals(exportIssues.get(i).getFixVersionName(), "") ? "修复的版本:" + exportIssues.get(i).getFixVersionName() + "" : "";
-                        versionName = versionName + (!Objects.equals(exportIssues.get(i).getInfluenceVersionName(), "") ? "影响的版本:" + exportIssues.get(i).getInfluenceVersionName() : "");
-                        cell.setCellValue(versionName);
+                        StringBuilder versionName = new StringBuilder(!Objects.equals(exportIssues.get(i).getFixVersionName(), "") ? "修复的版本:" + exportIssues.get(i).getFixVersionName() + "" : "");
+                        versionName.append(!Objects.equals(exportIssues.get(i).getInfluenceVersionName(), "") ? "影响的版本:" + exportIssues.get(i).getInfluenceVersionName() : "");
+                        cell.setCellValue(versionName.toString());
                         break;
                     default:
                         break;

@@ -5,8 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.infra.common.annotation.Update;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.stereotype.Component;
-
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;

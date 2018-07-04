@@ -2,11 +2,17 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO;
 import io.choerodon.agile.api.dto.CumulativeFlowFilterDTO;
+import io.choerodon.agile.api.dto.IssueListDTO;
 import io.choerodon.agile.api.dto.ReportIssueDTO;
 import io.choerodon.agile.app.service.ReportService;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.choerodon.mybatis.pagehelper.domain.Sort;
+import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -14,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +35,8 @@ public class ReportController {
 
     @Autowired
     private ReportService reportService;
+
+    private static final String QUERY_ISSUE_ERROR = "error.issue.query";
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询冲刺对应的燃尽图报告信息")
@@ -53,6 +62,24 @@ public class ReportController {
         return Optional.ofNullable(reportService.queryCumulativeFlowDiagram(projectId, cumulativeFlowFilterDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.report.queryCumulativeFlowDiagram"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @CustomPageRequest
+    @ApiOperation(value = "根据状态查版本下issue列表")
+    @GetMapping(value = "/{versionId}/issues")
+    public ResponseEntity<Page<IssueListDTO>> queryIssueByOptions(@ApiParam(value = "项目id", required = true)
+                                                                  @PathVariable(name = "project_id") Long projectId,
+                                                                  @ApiParam(value = "版本id", required = true)
+                                                                  @PathVariable Long versionId,
+                                                                  @ApiParam(value = "状态", required = true)
+                                                                  @RequestParam String status,
+                                                                  @ApiParam(value = "分页信息", required = true)
+                                                                  @SortDefault(value = "issue_id", direction = Sort.Direction.DESC)
+                                                                  @ApiIgnore PageRequest pageRequest) {
+        return Optional.ofNullable(reportService.queryIssueByOptions(projectId, versionId, status, pageRequest))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException(QUERY_ISSUE_ERROR));
     }
 
 }

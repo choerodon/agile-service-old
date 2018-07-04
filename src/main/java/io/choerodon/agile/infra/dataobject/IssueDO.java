@@ -108,6 +108,9 @@ public class IssueDO extends AuditDomain {
     @Transient
     private String statusName;
 
+    @Transient
+    private String typeName;
+
     private String colorCode;
 
     @Transient
@@ -312,6 +315,14 @@ public class IssueDO extends AuditDomain {
 
     public void setSprintId(Long sprintId) {
         this.sprintId = sprintId;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 
     @Override
