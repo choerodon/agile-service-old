@@ -155,8 +155,11 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         if (!projectId.equals(quickFilterDTO.getProjectId())) {
             throw new CommonException("error.projectId.notEqual");
         }
+        String sqlQuery = getSqlQuery(quickFilterDTO.getQuickFilterValueDTOList(), quickFilterDTO.getRelationOperations(), quickFilterDTO.getChildIncluded());
         quickFilterDTO.setFilterId(filterId);
-        return ConvertHelper.convert(quickFilterRepository.update(ConvertHelper.convert(quickFilterDTO, QuickFilterE.class)), QuickFilterDTO.class);
+        QuickFilterE quickFilterE = ConvertHelper.convert(quickFilterDTO, QuickFilterE.class);
+        quickFilterE.setSqlQuery(sqlQuery);
+        return ConvertHelper.convert(quickFilterRepository.update(quickFilterE), QuickFilterDTO.class);
     }
 
     @Override
