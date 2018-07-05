@@ -4,6 +4,7 @@ import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper;
 import io.choerodon.agile.infra.mapper.LookupValueMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.agile.api.dto.*;
@@ -175,7 +176,6 @@ public class IssueAssembler {
         Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
         IssueSubDTO issueSubDTO = new IssueSubDTO();
         BeanUtils.copyProperties(issueDetailDO, issueSubDTO);
-        issueSubDTO.setIssueLinkDTOList(ConvertHelper.convertList(issueDetailDO.getIssueLinkDOList(), IssueLinkDTO.class));
         issueSubDTO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
         issueSubDTO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
         issueSubDTO.setActiveSprint(sprintNameAssembler.doToDTO(issueDetailDO.getActiveSprint()));
@@ -236,4 +236,23 @@ public class IssueAssembler {
         });
         return issueNumDTOList;
     }
+
+    public IssueCreateDTO issueDtoToIssueCreateDto(IssueDTO issueDTO) {
+        IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
+        BeanUtils.copyProperties(issueDTO, issueCreateDTO);
+        issueCreateDTO.setSprintId(0L);
+        issueCreateDTO.getComponentIssueRelDTOList().forEach(componentIssueRelDTO -> {
+            componentIssueRelDTO.setIssueId(null);
+            componentIssueRelDTO.setObjectVersionNumber(null);
+        });
+        issueCreateDTO.getVersionIssueRelDTOList().forEach(versionIssueRelDTO -> versionIssueRelDTO.setIssueId(null));
+        issueCreateDTO.getLabelIssueRelDTOList().forEach(labelIssueRelDTO -> {
+            labelIssueRelDTO.setIssueId(null);
+            labelIssueRelDTO.setLabelName(null);
+            labelIssueRelDTO.setObjectVersionNumber(null);
+            labelIssueRelDTO.setProjectId(issueDTO.getProjectId());
+        });
+        return issueCreateDTO;
+    }
+
 }

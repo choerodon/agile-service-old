@@ -19,11 +19,13 @@ import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import org.apache.ibatis.jdbc.Null;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -115,6 +118,8 @@ public class IssueServiceImpl implements IssueService {
     private SprintNameAssembler sprintNameAssembler;
     @Autowired
     private BoardService boardService;
+    @Autowired
+    private IssueLinkTypeMapper issueLinkTypeMapper;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -190,9 +195,6 @@ public class IssueServiceImpl implements IssueService {
         Long issueId = issueRepository.create(issueE).getIssueId();
         if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
             issueRepository.issueToSprint(issueE.getProjectId(), issueE.getSprintId(), issueId, new Date());
-        }
-        if (issueCreateDTO.getIssueLinkCreateDTOList() != null && !issueCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
-            issueLinkService.createIssueLinkList(issueCreateDTO.getIssueLinkCreateDTOList(), issueId, issueCreateDTO.getProjectId());
         }
         handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
         handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
@@ -1203,7 +1205,7 @@ public class IssueServiceImpl implements IssueService {
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
         projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
-        if(projectInfoDO == null){
+        if (projectInfoDO == null) {
             throw new CommonException(PROJECT_ERROR);
         }
         List<ExportIssuesDTO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId));
@@ -1236,7 +1238,7 @@ public class IssueServiceImpl implements IssueService {
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
         projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
-        if(projectInfoDO == null){
+        if (projectInfoDO == null) {
             throw new CommonException(PROJECT_ERROR);
         }
         ExportIssuesDTO exportIssue = issueAssembler.exportIssuesDOToExportIssuesDTO(issueMapper.queryExportIssue(projectId, issueId));
@@ -1258,6 +1260,37 @@ public class IssueServiceImpl implements IssueService {
             fileName = fileName + "-" + exportIssue.getIssueNum();
         }
         dowloadExcel(workbook, fileName, charsetName, response);
+    }
+
+    @Override
+    public IssueDTO copyIssueByIssueId(Long projectId, Long issueId, String summary) {
+        //todo 故事点、预估剩余时间、子任务是否复制
+        IssueDTO issueDTO = queryIssue(projectId, issueId);
+        if (issueDTO != null) {
+            issueDTO.setSummary(summary);
+            IssueCreateDTO issueCreateDTO = issueAssembler.issueDtoToIssueCreateDto(issueDTO);
+            IssueDTO newIssue = createIssue(issueCreateDTO);
+            //生成一条复制的关联
+            IssueLinkTypeDO query = new IssueLinkTypeDO();
+            query.setProjectId(issueDTO.getProjectId());
+            query.setOutWard("复制");
+            IssueLinkTypeDO issueLinkTypeDO = issueLinkTypeMapper.selectOne(query);
+            if (issueLinkTypeDO != null) {
+                IssueLinkE issueLinkE = new IssueLinkE();
+                issueLinkE.setLinkedIssueId(issueDTO.getIssueId());
+                issueLinkE.setLinkTypeId(issueLinkTypeDO.getLinkTypeId());
+                issueLinkE.setIssueId(newIssue.getIssueId());
+                issueLinkRepository.create(issueLinkE);
+            }
+            return queryIssue(projectId, newIssue.getIssueId());
+        } else {
+            throw new CommonException("error.issue.copyIssueByIssueId");
+        }
+    }
+
+    @Override
+    public IssueSubDTO transformedSubTask(Long projectId, Long issueId, Long parentIssueId, Long statusId) {
+        return null;
     }
 
     private void dowloadExcel(HSSFWorkbook workbook, String fileName, String charsetName, HttpServletResponse response) {

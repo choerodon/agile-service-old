@@ -122,4 +122,25 @@ public interface IssueService {
     void exportIssues(Long projectId, HttpServletRequest request, HttpServletResponse response);
 
     void exportIssue(Long projectId, Long issueId, HttpServletRequest request, HttpServletResponse response);
+
+    /**
+     * 根据issueId复制一个issue
+     *
+     * @param projectId projectId
+     * @param issueId   issueId
+     * @param summary   summary
+     * @return IssueDTO
+     */
+    IssueDTO copyIssueByIssueId(Long projectId, Long issueId, String summary);
+
+    /**
+     * 根据issueId转换为子任务
+     *
+     * @param projectId     projectId
+     * @param issueId       issueId
+     * @param parentIssueId parentIssueId
+     * @param statusId      statusId
+     * @return IssueSubDTO
+     */
+    IssueSubDTO transformedSubTask(Long projectId, Long issueId, Long parentIssueId, Long statusId);
 }
