@@ -46,8 +46,6 @@ public class IssueSubDTO {
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
-    private List<IssueLinkDTO> issueLinkDTOList;
-
     private List<IssueCommentDTO> issueCommentDTOList;
 
     private List<IssueAttachmentDTO> issueAttachmentDTOList;
@@ -210,14 +208,6 @@ public class IssueSubDTO {
 
     public void setLabelIssueRelDTOList(List<LabelIssueRelDTO> labelIssueRelDTOList) {
         this.labelIssueRelDTOList = labelIssueRelDTOList;
-    }
-
-    public List<IssueLinkDTO> getIssueLinkDTOList() {
-        return issueLinkDTOList;
-    }
-
-    public void setIssueLinkDTOList(List<IssueLinkDTO> issueLinkDTOList) {
-        this.issueLinkDTOList = issueLinkDTOList;
     }
 
     public List<IssueCommentDTO> getIssueCommentDTOList() {

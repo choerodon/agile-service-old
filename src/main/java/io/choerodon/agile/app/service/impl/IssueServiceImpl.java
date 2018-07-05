@@ -119,9 +119,7 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private BoardService boardService;
     @Autowired
-    private IssueAttachmentMapper issueAttachmentMapper;
-    @Autowired
-    private IssueAttachmentRepository issueAttachmentRepository;
+    private IssueLinkTypeMapper issueLinkTypeMapper;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -197,9 +195,6 @@ public class IssueServiceImpl implements IssueService {
         Long issueId = issueRepository.create(issueE).getIssueId();
         if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
             issueRepository.issueToSprint(issueE.getProjectId(), issueE.getSprintId(), issueId, new Date());
-        }
-        if (issueCreateDTO.getIssueLinkCreateDTOList() != null && !issueCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
-            issueLinkService.createIssueLinkList(issueCreateDTO.getIssueLinkCreateDTOList(), issueId, issueCreateDTO.getProjectId());
         }
         handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
         handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
@@ -1275,10 +1270,27 @@ public class IssueServiceImpl implements IssueService {
             issueDTO.setSummary(summary);
             IssueCreateDTO issueCreateDTO = issueAssembler.issueDtoToIssueCreateDto(issueDTO);
             IssueDTO newIssue = createIssue(issueCreateDTO);
+            //生成一条复制的关联
+            IssueLinkTypeDO query = new IssueLinkTypeDO();
+            query.setProjectId(issueDTO.getProjectId());
+            query.setOutWard("复制");
+            IssueLinkTypeDO issueLinkTypeDO = issueLinkTypeMapper.selectOne(query);
+            if (issueLinkTypeDO != null) {
+                IssueLinkE issueLinkE = new IssueLinkE();
+                issueLinkE.setLinkedIssueId(issueDTO.getIssueId());
+                issueLinkE.setLinkTypeId(issueLinkTypeDO.getLinkTypeId());
+                issueLinkE.setIssueId(newIssue.getIssueId());
+                issueLinkRepository.create(issueLinkE);
+            }
             return queryIssue(projectId, newIssue.getIssueId());
         } else {
             throw new CommonException("error.issue.copyIssueByIssueId");
         }
+    }
+
+    @Override
+    public IssueSubDTO transformedSubTask(Long projectId, Long issueId, Long parentIssueId, Long statusId) {
+        return null;
     }
 
     private void dowloadExcel(HSSFWorkbook workbook, String fileName, String charsetName, HttpServletResponse response) {

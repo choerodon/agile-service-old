@@ -288,4 +288,20 @@ public class IssueController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.copyIssueByIssueId"));
     }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("任务转换为子任务")
+    @PostMapping("/{issueId}/transformed_sub_task")
+    public ResponseEntity<IssueSubDTO> transformedSubTask(@ApiParam(value = "项目id", required = true)
+                                                          @PathVariable(name = "project_id") Long projectId,
+                                                          @ApiParam(value = "issueId", required = true)
+                                                          @PathVariable(name = "issueId") Long issueId,
+                                                          @ApiParam(value = "父issueId", required = true)
+                                                          @RequestParam Long parentIssueId,
+                                                          @ApiParam(value = "状态id", required = true)
+                                                          @RequestParam Long statusId) {
+        return Optional.ofNullable(issueService.transformedSubTask(projectId, issueId, parentIssueId, statusId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.issue.transformedSubTask"));
+    }
 }

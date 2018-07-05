@@ -27,8 +27,6 @@ public class IssueAssembler {
     private LookupValueMapper lookupValueMapper;
     @Autowired
     private SprintNameAssembler sprintNameAssembler;
-    @Autowired
-    private IssueLinkTypeMapper issueLinkTypeMapper;
 
     private static final String ISSUE_STATUS_COLOR = "issue_status_color";
 
@@ -178,7 +176,6 @@ public class IssueAssembler {
         Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
         IssueSubDTO issueSubDTO = new IssueSubDTO();
         BeanUtils.copyProperties(issueDetailDO, issueSubDTO);
-        issueSubDTO.setIssueLinkDTOList(ConvertHelper.convertList(issueDetailDO.getIssueLinkDOList(), IssueLinkDTO.class));
         issueSubDTO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
         issueSubDTO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
         issueSubDTO.setActiveSprint(sprintNameAssembler.doToDTO(issueDetailDO.getActiveSprint()));
@@ -249,18 +246,6 @@ public class IssueAssembler {
             componentIssueRelDTO.setObjectVersionNumber(null);
         });
         issueCreateDTO.getVersionIssueRelDTOList().forEach(versionIssueRelDTO -> versionIssueRelDTO.setIssueId(null));
-        issueCreateDTO.setIssueLinkCreateDTOList(new ArrayList<>());
-        //生成一条复制的关联
-        IssueLinkTypeDO query = new IssueLinkTypeDO();
-        query.setProjectId(issueDTO.getProjectId());
-        query.setInWard("复制");
-        IssueLinkTypeDO issueLinkTypeDO = issueLinkTypeMapper.selectOne(query);
-        if (issueLinkTypeDO != null) {
-            IssueLinkCreateDTO issueLinkCreateDTO = new IssueLinkCreateDTO();
-            issueLinkCreateDTO.setLinkedIssueId(issueDTO.getIssueId());
-            issueLinkCreateDTO.setLinkTypeId(issueLinkTypeDO.getLinkTypeId());
-            issueCreateDTO.getIssueLinkCreateDTOList().add(issueLinkCreateDTO);
-        }
         issueCreateDTO.getLabelIssueRelDTOList().forEach(labelIssueRelDTO -> {
             labelIssueRelDTO.setIssueId(null);
             labelIssueRelDTO.setLabelName(null);
