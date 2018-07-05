@@ -205,7 +205,7 @@ public class SprintServiceImpl implements SprintService {
             if (idx != 0) {
                 sql.append(" and " + " ( " + filter + " ) ");
             } else {
-                sql.append(" ( " +filter + " ) ");
+                sql.append(" ( " + filter + " ) ");
                 idx += 1;
             }
         }
@@ -247,11 +247,13 @@ public class SprintServiceImpl implements SprintService {
             Map<Long, List<AssigneeIssueDTO>> assigneeIssueMap = issueSearchAssembler.doListToAssigneeIssueDTO(sprintMapper.queryAssigneeIssueCount(projectId, planSprintIds, customUserDetails.getUserId(), StringUtil.cast(result.get(ADVANCED_SEARCH_ARGS)), filterSql, true), usersMap).stream().collect(Collectors.groupingBy(AssigneeIssueDTO::getSprintId));
             Map<Long, List<AssigneeIssueDTO>> unassignedIssueMap = issueSearchAssembler.doListToAssigneeIssueDTO(sprintMapper.queryAssigneeIssueCount(projectId, planSprintIds, customUserDetails.getUserId(), StringUtil.cast(result.get(ADVANCED_SEARCH_ARGS)), filterSql, false), usersMap).stream().collect(Collectors.groupingBy(AssigneeIssueDTO::getSprintId));
             planSprints.forEach(planSprint -> {
-                List<AssigneeIssueDTO> assigneeIssue = new ArrayList<>();
-                assigneeIssue.addAll(assigneeIssueMap.get(planSprint.getSprintId()));
-                assigneeIssue.addAll(unassignedIssueMap.get(planSprint.getSprintId()));
+                List<AssigneeIssueDTO> assigneeIssues = new ArrayList<>();
+                List<AssigneeIssueDTO> assigneeIssue = assigneeIssueMap.get(planSprint.getSprintId());
+                List<AssigneeIssueDTO> unassignedIssue = unassignedIssueMap.get(planSprint.getSprintId());
+                assigneeIssues.addAll(assigneeIssue != null ? assigneeIssue : new ArrayList<>());
+                assigneeIssues.addAll(unassignedIssue != null ? unassignedIssue : new ArrayList<>());
                 planSprint.setIssueCount(issueCountMap.get(planSprint.getSprintId()));
-                planSprint.setAssigneeIssues(assigneeIssue);
+                planSprint.setAssigneeIssues(assigneeIssues);
             });
             sprintSearchs.addAll(planSprints);
         }
