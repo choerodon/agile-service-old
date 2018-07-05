@@ -35,10 +35,6 @@ public class IssueSubCreateDTO {
 
     private List<IssueLinkCreateDTO> issueLinkCreateDTOList;
 
-    private BigDecimal remainingTime;
-
-    private BigDecimal estimateTime;
-
     public String getIssueNum() {
         return issueNum;
     }
@@ -117,22 +113,6 @@ public class IssueSubCreateDTO {
 
     public void setIssueLinkCreateDTOList(List<IssueLinkCreateDTO> issueLinkCreateDTOList) {
         this.issueLinkCreateDTOList = issueLinkCreateDTOList;
-    }
-
-    public BigDecimal getRemainingTime() {
-        return remainingTime;
-    }
-
-    public void setRemainingTime(BigDecimal remainingTime) {
-        this.remainingTime = remainingTime;
-    }
-
-    public BigDecimal getEstimateTime() {
-        return estimateTime;
-    }
-
-    public void setEstimateTime(BigDecimal estimateTime) {
-        this.estimateTime = estimateTime;
     }
 
     public Long getSprintId() {

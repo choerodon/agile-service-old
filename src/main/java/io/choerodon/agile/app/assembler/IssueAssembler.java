@@ -4,6 +4,7 @@ import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper;
 import io.choerodon.agile.infra.mapper.LookupValueMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.agile.api.dto.*;
@@ -26,6 +27,8 @@ public class IssueAssembler {
     private LookupValueMapper lookupValueMapper;
     @Autowired
     private SprintNameAssembler sprintNameAssembler;
+    @Autowired
+    private IssueLinkTypeMapper issueLinkTypeMapper;
 
     private static final String ISSUE_STATUS_COLOR = "issue_status_color";
 
@@ -236,4 +239,35 @@ public class IssueAssembler {
         });
         return issueNumDTOList;
     }
+
+    public IssueCreateDTO issueDtoToIssueCreateDto(IssueDTO issueDTO) {
+        IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
+        BeanUtils.copyProperties(issueDTO, issueCreateDTO);
+        issueCreateDTO.setSprintId(0L);
+        issueCreateDTO.getComponentIssueRelDTOList().forEach(componentIssueRelDTO -> {
+            componentIssueRelDTO.setIssueId(null);
+            componentIssueRelDTO.setObjectVersionNumber(null);
+        });
+        issueCreateDTO.getVersionIssueRelDTOList().forEach(versionIssueRelDTO -> versionIssueRelDTO.setIssueId(null));
+        issueCreateDTO.setIssueLinkCreateDTOList(new ArrayList<>());
+        //生成一条复制的关联
+        IssueLinkTypeDO query = new IssueLinkTypeDO();
+        query.setProjectId(issueDTO.getProjectId());
+        query.setInWard("复制");
+        IssueLinkTypeDO issueLinkTypeDO = issueLinkTypeMapper.selectOne(query);
+        if (issueLinkTypeDO != null) {
+            IssueLinkCreateDTO issueLinkCreateDTO = new IssueLinkCreateDTO();
+            issueLinkCreateDTO.setLinkedIssueId(issueDTO.getIssueId());
+            issueLinkCreateDTO.setLinkTypeId(issueLinkTypeDO.getLinkTypeId());
+            issueCreateDTO.getIssueLinkCreateDTOList().add(issueLinkCreateDTO);
+        }
+        issueCreateDTO.getLabelIssueRelDTOList().forEach(labelIssueRelDTO -> {
+            labelIssueRelDTO.setIssueId(null);
+            labelIssueRelDTO.setLabelName(null);
+            labelIssueRelDTO.setObjectVersionNumber(null);
+            labelIssueRelDTO.setProjectId(issueDTO.getProjectId());
+        });
+        return issueCreateDTO;
+    }
+
 }

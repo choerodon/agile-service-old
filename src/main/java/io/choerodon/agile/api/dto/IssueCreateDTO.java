@@ -10,8 +10,6 @@ import java.util.List;
  */
 public class IssueCreateDTO {
 
-    private String issueNum;
-
     private String typeCode;
 
     private String summary;
@@ -28,8 +26,6 @@ public class IssueCreateDTO {
 
     private Long sprintId;
 
-    private Integer storyPoints;
-
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
@@ -43,14 +39,6 @@ public class IssueCreateDTO {
     private BigDecimal estimateTime;
 
     private String epicName;
-
-    public String getIssueNum() {
-        return issueNum;
-    }
-
-    public void setIssueNum(String issueNum) {
-        this.issueNum = issueNum;
-    }
 
     public String getTypeCode() {
         return typeCode;
@@ -114,14 +102,6 @@ public class IssueCreateDTO {
 
     public void setSprintId(Long sprintId) {
         this.sprintId = sprintId;
-    }
-
-    public Integer getStoryPoints() {
-        return storyPoints;
-    }
-
-    public void setStoryPoints(Integer storyPoints) {
-        this.storyPoints = storyPoints;
     }
 
     public List<VersionIssueRelDTO> getVersionIssueRelDTOList() {

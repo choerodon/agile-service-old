@@ -267,11 +267,25 @@ public class IssueController {
     @ApiOperation("导出issue详情")
     @GetMapping(value = "/export/{issueId}")
     public void exportIssue(@ApiParam(value = "项目id", required = true)
-                             @PathVariable(name = "project_id") Long projectId,
-                             @ApiParam(value = "issueId", required = true)
-                             @PathVariable(name = "issueId") Long issueId,
-                             HttpServletRequest request,
-                             HttpServletResponse response) {
+                            @PathVariable(name = "project_id") Long projectId,
+                            @ApiParam(value = "issueId", required = true)
+                            @PathVariable(name = "issueId") Long issueId,
+                            HttpServletRequest request,
+                            HttpServletResponse response) {
         issueService.exportIssue(projectId, issueId, request, response);
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("复制一个issue")
+    @PostMapping("/{issueId}/copy_issue")
+    public ResponseEntity<IssueDTO> copyIssueByIssueId(@ApiParam(value = "项目id", required = true)
+                                                       @PathVariable(name = "project_id") Long projectId,
+                                                       @ApiParam(value = "issueId", required = true)
+                                                       @PathVariable(name = "issueId") Long issueId,
+                                                       @ApiParam(value = "概要", required = true)
+                                                       @RequestParam String summary) {
+        return Optional.ofNullable(issueService.copyIssueByIssueId(projectId, issueId, summary))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.issue.copyIssueByIssueId"));
     }
 }

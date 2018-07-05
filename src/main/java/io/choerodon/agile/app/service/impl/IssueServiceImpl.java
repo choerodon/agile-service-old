@@ -19,11 +19,13 @@ import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import org.apache.ibatis.jdbc.Null;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -115,6 +118,10 @@ public class IssueServiceImpl implements IssueService {
     private SprintNameAssembler sprintNameAssembler;
     @Autowired
     private BoardService boardService;
+    @Autowired
+    private IssueAttachmentMapper issueAttachmentMapper;
+    @Autowired
+    private IssueAttachmentRepository issueAttachmentRepository;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -1203,7 +1210,7 @@ public class IssueServiceImpl implements IssueService {
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
         projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
-        if(projectInfoDO == null){
+        if (projectInfoDO == null) {
             throw new CommonException(PROJECT_ERROR);
         }
         List<ExportIssuesDTO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId));
@@ -1236,7 +1243,7 @@ public class IssueServiceImpl implements IssueService {
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
         projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
-        if(projectInfoDO == null){
+        if (projectInfoDO == null) {
             throw new CommonException(PROJECT_ERROR);
         }
         ExportIssuesDTO exportIssue = issueAssembler.exportIssuesDOToExportIssuesDTO(issueMapper.queryExportIssue(projectId, issueId));
@@ -1258,6 +1265,20 @@ public class IssueServiceImpl implements IssueService {
             fileName = fileName + "-" + exportIssue.getIssueNum();
         }
         dowloadExcel(workbook, fileName, charsetName, response);
+    }
+
+    @Override
+    public IssueDTO copyIssueByIssueId(Long projectId, Long issueId, String summary) {
+        //todo 故事点、预估剩余时间、子任务是否复制
+        IssueDTO issueDTO = queryIssue(projectId, issueId);
+        if (issueDTO != null) {
+            issueDTO.setSummary(summary);
+            IssueCreateDTO issueCreateDTO = issueAssembler.issueDtoToIssueCreateDto(issueDTO);
+            IssueDTO newIssue = createIssue(issueCreateDTO);
+            return queryIssue(projectId, newIssue.getIssueId());
+        } else {
+            throw new CommonException("error.issue.copyIssueByIssueId");
+        }
     }
 
     private void dowloadExcel(HSSFWorkbook workbook, String fileName, String charsetName, HttpServletResponse response) {
