@@ -59,15 +59,4 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
         return ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoDTO.class);
     }
 
-    @Override
-    public ProjectDefaultSettingDTO queryProjectDefaultSettingByProjectId(Long projectId) {
-        ProjectInfoDO query = new ProjectInfoDO();
-        query.setProjectId(projectId);
-        ProjectInfoDO projectInfoDO = projectInfoMapper.selectOne(query);
-        if (projectInfoDO != null) {
-            return projectInfoAssembler.projectInfoDoToDto(projectInfoDO);
-        } else {
-            throw new CommonException("error.projectInfo.queryProjectDefaultSettingByProjectId");
-        }
-    }
 }
