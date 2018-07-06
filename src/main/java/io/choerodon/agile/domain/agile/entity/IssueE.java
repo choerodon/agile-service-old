@@ -283,7 +283,9 @@ public class IssueE {
     }
 
     private void initializationReporter() {
-        this.reporterId = DetailsHelper.getUserDetails().getUserId();
+        if (reporterId == null) {
+            this.reporterId = DetailsHelper.getUserDetails().getUserId();
+        }
     }
 
     private void initializationIssueNum(ProjectInfoE projectInfoE) {
