@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 
+import com.google.common.collect.Lists;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.*;
@@ -1286,7 +1287,6 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueDTO copyIssueByIssueId(Long projectId, Long issueId, String summary, Boolean subTask) {
-        //todo 故事点、预估剩余时间是否复制
         IssueDetailDO issueDetailDO = issueMapper.queryIssueDetail(projectId, issueId);
         if (issueDetailDO != null) {
             issueDetailDO.setSummary(summary);
@@ -1300,6 +1300,13 @@ public class IssueServiceImpl implements IssueService {
             if (issueLinkTypeDO != null) {
                 createCopyIssueLink(issueDetailDO.getIssueId(), newIssue.getIssueId(), issueLinkTypeDO.getLinkTypeId());
             }
+            //复制故事点和剩余工作量并记录日志
+            IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO();
+            issueUpdateDTO.setStoryPoints(issueDetailDO.getStoryPoints());
+            issueUpdateDTO.setRemainingTime(issueDetailDO.getRemainingTime());
+            issueUpdateDTO.setIssueId(newIssue.getIssueId());
+            issueUpdateDTO.setObjectVersionNumber(newIssue.getObjectVersionNumber());
+            updateIssue(projectId, issueUpdateDTO, Lists.newArrayList("storyPoints", "remainingTime"));
             if (subTask) {
                 List<IssueDO> subIssueDOList = issueDetailDO.getSubIssueDOList();
                 if (subIssueDOList != null && !subIssueDOList.isEmpty()) {
@@ -1311,6 +1318,12 @@ public class IssueServiceImpl implements IssueService {
                         if (issueLinkTypeDO != null) {
                             createCopyIssueLink(subIssueDetailDO.getIssueId(), newSubIssue.getIssueId(), issueLinkTypeDO.getLinkTypeId());
                         }
+                        //复制剩余工作量并记录日志
+                        IssueUpdateDTO subIssueUpdateDTO = new IssueUpdateDTO();
+                        subIssueUpdateDTO.setRemainingTime(issueDO.getRemainingTime());
+                        subIssueUpdateDTO.setIssueId(newSubIssue.getIssueId());
+                        subIssueUpdateDTO.setObjectVersionNumber(newSubIssue.getObjectVersionNumber());
+                        updateIssue(projectId, subIssueUpdateDTO, Lists.newArrayList("remainingTime"));
                     });
                 }
             }

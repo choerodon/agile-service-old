@@ -41,11 +41,4 @@ public interface ProjectInfoService {
      */
     ProjectInfoDTO queryProjectInfoByProjectId(Long projectId);
 
-    /**
-     * 查询项目默认设置
-     *
-     * @param projectId projectId
-     * @return ProjectDefaultSettingDTO
-     */
-    ProjectDefaultSettingDTO queryProjectDefaultSettingByProjectId(Long projectId);
 }
