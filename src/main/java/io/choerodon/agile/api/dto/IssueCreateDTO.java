@@ -20,6 +20,8 @@ public class IssueCreateDTO {
 
     private Long assigneeId;
 
+    private Long reporterId;
+
     private Long projectId;
 
     private Long epicId;
@@ -148,6 +150,14 @@ public class IssueCreateDTO {
 
     public void setEpicName(String epicName) {
         this.epicName = epicName;
+    }
+
+    public Long getReporterId() {
+        return reporterId;
+    }
+
+    public void setReporterId(Long reporterId) {
+        this.reporterId = reporterId;
     }
 
     @Override

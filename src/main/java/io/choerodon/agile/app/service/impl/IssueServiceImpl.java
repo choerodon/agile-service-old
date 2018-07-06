@@ -1285,7 +1285,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueDTO copyIssueByIssueId(Long projectId, Long issueId, String summary, Boolean subTask) {
-        //todo 故事点、预估剩余时间、子任务是否复制
+        //todo 故事点、预估剩余时间是否复制
         IssueDetailDO issueDetailDO = issueMapper.queryIssueDetail(projectId, issueId);
         if (issueDetailDO != null) {
             issueDetailDO.setSummary(summary);
@@ -1297,20 +1297,34 @@ public class IssueServiceImpl implements IssueService {
             query.setOutWard("复制");
             IssueLinkTypeDO issueLinkTypeDO = issueLinkTypeMapper.selectOne(query);
             if (issueLinkTypeDO != null) {
-                IssueLinkE issueLinkE = new IssueLinkE();
-                issueLinkE.setLinkedIssueId(issueDetailDO.getIssueId());
-                issueLinkE.setLinkTypeId(issueLinkTypeDO.getLinkTypeId());
-                issueLinkE.setIssueId(newIssue.getIssueId());
-                issueLinkRepository.create(issueLinkE);
+                createCopyIssueLink(issueDetailDO.getIssueId(), newIssue.getIssueId(), issueLinkTypeDO.getLinkTypeId());
             }
-//            if(subTask){
-//                List<IssueDO> subIssueDOList = issueMapper.queryIssueSubList(projectId,issueId);
-//
-//            }
+            if (subTask) {
+                List<IssueDO> subIssueDOList = issueDetailDO.getSubIssueDOList();
+                if (subIssueDOList != null && !subIssueDOList.isEmpty()) {
+                    subIssueDOList.forEach(issueDO -> {
+                        IssueDetailDO subIssueDetailDO = issueMapper.queryIssueDetail(issueDO.getProjectId(), issueDO.getIssueId());
+                        IssueSubCreateDTO issueSubCreateDTO = issueAssembler.issueDtoToSubIssueCreateDto(subIssueDetailDO, newIssue.getIssueId());
+                        IssueSubDTO newSubIssue = createSubIssue(issueSubCreateDTO);
+                        //生成一条复制的关联
+                        if (issueLinkTypeDO != null) {
+                            createCopyIssueLink(subIssueDetailDO.getIssueId(), newSubIssue.getIssueId(), issueLinkTypeDO.getLinkTypeId());
+                        }
+                    });
+                }
+            }
             return queryIssue(projectId, newIssue.getIssueId());
         } else {
             throw new CommonException("error.issue.copyIssueByIssueId");
         }
+    }
+
+    private void createCopyIssueLink(Long issueId, Long newIssueId, Long linkTypeId) {
+        IssueLinkE issueLinkE = new IssueLinkE();
+        issueLinkE.setLinkedIssueId(issueId);
+        issueLinkE.setLinkTypeId(linkTypeId);
+        issueLinkE.setIssueId(newIssueId);
+        issueLinkRepository.create(issueLinkE);
     }
 
     @Override

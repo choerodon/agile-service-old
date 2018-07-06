@@ -291,4 +291,16 @@ public class IssueAssembler {
         return versionIssueRelDTOList;
     }
 
+    public IssueSubCreateDTO issueDtoToSubIssueCreateDto(IssueDetailDO subIssueDetailDO, Long parentIssueId) {
+        IssueSubCreateDTO issueCreateDTO = new IssueSubCreateDTO();
+        BeanUtils.copyProperties(subIssueDetailDO, issueCreateDTO);
+        String subSummary = "COPY-" + subIssueDetailDO.getSummary();
+        issueCreateDTO.setSummary(subSummary);
+        issueCreateDTO.setSprintId(null);
+        issueCreateDTO.setParentIssueId(parentIssueId);
+        issueCreateDTO.setComponentIssueRelDTOList(copyComponentIssueRel(subIssueDetailDO.getComponentIssueRelDOList()));
+        issueCreateDTO.setVersionIssueRelDTOList(copyVersionIssueRel(subIssueDetailDO.getVersionIssueRelDOList()));
+        issueCreateDTO.setLabelIssueRelDTOList(copyLabelIssueRel(subIssueDetailDO.getLabelIssueRelDOList(), subIssueDetailDO.getProjectId()));
+        return issueCreateDTO;
+    }
 }

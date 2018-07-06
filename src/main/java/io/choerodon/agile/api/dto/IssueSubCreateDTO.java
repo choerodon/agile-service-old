@@ -21,6 +21,8 @@ public class IssueSubCreateDTO {
 
     private Long assigneeId;
 
+    private Long reporterId;
+
     private Long projectId;
 
     private Long sprintId;
@@ -129,6 +131,14 @@ public class IssueSubCreateDTO {
 
     public void setComponentIssueRelDTOList(List<ComponentIssueRelDTO> componentIssueRelDTOList) {
         this.componentIssueRelDTOList = componentIssueRelDTOList;
+    }
+
+    public Long getReporterId() {
+        return reporterId;
+    }
+
+    public void setReporterId(Long reporterId) {
+        this.reporterId = reporterId;
     }
 
     @Override
