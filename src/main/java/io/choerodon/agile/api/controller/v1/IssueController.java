@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.core.domain.Page;
@@ -283,24 +284,23 @@ public class IssueController {
                                                        @ApiParam(value = "issueId", required = true)
                                                        @PathVariable(name = "issueId") Long issueId,
                                                        @ApiParam(value = "概要", required = true)
-                                                       @RequestParam String summary) {
-        return Optional.ofNullable(issueService.copyIssueByIssueId(projectId, issueId, summary))
+                                                       @RequestParam String summary,
+                                                       @ApiParam(value = "是否复制子任务", required = true)
+                                                       @RequestParam Boolean subTask) {
+        return Optional.ofNullable(issueService.copyIssueByIssueId(projectId, issueId, summary, subTask))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.copyIssueByIssueId"));
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("任务转换为子任务")
-    @PostMapping("/{issueId}/transformed_sub_task")
+    @PostMapping("/transformed_sub_task")
     public ResponseEntity<IssueSubDTO> transformedSubTask(@ApiParam(value = "项目id", required = true)
                                                           @PathVariable(name = "project_id") Long projectId,
-                                                          @ApiParam(value = "issueId", required = true)
-                                                          @PathVariable(name = "issueId") Long issueId,
-                                                          @ApiParam(value = "父issueId", required = true)
-                                                          @RequestParam Long parentIssueId,
-                                                          @ApiParam(value = "状态id", required = true)
-                                                          @RequestParam Long statusId) {
-        return Optional.ofNullable(issueService.transformedSubTask(projectId, issueId, parentIssueId, statusId))
+                                                          @ApiParam(value = "转换子任务信息", required = true)
+                                                          @RequestBody IssueTransformSubTask issueTransformSubTask) {
+        issueRule.verifyTransformedSubTask(projectId, issueTransformSubTask);
+        return Optional.ofNullable(issueService.transformedSubTask(projectId, issueTransformSubTask))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.transformedSubTask"));
     }
