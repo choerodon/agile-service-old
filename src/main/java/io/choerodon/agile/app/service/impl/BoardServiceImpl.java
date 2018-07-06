@@ -248,7 +248,7 @@ public class BoardServiceImpl implements BoardService {
         jsonObject.put("columnsData", putColumnData(columns));
         jsonObject.put("currentSprint", putCurrentSprint(activeSprint));
         //处理用户默认看板设置，保存最近一次的浏览
-//        handleUserSetting(boardId, projectId);
+        handleUserSetting(boardId, projectId);
         return jsonObject;
     }
 
