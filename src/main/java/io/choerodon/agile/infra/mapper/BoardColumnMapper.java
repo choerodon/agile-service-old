@@ -1,11 +1,8 @@
 package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
-import io.choerodon.agile.infra.dataobject.BoardColumnCheckDO;
-import io.choerodon.agile.infra.dataobject.ColumnAndIssueDO;
-import io.choerodon.agile.infra.dataobject.ColumnDO;
+import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.BaseMapper;
-import io.choerodon.agile.infra.dataobject.BoardColumnDO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
@@ -87,4 +84,6 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
      * @return ColumnAndIssueDO
      */
     List<ColumnAndIssueDO> queryColumnsByIssueIds(@Param("issueIds") List<Long> issueIds, @Param("boardId") Long boardId);
+
+    List<EpicIdWithNameDO> selectEpicBatchByIds(@Param("epicIds") List<Long> epicIds);
 }

@@ -46,6 +46,7 @@
         alv.name AS ai_priority_name,
         ai.parent_issue_id AS ai_parent_issue_id,
         ai.type_code AS ai_type_code,
+        ai.epic_id AS ai_epic_id,
         ai.object_version_number AS ai_object_version_number
         FROM
         agile_board_column abc
@@ -294,6 +295,17 @@
         <foreach collection="columnIds" item="columnId"
                  open="(" close=")" separator=",">
             #{columnId}
+        </foreach>
+    </select>
+
+    <select id="selectEpicBatchByIds" resultType="io.choerodon.agile.infra.dataobject.EpicIdWithNameDO">
+        SELECT
+         issue_id AS epic_id,
+         epic_name AS epic_name
+        FROM  agile_issue WHERE issue_id IN
+        <foreach collection="epicIds" item="epicId"
+                 open="(" close=")" separator=",">
+            #{epicId}
         </foreach>
     </select>
 
