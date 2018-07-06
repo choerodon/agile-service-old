@@ -129,7 +129,7 @@ public class BoardServiceImpl implements BoardService {
         return columnsData;
     }
 
-    private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids) {
+    private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds) {
         for (SubStatus status : subStatuses) {
             for (IssueForBoardDO issue : status.getIssues()) {
                 if (issue.getParentIssueId() != null && issue.getParentIssueId() != 0 && !parentIds.contains(issue.getParentIssueId())) {
@@ -140,16 +140,19 @@ public class BoardServiceImpl implements BoardService {
                 if (issue.getAssigneeId() != null && !assigneeIds.contains(issue.getAssigneeId())) {
                     assigneeIds.add(issue.getAssigneeId());
                 }
+                if (issue.getEpicId() != null && !epicIds.contains(issue.getEpicId())) {
+                    epicIds.add(issue.getEpicId());
+                }
             }
         }
     }
 
-    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId) {
+    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds) {
         //子任务经办人为自己，父任务经办人不为自己的情况
         List<Long> issueIds = new ArrayList<>();
         for (ColumnAndIssueDO column : columns) {
             List<SubStatus> subStatuses = column.getSubStatuses();
-            getDatas(subStatuses, parentIds, assigneeIds, issueIds);
+            getDatas(subStatuses, parentIds, assigneeIds, issueIds, epicIds);
             Collections.sort(subStatuses, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
         }
         if (parentIds != null && !parentIds.isEmpty()) {
@@ -229,10 +232,12 @@ public class BoardServiceImpl implements BoardService {
         }
         List<Long> assigneeIds = new ArrayList<>();
         List<Long> parentIds = new ArrayList<>();
+        List<Long> epicIds = new ArrayList<>();
         List<ColumnAndIssueDO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory, filterSql);
-        putDatasAndSort(columns, parentIds, assigneeIds, boardId);
+        putDatasAndSort(columns, parentIds, assigneeIds, boardId, epicIds);
         jsonObject.put("parentIds", parentIds);
         jsonObject.put("assigneeIds", assigneeIds);
+        jsonObject.put("epicInfo", boardColumnMapper.selectEpicBatchByIds(epicIds));
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         columns.forEach(columnAndIssueDO -> columnAndIssueDO.getSubStatuses().forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> {
             String assigneeName = usersMap.get(issueForBoardDO.getAssigneeId()) != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getName() : null;

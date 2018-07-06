@@ -26,6 +26,8 @@ public class IssueForBoardDO {
 
     private String imageUrl;
 
+    private Long epicId;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -104,5 +106,13 @@ public class IssueForBoardDO {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public void setEpicId(Long epicId) {
+        this.epicId = epicId;
+    }
+
+    public Long getEpicId() {
+        return epicId;
     }
 }
