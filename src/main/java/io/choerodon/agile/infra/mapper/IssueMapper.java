@@ -93,12 +93,14 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @param searchArgs         searchArgs
      * @param advancedSearchArgs advancedSearchArgs
      * @param otherArgs          otherArgs
+     * @param content            content
      * @return IssueDO
      */
     List<Long> queryIssueListWithoutSub(@Param("projectId") Long projectId,
                                         @Param("searchArgs") Map<String, Object> searchArgs,
                                         @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
-                                        @Param("otherArgs") Map<String, Object> otherArgs);
+                                        @Param("otherArgs") Map<String, Object> otherArgs,
+                                        @Param("content") String content);
 
     List<IssueLabelDO> selectLabelNameByIssueId(@Param("issueId") Long issueId);
 
