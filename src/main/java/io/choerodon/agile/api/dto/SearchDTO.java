@@ -25,6 +25,11 @@ public class SearchDTO {
      */
     private Map<String, Object> otherArgs;
 
+    /**
+     * issueNum+summary模糊搜索
+     */
+    private String content;
+
     public Map<String, Object> getSearchArgs() {
         return searchArgs;
     }
@@ -47,6 +52,14 @@ public class SearchDTO {
 
     public void setOtherArgs(Map<String, Object> otherArgs) {
         this.otherArgs = otherArgs;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     @Override
