@@ -174,7 +174,6 @@ public class BoardServiceImpl implements BoardService {
                         columns.add(columnAndIssueDO);
                     }
                 });
-                columns.addAll(boardColumnMapper.queryColumnsByIssueIds(subNoParentIds, boardId));
             }
         }
         Collections.sort(parentIds);

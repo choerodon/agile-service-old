@@ -4,6 +4,7 @@ import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
+import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +26,13 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public String queryUserNameByOption(Long userId, Boolean withId) {
-        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         if (userId == null || userId == 0) {
             return null;
         } else {
-            UserDO userDO = userFeignClient.query(customUserDetails.getOrganizationId(), userId).getBody();
+            UserDO userDO = userFeignClient.queryUserById(userId).getBody();
+            if(userDO==null){
+                throw new CommonException("error.userRepository.notFound");
+            }
             if (withId) {
                 return userDO.getLoginName() + "-" + userDO.getRealName();
             } else {

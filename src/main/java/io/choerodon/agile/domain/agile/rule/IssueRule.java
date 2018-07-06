@@ -3,6 +3,7 @@ package io.choerodon.agile.domain.agile.rule;
 import io.choerodon.agile.api.dto.IssueCreateDTO;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.IssueSubCreateDTO;
+import io.choerodon.agile.api.dto.IssueTransformSubTask;
 import io.choerodon.agile.api.dto.IssueUpdateTypeDTO;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.domain.agile.entity.*;
@@ -176,4 +177,15 @@ public class IssueRule {
         return labelIssueRelMapper.selectOne(labelIssueRelDO) == null;
     }
 
+    public void verifyTransformedSubTask(Long projectId,IssueTransformSubTask issueTransformSubTask) {
+        if(issueTransformSubTask.getIssueId()==null){
+            throw new CommonException(ERROR_ISSUE_ID_NOT_FOUND);
+        }
+        if(issueTransformSubTask.getParentIssueId()==null){
+            throw new CommonException("error.IssueRule.parentIssueId");
+        }
+        if(issueMapper.queryIssueByIssueId(projectId,issueTransformSubTask.getParentIssueId())==null){
+            throw new CommonException("error.IssueRule.issueNoFound");
+        }
+    }
 }

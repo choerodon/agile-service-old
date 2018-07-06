@@ -183,8 +183,15 @@ public class IssueAssembler {
         issueSubDTO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
         issueSubDTO.setIssueAttachmentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueAttachmentDOList(), IssueAttachmentDTO.class));
         issueSubDTO.setIssueCommentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueCommentDOList(), IssueCommentDTO.class));
-        issueSubDTO.setAssigneeName(userRepository.queryUserNameByOption(issueSubDTO.getAssigneeId(), true));
-        issueSubDTO.setReporterName(userRepository.queryUserNameByOption(issueSubDTO.getReporterId(), true));
+        List<Long> assigneeIdList = Arrays.asList(issueDetailDO.getAssigneeId(), issueDetailDO.getReporterId());
+        Map<Long, UserMessageDO> userMessageDOMap = userRepository.queryUsersMap(
+                assigneeIdList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
+        String assigneeName = userMessageDOMap.get(issueSubDTO.getAssigneeId()) != null ? userMessageDOMap.get(issueSubDTO.getAssigneeId()).getName() : null;
+        String reporterName = userMessageDOMap.get(issueSubDTO.getReporterId()) != null ? userMessageDOMap.get(issueSubDTO.getReporterId()).getName() : null;
+        issueSubDTO.setAssigneeName(assigneeName);
+        issueSubDTO.setAssigneeImageUrl(assigneeName != null ? userMessageDOMap.get(issueSubDTO.getAssigneeId()).getImageUrl() : null);
+        issueSubDTO.setReporterName(reporterName);
+        issueSubDTO.setReporterImageUrl(reporterName != null ? userMessageDOMap.get(issueSubDTO.getReporterId()).getImageUrl() : null);
         issueSubDTO.setStatusColor(ColorUtil.initializationStatusColor(issueSubDTO.getStatusCode(), lookupValueMap));
         return issueSubDTO;
     }
@@ -237,22 +244,51 @@ public class IssueAssembler {
         return issueNumDTOList;
     }
 
-    public IssueCreateDTO issueDtoToIssueCreateDto(IssueDTO issueDTO) {
+    public IssueCreateDTO issueDtoToIssueCreateDto(IssueDetailDO issueDetailDO) {
         IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
-        BeanUtils.copyProperties(issueDTO, issueCreateDTO);
+        BeanUtils.copyProperties(issueDetailDO, issueCreateDTO);
         issueCreateDTO.setSprintId(0L);
-        issueCreateDTO.getComponentIssueRelDTOList().forEach(componentIssueRelDTO -> {
+        issueCreateDTO.setComponentIssueRelDTOList(copyComponentIssueRel(issueDetailDO.getComponentIssueRelDOList()));
+        issueCreateDTO.setVersionIssueRelDTOList(copyVersionIssueRel(issueDetailDO.getVersionIssueRelDOList()));
+        issueCreateDTO.setLabelIssueRelDTOList(copyLabelIssueRel(issueDetailDO.getLabelIssueRelDOList(), issueDetailDO.getProjectId()));
+        return issueCreateDTO;
+    }
+
+    private List<ComponentIssueRelDTO> copyComponentIssueRel(List<ComponentIssueRelDO> componentIssueRelDOList) {
+        List<ComponentIssueRelDTO> componentIssueRelDTOList = new ArrayList<>();
+        componentIssueRelDOList.forEach(componentIssueRelDO -> {
+            ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
+            BeanUtils.copyProperties(componentIssueRelDO, componentIssueRelDTO);
             componentIssueRelDTO.setIssueId(null);
             componentIssueRelDTO.setObjectVersionNumber(null);
+            componentIssueRelDTOList.add(componentIssueRelDTO);
         });
-        issueCreateDTO.getVersionIssueRelDTOList().forEach(versionIssueRelDTO -> versionIssueRelDTO.setIssueId(null));
-        issueCreateDTO.getLabelIssueRelDTOList().forEach(labelIssueRelDTO -> {
+        return componentIssueRelDTOList;
+    }
+
+    private List<LabelIssueRelDTO> copyLabelIssueRel(List<LabelIssueRelDO> labelIssueRelDOList, Long projectId) {
+        List<LabelIssueRelDTO> labelIssueRelDTOList = new ArrayList<>();
+        labelIssueRelDOList.forEach(labelIssueRelDO -> {
+            LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO();
+            BeanUtils.copyProperties(labelIssueRelDO, labelIssueRelDTO);
             labelIssueRelDTO.setIssueId(null);
             labelIssueRelDTO.setLabelName(null);
             labelIssueRelDTO.setObjectVersionNumber(null);
-            labelIssueRelDTO.setProjectId(issueDTO.getProjectId());
+            labelIssueRelDTO.setProjectId(projectId);
+            labelIssueRelDTOList.add(labelIssueRelDTO);
         });
-        return issueCreateDTO;
+        return labelIssueRelDTOList;
+    }
+
+    private List<VersionIssueRelDTO> copyVersionIssueRel(List<VersionIssueRelDO> versionIssueRelDOList) {
+        List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>();
+        versionIssueRelDOList.forEach(versionIssueRelDO -> {
+            VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
+            BeanUtils.copyProperties(versionIssueRelDO, versionIssueRelDTO);
+            versionIssueRelDTO.setIssueId(null);
+            versionIssueRelDTOList.add(versionIssueRelDTO);
+        });
+        return versionIssueRelDTOList;
     }
 
 }

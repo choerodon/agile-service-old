@@ -74,6 +74,10 @@ public class IssueSubDTO {
 
     private String statusColor;
 
+    private String assigneeImageUrl;
+
+    private String reporterImageUrl;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -320,6 +324,22 @@ public class IssueSubDTO {
 
     public void setComponentIssueRelDTOList(List<ComponentIssueRelDTO> componentIssueRelDTOList) {
         this.componentIssueRelDTOList = componentIssueRelDTOList;
+    }
+
+    public String getAssigneeImageUrl() {
+        return assigneeImageUrl;
+    }
+
+    public void setAssigneeImageUrl(String assigneeImageUrl) {
+        this.assigneeImageUrl = assigneeImageUrl;
+    }
+
+    public String getReporterImageUrl() {
+        return reporterImageUrl;
+    }
+
+    public void setReporterImageUrl(String reporterImageUrl) {
+        this.reporterImageUrl = reporterImageUrl;
     }
 
     @Override

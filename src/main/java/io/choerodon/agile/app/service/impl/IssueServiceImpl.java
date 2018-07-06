@@ -133,6 +133,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String EPIC_ID_FIELD = "epicId";
     private static final String SPRINT_ID_FIELD = "sprintId";
     private static final String STATUS_ID = "statusId";
+    private static final String PARENT_ISSUE_ID = "parentIssueId";
     private static final String EPIC_COLOR_TYPE = "epic_color";
     private static final String FIELD_SUMMARY = "summary";
     private static final String FIELD_DESCRIPTION = "description";
@@ -140,6 +141,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String FIELD_ASSIGNEE = "assignee";
     private static final String FIELD_REPORTER = "reporter";
     private static final String FIELD_SPRINT = "Sprint";
+    private static final String STORY_TYPE = "story";
     private static final String FIELD_STORY_POINTS = "Story Points";
     private static final String FIELD_EPIC_LINK = "Epic Link";
     private static final String FIELD_TIMEESTIMATE = "timeestimate";
@@ -849,21 +851,40 @@ public class IssueServiceImpl implements IssueService {
             issueE.setEpicName(issueUpdateTypeDTO.getEpicName());
             List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
             issueE.initializationColor(colorList);
+            //保存日志
+            handleChangeStoryTypeIssue(issueE);
+            handleChangeRemainTimeIssue(issueE);
             issueE.setEpicId(0L);
-            issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD});
+            issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, FIELD_STORY_POINTS});
         } else if (issueE.getTypeCode().equals(ISSUE_EPIC)) {
             //如果之前类型是epic，会把该epic下的issue的epicId置为0
+            //todo epicId改变是否记录日志
             issueRepository.batchUpdateIssueEpicId(issueE.getProjectId(), issueE.getIssueId());
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
             issueE.setColorCode(null);
             issueE.setEpicName(null);
             issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, EPIC_NAME_FIELD, COLOR_CODE_FIELD});
         } else {
+            handleChangeStoryTypeIssue(issueE);
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
             issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD});
         }
         dataLogIssueType(originType, issueUpdateTypeDTO);
         return queryIssue(issueE.getProjectId(), issueE.getIssueId());
+    }
+
+    private void handleChangeRemainTimeIssue(IssueE issueE) {
+        if (issueE.getRemainingTime() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(issueE.getProjectId());
+            dataLogE.setIssueId(issueE.getIssueId());
+            dataLogE.setField(FIELD_TIMEESTIMATE);
+            dataLogE.setOldValue(issueE.getRemainingTime().toString());
+            dataLogE.setOldString(issueE.getRemainingTime().toString());
+            dataLogE.setNewValue(null);
+            dataLogE.setNewString(null);
+            dataLogRepository.create(dataLogE);
+        }
     }
 
     @Override
@@ -1263,25 +1284,29 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueDTO copyIssueByIssueId(Long projectId, Long issueId, String summary) {
+    public IssueDTO copyIssueByIssueId(Long projectId, Long issueId, String summary, Boolean subTask) {
         //todo 故事点、预估剩余时间、子任务是否复制
-        IssueDTO issueDTO = queryIssue(projectId, issueId);
-        if (issueDTO != null) {
-            issueDTO.setSummary(summary);
-            IssueCreateDTO issueCreateDTO = issueAssembler.issueDtoToIssueCreateDto(issueDTO);
+        IssueDetailDO issueDetailDO = issueMapper.queryIssueDetail(projectId, issueId);
+        if (issueDetailDO != null) {
+            issueDetailDO.setSummary(summary);
+            IssueCreateDTO issueCreateDTO = issueAssembler.issueDtoToIssueCreateDto(issueDetailDO);
             IssueDTO newIssue = createIssue(issueCreateDTO);
             //生成一条复制的关联
             IssueLinkTypeDO query = new IssueLinkTypeDO();
-            query.setProjectId(issueDTO.getProjectId());
+            query.setProjectId(issueDetailDO.getProjectId());
             query.setOutWard("复制");
             IssueLinkTypeDO issueLinkTypeDO = issueLinkTypeMapper.selectOne(query);
             if (issueLinkTypeDO != null) {
                 IssueLinkE issueLinkE = new IssueLinkE();
-                issueLinkE.setLinkedIssueId(issueDTO.getIssueId());
+                issueLinkE.setLinkedIssueId(issueDetailDO.getIssueId());
                 issueLinkE.setLinkTypeId(issueLinkTypeDO.getLinkTypeId());
                 issueLinkE.setIssueId(newIssue.getIssueId());
                 issueLinkRepository.create(issueLinkE);
             }
+//            if(subTask){
+//                List<IssueDO> subIssueDOList = issueMapper.queryIssueSubList(projectId,issueId);
+//
+//            }
             return queryIssue(projectId, newIssue.getIssueId());
         } else {
             throw new CommonException("error.issue.copyIssueByIssueId");
@@ -1289,8 +1314,54 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueSubDTO transformedSubTask(Long projectId, Long issueId, Long parentIssueId, Long statusId) {
-        return null;
+    public IssueSubDTO transformedSubTask(Long projectId, IssueTransformSubTask issueTransformSubTask) {
+        IssueE issueE = ConvertHelper.convert(issueMapper.queryIssueByIssueId(projectId, issueTransformSubTask.getIssueId()), IssueE.class);
+        if (issueE != null) {
+            if (!issueE.getTypeCode().equals(SUB_TASK)) {
+                String originTypeCode = issueE.getTypeCode();
+                issueE.setTypeCode(SUB_TASK);
+                issueE.setRank(null);
+                issueE.setParentIssueId(issueTransformSubTask.getParentIssueId());
+                //日志记录故事点
+                handleChangeStoryTypeIssue(issueE);
+                //日志记录状态
+                IssueDO issueDO = new IssueDO();
+                issueDO.setStatusId(issueE.getStatusId());
+                issueDO.setProjectId(issueE.getProjectId());
+                issueE.setStatusId(issueTransformSubTask.getStatusId());
+                boardService.dataLogStatus(issueDO, issueE);
+                //日志记录issue类型变化
+                String originTypeName = lookupValueMapper.selectNameByValueCode(originTypeCode);
+                String currentTypeName = lookupValueMapper.selectNameByValueCode(issueE.getTypeCode());
+                DataLogE dataLogE = new DataLogE();
+                dataLogE.setField(FIELD_ISSUETYPE);
+                dataLogE.setIssueId(issueE.getIssueId());
+                dataLogE.setProjectId(issueE.getProjectId());
+                dataLogE.setOldString(originTypeName);
+                dataLogE.setNewString(currentTypeName);
+                dataLogRepository.create(dataLogE);
+                return queryIssueSub(projectId, issueE.getIssueId());
+            } else {
+                throw new CommonException("error.IssueRule.subTaskError");
+            }
+        } else {
+            throw new CommonException("error.IssueRule.issueNoFound");
+        }
+    }
+
+    private void handleChangeStoryTypeIssue(IssueE issueE) {
+        if (STORY_TYPE.equals(issueE.getTypeCode()) && issueE.getStoryPoints() != null) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(issueE.getProjectId());
+            dataLogE.setIssueId(issueE.getIssueId());
+            dataLogE.setField(FIELD_STORY_POINTS);
+            if (issueE.getStoryPoints() != null) {
+                dataLogE.setOldString(issueE.getStoryPoints().toString());
+            }
+            dataLogE.setNewString(null);
+            dataLogRepository.create(dataLogE);
+            issueE.setStoryPoints(null);
+        }
     }
 
     private void dowloadExcel(HSSFWorkbook workbook, String fileName, String charsetName, HttpServletResponse response) {
