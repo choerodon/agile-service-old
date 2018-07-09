@@ -20,13 +20,11 @@ import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import org.apache.ibatis.jdbc.Null;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -37,7 +35,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -649,13 +646,61 @@ public class IssueServiceImpl implements IssueService {
         return queryIssueSub(subIssueE.getProjectId(), issueId);
     }
 
+    private List<ProductVersionDO> getVersionRelsByIssueId(Long projectId, Long issueId) {
+        return productVersionMapper.selectVersionRelsByIssueId(projectId, issueId);
+    }
+
+    private Map getVersionIssueRelsByBatch(Long projectId, List<Long> issueIds) {
+        Map map = new HashMap();
+        for (Long issueId : issueIds) {
+            map.put(issueId, getVersionRelsByIssueId(projectId, issueId));
+        }
+        return map;
+    }
+
+    private void dataLogVersionByAdd(Long projectId, Long versionId, List<Long> issueIds) {
+        ProductVersionDO productVersionDO = productVersionMapper.selectByPrimaryKey(versionId);
+        if (productVersionDO == null) {
+            throw new CommonException("error.productVersion.get");
+        }
+        for (Long issueId : issueIds) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(projectId);
+            dataLogE.setIssueId(issueId);
+            dataLogE.setField(FIELD_FIX_VERSION);
+            dataLogE.setNewValue(productVersionDO.getVersionId().toString());
+            dataLogE.setNewString(productVersionDO.getName());
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void dataLogVersionByRemove(Long projectId, Map map) {
+        for (Object object : map.entrySet()) {
+            Map.Entry entry = (Map.Entry<Long, List<ProductVersionDO>>)object;
+            Long issueId = Long.parseLong(entry.getKey().toString());
+            List<ProductVersionDO> versionIssueRelDOList = (List<ProductVersionDO>) entry.getValue();
+            for (ProductVersionDO productVersionDO : versionIssueRelDOList) {
+                DataLogE dataLogE = new DataLogE();
+                dataLogE.setProjectId(projectId);
+                dataLogE.setField(FIELD_FIX_VERSION);
+                dataLogE.setIssueId(issueId);
+                dataLogE.setOldValue(productVersionDO.getVersionId().toString());
+                dataLogE.setOldString(productVersionDO.getName());
+                dataLogRepository.create(dataLogE);
+            }
+        }
+    }
+
     @Override
     public List<IssueSearchDTO> batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds) {
         if (versionId != null && !Objects.equals(versionId, 0L)) {
             productVersionRule.judgeExist(projectId, versionId);
             issueRepository.batchIssueToVersion(projectId, versionId, issueIds);
+            dataLogVersionByAdd(projectId, versionId, issueIds);
         } else {
+            Map map = getVersionIssueRelsByBatch(projectId, issueIds);
             issueRepository.batchRemoveVersion(projectId, issueIds);
+            dataLogVersionByRemove(projectId, map);
         }
         return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>());
     }
