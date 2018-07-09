@@ -119,7 +119,7 @@ public interface IssueService {
 
     Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String content, PageRequest pageRequest);
 
-    void exportIssues(Long projectId, HttpServletRequest request, HttpServletResponse response);
+    void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response);
 
     void exportIssue(Long projectId, Long issueId, HttpServletRequest request, HttpServletResponse response);
 

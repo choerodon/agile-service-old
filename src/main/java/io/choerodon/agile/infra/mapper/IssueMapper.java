@@ -133,7 +133,11 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List queryIssueByOption(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("content") String content);
 
-    List<ExportIssuesDO> queryExportIssues(@Param("projectId") Long projectId);
+    List<ExportIssuesDO> queryExportIssues(@Param("projectId") Long projectId,
+                                           @Param("searchArgs") Map<String, Object> searchArgs,
+                                           @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
+                                           @Param("otherArgs") Map<String, Object> otherArgs,
+                                           @Param("content") String content);
 
     List<SprintNameDO> querySprintNameByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
