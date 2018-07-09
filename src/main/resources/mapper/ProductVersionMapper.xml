@@ -320,4 +320,16 @@
             apv.project_id = #{projectId}
     </select>
 
+    <select id="selectVersionRelsByIssueId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDO">
+        SELECT
+          avir.version_id AS version_id,
+          avir.issue_id AS issue_id,
+          apv.`name`
+        FROM
+            agile_version_issue_rel avir
+        LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
+        WHERE avir.project_id = #{projectId}
+        AND avir.issue_id = #{issueId}
+    </select>
+
 </mapper>
