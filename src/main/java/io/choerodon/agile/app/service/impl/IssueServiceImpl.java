@@ -118,6 +118,12 @@ public class IssueServiceImpl implements IssueService {
     private BoardService boardService;
     @Autowired
     private IssueLinkTypeMapper issueLinkTypeMapper;
+    @Autowired
+    private IssueLinkMapper issueLinkMapper;
+    @Autowired
+    private IssueSprintRelRepository issueSprintRelRepository;
+    @Autowired
+    private IssueSprintRelMapper issueSprintRelMapper;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -131,7 +137,6 @@ public class IssueServiceImpl implements IssueService {
     private static final String EPIC_ID_FIELD = "epicId";
     private static final String SPRINT_ID_FIELD = "sprintId";
     private static final String STATUS_ID = "statusId";
-    private static final String PARENT_ISSUE_ID = "parentIssueId";
     private static final String EPIC_COLOR_TYPE = "epic_color";
     private static final String FIELD_SUMMARY = "summary";
     private static final String FIELD_DESCRIPTION = "description";
@@ -529,6 +534,7 @@ public class IssueServiceImpl implements IssueService {
                     fieldList.add(RANK_FIELD);
                 }
             }
+            //todo epicId改变记录日志
             issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
         }
         Long issueId = issueUpdateDTO.getIssueId();
@@ -709,6 +715,7 @@ public class IssueServiceImpl implements IssueService {
     public List<IssueSearchDTO> batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds) {
         issueRule.judgeExist(projectId, epicId);
         issueRepository.batchIssueToEpic(projectId, epicId, issueIds);
+        //todo 修改epic记录日志
         return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>());
     }
 
@@ -1331,10 +1338,10 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueDTO copyIssueByIssueId(Long projectId, Long issueId, String summary, Boolean subTask) {
+    public IssueDTO copyIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO) {
         IssueDetailDO issueDetailDO = issueMapper.queryIssueDetail(projectId, issueId);
         if (issueDetailDO != null) {
-            issueDetailDO.setSummary(summary);
+            issueDetailDO.setSummary(copyConditionDTO.getSummary());
             IssueCreateDTO issueCreateDTO = issueAssembler.issueDtoToIssueCreateDto(issueDetailDO);
             IssueDTO newIssue = createIssue(issueCreateDTO);
             //生成一条复制的关联
@@ -1352,7 +1359,11 @@ public class IssueServiceImpl implements IssueService {
             issueUpdateDTO.setIssueId(newIssue.getIssueId());
             issueUpdateDTO.setObjectVersionNumber(newIssue.getObjectVersionNumber());
             updateIssue(projectId, issueUpdateDTO, Lists.newArrayList("storyPoints", "remainingTime"));
-            if (subTask) {
+            //复制链接
+            batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueId, newIssue.getIssueId(), projectId);
+            //复制冲刺
+            handleCreateCopyIssueSprintRel(copyConditionDTO.getSprintValues(), issueId, newIssue.getIssueId(), projectId);
+            if (copyConditionDTO.getSubTask()) {
                 List<IssueDO> subIssueDOList = issueDetailDO.getSubIssueDOList();
                 if (subIssueDOList != null && !subIssueDOList.isEmpty()) {
                     subIssueDOList.forEach(issueDO -> {
@@ -1363,6 +1374,10 @@ public class IssueServiceImpl implements IssueService {
                         if (issueLinkTypeDO != null) {
                             createCopyIssueLink(subIssueDetailDO.getIssueId(), newSubIssue.getIssueId(), issueLinkTypeDO.getLinkTypeId());
                         }
+                        //复制链接
+                        batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueDO.getIssueId(), newSubIssue.getIssueId(), projectId);
+                        //复制冲刺
+                        handleCreateCopyIssueSprintRel(copyConditionDTO.getSprintValues(), issueDO.getIssueId(), newSubIssue.getIssueId(), projectId);
                         //复制剩余工作量并记录日志
                         IssueUpdateDTO subIssueUpdateDTO = new IssueUpdateDTO();
                         subIssueUpdateDTO.setRemainingTime(issueDO.getRemainingTime());
@@ -1375,6 +1390,39 @@ public class IssueServiceImpl implements IssueService {
             return queryIssue(projectId, newIssue.getIssueId());
         } else {
             throw new CommonException("error.issue.copyIssueByIssueId");
+        }
+    }
+
+    private void handleCreateCopyIssueSprintRel(Boolean sprintValues, Long issueId, Long newIssueId, Long projectId) {
+        if (sprintValues) {
+            IssueSprintRelDO issueSprintRelDO = new IssueSprintRelDO();
+            issueSprintRelDO.setIssueId(issueId);
+            issueSprintRelDO.setProjectId(projectId);
+            List<IssueSprintRelDO> issueSprintRelDOList = issueSprintRelMapper.select(issueSprintRelDO);
+            issueSprintRelDOList.parallelStream().forEach(createIssueSprintRel -> {
+                createIssueSprintRel.setIssueId(newIssueId);
+                createIssueSprintRel.setCreatedBy(DetailsHelper.getUserDetails().getUserId());
+                createIssueSprintRel.setObjectVersionNumber(null);
+                createIssueSprintRel.setCreationDate(new Date());
+                issueSprintRelRepository.createIssueSprintRel(createIssueSprintRel);
+            });
+        }
+    }
+
+    private void batchCreateCopyIssueLink(Boolean condition, Long issueId, Long newIssueId, Long projectId) {
+        if (condition) {
+            List<IssueLinkE> issueLinkEList = ConvertHelper.convertList(issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId), IssueLinkE.class);
+            issueLinkEList.parallelStream().forEach(issueLinkE -> {
+                if (issueLinkE.getIssueId().equals(issueId)) {
+                    issueLinkE.setIssueId(newIssueId);
+                }
+                if (issueLinkE.getLinkedIssueId().equals(issueId)) {
+                    issueLinkE.setLinkedIssueId(newIssueId);
+                }
+                issueLinkE.setObjectVersionNumber(null);
+                issueLinkE.setLinkId(null);
+                issueLinkRepository.create(issueLinkE);
+            });
         }
     }
 

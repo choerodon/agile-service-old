@@ -104,7 +104,7 @@
         LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.id
         LEFT JOIN (SELECT ai1.*
         from agile_issue ai1 WHERE
-         ai1.issue_id IN
+        ai1.issue_id IN
         <foreach collection="issueIds" item="issueId"
                  open="(" close=")" separator=",">
             #{issueId}
@@ -291,7 +291,10 @@
     </select>
 
     <select id="queryColumnByColumnIds" resultType="io.choerodon.agile.infra.dataobject.ColumnDO">
-        SELECT column_id ,name from agile_board_column where column_id in
+        SELECT abc.column_id ,abc.name,alv.name as color
+        from agile_board_column abc left join agile_lookup_value alv on
+        alv.type_code = 'column_color'
+        and alv.value_code = abc.color_code where abc.column_id in
         <foreach collection="columnIds" item="columnId"
                  open="(" close=")" separator=",">
             #{columnId}
@@ -300,9 +303,9 @@
 
     <select id="selectEpicBatchByIds" resultType="io.choerodon.agile.infra.dataobject.EpicIdWithNameDO">
         SELECT
-         issue_id AS epic_id,
-         epic_name AS epic_name
-        FROM  agile_issue WHERE issue_id IN
+        issue_id AS epic_id,
+        epic_name AS epic_name
+        FROM agile_issue WHERE issue_id IN
         <foreach collection="epicIds" item="epicId"
                  open="(" close=")" separator=",">
             #{epicId}

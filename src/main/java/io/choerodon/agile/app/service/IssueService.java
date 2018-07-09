@@ -126,13 +126,12 @@ public interface IssueService {
     /**
      * 根据issueId复制一个issue
      *
-     * @param projectId projectId
-     * @param issueId   issueId
-     * @param summary   summary
-     * @param subTask   是否复制子任务
+     * @param projectId        projectId
+     * @param issueId          issueId
+     * @param copyConditionDTO copyConditionDTO
      * @return IssueDTO
      */
-    IssueDTO copyIssueByIssueId(Long projectId, Long issueId, String summary, Boolean subTask);
+    IssueDTO copyIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO);
 
     /**
      * 根据issueId转换为子任务
