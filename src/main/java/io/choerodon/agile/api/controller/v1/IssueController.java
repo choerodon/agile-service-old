@@ -258,9 +258,11 @@ public class IssueController {
     @PostMapping(value = "/export")
     public void exportIssues(@ApiParam(value = "项目id", required = true)
                              @PathVariable(name = "project_id") Long projectId,
+                             @ApiParam(value = "查询参数", required = true)
+                             @RequestBody(required = false) SearchDTO searchDTO,
                              HttpServletRequest request,
                              HttpServletResponse response) {
-        issueService.exportIssues(projectId, request, response);
+        issueService.exportIssues(projectId, searchDTO, request, response);
     }
 
     @ResponseBody
