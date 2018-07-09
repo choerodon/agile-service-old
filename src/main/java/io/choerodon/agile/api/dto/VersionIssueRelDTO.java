@@ -19,6 +19,8 @@ public class VersionIssueRelDTO {
 
     private String relationType;
 
+    private String statusCode;
+
     public Long getVersionId() {
         return versionId;
     }
@@ -57,6 +59,14 @@ public class VersionIssueRelDTO {
 
     public void setRelationType(String relationType) {
         this.relationType = relationType;
+    }
+
+    public String getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
     }
 
     @Override

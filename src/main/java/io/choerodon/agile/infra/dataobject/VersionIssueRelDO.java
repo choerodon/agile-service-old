@@ -29,6 +29,9 @@ public class VersionIssueRelDO {
     @Transient
     private String name;
 
+    @Transient
+    private String statusCode;
+
     private String relationType;
 
     private Long projectId;
@@ -71,6 +74,14 @@ public class VersionIssueRelDO {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    public String getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
     }
 
     @Override
