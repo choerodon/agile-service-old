@@ -276,4 +276,12 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         productVersionRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         return true;
     }
+
+    @Override
+    public ProductVersionDetailDTO queryVersionByVersionId(Long projectId, Long versionId) {
+        ProductVersionDO productVersionDO = new ProductVersionDO();
+        productVersionDO.setProjectId(projectId);
+        productVersionDO.setVersionId(versionId);
+        return versionDataAssembler.doToVersionDetailDTO(productVersionMapper.selectOne(productVersionDO));
+    }
 }
