@@ -12,6 +12,8 @@ public class ColumnDTO {
 
     private String name;
 
+    private String color;
+
     public Long getColumnId() {
         return columnId;
     }
@@ -26,6 +28,14 @@ public class ColumnDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     @Override

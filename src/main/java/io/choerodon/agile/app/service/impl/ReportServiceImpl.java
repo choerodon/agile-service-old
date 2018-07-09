@@ -109,24 +109,23 @@ public class ReportServiceImpl implements ReportService {
             //所有在当前时间内状态改变的issue
             handleCumulativeFlowChangeDuringDate(cumulativeFlowFilterDTO, allIssueIds, result);
             //过滤并排序
-            List<ColumnChangeDTO> columnChangeDTOList = result.stream().filter(columnChangeDTO ->
+            List<ColumnChangeDTO> columnChangeDTOList = new ArrayList<>();
+            columnChangeDTOList.addAll(result.stream().filter(columnChangeDTO ->
                     columnChangeDTO.getColumnTo() != null && !columnChangeDTO.getColumnFrom().equals(columnChangeDTO.getColumnTo()))
-                    .sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList());
+                    .sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList()));
             //对传入时间点的数据给与坐标
-            if (columnChangeDTOList.get(0).getDate().after(cumulativeFlowFilterDTO.getStartDate())) {
-                ColumnChangeDTO columnChangeDTO = new ColumnChangeDTO();
-                columnChangeDTO.setDate(cumulativeFlowFilterDTO.getStartDate());
-                columnChangeDTO.setColumnTo("0");
-                columnChangeDTO.setColumnFrom("0");
-                columnChangeDTOList.add(0, columnChangeDTO);
+            if (!columnChangeDTOList.isEmpty()) {
+                if (columnChangeDTOList.get(0).getDate().after(cumulativeFlowFilterDTO.getStartDate())) {
+                    addStartColumnChangeByDate(columnChangeDTOList, cumulativeFlowFilterDTO.getStartDate());
+                }
+                if (!columnChangeDTOList.get(columnChangeDTOList.size() - 1).getDate().before(cumulativeFlowFilterDTO.getStartDate())) {
+                    addEndColumnChangeByDate(columnChangeDTOList, cumulativeFlowFilterDTO.getEndDate());
+                }
+            } else {
+                addStartColumnChangeByDate(columnChangeDTOList, cumulativeFlowFilterDTO.getStartDate());
+                addEndColumnChangeByDate(columnChangeDTOList, cumulativeFlowFilterDTO.getEndDate());
             }
-            if (!columnChangeDTOList.get(columnChangeDTOList.size() - 1).getDate().before(cumulativeFlowFilterDTO.getStartDate())) {
-                ColumnChangeDTO columnChangeDTO = new ColumnChangeDTO();
-                columnChangeDTO.setDate(cumulativeFlowFilterDTO.getEndDate());
-                columnChangeDTO.setColumnTo("0");
-                columnChangeDTO.setColumnFrom("0");
-                columnChangeDTOList.add(columnChangeDTOList.size(), columnChangeDTO);
-            }
+
             cumulativeFlowDiagramDTO.getColumnChangeDTOList().addAll(columnChangeDTOList);
             cumulativeFlowDiagramDTO.setColumnDTOList(reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(cumulativeFlowFilterDTO.getColumnIds())));
             return cumulativeFlowDiagramDTO;
@@ -135,6 +134,22 @@ public class ReportServiceImpl implements ReportService {
         } else {
             return cumulativeFlowDiagramDTO;
         }
+    }
+
+    private void addEndColumnChangeByDate(List<ColumnChangeDTO> columnChangeDTOList, Date endDate) {
+        ColumnChangeDTO columnChangeDTO = new ColumnChangeDTO();
+        columnChangeDTO.setDate(endDate);
+        columnChangeDTO.setColumnTo("0");
+        columnChangeDTO.setColumnFrom("0");
+        columnChangeDTOList.add(columnChangeDTOList.size(), columnChangeDTO);
+    }
+
+    private void addStartColumnChangeByDate(List<ColumnChangeDTO> columnChangeDTOList, Date startDate) {
+        ColumnChangeDTO columnChangeDTO = new ColumnChangeDTO();
+        columnChangeDTO.setDate(startDate);
+        columnChangeDTO.setColumnTo("0");
+        columnChangeDTO.setColumnFrom("0");
+        columnChangeDTOList.add(0, columnChangeDTO);
     }
 
     private void handleCumulativeFlowChangeDuringDate(CumulativeFlowFilterDTO cumulativeFlowFilterDTO, List<Long> allIssueIds, List<ColumnChangeDTO> result) {

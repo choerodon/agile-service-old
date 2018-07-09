@@ -156,7 +156,7 @@ public class IssueController {
     public ResponseEntity<List<EpicDataDTO>> listEpic(@ApiParam(value = "项目id", required = true)
                                                       @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(issueService.listEpic(projectId))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Epic.listEpic"));
     }
 
@@ -283,11 +283,9 @@ public class IssueController {
                                                        @PathVariable(name = "project_id") Long projectId,
                                                        @ApiParam(value = "issueId", required = true)
                                                        @PathVariable(name = "issueId") Long issueId,
-                                                       @ApiParam(value = "概要", required = true)
-                                                       @RequestParam String summary,
-                                                       @ApiParam(value = "是否复制子任务", required = true)
-                                                       @RequestParam Boolean subTask) {
-        return Optional.ofNullable(issueService.copyIssueByIssueId(projectId, issueId, summary, subTask))
+                                                       @ApiParam(value = "复制条件", required = true)
+                                                       @RequestBody CopyConditionDTO copyConditionDTO) {
+        return Optional.ofNullable(issueService.copyIssueByIssueId(projectId, issueId, copyConditionDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.copyIssueByIssueId"));
     }
