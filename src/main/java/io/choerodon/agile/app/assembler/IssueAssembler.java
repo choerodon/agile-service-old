@@ -4,7 +4,6 @@ import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper;
 import io.choerodon.agile.infra.mapper.LookupValueMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.agile.api.dto.*;
@@ -302,5 +301,15 @@ public class IssueAssembler {
         issueCreateDTO.setVersionIssueRelDTOList(copyVersionIssueRel(subIssueDetailDO.getVersionIssueRelDOList()));
         issueCreateDTO.setLabelIssueRelDTOList(copyLabelIssueRel(subIssueDetailDO.getLabelIssueRelDOList(), subIssueDetailDO.getProjectId()));
         return issueCreateDTO;
+    }
+
+    public List<IssueChangeDTO> issueChangeDOListToIssueChangeDTO(List<IssueChangeDO> issueChangeDOS){
+        List<IssueChangeDTO> issueChangeDTOS = new ArrayList<>();
+        issueChangeDOS.forEach(issueChangeDO -> {
+            IssueChangeDTO issueChangeDTO = new IssueChangeDTO();
+            BeanUtils.copyProperties(issueChangeDO, issueChangeDTO);
+            issueChangeDTOS.add(issueChangeDTO);
+        });
+        return issueChangeDTOS;
     }
 }

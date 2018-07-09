@@ -8,6 +8,7 @@ import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author dinghuang123@gmail.com
@@ -35,4 +36,6 @@ public interface ReportService {
    CumulativeFlowDiagramDTO queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO);
 
     Page<IssueListDTO> queryIssueByOptions(Long projectId, Long versionId, String status, PageRequest pageRequest);
+
+    Map<String, Object> queryVersionLineChart(Long projectId, Long versionId);
 }

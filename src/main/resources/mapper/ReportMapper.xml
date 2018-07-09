@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.agile.infra.mapper.ReportMapper">
+
+    <resultMap id="versionIssue" type="io.choerodon.agile.infra.dataobject.VersionIssueChangeDO">
+        <id property="changeDate" column="change_date"/>
+        <collection property="issueIds" autoMapping="true" ofType="java.lang.Long">
+            <id column="issue_id"/>
+        </collection>
+        <collection property="logIds" autoMapping="true" ofType="java.lang.Long">
+            <id column="log_id"/>
+        </collection>
+        <collection property="addIssueIds" autoMapping="true" ofType="java.lang.Long">
+            <id column="add_issue_id"/>
+        </collection>
+        <collection property="removeIssueIds" autoMapping="true" ofType="java.lang.Long">
+            <id column="remove_issue_id"/>
+        </collection>
+    </resultMap>
+
     <select id="queryIssueIdsBeforeSprintStart" resultType="java.lang.Long">
         SELECT adl5.issue_id
         FROM agile_data_log adl5
@@ -893,6 +910,174 @@
                       AND FALSE
                    </otherwise>
                </choose>
+    </select>
+
+    <select id="queryChangeIssue" resultMap="versionIssue">
+        SELECT adl.creation_date AS change_date, a.issue_id AS add_issue_id,
+                b.issue_id AS  remove_issue_id, NULL AS issue_id,
+                adl.log_id AS log_id
+        FROM agile_data_log adl
+        LEFT JOIN (SELECT creation_date, issue_id
+                    FROM agile_data_log
+                    WHERE project_id = #{projectId}
+                            AND field = 'Fix Version'
+                            AND creation_date >= #{startDate}
+                            AND creation_date &lt;= #{endDate}
+                            AND  new_value = #{versionId}
+                    ) a ON a.creation_date = adl.creation_date
+        LEFT JOIN (SELECT creation_date, issue_id
+                    FROM agile_data_log
+                    WHERE project_id = #{projectId}
+                            AND field = 'Fix Version'
+                            AND creation_date >= #{startDate}
+                            AND creation_date &lt;= #{endDate}
+                            AND  old_value = #{versionId}
+                    ) b ON b.creation_date = adl.creation_date
+        WHERE adl.project_id = #{projectId}
+               AND adl.field = 'Fix Version'
+               AND adl.creation_date >= #{startDate}
+               AND adl.creation_date &lt;= #{endDate}
+               AND (adl.new_value = #{versionId} OR adl.old_value = #{versionId})
+        ORDER BY adl.creation_date DESC
+    </select>
+
+    <select id="queryIssueIdByVersionId" resultType="java.lang.Long">
+        SELECT issue_id
+        FROM agile_version_issue_rel
+        WHERE project_id = #{projectId} AND version_id = #{versionId}
+    </select>
+
+    <select id="queryStoryPointChangeIssue" resultType="io.choerodon.agile.infra.dataobject.IssueChangeDO">
+        SELECT adl.issue_id,                       CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+                adl.old_string AS old_value,        adl.new_string AS new_value,
+                adl.creation_date AS change_date,   IFNULL(adl.new_string, 0) - IFNULL(adl.old_string, 0) AS change_story_points
+        FROM agile_data_log adl
+        LEFT JOIN agile_issue ai ON ai.issue_id = adl.issue_id
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        WHERE adl.project_id = #{projectId} AND adl.field = 'Story Points'
+        AND (
+            <foreach collection="versionIssues" item="versionIssue"
+                 open="(" close=")" separator=" OR ">
+                ( adl.creation_date &lt;= #{versionIssue.changeDate} AND adl.creation_date > #{versionIssue.preDate}
+                    AND adl.issue_id IN
+                    <foreach collection="versionIssue.issueIds" item="issueId"
+                             open="(" close=")" separator=",">
+                        #{issueId}
+                    </foreach>
+                )
+            </foreach>
+        )
+    </select>
+
+    <select id="queryCompletedChangeIssue" resultMap="versionIssue">
+        SELECT adl.issue_id,            adl.creation_date AS change_date,
+                NULL AS add_issue_id,   NULL AS remove_issue_id,
+                adl.log_id AS log_id
+        FROM agile_data_log adl
+        LEFT JOIN agile_issue_status ais ON
+                                             <if test="completed == true">
+                                                 ais.id = adl.new_value
+                                             </if>
+                                             <if test="completed == false">
+                                                 ais.id = adl.old_value
+                                             </if>
+        WHERE adl.project_id = #{projectId} AND adl.field = 'resolution'
+               AND ais.is_completed = TRUE
+               AND (
+                   <foreach collection="versionIssues" item="versionIssue"
+                      open="(" close=")" separator=" OR ">
+                      ( adl.creation_date &lt;= #{versionIssue.changeDate} AND adl.creation_date > #{versionIssue.preDate}
+                        AND adl.issue_id IN
+                        <foreach collection="versionIssue.issueIds" item="issueId"
+                                 open="(" close=")" separator=",">
+                            #{issueId}
+                        </foreach>
+                      )
+                   </foreach>
+                )
+    </select>
+
+    <select id="queryChangIssue" resultType="io.choerodon.agile.infra.dataobject.IssueChangeDO">
+        SELECT adl.issue_id,                       CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+                b.old_value AS old_value,          b.new_value AS new_value,
+                adl.creation_date AS change_date
+        FROM agile_data_log adl
+        LEFT JOIN agile_issue ai ON ai.issue_id = adl.issue_id
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN (
+                    SELECT adl1.issue_id,                      adl1.old_value AS old_value,
+                            adl1.new_string AS new_value,       a.change_date AS change_date
+                    FROM agile_data_log adl1
+                    LEFT JOIN agile_issue ai1 ON ai1.issue_id = adl1.issue_id,
+                    (
+                        <foreach collection="changeIssues" item="changeIssue"
+                                 open="(" close=")" separator=" UNION ALL  ">
+                            SELECT MAX(log_id) AS log_id, #{changeIssue.changeDate} AS change_date
+                            FROM agile_data_log
+                            WHERE project_id = #{projectId} AND field = 'Story Points'
+                            AND creation_date &lt; #{changeIssue.changeDate}
+                            AND issue_id IN
+                            <foreach collection="changeIssue.issueIds" item="issueId"
+                                     open="(" close=")" separator=",">
+                                #{issueId}
+                            </foreach>
+                            GROUP BY issue_id
+                        </foreach>
+                    )a
+                    WHERE adl1.log_id = a.log_id
+                ) b ON b.change_date = adl.creation_date AND b.issue_id= adl.issue_id
+        WHERE  adl.project_id = #{projectId}
+                AND (
+                    <foreach collection="changeIssues" item="changeIssue"
+                             open="(" close=")" separator=" OR ">
+                        ( adl.creation_date = #{changeIssue.changeDate}
+                        AND adl.log_id IN
+                        <foreach collection="changeIssue.logIds" item="logId"
+                                 open="(" close=")" separator=",">
+                            #{logId}
+                        </foreach>
+                        AND adl.issue_id IN
+                        <foreach collection="changeIssue.issueIds" item="issueId"
+                                 open="(" close=")" separator=",">
+                            #{issueId}
+                        </foreach>
+                        )
+                    </foreach>
+                )
+    </select>
+
+    <select id="queryTotalStoryPoints" resultType="java.lang.Integer">
+        SELECT SUM(story_points)
+        FROM agile_issue
+        WHERE project_id = #{projectId} AND issue_id IN 
+              <foreach collection="issueIds" item="issueId"
+                       open="(" close=")" separator=",">
+                  #{issueId}
+              </foreach>
+    </select>
+
+    <select id="queryCompleteStoryPoints" resultType="java.lang.Integer">
+        SELECT SUM(ai.story_points)
+        FROM agile_issue ai
+        LEFT JOIN agile_issue_status ais ON  ais.id = ai.status_id
+        WHERE ai.project_id = #{projectId} AND ais.is_completed = TRUE
+        AND ai.issue_id IN
+        <foreach collection="issueIds" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+    </select>
+
+    <select id="queryUnEstimateCount" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM agile_issue ai
+        LEFT JOIN agile_issue_status ais ON  ais.id = ai.status_id
+        WHERE ai.project_id = #{projectId} AND ais.is_completed = FALSE
+        AND ai.story_points IS NULL AND ai.issue_id IN
+        <foreach collection="issueIds" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
     </select>
 
 </mapper>
