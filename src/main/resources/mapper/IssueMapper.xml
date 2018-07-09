@@ -553,7 +553,7 @@
         </foreach>
     </select>
 
-    <select id="queryIssueByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+    <select id="queryIssueSprintNotClosed" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
         SELECT
             ai.issue_id,
             asp1.sprint_id,
@@ -594,10 +594,15 @@
             AND type_code = 'issue_epic'
     </select>
 
-    <delete id="batchRemoveFromVerion">
-        DELETE
-        FROM agile_version_issue_rel
-        WHERE project_id = #{projectId} AND relation_type = 'fix' AND issue_id IN
+    <delete id="batchRemoveFromVersion">
+        DELETE avir
+        FROM
+        agile_version_issue_rel avir,
+        agile_product_version apv
+        WHERE
+        apv.version_id = avir.version_id
+        AND apv.status_code != 'archived'
+        WHERE avir.project_id = #{projectId} AND avir.relation_type = 'fix' AND avir.issue_id IN
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
             #{issueId}
@@ -947,5 +952,14 @@
             LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
         WHERE ai.project_id = #{projectId} AND ai.parent_issue_id = #{issueId}
     </select>
+
+    <select id="queryIssueEpicInfoByIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        select ai.* from agile_issue ai where ai.issue_id in
+        <foreach collection="issueIds" item="issueId" open="(" separator=","
+                 close=")">
+            #{issueId}
+        </foreach>
+    </select>
+
 
 </mapper>

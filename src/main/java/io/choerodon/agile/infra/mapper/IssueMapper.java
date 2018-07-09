@@ -48,7 +48,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      */
     List<IssueDO> queryIssueEpicSelectList(@Param("projectId") Long projectId);
 
-    int batchRemoveFromVerion(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+    int batchRemoveFromVersion(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     String queryRank(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("outsetIssueId") Long outsetIssueId);
 
@@ -129,7 +129,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<SprintNameDO> querySprintNameByIssueId(@Param("issueId") Long issueId);
 
-    IssueDO queryIssueByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+    IssueDO queryIssueSprintNotClosed(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
     List queryIssueByOption(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("content") String content);
 
@@ -152,4 +152,13 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     List<String> queryLabelNameByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
     List<ExportIssuesDO> querySubIssuesByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+
+    /**
+     * 根据issueIds查询issueEpic信息
+     *
+     * @param projectId projectId
+     * @param issueIds  issueIds
+     * @return IssueDO
+     */
+    List<IssueDO> queryIssueEpicInfoByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 }

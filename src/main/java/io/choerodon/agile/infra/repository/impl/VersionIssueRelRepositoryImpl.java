@@ -57,11 +57,8 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
     }
 
     @Override
-    public int deleteByIssueIdAndType(Long issueId, String versionType) {
-        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
-        versionIssueRelDO.setIssueId(issueId);
-        versionIssueRelDO.setRelationType(versionType);
-        return versionIssueRelMapper.delete(versionIssueRelDO);
+    public int batchDeleteByIssueIdAndType(Long projectId,Long issueId, String versionType) {
+        return versionIssueRelMapper.batchDeleteByIssueIdAndType(projectId,issueId,versionType);
     }
 
     @Override

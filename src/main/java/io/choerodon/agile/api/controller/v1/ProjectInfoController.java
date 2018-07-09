@@ -1,6 +1,5 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.ProjectDefaultSettingDTO;
 import io.choerodon.agile.api.dto.ProjectInfoDTO;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.domain.agile.rule.ProjectInfoRule;

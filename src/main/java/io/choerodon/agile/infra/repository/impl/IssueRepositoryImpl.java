@@ -96,7 +96,7 @@ public class IssueRepositoryImpl implements IssueRepository {
 
     @Override
     public int batchRemoveVersion(Long projectId, List<Long> issueIds) {
-        return issueMapper.batchRemoveFromVerion(projectId, issueIds);
+        return issueMapper.batchRemoveFromVersion(projectId, issueIds);
     }
 
     @Override

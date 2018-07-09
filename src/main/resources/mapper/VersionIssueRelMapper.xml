@@ -6,8 +6,8 @@
         DELETE avir
         FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
         WHERE avir.version_id = #{versionId} AND ai.project_id = #{projectId}
-        AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix' AND ai.status_id = ais.id
-        AND ais.category_code != 'done'
+              AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix' AND ai.status_id = ais.id
+              AND ais.category_code != 'done'
     </delete>
 
     <delete id="deleteByVersionIds">
@@ -18,6 +18,19 @@
                  open="(" close=")" separator=",">
             #{versionId}
         </foreach>
+    </delete>
+
+    <delete id="batchDeleteByIssueIdAndType">
+        DELETE avir
+        FROM
+            agile_version_issue_rel avir,
+            agile_product_version apv
+        WHERE
+            avir.issue_id = #{issueId}
+            AND apv.version_id = avir.version_id
+            AND avir.project_id = #{projectId}
+            AND avir.relation_type = #{versionType}
+            AND apv.status_code != 'archived';
     </delete>
 
 </mapper>
