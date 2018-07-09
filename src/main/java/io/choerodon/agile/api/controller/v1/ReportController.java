@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -37,6 +38,7 @@ public class ReportController {
     private ReportService reportService;
 
     private static final String QUERY_ISSUE_ERROR = "error.issue.query";
+    private static final String VERSION_LINE_CHART_ERROR = "error.version.lineChart";
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询冲刺对应的燃尽图报告信息")
@@ -56,9 +58,9 @@ public class ReportController {
     @ApiOperation("查看项目累积流量图")
     @PostMapping(value = "/cumulative_flow_diagram")
     public ResponseEntity<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(@ApiParam(value = "项目id", required = true)
-                                                                                     @PathVariable(name = "project_id") Long projectId,
-                                                                                     @ApiParam(value = "过滤条件", required = true)
-                                                                                     @RequestBody CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
+                                                                               @PathVariable(name = "project_id") Long projectId,
+                                                                               @ApiParam(value = "过滤条件", required = true)
+                                                                               @RequestBody CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
         return Optional.ofNullable(reportService.queryCumulativeFlowDiagram(projectId, cumulativeFlowFilterDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.report.queryCumulativeFlowDiagram"));
@@ -80,6 +82,18 @@ public class ReportController {
         return Optional.ofNullable(reportService.queryIssueByOptions(projectId, versionId, status, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_ISSUE_ERROR));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation(value = "版本报告图信息")
+    @GetMapping(value = "/{versionId}")
+    public ResponseEntity<Map<String, Object>> queryVersionLineChart(@ApiParam(value = "项目id", required = true)
+                                                                     @PathVariable(name = "project_id") Long projectId,
+                                                                     @ApiParam(value = "版本id", required = true)
+                                                                     @PathVariable Long versionId) {
+        return Optional.ofNullable(reportService.queryVersionLineChart(projectId, versionId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException(VERSION_LINE_CHART_ERROR));
     }
 
 }

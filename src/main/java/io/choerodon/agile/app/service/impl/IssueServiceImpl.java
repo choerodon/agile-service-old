@@ -1488,9 +1488,8 @@ public class IssueServiceImpl implements IssueService {
     private void dowloadExcel(HSSFWorkbook workbook, String fileName, String charsetName, HttpServletResponse response) {
         // 设置response参数，可以打开下载页面
         response.reset();
-        response.setContentType("application/ms-excel;charset=utf-8");
+        response.setContentType("application/vnd.ms-excel;charset=utf-8");
         try {
-            fileName = URLEncoder.encode(fileName, "UTF-8");
             response.setHeader("Content-Disposition", "attachment;filename="
                     + new String((fileName + ".xls").getBytes(charsetName),
                     "ISO-8859-1"));

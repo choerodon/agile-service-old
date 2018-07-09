@@ -255,7 +255,7 @@ public class IssueController {
     @ResponseBody
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("导出issue列表")
-    @GetMapping(value = "/export")
+    @PostMapping(value = "/export")
     public void exportIssues(@ApiParam(value = "项目id", required = true)
                              @PathVariable(name = "project_id") Long projectId,
                              HttpServletRequest request,
@@ -266,7 +266,7 @@ public class IssueController {
     @ResponseBody
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("导出issue详情")
-    @GetMapping(value = "/export/{issueId}")
+    @PostMapping(value = "/export/{issueId}")
     public void exportIssue(@ApiParam(value = "项目id", required = true)
                             @PathVariable(name = "project_id") Long projectId,
                             @ApiParam(value = "issueId", required = true)

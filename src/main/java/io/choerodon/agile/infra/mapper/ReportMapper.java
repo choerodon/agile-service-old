@@ -300,4 +300,20 @@ public interface ReportMapper {
     List<ColumnChangeDO> queryChangeIssueDuringDate(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("allIssueIds") List<Long> allIssueIds, @Param("columnIds") List<Long> columnIds);
 
     List queryReportIssues(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("status") String status);
+
+    List<VersionIssueChangeDO> queryChangeIssue(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+    List<Long> queryIssueIdByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+
+    List<IssueChangeDO> queryStoryPointChangeIssue(@Param("projectId") Long projectId, @Param("versionIssues") List<VersionIssueChangeDO> versionIssues);
+
+    List<VersionIssueChangeDO> queryCompletedChangeIssue(@Param("projectId") Long projectId, @Param("versionIssues") List<VersionIssueChangeDO> versionIssues, @Param("completed") Boolean completed);
+
+    List<IssueChangeDO> queryChangIssue(@Param("projectId") Long projectId, @Param("changeIssues") List<VersionIssueChangeDO> changeIssues);
+
+    Integer queryTotalStoryPoints(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
+    Integer queryCompleteStoryPoints(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
+    Integer queryUnEstimateCount(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 }
