@@ -1047,7 +1047,7 @@
     </select>
 
     <select id="queryTotalStoryPoints" resultType="java.lang.Integer">
-        SELECT SUM(story_points)
+        SELECT IFNULL(SUM(story_points),0) AS story_points
         FROM agile_issue
         WHERE project_id = #{projectId} AND issue_id IN 
               <foreach collection="issueIds" item="issueId"
@@ -1057,7 +1057,7 @@
     </select>
 
     <select id="queryCompleteStoryPoints" resultType="java.lang.Integer">
-        SELECT SUM(ai.story_points)
+        SELECT IFNULL(SUM(ai.story_points),0) AS story_points
         FROM agile_issue ai
         LEFT JOIN agile_issue_status ais ON  ais.id = ai.status_id
         WHERE ai.project_id = #{projectId} AND ais.is_completed = TRUE
