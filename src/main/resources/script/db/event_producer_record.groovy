@@ -1,4 +1,4 @@
-package db
+package script.db
 
 databaseChangeLog(logicalFilePath: 'event_producer_record.groovy') {
     changeSet(id: '2018-07-09-add-table-event-producer-record', author: 'fuqianghuang01@gmail.com') {
