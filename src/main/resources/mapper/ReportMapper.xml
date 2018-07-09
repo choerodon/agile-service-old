@@ -1011,7 +1011,7 @@
                     LEFT JOIN agile_issue ai1 ON ai1.issue_id = adl1.issue_id,
                     (
                         <foreach collection="changeIssues" item="changeIssue"
-                                 open="(" close=")" separator=" UNION ALL  ">
+                                 open="" close="" separator=" UNION ALL  ">
                             SELECT MAX(log_id) AS log_id, #{changeIssue.changeDate} AS change_date
                             FROM agile_data_log
                             WHERE project_id = #{projectId} AND field = 'Story Points'
