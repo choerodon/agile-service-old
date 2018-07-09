@@ -1,6 +1,5 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.ProjectDefaultSettingDTO;
 import io.choerodon.agile.api.dto.ProjectInfoDTO;
 import io.choerodon.agile.domain.agile.event.ProjectEvent;
 

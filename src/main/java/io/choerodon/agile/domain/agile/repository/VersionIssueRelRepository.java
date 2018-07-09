@@ -35,7 +35,15 @@ public interface VersionIssueRelRepository {
      */
     int deleteByIssueId(Long issueId);
 
-    int deleteByIssueIdAndType(Long issueId, String versionType);
+    /**
+     * 通过查询条件批量删除issue版本关联（不包含已归档的版本）
+     *
+     * @param projectId   projectId
+     * @param issueId     issueId
+     * @param versionType versionType
+     * @return int
+     */
+    int batchDeleteByIssueIdAndType(Long projectId, Long issueId, String versionType);
 
     /**
      * 根据id删除
