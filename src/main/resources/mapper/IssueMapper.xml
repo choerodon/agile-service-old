@@ -107,7 +107,8 @@
     <select id="queryVersionIssueRelByIssueId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueRelDO">
         SELECT
             avir.*,
-            apr.name
+            apr.name,
+            apr.status_code
         FROM agile_version_issue_rel avir LEFT JOIN agile_product_version apr ON avir.version_id = apr.version_id
         WHERE avir.issue_id = #{issueId}
     </select>
