@@ -630,6 +630,7 @@ public class IssueServiceImpl implements IssueService {
         componentIssueRelRepository.deleteByIssueId(issueE.getIssueId());
         //删除版本关联
         versionIssueRelRepository.deleteByIssueId(issueE.getIssueId());
+        //删除冲刺关联
         issueRepository.deleteIssueFromSprintByIssueId(projectId, issueId);
         //删除评论信息
         issueCommentService.deleteByIssueId(issueE.getIssueId());
@@ -638,6 +639,11 @@ public class IssueServiceImpl implements IssueService {
         //不是子任务的issue删除子任务
         if (!(SUB_TASK).equals(issueE.getTypeCode())) {
             if ((ISSUE_EPIC).equals(issueE.getTypeCode())) {
+                //Epic删除后更改为0的日志记录
+                IssueDO issueDO = new IssueDO();
+                issueDO.setEpicId(issueE.getIssueId());
+                List<IssueDO> issueDOList = issueMapper.select(issueDO);
+                issueDOList.parallelStream().forEach(issueEpic -> dataLogEpic(issueEpic.getProjectId(), issueEpic, 0L));
                 //如果是epic，会把该epic下的issue的epicId置为0
                 issueRepository.batchUpdateIssueEpicId(projectId, issueE.getIssueId());
             }
@@ -646,6 +652,7 @@ public class IssueServiceImpl implements IssueService {
                 issueDOList.forEach(subIssue -> deleteIssue(subIssue.getProjectId(), subIssue.getIssueId()));
             }
         }
+        //删除日志信息
         dataLogDeleteByIssueId(projectId, issueId);
         return issueRepository.delete(projectId, issueE.getIssueId());
     }
@@ -947,7 +954,7 @@ public class IssueServiceImpl implements IssueService {
             issueE.setEpicId(0L);
             issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, FIELD_STORY_POINTS});
         } else if (issueE.getTypeCode().equals(ISSUE_EPIC)) {
-            //如果之前类型是epic，会把该epic下的issue的epicId置为0
+            // 如果之前类型是epic，会把该epic下的issue的epicId置为0
             IssueDO issueDO = new IssueDO();
             issueDO.setEpicId(issueE.getIssueId());
             List<IssueDO> issueDOList = issueMapper.select(issueDO);

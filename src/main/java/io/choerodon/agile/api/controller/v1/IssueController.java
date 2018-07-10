@@ -224,11 +224,11 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("更改issue状态")
+    @ApiOperation("更改issue类型")
     @PostMapping("/update_type")
     public ResponseEntity<IssueDTO> updateIssueTypeCode(@ApiParam(value = "项目id", required = true)
                                                         @PathVariable(name = "project_id") Long projectId,
-                                                        @ApiParam(value = "修改状态", required = true)
+                                                        @ApiParam(value = "修改类型信息", required = true)
                                                         @RequestBody IssueUpdateTypeDTO issueUpdateTypeDTO) {
         IssueE issueE = issueRule.verifyUpdateTypeData(projectId, issueUpdateTypeDTO);
         return Optional.ofNullable(issueService.updateIssueTypeCode(issueE, issueUpdateTypeDTO))
