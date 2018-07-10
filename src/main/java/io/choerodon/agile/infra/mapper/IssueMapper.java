@@ -131,7 +131,11 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     IssueDO queryIssueSprintNotClosed(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
-    List queryIssueByOption(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("content") String content);
+    List queryIssueByOption(@Param("projectId") Long projectId,
+                            @Param("issueId") Long issueId,
+                            @Param("issueNum") String issueNum,
+                            @Param("self") Boolean self,
+                            @Param("content") String content);
 
     List<ExportIssuesDO> queryExportIssues(@Param("projectId") Long projectId,
                                            @Param("searchArgs") Map<String, Object> searchArgs,
@@ -162,5 +166,5 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      */
     List<IssueDO> queryIssueEpicInfoByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-   IssueNumDO queryIssueByIssueNum(@Param("projectId") Long projectId, @Param("issueNum") String issueNum);
+   IssueNumDO queryIssueByIssueNumOrIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("issueNum") String issueNum);
 }

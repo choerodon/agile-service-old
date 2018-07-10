@@ -117,7 +117,7 @@ public interface IssueService {
 
     Page<IssueCommonDTO> listByOptions(Long projectId, String typeCode, PageRequest pageRequest);
 
-    Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String content, PageRequest pageRequest);
+    Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Boolean self, String content, PageRequest pageRequest);
 
     void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response);
 
@@ -141,6 +141,4 @@ public interface IssueService {
      * @return IssueSubDTO
      */
     IssueSubDTO transformedSubTask(Long projectId, IssueTransformSubTask issueTransformSubTask);
-
-    IssueNumDTO queryIssueByIssueNum(Long projectId, String issueNum);
 }

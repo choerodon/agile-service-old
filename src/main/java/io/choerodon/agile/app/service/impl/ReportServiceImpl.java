@@ -280,7 +280,7 @@ public class ReportServiceImpl implements ReportService {
                 versionIssues.add(versionChangeIssue.get(i));
             }
         }
-        if(versionIssues.isEmpty()){
+        if (versionIssues.isEmpty()) {
             versionReportMap.put("version", versionDO);
             versionReportMap.put("versionReport", versionReport);
             return versionReportMap;
@@ -339,10 +339,10 @@ public class ReportServiceImpl implements ReportService {
             List<IssueChangeDTO> removeIssue = removeIssuesMap.get(date) != null ? removeIssuesMap.get(date) : new ArrayList<>();
 
             Integer changeStoryPoints = storyPointChangeIssue.stream().mapToInt(storyPoint -> Integer.valueOf(storyPoint.getChangeStoryPoints())).sum();
-            Integer addStoryPoints = addIssue.stream().mapToInt(storyPoint -> storyPoint.getNewValue() != null ? Integer.valueOf(storyPoint.getNewValue()) : 0).sum();
-            Integer removePoints = removeIssue.stream().mapToInt(storyPoint -> storyPoint.getNewValue() != null ? Integer.valueOf(storyPoint.getNewValue()) : 0).sum();
-            Integer completedPoints = completedIssue.stream().mapToInt(storyPoint -> storyPoint.getNewValue() != null ? Integer.valueOf(storyPoint.getNewValue()) : 0).sum();
-            Integer unCompletedPoints = unCompletedIssue.stream().mapToInt(storyPoint -> storyPoint.getNewValue() != null ? Integer.valueOf(storyPoint.getNewValue()) : 0).sum();
+            Integer addStoryPoints = addIssue.stream().filter(storyPoint -> storyPoint.getNewValue() != null).mapToInt(storyPoint -> Integer.valueOf(storyPoint.getNewValue())).sum();
+            Integer removePoints = removeIssue.stream().filter(storyPoint -> storyPoint.getNewValue() != null).mapToInt(storyPoint -> Integer.valueOf(storyPoint.getNewValue())).sum();
+            Integer completedPoints = completedIssue.stream().filter(storyPoint -> storyPoint.getNewValue() != null).mapToInt(storyPoint -> Integer.valueOf(storyPoint.getNewValue())).sum();
+            Integer unCompletedPoints = unCompletedIssue.stream().filter(storyPoint -> storyPoint.getNewValue() != null).mapToInt(storyPoint -> Integer.valueOf(storyPoint.getNewValue())).sum();
 
             nowIssueCount = nowIssueCount - addIssue.size() + removeIssue.size();
 

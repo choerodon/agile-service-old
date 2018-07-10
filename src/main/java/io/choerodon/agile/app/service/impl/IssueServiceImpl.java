@@ -1303,11 +1303,19 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String content, PageRequest pageRequest) {
+    public Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Boolean self, String content, PageRequest pageRequest) {
         //连表查询需要设置主表别名
         pageRequest.resetOrder("ai", new HashMap<>());
+        IssueNumDO issueNumDO = issueMapper.queryIssueByIssueNumOrIssueId(projectId, issueId, issueNum);
+        if (self && issueNumDO != null) {
+            pageRequest.setSize(pageRequest.getSize() - 1);
+        }
         Page<IssueNumDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
-                issueMapper.queryIssueByOption(projectId, issueId, content));
+                issueMapper.queryIssueByOption(projectId, issueId, issueNum, self, content));
+        if (self && issueNumDO != null) {
+            issueDOPage.getContent().add(0, issueNumDO);
+            issueDOPage.setSize(issueDOPage.getSize() + 1);
+        }
         Page<IssueNumDTO> issueListDTOPage = new Page<>();
         issueListDTOPage.setNumber(issueDOPage.getNumber());
         issueListDTOPage.setNumberOfElements(issueDOPage.getNumberOfElements());
@@ -1516,11 +1524,6 @@ public class IssueServiceImpl implements IssueService {
         } else {
             throw new CommonException("error.IssueRule.issueNoFound");
         }
-    }
-
-    @Override
-    public IssueNumDTO queryIssueByIssueNum(Long projectId, String issueNum) {
-        return issueAssembler.issueNumDOToIssueNumDTO(issueMapper.queryIssueByIssueNum(projectId, issueNum));
     }
 
     private void handleChangeStoryTypeIssue(IssueE issueE) {
