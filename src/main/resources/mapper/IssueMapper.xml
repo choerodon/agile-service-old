@@ -272,10 +272,13 @@
                 <if test='otherArgs.type == "sprint" '>
                     agile_issue_sprint_rel oa where oa.sprint_id
                 </if>
+                <if test='otherArgs.type == "label" '>
+                    agile_label_issue_rel oa where oa.label_id
+                </if>
                 in
-                <foreach collection="otherArgs.id" item="issueId" open="(" separator=","
+                <foreach collection="otherArgs.id" item="id" open="(" separator=","
                          close=")">
-                    #{issueId}
+                    #{id}
                 </foreach>
                 )
             </if>

@@ -118,7 +118,7 @@ public class ReportServiceImpl implements ReportService {
                 if (columnChangeDTOList.get(0).getDate().after(cumulativeFlowFilterDTO.getStartDate())) {
                     addStartColumnChangeByDate(columnChangeDTOList, cumulativeFlowFilterDTO.getStartDate());
                 }
-                if (!columnChangeDTOList.get(columnChangeDTOList.size() - 1).getDate().before(cumulativeFlowFilterDTO.getStartDate())) {
+                if (columnChangeDTOList.get(columnChangeDTOList.size() - 1).getDate().before(cumulativeFlowFilterDTO.getEndDate())) {
                     addEndColumnChangeByDate(columnChangeDTOList, cumulativeFlowFilterDTO.getEndDate());
                 }
             } else {
