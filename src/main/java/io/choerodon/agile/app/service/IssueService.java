@@ -141,4 +141,6 @@ public interface IssueService {
      * @return IssueSubDTO
      */
     IssueSubDTO transformedSubTask(Long projectId, IssueTransformSubTask issueTransformSubTask);
+
+    IssueNumDTO queryIssueByIssueNum(Long projectId, String issueNum);
 }

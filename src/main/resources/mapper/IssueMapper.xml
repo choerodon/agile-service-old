@@ -961,5 +961,16 @@
         </foreach>
     </select>
 
+    <select id="queryIssueByIssueNum" resultType="io.choerodon.agile.infra.dataobject.IssueNumDO">
+        SELECT
+        ai.issue_id, ai.summary,
+        ai.project_id, ai.type_code,
+        alv.name AS type_name,
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
+        FROM agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN agile_lookup_value alv ON alv.value_code = ai.type_code
+        WHERE ai.project_id = #{projectId} AND CONCAT_WS( '-', api.project_code, ai.issue_num ) = #{issueNum}
+    </select>
 
 </mapper>

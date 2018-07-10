@@ -381,7 +381,7 @@ public class SprintServiceImpl implements SprintService {
     public SprintCompleteMessageDTO queryCompleteMessageBySprintId(Long projectId, Long sprintId) {
         SprintCompleteMessageDTO sprintCompleteMessage = new SprintCompleteMessageDTO();
         sprintCompleteMessage.setSprintNames(sprintNameAssembler.doListToDTO(sprintMapper.queryPlanSprintName(projectId)));
-        sprintCompleteMessage.setParentsDoneUnfinishedSubtasks(issueAssembler.issueNumDOToIssueNumDTO(sprintMapper.queryParentsDoneUnfinishedSubtasks(projectId, sprintId)));
+        sprintCompleteMessage.setParentsDoneUnfinishedSubtasks(issueAssembler.issueNumDOListToIssueNumDTO(sprintMapper.queryParentsDoneUnfinishedSubtasks(projectId, sprintId)));
         sprintCompleteMessage.setIncompleteIssues(sprintMapper.queryNotDoneIssueCount(projectId, sprintId));
         sprintCompleteMessage.setPartiallyCompleteIssues(sprintMapper.queryDoneIssueCount(projectId, sprintId));
         return sprintCompleteMessage;
