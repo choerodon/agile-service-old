@@ -10,24 +10,54 @@ import java.util.List;
  */
 public class CumulativeFlowDiagramDTO {
 
-    private List<ColumnChangeDTO> columnChangeDTOList;
+    private Long columnId;
 
-    private List<ColumnDTO> columnDTOList;
+    private String color;
 
-    public List<ColumnChangeDTO> getColumnChangeDTOList() {
-        return columnChangeDTOList;
+    private String name;
+
+    private String categoryCode;
+
+    private List<CoordinateDTO> coordinateDTOList;
+
+    public Long getColumnId() {
+        return columnId;
     }
 
-    public void setColumnChangeDTOList(List<ColumnChangeDTO> columnChangeDTOList) {
-        this.columnChangeDTOList = columnChangeDTOList;
+    public void setColumnId(Long columnId) {
+        this.columnId = columnId;
     }
 
-    public List<ColumnDTO> getColumnDTOList() {
-        return columnDTOList;
+    public String getColor() {
+        return color;
     }
 
-    public void setColumnDTOList(List<ColumnDTO> columnDTOList) {
-        this.columnDTOList = columnDTOList;
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<CoordinateDTO> getCoordinateDTOList() {
+        return coordinateDTOList;
+    }
+
+    public void setCoordinateDTOList(List<CoordinateDTO> coordinateDTOList) {
+        this.coordinateDTOList = coordinateDTOList;
+    }
+
+    public String getCategoryCode() {
+        return categoryCode;
+    }
+
+    public void setCategoryCode(String categoryCode) {
+        this.categoryCode = categoryCode;
     }
 
     @Override

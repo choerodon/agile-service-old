@@ -291,7 +291,7 @@
     </select>
 
     <select id="queryColumnByColumnIds" resultType="io.choerodon.agile.infra.dataobject.ColumnDO">
-        SELECT abc.column_id ,abc.name,alv.name as color
+        SELECT abc.column_id ,abc.name,alv.name as color,abc.category_code
         from agile_board_column abc left join agile_lookup_value alv on
         alv.type_code = 'column_color'
         and alv.value_code = abc.color_code where abc.column_id in
@@ -299,6 +299,7 @@
                  open="(" close=")" separator=",">
             #{columnId}
         </foreach>
+        ORDER BY abc.column_id
     </select>
 
     <select id="selectEpicBatchByIds" resultType="io.choerodon.agile.infra.dataobject.EpicIdWithNameDO">
