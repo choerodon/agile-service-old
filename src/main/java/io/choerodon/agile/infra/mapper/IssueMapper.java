@@ -161,4 +161,6 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @return IssueDO
      */
     List<IssueDO> queryIssueEpicInfoByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
+   IssueNumDO queryIssueByIssueNum(@Param("projectId") Long projectId, @Param("issueNum") String issueNum);
 }

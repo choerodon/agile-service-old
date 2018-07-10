@@ -1307,7 +1307,7 @@ public class IssueServiceImpl implements IssueService {
         issueListDTOPage.setSize(issueDOPage.getSize());
         issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
         issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
-        issueListDTOPage.setContent(issueAssembler.issueNumDOToIssueNumDTO(issueDOPage.getContent()));
+        issueListDTOPage.setContent(issueAssembler.issueNumDOListToIssueNumDTO(issueDOPage.getContent()));
         return issueListDTOPage;
     }
 
@@ -1509,6 +1509,11 @@ public class IssueServiceImpl implements IssueService {
         } else {
             throw new CommonException("error.IssueRule.issueNoFound");
         }
+    }
+
+    @Override
+    public IssueNumDTO queryIssueByIssueNum(Long projectId, String issueNum) {
+        return issueAssembler.issueNumDOToIssueNumDTO(issueMapper.queryIssueByIssueNum(projectId, issueNum));
     }
 
     private void handleChangeStoryTypeIssue(IssueE issueE) {

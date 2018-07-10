@@ -232,8 +232,16 @@ public class IssueAssembler {
         return exportIssuesDTO;
     }
 
+    public IssueNumDTO issueNumDOToIssueNumDTO(IssueNumDO issueNumDO) {
+        if(issueNumDO == null){
+            return null;
+        }
+        IssueNumDTO issueNumDTO = new IssueNumDTO();
+        BeanUtils.copyProperties(issueNumDO, issueNumDTO);
+        return issueNumDTO;
+    }
 
-    public List<IssueNumDTO> issueNumDOToIssueNumDTO(List<IssueNumDO> issueNumDOList) {
+    public List<IssueNumDTO> issueNumDOListToIssueNumDTO(List<IssueNumDO> issueNumDOList) {
         List<IssueNumDTO> issueNumDTOList = new ArrayList<>();
         issueNumDOList.forEach(issueNumDO -> {
             IssueNumDTO issueNumDTO = new IssueNumDTO();
@@ -303,7 +311,7 @@ public class IssueAssembler {
         return issueCreateDTO;
     }
 
-    public List<IssueChangeDTO> issueChangeDOListToIssueChangeDTO(List<IssueChangeDO> issueChangeDOS){
+    public List<IssueChangeDTO> issueChangeDOListToIssueChangeDTO(List<IssueChangeDO> issueChangeDOS) {
         List<IssueChangeDTO> issueChangeDTOS = new ArrayList<>();
         issueChangeDOS.forEach(issueChangeDO -> {
             IssueChangeDTO issueChangeDTO = new IssueChangeDTO();
