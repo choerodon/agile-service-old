@@ -224,7 +224,7 @@ public class ReportServiceImpl implements ReportService {
             nowVersionIssue.removeAll(versionChangeIssue.get(i).getAddIssueIds());
             nowVersionIssue.addAll(versionChangeIssue.get(i).getRemoveIssueIds());
             versionChangeIssue.get(i).setIssueIds(new ArrayList<>(nowVersionIssue));
-            if(!nowVersionIssue.isEmpty()){
+            if (!nowVersionIssue.isEmpty()) {
                 versionIssues.add(versionChangeIssue.get(i));
             }
         }
@@ -300,7 +300,7 @@ public class ReportServiceImpl implements ReportService {
 
             nowTotalStoryPoints = nowTotalStoryPoints - changeStoryPoints - addStoryPoints + removePoints;
             nowCompletedStoryPoints = nowCompletedStoryPoints - completedPoints + unCompletedPoints;
-            nowUnEstimatedPercentage = nowUnEstimateCount / nowIssueCount;
+            nowUnEstimatedPercentage = nowIssueCount == 0 ? 0 : nowUnEstimateCount / nowIssueCount;
             versionReportDTO.setChangeDate(date);
             versionReportDTO.setTotalStoryPoints(nowTotalStoryPoints);
             versionReportDTO.setCompletedStoryPoints(nowCompletedStoryPoints);
