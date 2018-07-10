@@ -237,7 +237,7 @@ public class BoardServiceImpl implements BoardService {
         putDatasAndSort(columns, parentIds, assigneeIds, boardId, epicIds);
         jsonObject.put("parentIds", parentIds);
         jsonObject.put("assigneeIds", assigneeIds);
-        jsonObject.put("epicInfo", boardColumnMapper.selectEpicBatchByIds(epicIds));
+        jsonObject.put("epicInfo", epicIds != null && !epicIds.isEmpty() ? boardColumnMapper.selectEpicBatchByIds(epicIds) : null);
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         columns.forEach(columnAndIssueDO -> columnAndIssueDO.getSubStatuses().forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> {
             String assigneeName = usersMap.get(issueForBoardDO.getAssigneeId()) != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getName() : null;
