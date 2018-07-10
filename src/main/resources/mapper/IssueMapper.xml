@@ -978,12 +978,17 @@
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_lookup_value alv ON alv.value_code = ai.type_code
         WHERE ai.project_id = #{projectId}
-        <if test="issueId != null">
-            AND ai.issue_id = #{issueId}
-        </if>
-        <if test="issueNum != null">
-            AND ai.issue_num = #{issueNum}
-        </if>
+        <choose>
+            <when test="issueId != null">
+                AND ai.issue_id = #{issueId}
+            </when>
+            <when test="issueNum != null">
+                AND ai.issue_num = #{issueNum}
+            </when>
+            <otherwise>
+                AND FALSE
+            </otherwise>
+        </choose>
     </select>
 
 </mapper>

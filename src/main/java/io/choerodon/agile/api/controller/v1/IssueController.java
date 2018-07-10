@@ -131,7 +131,7 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("分页搜索查询issue列表(不包含子任务、自身)")
+    @ApiOperation("分页搜索查询issue列表(不包含子任务)")
     @CustomPageRequest
     @GetMapping(value = "/summary")
     public ResponseEntity<Page<IssueNumDTO>> queryIssueByOption(@ApiIgnore
