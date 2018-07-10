@@ -2,12 +2,14 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
+import io.choerodon.agile.domain.agile.event.VersionPayload;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.infra.dataobject.IssueCountDO;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.event.producer.execute.EventProducerTemplate;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.agile.app.service.ProductVersionService;
@@ -18,6 +20,7 @@ import io.choerodon.agile.infra.common.utils.SearchUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -54,6 +58,8 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private ProductVersionRule productVersionRule;
     @Autowired
     private ProductVersionMapper productVersionMapper;
+    @Autowired
+    private EventProducerTemplate eventProducerTemplate;
 
     private static final String SEARCH_ARGS = "searchArgs";
     public static final String ADVANCE_SEARCH_ARGS = "advancedSearchArgs";
@@ -71,6 +77,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private static final String SOURCE_VERSION_ERROR = "error.sourceVersionIds.notNull";
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
+    private static final String AGILE_SERVICE = "agile_service";
 
     @Override
     public ProductVersionDetailDTO createVersion(Long projectId, ProductVersionCreateDTO versionCreateDTO) {
@@ -82,7 +89,19 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         productVersionRule.judgeName(productVersionE.getProjectId(), productVersionE.getVersionId(), productVersionE.getName());
         //设置状态
         productVersionE.setStatusCode(VERSION_PLANNING);
-        return productVersionCreateAssembler.entityToDto(productVersionRepository.createVersion(productVersionE));
+        ProductVersionDetailDTO result = new ProductVersionDetailDTO();
+        VersionPayload versionPayload = new VersionPayload();
+        Exception exception = eventProducerTemplate.execute("versionCreate", AGILE_SERVICE, versionPayload,
+                (String uuid) -> {
+                    ProductVersionE productVersionE1 = productVersionRepository.createVersion(productVersionE);
+                    versionPayload.setVersionId(productVersionE1.getVersionId());
+                    BeanUtils.copyProperties(productVersionE1, result);
+                }
+        );
+        Optional.ofNullable(exception).map(e -> {
+            throw new CommonException(exception.getMessage());
+        });
+        return result;
     }
 
     @Override
