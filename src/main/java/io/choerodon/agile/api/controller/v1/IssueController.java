@@ -133,18 +133,22 @@ public class IssueController {
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("分页搜索查询issue列表(不包含子任务、自身)")
     @CustomPageRequest
-    @GetMapping(value = "/{issueId}/summary")
+    @GetMapping(value = "/summary")
     public ResponseEntity<Page<IssueNumDTO>> queryIssueByOption(@ApiIgnore
                                                                 @ApiParam(value = "分页信息", required = true)
                                                                 @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
                                                                         PageRequest pageRequest,
                                                                 @ApiParam(value = "项目id", required = true)
                                                                 @PathVariable(name = "project_id") Long projectId,
-                                                                @ApiParam(value = "issueId", required = true)
-                                                                @PathVariable Long issueId,
+                                                                @ApiParam(value = "issueId")
+                                                                @RequestParam(required = false) Long issueId,
+                                                                @ApiParam(value = "issueNum")
+                                                                @RequestParam(required = false) String issueNum,
+                                                                @ApiParam(value = "是否包含自身", required = true)
+                                                                @RequestParam() Boolean self,
                                                                 @ApiParam(value = "搜索内容", required = false)
                                                                 @RequestParam(required = false) String content) {
-        return Optional.ofNullable(issueService.queryIssueByOption(projectId, issueId, content, pageRequest))
+        return Optional.ofNullable(issueService.queryIssueByOption(projectId, issueId, issueNum, self, content, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssueByOption"));
     }
@@ -304,17 +308,4 @@ public class IssueController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.transformedSubTask"));
     }
-
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("根据issue编码搜索issue")
-    @GetMapping()
-    public ResponseEntity<IssueNumDTO> queryIssueByIssueNum(@ApiParam(value = "项目id", required = true)
-                                               @PathVariable(name = "project_id") Long projectId,
-                                               @ApiParam(value = "issue编码", required = true)
-                                               @RequestParam String issueNum) {
-        return Optional.ofNullable(issueService.queryIssueByIssueNum(projectId, issueNum))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.OK));
-    }
-
 }
