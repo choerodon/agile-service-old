@@ -1306,9 +1306,12 @@ public class IssueServiceImpl implements IssueService {
     public Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Boolean self, String content, PageRequest pageRequest) {
         //连表查询需要设置主表别名
         pageRequest.resetOrder("ai", new HashMap<>());
-        IssueNumDO issueNumDO = issueMapper.queryIssueByIssueNumOrIssueId(projectId, issueId, issueNum);
-        if (self && issueNumDO != null) {
-            pageRequest.setSize(pageRequest.getSize() - 1);
+        IssueNumDO issueNumDO = null;
+        if (self) {
+            issueNumDO = issueMapper.queryIssueByIssueNumOrIssueId(projectId, issueId, issueNum);
+            if (issueNumDO != null) {
+                pageRequest.setSize(pageRequest.getSize() - 1);
+            }
         }
         Page<IssueNumDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
                 issueMapper.queryIssueByOption(projectId, issueId, issueNum, self, content));
