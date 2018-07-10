@@ -194,23 +194,25 @@ public class ReportServiceImpl implements ReportService {
         List<VersionIssueChangeDO> versionIssues = new ArrayList<>();
         VersionIssueChangeDO nowVersionIssueChang = new VersionIssueChangeDO();
         List<Long> nowVersionIssue = reportMapper.queryIssueIdByVersionId(projectId, versionId);
-        //查统计最末时间点的相关信息
-        Integer nowTotalStoryPoints = reportMapper.queryTotalStoryPoints(projectId, nowVersionIssue);
-        Integer nowCompletedStoryPoints = reportMapper.queryCompleteStoryPoints(projectId, nowVersionIssue);
-        double nowUnEstimateCount = reportMapper.queryUnEstimateCount(projectId, nowVersionIssue);
-        double nowIssueCount = nowVersionIssue.size();
-        double nowUnEstimatedPercentage = nowUnEstimateCount / nowIssueCount;
-
         Date startDate = versionDO.getStartDate() != null ? versionDO.getStartDate() : versionDO.getCreationDate();
         Date endDate = new Date();
         List<VersionIssueChangeDO> versionChangeIssue = reportMapper.queryChangeIssue(projectId, versionId, startDate, endDate);
-
-        //空指针异常
-        nowVersionIssueChang.setPreDate(versionChangeIssue.isEmpty() ? startDate : versionChangeIssue.get(0).getChangeDate());
-
-        nowVersionIssueChang.setChangeDate(endDate);
-        nowVersionIssueChang.setIssueIds(new ArrayList<>(nowVersionIssue));
-        versionIssues.add(nowVersionIssueChang);
+        //查统计最末时间点的相关信息
+        Integer nowTotalStoryPoints = 0;
+        Integer nowCompletedStoryPoints = 0;
+        double nowUnEstimateCount = 0;
+        if (!nowVersionIssue.isEmpty()) {
+            nowTotalStoryPoints = reportMapper.queryTotalStoryPoints(projectId, nowVersionIssue);
+            nowCompletedStoryPoints = reportMapper.queryCompleteStoryPoints(projectId, nowVersionIssue);
+            nowUnEstimateCount = reportMapper.queryUnEstimateCount(projectId, nowVersionIssue);
+            //空指针异常
+            nowVersionIssueChang.setPreDate(versionChangeIssue.isEmpty() ? startDate : versionChangeIssue.get(0).getChangeDate());
+            nowVersionIssueChang.setChangeDate(endDate);
+            nowVersionIssueChang.setIssueIds(new ArrayList<>(nowVersionIssue));
+            versionIssues.add(nowVersionIssueChang);
+        }
+        double nowIssueCount = nowVersionIssue.size();
+        double nowUnEstimatedPercentage = nowIssueCount == 0 ? 0 : nowUnEstimateCount / nowIssueCount;
 
         for (int i = 0; i < versionChangeIssue.size(); i++) {
             int j = i + 1;
@@ -222,8 +224,10 @@ public class ReportServiceImpl implements ReportService {
             nowVersionIssue.removeAll(versionChangeIssue.get(i).getAddIssueIds());
             nowVersionIssue.addAll(versionChangeIssue.get(i).getRemoveIssueIds());
             versionChangeIssue.get(i).setIssueIds(new ArrayList<>(nowVersionIssue));
+            if(!nowVersionIssue.isEmpty()){
+                versionIssues.add(versionChangeIssue.get(i));
+            }
         }
-        versionIssues.addAll(versionChangeIssue);
         Set<Date> dateSet = new TreeSet<>((first, second) -> second.compareTo(first));
         //issue故事点变更
         List<IssueChangeDTO> storyPointChangeIssues = issueAssembler.issueChangeDOListToIssueChangeDTO(reportMapper.queryStoryPointChangeIssue(projectId, versionIssues));
