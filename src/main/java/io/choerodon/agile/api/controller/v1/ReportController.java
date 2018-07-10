@@ -57,7 +57,7 @@ public class ReportController {
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查看项目累积流量图")
     @PostMapping(value = "/cumulative_flow_diagram")
-    public ResponseEntity<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<CumulativeFlowDiagramDTO>> queryCumulativeFlowDiagram(@ApiParam(value = "项目id", required = true)
                                                                                @PathVariable(name = "project_id") Long projectId,
                                                                                @ApiParam(value = "过滤条件", required = true)
                                                                                @RequestBody CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {

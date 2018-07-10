@@ -33,7 +33,7 @@ public interface ReportService {
      * @param cumulativeFlowFilterDTO cumulativeFlowFilterDTO
      * @return CumulativeFlowDiagramDTO
      */
-   CumulativeFlowDiagramDTO queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO);
+    List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO);
 
     Page<IssueListDTO> queryIssueByOptions(Long projectId, Long versionId, String status, PageRequest pageRequest);
 

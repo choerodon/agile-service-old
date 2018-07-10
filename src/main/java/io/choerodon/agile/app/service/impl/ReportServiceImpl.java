@@ -48,6 +48,8 @@ public class ReportServiceImpl implements ReportService {
     private ProductVersionMapper versionMapper;
     @Autowired
     private IssueAssembler issueAssembler;
+    @Autowired
+    private ProjectInfoMapper projectInfoMapper;
 
     private static final String STORY_POINTS = "storyPoints";
     private static final String REMAINING_ESTIMATED_TIME = "remainingEstimatedTime";
@@ -60,6 +62,7 @@ public class ReportServiceImpl implements ReportService {
     private static final String SPRINT_CLOSED = "closed";
     private static final String VERSION_ARCHIVED_CODE = "archived";
     private static final String VERSION_REPORT_ERROR = "error.report.version";
+    private static final String TODO = "todo";
 
     @Override
     public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
@@ -91,12 +94,19 @@ public class ReportServiceImpl implements ReportService {
                 sorted(Comparator.comparing(ReportIssueE::getDate)).collect(Collectors.toList()), ReportIssueDTO.class);
     }
 
+
     @Override
-    public CumulativeFlowDiagramDTO queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
+    public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
+        ProjectInfoDO query = new ProjectInfoDO();
+        query.setProjectId(projectId);
+        ProjectInfoDO projectInfoDO = projectInfoMapper.selectOne(query);
+        if (projectInfoDO == null) {
+            throw new CommonException("error.cumulativeFlow.projectInfoNotFound");
+        }
+        //设置时间区间
+        cumulativeFlowFilterDTO.setStartDate(projectInfoDO.getCreationDate());
+        cumulativeFlowFilterDTO.setEndDate(new Date());
         //获取当前符合条件的所有issueIds
-        CumulativeFlowDiagramDTO cumulativeFlowDiagramDTO = new CumulativeFlowDiagramDTO();
-        cumulativeFlowDiagramDTO.setColumnDTOList(new ArrayList<>());
-        cumulativeFlowDiagramDTO.setColumnChangeDTOList(new ArrayList<>());
         String filterSql = null;
         if (cumulativeFlowFilterDTO.getQuickFilterIds() != null && !cumulativeFlowFilterDTO.getQuickFilterIds().isEmpty()) {
             filterSql = sprintService.getQuickFilter(cumulativeFlowFilterDTO.getQuickFilterIds());
@@ -114,43 +124,84 @@ public class ReportServiceImpl implements ReportService {
                     columnChangeDTO.getColumnTo() != null && !columnChangeDTO.getColumnFrom().equals(columnChangeDTO.getColumnTo()))
                     .sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList()));
             //对传入时间点的数据给与坐标
-            if (!columnChangeDTOList.isEmpty()) {
-                if (columnChangeDTOList.get(0).getDate().after(cumulativeFlowFilterDTO.getStartDate())) {
-                    addStartColumnChangeByDate(columnChangeDTOList, cumulativeFlowFilterDTO.getStartDate());
+            List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(cumulativeFlowFilterDTO.getColumnIds()));
+            cumulativeFlowDiagramDTOList.parallelStream().forEachOrdered(cumulativeFlowDiagramDTO -> {
+                cumulativeFlowDiagramDTO.setCoordinateDTOList(new ArrayList<>());
+                if (cumulativeFlowDiagramDTO.getCategoryCode().equals(TODO)) {
+                    handleToDoCoordinate(columnChangeDTOList, cumulativeFlowDiagramDTO, cumulativeFlowFilterDTO.getEndDate());
+                } else {
+                    handleColumnCoordinate(columnChangeDTOList, cumulativeFlowDiagramDTO, cumulativeFlowFilterDTO.getEndDate());
                 }
-                if (columnChangeDTOList.get(columnChangeDTOList.size() - 1).getDate().before(cumulativeFlowFilterDTO.getEndDate())) {
-                    addEndColumnChangeByDate(columnChangeDTOList, cumulativeFlowFilterDTO.getEndDate());
-                }
-            } else {
-                addStartColumnChangeByDate(columnChangeDTOList, cumulativeFlowFilterDTO.getStartDate());
-                addEndColumnChangeByDate(columnChangeDTOList, cumulativeFlowFilterDTO.getEndDate());
-            }
-
-            cumulativeFlowDiagramDTO.getColumnChangeDTOList().addAll(columnChangeDTOList);
-            cumulativeFlowDiagramDTO.setColumnDTOList(reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(cumulativeFlowFilterDTO.getColumnIds())));
-            return cumulativeFlowDiagramDTO;
+            });
+            return cumulativeFlowDiagramDTOList;
         } else if (cumulativeFlowFilterDTO.getColumnIds() == null || cumulativeFlowFilterDTO.getColumnIds().isEmpty()) {
             throw new CommonException(REPORT_FILTER_ERROR);
         } else {
-            return cumulativeFlowDiagramDTO;
+            return new ArrayList<>();
         }
     }
 
-    private void addEndColumnChangeByDate(List<ColumnChangeDTO> columnChangeDTOList, Date endDate) {
-        ColumnChangeDTO columnChangeDTO = new ColumnChangeDTO();
-        columnChangeDTO.setDate(endDate);
-        columnChangeDTO.setColumnTo("0");
-        columnChangeDTO.setColumnFrom("0");
-        columnChangeDTOList.add(columnChangeDTOList.size(), columnChangeDTO);
+    private void handleToDoCoordinate(List<ColumnChangeDTO> columnChangeDTOList,
+                                      CumulativeFlowDiagramDTO cumulativeFlowDiagramDTO,
+                                      Date endDate) {
+        List<ColumnChangeDTO> columnChange = columnChangeDTOList.stream().filter(columnChangeDTO ->
+                Objects.equals(columnChangeDTO.getColumnFrom(), "0")
+                        && Objects.equals(columnChangeDTO.getColumnTo(), cumulativeFlowDiagramDTO.getColumnId().toString())).collect(Collectors.toList());
+        if (columnChange != null && !columnChange.isEmpty()) {
+            int count = 1;
+            for (ColumnChangeDTO columnChangeDTO : columnChange) {
+                CoordinateDTO coordinateDTO = new CoordinateDTO();
+                coordinateDTO.setDate(columnChangeDTO.getDate());
+                coordinateDTO.setColumnChangeDTO(columnChangeDTO);
+                coordinateDTO.setIssueCount(count++);
+                cumulativeFlowDiagramDTO.getCoordinateDTOList().add(coordinateDTO);
+            }
+            addEndColumnChangeByDate(cumulativeFlowDiagramDTO, endDate);
+        } else {
+            handleColumnCoordinate(columnChangeDTOList, cumulativeFlowDiagramDTO, endDate);
+        }
     }
 
-    private void addStartColumnChangeByDate(List<ColumnChangeDTO> columnChangeDTOList, Date startDate) {
-        ColumnChangeDTO columnChangeDTO = new ColumnChangeDTO();
-        columnChangeDTO.setDate(startDate);
-        columnChangeDTO.setColumnTo("0");
-        columnChangeDTO.setColumnFrom("0");
-        columnChangeDTOList.add(0, columnChangeDTO);
+
+    private void handleColumnCoordinate(List<ColumnChangeDTO> columnChangeDTOList,
+                                        CumulativeFlowDiagramDTO cumulativeFlowDiagramDTO,
+                                        Date endDate) {
+        List<ColumnChangeDTO> columnChange = columnChangeDTOList.stream().filter(columnChangeDTO ->
+                Objects.equals(columnChangeDTO.getColumnFrom(), cumulativeFlowDiagramDTO.getColumnId().toString())
+                        || Objects.equals(columnChangeDTO.getColumnTo(), cumulativeFlowDiagramDTO.getColumnId().toString())).collect(Collectors.toList());
+        if (columnChange != null && !columnChange.isEmpty()) {
+            int count = 1;
+            for (ColumnChangeDTO columnChangeDTO : columnChange) {
+                if (columnChangeDTO.getColumnFrom().equals(cumulativeFlowDiagramDTO.getColumnId().toString())) {
+                    CoordinateDTO coordinateDTO = new CoordinateDTO();
+                    coordinateDTO.setDate(columnChangeDTO.getDate());
+                    coordinateDTO.setColumnChangeDTO(columnChangeDTO);
+                    coordinateDTO.setIssueCount(count--);
+                    cumulativeFlowDiagramDTO.getCoordinateDTOList().add(coordinateDTO);
+                } else {
+                    CoordinateDTO coordinateDTO = new CoordinateDTO();
+                    coordinateDTO.setDate(columnChangeDTO.getDate());
+                    coordinateDTO.setIssueCount(count++);
+                    coordinateDTO.setColumnChangeDTO(columnChangeDTO);
+                    cumulativeFlowDiagramDTO.getCoordinateDTOList().add(coordinateDTO);
+                }
+                addEndColumnChangeByDate(cumulativeFlowDiagramDTO, endDate);
+            }
+        }
     }
+
+    private void addEndColumnChangeByDate(CumulativeFlowDiagramDTO cumulativeFlowDiagramDTO, Date endDate) {
+        CoordinateDTO endCoordinate = cumulativeFlowDiagramDTO.getCoordinateDTOList().
+                get(cumulativeFlowDiagramDTO.getCoordinateDTOList().size() - 1);
+        if (endCoordinate.getDate().before(endDate)) {
+            CoordinateDTO end = new CoordinateDTO();
+            end.setDate(endDate);
+            end.setIssueCount(endCoordinate.getIssueCount());
+            end.setColumnChangeDTO(null);
+            cumulativeFlowDiagramDTO.getCoordinateDTOList().add(cumulativeFlowDiagramDTO.getCoordinateDTOList().size(), end);
+        }
+    }
+
 
     private void handleCumulativeFlowChangeDuringDate(CumulativeFlowFilterDTO cumulativeFlowFilterDTO, List<Long> allIssueIds, List<ColumnChangeDTO> result) {
         List<ColumnChangeDTO> changeIssueDuringDate = reportAssembler.columnChangeListDoToDto(reportMapper.queryChangeIssueDuringDate(cumulativeFlowFilterDTO.getStartDate(),

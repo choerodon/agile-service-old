@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.dto.ColumnChangeDTO;
-import io.choerodon.agile.api.dto.ColumnDTO;
+import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO;
 import io.choerodon.agile.infra.dataobject.ColumnChangeDO;
 import io.choerodon.agile.infra.dataobject.ColumnDO;
 import org.springframework.beans.BeanUtils;
@@ -17,14 +17,17 @@ import java.util.List;
 @Component
 public class ReportAssembler {
 
-    public List<ColumnDTO> columnListDoToDto(List<ColumnDO> columnDOList) {
-        List<ColumnDTO> columnDTOList = new ArrayList<>();
+    public List<CumulativeFlowDiagramDTO> columnListDoToDto(List<ColumnDO> columnDOList) {
+        List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = new ArrayList<>();
         columnDOList.forEach(columnDO -> {
-            ColumnDTO columnDTO = new ColumnDTO();
-            BeanUtils.copyProperties(columnDO, columnDTO);
-            columnDTOList.add(columnDTO);
+            CumulativeFlowDiagramDTO cumulativeFlowDiagramDTO = new CumulativeFlowDiagramDTO();
+            cumulativeFlowDiagramDTO.setColumnId(columnDO.getColumnId());
+            cumulativeFlowDiagramDTO.setColor(columnDO.getColor());
+            cumulativeFlowDiagramDTO.setName(columnDO.getName());
+            cumulativeFlowDiagramDTO.setCategoryCode(columnDO.getCategoryCode());
+            cumulativeFlowDiagramDTOList.add(cumulativeFlowDiagramDTO);
         });
-        return columnDTOList;
+        return cumulativeFlowDiagramDTOList;
     }
 
     public List<ColumnChangeDTO> columnChangeListDoToDto(List<ColumnChangeDO> columnChangeDOList) {

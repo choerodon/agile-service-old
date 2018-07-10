@@ -14,6 +14,8 @@ public class ColumnDO {
 
     private String color;
 
+    private String categoryCode;
+
     public Long getColumnId() {
         return columnId;
     }
@@ -36,6 +38,14 @@ public class ColumnDO {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public String getCategoryCode() {
+        return categoryCode;
+    }
+
+    public void setCategoryCode(String categoryCode) {
+        this.categoryCode = categoryCode;
     }
 
     @Override
