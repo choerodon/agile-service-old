@@ -28,7 +28,7 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
     @Override
     public void initializationProjectInfo(ProjectEvent projectEvent) {
         ProjectInfoE projectInfoE = new ProjectInfoE();
-        projectInfoE.setIssueMaxNum(1L);
+        projectInfoE.setIssueMaxNum(0L);
         projectInfoE.setProjectCode(projectEvent.getProjectCode());
         projectInfoE.setProjectId(projectEvent.getProjectId());
         projectInfoRepository.create(projectInfoE);
