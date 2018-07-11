@@ -66,7 +66,7 @@ public interface IssueService {
      * @param issueId   issueId
      * @return int
      */
-    int deleteIssue(Long projectId, Long issueId);
+    void deleteIssue(Long projectId, Long issueId);
 
     /**
      * 创建issue子任务

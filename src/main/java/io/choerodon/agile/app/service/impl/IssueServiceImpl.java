@@ -18,6 +18,7 @@ import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
+import io.choerodon.event.producer.execute.EventProducerTemplate;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -123,6 +124,8 @@ public class IssueServiceImpl implements IssueService {
     private IssueSprintRelRepository issueSprintRelRepository;
     @Autowired
     private IssueSprintRelMapper issueSprintRelMapper;
+    @Autowired
+    private EventProducerTemplate eventProducerTemplate;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -169,7 +172,8 @@ public class IssueServiceImpl implements IssueService {
     private static final String EXPORT_ERROR = "error.issue.export";
     private static final String PROJECT_ERROR = "error.project.notFound";
     private static final String ERROR_EPIC_NOT_FOUND = "error.dataLogEpic.epicNotFound";
-    private static final String ARCHIVED = "archived";
+    private static final String ERROR_ISSUE_NOT_FOUND = "error.Issue.queryIssue";
+    private static final String AGILE_SERVICE = "agile-service";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -618,43 +622,54 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public int deleteIssue(Long projectId, Long issueId) {
-        IssueE issueE = queryIssueByProjectIdAndIssueId(projectId, issueId);
-        //删除issueLink
-        issueLinkRepository.deleteByIssueId(issueE.getIssueId());
-        //删除标签关联
-        labelIssueRelRepository.deleteByIssueId(issueE.getIssueId());
-        //没有issue使用的标签进行垃圾回收
-        issueLabelRepository.labelGarbageCollection();
-        //删除模块关联
-        componentIssueRelRepository.deleteByIssueId(issueE.getIssueId());
-        //删除版本关联
-        versionIssueRelRepository.deleteByIssueId(issueE.getIssueId());
-        //删除冲刺关联
-        issueRepository.deleteIssueFromSprintByIssueId(projectId, issueId);
-        //删除评论信息
-        issueCommentService.deleteByIssueId(issueE.getIssueId());
-        //删除附件
-        issueAttachmentService.deleteByIssueId(issueE.getIssueId());
-        //不是子任务的issue删除子任务
-        if (!(SUB_TASK).equals(issueE.getTypeCode())) {
-            if ((ISSUE_EPIC).equals(issueE.getTypeCode())) {
-                //Epic删除后更改为0的日志记录
-                IssueDO issueDO = new IssueDO();
-                issueDO.setEpicId(issueE.getIssueId());
-                List<IssueDO> issueDOList = issueMapper.select(issueDO);
-                issueDOList.parallelStream().forEach(issueEpic -> dataLogEpic(issueEpic.getProjectId(), issueEpic, 0L));
-                //如果是epic，会把该epic下的issue的epicId置为0
-                issueRepository.batchUpdateIssueEpicId(projectId, issueE.getIssueId());
-            }
-            List<IssueDO> issueDOList = issueMapper.queryIssueSubList(projectId, issueE.getIssueId());
-            if (issueDOList != null && !issueDOList.isEmpty()) {
-                issueDOList.forEach(subIssue -> deleteIssue(subIssue.getProjectId(), subIssue.getIssueId()));
-            }
-        }
-        //删除日志信息
-        dataLogDeleteByIssueId(projectId, issueId);
-        return issueRepository.delete(projectId, issueE.getIssueId());
+    public void deleteIssue(Long projectId, Long issueId) {
+        //删除issue发送消息
+        Exception exception = eventProducerTemplate.execute("deleteIssue", AGILE_SERVICE, issueId,
+                (String uuid) -> {
+                    IssueE issueE = queryIssueByProjectIdAndIssueId(projectId, issueId);
+                    if (issueE == null) {
+                        throw new CommonException(ERROR_ISSUE_NOT_FOUND);
+                    }
+                    //删除issueLink
+                    issueLinkRepository.deleteByIssueId(issueE.getIssueId());
+                    //删除标签关联
+                    labelIssueRelRepository.deleteByIssueId(issueE.getIssueId());
+                    //没有issue使用的标签进行垃圾回收
+                    issueLabelRepository.labelGarbageCollection();
+                    //删除模块关联
+                    componentIssueRelRepository.deleteByIssueId(issueE.getIssueId());
+                    //删除版本关联
+                    versionIssueRelRepository.deleteByIssueId(issueE.getIssueId());
+                    //删除冲刺关联
+                    issueRepository.deleteIssueFromSprintByIssueId(projectId, issueId);
+                    //删除评论信息
+                    issueCommentService.deleteByIssueId(issueE.getIssueId());
+                    //删除附件
+                    issueAttachmentService.deleteByIssueId(issueE.getIssueId());
+                    //不是子任务的issue删除子任务
+                    if (!(SUB_TASK).equals(issueE.getTypeCode())) {
+                        if ((ISSUE_EPIC).equals(issueE.getTypeCode())) {
+                            //Epic删除后更改为0的日志记录
+                            IssueDO issueDO = new IssueDO();
+                            issueDO.setEpicId(issueE.getIssueId());
+                            List<IssueDO> issueDOList = issueMapper.select(issueDO);
+                            issueDOList.parallelStream().forEach(issueEpic -> dataLogEpic(issueEpic.getProjectId(), issueEpic, 0L));
+                            //如果是epic，会把该epic下的issue的epicId置为0
+                            issueRepository.batchUpdateIssueEpicId(projectId, issueE.getIssueId());
+                        }
+                        List<IssueDO> issueDOList = issueMapper.queryIssueSubList(projectId, issueE.getIssueId());
+                        if (issueDOList != null && !issueDOList.isEmpty()) {
+                            issueDOList.forEach(subIssue -> deleteIssue(subIssue.getProjectId(), subIssue.getIssueId()));
+                        }
+                    }
+                    //删除日志信息
+                    dataLogDeleteByIssueId(projectId, issueId);
+                    issueRepository.delete(projectId, issueE.getIssueId());
+                }
+        );
+        Optional.ofNullable(exception).map(e -> {
+            throw new CommonException(exception.getMessage());
+        });
     }
 
     @Override
@@ -1538,9 +1553,8 @@ public class IssueServiceImpl implements IssueService {
             if (issueE.getStoryPoints() != null) {
                 dataLogE.setOldString(issueE.getStoryPoints().toString());
             }
-            dataLogE.setNewString(null);
             dataLogRepository.create(dataLogE);
-            issueE.setStoryPoints(null);
+            issueE.setStoryPoints(0);
         }
     }
 
