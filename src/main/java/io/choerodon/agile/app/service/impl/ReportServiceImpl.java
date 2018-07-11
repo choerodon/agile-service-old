@@ -157,9 +157,8 @@ public class ReportServiceImpl implements ReportService {
                 cumulativeFlowDiagramDTO.getCoordinateDTOList().add(coordinateDTO);
             }
             addEndColumnChangeByDate(cumulativeFlowDiagramDTO, endDate);
-        } else {
-            handleColumnCoordinate(columnChangeDTOList, cumulativeFlowDiagramDTO, endDate);
         }
+        handleColumnCoordinate(columnChangeDTOList, cumulativeFlowDiagramDTO, endDate);
     }
 
 

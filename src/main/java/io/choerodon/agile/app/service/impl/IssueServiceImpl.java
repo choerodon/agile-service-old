@@ -1538,9 +1538,8 @@ public class IssueServiceImpl implements IssueService {
             if (issueE.getStoryPoints() != null) {
                 dataLogE.setOldString(issueE.getStoryPoints().toString());
             }
-            dataLogE.setNewString(null);
             dataLogRepository.create(dataLogE);
-            issueE.setStoryPoints(null);
+            issueE.setStoryPoints(0);
         }
     }
 
