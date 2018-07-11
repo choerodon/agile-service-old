@@ -1,7 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
