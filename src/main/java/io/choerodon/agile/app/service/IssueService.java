@@ -1,8 +1,10 @@
 package io.choerodon.agile.app.service;
 
 
+import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.infra.dataobject.IssueInfoDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
@@ -141,4 +143,6 @@ public interface IssueService {
      * @return IssueSubDTO
      */
     IssueSubDTO transformedSubTask(Long projectId, IssueTransformSubTask issueTransformSubTask);
+
+    List<IssueInfoDTO> listByIssueIds(Long projectId, List<Long> issueIds);
 }

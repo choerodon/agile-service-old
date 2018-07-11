@@ -1815,4 +1815,8 @@ public class IssueServiceImpl implements IssueService {
         return issueMapper.selectOne(issueDO);
     }
 
+    @Override
+    public List<IssueInfoDTO> listByIssueIds(Long projectId, List<Long> issueIds) {
+        return ConvertHelper.convertList(issueMapper.listByIssueIds(projectId, issueIds), IssueInfoDTO.class);
+    }
 }
