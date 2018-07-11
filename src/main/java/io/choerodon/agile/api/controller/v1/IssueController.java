@@ -3,6 +3,7 @@ package io.choerodon.agile.api.controller.v1;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.infra.dataobject.IssueInfoDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.app.service.IssueService;
@@ -307,5 +308,17 @@ public class IssueController {
         return Optional.ofNullable(issueService.transformedSubTask(projectId, issueTransformSubTask))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.transformedSubTask"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("根据issue ids查询issue相关信息")
+    @PostMapping("/issue_infos")
+    public ResponseEntity<List<IssueInfoDTO>> listByIssueIds(@ApiParam(value = "项目id", required = true)
+                                                      @PathVariable(name = "project_id") Long projectId,
+                                                            @ApiParam(value = "issue ids", required = true)
+                                                      @RequestBody List<Long> issueIds) {
+        return Optional.ofNullable(issueService.listByIssueIds(projectId, issueIds))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.issueNums.get"));
     }
 }

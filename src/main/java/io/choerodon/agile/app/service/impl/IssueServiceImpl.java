@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
@@ -1815,4 +1816,8 @@ public class IssueServiceImpl implements IssueService {
         return issueMapper.selectOne(issueDO);
     }
 
+    @Override
+    public List<IssueInfoDTO> listByIssueIds(Long projectId, List<Long> issueIds) {
+        return ConvertHelper.convertList(issueMapper.listByIssueIds(projectId, issueIds), IssueInfoDTO.class);
+    }
 }
