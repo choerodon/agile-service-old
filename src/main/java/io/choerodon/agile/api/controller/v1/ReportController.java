@@ -90,8 +90,10 @@ public class ReportController {
     public ResponseEntity<Map<String, Object>> queryVersionLineChart(@ApiParam(value = "项目id", required = true)
                                                                      @PathVariable(name = "project_id") Long projectId,
                                                                      @ApiParam(value = "版本id", required = true)
-                                                                     @PathVariable Long versionId) {
-        return Optional.ofNullable(reportService.queryVersionLineChart(projectId, versionId))
+                                                                     @PathVariable Long versionId,
+                                                                     @ApiParam(value = "统计类型", required = true)
+                                                                     @RequestParam String type) {
+        return Optional.ofNullable(reportService.queryVersionLineChart(projectId, versionId, type))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(VERSION_LINE_CHART_ERROR));
     }

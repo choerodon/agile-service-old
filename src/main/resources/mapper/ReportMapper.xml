@@ -944,17 +944,40 @@
     <select id="queryIssueIdByVersionId" resultType="java.lang.Long">
         SELECT issue_id
         FROM agile_version_issue_rel
-        WHERE project_id = #{projectId} AND version_id = #{versionId}
+        WHERE project_id = #{projectId} AND version_id = #{versionId} AND relation_type = 'fix'
     </select>
 
-    <select id="queryStoryPointChangeIssue" resultType="io.choerodon.agile.infra.dataobject.IssueChangeDO">
+    <select id="queryChangeFiledIssue" resultType="io.choerodon.agile.infra.dataobject.IssueChangeDO">
         SELECT adl.issue_id,                       CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
                 adl.old_string AS old_value,        adl.new_string AS new_value,
-                adl.creation_date AS change_date,   IFNULL(adl.new_string, 0) - IFNULL(adl.old_string, 0) AS change_story_points
+                adl.creation_date AS change_date,   IFNULL(adl.new_string, 0) - IFNULL(adl.old_string, 0) AS change_field,
+                ai.type_code AS type_code,          IFNULL(b.completed, FALSE) AS completed
         FROM agile_data_log adl
         LEFT JOIN agile_issue ai ON ai.issue_id = adl.issue_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE adl.project_id = #{projectId} AND adl.field = 'Story Points'
+        LEFT JOIN (
+            SELECT adl1.issue_id,                  ais.is_completed AS completed,
+                    a.change_date AS change_date
+            FROM agile_data_log adl1
+                 LEFT JOIN agile_issue_status ais ON ais.id = adl1.new_value,
+                (
+                <foreach collection="versionIssues" item="versionIssue"
+                         open="" close="" separator=" UNION ALL  ">
+                    SELECT MAX(log_id) AS log_id, #{versionIssue.changeDate} AS change_date
+                    FROM agile_data_log
+                    WHERE project_id = #{projectId} AND field = 'resolution'
+                    AND creation_date &lt; #{versionIssue.changeDate}
+                    AND issue_id IN
+                    <foreach collection="versionIssue.issueIds" item="issueId"
+                             open="(" close=")" separator=",">
+                        #{issueId}
+                    </foreach>
+                    GROUP BY issue_id
+                </foreach>
+                )a
+            WHERE adl1.log_id = a.log_id
+        ) b ON b.change_date = adl.creation_date AND b.issue_id= adl.issue_id
+        WHERE adl.project_id = #{projectId} AND adl.field = #{filed}
         AND (
             <foreach collection="versionIssues" item="versionIssue"
                  open="(" close=")" separator=" OR ">
@@ -1000,21 +1023,21 @@
     <select id="queryChangIssue" resultType="io.choerodon.agile.infra.dataobject.IssueChangeDO">
         SELECT adl.issue_id,                       CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
                 b.old_value AS old_value,          b.new_value AS new_value,
-                adl.creation_date AS change_date
+                adl.creation_date AS change_date,  ai.type_code AS type_code,
+                IFNULL(b1.completed, FALSE) AS completed
         FROM agile_data_log adl
         LEFT JOIN agile_issue ai ON ai.issue_id = adl.issue_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN (
-                    SELECT adl1.issue_id,                      adl1.old_value AS old_value,
+                    SELECT adl1.issue_id,                      adl1.old_string AS old_value,
                             adl1.new_string AS new_value,       a.change_date AS change_date
-                    FROM agile_data_log adl1
-                    LEFT JOIN agile_issue ai1 ON ai1.issue_id = adl1.issue_id,
+                    FROM agile_data_log adl1,
                     (
                         <foreach collection="changeIssues" item="changeIssue"
                                  open="" close="" separator=" UNION ALL  ">
                             SELECT MAX(log_id) AS log_id, #{changeIssue.changeDate} AS change_date
                             FROM agile_data_log
-                            WHERE project_id = #{projectId} AND field = 'Story Points'
+                            WHERE project_id = #{projectId} AND field = #{filed}
                             AND creation_date &lt; #{changeIssue.changeDate}
                             AND issue_id IN
                             <foreach collection="changeIssue.issueIds" item="issueId"
@@ -1026,6 +1049,28 @@
                     )a
                     WHERE adl1.log_id = a.log_id
                 ) b ON b.change_date = adl.creation_date AND b.issue_id= adl.issue_id
+        LEFT JOIN (
+                SELECT adl1.issue_id,                  ais.is_completed AS completed,
+                a.change_date AS change_date
+                FROM agile_data_log adl1
+                LEFT JOIN agile_issue_status ais ON ais.id = adl1.new_value,
+                (
+                <foreach collection="changeIssues" item="changeIssue"
+                         open="" close="" separator=" UNION ALL  ">
+                    SELECT MAX(log_id) AS log_id, #{changeIssue.changeDate} AS change_date
+                    FROM agile_data_log
+                    WHERE project_id = #{projectId} AND field = 'resolution'
+                    AND creation_date &lt; #{changeIssue.changeDate}
+                    AND issue_id IN
+                    <foreach collection="changeIssue.issueIds" item="issueId"
+                             open="(" close=")" separator=",">
+                        #{issueId}
+                    </foreach>
+                    GROUP BY issue_id
+                </foreach>
+                )a
+                WHERE adl1.log_id = a.log_id
+        ) b1 ON b1.change_date = adl.creation_date AND b1.issue_id= adl.issue_id
         WHERE  adl.project_id = #{projectId}
                 AND (
                     <foreach collection="changeIssues" item="changeIssue"
@@ -1046,21 +1091,34 @@
                 )
     </select>
 
-    <select id="queryTotalStoryPoints" resultType="java.lang.Integer">
-        SELECT IFNULL(SUM(story_points),0) AS story_points
+    <select id="queryTotalFiled" resultType="java.lang.Integer">
+        SELECT IFNULL(SUM(${filed}),0)
         FROM agile_issue
-        WHERE project_id = #{projectId} AND issue_id IN 
-              <foreach collection="issueIds" item="issueId"
-                       open="(" close=")" separator=",">
-                  #{issueId}
-              </foreach>
+        WHERE project_id = #{projectId}
+                <if test='filed == "story_points"'>
+                   AND type_code = 'story'
+                </if>
+                <if test='filed == "remaining_time"'>
+                   AND type_code != 'sub_task'
+                </if>
+                AND issue_id IN
+                      <foreach collection="issueIds" item="issueId"
+                               open="(" close=")" separator=",">
+                          #{issueId}
+                      </foreach>
     </select>
 
-    <select id="queryCompleteStoryPoints" resultType="java.lang.Integer">
-        SELECT IFNULL(SUM(ai.story_points),0) AS story_points
+    <select id="queryCompleteFiled" resultType="java.lang.Integer">
+        SELECT IFNULL(SUM(ai.${filed}),0)
         FROM agile_issue ai
         LEFT JOIN agile_issue_status ais ON  ais.id = ai.status_id
         WHERE ai.project_id = #{projectId} AND ais.is_completed = TRUE
+        <if test='filed == "story_points"'>
+            AND ai.type_code = 'story'
+        </if>
+        <if test='filed == "remaining_time"'>
+            AND ai.type_code != 'sub_task'
+        </if>
         AND ai.issue_id IN
         <foreach collection="issueIds" item="issueId"
                  open="(" close=")" separator=",">
@@ -1073,7 +1131,25 @@
         FROM agile_issue ai
         LEFT JOIN agile_issue_status ais ON  ais.id = ai.status_id
         WHERE ai.project_id = #{projectId} AND ais.is_completed = FALSE
-        AND ai.story_points IS NULL AND ai.issue_id IN
+        <if test='filed == "story_points"'>
+            AND ai.type_code = 'story' AND ai.story_points IS NULL
+        </if>
+        <if test='filed == "remaining_time"'>
+            AND ai.type_code != 'sub_task' AND ai.remaining_time IS NULL
+        </if>
+        AND ai.issue_id IN
+        <foreach collection="issueIds" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+    </select>
+
+    <select id="queryCompletedIssueCount" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM agile_issue ai
+        LEFT JOIN agile_issue_status ais ON  ais.id = ai.status_id
+        WHERE ai.project_id = #{projectId} AND ais.is_completed = TRUE
+        AND ai.type_code != 'sub_task' AND ai.issue_id IN
         <foreach collection="issueIds" item="issueId"
                  open="(" close=")" separator=",">
             #{issueId}
