@@ -177,18 +177,12 @@ public class IssueRule {
         return labelIssueRelMapper.selectOne(labelIssueRelDO) == null;
     }
 
-    public void verifyTransformedSubTask(Long projectId, IssueTransformSubTask issueTransformSubTask) {
+    public void verifyTransformedSubTask(IssueTransformSubTask issueTransformSubTask) {
         if (issueTransformSubTask.getIssueId() == null) {
             throw new CommonException(ERROR_ISSUE_ID_NOT_FOUND);
         }
         if (issueTransformSubTask.getParentIssueId() == null) {
             throw new CommonException("error.IssueRule.parentIssueId");
-        }
-        IssueDO issueDO = new IssueDO();
-        issueDO.setProjectId(projectId);
-        issueDO.setIssueId(issueTransformSubTask.getIssueId());
-        if (issueMapper.selectOne(issueDO) == null) {
-            throw new CommonException("error.IssueRule.issueNoFound");
         }
     }
 }

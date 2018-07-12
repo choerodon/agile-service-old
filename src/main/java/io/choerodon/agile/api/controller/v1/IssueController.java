@@ -302,7 +302,7 @@ public class IssueController {
                                                           @PathVariable(name = "project_id") Long projectId,
                                                           @ApiParam(value = "转换子任务信息", required = true)
                                                           @RequestBody IssueTransformSubTask issueTransformSubTask) {
-        issueRule.verifyTransformedSubTask(projectId, issueTransformSubTask);
+        issueRule.verifyTransformedSubTask(issueTransformSubTask);
         return Optional.ofNullable(issueService.transformedSubTask(projectId, issueTransformSubTask))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.transformedSubTask"));
