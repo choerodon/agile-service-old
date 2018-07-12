@@ -119,20 +119,20 @@ public class SprintServiceImpl implements SprintService {
         List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
         String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
         String oldSprintNameStr = sprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
-        String newSprintIdStr = "";
-        String newSprintNameStr = "";
+        StringBuilder newSprintIdStr = new StringBuilder();
+        StringBuilder newSprintNameStr = new StringBuilder();
         int idx = 0;
         for (SprintNameDTO sprintName : sprintNames) {
             if (sprintId.equals(sprintName.getSprintId())) {
                 continue;
             }
             if (idx == 0) {
-                newSprintIdStr = sprintName.getSprintId().toString();
-                newSprintNameStr = sprintName.getSprintName();
+                newSprintIdStr.append(sprintName.getSprintId().toString());
+                newSprintNameStr.append(sprintName.getSprintName());
                 idx++;
             } else {
-                newSprintIdStr = newSprintIdStr + "," + sprintName.getSprintId().toString();
-                newSprintNameStr = newSprintNameStr + "," + sprintName.getSprintName();
+                newSprintIdStr.append("," + sprintName.getSprintId().toString());
+                newSprintNameStr.append("," + sprintName.getSprintName());
             }
         }
         String oldValue = oldSprintIdStr;
@@ -143,8 +143,8 @@ public class SprintServiceImpl implements SprintService {
         dataLogE.setIssueId(issueId);
         dataLogE.setOldValue("".equals(oldValue) ? null : oldValue);
         dataLogE.setOldString("".equals(oldString) ? null : oldString);
-        dataLogE.setNewValue("".equals(newSprintIdStr) ? null : newSprintIdStr);
-        dataLogE.setNewString("".equals(newSprintNameStr) ? null : newSprintNameStr);
+        dataLogE.setNewValue(newSprintIdStr.length() == 0 ? null : newSprintIdStr.toString());
+        dataLogE.setNewString(newSprintNameStr.length() == 0 ? null : newSprintNameStr.toString());
         return dataLogE;
     }
 
