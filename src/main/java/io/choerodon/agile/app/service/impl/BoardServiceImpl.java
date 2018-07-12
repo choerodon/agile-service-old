@@ -141,12 +141,9 @@ public class BoardServiceImpl implements BoardService {
     }
 
     private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds) {
-        for (SubStatus status : subStatuses) {
-            for (IssueForBoardDO issue : status.getIssues()) {
-                addIssueInfos(issue, parentIds, assigneeIds, ids, epicIds);
-            }
-        }
+        subStatuses.forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> addIssueInfos(issueForBoardDO, parentIds, assigneeIds, ids, epicIds)));
     }
+
 
     public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds) {
         //子任务经办人为自己，父任务经办人不为自己的情况
@@ -156,6 +153,12 @@ public class BoardServiceImpl implements BoardService {
             getDatas(subStatuses, parentIds, assigneeIds, issueIds, epicIds);
             Collections.sort(subStatuses, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
         }
+        handleParentIdsWithSubIssues(parentIds, issueIds, columns, boardId);
+        Collections.sort(parentIds);
+        Collections.sort(assigneeIds);
+    }
+
+    private void handleParentIdsWithSubIssues(List<Long> parentIds, List<Long> issueIds, List<ColumnAndIssueDO> columns, Long boardId) {
         if (parentIds != null && !parentIds.isEmpty()) {
             List<Long> subNoParentIds = new ArrayList<>();
             parentIds.forEach(id -> {
@@ -180,8 +183,6 @@ public class BoardServiceImpl implements BoardService {
                 });
             }
         }
-        Collections.sort(parentIds);
-        Collections.sort(assigneeIds);
     }
 
     private SprintDO getActiveSprint(Long projectId) {

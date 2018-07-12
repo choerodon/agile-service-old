@@ -374,17 +374,19 @@ public class ReportServiceImpl implements ReportService {
                 cumulativeFlowFilterDTO.getEndDate(), allIssueIds, cumulativeFlowFilterDTO.getColumnIds()));
         if (addIssueDuringDate != null && !addIssueDuringDate.isEmpty()) {
             List<Long> statusToNullIssueIds = addIssueDuringDate.stream().filter(columnChangeDTO -> columnChangeDTO.getStatusTo() == null).map(ColumnChangeDTO::getIssueId).collect(Collectors.toList());
-            Map<Long, ColumnStatusRelDO> columnStatusRelMap = columnStatusRelMapper.queryByIssueIdAndColumnIds(statusToNullIssueIds, cumulativeFlowFilterDTO.getColumnIds())
-                    .stream().collect(Collectors.toMap(ColumnStatusRelDO::getIssueId, Function.identity()));
-            addIssueDuringDate.parallelStream().forEach(columnChangeDTO -> {
-                if (statusToNullIssueIds.contains(columnChangeDTO.getIssueId())) {
-                    ColumnStatusRelDO columnStatusRelDO = columnStatusRelMap.get(columnChangeDTO.getIssueId());
-                    if (columnStatusRelDO != null) {
-                        columnChangeDTO.setColumnTo(columnStatusRelDO.getColumnId().toString());
-                        columnChangeDTO.setStatusTo(columnStatusRelDO.getStatusId().toString());
+            if (statusToNullIssueIds != null && !statusToNullIssueIds.isEmpty()) {
+                Map<Long, ColumnStatusRelDO> columnStatusRelMap = columnStatusRelMapper.queryByIssueIdAndColumnIds(statusToNullIssueIds, cumulativeFlowFilterDTO.getColumnIds())
+                        .stream().collect(Collectors.toMap(ColumnStatusRelDO::getIssueId, Function.identity()));
+                addIssueDuringDate.parallelStream().forEach(columnChangeDTO -> {
+                    if (statusToNullIssueIds.contains(columnChangeDTO.getIssueId())) {
+                        ColumnStatusRelDO columnStatusRelDO = columnStatusRelMap.get(columnChangeDTO.getIssueId());
+                        if (columnStatusRelDO != null) {
+                            columnChangeDTO.setColumnTo(columnStatusRelDO.getColumnId().toString());
+                            columnChangeDTO.setStatusTo(columnStatusRelDO.getStatusId().toString());
+                        }
                     }
-                }
-            });
+                });
+            }
             result.addAll(addIssueDuringDate);
         }
     }
