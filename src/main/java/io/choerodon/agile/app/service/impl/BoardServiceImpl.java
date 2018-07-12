@@ -168,22 +168,25 @@ public class BoardServiceImpl implements BoardService {
             });
             if (!subNoParentIds.isEmpty()) {
                 List<ColumnAndIssueDO> subNoParentColumns = boardColumnMapper.queryColumnsByIssueIds(subNoParentIds, boardId);
-                subNoParentColumns.forEach(columnAndIssueDO -> {
-                    Optional<ColumnAndIssueDO> sameColumn = columns.stream().filter(caid -> caid.getColumnId().equals(columnAndIssueDO.getColumnId()))
-                            .findFirst();
-                    if (sameColumn.isPresent()) {
-                        sameColumn.get().getSubStatuses().forEach(subStatus -> columnAndIssueDO.getSubStatuses().forEach(s -> {
-                            if (subStatus.getId().equals(s.getId())) {
-                                subStatus.getIssues().addAll(s.getIssues());
-                            }
-                        }));
-                    } else {
-                        columns.add(columnAndIssueDO);
-                    }
-                });
+                subNoParentColumns.forEach(columnAndIssueDO -> handleSameColumn(columns,columnAndIssueDO));
             }
         }
     }
+
+    private void handleSameColumn(List<ColumnAndIssueDO> columns, ColumnAndIssueDO columnAndIssueDO) {
+        Optional<ColumnAndIssueDO> sameColumn = columns.stream().filter(columnAndIssue -> columnAndIssue.getColumnId().equals(columnAndIssueDO.getColumnId()))
+                .findFirst();
+        if (sameColumn.isPresent()) {
+            sameColumn.get().getSubStatuses().forEach(subStatus -> columnAndIssueDO.getSubStatuses().forEach(s -> {
+                if (subStatus.getId().equals(s.getId())) {
+                    subStatus.getIssues().addAll(s.getIssues());
+                }
+            }));
+        } else {
+            columns.add(columnAndIssueDO);
+        }
+    }
+
 
     private SprintDO getActiveSprint(Long projectId) {
         return sprintService.getActiveSprint(projectId);
