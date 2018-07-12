@@ -12,6 +12,7 @@ import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.common.utils.RankUtil;
+import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
@@ -26,12 +27,13 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -50,6 +52,7 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class IssueServiceImpl implements IssueService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(IssueServiceImpl.class);
     @Autowired
     private IssueRepository issueRepository;
     @Autowired
@@ -126,6 +129,9 @@ public class IssueServiceImpl implements IssueService {
     private IssueSprintRelMapper issueSprintRelMapper;
     @Autowired
     private EventProducerTemplate eventProducerTemplate;
+    @Autowired
+    private UserFeignClient userFeignClient;
+
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -167,7 +173,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String RANK_FIELD = "rank";
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
-    private static final String[] COLUMN_NAMES = {"编码", "概述", "类型", "所属项目", "经办人", "报告人", "状态", "描述", "关注", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "初始预估", "剩余预估", "版本"};
+    private static final String[] COLUMN_NAMES = {"编码", "概述", "类型", "所属项目", "经办人", "报告人", "状态", "关注", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "初始预估", "剩余预估", "版本"};
     private static final String[] SUB_COLUMN_NAMES = {"关键字", "概述", "类型", "状态", "经办人"};
     private static final String EXPORT_ERROR = "error.issue.export";
     private static final String PROJECT_ERROR = "error.project.notFound";
@@ -1427,10 +1433,8 @@ public class IssueServiceImpl implements IssueService {
         if (request.getHeader("User-Agent").contains("Firefox")) {
             charsetName = "GB2312";
         }
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        projectInfoDO.setProjectId(projectId);
-        projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
-        if (projectInfoDO == null) {
+        ProjectDTO project = userFeignClient.queryProject(projectId).getBody();
+        if (project == null) {
             throw new CommonException(PROJECT_ERROR);
         }
         List<ExportIssuesDTO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId, searchDTO.getSearchArgs(),
@@ -1450,8 +1454,9 @@ public class IssueServiceImpl implements IssueService {
                 return exportIssue;
             }).collect(Collectors.toList());
         }
-        HSSFWorkbook workbook = exportIssuesXls(projectInfoDO, exportIssues);
-        String fileName = projectInfoDO.getProjectCode();
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        exportIssuesXls(workbook, project, exportIssues);
+        String fileName = project.getName();
         dowloadExcel(workbook, fileName, charsetName, response);
     }
 
@@ -1464,12 +1469,14 @@ public class IssueServiceImpl implements IssueService {
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
         projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
-        if (projectInfoDO == null) {
+        ProjectDTO project = userFeignClient.queryProject(projectId).getBody();
+        if (project == null || projectInfoDO == null) {
             throw new CommonException(PROJECT_ERROR);
         }
+        project.setCode(projectInfoDO.getProjectCode());
         ExportIssuesDTO exportIssue = issueAssembler.exportIssuesDOToExportIssuesDTO(issueMapper.queryExportIssue(projectId, issueId));
         HSSFWorkbook workbook = new HSSFWorkbook();
-        String fileName = projectInfoDO.getProjectCode();
+        String fileName = project.getCode();
         if (exportIssue != null) {
             String componentName = issueMapper.queryComponentNameByIssueId(projectId, issueId).stream().collect(Collectors.joining(","));
             String labelName = issueMapper.queryLabelNameByIssueId(projectId, issueId).stream().collect(Collectors.joining(","));
@@ -1482,7 +1489,7 @@ public class IssueServiceImpl implements IssueService {
             exportIssue.setCloseSprintName(closeSprintName);
             exportIssue.setFixVersionName(fixVersionName);
             exportIssue.setInfluenceVersionName(influenceVersionName);
-            exportIssueXls(workbook, projectInfoDO, exportIssue, subIssues);
+            exportIssueXls(workbook, project, exportIssue, subIssues);
             fileName = fileName + "-" + exportIssue.getIssueNum();
         }
         dowloadExcel(workbook, fileName, charsetName, response);
@@ -1642,7 +1649,7 @@ public class IssueServiceImpl implements IssueService {
     private void dowloadExcel(HSSFWorkbook workbook, String fileName, String charsetName, HttpServletResponse response) {
         // 设置response参数，可以打开下载页面
         response.reset();
-        response.setContentType("application/vnd.ms-excel;charset=utf-8");
+        response.setContentType("application/ms-excel;charset=utf-8");
         try {
             response.setHeader("Content-Disposition", "attachment;filename="
                     + new String((fileName + ".xls").getBytes(charsetName),
@@ -1651,26 +1658,23 @@ public class IssueServiceImpl implements IssueService {
             throw new CommonException(EXPORT_ERROR);
         }
         response.setCharacterEncoding("utf-8");
-        ServletOutputStream out = null;
         try {
-            out = response.getOutputStream();
-            workbook.write(out);
+            workbook.write(response.getOutputStream());
         } catch (final IOException e) {
             throw new CommonException(EXPORT_ERROR);
         } finally {
             try {
-                out.flush();
-                out.close();
+                workbook.close();
             } catch (IOException e) {
-                throw new CommonException(EXPORT_ERROR);
+                LOGGER.error(e.getMessage());
             }
         }
     }
 
-    private void exportIssueXls(HSSFWorkbook workbook, ProjectInfoDO projectInfoDO, ExportIssuesDTO exportIssue, List<ExportIssuesDTO> subIssues) {
+    private void exportIssueXls(HSSFWorkbook workbook, ProjectDTO project, ExportIssuesDTO exportIssue, List<ExportIssuesDTO> subIssues) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String issueNum = projectInfoDO.getProjectCode() + "-" + exportIssue.getIssueNum();
+        String issueNum = project.getCode() + "-" + exportIssue.getIssueNum();
         HSSFSheet sheet = workbook.createSheet(issueNum);
         int lastRow = 13;
         if (!subIssues.isEmpty()) {
@@ -1697,7 +1701,7 @@ public class IssueServiceImpl implements IssueService {
         cell = row.createCell(0);
         cell.setCellValue("项目:");
         cell = row.createCell(1);
-        cell.setCellValue(projectInfoDO.getProjectCode());
+        cell.setCellValue(project.getName());
 
         row = sheet.createRow(3);
         cell = row.createCell(0);
@@ -1773,40 +1777,7 @@ public class IssueServiceImpl implements IssueService {
 
         sheet.createRow(13);
 
-        if (!subIssues.isEmpty()) {
-            row = sheet.createRow(14);
-            cell = row.createCell(0);
-            cell.setCellValue("子任务:");
-            for (int i = 0; i < SUB_COLUMN_NAMES.length; i++) {
-                cell = row.createCell(i + 1);
-                cell.setCellValue(SUB_COLUMN_NAMES[i]);
-            }
-            for (int i = 0; i < subIssues.size(); i++) {
-                row = sheet.createRow(i + 15);
-                for (int j = 0; j < SUB_COLUMN_NAMES.length; j++) {
-                    cell = row.createCell(j + 1);
-                    switch (SUB_COLUMN_NAMES[j]) {
-                        case "关键字":
-                            cell.setCellValue(projectInfoDO.getProjectCode() + "-" + subIssues.get(i).getIssueNum());
-                            break;
-                        case "概述":
-                            cell.setCellValue(subIssues.get(i).getSummary());
-                            break;
-                        case "类型":
-                            cell.setCellValue(subIssues.get(i).getTypeName());
-                            break;
-                        case "状态":
-                            cell.setCellValue(subIssues.get(i).getStatusName());
-                            break;
-                        case "经办人":
-                            cell.setCellValue(subIssues.get(i).getAssigneeName());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-        }
+        createSubIssueRow(subIssues, project, sheet);
 
         row = sheet.createRow(lastRow + 1);
         cell = row.createCell(0);
@@ -1827,10 +1798,46 @@ public class IssueServiceImpl implements IssueService {
         cell.setCellValue(customUserDetails.getUsername() + "于" + dateFormat.format(new Date()) + "导出");
     }
 
-    private HSSFWorkbook exportIssuesXls(ProjectInfoDO projectInfoDO, List<ExportIssuesDTO> exportIssues) {
+    private void createSubIssueRow(List<ExportIssuesDTO> subIssues, ProjectDTO project, HSSFSheet sheet) {
+        if (!subIssues.isEmpty()) {
+            HSSFRow row = sheet.createRow(14);
+            HSSFCell cell = row.createCell(0);
+            cell.setCellValue("子任务:");
+            for (int i = 0; i < SUB_COLUMN_NAMES.length; i++) {
+                cell = row.createCell(i + 1);
+                cell.setCellValue(SUB_COLUMN_NAMES[i]);
+            }
+            for (int i = 0; i < subIssues.size(); i++) {
+                row = sheet.createRow(i + 15);
+                for (int j = 0; j < SUB_COLUMN_NAMES.length; j++) {
+                    cell = row.createCell(j + 1);
+                    switch (SUB_COLUMN_NAMES[j]) {
+                        case "关键字":
+                            cell.setCellValue(project.getCode() + "-" + subIssues.get(i).getIssueNum());
+                            break;
+                        case "概述":
+                            cell.setCellValue(subIssues.get(i).getSummary());
+                            break;
+                        case "类型":
+                            cell.setCellValue(subIssues.get(i).getTypeName());
+                            break;
+                        case "状态":
+                            cell.setCellValue(subIssues.get(i).getStatusName());
+                            break;
+                        case "经办人":
+                            cell.setCellValue(subIssues.get(i).getAssigneeName());
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    private HSSFWorkbook exportIssuesXls(HSSFWorkbook workbook, ProjectDTO project, List<ExportIssuesDTO> exportIssues) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet(projectInfoDO.getProjectCode());
+        HSSFSheet sheet = workbook.createSheet(project.getName());
         HSSFRow row = sheet.createRow(0);
 
         for (int i = 0; i < COLUMN_NAMES.length; i++) {
@@ -1853,7 +1860,7 @@ public class IssueServiceImpl implements IssueService {
                         cell.setCellValue(exportIssues.get(i).getTypeName());
                         break;
                     case "所属项目":
-                        cell.setCellValue(projectInfoDO.getProjectCode());
+                        cell.setCellValue(project.getName());
                         break;
                     case "经办人":
                         cell.setCellValue(exportIssues.get(i).getAssigneeName());
@@ -1864,13 +1871,9 @@ public class IssueServiceImpl implements IssueService {
                     case "状态":
                         cell.setCellValue(exportIssues.get(i).getStatusName());
                         break;
-                    case "描述":
-                        cell.setCellValue(exportIssues.get(i).getDescription());
-                        break;
                     case "冲刺":
-                        StringBuilder sprintName = new StringBuilder(exportIssues.get(i).getSprintName() != null ? "正在使用冲刺:" + exportIssues.get(i).getSprintName() + " " : "");
-                        sprintName.append(!Objects.equals(exportIssues.get(i).getCloseSprintName(), "") ? "已关闭冲刺:" + exportIssues.get(i).getCloseSprintName() : "");
-                        cell.setCellValue(sprintName.toString());
+                        String sprintName = exportIssuesSprintName(exportIssues.get(i));
+                        cell.setCellValue(sprintName);
                         break;
                     case "创建时间":
                         cell.setCellValue(dateFormat.format(exportIssues.get(i).getCreationDate()));
@@ -1891,9 +1894,8 @@ public class IssueServiceImpl implements IssueService {
                         cell.setCellValue(exportIssues.get(i).getRemainingTime() != null ? exportIssues.get(i).getRemainingTime().toString() : "");
                         break;
                     case "版本":
-                        StringBuilder versionName = new StringBuilder(!Objects.equals(exportIssues.get(i).getFixVersionName(), "") ? "修复的版本:" + exportIssues.get(i).getFixVersionName() + "" : "");
-                        versionName.append(!Objects.equals(exportIssues.get(i).getInfluenceVersionName(), "") ? "影响的版本:" + exportIssues.get(i).getInfluenceVersionName() : "");
-                        cell.setCellValue(versionName.toString());
+                        String versionName = exportIssuesVersionName(exportIssues.get(i));
+                        cell.setCellValue(versionName);
                         break;
                     default:
                         break;
@@ -1901,6 +1903,18 @@ public class IssueServiceImpl implements IssueService {
             }
         }
         return workbook;
+    }
+
+    private String exportIssuesVersionName(ExportIssuesDTO exportIssuesDTO) {
+        StringBuilder versionName = new StringBuilder(!Objects.equals(exportIssuesDTO.getFixVersionName(), "") ? "修复的版本:" + exportIssuesDTO.getFixVersionName() + "" : "");
+        versionName.append(!Objects.equals(exportIssuesDTO.getInfluenceVersionName(), "") ? "影响的版本:" + exportIssuesDTO.getInfluenceVersionName() : "");
+        return versionName.toString();
+    }
+
+    private String exportIssuesSprintName(ExportIssuesDTO exportIssuesDTO) {
+        StringBuilder sprintName = new StringBuilder(exportIssuesDTO.getSprintName() != null ? "正在使用冲刺:" + exportIssuesDTO.getSprintName() + " " : "");
+        sprintName.append(!Objects.equals(exportIssuesDTO.getCloseSprintName(), "") ? "已关闭冲刺:" + exportIssuesDTO.getCloseSprintName() : "");
+        return sprintName.toString();
     }
 
     private IssueDO queryIssueByIssueIdAndProjectId(Long projectId, Long issueId) {
