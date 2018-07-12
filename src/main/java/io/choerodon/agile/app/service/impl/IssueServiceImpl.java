@@ -795,6 +795,46 @@ public class IssueServiceImpl implements IssueService {
         return sprintMapper.selectByPrimaryKey(sprintId);
     }
 
+    private DataLogE returnDataLogE(Long projectId, Long issueId, String oldSprintIdStr, String oldSprintNameStr, StringBuilder newSprintIdStr, StringBuilder newSprintNameStr) {
+        DataLogE dataLogE = new DataLogE();
+        dataLogE.setProjectId(projectId);
+        dataLogE.setIssueId(issueId);
+        dataLogE.setField(FIELD_SPRINT);
+        dataLogE.setOldValue("".equals(oldSprintIdStr) ? null : oldSprintIdStr);
+        dataLogE.setOldString("".equals(oldSprintNameStr) ? null : oldSprintNameStr);
+        dataLogE.setNewValue(newSprintIdStr.length() == 0 ? null : newSprintIdStr.toString());
+        dataLogE.setNewString(newSprintNameStr.length() == 0 ? null : newSprintNameStr.toString());
+        return dataLogE;
+    }
+
+    private void addToSprintDataLogList(Long projectId, SprintNameDTO activeSprintName, SprintDO sprintDO, Long issueId, List<DataLogE> dataLogEList) {
+        StringBuilder newSprintIdStr = new StringBuilder();
+        StringBuilder newSprintNameStr = new StringBuilder();
+        List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
+        String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
+        String oldSprintNameStr = sprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
+        int idx = 0;
+        for (SprintNameDTO sprintName : sprintNames) {
+            if (activeSprintName != null && activeSprintName.getSprintId().equals(sprintName.getSprintId())) {
+                continue;
+            }
+            if (idx == 0) {
+                newSprintNameStr.append(sprintName.getSprintName());
+                newSprintIdStr.append(sprintName.getSprintId().toString());
+                idx++;
+            } else {
+                newSprintNameStr.append("," + sprintName.getSprintName());
+                newSprintIdStr.append("," + sprintName.getSprintId().toString());
+            }
+        }
+        if (sprintDO != null) {
+            newSprintIdStr.append(newSprintIdStr.length() == 0 ? sprintDO.getSprintId().toString() : newSprintIdStr.toString() + "," + sprintDO.getSprintId().toString());
+            newSprintNameStr.append(newSprintNameStr.length() == 0 ? sprintDO.getSprintName() : newSprintNameStr.toString() + "," + sprintDO.getSprintName());
+        }
+
+        dataLogEList.add(returnDataLogE(projectId, issueId, oldSprintIdStr, oldSprintNameStr, newSprintIdStr, newSprintNameStr));
+    }
+
     private List<DataLogE> getSprintDataLogByMove(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO) {
         SprintDO sprintDO = getSprintById(sprintId);
         List<DataLogE> dataLogEList = new ArrayList<>();
@@ -803,38 +843,7 @@ public class IssueServiceImpl implements IssueService {
             if (activeSprintName != null && sprintId.equals(activeSprintName.getSprintId())) {
                 continue;
             }
-            String newSprintIdStr = "";
-            String newSprintNameStr = "";
-            List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
-            String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
-            String oldSprintNameStr = sprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
-            int idx = 0;
-            for (SprintNameDTO sprintName : sprintNames) {
-                if (activeSprintName != null && activeSprintName.getSprintId().equals(sprintName.getSprintId())) {
-                    continue;
-                }
-                if (idx == 0) {
-                    newSprintNameStr = sprintName.getSprintName();
-                    newSprintIdStr = sprintName.getSprintId().toString();
-                    idx++;
-                } else {
-                    newSprintNameStr = newSprintNameStr + "," + sprintName.getSprintName();
-                    newSprintIdStr = newSprintIdStr + "," + sprintName.getSprintId().toString();
-                }
-            }
-            if (sprintDO != null) {
-                newSprintIdStr = "".equals(newSprintIdStr) ? sprintDO.getSprintId().toString() : newSprintIdStr + "," + sprintDO.getSprintId().toString();
-                newSprintNameStr = "".equals(newSprintNameStr) ? sprintDO.getSprintName() : newSprintNameStr + "," + sprintDO.getSprintName();
-            }
-            DataLogE dataLogE = new DataLogE();
-            dataLogE.setProjectId(projectId);
-            dataLogE.setIssueId(issueId);
-            dataLogE.setField(FIELD_SPRINT);
-            dataLogE.setOldValue("".equals(oldSprintIdStr) ? null : oldSprintIdStr);
-            dataLogE.setOldString("".equals(oldSprintNameStr) ? null : oldSprintNameStr);
-            dataLogE.setNewValue("".equals(newSprintIdStr) ? null : newSprintIdStr);
-            dataLogE.setNewString("".equals(newSprintNameStr) ? null : newSprintNameStr);
-            dataLogEList.add(dataLogE);
+            addToSprintDataLogList(projectId, activeSprintName, sprintDO, issueId, dataLogEList);
         }
         return dataLogEList;
     }
@@ -1158,47 +1167,55 @@ public class IssueServiceImpl implements IssueService {
 
     }
 
+    private void dealVersionLogForward(Long projectId, Long issueId, List<VersionIssueRelDO> versionIssueRelDOList, List<VersionIssueRelDTO> versionIssueRelDTOList) {
+        for (VersionIssueRelDO versionIssueRel : versionIssueRelDOList) {
+            int flag = 0;
+            for (VersionIssueRelDTO versionRel : versionIssueRelDTOList) {
+                if (versionRel.getVersionId().equals(versionIssueRel.getVersionId())) {
+                    flag = 1;
+                }
+            }
+            if (flag == 0) {
+                DataLogE dataLogE = new DataLogE();
+                dataLogE.setProjectId(projectId);
+                dataLogE.setIssueId(issueId);
+                dataLogE.setField(FIELD_FIX_VERSION);
+                dataLogE.setOldValue(versionIssueRel.getVersionId().toString());
+                dataLogE.setOldString(productVersionMapper.selectByPrimaryKey(versionIssueRel.getVersionId()).getName());
+                dataLogRepository.create(dataLogE);
+            }
+        }
+    }
+
+    private void dealVersionLogOpposite(Long projectId, Long issueId, List<VersionIssueRelDO> versionIssueRelDOList, List<VersionIssueRelDTO> versionIssueRelDTOList) {
+        for (VersionIssueRelDTO versionRel : versionIssueRelDTOList) {
+            int flag = 0;
+            for (VersionIssueRelDO versionIssueRel : versionIssueRelDOList) {
+                if (versionRel.getVersionId().equals(versionIssueRel.getVersionId())) {
+                    flag = 1;
+                }
+            }
+            if (flag == 0) {
+                DataLogE dataLogE = new DataLogE();
+                dataLogE.setProjectId(projectId);
+                dataLogE.setIssueId(issueId);
+                dataLogE.setField(FIELD_FIX_VERSION);
+                dataLogE.setNewValue(versionRel.getVersionId().toString());
+                dataLogE.setNewString(productVersionMapper.selectByPrimaryKey(versionRel.getVersionId()).getName());
+                dataLogRepository.create(dataLogE);
+            }
+        }
+    }
+
     private void dataLogVersion(Long projectId, Long issueId, List<VersionIssueRelDO> versionIssueRelDOList, List<VersionIssueRelDTO> versionIssueRelDTOList, String versionType) {
         if (!"fix".equals(versionType)) {
             return;
         }
         if (versionIssueRelDOList != null && !versionIssueRelDOList.isEmpty()) {
-            for (VersionIssueRelDO versionIssueRel : versionIssueRelDOList) {
-                int flag = 0;
-                for (VersionIssueRelDTO versionRel : versionIssueRelDTOList) {
-                    if (versionRel.getVersionId().equals(versionIssueRel.getVersionId())) {
-                        flag = 1;
-                    }
-                }
-                if (flag == 0) {
-                    DataLogE dataLogE = new DataLogE();
-                    dataLogE.setProjectId(projectId);
-                    dataLogE.setIssueId(issueId);
-                    dataLogE.setField(FIELD_FIX_VERSION);
-                    dataLogE.setOldValue(versionIssueRel.getVersionId().toString());
-                    dataLogE.setOldString(productVersionMapper.selectByPrimaryKey(versionIssueRel.getVersionId()).getName());
-                    dataLogRepository.create(dataLogE);
-                }
-            }
+            dealVersionLogForward(projectId, issueId, versionIssueRelDOList, versionIssueRelDTOList);
         }
         if (versionIssueRelDTOList != null && !versionIssueRelDTOList.isEmpty()) {
-            for (VersionIssueRelDTO versionRel : versionIssueRelDTOList) {
-                int flag = 0;
-                for (VersionIssueRelDO versionIssueRel : versionIssueRelDOList) {
-                    if (versionRel.getVersionId().equals(versionIssueRel.getVersionId())) {
-                        flag = 1;
-                    }
-                }
-                if (flag == 0) {
-                    DataLogE dataLogE = new DataLogE();
-                    dataLogE.setProjectId(projectId);
-                    dataLogE.setIssueId(issueId);
-                    dataLogE.setField(FIELD_FIX_VERSION);
-                    dataLogE.setNewValue(versionRel.getVersionId().toString());
-                    dataLogE.setNewString(productVersionMapper.selectByPrimaryKey(versionRel.getVersionId()).getName());
-                    dataLogRepository.create(dataLogE);
-                }
-            }
+            dealVersionLogOpposite(projectId, issueId, versionIssueRelDOList, versionIssueRelDTOList);
         }
 
     }
@@ -1232,44 +1249,52 @@ public class IssueServiceImpl implements IssueService {
         return componentIssueRelMapper.selectByProjectIdAndIssueId(projectId, issueId);
     }
 
-    private void dataLogComponent(Long projectId, Long issueId, List<ComponentIssueRelDO> originComponentIssueRels, List<ComponentIssueRelDO> curComponentIssueRels) {
-        if (originComponentIssueRels != null && !originComponentIssueRels.isEmpty()) {
-            for (ComponentIssueRelDO originRel : originComponentIssueRels) {
-                int flag = 0;
-                for (ComponentIssueRelDO curRel : curComponentIssueRels) {
-                    if (originRel.getComponentId().equals(curRel.getComponentId())) {
-                        flag = 1;
-                    }
+    private void dealComponentLogForward(Long projectId, Long issueId, List<ComponentIssueRelDO> originComponentIssueRels, List<ComponentIssueRelDO> curComponentIssueRels) {
+        for (ComponentIssueRelDO originRel : originComponentIssueRels) {
+            int flag = 0;
+            for (ComponentIssueRelDO curRel : curComponentIssueRels) {
+                if (originRel.getComponentId().equals(curRel.getComponentId())) {
+                    flag = 1;
                 }
-                if (flag == 0) {
-                    DataLogE dataLogE = new DataLogE();
-                    dataLogE.setProjectId(projectId);
-                    dataLogE.setIssueId(issueId);
-                    dataLogE.setField(FIELD_COMPONENT);
-                    dataLogE.setOldValue(originRel.getComponentId().toString());
-                    dataLogE.setOldString(issueComponentMapper.selectByPrimaryKey(originRel.getComponentId()).getName());
-                    dataLogRepository.create(dataLogE);
-                }
+            }
+            if (flag == 0) {
+                DataLogE dataLogE = new DataLogE();
+                dataLogE.setProjectId(projectId);
+                dataLogE.setIssueId(issueId);
+                dataLogE.setField(FIELD_COMPONENT);
+                dataLogE.setOldValue(originRel.getComponentId().toString());
+                dataLogE.setOldString(issueComponentMapper.selectByPrimaryKey(originRel.getComponentId()).getName());
+                dataLogRepository.create(dataLogE);
             }
         }
-        if (curComponentIssueRels != null && !curComponentIssueRels.isEmpty()) {
-            for (ComponentIssueRelDO curRel : curComponentIssueRels) {
-                int flag = 0;
-                for (ComponentIssueRelDO originRel : originComponentIssueRels) {
-                    if (originRel.getComponentId().equals(curRel.getComponentId())) {
-                        flag = 1;
-                    }
-                }
-                if (flag == 0) {
-                    DataLogE dataLogE = new DataLogE();
-                    dataLogE.setProjectId(projectId);
-                    dataLogE.setIssueId(issueId);
-                    dataLogE.setField(FIELD_COMPONENT);
-                    dataLogE.setNewValue(curRel.getComponentId().toString());
-                    dataLogE.setNewString(curRel.getName());
-                    dataLogRepository.create(dataLogE);
+    }
+
+    private void dealComponentLogOpposite(Long projectId, Long issueId, List<ComponentIssueRelDO> originComponentIssueRels, List<ComponentIssueRelDO> curComponentIssueRels) {
+        for (ComponentIssueRelDO curRel : curComponentIssueRels) {
+            int flag = 0;
+            for (ComponentIssueRelDO originRel : originComponentIssueRels) {
+                if (originRel.getComponentId().equals(curRel.getComponentId())) {
+                    flag = 1;
                 }
             }
+            if (flag == 0) {
+                DataLogE dataLogE = new DataLogE();
+                dataLogE.setProjectId(projectId);
+                dataLogE.setIssueId(issueId);
+                dataLogE.setField(FIELD_COMPONENT);
+                dataLogE.setNewValue(curRel.getComponentId().toString());
+                dataLogE.setNewString(curRel.getName());
+                dataLogRepository.create(dataLogE);
+            }
+        }
+    }
+
+    private void dataLogComponent(Long projectId, Long issueId, List<ComponentIssueRelDO> originComponentIssueRels, List<ComponentIssueRelDO> curComponentIssueRels) {
+        if (originComponentIssueRels != null && !originComponentIssueRels.isEmpty()) {
+            dealComponentLogForward(projectId, issueId, originComponentIssueRels, curComponentIssueRels);
+        }
+        if (curComponentIssueRels != null && !curComponentIssueRels.isEmpty()) {
+            dealComponentLogOpposite(projectId, issueId, originComponentIssueRels, curComponentIssueRels);
         }
     }
 

@@ -1,6 +1,5 @@
 package io.choerodon.agile.api.dto;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 /**

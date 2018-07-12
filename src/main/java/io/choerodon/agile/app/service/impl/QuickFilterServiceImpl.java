@@ -24,6 +24,9 @@ import java.util.List;
 @Transactional(rollbackFor = Exception.class)
 public class QuickFilterServiceImpl implements QuickFilterService {
 
+    private static final String NOT_IN = "not in";
+    private static final String IS_NOT = "is not";
+
     @Autowired
     private QuickFilterRepository quickFilterRepository;
 
@@ -32,6 +35,94 @@ public class QuickFilterServiceImpl implements QuickFilterService {
 
     @Autowired
     private QuickFilterFieldMapper quickFilterFieldMapper;
+
+    private void dealCaseComponent(String field, String value, String operation, StringBuilder sqlQuery) {
+        if ("null".equals(value)) {
+            if ("is".equals(operation)) {
+                sqlQuery.append(" issue_id not in ( select issue_id from agile_component_issue_rel )  ");
+            } else if (IS_NOT.equals(operation)) {
+                sqlQuery.append(" issue_id in ( select issue_id from agile_component_issue_rel )  ");
+            }
+        } else {
+            if (NOT_IN.equals(operation)) {
+                sqlQuery.append(" issue_id not in ( select issue_id from agile_component_issue_rel where component_id in " + value + " ) ");
+            } else {
+                sqlQuery.append(" issue_id in ( select issue_id from agile_component_issue_rel where " + field +" " + operation + " " + value + " ) ");
+            }
+        }
+    }
+
+    private void dealFixVersion(QuickFilterValueDTO quickFilterValueDTO, String field, String value, String operation, StringBuilder sqlQuery) {
+        if ("null".equals(value)) {
+            if ("is".equals(operation)) {
+                sqlQuery.append(" issue_id not in ( select issue_id from agile_version_issue_rel where relation_type = 'fix' ) ");
+            } else if (IS_NOT.equals(operation)) {
+                sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where relation_type = 'fix' ) ");
+            }
+        } else {
+            if (NOT_IN.equals(operation)) {
+                sqlQuery.append(" issue_id not in ( select issue_id from agile_version_issue_rel where version_id in " + value + " and relation_type = 'fix' ) ");
+            } else {
+                sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " and relation_type = 'fix' ) ");
+            }
+        }
+    }
+
+    private void dealInfluenceVersion(QuickFilterValueDTO quickFilterValueDTO, String field, String value, String operation, StringBuilder sqlQuery) {
+        if ("null".equals(value)) {
+            if ("is".equals(operation)) {
+                sqlQuery.append(" issue_id not in ( select issue_id from agile_version_issue_rel where relation_type = 'influence' ) ");
+            } else if (IS_NOT.equals(operation)) {
+                sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where relation_type = 'influence' ) ");
+            }
+        } else {
+            if (NOT_IN.equals(operation)) {
+                sqlQuery.append(" issue_id not in ( select issue_id from agile_version_issue_rel where version_id in " + value + " and relation_type = 'influence' ) ");
+            } else {
+                sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " and relation_type = 'influence' ) ");
+            }
+        }
+    }
+
+    private void dealCaseVersion(QuickFilterValueDTO quickFilterValueDTO, String field, String value, String operation, StringBuilder sqlQuery) {
+        if ("fix_version".equals(quickFilterValueDTO.getFieldCode())) {
+            dealFixVersion(quickFilterValueDTO, field, value, operation, sqlQuery);
+        } else if ("influence_version".equals(quickFilterValueDTO.getFieldCode())) {
+            dealInfluenceVersion(quickFilterValueDTO, field, value, operation, sqlQuery);
+        }
+    }
+
+    private void dealCaseLabel(String field, String value, String operation, StringBuilder sqlQuery) {
+        if ("null".equals(value)) {
+            if ("is".equals(operation)) {
+                sqlQuery.append(" issue_id not in ( select issue_id from agile_label_issue_rel ) ");
+            } else if (IS_NOT.equals(operation)) {
+                sqlQuery.append(" issue_id in ( select issue_id from agile_label_issue_rel ) ");
+            }
+        } else {
+            if (NOT_IN.equals(operation)) {
+                sqlQuery.append(" issue_id not in ( select issue_id from agile_label_issue_rel where label_id in " + value + " ) ");
+            } else {
+                sqlQuery.append(" issue_id in ( select issue_id from agile_label_issue_rel where " + field + " " + operation + " " + value + " ) ");
+            }
+        }
+    }
+
+    private void dealCaseSprint(String field, String value, String operation, StringBuilder sqlQuery) {
+        if ("null".equals(value)) {
+            if ("is".equals(operation)) {
+                sqlQuery.append(" issue_id not in ( select issue_id from agile_issue_sprint_rel ) ");
+            } else if (IS_NOT.equals(operation)) {
+                sqlQuery.append(" issue_id in ( select issue_id from agile_issue_sprint_rel ) ");
+            }
+        } else {
+            if (NOT_IN.equals(operation)) {
+                sqlQuery.append(" issue_id not in ( select issue_id from agile_issue_sprint_rel where sprint_id in " + value + " ) ");
+            } else {
+                sqlQuery.append(" issue_id in ( select issue_id from agile_issue_sprint_rel where " + field + " " + operation + " " + value + " ) ");
+            }
+        }
+    }
 
     private String getSqlQuery(List<QuickFilterValueDTO> quickFilterValueDTOList, List<String> relationOperations, Boolean childIncluded) {
         StringBuilder sqlQuery = new StringBuilder();
@@ -42,80 +133,16 @@ public class QuickFilterServiceImpl implements QuickFilterService {
             String operation = quickFilterValueDTO.getOperation();
             switch (field) {
                 case "component_id":
-                    if ("null".equals(value)) {
-                        if ("is".equals(operation)) {
-                            sqlQuery.append(" issue_id not in ( select issue_id from agile_component_issue_rel )  ");
-                        } else if ("is not".equals(operation)) {
-                            sqlQuery.append(" issue_id in ( select issue_id from agile_component_issue_rel )  ");
-                        }
-                    } else {
-                        if ("not in".equals(operation)) {
-                            sqlQuery.append(" issue_id not in ( select issue_id from agile_component_issue_rel where component_id in " + value + " ) ");
-                        } else {
-                            sqlQuery.append(" issue_id in ( select issue_id from agile_component_issue_rel where " + field +" " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
-                        }
-                    }
+                    dealCaseComponent(field, value, operation, sqlQuery);
                     break;
                 case "version_id":
-                    if ("fix_version".equals(quickFilterValueDTO.getFieldCode())) {
-                        if ("null".equals(value)) {
-                            if ("is".equals(operation)) {
-                                sqlQuery.append(" issue_id not in ( select issue_id from agile_version_issue_rel where relation_type = 'fix' ) ");
-                            } else if ("is not".equals(operation)) {
-                                sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where relation_type = 'fix' ) ");
-                            }
-                        } else {
-                            if ("not in".equals(operation)) {
-                                sqlQuery.append(" issue_id not in ( select issue_id from agile_version_issue_rel where version_id in " + value + " and relation_type = 'fix' ) ");
-                            } else {
-                                sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " and relation_type = 'fix' ) ");
-                            }
-                        }
-                    } else if ("influence_version".equals(quickFilterValueDTO.getFieldCode())) {
-                        if ("null".equals(value)) {
-                            if ("is".equals(operation)) {
-                                sqlQuery.append(" issue_id not in ( select issue_id from agile_version_issue_rel where relation_type = 'influence' ) ");
-                            } else if ("is not".equals(operation)) {
-                                sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where relation_type = 'influence' ) ");
-                            }
-                        } else {
-                            if ("not in".equals(operation)) {
-                                sqlQuery.append(" issue_id not in ( select issue_id from agile_version_issue_rel where version_id in " + value + " and relation_type = 'influence' ) ");
-                            } else {
-                                sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " and relation_type = 'influence' ) ");
-                            }
-                        }
-                    }
+                    dealCaseVersion(quickFilterValueDTO, field, value, operation, sqlQuery);
                     break;
                 case "label_id":
-                    if ("null".equals(value)) {
-                        if ("is".equals(operation)) {
-                            sqlQuery.append(" issue_id not in ( select issue_id from agile_label_issue_rel ) ");
-                        } else if ("is not".equals(operation)) {
-                            sqlQuery.append(" issue_id in ( select issue_id from agile_label_issue_rel ) ");
-                        }
-                    } else {
-                        if ("not in".equals(operation)) {
-                            sqlQuery.append(" issue_id not in ( select issue_id from agile_label_issue_rel where label_id in " + value + " ) ");
-                        } else {
-                            sqlQuery.append(" issue_id in ( select issue_id from agile_label_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
-                        }
-                    }
+                    dealCaseLabel(field, value, operation, sqlQuery);
                     break;
                 case "sprint_id":
-                    if ("null".equals(value)) {
-                        if ("is".equals(operation)) {
-                            sqlQuery.append(" issue_id not in ( select issue_id from agile_issue_sprint_rel ) ");
-                        } else if ("is not".equals(operation)) {
-                            sqlQuery.append(" issue_id in ( select issue_id from agile_issue_sprint_rel ) ");
-                        }
-                    } else {
-                        if ("not in".equals(operation)) {
-                            sqlQuery.append(" issue_id not in ( select issue_id from agile_issue_sprint_rel where sprint_id in " + value + " ) ");
-                        } else {
-                            sqlQuery.append(" issue_id in ( select issue_id from agile_issue_sprint_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " ) ");
-                        }
-                    }
+                    dealCaseSprint(field, value, operation, sqlQuery);
                     break;
                 case "creation_date":
                     sqlQuery.append(" unix_timestamp(" + field + ")" + " " + quickFilterValueDTO.getOperation() + " " + "unix_timestamp('" + value+"') ");
