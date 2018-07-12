@@ -1,5 +1,6 @@
 package io.choerodon.agile.api.dto;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -7,30 +8,30 @@ import java.util.List;
  * Created by jian_zhang02@163.com on 2018/7/5.
  */
 public class VersionReportDTO {
-    private Integer totalStoryPoints;
-    private Integer completedStoryPoints;
+    private Integer totalField;
+    private Integer completedField;
     private double  unEstimatedPercentage;
     private Date changeDate;
-    private List<IssueChangeDTO> storyPointsChangIssues;
+    private List<IssueChangeDTO> fieldChangIssues;
     private List<IssueChangeDTO> completedIssues;
     private List<IssueChangeDTO> unCompletedIssues;
     private List<IssueChangeDTO> addIssues;
     private List<IssueChangeDTO> removeIssues;
 
-    public Integer getTotalStoryPoints() {
-        return totalStoryPoints;
+    public Integer getTotalField() {
+        return totalField;
     }
 
-    public void setTotalStoryPoints(Integer totalStoryPoints) {
-        this.totalStoryPoints = totalStoryPoints;
+    public void setTotalField(Integer totalField) {
+        this.totalField = totalField;
     }
 
-    public Integer getCompletedStoryPoints() {
-        return completedStoryPoints;
+    public Integer getCompletedField() {
+        return completedField;
     }
 
-    public void setCompletedStoryPoints(Integer completedStoryPoints) {
-        this.completedStoryPoints = completedStoryPoints;
+    public void setCompletedField(Integer completedField) {
+        this.completedField = completedField;
     }
 
     public double getUnEstimatedPercentage() {
@@ -49,12 +50,12 @@ public class VersionReportDTO {
         this.changeDate = changeDate;
     }
 
-    public List<IssueChangeDTO> getStoryPointsChangIssues() {
-        return storyPointsChangIssues;
+    public List<IssueChangeDTO> getFieldChangIssues() {
+        return fieldChangIssues;
     }
 
-    public void setStoryPointsChangIssues(List<IssueChangeDTO> storyPointsChangIssues) {
-        this.storyPointsChangIssues = storyPointsChangIssues;
+    public void setFieldChangIssues(List<IssueChangeDTO> fieldChangIssues) {
+        this.fieldChangIssues = fieldChangIssues;
     }
 
     public List<IssueChangeDTO> getCompletedIssues() {
@@ -88,4 +89,5 @@ public class VersionReportDTO {
     public void setRemoveIssues(List<IssueChangeDTO> removeIssues) {
         this.removeIssues = removeIssues;
     }
+
 }

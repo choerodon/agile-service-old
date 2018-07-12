@@ -305,15 +305,17 @@ public interface ReportMapper {
 
     List<Long> queryIssueIdByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
-    List<IssueChangeDO> queryStoryPointChangeIssue(@Param("projectId") Long projectId, @Param("versionIssues") List<VersionIssueChangeDO> versionIssues);
+    List<IssueChangeDO> queryChangeFiledIssue(@Param("projectId") Long projectId, @Param("versionIssues") List<VersionIssueChangeDO> versionIssues, @Param("filed") String filed);
 
     List<VersionIssueChangeDO> queryCompletedChangeIssue(@Param("projectId") Long projectId, @Param("versionIssues") List<VersionIssueChangeDO> versionIssues, @Param("completed") Boolean completed);
 
-    List<IssueChangeDO> queryChangIssue(@Param("projectId") Long projectId, @Param("changeIssues") List<VersionIssueChangeDO> changeIssues);
+    List<IssueChangeDO> queryChangIssue(@Param("projectId") Long projectId, @Param("changeIssues") List<VersionIssueChangeDO> changeIssues, @Param("filed") String filed);
 
-    Integer queryTotalStoryPoints(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+    Integer queryTotalFiled(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("filed") String filed);
 
-    Integer queryCompleteStoryPoints(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+    Integer queryCompleteFiled(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("filed") String filed);
 
-    Integer queryUnEstimateCount(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+    Integer queryUnEstimateCount(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("filed") String filed);
+
+    Integer queryCompletedIssueCount(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 }

@@ -11,8 +11,10 @@ public class IssueChangeDTO {
     private String oldValue;
     private String newValue;
     private String status;
-    private String changeStoryPoints;
+    private String changeField;
     private Date changeDate;
+    private String typeCode;
+    private Boolean completed;
 
     public Long getIssueId() {
         return issueId;
@@ -62,11 +64,27 @@ public class IssueChangeDTO {
         this.changeDate = changeDate;
     }
 
-    public String getChangeStoryPoints() {
-        return changeStoryPoints;
+    public String getChangeField() {
+        return changeField;
     }
 
-    public void setChangeStoryPoints(String changeStoryPoints) {
-        this.changeStoryPoints = changeStoryPoints;
+    public void setChangeField(String changeField) {
+        this.changeField = changeField;
+    }
+
+    public String getTypeCode() {
+        return typeCode;
+    }
+
+    public void setTypeCode(String typeCode) {
+        this.typeCode = typeCode;
+    }
+
+    public Boolean getCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
     }
 }

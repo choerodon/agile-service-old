@@ -37,5 +37,5 @@ public interface ReportService {
 
     Page<IssueListDTO> queryIssueByOptions(Long projectId, Long versionId, String status, PageRequest pageRequest);
 
-    Map<String, Object> queryVersionLineChart(Long projectId, Long versionId);
+    Map<String, Object> queryVersionLineChart(Long projectId, Long versionId, String type);
 }
