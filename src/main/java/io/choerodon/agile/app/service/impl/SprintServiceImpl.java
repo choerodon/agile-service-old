@@ -84,6 +84,7 @@ public class SprintServiceImpl implements SprintService {
     private static final String SPRINT_REPORT_ERROR = "error.sprint.report";
     private static final String SPRINT_PLANNING_CODE = "sprint_planning";
     private static final String FIEID_SPRINT = "Sprint";
+    private static final String ISSUE_TYPE_TEST_CODE = "issue_test";
 
     @Override
     public SprintDetailDTO createSprint(Long projectId) {
@@ -259,7 +260,7 @@ public class SprintServiceImpl implements SprintService {
         }
         Long finalActiveSprintId = activeSprintId;
         Map<Long, List<IssueSearchDTO>> issuesMap = issues.stream().filter(issue -> issue.getSprintId() != null && (Objects.equals(issue.getSprintId(), finalActiveSprintId) || !Objects.equals(issue.getCategoryCode(), CATEGORY_DONE_CODE))).collect(Collectors.groupingBy(IssueSearchDTO::getSprintId));
-        List<IssueSearchDTO> backLogIssue = issues.stream().filter(issue -> (issue.getSprintId() == null || Objects.equals(issue.getSprintId(), 0L)) && !Objects.equals(issue.getCategoryCode(), CATEGORY_DONE_CODE)).collect(Collectors.toList());
+        List<IssueSearchDTO> backLogIssue = issues.stream().filter(issue -> (issue.getSprintId() == null || Objects.equals(issue.getSprintId(), 0L)) && !Objects.equals(issue.getTypeCode(), ISSUE_TYPE_TEST_CODE) && !Objects.equals(issue.getCategoryCode(), CATEGORY_DONE_CODE)).collect(Collectors.toList());
         sprintSearchs.forEach(sprintSearch -> sprintSearch.setIssueSearchDTOList(issuesMap.get(sprintSearch.getSprintId())));
         Integer backlogIssueCount = issueMapper.queryBacklogIssueCount(projectId);
         BackLogIssueDTO backLogIssueDTO = new BackLogIssueDTO(backlogIssueCount, backLogIssue);

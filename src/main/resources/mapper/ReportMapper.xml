@@ -947,7 +947,7 @@
         WHERE project_id = #{projectId} AND version_id = #{versionId} AND relation_type = 'fix'
     </select>
 
-    <select id="queryChangeFiledIssue" resultType="io.choerodon.agile.infra.dataobject.IssueChangeDO">
+    <select id="queryChangeFieldIssue" resultType="io.choerodon.agile.infra.dataobject.IssueChangeDO">
         SELECT adl.issue_id,                       CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
                 adl.old_string AS old_value,        adl.new_string AS new_value,
                 adl.creation_date AS change_date,   IFNULL(adl.new_string, 0) - IFNULL(adl.old_string, 0) AS change_field,
@@ -977,7 +977,7 @@
                 )a
             WHERE adl1.log_id = a.log_id
         ) b ON b.change_date = adl.creation_date AND b.issue_id= adl.issue_id
-        WHERE adl.project_id = #{projectId} AND adl.field = #{filed}
+        WHERE adl.project_id = #{projectId} AND adl.field = #{field}
         AND (
             <foreach collection="versionIssues" item="versionIssue"
                  open="(" close=")" separator=" OR ">
@@ -1037,7 +1037,7 @@
                                  open="" close="" separator=" UNION ALL  ">
                             SELECT MAX(log_id) AS log_id, #{changeIssue.changeDate} AS change_date
                             FROM agile_data_log
-                            WHERE project_id = #{projectId} AND field = #{filed}
+                            WHERE project_id = #{projectId} AND field = #{field}
                             AND creation_date &lt; #{changeIssue.changeDate}
                             AND issue_id IN
                             <foreach collection="changeIssue.issueIds" item="issueId"
@@ -1091,14 +1091,14 @@
                 )
     </select>
 
-    <select id="queryTotalFiled" resultType="java.lang.Integer">
-        SELECT IFNULL(SUM(${filed}),0)
+    <select id="queryTotalField" resultType="java.lang.Integer">
+        SELECT IFNULL(SUM(${field}),0)
         FROM agile_issue
         WHERE project_id = #{projectId}
-                <if test='filed == "story_points"'>
+                <if test='field == "story_points"'>
                    AND type_code = 'story'
                 </if>
-                <if test='filed == "remaining_time"'>
+                <if test='field == "remaining_time"'>
                    AND type_code != 'sub_task'
                 </if>
                 AND issue_id IN
@@ -1108,15 +1108,15 @@
                       </foreach>
     </select>
 
-    <select id="queryCompleteFiled" resultType="java.lang.Integer">
-        SELECT IFNULL(SUM(ai.${filed}),0)
+    <select id="queryCompleteField" resultType="java.lang.Integer">
+        SELECT IFNULL(SUM(ai.${field}),0)
         FROM agile_issue ai
         LEFT JOIN agile_issue_status ais ON  ais.id = ai.status_id
         WHERE ai.project_id = #{projectId} AND ais.is_completed = TRUE
-        <if test='filed == "story_points"'>
+        <if test='field == "story_points"'>
             AND ai.type_code = 'story'
         </if>
-        <if test='filed == "remaining_time"'>
+        <if test='field == "remaining_time"'>
             AND ai.type_code != 'sub_task'
         </if>
         AND ai.issue_id IN
@@ -1131,10 +1131,10 @@
         FROM agile_issue ai
         LEFT JOIN agile_issue_status ais ON  ais.id = ai.status_id
         WHERE ai.project_id = #{projectId} AND ais.is_completed = FALSE
-        <if test='filed == "story_points"'>
+        <if test='field == "story_points"'>
             AND ai.type_code = 'story' AND ai.story_points IS NULL
         </if>
-        <if test='filed == "remaining_time"'>
+        <if test='field == "remaining_time"'>
             AND ai.type_code != 'sub_task' AND ai.remaining_time IS NULL
         </if>
         AND ai.issue_id IN

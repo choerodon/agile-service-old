@@ -1457,7 +1457,7 @@ public class IssueServiceImpl implements IssueService {
         HSSFWorkbook workbook = new HSSFWorkbook();
         exportIssuesXls(workbook, project, exportIssues);
         String fileName = project.getName();
-        dowloadExcel(workbook, fileName, charsetName, response);
+        downloadExcel(workbook, fileName, charsetName, response);
     }
 
     @Override
@@ -1492,7 +1492,7 @@ public class IssueServiceImpl implements IssueService {
             exportIssueXls(workbook, project, exportIssue, subIssues);
             fileName = fileName + "-" + exportIssue.getIssueNum();
         }
-        dowloadExcel(workbook, fileName, charsetName, response);
+        downloadExcel(workbook, fileName, charsetName, response);
     }
 
     @Override
@@ -1646,7 +1646,7 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void dowloadExcel(HSSFWorkbook workbook, String fileName, String charsetName, HttpServletResponse response) {
+    private void downloadExcel(HSSFWorkbook workbook, String fileName, String charsetName, HttpServletResponse response) {
         // 设置response参数，可以打开下载页面
         response.reset();
         response.setContentType("application/ms-excel;charset=utf-8");
