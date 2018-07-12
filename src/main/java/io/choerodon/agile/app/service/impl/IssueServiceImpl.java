@@ -1150,7 +1150,7 @@ public class IssueServiceImpl implements IssueService {
                 originLabelNames.append(label.getLabelName() + " ");
             }
         }
-        return originLabelNames.toString();
+        return originLabelNames.length() == 0 ? null : originLabelNames.toString();
     }
 
     private String getCurrentLabelNames(List<LabelIssueRelDTO> labelIssueRelDTOList) {
@@ -1163,7 +1163,7 @@ public class IssueServiceImpl implements IssueService {
                 stringBuilder.append(label.getLabelName() + " ");
             }
         }
-        return stringBuilder.toString();
+        return stringBuilder.length() == 0 ? null : stringBuilder.toString();
     }
 
     private void dataLogLabel(List<IssueLabelDO> originLabels, List<LabelIssueRelDTO> labelIssueRelDTOList, Long issueId) {
