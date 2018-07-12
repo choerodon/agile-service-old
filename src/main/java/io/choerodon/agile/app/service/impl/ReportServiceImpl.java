@@ -162,7 +162,6 @@ public class ReportServiceImpl implements ReportService {
             }
             addEndColumnChangeByDate(cumulativeFlowDiagramDTO, endDate);
         }
-        handleColumnCoordinate(columnChangeDTOList, cumulativeFlowDiagramDTO, endDate);
     }
 
 
@@ -188,8 +187,8 @@ public class ReportServiceImpl implements ReportService {
                     coordinateDTO.setColumnChangeDTO(columnChangeDTO);
                     cumulativeFlowDiagramDTO.getCoordinateDTOList().add(coordinateDTO);
                 }
-                addEndColumnChangeByDate(cumulativeFlowDiagramDTO, endDate);
             }
+            addEndColumnChangeByDate(cumulativeFlowDiagramDTO, endDate);
         }
     }
 
