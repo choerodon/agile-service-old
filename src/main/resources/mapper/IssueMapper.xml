@@ -282,6 +282,13 @@
                 </foreach>
                 )
             </if>
+            <if test='otherArgs.issueIds != null and otherArgs.issueIds.size > 0'>
+                AND ai.issue_id in
+                <foreach collection="otherArgs.issueIds" item="issueId" open="(" separator=","
+                         close=")">
+                    #{issueId}
+                </foreach>
+            </if>
         </if>
         )search where 1=1
         <if test='searchArgs != null'>
@@ -293,7 +300,6 @@
             AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE CONCAT(CONCAT('%',
             #{content}), '%'))
         </if>
-
     </select>
 
     <select id="queryIssueByOption" resultType="io.choerodon.agile.infra.dataobject.IssueNumDO">
@@ -308,7 +314,7 @@
             AND ai.issue_id != #{issueId}
         </if>
         <if test="issueNum != null">
-            AND  ai.issue_num != #{issueNum}
+            AND ai.issue_num != #{issueNum}
         </if>
         <if test='content != null'>
             AND (ai.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR ai.summary LIKE CONCAT(CONCAT('%',
@@ -993,14 +999,14 @@
 
     <select id="listByIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueInfoDO">
         SELECT
-          ai.issue_id,
-          CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
+        ai.issue_id,
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         WHERE ai.issue_id IN
         <foreach collection="issueIds" item="issueId" open="(" separator=","
-                  close=")">
-           #{issueId}
+                 close=")">
+            #{issueId}
         </foreach>
         ORDER BY ai.issue_id
     </select>
