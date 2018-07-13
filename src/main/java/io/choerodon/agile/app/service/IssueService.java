@@ -142,4 +142,14 @@ public interface IssueService {
     IssueSubDTO transformedSubTask(Long projectId, IssueTransformSubTask issueTransformSubTask);
 
     List<IssueInfoDTO> listByIssueIds(Long projectId, List<Long> issueIds);
+
+    /**
+     * 参数查询issueList提供给测试模块
+     *
+     * @param projectId   projectId
+     * @param searchDTO   searchDTO
+     * @param pageRequest pageRequest
+     * @return IssueListDTO
+     */
+    Page<IssueListDTO> listIssueWithoutSubToTestComponent(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
 }

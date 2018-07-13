@@ -96,11 +96,11 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @param content            content
      * @return IssueDO
      */
-    List<Long> queryIssueListWithoutSub(@Param("projectId") Long projectId,
-                                        @Param("searchArgs") Map<String, Object> searchArgs,
-                                        @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
-                                        @Param("otherArgs") Map<String, Object> otherArgs,
-                                        @Param("content") String content);
+    List<IssueDO> queryIssueListWithoutSub(@Param("projectId") Long projectId,
+                                           @Param("searchArgs") Map<String, Object> searchArgs,
+                                           @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
+                                           @Param("otherArgs") Map<String, Object> otherArgs,
+                                           @Param("content") String content);
 
     List<IssueLabelDO> selectLabelNameByIssueId(@Param("issueId") Long issueId);
 
@@ -166,7 +166,23 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      */
     List<IssueDO> queryIssueEpicInfoByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-   IssueNumDO queryIssueByIssueNumOrIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("issueNum") String issueNum);
+    IssueNumDO queryIssueByIssueNumOrIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("issueNum") String issueNum);
 
     List<IssueInfoDO> listByIssueIds(@Param("projectId") Long prjectId, @Param("issueIds") List<Long> issueIds);
+
+    /**
+     * 根据参数查询issueList提供给测试模块
+     *
+     * @param projectId          projectId
+     * @param searchArgs         searchArgs
+     * @param advancedSearchArgs advancedSearchArgs
+     * @param otherArgs          otherArgs
+     * @param content            content
+     * @return IssueDO
+     */
+    List<IssueDO> listIssueWithoutSubToTestComponent(@Param("projectId") Long projectId,
+                                                     @Param("searchArgs") Map<String, Object> searchArgs,
+                                                     @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
+                                                     @Param("otherArgs") Map<String, Object> otherArgs,
+                                                     @Param("content") String content);
 }
