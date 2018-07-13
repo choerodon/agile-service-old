@@ -58,8 +58,8 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     }
 
     @Override
-    public Boolean issueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDO> versionIssues) {
-        versionMapper.issueToDestination(projectId, targetVersionId, versionIssues);
+    public Boolean issueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDO> versionIssues, Date date) {
+        versionMapper.issueToDestination(projectId, targetVersionId, versionIssues, date);
         return true;
     }
 

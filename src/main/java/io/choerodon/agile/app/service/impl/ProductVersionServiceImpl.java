@@ -25,10 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -110,11 +107,11 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         productVersionRule.judgeExist(projectId, influenceTargetVersionId);
         if (fixTargetVersionId != null && !Objects.equals(fixTargetVersionId, 0L)) {
             List<VersionIssueDO> versionIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, FIX_RELATION_TYPE);
-            productVersionRepository.issueToDestination(projectId, fixTargetVersionId, versionIssues);
+            productVersionRepository.issueToDestination(projectId, fixTargetVersionId, versionIssues, new Date());
         }
         if (influenceTargetVersionId != null && !Objects.equals(influenceTargetVersionId, 0L)) {
             List<VersionIssueDO> versionIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, INFLUENCE_RELATION_TYPE);
-            productVersionRepository.issueToDestination(projectId, influenceTargetVersionId, versionIssues);
+            productVersionRepository.issueToDestination(projectId, influenceTargetVersionId, versionIssues, new Date());
         }
         versionIssueRelRepository.deleteByVersionId(projectId, versionId);
         return simpleDeleteVersion(projectId, versionId);
@@ -217,7 +214,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             List<VersionIssueDO> incompleteIssues = productVersionMapper.queryIncompleteIssues(projectId, productVersionRelease.getVersionId());
             if (!incompleteIssues.isEmpty()) {
                 versionIssueRelRepository.deleteIncompleteIssueByVersionId(projectId, productVersionRelease.getVersionId());
-                productVersionRepository.issueToDestination(projectId, productVersionRelease.getTargetVersionId(), incompleteIssues);
+                productVersionRepository.issueToDestination(projectId, productVersionRelease.getTargetVersionId(), incompleteIssues, new Date());
             }
         }
         productVersionRepository.releaseVersion(projectId, productVersionRelease.getVersionId(), productVersionRelease.getReleaseDate());
@@ -290,7 +287,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         versionIssueRelRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         if (!versionIssues.isEmpty()) {
-            productVersionRepository.issueToDestination(projectId, productVersionMergeDTO.getTargetVersionId(), versionIssues);
+            productVersionRepository.issueToDestination(projectId, productVersionMergeDTO.getTargetVersionId(), versionIssues, new Date());
         }
         productVersionRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         return true;
