@@ -173,7 +173,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String RANK_FIELD = "rank";
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
-    private static final String[] COLUMN_NAMES = {"编码", "概述", "类型", "所属项目", "经办人", "报告人", "状态", "关注", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "初始预估", "剩余预估", "版本"};
+    private static final String[] COLUMN_NAMES = {"编码", "概述", "类型", "所属项目", "经办人", "报告人", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本"};
     private static final String[] SUB_COLUMN_NAMES = {"关键字", "概述", "类型", "状态", "经办人"};
     private static final String EXPORT_ERROR = "error.issue.export";
     private static final String PROJECT_ERROR = "error.project.notFound";
@@ -1086,8 +1086,23 @@ public class IssueServiceImpl implements IssueService {
         if (versionIssueRelDTOList != null && !versionIssueRelDTOList.isEmpty()) {
             //创建版本默认为fix
             handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId, "fix");
+            createIssueVersionDateLog(projectId, issueId);
         }
     }
+
+    private void createIssueVersionDateLog(Long projectId, Long issueId) {
+        List<VersionIssueRelDTO> versionIssueRelDTOS = ConvertHelper.convertList(getVersionIssueRels(projectId, issueId), VersionIssueRelDTO.class);
+        versionIssueRelDTOS.forEach(versionIssueRel -> {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(versionIssueRel.getProjectId());
+            dataLogE.setIssueId(versionIssueRel.getIssueId());
+            dataLogE.setField(FIELD_FIX_VERSION);
+            dataLogE.setNewValue(versionIssueRel.getVersionId().toString());
+            dataLogE.setNewString(productVersionMapper.selectByPrimaryKey(versionIssueRel.getVersionId()).getName());
+            dataLogRepository.create(dataLogE);
+        });
+    }
+
 
     private void handleVersionIssueRel(List<VersionIssueRelE> versionIssueRelEList, Long projectId, Long issueId, String versionType) {
         versionIssueRelEList.forEach(versionIssueRelE -> {
@@ -1430,8 +1445,8 @@ public class IssueServiceImpl implements IssueService {
         if (project == null) {
             throw new CommonException(PROJECT_ERROR);
         }
-        List<ExportIssuesDTO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId, searchDTO.getSearchArgs(),
-                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
+        List<ExportIssuesDTO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId, null,
+                null, null, null));
         List<Long> issueIds = exportIssues.stream().map(ExportIssuesDTO::getIssueId).collect(Collectors.toList());
         if (!issueIds.isEmpty()) {
             Map<Long, List<SprintNameDO>> closeSprintNames = issueMapper.querySprintNameByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(SprintNameDO::getIssueId));
@@ -1669,10 +1684,10 @@ public class IssueServiceImpl implements IssueService {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String issueNum = project.getCode() + "-" + exportIssue.getIssueNum();
         HSSFSheet sheet = workbook.createSheet(issueNum);
-        int lastRow = 13;
+        int lastRow = 12;
         if (!subIssues.isEmpty()) {
-            lastRow = subIssues.size() + 14;
-            sheet.addMergedRegion(new CellRangeAddress(14, lastRow, 0, 0));
+            lastRow = subIssues.size() + 13;
+            sheet.addMergedRegion(new CellRangeAddress(13, lastRow, 0, 0));
         }
         HSSFRow row = sheet.createRow(0);
         HSSFCell cell = row.createCell(0);
@@ -1758,17 +1773,7 @@ public class IssueServiceImpl implements IssueService {
         cell = row.createCell(3);
         cell.setCellValue(exportIssue.getRemainingTime() != null ? exportIssue.getRemainingTime().toString() : "");
 
-        row = sheet.createRow(12);
-        cell = row.createCell(0);
-        cell.setCellValue("Σ原预估时间:");
-        cell = row.createCell(1);
-        cell.setCellValue(exportIssue.getSumEstimateTime() != null ? exportIssue.getSumEstimateTime().toString() : "");
-        cell = row.createCell(2);
-        cell.setCellValue("初始预估:");
-        cell = row.createCell(3);
-        cell.setCellValue(exportIssue.getEstimateTime() != null ? exportIssue.getEstimateTime().toString() : "");
-
-        sheet.createRow(13);
+        sheet.createRow(12);
 
         createSubIssueRow(subIssues, project, sheet);
 
@@ -1793,7 +1798,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void createSubIssueRow(List<ExportIssuesDTO> subIssues, ProjectDTO project, HSSFSheet sheet) {
         if (!subIssues.isEmpty()) {
-            HSSFRow row = sheet.createRow(14);
+            HSSFRow row = sheet.createRow(13);
             HSSFCell cell = row.createCell(0);
             cell.setCellValue("子任务:");
             for (int i = 0; i < SUB_COLUMN_NAMES.length; i++) {
@@ -1801,7 +1806,7 @@ public class IssueServiceImpl implements IssueService {
                 cell.setCellValue(SUB_COLUMN_NAMES[i]);
             }
             for (int i = 0; i < subIssues.size(); i++) {
-                row = sheet.createRow(i + 15);
+                row = sheet.createRow(i + 14);
                 for (int j = 0; j < SUB_COLUMN_NAMES.length; j++) {
                     cell = row.createCell(j + 1);
                     switch (SUB_COLUMN_NAMES[j]) {
@@ -1879,9 +1884,6 @@ public class IssueServiceImpl implements IssueService {
                         break;
                     case "是否子任务":
                         cell.setCellValue(exportIssues.get(i).getSubTask());
-                        break;
-                    case "初始预估":
-                        cell.setCellValue(exportIssues.get(i).getEstimateTime() != null ? exportIssues.get(i).getEstimateTime().toString() : "");
                         break;
                     case "剩余预估":
                         cell.setCellValue(exportIssues.get(i).getRemainingTime() != null ? exportIssues.get(i).getRemainingTime().toString() : "");
