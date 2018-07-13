@@ -808,7 +808,7 @@ public class IssueServiceImpl implements IssueService {
     public List<IssueSearchDTO> batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds) {
         if (versionId != null && !Objects.equals(versionId, 0L)) {
             productVersionRule.judgeExist(projectId, versionId);
-            issueRepository.batchIssueToVersion(projectId, versionId, issueIds);
+            issueRepository.batchIssueToVersion(projectId, versionId, issueIds, new Date());
             dataLogVersionByAdd(projectId, versionId, issueIds);
         } else {
             Map map = getVersionIssueRelsByBatch(projectId, issueIds);

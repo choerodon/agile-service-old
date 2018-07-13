@@ -34,7 +34,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     Integer queryBacklogIssueCount(@Param("projectId") Long projectId);
 
-    int batchIssueToVersion(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("issueIds") List<Long> issueIds);
+    int batchIssueToVersion(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date);
 
     int batchIssueToEpic(@Param("projectId") Long projectId, @Param("epicId") Long epicId, @Param("issueIds") List<Long> issueIds);
 

@@ -17,7 +17,7 @@ public interface ProductVersionRepository {
 
     ProductVersionE updateVersion(ProductVersionE versionE, List<String> fieldList);
 
-    Boolean issueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDO> incompleteIssues);
+    Boolean issueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDO> incompleteIssues, Date date);
 
     Boolean releaseVersion(Long projectId, Long versionId, Date releaseDate);
 

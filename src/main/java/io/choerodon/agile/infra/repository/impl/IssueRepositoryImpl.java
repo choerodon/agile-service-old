@@ -83,8 +83,8 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public Boolean batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds) {
-        issueMapper.batchIssueToVersion(projectId, versionId, issueIds);
+    public Boolean batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds, Date date) {
+        issueMapper.batchIssueToVersion(projectId, versionId, issueIds, date);
         return true;
     }
 

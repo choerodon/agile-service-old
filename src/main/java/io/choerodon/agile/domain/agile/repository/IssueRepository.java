@@ -45,7 +45,7 @@ public interface IssueRepository {
 
     IssueE updateSelective(IssueE issueE);
 
-    Boolean batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds);
+    Boolean batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds, Date date);
 
     Boolean batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds);
 
