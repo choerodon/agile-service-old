@@ -319,4 +319,21 @@ public class IssueController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issueNums.get"));
     }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("分页过滤查询issue列表提供给测试模块用")
+    @CustomPageRequest
+    @PostMapping(value = "/test_component/no_sub")
+    public ResponseEntity<Page<IssueListDTO>> listIssueWithoutSubToTestComponent(@ApiIgnore
+                                                                  @ApiParam(value = "分页信息", required = true)
+                                                                  @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
+                                                                          PageRequest pageRequest,
+                                                                  @ApiParam(value = "项目id", required = true)
+                                                                  @PathVariable(name = "project_id") Long projectId,
+                                                                  @ApiParam(value = "查询参数", required = true)
+                                                                  @RequestBody(required = false) SearchDTO searchDTO) {
+        return Optional.ofNullable(issueService.listIssueWithoutSubToTestComponent(projectId, searchDTO, pageRequest))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.Issue.listIssueWithoutSubToTestComponent"));
+    }
 }

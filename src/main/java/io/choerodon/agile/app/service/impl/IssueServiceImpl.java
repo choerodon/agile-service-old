@@ -287,14 +287,7 @@ public class IssueServiceImpl implements IssueService {
         Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
                 issueMapper.queryIssueListWithoutSub(projectId, searchDTO.getSearchArgs(),
                         searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
-        Page<IssueListDTO> issueListDTOPage = new Page<>();
-        issueListDTOPage.setNumber(issueDOPage.getNumber());
-        issueListDTOPage.setNumberOfElements(issueDOPage.getNumberOfElements());
-        issueListDTOPage.setSize(issueDOPage.getSize());
-        issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
-        issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
-        issueListDTOPage.setContent(issueAssembler.issueDoToIssueListDto(issueDOPage.getContent()));
-        return issueListDTOPage;
+        return handlePageDoToDto(issueDOPage);
     }
 
     private void dataLogSummary(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
@@ -1927,5 +1920,26 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public List<IssueInfoDTO> listByIssueIds(Long projectId, List<Long> issueIds) {
         return ConvertHelper.convertList(issueMapper.listByIssueIds(projectId, issueIds), IssueInfoDTO.class);
+    }
+
+    @Override
+    public Page<IssueListDTO> listIssueWithoutSubToTestComponent(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
+        //连表查询需要设置主表别名
+        pageRequest.resetOrder("search", new HashMap<>());
+        Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
+                issueMapper.listIssueWithoutSubToTestComponent(projectId, searchDTO.getSearchArgs(),
+                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
+        return handlePageDoToDto(issueDOPage);
+    }
+
+    private Page<IssueListDTO> handlePageDoToDto(Page<IssueDO> issueDOPage) {
+        Page<IssueListDTO> issueListDTOPage = new Page<>();
+        issueListDTOPage.setNumber(issueDOPage.getNumber());
+        issueListDTOPage.setNumberOfElements(issueDOPage.getNumberOfElements());
+        issueListDTOPage.setSize(issueDOPage.getSize());
+        issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
+        issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
+        issueListDTOPage.setContent(issueAssembler.issueDoToIssueListDto(issueDOPage.getContent()));
+        return issueListDTOPage;
     }
 }
