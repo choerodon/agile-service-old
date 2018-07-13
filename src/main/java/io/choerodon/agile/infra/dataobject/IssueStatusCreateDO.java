@@ -2,8 +2,6 @@ package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
-import javax.persistence.Column;
-
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/5/29
@@ -14,7 +12,6 @@ public class IssueStatusCreateDO {
 
     private String categoryCode;
 
-    @Column(name = "is_completed")
     private Boolean completed;
 
     private String name;

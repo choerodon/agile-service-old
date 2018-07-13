@@ -51,7 +51,7 @@
         SELECT
             id,
             category_code,
-            is_completed,
+            is_completed as completed,
             name
         FROM
             agile_issue_status
