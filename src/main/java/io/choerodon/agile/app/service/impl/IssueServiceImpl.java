@@ -1566,11 +1566,11 @@ public class IssueServiceImpl implements IssueService {
             issueSprintRelDO.setProjectId(projectId);
             List<IssueSprintRelDO> issueSprintRelDOList = issueSprintRelMapper.select(issueSprintRelDO);
             issueSprintRelDOList.parallelStream().forEach(createIssueSprintRel -> {
-                createIssueSprintRel.setIssueId(newIssueId);
-                createIssueSprintRel.setCreatedBy(DetailsHelper.getUserDetails().getUserId());
-                createIssueSprintRel.setObjectVersionNumber(null);
-                createIssueSprintRel.setCreationDate(new Date());
-                issueSprintRelRepository.createIssueSprintRel(createIssueSprintRel);
+                IssueSprintRelDO copy = new IssueSprintRelDO();
+                copy.setProjectId(createIssueSprintRel.getProjectId());
+                copy.setIssueId(newIssueId);
+                copy.setSprintId(createIssueSprintRel.getSprintId());
+                issueSprintRelRepository.createIssueSprintRel(copy);
             });
         }
     }
