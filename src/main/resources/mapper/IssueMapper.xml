@@ -438,8 +438,8 @@
         LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
         LEFT JOIN (SELECT aisr.issue_id, asp.sprint_id
-                    FROM agile_issue_sprint_rel aisr, agile_sprint asp
-                    WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
+        FROM agile_issue_sprint_rel aisr, agile_sprint asp
+        WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
         ) asp1 ON asp1.issue_id = ai.issue_id
         LEFT JOIN (SELECT avir.issue_id, avir.version_id, apv.name
         FROM agile_version_issue_rel avir, agile_product_version apv
@@ -477,10 +477,13 @@
     <select id="queryBacklogIssueCount" resultType="java.lang.Integer">
         SELECT COUNT(1)
         FROM agile_issue ai
-            LEFT JOIN (SELECT aisr.issue_id, asp.sprint_id
-                        FROM agile_issue_sprint_rel aisr, agile_sprint asp
-                        WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
-                       ) asp1 ON asp1.issue_id = ai.issue_id,
+            LEFT JOIN (SELECT
+                           aisr.issue_id,
+                           asp.sprint_id
+                       FROM agile_issue_sprint_rel aisr, agile_sprint asp
+                       WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
+                      ) asp1 ON asp1.issue_id = ai.issue_id
+            ,
             agile_issue_status ais
         WHERE ai.project_id = #{projectId} AND (asp1.sprint_id IS NULL OR asp1.sprint_id = 0)
               AND ai.status_id = ais.id AND ais.category_code != 'done'
@@ -863,6 +866,13 @@
                     #{issueId}
                 </foreach>
                 )
+            </if>
+            <if test='otherArgs.issueIds != null and otherArgs.issueIds.size > 0'>
+                AND ai.issue_id in
+                <foreach collection="otherArgs.issueIds" item="issueId" open="(" separator=","
+                         close=")">
+                    #{issueId}
+                </foreach>
             </if>
         </if>
         )search where 1=1
