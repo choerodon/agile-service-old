@@ -100,15 +100,6 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
-        ProjectInfoDO query = new ProjectInfoDO();
-        query.setProjectId(projectId);
-        ProjectInfoDO projectInfoDO = projectInfoMapper.selectOne(query);
-        if (projectInfoDO == null) {
-            throw new CommonException("error.cumulativeFlow.projectInfoNotFound");
-        }
-        //设置时间区间
-        Date startDate = projectInfoDO.getCreationDate();
-        Date endDate = new Date();
         //获取当前符合条件的所有issueIds
         String filterSql = null;
         if (cumulativeFlowFilterDTO.getQuickFilterIds() != null && !cumulativeFlowFilterDTO.getQuickFilterIds().isEmpty()) {
@@ -116,30 +107,7 @@ public class ReportServiceImpl implements ReportService {
         }
         List<Long> allIssueIds = reportMapper.queryAllIssueIdsByFilter(projectId, filterSql);
         if (allIssueIds != null && !allIssueIds.isEmpty() && cumulativeFlowFilterDTO.getColumnIds() != null && !cumulativeFlowFilterDTO.getColumnIds().isEmpty()) {
-            List<ColumnChangeDTO> result = new ArrayList<>();
-            //所有在当前时间内创建的issue
-            handleCumulativeFlowAddDuringDate(allIssueIds, result, startDate, endDate, cumulativeFlowFilterDTO.getColumnIds());
-            //所有在当前时间内状态改变的issue
-            handleCumulativeFlowChangeDuringDate(startDate, endDate, cumulativeFlowFilterDTO.getColumnIds(), allIssueIds, result);
-            //过滤并排序
-            List<ColumnChangeDTO> columnChangeDTOList = new ArrayList<>();
-            columnChangeDTOList.addAll(result.stream().filter(columnChangeDTO ->
-                    columnChangeDTO.getColumnTo() != null && !columnChangeDTO.getColumnFrom().equals(columnChangeDTO.getColumnTo()))
-                    .sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList()));
-            //对传入时间点的数据给与坐标
-            List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(cumulativeFlowFilterDTO.getColumnIds()));
-            cumulativeFlowDiagramDTOList.parallelStream().forEachOrdered(cumulativeFlowDiagramDTO -> {
-                cumulativeFlowDiagramDTO.setCoordinateDTOList(new ArrayList<>());
-                if (cumulativeFlowDiagramDTO.getCategoryCode().equals(TODO)) {
-                    handleToDoCoordinate(columnChangeDTOList, cumulativeFlowDiagramDTO, cumulativeFlowFilterDTO.getStartDate(), cumulativeFlowFilterDTO.getEndDate());
-                } else {
-                    handleColumnCoordinate(columnChangeDTOList, cumulativeFlowDiagramDTO, cumulativeFlowFilterDTO.getStartDate(), cumulativeFlowFilterDTO.getEndDate());
-                }
-                cumulativeFlowDiagramDTO.setCoordinateDTOList(cumulativeFlowDiagramDTO.getCoordinateDTOList().stream().filter(coordinateDTO ->
-                        (coordinateDTO.getDate().before(cumulativeFlowFilterDTO.getEndDate()) || coordinateDTO.getDate().equals(cumulativeFlowFilterDTO.getEndDate())
-                                && (coordinateDTO.getDate().after(cumulativeFlowFilterDTO.getStartDate()) || coordinateDTO.getDate().equals(cumulativeFlowFilterDTO.getStartDate())))).collect(Collectors.toList()));
-            });
-            return cumulativeFlowDiagramDTOList;
+            return getCumulativeFlowDiagram(allIssueIds, projectId, cumulativeFlowFilterDTO);
         } else if (cumulativeFlowFilterDTO.getColumnIds() == null || cumulativeFlowFilterDTO.getColumnIds().isEmpty()) {
             throw new CommonException(REPORT_FILTER_ERROR);
         } else {
@@ -765,5 +733,44 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
+    private List<CoordinateDTO> getCumulativeFlowDiagramDuringDate(CumulativeFlowDiagramDTO cumulativeFlowDiagramDTO, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
+        return cumulativeFlowDiagramDTO.getCoordinateDTOList().stream().filter(coordinateDTO ->
+                (coordinateDTO.getDate().before(cumulativeFlowFilterDTO.getEndDate()) || coordinateDTO.getDate().equals(cumulativeFlowFilterDTO.getEndDate())
+                        && (coordinateDTO.getDate().after(cumulativeFlowFilterDTO.getStartDate()) || coordinateDTO.getDate().equals(cumulativeFlowFilterDTO.getStartDate())))).collect(Collectors.toList());
+    }
+
+    private List<CumulativeFlowDiagramDTO> getCumulativeFlowDiagram(List<Long> allIssueIds, Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
+        ProjectInfoDO query = new ProjectInfoDO();
+        query.setProjectId(projectId);
+        ProjectInfoDO projectInfoDO = projectInfoMapper.selectOne(query);
+        if (projectInfoDO == null) {
+            throw new CommonException("error.cumulativeFlow.projectInfoNotFound");
+        }
+        //设置时间区间
+        Date startDate = projectInfoDO.getCreationDate();
+        Date endDate = new Date();
+        List<ColumnChangeDTO> result = new ArrayList<>();
+        //所有在当前时间内创建的issue
+        handleCumulativeFlowAddDuringDate(allIssueIds, result, startDate, endDate, cumulativeFlowFilterDTO.getColumnIds());
+        //所有在当前时间内状态改变的issue
+        handleCumulativeFlowChangeDuringDate(startDate, endDate, cumulativeFlowFilterDTO.getColumnIds(), allIssueIds, result);
+        //过滤并排序
+        List<ColumnChangeDTO> columnChangeDTOList = new ArrayList<>();
+        columnChangeDTOList.addAll(result.stream().filter(columnChangeDTO ->
+                columnChangeDTO.getColumnTo() != null && !columnChangeDTO.getColumnFrom().equals(columnChangeDTO.getColumnTo()))
+                .sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList()));
+        //对传入时间点的数据给与坐标
+        List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(cumulativeFlowFilterDTO.getColumnIds()));
+        cumulativeFlowDiagramDTOList.parallelStream().forEachOrdered(cumulativeFlowDiagramDTO -> {
+            cumulativeFlowDiagramDTO.setCoordinateDTOList(new ArrayList<>());
+            if (cumulativeFlowDiagramDTO.getCategoryCode().equals(TODO)) {
+                handleToDoCoordinate(columnChangeDTOList, cumulativeFlowDiagramDTO, cumulativeFlowFilterDTO.getStartDate(), cumulativeFlowFilterDTO.getEndDate());
+            } else {
+                handleColumnCoordinate(columnChangeDTOList, cumulativeFlowDiagramDTO, cumulativeFlowFilterDTO.getStartDate(), cumulativeFlowFilterDTO.getEndDate());
+            }
+            cumulativeFlowDiagramDTO.setCoordinateDTOList(getCumulativeFlowDiagramDuringDate(cumulativeFlowDiagramDTO, cumulativeFlowFilterDTO));
+        });
+        return cumulativeFlowDiagramDTOList;
+    }
 }
 
