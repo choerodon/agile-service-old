@@ -152,4 +152,6 @@ public interface IssueService {
      * @return IssueListDTO
      */
     Page<IssueListDTO> listIssueWithoutSubToTestComponent(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
+
+    List<IssueCreationNumDTO> queryIssueNumByTimeSlot(Long projectId, String typeCode, Integer timeSlot);
 }

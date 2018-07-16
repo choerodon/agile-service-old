@@ -1125,4 +1125,20 @@
         </if>
     </select>
 
+    <select id="queryIssueNumByTimeSlot" resultType="io.choerodon.agile.infra.dataobject.IssueCreationNumDO">
+        SELECT
+            DATE_FORMAT(creation_date, '%Y-%m-%d') AS creation_day,
+            COUNT(issue_id) AS issue_count
+        FROM
+            agile_issue
+        WHERE
+            project_id = #{projectId}
+        AND type_code = #{typeCode}
+        AND DATE_SUB(now(), INTERVAL #{timeSlot} DAY) &lt;= creation_date
+        GROUP BY
+            DATE_FORMAT(creation_date, '%Y-%m-%d')
+        ORDER BY
+            creation_day
+    </select>
+
 </mapper>
