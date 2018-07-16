@@ -336,4 +336,18 @@ public class IssueController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.listIssueWithoutSubToTestComponent"));
     }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("根据时间段查询问题类型的数量")
+    @GetMapping(value = "/type/{typeCode}")
+    public ResponseEntity<List<IssueCreationNumDTO>> queryIssueNumByTimeSlot(@ApiParam(value = "项目id", required = true)
+                                                     @PathVariable(name = "project_id") Long projectId,
+                                                     @ApiParam(value = "type code", required = true)
+                                                     @PathVariable String typeCode,
+                                                     @ApiParam(value = "时间段", required = true)
+                                                     @RequestParam Integer timeSlot) {
+        return Optional.ofNullable(issueService.queryIssueNumByTimeSlot(projectId, typeCode, timeSlot))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.timeSlotCount.get"));
+    }
 }

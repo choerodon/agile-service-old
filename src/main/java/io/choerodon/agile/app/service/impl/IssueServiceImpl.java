@@ -1947,4 +1947,9 @@ public class IssueServiceImpl implements IssueService {
         issueListDTOPage.setContent(issueAssembler.issueDoToIssueListDto(issueDOPage.getContent()));
         return issueListDTOPage;
     }
+
+    @Override
+    public List<IssueCreationNumDTO> queryIssueNumByTimeSlot(Long projectId, String typeCode, Integer timeSlot) {
+        return ConvertHelper.convertList(issueMapper.queryIssueNumByTimeSlot(projectId, typeCode, timeSlot), IssueCreationNumDTO.class);
+    }
 }
