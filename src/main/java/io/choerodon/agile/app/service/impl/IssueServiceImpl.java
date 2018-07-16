@@ -145,6 +145,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String EPIC_ID_FIELD = "epicId";
     private static final String SPRINT_ID_FIELD = "sprintId";
     private static final String STATUS_ID = "statusId";
+    private static final String PARENT_ISSUE_ID = "parentIssueId";
     private static final String EPIC_COLOR_TYPE = "epic_color";
     private static final String FIELD_SUMMARY = "summary";
     private static final String FIELD_DESCRIPTION = "description";
@@ -1566,11 +1567,11 @@ public class IssueServiceImpl implements IssueService {
             issueSprintRelDO.setProjectId(projectId);
             List<IssueSprintRelDO> issueSprintRelDOList = issueSprintRelMapper.select(issueSprintRelDO);
             issueSprintRelDOList.parallelStream().forEach(createIssueSprintRel -> {
-                createIssueSprintRel.setIssueId(newIssueId);
-                createIssueSprintRel.setCreatedBy(DetailsHelper.getUserDetails().getUserId());
-                createIssueSprintRel.setObjectVersionNumber(null);
-                createIssueSprintRel.setCreationDate(new Date());
-                issueSprintRelRepository.createIssueSprintRel(createIssueSprintRel);
+                IssueSprintRelDO copy = new IssueSprintRelDO();
+                copy.setProjectId(createIssueSprintRel.getProjectId());
+                copy.setIssueId(newIssueId);
+                copy.setSprintId(createIssueSprintRel.getSprintId());
+                issueSprintRelRepository.createIssueSprintRel(copy);
             });
         }
     }
@@ -1613,6 +1614,7 @@ public class IssueServiceImpl implements IssueService {
                 issueE.setTypeCode(SUB_TASK);
                 issueE.setRank(null);
                 issueE.setParentIssueId(issueTransformSubTask.getParentIssueId());
+                issueRule.verifySubTask(issueTransformSubTask.getParentIssueId());
                 //日志记录故事点
                 handleChangeStoryTypeIssue(issueE);
                 //日志记录状态
@@ -1631,6 +1633,7 @@ public class IssueServiceImpl implements IssueService {
                 dataLogE.setOldString(originTypeName);
                 dataLogE.setNewString(currentTypeName);
                 dataLogRepository.create(dataLogE);
+                issueRepository.update(issueE,new String[]{TYPE_CODE_FIELD,RANK_FIELD,STATUS_ID,PARENT_ISSUE_ID});
                 return queryIssueSub(projectId, issueE.getIssueId());
             } else {
                 throw new CommonException("error.IssueRule.subTaskError");
