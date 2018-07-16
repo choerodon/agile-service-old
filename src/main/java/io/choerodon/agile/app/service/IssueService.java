@@ -130,7 +130,7 @@ public interface IssueService {
      * @param copyConditionDTO copyConditionDTO
      * @return IssueDTO
      */
-    IssueDTO copyIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO);
+    IssueDTO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO);
 
     /**
      * 根据issueId转换为子任务
