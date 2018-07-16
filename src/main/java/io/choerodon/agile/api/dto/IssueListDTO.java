@@ -2,6 +2,8 @@ package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import java.math.BigDecimal;
+
 /**
  * @author dinghuang123@gmail.com
  */
@@ -40,6 +42,8 @@ public class IssueListDTO {
     private Integer storyPoints;
 
     private Boolean addIssue;
+
+    private BigDecimal remainingTime;
 
     public Long getIssueId() {
         return issueId;
@@ -175,6 +179,14 @@ public class IssueListDTO {
 
     public void setEpicName(String epicName) {
         this.epicName = epicName;
+    }
+
+    public BigDecimal getRemainingTime() {
+        return remainingTime;
+    }
+
+    public void setRemainingTime(BigDecimal remainingTime) {
+        this.remainingTime = remainingTime;
     }
 
     @Override

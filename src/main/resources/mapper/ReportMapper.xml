@@ -885,7 +885,8 @@
         ai.summary, ai.priority_code,
         alv.name AS priority_name,
         ai.assignee_id, ai.project_id,
-        ai1.epic_name,  ai.story_points
+        ai1.epic_name,  ai.story_points,
+        ai.remaining_time
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
