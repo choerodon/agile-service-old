@@ -1505,7 +1505,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueDTO copyIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO) {
+    public IssueDTO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO) {
         IssueDetailDO issueDetailDO = issueMapper.queryIssueDetail(projectId, issueId);
         if (issueDetailDO != null) {
             issueDetailDO.setSummary(copyConditionDTO.getSummary());

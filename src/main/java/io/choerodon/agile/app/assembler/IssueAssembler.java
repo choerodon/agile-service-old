@@ -301,7 +301,7 @@ public class IssueAssembler {
     public IssueSubCreateDTO issueDtoToSubIssueCreateDto(IssueDetailDO subIssueDetailDO, Long parentIssueId) {
         IssueSubCreateDTO issueCreateDTO = new IssueSubCreateDTO();
         BeanUtils.copyProperties(subIssueDetailDO, issueCreateDTO);
-        String subSummary = "COPY-" + subIssueDetailDO.getSummary();
+        String subSummary = "CLONE-" + subIssueDetailDO.getSummary();
         issueCreateDTO.setSummary(subSummary);
         issueCreateDTO.setSprintId(null);
         issueCreateDTO.setParentIssueId(parentIssueId);
