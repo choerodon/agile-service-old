@@ -34,8 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -1663,15 +1661,6 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void downloadExcel(HSSFWorkbook workbook, String fileName, String charsetName, HttpServletResponse response) {
-
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream("G:\\" + fileName + ".xls");
-            workbook.write(fileOutputStream);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
         // 设置response参数，可以打开下载页面
         response.reset();
         response.setContentType("application/ms-excel;charset=utf-8");
