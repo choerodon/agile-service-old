@@ -185,4 +185,15 @@ public class IssueRule {
             throw new CommonException("error.IssueRule.parentIssueId");
         }
     }
+
+    public void verifySubTask(Long parentIssueId) {
+        IssueDO issueDO = new IssueDO();
+        issueDO.setIssueId(parentIssueId);
+        IssueDO query = issueMapper.selectByPrimaryKey(issueDO);
+        if (query == null) {
+            throw new CommonException("error.IssueRule.issueNoFound");
+        } else if (query.getTypeCode().equals(SUB_TASK)) {
+            throw new CommonException("error.IssueRule.parentIssueId");
+        }
+    }
 }
