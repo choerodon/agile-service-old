@@ -230,10 +230,10 @@
 
     <insert id="issueToDestination">
         INSERT IGNORE INTO agile_version_issue_rel
-        (version_id, issue_id, project_id, relation_type, creation_date, last_update_date) values
+        (version_id, issue_id, project_id, relation_type, creation_date, last_update_date, created_by, last_updated_by) values
         <foreach collection="versionIssues" item="versionIssue" index="index"
                  separator=",">
-            (#{targetVersionId}, #{versionIssue.issueId}, #{projectId}, #{versionIssue.relationType}, #{date}, #{date})
+            (#{targetVersionId}, #{versionIssue.issueId}, #{projectId}, #{versionIssue.relationType}, #{date}, #{date}, #{userId}, #{userId})
         </foreach>
     </insert>
 

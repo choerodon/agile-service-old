@@ -9,6 +9,8 @@ import io.choerodon.agile.infra.dataobject.VersionIssueDO;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.oauth.CustomUserDetails;
+import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.event.producer.execute.EventProducerTemplate;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
@@ -105,13 +107,14 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     public Boolean deleteVersion(Long projectId, Long versionId, Long fixTargetVersionId, Long influenceTargetVersionId) {
         productVersionRule.judgeExist(projectId, fixTargetVersionId);
         productVersionRule.judgeExist(projectId, influenceTargetVersionId);
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         if (fixTargetVersionId != null && !Objects.equals(fixTargetVersionId, 0L)) {
             List<VersionIssueDO> versionIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, FIX_RELATION_TYPE);
-            productVersionRepository.issueToDestination(projectId, fixTargetVersionId, versionIssues, new Date());
+            productVersionRepository.issueToDestination(projectId, fixTargetVersionId, versionIssues, new Date(), customUserDetails.getUserId());
         }
         if (influenceTargetVersionId != null && !Objects.equals(influenceTargetVersionId, 0L)) {
             List<VersionIssueDO> versionIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, INFLUENCE_RELATION_TYPE);
-            productVersionRepository.issueToDestination(projectId, influenceTargetVersionId, versionIssues, new Date());
+            productVersionRepository.issueToDestination(projectId, influenceTargetVersionId, versionIssues, new Date(), customUserDetails.getUserId());
         }
         versionIssueRelRepository.deleteByVersionId(projectId, versionId);
         return simpleDeleteVersion(projectId, versionId);
@@ -222,11 +225,12 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             throw new CommonException(NOT_EQUAL_ERROR);
         }
         productVersionRule.isRelease(projectId, productVersionRelease);
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         if (productVersionRelease.getTargetVersionId() != null && !Objects.equals(productVersionRelease.getTargetVersionId(), 0L)) {
             List<VersionIssueDO> incompleteIssues = productVersionMapper.queryIncompleteIssues(projectId, productVersionRelease.getVersionId());
             if (!incompleteIssues.isEmpty()) {
                 versionIssueRelRepository.deleteIncompleteIssueByVersionId(projectId, productVersionRelease.getVersionId());
-                productVersionRepository.issueToDestination(projectId, productVersionRelease.getTargetVersionId(), incompleteIssues, new Date());
+                productVersionRepository.issueToDestination(projectId, productVersionRelease.getTargetVersionId(), incompleteIssues, new Date(), customUserDetails.getUserId());
             }
         }
         productVersionRepository.releaseVersion(projectId, productVersionRelease.getVersionId(), productVersionRelease.getReleaseDate());
@@ -296,10 +300,11 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         if (productVersionMergeDTO.getSourceVersionIds().isEmpty()) {
             throw new CommonException(SOURCE_VERSION_ERROR);
         }
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         versionIssueRelRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         if (!versionIssues.isEmpty()) {
-            productVersionRepository.issueToDestination(projectId, productVersionMergeDTO.getTargetVersionId(), versionIssues, new Date());
+            productVersionRepository.issueToDestination(projectId, productVersionMergeDTO.getTargetVersionId(), versionIssues, new Date(), customUserDetails.getUserId());
         }
         productVersionRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         return true;

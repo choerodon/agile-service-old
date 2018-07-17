@@ -34,7 +34,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     Integer queryBacklogIssueCount(@Param("projectId") Long projectId);
 
-    int batchIssueToVersion(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date);
+    int batchIssueToVersion(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date, @Param("userId") Long userId);
 
     int batchIssueToEpic(@Param("projectId") Long projectId, @Param("epicId") Long epicId, @Param("issueIds") List<Long> issueIds);
 
@@ -109,7 +109,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<Long> querySubTaskIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    int issueToDestinationByIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date);
+    int issueToDestinationByIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date, @Param("userId") Long userId);
 
     int batchUpdateIssueRank(@Param("projectId") Long projectId, @Param("moveIssues") List<MoveIssueDO> moveIssues);
 
@@ -117,7 +117,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     int removeIssueFromSprintByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-    int issueToSprint(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueId") Long issueId, @Param("date") Date date);
+    int issueToSprint(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueId") Long issueId, @Param("date") Date date, @Param("userId") Long userId);
 
     List<Long> querySubIssueIdsByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 

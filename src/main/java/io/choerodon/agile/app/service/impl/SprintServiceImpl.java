@@ -339,6 +339,7 @@ public class SprintServiceImpl implements SprintService {
     }
 
     private void moveNotDoneIssueToTargetSprint(Long projectId, SprintCompleteDTO sprintCompleteDTO) {
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
         Long targetSprintId = sprintCompleteDTO.getIncompleteIssuesDestination();
         List<Long> moveIssueRankIds = sprintMapper.queryIssueIdOrderByRankDesc(projectId, sprintCompleteDTO.getSprintId());
@@ -353,7 +354,7 @@ public class SprintServiceImpl implements SprintService {
             for (Long issueId : moveIssueIds) {
                 newDataLogs.add(getNewDataLog(projectId, issueId, sprintCompleteDTO.getIncompleteIssuesDestination()));
             }
-            issueRepository.issueToDestinationByIds(projectId, targetSprintId, moveIssueIds, new Date());
+            issueRepository.issueToDestinationByIds(projectId, targetSprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
             dataLogCompleteSprint(newDataLogs);
         }
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
