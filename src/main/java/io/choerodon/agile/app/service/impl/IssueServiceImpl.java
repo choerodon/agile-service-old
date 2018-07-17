@@ -1308,7 +1308,7 @@ public class IssueServiceImpl implements IssueService {
             if (!versionIssueRelDTOList.isEmpty()) {
                 //归档状态的版本之间的关联不删除
                 versionIssueRelRepository.batchDeleteByIssueIdAndType(projectId, issueId, versionType);
-                handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId, versionType);
+                handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId);
             } else {
                 versionIssueRelRepository.batchDeleteByIssueIdAndType(projectId, issueId, versionType);
             }
