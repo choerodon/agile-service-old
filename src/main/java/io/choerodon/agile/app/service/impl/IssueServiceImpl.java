@@ -142,6 +142,8 @@ public class IssueServiceImpl implements IssueService {
     private static final String COLOR_CODE_FIELD = "colorCode";
     private static final String EPIC_ID_FIELD = "epicId";
     private static final String SPRINT_ID_FIELD = "sprintId";
+    private static final String STORY_POINTS_FIELD = "storyPoints";
+    private static final String REMAIN_TIME_FIELD = "remainingTime";
     private static final String STATUS_ID = "statusId";
     private static final String PARENT_ISSUE_ID = "parentIssueId";
     private static final String EPIC_COLOR_TYPE = "epic_color";
@@ -437,8 +439,8 @@ public class IssueServiceImpl implements IssueService {
         return valuesMap;
     }
 
-    private void dataLogStoryPoint(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
-        if (issueUpdateDTO.getStoryPoints() != null) {
+    private void dataLogStoryPoint(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO, boolean isStoryPoints) {
+        if (isStoryPoints) {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
@@ -546,8 +548,8 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void dataLogRemainTime(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
-        if (issueUpdateDTO.getRemainingTime() != null) {
+    private void dataLogRemainTime(IssueDO originIssue, IssueUpdateDTO issueUpdateDTO, boolean isRemainTime) {
+        if (isRemainTime) {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(originIssue.getProjectId());
             dataLogE.setIssueId(issueUpdateDTO.getIssueId());
@@ -576,19 +578,19 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void dataLog(List<String> fieldList, IssueDO originIssue, IssueUpdateDTO issueUpdateDTO, boolean isRecordSprintLog) {
+    private void dataLog(List<String> fieldList, IssueDO originIssue, IssueUpdateDTO issueUpdateDTO) {
         dataLogEpicName(originIssue, issueUpdateDTO);
         dataLogSummary(originIssue, issueUpdateDTO);
         dataLogDescription(originIssue, issueUpdateDTO);
         dataLogPriority(originIssue, issueUpdateDTO);
         dataLogAssignee(originIssue, issueUpdateDTO);
         dataLogReporter(originIssue, issueUpdateDTO);
-        dataLogSprint(originIssue, issueUpdateDTO, isRecordSprintLog);
-        dataLogStoryPoint(originIssue, issueUpdateDTO);
+        dataLogSprint(originIssue, issueUpdateDTO, fieldList.contains(SPRINT_ID_FIELD));
+        dataLogStoryPoint(originIssue, issueUpdateDTO, fieldList.contains(STORY_POINTS_FIELD));
         if (fieldList.contains(EPIC_ID_FIELD)) {
             dataLogEpic(originIssue.getProjectId(), originIssue, issueUpdateDTO.getEpicId());
         }
-        dataLogRemainTime(originIssue, issueUpdateDTO);
+        dataLogRemainTime(originIssue, issueUpdateDTO, fieldList.contains(REMAIN_TIME_FIELD));
         dataLogStatus(fieldList, issueUpdateDTO, originIssue);
     }
 
@@ -597,7 +599,7 @@ public class IssueServiceImpl implements IssueService {
         IssueDO originIssue = issueMapper.selectByPrimaryKey(issueUpdateDTO.getIssueId());
         if (fieldList != null && !fieldList.isEmpty()) {
             //日志记录
-            dataLog(fieldList, originIssue, issueUpdateDTO, fieldList.contains(SPRINT_ID_FIELD));
+            dataLog(fieldList, originIssue, issueUpdateDTO);
             IssueE issueE = issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO);
             //处理用户，前端可能会传0，处理为null
             issueE.initializationIssueUser();
