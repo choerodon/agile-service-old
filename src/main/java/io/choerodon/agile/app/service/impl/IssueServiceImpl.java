@@ -173,7 +173,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
     private static final String[] COLUMN_NAMES = {"编码", "概述", "类型", "所属项目", "经办人", "报告人", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本"};
-    private static final int[] COLUMN_WIDTH = {6*2*256, 17*2*256, 6*2*256, 10*2*256, 6*2*256, 6*2*256, 8*2*256, 17*2*256, 10*2*256, 10*2*256, 4*2*256, 7*2*256, 4*2*256, 17*2*256};
+    private static final int[] COLUMN_WIDTH = {6 * 2 * 256, 17 * 2 * 256, 6 * 2 * 256, 10 * 2 * 256, 6 * 2 * 256, 6 * 2 * 256, 8 * 2 * 256, 17 * 2 * 256, 10 * 2 * 256, 10 * 2 * 256, 4 * 2 * 256, 7 * 2 * 256, 4 * 2 * 256, 17 * 2 * 256};
     private static final String[] SUB_COLUMN_NAMES = {"关键字", "概述", "类型", "状态", "经办人"};
     private static final String EXPORT_ERROR = "error.issue.export";
     private static final String PROJECT_ERROR = "error.project.notFound";
@@ -446,7 +446,9 @@ public class IssueServiceImpl implements IssueService {
             if (originIssue.getStoryPoints() != null) {
                 dataLogE.setOldString(originIssue.getStoryPoints().toString());
             }
-            dataLogE.setNewString(issueUpdateDTO.getStoryPoints().toString());
+            if (issueUpdateDTO.getStoryPoints() != null) {
+                dataLogE.setNewString(issueUpdateDTO.getStoryPoints().toString());
+            }
             dataLogRepository.create(dataLogE);
         }
     }
@@ -554,8 +556,10 @@ public class IssueServiceImpl implements IssueService {
                 dataLogE.setOldValue(originIssue.getRemainingTime().toString());
                 dataLogE.setOldString(originIssue.getRemainingTime().toString());
             }
-            dataLogE.setNewValue(issueUpdateDTO.getRemainingTime().toString());
-            dataLogE.setNewString(issueUpdateDTO.getRemainingTime().toString());
+            if (issueUpdateDTO.getRemainingTime() != null) {
+                dataLogE.setNewValue(issueUpdateDTO.getRemainingTime().toString());
+                dataLogE.setNewString(issueUpdateDTO.getRemainingTime().toString());
+            }
             dataLogRepository.create(dataLogE);
         }
     }
@@ -1636,7 +1640,7 @@ public class IssueServiceImpl implements IssueService {
                 dataLogE.setOldString(originTypeName);
                 dataLogE.setNewString(currentTypeName);
                 dataLogRepository.create(dataLogE);
-                issueRepository.update(issueE,new String[]{TYPE_CODE_FIELD,RANK_FIELD,STATUS_ID,PARENT_ISSUE_ID});
+                issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, RANK_FIELD, STATUS_ID, PARENT_ISSUE_ID});
                 return queryIssueSub(projectId, issueE.getIssueId());
             } else {
                 throw new CommonException("error.IssueRule.subTaskError");
@@ -1843,7 +1847,7 @@ public class IssueServiceImpl implements IssueService {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         HSSFSheet sheet = workbook.createSheet(project.getName());
         HSSFRow row = sheet.createRow(0);
-        HSSFCellStyle cellStyle=workbook.createCellStyle();
+        HSSFCellStyle cellStyle = workbook.createCellStyle();
         cellStyle.setWrapText(true);
         cellStyle.setAlignment(CellStyle.ALIGN_LEFT);
         cellStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
@@ -1859,7 +1863,7 @@ public class IssueServiceImpl implements IssueService {
                 cell.setCellStyle(cellStyle);
                 switch (COLUMN_NAMES[j]) {
                     case "编码":
-                        cell.setCellValue(project.getCode() + "-" +exportIssues.get(i).getIssueNum());
+                        cell.setCellValue(project.getCode() + "-" + exportIssues.get(i).getIssueNum());
                         break;
                     case "概述":
                         cell.setCellValue(exportIssues.get(i).getSummary());
