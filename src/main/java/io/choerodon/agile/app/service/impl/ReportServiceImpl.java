@@ -137,20 +137,20 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void addStartColumnChangeByDate(CumulativeFlowDiagramDTO cumulativeFlowDiagramDTO, Date startDate) {
-        List<CoordinateDTO> endCoordinateList = cumulativeFlowDiagramDTO.getCoordinateDTOList().stream().filter(coordinateDTO ->
+        List<CoordinateDTO> startCoordinateList = cumulativeFlowDiagramDTO.getCoordinateDTOList().stream().filter(coordinateDTO ->
                 coordinateDTO.getDate().after(startDate)).collect(Collectors.toList());
-        if (endCoordinateList != null && !endCoordinateList.isEmpty()) {
-            CoordinateDTO end = new CoordinateDTO();
-            end.setIssueCount(endCoordinateList.get(0).getIssueCount());
-            end.setDate(startDate);
-            end.setColumnChangeDTO(null);
-            cumulativeFlowDiagramDTO.getCoordinateDTOList().add(cumulativeFlowDiagramDTO.getCoordinateDTOList().size(), end);
+        if (startCoordinateList != null && !startCoordinateList.isEmpty()) {
+            CoordinateDTO start = new CoordinateDTO();
+            start.setIssueCount(startCoordinateList.get(0).getIssueCount());
+            start.setDate(startDate);
+            start.setColumnChangeDTO(null);
+            cumulativeFlowDiagramDTO.getCoordinateDTOList().add(cumulativeFlowDiagramDTO.getCoordinateDTOList().size(), start);
         } else {
-            CoordinateDTO end = new CoordinateDTO();
-            end.setIssueCount(0);
-            end.setDate(startDate);
-            end.setColumnChangeDTO(null);
-            cumulativeFlowDiagramDTO.getCoordinateDTOList().add(cumulativeFlowDiagramDTO.getCoordinateDTOList().size(), end);
+            CoordinateDTO start = new CoordinateDTO();
+            start.setIssueCount(0);
+            start.setDate(startDate);
+            start.setColumnChangeDTO(null);
+            cumulativeFlowDiagramDTO.getCoordinateDTOList().add(cumulativeFlowDiagramDTO.getCoordinateDTOList().size(), start);
         }
     }
 
@@ -190,7 +190,7 @@ public class ReportServiceImpl implements ReportService {
         if (endCoordinateList != null && !endCoordinateList.isEmpty()) {
             CoordinateDTO end = new CoordinateDTO();
             end.setDate(endDate);
-            end.setIssueCount(endCoordinateList.get(cumulativeFlowDiagramDTO.getCoordinateDTOList().size() - 1).getIssueCount());
+            end.setIssueCount(endCoordinateList.get(endCoordinateList.size() - 1).getIssueCount());
             end.setColumnChangeDTO(null);
             cumulativeFlowDiagramDTO.getCoordinateDTOList().add(cumulativeFlowDiagramDTO.getCoordinateDTOList().size(), end);
         } else {
