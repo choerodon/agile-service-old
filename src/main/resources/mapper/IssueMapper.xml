@@ -493,7 +493,8 @@
 
     <insert id="batchIssueToVersion">
         INSERT IGNORE INTO agile_version_issue_rel
-        (version_id, issue_id, project_id, relation_type, creation_date, last_update_date, created_by, last_updated_by) values
+        (version_id, issue_id, project_id, relation_type, creation_date, last_update_date, created_by, last_updated_by)
+        values
         <foreach collection="issueIds" item="issueId" index="index"
                  separator=",">
             (#{versionId}, #{issueId}, #{projectId}, 'fix', #{date}, #{date}, #{userId}, #{userId})
@@ -1041,7 +1042,7 @@
         FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
         LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task' AND ai.type_code != 'issue_test'
+        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task'
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
                 AND position(#{searchArgs.summary} IN ai.summary)
@@ -1125,7 +1126,7 @@
                 </foreach>
             </if>
         </if>
-        )search where 1=1
+        )search where search.type_code = 'issue_test'
         <if test='searchArgs != null'>
             <if test='searchArgs.issueNum != null and searchArgs.issueNum != ""'>
                 AND position(#{searchArgs.issueNum} IN search.issue_num)
