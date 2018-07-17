@@ -1529,6 +1529,8 @@ public class IssueServiceImpl implements IssueService {
             issueDetailDO.setSummary(copyConditionDTO.getSummary());
             IssueCreateDTO issueCreateDTO = issueAssembler.issueDtoToIssueCreateDto(issueDetailDO);
             IssueDTO newIssue = createIssue(issueCreateDTO);
+            //复制链接
+            batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueId, newIssue.getIssueId(), projectId);
             //生成一条复制的关联
             IssueLinkTypeDO query = new IssueLinkTypeDO();
             query.setProjectId(issueDetailDO.getProjectId());
@@ -1539,8 +1541,6 @@ public class IssueServiceImpl implements IssueService {
             }
             //复制故事点和剩余工作量并记录日志
             copyStoryPointAndRemainingTimeData(issueDetailDO, projectId, newIssue);
-            //复制链接
-            batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueId, newIssue.getIssueId(), projectId);
             //复制冲刺
             handleCreateCopyIssueSprintRel(copyConditionDTO.getSprintValues(), issueDetailDO, newIssue.getIssueId());
             if (copyConditionDTO.getSubTask()) {
@@ -1561,19 +1561,19 @@ public class IssueServiceImpl implements IssueService {
         issueUpdateDTO.setRemainingTime(issueDetailDO.getRemainingTime());
         issueUpdateDTO.setIssueId(newIssue.getIssueId());
         issueUpdateDTO.setObjectVersionNumber(newIssue.getObjectVersionNumber());
-        updateIssue(projectId, issueUpdateDTO, Lists.newArrayList("storyPoints", "remainingTime"));
+        updateIssue(projectId, issueUpdateDTO, Lists.newArrayList(STORY_POINTS_FIELD, REMAIN_TIME_FIELD));
     }
 
     private void copySubIssue(IssueDO issueDO, Long newIssueId, IssueLinkTypeDO issueLinkTypeDO, CopyConditionDTO copyConditionDTO, Long projectId) {
         IssueDetailDO subIssueDetailDO = issueMapper.queryIssueDetail(issueDO.getProjectId(), issueDO.getIssueId());
         IssueSubCreateDTO issueSubCreateDTO = issueAssembler.issueDtoToSubIssueCreateDto(subIssueDetailDO, newIssueId);
         IssueSubDTO newSubIssue = createSubIssue(issueSubCreateDTO);
+        //复制链接
+        batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueDO.getIssueId(), newSubIssue.getIssueId(), projectId);
         //生成一条复制的关联
         if (issueLinkTypeDO != null) {
             createCopyIssueLink(subIssueDetailDO.getIssueId(), newSubIssue.getIssueId(), issueLinkTypeDO.getLinkTypeId());
         }
-        //复制链接
-        batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueDO.getIssueId(), newSubIssue.getIssueId(), projectId);
         //复制冲刺
         handleCreateCopyIssueSprintRel(copyConditionDTO.getSprintValues(), subIssueDetailDO, newSubIssue.getIssueId());
         //复制剩余工作量并记录日志
@@ -1581,7 +1581,7 @@ public class IssueServiceImpl implements IssueService {
         subIssueUpdateDTO.setRemainingTime(issueDO.getRemainingTime());
         subIssueUpdateDTO.setIssueId(newSubIssue.getIssueId());
         subIssueUpdateDTO.setObjectVersionNumber(newSubIssue.getObjectVersionNumber());
-        updateIssue(projectId, subIssueUpdateDTO, Lists.newArrayList("remainingTime"));
+        updateIssue(projectId, subIssueUpdateDTO, Lists.newArrayList(REMAIN_TIME_FIELD));
     }
 
     private void handleCreateCopyIssueSprintRel(Boolean sprintValues, IssueDetailDO issueDetailDO, Long newIssueId) {

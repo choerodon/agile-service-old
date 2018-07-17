@@ -233,7 +233,7 @@ public class IssueAssembler {
     }
 
     public IssueNumDTO issueNumDOToIssueNumDTO(IssueNumDO issueNumDO) {
-        if(issueNumDO == null){
+        if (issueNumDO == null) {
             return null;
         }
         IssueNumDTO issueNumDTO = new IssueNumDTO();
@@ -255,6 +255,7 @@ public class IssueAssembler {
         IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
         BeanUtils.copyProperties(issueDetailDO, issueCreateDTO);
         issueCreateDTO.setSprintId(0L);
+        issueCreateDTO.setRemainingTime(null);
         issueCreateDTO.setComponentIssueRelDTOList(copyComponentIssueRel(issueDetailDO.getComponentIssueRelDOList()));
         issueCreateDTO.setVersionIssueRelDTOList(copyVersionIssueRel(issueDetailDO.getVersionIssueRelDOList()));
         issueCreateDTO.setLabelIssueRelDTOList(copyLabelIssueRel(issueDetailDO.getLabelIssueRelDOList(), issueDetailDO.getProjectId()));
