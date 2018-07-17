@@ -83,8 +83,8 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public Boolean batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds, Date date) {
-        issueMapper.batchIssueToVersion(projectId, versionId, issueIds, date);
+    public Boolean batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds, Date date, Long userId) {
+        issueMapper.batchIssueToVersion(projectId, versionId, issueIds, date, userId);
         return true;
     }
 
@@ -105,8 +105,8 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public int issueToDestinationByIds(Long projectId, Long sprintId, List<Long> issueIds, Date date) {
-        return issueMapper.issueToDestinationByIds(projectId, sprintId, issueIds, date);
+    public int issueToDestinationByIds(Long projectId, Long sprintId, List<Long> issueIds, Date date, Long userId) {
+        return issueMapper.issueToDestinationByIds(projectId, sprintId, issueIds, date, userId);
     }
 
     @Override
@@ -120,8 +120,8 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public int issueToSprint(Long projectId, Long sprintId, Long issueId, Date date) {
-        return issueMapper.issueToSprint(projectId, sprintId, issueId, date);
+    public int issueToSprint(Long projectId, Long sprintId, Long issueId, Date date, Long userId) {
+        return issueMapper.issueToSprint(projectId, sprintId, issueId, date, userId);
     }
 
     @Override

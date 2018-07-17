@@ -189,6 +189,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueDTO createIssue(IssueCreateDTO issueCreateDTO) {
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         IssueE issueE = issueAssembler.issueCreateDtoToIssueE(issueCreateDTO);
         //设置初始状态,如果有todo，就用todo，否则为doing，最后为done
         List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(issueE.getProjectId());
@@ -205,7 +206,7 @@ public class IssueServiceImpl implements IssueService {
         createResolutionDataLog(issueStatusDO, issueId, issueE.getProjectId());
         //处理冲刺
         if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
-            issueRepository.issueToSprint(issueE.getProjectId(), issueE.getSprintId(), issueId, new Date());
+            issueRepository.issueToSprint(issueE.getProjectId(), issueE.getSprintId(), issueId, new Date(), customUserDetails.getUserId());
         }
         handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
         handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
@@ -596,6 +597,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueDTO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList) {
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         IssueDO originIssue = issueMapper.selectByPrimaryKey(issueUpdateDTO.getIssueId());
         if (fieldList != null && !fieldList.isEmpty()) {
             //日志记录
@@ -609,7 +611,7 @@ public class IssueServiceImpl implements IssueService {
                 issueIds.add(issueE.getIssueId());
                 issueRepository.removeIssueFromSprintByIssueIds(projectId, issueIds);
                 if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
-                    issueRepository.issueToDestinationByIds(projectId, issueE.getSprintId(), issueIds, new Date());
+                    issueRepository.issueToDestinationByIds(projectId, issueE.getSprintId(), issueIds, new Date(), customUserDetails.getUserId());
                 }
                 if (issueE.isIssueRank() || (issueE.getTypeCode() == null && oldIssue.isIssueRank())) {
                     calculationRank(projectId, issueE);
@@ -717,6 +719,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO) {
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         IssueE subIssueE = issueAssembler.issueSubCreateDtoToEntity(issueSubCreateDTO);
         //日志记录
         IssueDO issueDO = new IssueDO();
@@ -738,7 +741,7 @@ public class IssueServiceImpl implements IssueService {
         boardService.dataLogStatus(issueDO, subIssueE);
         //处理冲刺
         if (subIssueE.getSprintId() != null && !Objects.equals(subIssueE.getSprintId(), 0L)) {
-            issueRepository.issueToSprint(subIssueE.getProjectId(), subIssueE.getSprintId(), issueId, new Date());
+            issueRepository.issueToSprint(subIssueE.getProjectId(), subIssueE.getSprintId(), issueId, new Date(), customUserDetails.getUserId());
         }
         if (issueSubCreateDTO.getIssueLinkCreateDTOList() != null && !issueSubCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
             issueLinkService.createIssueLinkList(issueSubCreateDTO.getIssueLinkCreateDTOList(), issueId, issueSubCreateDTO.getProjectId());
@@ -812,9 +815,10 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<IssueSearchDTO> batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds) {
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         if (versionId != null && !Objects.equals(versionId, 0L)) {
             productVersionRule.judgeExist(projectId, versionId);
-            issueRepository.batchIssueToVersion(projectId, versionId, issueIds, new Date());
+            issueRepository.batchIssueToVersion(projectId, versionId, issueIds, new Date(), customUserDetails.getUserId());
             dataLogVersionByAdd(projectId, versionId, issueIds);
         } else {
             Map map = getVersionIssueRelsByBatch(projectId, issueIds);
@@ -914,6 +918,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public List<IssueSearchDTO> batchIssueToSprint(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO) {
         sprintRule.judgeExist(projectId, sprintId);
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
         if (moveIssueDTO.getBefore()) {
             beforeRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
@@ -927,7 +932,7 @@ public class IssueServiceImpl implements IssueService {
         List<DataLogE> dataLogEList = getSprintDataLogByMove(projectId, sprintId, moveIssueDTO);
         issueRepository.removeIssueFromSprintByIssueIds(projectId, moveIssueIds);
         if (sprintId != null && !Objects.equals(sprintId, 0L)) {
-            issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds, new Date());
+            issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
         }
         dataLogSprintByMove(dataLogEList);
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);

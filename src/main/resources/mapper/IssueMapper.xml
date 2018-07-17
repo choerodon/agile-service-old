@@ -492,10 +492,10 @@
 
     <insert id="batchIssueToVersion">
         INSERT IGNORE INTO agile_version_issue_rel
-        (version_id, issue_id, project_id, relation_type, creation_date, last_update_date) values
+        (version_id, issue_id, project_id, relation_type, creation_date, last_update_date, created_by, last_updated_by) values
         <foreach collection="issueIds" item="issueId" index="index"
                  separator=",">
-            (#{versionId}, #{issueId}, #{projectId}, 'fix', #{date}, #{date})
+            (#{versionId}, #{issueId}, #{projectId}, 'fix', #{date}, #{date}, #{userId}, #{userId})
         </foreach>
     </insert>
 
@@ -768,17 +768,17 @@
 
     <insert id="issueToDestinationByIds">
         INSERT IGNORE INTO agile_issue_sprint_rel
-        (issue_id, sprint_id, project_id, creation_date, last_update_date) VALUES
+        (issue_id, sprint_id, project_id, creation_date, last_update_date, created_by, last_updated_by) VALUES
         <foreach collection="issueIds" item="issueId" index="index"
                  separator=",">
-            (#{issueId}, #{sprintId}, #{projectId}, #{date}, #{date})
+            (#{issueId}, #{sprintId}, #{projectId}, #{date}, #{date}, #{userId}, #{userId})
         </foreach>
     </insert>
 
     <insert id="issueToSprint">
         INSERT IGNORE
-        INTO agile_issue_sprint_rel (issue_id, sprint_id, project_id, creation_date, last_update_date)
-        VALUES (#{issueId}, #{sprintId}, #{projectId}, #{date}, #{date})
+        INTO agile_issue_sprint_rel (issue_id, sprint_id, project_id, creation_date, last_update_date, created_by, last_updated_by)
+        VALUES (#{issueId}, #{sprintId}, #{projectId}, #{date}, #{date}, #{userId}, #{userId})
     </insert>
 
     <select id="querySubIssueIdsByIssueId" resultType="java.lang.Long">

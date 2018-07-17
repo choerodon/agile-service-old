@@ -45,7 +45,7 @@ public interface IssueRepository {
 
     IssueE updateSelective(IssueE issueE);
 
-    Boolean batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds, Date date);
+    Boolean batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds, Date date, Long userId);
 
     Boolean batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds);
 
@@ -60,13 +60,13 @@ public interface IssueRepository {
      */
     int batchUpdateIssueEpicId(Long projectId, Long issueId);
 
-    int issueToDestinationByIds(Long projectId, Long sprintId, List<Long> issueIds, Date date);
+    int issueToDestinationByIds(Long projectId, Long sprintId, List<Long> issueIds, Date date, Long userId);
 
     int batchUpdateIssueRank(Long projectId, List<MoveIssueDO> moveIssueDOS);
 
     int removeIssueFromSprintByIssueIds(Long projectId, List<Long> issueIds);
 
-    int issueToSprint(Long projectId, Long sprintId, Long issueId, Date date);
+    int issueToSprint(Long projectId, Long sprintId, Long issueId, Date date, Long userId);
 
     int deleteIssueFromSprintByIssueId(Long projectId, Long issueId);
 }
