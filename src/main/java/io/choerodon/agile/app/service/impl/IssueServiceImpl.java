@@ -6,6 +6,7 @@ import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.domain.agile.entity.*;
+import io.choerodon.agile.domain.agile.event.IssuePayload;
 import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
@@ -47,7 +48,7 @@ import java.util.stream.Collectors;
  * @since 2018-05-14 20:30:48
  */
 @Service
-@Transactional(rollbackFor = Exception.class)
+@Transactional(rollbackFor = CommonException.class)
 public class IssueServiceImpl implements IssueService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IssueServiceImpl.class);
@@ -123,8 +124,6 @@ public class IssueServiceImpl implements IssueService {
     private IssueLinkMapper issueLinkMapper;
     @Autowired
     private IssueSprintRelRepository issueSprintRelRepository;
-    @Autowired
-    private IssueSprintRelMapper issueSprintRelMapper;
     @Autowired
     private EventProducerTemplate eventProducerTemplate;
     @Autowired
@@ -669,8 +668,10 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public void deleteIssue(Long projectId, Long issueId) {
         //删除issue发送消息
-        Exception exception = eventProducerTemplate.execute("deleteIssue", AGILE_SERVICE, issueId,
+        IssuePayload issuePayload = new IssuePayload();
+        Exception exception = eventProducerTemplate.execute("deleteIssue", AGILE_SERVICE, issuePayload,
                 (String uuid) -> {
+                    issuePayload.setIssueId(issueId);
                     IssueE issueE = queryIssueByProjectIdAndIssueId(projectId, issueId);
                     if (issueE == null) {
                         throw new CommonException(ERROR_ISSUE_NOT_FOUND);
@@ -1537,38 +1538,15 @@ public class IssueServiceImpl implements IssueService {
                 createCopyIssueLink(issueDetailDO.getIssueId(), newIssue.getIssueId(), issueLinkTypeDO.getLinkTypeId());
             }
             //复制故事点和剩余工作量并记录日志
-            IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO();
-            issueUpdateDTO.setStoryPoints(issueDetailDO.getStoryPoints());
-            issueUpdateDTO.setRemainingTime(issueDetailDO.getRemainingTime());
-            issueUpdateDTO.setIssueId(newIssue.getIssueId());
-            issueUpdateDTO.setObjectVersionNumber(newIssue.getObjectVersionNumber());
-            updateIssue(projectId, issueUpdateDTO, Lists.newArrayList(STORY_POINTS_FIELD, REMAIN_TIME_FIELD));
+            copyStoryPointAndRemainingTimeData(issueDetailDO, projectId, newIssue);
             //复制链接
             batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueId, newIssue.getIssueId(), projectId);
             //复制冲刺
-            handleCreateCopyIssueSprintRel(copyConditionDTO.getSprintValues(), issueId, newIssue.getIssueId(), projectId);
+            handleCreateCopyIssueSprintRel(copyConditionDTO.getSprintValues(), issueDetailDO, newIssue.getIssueId());
             if (copyConditionDTO.getSubTask()) {
                 List<IssueDO> subIssueDOList = issueDetailDO.getSubIssueDOList();
                 if (subIssueDOList != null && !subIssueDOList.isEmpty()) {
-                    subIssueDOList.forEach(issueDO -> {
-                        IssueDetailDO subIssueDetailDO = issueMapper.queryIssueDetail(issueDO.getProjectId(), issueDO.getIssueId());
-                        IssueSubCreateDTO issueSubCreateDTO = issueAssembler.issueDtoToSubIssueCreateDto(subIssueDetailDO, newIssue.getIssueId());
-                        IssueSubDTO newSubIssue = createSubIssue(issueSubCreateDTO);
-                        //生成一条复制的关联
-                        if (issueLinkTypeDO != null) {
-                            createCopyIssueLink(subIssueDetailDO.getIssueId(), newSubIssue.getIssueId(), issueLinkTypeDO.getLinkTypeId());
-                        }
-                        //复制链接
-                        batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueDO.getIssueId(), newSubIssue.getIssueId(), projectId);
-                        //复制冲刺
-                        handleCreateCopyIssueSprintRel(copyConditionDTO.getSprintValues(), issueDO.getIssueId(), newSubIssue.getIssueId(), projectId);
-                        //复制剩余工作量并记录日志
-                        IssueUpdateDTO subIssueUpdateDTO = new IssueUpdateDTO();
-                        subIssueUpdateDTO.setRemainingTime(issueDO.getRemainingTime());
-                        subIssueUpdateDTO.setIssueId(newSubIssue.getIssueId());
-                        subIssueUpdateDTO.setObjectVersionNumber(newSubIssue.getObjectVersionNumber());
-                        updateIssue(projectId, subIssueUpdateDTO, Lists.newArrayList(REMAIN_TIME_FIELD));
-                    });
+                    subIssueDOList.forEach(issueDO -> copySubIssue(issueDO, newIssue.getIssueId(), issueLinkTypeDO, copyConditionDTO, projectId));
                 }
             }
             return queryIssue(projectId, newIssue.getIssueId());
@@ -1577,19 +1555,54 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void handleCreateCopyIssueSprintRel(Boolean sprintValues, Long issueId, Long newIssueId, Long projectId) {
+    private void copyStoryPointAndRemainingTimeData(IssueDetailDO issueDetailDO, Long projectId, IssueDTO newIssue) {
+        IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO();
+        issueUpdateDTO.setStoryPoints(issueDetailDO.getStoryPoints());
+        issueUpdateDTO.setRemainingTime(issueDetailDO.getRemainingTime());
+        issueUpdateDTO.setIssueId(newIssue.getIssueId());
+        issueUpdateDTO.setObjectVersionNumber(newIssue.getObjectVersionNumber());
+        updateIssue(projectId, issueUpdateDTO, Lists.newArrayList("storyPoints", "remainingTime"));
+    }
+
+    private void copySubIssue(IssueDO issueDO, Long newIssueId, IssueLinkTypeDO issueLinkTypeDO, CopyConditionDTO copyConditionDTO, Long projectId) {
+        IssueDetailDO subIssueDetailDO = issueMapper.queryIssueDetail(issueDO.getProjectId(), issueDO.getIssueId());
+        IssueSubCreateDTO issueSubCreateDTO = issueAssembler.issueDtoToSubIssueCreateDto(subIssueDetailDO, newIssueId);
+        IssueSubDTO newSubIssue = createSubIssue(issueSubCreateDTO);
+        //生成一条复制的关联
+        if (issueLinkTypeDO != null) {
+            createCopyIssueLink(subIssueDetailDO.getIssueId(), newSubIssue.getIssueId(), issueLinkTypeDO.getLinkTypeId());
+        }
+        //复制链接
+        batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueDO.getIssueId(), newSubIssue.getIssueId(), projectId);
+        //复制冲刺
+        handleCreateCopyIssueSprintRel(copyConditionDTO.getSprintValues(), subIssueDetailDO, newSubIssue.getIssueId());
+        //复制剩余工作量并记录日志
+        IssueUpdateDTO subIssueUpdateDTO = new IssueUpdateDTO();
+        subIssueUpdateDTO.setRemainingTime(issueDO.getRemainingTime());
+        subIssueUpdateDTO.setIssueId(newSubIssue.getIssueId());
+        subIssueUpdateDTO.setObjectVersionNumber(newSubIssue.getObjectVersionNumber());
+        updateIssue(projectId, subIssueUpdateDTO, Lists.newArrayList("remainingTime"));
+    }
+
+    private void handleCreateCopyIssueSprintRel(Boolean sprintValues, IssueDetailDO issueDetailDO, Long newIssueId) {
         if (sprintValues) {
-            IssueSprintRelDO issueSprintRelDO = new IssueSprintRelDO();
-            issueSprintRelDO.setIssueId(issueId);
-            issueSprintRelDO.setProjectId(projectId);
-            List<IssueSprintRelDO> issueSprintRelDOList = issueSprintRelMapper.select(issueSprintRelDO);
-            issueSprintRelDOList.parallelStream().forEach(createIssueSprintRel -> {
+            if (issueDetailDO.getActiveSprint() != null && !issueDetailDO.getTypeCode().equals(SUB_TASK)) {
+                //子任务当前活跃冲刺关联会在创建子任务中创建
                 IssueSprintRelDO copy = new IssueSprintRelDO();
-                copy.setProjectId(createIssueSprintRel.getProjectId());
+                copy.setProjectId(issueDetailDO.getProjectId());
                 copy.setIssueId(newIssueId);
-                copy.setSprintId(createIssueSprintRel.getSprintId());
+                copy.setSprintId(issueDetailDO.getActiveSprint().getSprintId());
                 issueSprintRelRepository.createIssueSprintRel(copy);
-            });
+            }
+            if (issueDetailDO.getCloseSprint() != null && !issueDetailDO.getCloseSprint().isEmpty()) {
+                issueDetailDO.getCloseSprint().forEach(sprint -> {
+                    IssueSprintRelDO copy = new IssueSprintRelDO();
+                    copy.setProjectId(issueDetailDO.getProjectId());
+                    copy.setIssueId(newIssueId);
+                    copy.setSprintId(sprint.getSprintId());
+                    issueSprintRelRepository.createIssueSprintRel(copy);
+                });
+            }
         }
     }
 
@@ -1597,15 +1610,17 @@ public class IssueServiceImpl implements IssueService {
         if (condition) {
             List<IssueLinkE> issueLinkEList = ConvertHelper.convertList(issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId), IssueLinkE.class);
             issueLinkEList.parallelStream().forEach(issueLinkE -> {
+                IssueLinkE copy = new IssueLinkE();
                 if (issueLinkE.getIssueId().equals(issueId)) {
-                    issueLinkE.setIssueId(newIssueId);
+                    copy.setIssueId(newIssueId);
+                    copy.setLinkedIssueId(issueLinkE.getLinkedIssueId());
                 }
                 if (issueLinkE.getLinkedIssueId().equals(issueId)) {
-                    issueLinkE.setLinkedIssueId(newIssueId);
+                    copy.setIssueId(issueLinkE.getIssueId());
+                    copy.setLinkedIssueId(newIssueId);
                 }
-                issueLinkE.setObjectVersionNumber(null);
-                issueLinkE.setLinkId(null);
-                issueLinkRepository.create(issueLinkE);
+                copy.setLinkTypeId(issueLinkE.getLinkTypeId());
+                issueLinkRepository.create(copy);
             });
         }
     }
