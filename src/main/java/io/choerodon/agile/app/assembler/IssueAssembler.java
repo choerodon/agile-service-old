@@ -304,6 +304,7 @@ public class IssueAssembler {
         String subSummary = "CLONE-" + subIssueDetailDO.getSummary();
         issueCreateDTO.setSummary(subSummary);
         issueCreateDTO.setSprintId(null);
+        issueCreateDTO.setIssueNum(null);
         issueCreateDTO.setParentIssueId(parentIssueId);
         issueCreateDTO.setComponentIssueRelDTOList(copyComponentIssueRel(subIssueDetailDO.getComponentIssueRelDOList()));
         issueCreateDTO.setVersionIssueRelDTOList(copyVersionIssueRel(subIssueDetailDO.getVersionIssueRelDOList()));

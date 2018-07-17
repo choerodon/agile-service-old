@@ -113,7 +113,7 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("分页过滤查询issue列表(不包含子任务)")
+    @ApiOperation("分页过滤查询issue列表(不包含子任务,不含测试任务)")
     @CustomPageRequest
     @PostMapping(value = "/no_sub")
     public ResponseEntity<Page<IssueListDTO>> listIssueWithoutSub(@ApiIgnore
@@ -285,11 +285,11 @@ public class IssueController {
     @ApiOperation("复制一个issue")
     @PostMapping("/{issueId}/clone_issue")
     public ResponseEntity<IssueDTO> cloneIssueByIssueId(@ApiParam(value = "项目id", required = true)
-                                                       @PathVariable(name = "project_id") Long projectId,
-                                                       @ApiParam(value = "issueId", required = true)
-                                                       @PathVariable(name = "issueId") Long issueId,
-                                                       @ApiParam(value = "复制条件", required = true)
-                                                       @RequestBody CopyConditionDTO copyConditionDTO) {
+                                                        @PathVariable(name = "project_id") Long projectId,
+                                                        @ApiParam(value = "issueId", required = true)
+                                                        @PathVariable(name = "issueId") Long issueId,
+                                                        @ApiParam(value = "复制条件", required = true)
+                                                        @RequestBody CopyConditionDTO copyConditionDTO) {
         return Optional.ofNullable(issueService.cloneIssueByIssueId(projectId, issueId, copyConditionDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.cloneIssueByIssueId"));

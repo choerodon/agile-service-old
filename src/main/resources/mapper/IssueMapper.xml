@@ -220,6 +220,7 @@
         ai.priority_code,
         ai.assignee_id,
         ai.project_id,
+        ai.status_id,
         alv.name AS priority_name,
         ais.category_code AS status_code,
         ais.name AS status_name,
@@ -1029,6 +1030,7 @@
         ai.issue_id,
         ai.type_code,
         ai.summary,
+        ai.status_id,
         ai.priority_code,
         ai.assignee_id,
         ai.project_id,
@@ -1039,7 +1041,7 @@
         FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
         LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task'
+        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task' AND ai.type_code != 'issue_test'
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
                 AND position(#{searchArgs.summary} IN ai.summary)
@@ -1138,13 +1140,13 @@
     <select id="queryIssueNumByTimeSlot" resultType="io.choerodon.agile.infra.dataobject.IssueCreationNumDO">
         SELECT
             DATE_FORMAT(creation_date, '%Y-%m-%d') AS creation_day,
-            COUNT(issue_id) AS issue_count
+            COUNT(issue_id)                        AS issue_count
         FROM
             agile_issue
         WHERE
             project_id = #{projectId}
-        AND type_code = #{typeCode}
-        AND DATE_SUB(now(), INTERVAL #{timeSlot} DAY) &lt;= creation_date
+            AND type_code = #{typeCode}
+            AND DATE_SUB(now(), INTERVAL #{timeSlot} DAY) &lt;= creation_date
         GROUP BY
             DATE_FORMAT(creation_date, '%Y-%m-%d')
         ORDER BY

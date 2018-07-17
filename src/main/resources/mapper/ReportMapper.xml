@@ -793,6 +793,7 @@
 
     <select id="queryAllIssueIdsByFilter" resultType="java.lang.Long">
         select * from agile_issue ai where ai.project_id = #{projectId}
+        AND ai.type_code != 'issue_test'
         <if test='filterSql != null'>
             AND ai.issue_id IN (${filterSql})
         </if>
