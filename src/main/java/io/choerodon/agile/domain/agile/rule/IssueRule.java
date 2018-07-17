@@ -149,9 +149,6 @@ public class IssueRule {
         if (issueUpdateTypeDTO.getTypeCode().equals(issueE.getTypeCode())) {
             throw new CommonException("error.IssueRule.sameTypeCode");
         }
-        if (issueE.getTypeCode().equals(SUB_TASK)) {
-            throw new CommonException("error.IssueRule.subTask");
-        }
         return issueE;
     }
 
