@@ -125,7 +125,19 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         if (versionE == null) {
             throw new CommonException(NOT_FOUND);
         }
-        return productVersionRepository.deleteVersion(versionE);
+        Boolean result = false;
+        VersionPayload versionPayload = new VersionPayload();
+        Exception exception = eventProducerTemplate.execute("versionDelete", AGILE_SERVICE, versionPayload,
+                (String uuid) -> {
+                    Boolean deleteResult = productVersionRepository.deleteVersion(versionE);
+                    versionPayload.setVersionId(versionE.getVersionId());
+                    BeanUtils.copyProperties(deleteResult, result);
+                }
+        );
+        Optional.ofNullable(exception).map(e -> {
+            throw new CommonException(exception.getMessage());
+        });
+        return result;
     }
 
     @Override
