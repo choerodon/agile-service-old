@@ -1537,7 +1537,7 @@ public class IssueServiceImpl implements IssueService {
             issueUpdateDTO.setRemainingTime(issueDetailDO.getRemainingTime());
             issueUpdateDTO.setIssueId(newIssue.getIssueId());
             issueUpdateDTO.setObjectVersionNumber(newIssue.getObjectVersionNumber());
-            updateIssue(projectId, issueUpdateDTO, Lists.newArrayList("storyPoints", "remainingTime"));
+            updateIssue(projectId, issueUpdateDTO, Lists.newArrayList(STORY_POINTS_FIELD, REMAIN_TIME_FIELD));
             //复制链接
             batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueId, newIssue.getIssueId(), projectId);
             //复制冲刺
@@ -1562,7 +1562,7 @@ public class IssueServiceImpl implements IssueService {
                         subIssueUpdateDTO.setRemainingTime(issueDO.getRemainingTime());
                         subIssueUpdateDTO.setIssueId(newSubIssue.getIssueId());
                         subIssueUpdateDTO.setObjectVersionNumber(newSubIssue.getObjectVersionNumber());
-                        updateIssue(projectId, subIssueUpdateDTO, Lists.newArrayList("remainingTime"));
+                        updateIssue(projectId, subIssueUpdateDTO, Lists.newArrayList(REMAIN_TIME_FIELD));
                     });
                 }
             }
