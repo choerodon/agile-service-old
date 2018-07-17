@@ -59,14 +59,14 @@ public class VerifyUpdateUtil {
         if (field.getType() == String.class) {
             field.set(objectUpdate, v);
         } else if (field.getType() == Long.class) {
-            field.set(objectUpdate, Long.valueOf(v.toString()));
+            field.set(objectUpdate, v == null ? null : Long.valueOf(v.toString()));
         } else if (field.getType() == Date.class) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             field.set(objectUpdate, v != null ? sdf.parse(v.toString()) : null);
         } else if (field.getType() == Integer.class) {
-            field.set(objectUpdate, Integer.valueOf(v.toString()));
+            field.set(objectUpdate, v == null ? null : Integer.valueOf(v.toString()));
         } else if (field.getType() == BigDecimal.class) {
-            field.set(objectUpdate, new BigDecimal(v.toString()));
+            field.set(objectUpdate, v == null ? null : new BigDecimal(v.toString()));
         } else if (field.getType() == List.class) {
             //对象包含子对象是list的值设置
             String className = field.getGenericType().getTypeName().substring(15, field.getGenericType().getTypeName().length() - 1);

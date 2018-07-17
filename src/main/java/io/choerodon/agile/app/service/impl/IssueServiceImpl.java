@@ -1022,7 +1022,11 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public IssueDTO updateIssueTypeCode(IssueE issueE, IssueUpdateTypeDTO issueUpdateTypeDTO) {
         String originType = issueE.getTypeCode();
+        if (originType.equals(SUB_TASK)) {
+            issueE.setParentIssueId(null);
+        }
         if (issueUpdateTypeDTO.getTypeCode().equals(ISSUE_EPIC)) {
+            issueE.setRank(null);
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
             issueE.setEpicName(issueUpdateTypeDTO.getEpicName());
             List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
@@ -1031,7 +1035,6 @@ public class IssueServiceImpl implements IssueService {
             handleChangeStoryTypeIssue(issueE);
             handleChangeRemainTimeIssue(issueE);
             issueE.setEpicId(0L);
-            issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, FIELD_STORY_POINTS});
         } else if (issueE.getTypeCode().equals(ISSUE_EPIC)) {
             // 如果之前类型是epic，会把该epic下的issue的epicId置为0
             IssueDO issueDO = new IssueDO();
@@ -1044,12 +1047,13 @@ public class IssueServiceImpl implements IssueService {
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
             issueE.setColorCode(null);
             issueE.setEpicName(null);
-            issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, EPIC_NAME_FIELD, COLOR_CODE_FIELD});
+            //rank值重置
+            calculationRank(issueE.getProjectId(), issueE);
         } else {
             handleChangeStoryTypeIssue(issueE);
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
-            issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD});
         }
+        issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, FIELD_STORY_POINTS, RANK_FIELD});
         dataLogIssueType(originType, issueUpdateTypeDTO);
         return queryIssue(issueE.getProjectId(), issueE.getIssueId());
     }
@@ -1088,8 +1092,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleCreateVersionIssueRel(List<VersionIssueRelDTO> versionIssueRelDTOList, Long projectId, Long issueId) {
         if (versionIssueRelDTOList != null && !versionIssueRelDTOList.isEmpty()) {
-            //创建版本默认为fix
-            handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId, "fix");
+            handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId);
             createIssueVersionDateLog(projectId, issueId);
         }
     }
@@ -1108,11 +1111,11 @@ public class IssueServiceImpl implements IssueService {
     }
 
 
-    private void handleVersionIssueRel(List<VersionIssueRelE> versionIssueRelEList, Long projectId, Long issueId, String versionType) {
+    private void handleVersionIssueRel(List<VersionIssueRelE> versionIssueRelEList, Long projectId, Long issueId) {
         versionIssueRelEList.forEach(versionIssueRelE -> {
             versionIssueRelE.setIssueId(issueId);
             versionIssueRelE.setProjectId(projectId);
-            versionIssueRelE.setRelationType(versionType);
+            versionIssueRelE.setRelationType(versionIssueRelE.getRelationType() == null ? "fix" : versionIssueRelE.getRelationType());
             issueRule.verifyVersionIssueRelData(versionIssueRelE);
             if (versionIssueRelE.getName() != null && versionIssueRelE.getVersionId() == null) {
                 //重名校验
@@ -1622,6 +1625,8 @@ public class IssueServiceImpl implements IssueService {
                 issueE.setRank(null);
                 issueE.setParentIssueId(issueTransformSubTask.getParentIssueId());
                 issueRule.verifySubTask(issueTransformSubTask.getParentIssueId());
+                //删除链接
+                issueLinkRepository.deleteByIssueId(issueE.getIssueId());
                 //日志记录故事点
                 handleChangeStoryTypeIssue(issueE);
                 //日志记录状态
