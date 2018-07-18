@@ -58,9 +58,9 @@ public class ReportController {
     @ApiOperation("查看项目累积流量图")
     @PostMapping(value = "/cumulative_flow_diagram")
     public ResponseEntity<List<CumulativeFlowDiagramDTO>> queryCumulativeFlowDiagram(@ApiParam(value = "项目id", required = true)
-                                                                               @PathVariable(name = "project_id") Long projectId,
-                                                                               @ApiParam(value = "过滤条件", required = true)
-                                                                               @RequestBody CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
+                                                                                     @PathVariable(name = "project_id") Long projectId,
+                                                                                     @ApiParam(value = "过滤条件", required = true)
+                                                                                     @RequestBody CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
         return Optional.ofNullable(reportService.queryCumulativeFlowDiagram(projectId, cumulativeFlowFilterDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.report.queryCumulativeFlowDiagram"));
@@ -76,10 +76,12 @@ public class ReportController {
                                                                   @PathVariable Long versionId,
                                                                   @ApiParam(value = "状态", required = true)
                                                                   @RequestParam String status,
+                                                                  @ApiParam(value = "类型", required = true)
+                                                                  @RequestParam String type,
                                                                   @ApiParam(value = "分页信息", required = true)
                                                                   @SortDefault(value = "issue_id", direction = Sort.Direction.DESC)
                                                                   @ApiIgnore PageRequest pageRequest) {
-        return Optional.ofNullable(reportService.queryIssueByOptions(projectId, versionId, status, pageRequest))
+        return Optional.ofNullable(reportService.queryIssueByOptions(projectId, versionId, status, type, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_ISSUE_ERROR));
     }

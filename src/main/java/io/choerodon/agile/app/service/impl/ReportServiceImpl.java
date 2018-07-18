@@ -212,7 +212,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public Page<IssueListDTO> queryIssueByOptions(Long projectId, Long versionId, String status, PageRequest pageRequest) {
+    public Page<IssueListDTO> queryIssueByOptions(Long projectId, Long versionId, String status, String type, PageRequest pageRequest) {
         ProductVersionDO versionDO = new ProductVersionDO();
         versionDO.setProjectId(projectId);
         versionDO.setVersionId(versionId);
@@ -221,7 +221,7 @@ public class ReportServiceImpl implements ReportService {
             throw new CommonException(VERSION_REPORT_ERROR);
         }
         pageRequest.resetOrder("ai", new HashMap<>());
-        Page<IssueDO> reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryReportIssues(projectId, versionId, status));
+        Page<IssueDO> reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryReportIssues(projectId, versionId, status, type));
         Page<IssueListDTO> reportPage = new Page<>();
         reportPage.setTotalPages(reportIssuePage.getTotalPages());
         reportPage.setTotalElements(reportIssuePage.getTotalElements());
