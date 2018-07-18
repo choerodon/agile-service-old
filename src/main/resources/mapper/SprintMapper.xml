@@ -200,94 +200,101 @@
     </select>
 
     <select id="queryAssigneeIssueCount" resultType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
-        SELECT
-        aisr.sprint_id, ai.assignee_id,
-        SUM(ai.story_points) AS total_story_points,
-        SUM(ai.remaining_time) AS total_remaining_time,
-        COUNT(1) AS issue_count
-        FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
-        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND ai.type_code NOT IN ('sub_task',
-        'issue_epic')
-        AND ai.status_id = ais.id AND ais.category_code != 'done' AND aisr.sprint_id IN
-        <foreach collection="sprintIds" item="sprintId" open="("
-                 separator="," close=")">
-            #{sprintId}
-        </foreach>
-        <if test='advancedSearchArgs != null'>
-            <if test='advancedSearchArgs.versionId != null'>
-                AND ai.issue_id IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id =
-                #{advancedSearchArgs.versionId})
+        SELECT a.sprint_id, a.assignee_id,
+                SUM(a.story_points) AS total_story_points,
+                SUM(a.remaining_time) AS total_remaining_time,
+                COUNT(1) AS issue_count
+        FROM (
+            SELECT
+            aisr.sprint_id, IFNULL(ai.assignee_id, 0) AS assignee_id,
+            ai.story_points, ai.remaining_time
+            FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
+            WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND ai.type_code NOT IN ('sub_task',
+            'issue_epic')
+            AND ai.status_id = ais.id AND ais.category_code != 'done' AND aisr.sprint_id IN
+            <foreach collection="sprintIds" item="sprintId" open="("
+                     separator="," close=")">
+                #{sprintId}
+            </foreach>
+            <if test='advancedSearchArgs != null'>
+                <if test='advancedSearchArgs.versionId != null'>
+                    AND ai.issue_id IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id =
+                    #{advancedSearchArgs.versionId})
+                </if>
+                <if test='advancedSearchArgs.epicId != null'>
+                    AND ai.epic_id = #{advancedSearchArgs.epicId}
+                </if>
+                <if test='advancedSearchArgs.noVersion != "" and advancedSearchArgs.noVersion == "true"'>
+                    AND ai.issue_id NOT IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id != 0)
+                </if>
+                <if test='advancedSearchArgs.noEpic != "" and advancedSearchArgs.noEpic == "true"'>
+                    AND (ai.epic_id IS NULL OR ai.epic_id = 0)
+                </if>
+                <if test='advancedSearchArgs.ownIssue != "" and advancedSearchArgs.ownIssue == "true"'>
+                    AND ai.assignee_id = #{userId}
+                </if>
+                <if test='advancedSearchArgs.onlyStory != "" and advancedSearchArgs.onlyStory == "true"'>
+                    AND ai.type_code = 'story'
+                </if>
             </if>
-            <if test='advancedSearchArgs.epicId != null'>
-                AND ai.epic_id = #{advancedSearchArgs.epicId}
+            <if test='filterSql != null'>
+                AND ai.issue_id IN (${filterSql})
             </if>
-            <if test='advancedSearchArgs.noVersion != "" and advancedSearchArgs.noVersion == "true"'>
-                AND ai.issue_id NOT IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id != 0)
+            <if test="assigned == false">
+                AND (ai.assignee_id IS NULL OR ai.assignee_id = 0)
             </if>
-            <if test='advancedSearchArgs.noEpic != "" and advancedSearchArgs.noEpic == "true"'>
-                AND (ai.epic_id IS NULL OR ai.epic_id = 0)
+            <if test="assigned == true">
+                AND ai.assignee_id IS NOT NULL AND ai.assignee_id != 0
             </if>
-            <if test='advancedSearchArgs.ownIssue != "" and advancedSearchArgs.ownIssue == "true"'>
-                AND ai.assignee_id = #{userId}
-            </if>
-            <if test='advancedSearchArgs.onlyStory != "" and advancedSearchArgs.onlyStory == "true"'>
-                AND ai.type_code = 'story'
-            </if>
-        </if>
-        <if test='filterSql != null'>
-            AND ai.issue_id IN (${filterSql})
-        </if>
-        <if test="assigned == false">
-            AND (ai.assignee_id IS NULL OR ai.assignee_id = 0)
-            GROUP BY aisr.sprint_id, IFNULL(ai.assignee_id, 0)
-        </if>
-        <if test="assigned == true">
-            AND ai.assignee_id IS NOT NULL AND ai.assignee_id != 0
-            GROUP BY aisr.sprint_id, ai.assignee_id
-        </if>
+        ) a
+        GROUP BY a.sprint_id, a.assignee_id
     </select>
 
     <select id="queryAssigneeIssueCountById" resultType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
-        SELECT
-        aisr.sprint_id, ai.assignee_id,
-        SUM(ai.story_points) AS total_story_points,
-        SUM(ai.remaining_time) AS total_remaining_time,
-        COUNT(1) AS issue_count
-        FROM agile_issue ai, agile_issue_sprint_rel aisr
-        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
-        AND ai.type_code NOT IN ('sub_task', 'issue_epic')
-        <if test='advancedSearchArgs != null'>
-            <if test='advancedSearchArgs.versionId != null'>
-                AND ai.issue_id IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id =
-                #{advancedSearchArgs.versionId})
-            </if>
-            <if test='advancedSearchArgs.epicId != null'>
-                AND ai.epic_id = #{advancedSearchArgs.epicId}
-            </if>
-            <if test='advancedSearchArgs.noVersion != "" and advancedSearchArgs.noVersion == "true"'>
-                AND ai.issue_id NOT IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id != 0)
-            </if>
-            <if test='advancedSearchArgs.noEpic != "" and advancedSearchArgs.noEpic == "true"'>
-                AND (ai.epic_id IS NULL OR ai.epic_id = 0)
-            </if>
-            <if test='advancedSearchArgs.ownIssue != "" and advancedSearchArgs.ownIssue == "true"'>
-                AND ai.assignee_id = #{userId}
-            </if>
-            <if test='advancedSearchArgs.onlyStory != "" and advancedSearchArgs.onlyStory == "true"'>
-                AND ai.type_code = 'story'
-            </if>
-        </if>
-        <if test='filterSql != null'>
-            AND ai.issue_id IN (${filterSql})
-        </if>
-        <if test="assigned == false">
-            AND (ai.assignee_id IS NULL OR ai.assignee_id = 0)
-            GROUP BY aisr.sprint_id, IFNULL(ai.assignee_id, 0)
-        </if>
-        <if test="assigned == true">
-            AND ai.assignee_id IS NOT NULL AND ai.assignee_id != 0
-            GROUP BY aisr.sprint_id, ai.assignee_id
-        </if>
+        SELECT a.sprint_id, a.assignee_id,
+                SUM(a.story_points) AS total_story_points,
+                SUM(a.remaining_time) AS total_remaining_time,
+                COUNT(1) AS issue_count
+        FROM (
+                SELECT
+                aisr.sprint_id, IFNULL(ai.assignee_id, 0) AS assignee_id,
+                ai.story_points, ai.remaining_time
+                FROM agile_issue ai, agile_issue_sprint_rel aisr
+                WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
+                AND ai.type_code NOT IN ('sub_task', 'issue_epic')
+                <if test='advancedSearchArgs != null'>
+                        <if test='advancedSearchArgs.versionId != null'>AND ai.issue_id IN (SELECT issue_id FROM
+                            agile_version_issue_rel WHERE version_id =
+                            #{
+                        advancedSearchArgs.versionId})
+                        </if>
+                        <if test='advancedSearchArgs.epicId != null'>
+                            AND ai.epic_id = #{advancedSearchArgs.epicId}
+                        </if>
+                        <if test='advancedSearchArgs.noVersion != "" and advancedSearchArgs.noVersion == "true"'>
+                            AND ai.issue_id NOT IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id != 0)
+                        </if>
+                        <if test='advancedSearchArgs.noEpic != "" and advancedSearchArgs.noEpic == "true"'>
+                            AND (ai.epic_id IS NULL OR ai.epic_id = 0)
+                        </if>
+                        <if test='advancedSearchArgs.ownIssue != "" and advancedSearchArgs.ownIssue == "true"'>
+                            AND ai.assignee_id = #{userId}
+                        </if>
+                        <if test='advancedSearchArgs.onlyStory != "" and advancedSearchArgs.onlyStory == "true"'>
+                            AND ai.type_code = 'story'
+                        </if>
+                    </if>
+                    <if test='filterSql != null'>
+                        AND ai.issue_id IN (${filterSql})
+                    </if>
+                    <if test="assigned == false">
+                        AND (ai.assignee_id IS NULL OR ai.assignee_id = 0)
+                    </if>
+                    <if test="assigned == true">
+                        AND ai.assignee_id IS NOT NULL AND ai.assignee_id != 0
+                    </if>
+                ) a
+        GROUP BY a.sprint_id, a.assignee_id
     </select>
 
     <select id="queryIssueIdOrderByRankDesc" resultType="java.lang.Long">
