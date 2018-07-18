@@ -53,4 +53,6 @@ public interface ProductVersionService {
     Boolean mergeVersion(Long projectId, ProductVersionMergeDTO productVersionMergeDTO);
 
     ProductVersionDetailDTO queryVersionByVersionId(Long projectId, Long versionId);
+
+    List<Long> listIds(Long projectId);
 }
