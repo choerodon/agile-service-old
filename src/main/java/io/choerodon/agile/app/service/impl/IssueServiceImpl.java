@@ -1638,6 +1638,7 @@ public class IssueServiceImpl implements IssueService {
         IssueE issueE = ConvertHelper.convert(queryIssueByIssueIdAndProjectId(projectId, issueTransformSubTask.getIssueId()), IssueE.class);
         if (issueE != null) {
             if (!issueE.getTypeCode().equals(SUB_TASK)) {
+                issueE.setObjectVersionNumber(issueTransformSubTask.getObjectVersionNumber());
                 List<Long> subIssueIds = issueMapper.querySubIssueIdsByIssueId(projectId, issueE.getIssueId());
                 if (subIssueIds != null && !subIssueIds.isEmpty()) {
                     throw new CommonException("error.transformedSubTask.issueHaveSubIssue");

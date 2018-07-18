@@ -146,6 +146,9 @@ public class IssueRule {
         if (issueE == null) {
             throw new CommonException("error.IssueUpdateTypeDTO.issueDO");
         }
+        if (issueUpdateTypeDTO.getTypeCode().equals(SUB_TASK)) {
+            throw new CommonException("error.IssueRule.subTask");
+        }
         if (issueUpdateTypeDTO.getTypeCode().equals(issueE.getTypeCode())) {
             throw new CommonException("error.IssueRule.sameTypeCode");
         }
@@ -180,6 +183,9 @@ public class IssueRule {
         }
         if (issueTransformSubTask.getParentIssueId() == null) {
             throw new CommonException("error.IssueRule.parentIssueId");
+        }
+        if (issueTransformSubTask.getObjectVersionNumber() == null) {
+            throw new CommonException("error.IssueRule.objectVersionNumber");
         }
     }
 
