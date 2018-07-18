@@ -239,7 +239,7 @@
         </if>
         <if test="assigned == false">
             AND (ai.assignee_id IS NULL OR ai.assignee_id = 0)
-            GROUP BY aisr.sprint_id
+            GROUP BY aisr.sprint_id, IFNULL(ai.assignee_id, 0)
         </if>
         <if test="assigned == true">
             AND ai.assignee_id IS NOT NULL AND ai.assignee_id != 0
@@ -282,7 +282,7 @@
         </if>
         <if test="assigned == false">
             AND (ai.assignee_id IS NULL OR ai.assignee_id = 0)
-            GROUP BY aisr.sprint_id
+            GROUP BY aisr.sprint_id, IFNULL(ai.assignee_id, 0)
         </if>
         <if test="assigned == true">
             AND ai.assignee_id IS NOT NULL AND ai.assignee_id != 0
