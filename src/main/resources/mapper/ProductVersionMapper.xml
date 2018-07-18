@@ -332,4 +332,13 @@
         AND avir.issue_id = #{issueId}
     </select>
 
+    <select id="listIds" resultType="java.lang.Long">
+        SELECT
+            version_id
+        FROM
+            agile_product_version
+        ORDER BY
+            version_id
+    </select>
+
 </mapper>

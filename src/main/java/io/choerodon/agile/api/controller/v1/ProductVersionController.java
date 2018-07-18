@@ -280,4 +280,14 @@ public class ProductVersionController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(REVOKE_ARCHIVED_ERROR));
     }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation(value = "查找所有项目的version ids")
+    @GetMapping(value = "/ids")
+    public ResponseEntity<List<Long>> listIds(@ApiParam(value = "项目id", required = true)
+                                               @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(productVersionService.listIds(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.versionIds.get"));
+    }
 }

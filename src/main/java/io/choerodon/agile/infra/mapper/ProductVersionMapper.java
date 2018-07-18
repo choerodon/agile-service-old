@@ -71,4 +71,6 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
     int deleteByVersionIds(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds);
 
     List<ProductVersionDO> selectVersionRelsByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+
+    List<Long> listIds();
 }

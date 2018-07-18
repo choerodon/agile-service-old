@@ -317,4 +317,9 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         productVersionDO.setVersionId(versionId);
         return versionDataAssembler.doToVersionDetailDTO(productVersionMapper.selectOne(productVersionDO));
     }
+
+    @Override
+    public List<Long> listIds(Long projectId) {
+        return productVersionMapper.listIds();
+    }
 }
