@@ -8,7 +8,6 @@ import io.choerodon.agile.infra.dataobject.IssueLabelDO;
 import io.choerodon.agile.infra.mapper.IssueLabelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 2018-05-14 21:04:00
  */
 @Component
-@Transactional(rollbackFor = CommonException.class)
 public class IssueLabelRepositoryImpl implements IssueLabelRepository {
 
     private static final String UPDATE_ERROR = "error.IssueLabel.update";

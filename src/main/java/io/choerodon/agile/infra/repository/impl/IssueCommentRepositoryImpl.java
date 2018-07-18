@@ -9,7 +9,6 @@ import io.choerodon.agile.infra.dataobject.IssueCommentDO;
 import io.choerodon.agile.infra.mapper.IssueCommentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -19,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 2018-05-14 21:59:45
  */
 @Component
-@Transactional(rollbackFor = CommonException.class)
 public class IssueCommentRepositoryImpl implements IssueCommentRepository {
 
     private static final String UPDATE_ERROR = "error.IssueComment.update";

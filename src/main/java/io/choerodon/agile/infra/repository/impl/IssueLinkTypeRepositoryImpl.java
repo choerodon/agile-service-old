@@ -10,14 +10,12 @@ import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/6/14
  */
 @Component
-@Transactional(rollbackFor = CommonException.class)
 public class IssueLinkTypeRepositoryImpl implements IssueLinkTypeRepository {
 
     private static final String UPDATE_ERROR = "error.IssueLinkType.update";

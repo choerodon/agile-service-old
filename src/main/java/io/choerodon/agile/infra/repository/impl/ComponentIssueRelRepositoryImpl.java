@@ -8,7 +8,6 @@ import io.choerodon.agile.infra.dataobject.ComponentIssueRelDO;
 import io.choerodon.agile.infra.mapper.ComponentIssueRelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,7 +17,6 @@ import java.util.List;
  * @since 2018-05-15 16:47:27
  */
 @Component
-@Transactional(rollbackFor = CommonException.class)
 public class ComponentIssueRelRepositoryImpl implements ComponentIssueRelRepository {
 
     private static final String INSERT_ERROR = "error.ComponentIssueRel.create";

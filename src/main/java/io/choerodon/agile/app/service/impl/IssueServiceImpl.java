@@ -699,7 +699,7 @@ public class IssueServiceImpl implements IssueService {
                             IssueDO issueDO = new IssueDO();
                             issueDO.setEpicId(issueE.getIssueId());
                             List<IssueDO> issueDOList = issueMapper.select(issueDO);
-                            issueDOList.parallelStream().forEach(issueEpic -> dataLogEpic(issueEpic.getProjectId(), issueEpic, 0L));
+                            issueDOList.forEach(issueEpic -> dataLogEpic(issueEpic.getProjectId(), issueEpic, 0L));
                             //如果是epic，会把该epic下的issue的epicId置为0
                             issueRepository.batchUpdateIssueEpicId(projectId, issueE.getIssueId());
                         }
@@ -834,7 +834,7 @@ public class IssueServiceImpl implements IssueService {
         issueRule.judgeExist(projectId, epicId);
         //修改epic记录日志
         List<IssueDO> issueDOList = issueMapper.queryIssueEpicInfoByIssueIds(projectId, issueIds);
-        issueDOList.parallelStream().forEach(issueEpic -> dataLogEpic(issueEpic.getProjectId(), issueEpic, epicId));
+        issueDOList.forEach(issueEpic -> dataLogEpic(issueEpic.getProjectId(), issueEpic, epicId));
         issueRepository.batchIssueToEpic(projectId, epicId, issueIds);
         return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>());
     }
@@ -1049,7 +1049,7 @@ public class IssueServiceImpl implements IssueService {
             issueDO.setEpicId(issueE.getIssueId());
             List<IssueDO> issueDOList = issueMapper.select(issueDO);
             //记录日志
-            issueDOList.parallelStream().forEach(issueEpic -> dataLogEpic(issueEpic.getProjectId(), issueEpic, 0L));
+            issueDOList.forEach(issueEpic -> dataLogEpic(issueEpic.getProjectId(), issueEpic, 0L));
             //批量更新
             issueRepository.batchUpdateIssueEpicId(issueE.getProjectId(), issueE.getIssueId());
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
@@ -1609,7 +1609,7 @@ public class IssueServiceImpl implements IssueService {
     private void batchCreateCopyIssueLink(Boolean condition, Long issueId, Long newIssueId, Long projectId) {
         if (condition) {
             List<IssueLinkE> issueLinkEList = ConvertHelper.convertList(issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId), IssueLinkE.class);
-            issueLinkEList.parallelStream().forEach(issueLinkE -> {
+            issueLinkEList.forEach(issueLinkE -> {
                 IssueLinkE copy = new IssueLinkE();
                 if (issueLinkE.getIssueId().equals(issueId)) {
                     copy.setIssueId(newIssueId);
