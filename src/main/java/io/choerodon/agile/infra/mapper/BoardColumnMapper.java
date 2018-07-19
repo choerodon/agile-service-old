@@ -1,9 +1,8 @@
 package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
-import io.choerodon.agile.infra.dataobject.BoardColumnCheckDO;
+import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.BaseMapper;
-import io.choerodon.agile.infra.dataobject.BoardColumnDO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -62,9 +61,28 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
     /**
      * 根据冲刺id查询当前冲刺所有用户
      *
-     * @param projectId    projectId
+     * @param projectId      projectId
      * @param activeSprintId activeSprintId
      * @return Long
      */
-    List<Long> queryAssigneeIdsBySprintId(@Param("projectId") Long projectId, @Param("activeSprintId")Long activeSprintId);
+    List<Long> queryAssigneeIdsBySprintId(@Param("projectId") Long projectId, @Param("activeSprintId") Long activeSprintId);
+
+    /**
+     * 根据列id获取列对象
+     *
+     * @param columnIds columnIds
+     * @return ColumnDO
+     */
+    List<ColumnDO> queryColumnByColumnIds(@Param("columnIds") List<Long> columnIds);
+
+    /**
+     * 根据issueIds集合获取ColumnAndIssueDO
+     *
+     * @param issueIds issueIds
+     * @param boardId  boardId
+     * @return ColumnAndIssueDO
+     */
+    List<ColumnAndIssueDO> queryColumnsByIssueIds(@Param("issueIds") List<Long> issueIds, @Param("boardId") Long boardId);
+
+    List<EpicIdWithNameDO> selectEpicBatchByIds(@Param("epicIds") List<Long> epicIds);
 }

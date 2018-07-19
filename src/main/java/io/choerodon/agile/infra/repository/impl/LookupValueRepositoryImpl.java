@@ -8,7 +8,6 @@ import io.choerodon.agile.infra.dataobject.LookupValueDO;
 import io.choerodon.agile.infra.mapper.LookupValueMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 2018-05-15 09:40:27
  */
 @Component
-@Transactional(rollbackFor = CommonException.class)
 public class LookupValueRepositoryImpl implements LookupValueRepository {
 
     private static final String UPDATE_ERROR = "error.LookupValue.update";

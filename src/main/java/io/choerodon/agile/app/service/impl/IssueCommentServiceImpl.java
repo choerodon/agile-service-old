@@ -10,6 +10,7 @@ import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.domain.agile.entity.IssueCommentE;
 import io.choerodon.agile.domain.agile.repository.DataLogRepository;
 import io.choerodon.agile.domain.agile.repository.IssueCommentRepository;
+import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.IssueCommentDO;
 import io.choerodon.agile.infra.mapper.IssueCommentMapper;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -42,6 +43,8 @@ public class IssueCommentServiceImpl implements IssueCommentService {
     private IssueCommentMapper issueCommentMapper;
     @Autowired
     private DataLogRepository dataLogRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public IssueCommentDTO createIssueComment(Long projectId, IssueCommentCreateDTO issueCommentCreateDTO) {
@@ -104,6 +107,9 @@ public class IssueCommentServiceImpl implements IssueCommentService {
         IssueCommentDO issueCommentDO = new IssueCommentDO();
         issueCommentDO.setProjectId(projectId);
         issueCommentDO.setCommentId(commentId);
+        IssueCommentDTO issueCommentDTO = ConvertHelper.convert(issueCommentMapper.selectOne(issueCommentDO), IssueCommentDTO.class);
+        issueCommentDTO.setUserName(userRepository.queryUserNameByOption(issueCommentDTO.getUserId(), true).getRealName());
+        issueCommentDTO.setUserImageUrl(userRepository.queryUserNameByOption(issueCommentDTO.getUserId(), true).getImageUrl());
         return ConvertHelper.convert(issueCommentMapper.selectOne(issueCommentDO), IssueCommentDTO.class);
     }
 }

@@ -46,11 +46,11 @@ public class IssueSubDTO {
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
-    private List<IssueLinkDTO> issueLinkDTOList;
-
     private List<IssueCommentDTO> issueCommentDTOList;
 
     private List<IssueAttachmentDTO> issueAttachmentDTOList;
+
+    private List<ComponentIssueRelDTO> componentIssueRelDTOList;
 
     private Long objectVersionNumber;
 
@@ -73,6 +73,10 @@ public class IssueSubDTO {
     private String parentIssueNum;
 
     private String statusColor;
+
+    private String assigneeImageUrl;
+
+    private String reporterImageUrl;
 
     public Long getIssueId() {
         return issueId;
@@ -210,14 +214,6 @@ public class IssueSubDTO {
         this.labelIssueRelDTOList = labelIssueRelDTOList;
     }
 
-    public List<IssueLinkDTO> getIssueLinkDTOList() {
-        return issueLinkDTOList;
-    }
-
-    public void setIssueLinkDTOList(List<IssueLinkDTO> issueLinkDTOList) {
-        this.issueLinkDTOList = issueLinkDTOList;
-    }
-
     public List<IssueCommentDTO> getIssueCommentDTOList() {
         return issueCommentDTOList;
     }
@@ -320,6 +316,30 @@ public class IssueSubDTO {
 
     public void setStatusColor(String statusColor) {
         this.statusColor = statusColor;
+    }
+
+    public List<ComponentIssueRelDTO> getComponentIssueRelDTOList() {
+        return componentIssueRelDTOList;
+    }
+
+    public void setComponentIssueRelDTOList(List<ComponentIssueRelDTO> componentIssueRelDTOList) {
+        this.componentIssueRelDTOList = componentIssueRelDTOList;
+    }
+
+    public String getAssigneeImageUrl() {
+        return assigneeImageUrl;
+    }
+
+    public void setAssigneeImageUrl(String assigneeImageUrl) {
+        this.assigneeImageUrl = assigneeImageUrl;
+    }
+
+    public String getReporterImageUrl() {
+        return reporterImageUrl;
+    }
+
+    public void setReporterImageUrl(String reporterImageUrl) {
+        this.reporterImageUrl = reporterImageUrl;
     }
 
     @Override

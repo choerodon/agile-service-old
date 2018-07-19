@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.ProjectInfoDTO;
+import io.choerodon.agile.app.assembler.ProjectInfoAssembler;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.domain.agile.event.ProjectEvent;
@@ -24,6 +25,8 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
     private ProjectInfoRepository projectInfoRepository;
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
+    @Autowired
+    private ProjectInfoAssembler projectInfoAssembler;
 
     @Override
     public void initializationProjectInfo(ProjectEvent projectEvent) {
@@ -53,4 +56,5 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
         projectInfoDO.setProjectId(projectId);
         return ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoDTO.class);
     }
+
 }

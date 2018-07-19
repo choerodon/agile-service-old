@@ -1,6 +1,5 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.mybatis.common.BaseMapper;
 import io.choerodon.agile.infra.dataobject.*;
 import org.apache.ibatis.annotations.Param;
@@ -35,7 +34,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     Integer queryBacklogIssueCount(@Param("projectId") Long projectId);
 
-    int batchIssueToVersion(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("issueIds") List<Long> issueIds);
+    int batchIssueToVersion(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date, @Param("userId") Long userId);
 
     int batchIssueToEpic(@Param("projectId") Long projectId, @Param("epicId") Long epicId, @Param("issueIds") List<Long> issueIds);
 
@@ -49,7 +48,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      */
     List<IssueDO> queryIssueEpicSelectList(@Param("projectId") Long projectId);
 
-    int batchRemoveFromVerion(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+    int batchRemoveFromVersion(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     String queryRank(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("outsetIssueId") Long outsetIssueId);
 
@@ -93,11 +92,15 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @param projectId          projectId
      * @param searchArgs         searchArgs
      * @param advancedSearchArgs advancedSearchArgs
+     * @param otherArgs          otherArgs
+     * @param content            content
      * @return IssueDO
      */
-    List<Long> queryIssueListWithoutSub(@Param("projectId") Long projectId,
-                                        @Param("searchArgs") Map<String, Object> searchArgs,
-                                        @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
+    List<IssueDO> queryIssueListWithoutSub(@Param("projectId") Long projectId,
+                                           @Param("searchArgs") Map<String, Object> searchArgs,
+                                           @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
+                                           @Param("otherArgs") Map<String, Object> otherArgs,
+                                           @Param("content") String content);
 
     List<IssueLabelDO> selectLabelNameByIssueId(@Param("issueId") Long issueId);
 
@@ -106,7 +109,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<Long> querySubTaskIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    int issueToDestinationByIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date);
+    int issueToDestinationByIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date, @Param("userId") Long userId);
 
     int batchUpdateIssueRank(@Param("projectId") Long projectId, @Param("moveIssues") List<MoveIssueDO> moveIssues);
 
@@ -114,7 +117,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     int removeIssueFromSprintByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-    int issueToSprint(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueId") Long issueId, @Param("date") Date date);
+    int issueToSprint(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueId") Long issueId, @Param("date") Date date, @Param("userId") Long userId);
 
     List<Long> querySubIssueIdsByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
@@ -126,7 +129,66 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<SprintNameDO> querySprintNameByIssueId(@Param("issueId") Long issueId);
 
-    IssueDO queryIssueByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+    IssueDO queryIssueSprintNotClosed(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
-    List queryIssueByOption(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("content") String content);
+    List queryIssueByOption(@Param("projectId") Long projectId,
+                            @Param("issueId") Long issueId,
+                            @Param("issueNum") String issueNum,
+                            @Param("self") Boolean self,
+                            @Param("content") String content);
+
+    List<ExportIssuesDO> queryExportIssues(@Param("projectId") Long projectId,
+                                           @Param("searchArgs") Map<String, Object> searchArgs,
+                                           @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
+                                           @Param("otherArgs") Map<String, Object> otherArgs,
+                                           @Param("content") String content);
+
+    List<SprintNameDO> querySprintNameByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
+    List<VersionIssueRelDO> queryVersionNameByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("relationType") String relationType);
+
+    ExportIssuesDO queryExportIssue(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+
+    List<VersionIssueRelDO> queryVersionNameByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("relationType") String fixRelationType);
+
+    List<String> queryComponentNameByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+
+    List<String> queryLabelNameByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+
+    List<ExportIssuesDO> querySubIssuesByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+
+    /**
+     * 根据issueIds查询issueEpic信息
+     *
+     * @param projectId projectId
+     * @param issueIds  issueIds
+     * @return IssueDO
+     */
+    List<IssueDO> queryIssueEpicInfoByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
+    IssueNumDO queryIssueByIssueNumOrIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("issueNum") String issueNum);
+
+    List<IssueInfoDO> listByIssueIds(@Param("projectId") Long prjectId, @Param("issueIds") List<Long> issueIds);
+
+    /**
+     * 根据参数查询issueList提供给测试模块
+     *
+     * @param projectId          projectId
+     * @param searchArgs         searchArgs
+     * @param advancedSearchArgs advancedSearchArgs
+     * @param otherArgs          otherArgs
+     * @param content            content
+     * @return IssueDO
+     */
+    List<IssueDO> listIssueWithoutSubToTestComponent(@Param("projectId") Long projectId,
+                                                     @Param("searchArgs") Map<String, Object> searchArgs,
+                                                     @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
+                                                     @Param("otherArgs") Map<String, Object> otherArgs,
+                                                     @Param("content") String content);
+
+    List<IssueCreationNumDO> queryIssueNumByTimeSlot(@Param("projectId") Long projectId,
+                                                     @Param("typeCode") String typeCode,
+                                                     @Param("timeSlot") Integer timeSlot);
+
+    List<Long> queryInVersionIssueIds(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("issueIds") List<Long> issueIds);
 }

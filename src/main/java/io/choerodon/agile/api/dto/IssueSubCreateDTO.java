@@ -2,7 +2,6 @@ package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -21,6 +20,8 @@ public class IssueSubCreateDTO {
 
     private Long assigneeId;
 
+    private Long reporterId;
+
     private Long projectId;
 
     private Long sprintId;
@@ -31,11 +32,9 @@ public class IssueSubCreateDTO {
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
+    private List<ComponentIssueRelDTO> componentIssueRelDTOList;
+
     private List<IssueLinkCreateDTO> issueLinkCreateDTOList;
-
-    private BigDecimal remainingTime;
-
-    private BigDecimal estimateTime;
 
     public String getIssueNum() {
         return issueNum;
@@ -117,28 +116,28 @@ public class IssueSubCreateDTO {
         this.issueLinkCreateDTOList = issueLinkCreateDTOList;
     }
 
-    public BigDecimal getRemainingTime() {
-        return remainingTime;
-    }
-
-    public void setRemainingTime(BigDecimal remainingTime) {
-        this.remainingTime = remainingTime;
-    }
-
-    public BigDecimal getEstimateTime() {
-        return estimateTime;
-    }
-
-    public void setEstimateTime(BigDecimal estimateTime) {
-        this.estimateTime = estimateTime;
-    }
-
     public Long getSprintId() {
         return sprintId;
     }
 
     public void setSprintId(Long sprintId) {
         this.sprintId = sprintId;
+    }
+
+    public List<ComponentIssueRelDTO> getComponentIssueRelDTOList() {
+        return componentIssueRelDTOList;
+    }
+
+    public void setComponentIssueRelDTOList(List<ComponentIssueRelDTO> componentIssueRelDTOList) {
+        this.componentIssueRelDTOList = componentIssueRelDTOList;
+    }
+
+    public Long getReporterId() {
+        return reporterId;
+    }
+
+    public void setReporterId(Long reporterId) {
+        this.reporterId = reporterId;
     }
 
     @Override

@@ -191,7 +191,7 @@ public class WorkLogServiceImpl implements WorkLogService {
         workLogDO.setProjectId(projectId);
         workLogDO.setLogId(logId);
         WorkLogDTO workLogDTO = ConvertHelper.convert(workLogMapper.selectOne(workLogDO), WorkLogDTO.class);
-        workLogDTO.setUserName(userRepository.queryUserNameByOption(workLogDTO.getUserId(), true));
+        workLogDTO.setUserName(userRepository.queryUserNameByOption(workLogDTO.getUserId(), true).getRealName());
         return workLogDTO;
     }
 

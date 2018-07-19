@@ -3,6 +3,7 @@ package io.choerodon.agile.domain.agile.rule;
 import io.choerodon.agile.api.dto.IssueCreateDTO;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.IssueSubCreateDTO;
+import io.choerodon.agile.api.dto.IssueTransformSubTask;
 import io.choerodon.agile.api.dto.IssueUpdateTypeDTO;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.domain.agile.entity.*;
@@ -145,11 +146,11 @@ public class IssueRule {
         if (issueE == null) {
             throw new CommonException("error.IssueUpdateTypeDTO.issueDO");
         }
+        if (issueUpdateTypeDTO.getTypeCode().equals(SUB_TASK)) {
+            throw new CommonException("error.IssueRule.subTask");
+        }
         if (issueUpdateTypeDTO.getTypeCode().equals(issueE.getTypeCode())) {
             throw new CommonException("error.IssueRule.sameTypeCode");
-        }
-        if (issueE.getTypeCode().equals(SUB_TASK)) {
-            throw new CommonException("error.IssueRule.subTask");
         }
         return issueE;
     }
@@ -176,4 +177,26 @@ public class IssueRule {
         return labelIssueRelMapper.selectOne(labelIssueRelDO) == null;
     }
 
+    public void verifyTransformedSubTask(IssueTransformSubTask issueTransformSubTask) {
+        if (issueTransformSubTask.getIssueId() == null) {
+            throw new CommonException(ERROR_ISSUE_ID_NOT_FOUND);
+        }
+        if (issueTransformSubTask.getParentIssueId() == null) {
+            throw new CommonException("error.IssueRule.parentIssueId");
+        }
+        if (issueTransformSubTask.getObjectVersionNumber() == null) {
+            throw new CommonException("error.IssueRule.objectVersionNumber");
+        }
+    }
+
+    public void verifySubTask(Long parentIssueId) {
+        IssueDO issueDO = new IssueDO();
+        issueDO.setIssueId(parentIssueId);
+        IssueDO query = issueMapper.selectByPrimaryKey(issueDO);
+        if (query == null) {
+            throw new CommonException("error.IssueRule.issueNoFound");
+        } else if (query.getTypeCode().equals(SUB_TASK)) {
+            throw new CommonException("error.IssueRule.parentIssueId");
+        }
+    }
 }

@@ -39,4 +39,5 @@ public interface ProjectInfoService {
      * @return ProjectInfoDTO
      */
     ProjectInfoDTO queryProjectInfoByProjectId(Long projectId);
+
 }

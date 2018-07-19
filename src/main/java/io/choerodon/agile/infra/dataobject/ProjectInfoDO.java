@@ -28,6 +28,21 @@ public class ProjectInfoDO extends AuditDomain {
 
     private Long issueMaxNum;
 
+    /**
+     * 默认经办人
+     */
+    private Long defaultAssigneeId;
+
+    /**
+     * 经办人策略
+     */
+    private String defaultAssigneeType;
+
+    /**
+     * 经办人策略
+     */
+    private String defaultPriorityCode;
+
     public Long getInfoId() {
         return infoId;
     }
@@ -58,6 +73,30 @@ public class ProjectInfoDO extends AuditDomain {
 
     public void setIssueMaxNum(Long issueMaxNum) {
         this.issueMaxNum = issueMaxNum;
+    }
+
+    public Long getDefaultAssigneeId() {
+        return defaultAssigneeId;
+    }
+
+    public void setDefaultAssigneeId(Long defaultAssigneeId) {
+        this.defaultAssigneeId = defaultAssigneeId;
+    }
+
+    public String getDefaultAssigneeType() {
+        return defaultAssigneeType;
+    }
+
+    public void setDefaultAssigneeType(String defaultAssigneeType) {
+        this.defaultAssigneeType = defaultAssigneeType;
+    }
+
+    public String getDefaultPriorityCode() {
+        return defaultPriorityCode;
+    }
+
+    public void setDefaultPriorityCode(String defaultPriorityCode) {
+        this.defaultPriorityCode = defaultPriorityCode;
     }
 
     @Override

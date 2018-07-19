@@ -49,4 +49,5 @@ public class IssueNumDO {
     public void setTypeCode(String typeCode) {
         this.typeCode = typeCode;
     }
+
 }

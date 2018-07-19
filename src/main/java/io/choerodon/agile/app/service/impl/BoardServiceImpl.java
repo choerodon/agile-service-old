@@ -4,9 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.BoardSprintDTO;
 import io.choerodon.agile.api.dto.IssueMoveDTO;
 import io.choerodon.agile.app.service.SprintService;
-import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
-import io.choerodon.agile.domain.agile.entity.DataLogE;
-import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.mapper.*;
@@ -15,8 +13,8 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.dto.BoardDTO;
 import io.choerodon.agile.app.service.BoardColumnService;
 import io.choerodon.agile.app.service.BoardService;
-import io.choerodon.agile.domain.agile.entity.BoardE;
 import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.core.oauth.DetailsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,9 +58,6 @@ public class BoardServiceImpl implements BoardService {
     private IssueMapper issueMapper;
 
     @Autowired
-    private DateUtil dateUtil;
-
-    @Autowired
     private ColumnStatusRelRepository columnStatusRelRepository;
 
     @Autowired
@@ -79,6 +74,12 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private DataLogRepository dataLogRepository;
+
+    @Autowired
+    private UserSettingMapper userSettingMapper;
+
+    @Autowired
+    private UserSettingRepository userSettingRepository;
 
 
     @Override
@@ -125,28 +126,67 @@ public class BoardServiceImpl implements BoardService {
         return columnsData;
     }
 
-    private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds) {
-        for (SubStatus status : subStatuses) {
-            for (IssueForBoardDO issue : status.getIssues()) {
-                if (issue.getParentIssueId() != null && issue.getParentIssueId() != 0 && !parentIds.contains(issue.getParentIssueId())) {
-                    parentIds.add(issue.getParentIssueId());
+    private void addIssueInfos(IssueForBoardDO issue, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds) {
+        if (issue.getParentIssueId() != null && issue.getParentIssueId() != 0 && !parentIds.contains(issue.getParentIssueId())) {
+            parentIds.add(issue.getParentIssueId());
+        } else {
+            ids.add(issue.getIssueId());
+        }
+        if (issue.getAssigneeId() != null && !assigneeIds.contains(issue.getAssigneeId())) {
+            assigneeIds.add(issue.getAssigneeId());
+        }
+        if (issue.getEpicId() != null && !epicIds.contains(issue.getEpicId())) {
+            epicIds.add(issue.getEpicId());
+        }
+    }
+
+    private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds) {
+        subStatuses.forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> addIssueInfos(issueForBoardDO, parentIds, assigneeIds, ids, epicIds)));
+    }
+
+
+    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds) {
+        //子任务经办人为自己，父任务经办人不为自己的情况
+        List<Long> issueIds = new ArrayList<>();
+        for (ColumnAndIssueDO column : columns) {
+            List<SubStatus> subStatuses = column.getSubStatuses();
+            getDatas(subStatuses, parentIds, assigneeIds, issueIds, epicIds);
+            Collections.sort(subStatuses, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
+        }
+        handleParentIdsWithSubIssues(parentIds, issueIds, columns, boardId);
+        Collections.sort(parentIds);
+        Collections.sort(assigneeIds);
+    }
+
+    private void handleParentIdsWithSubIssues(List<Long> parentIds, List<Long> issueIds, List<ColumnAndIssueDO> columns, Long boardId) {
+        if (parentIds != null && !parentIds.isEmpty()) {
+            List<Long> subNoParentIds = new ArrayList<>();
+            parentIds.forEach(id -> {
+                if (!issueIds.contains(id)) {
+                    subNoParentIds.add(id);
                 }
-                if (issue.getAssigneeId() != null && !assigneeIds.contains(issue.getAssigneeId())) {
-                    assigneeIds.add(issue.getAssigneeId());
-                }
+            });
+            if (!subNoParentIds.isEmpty()) {
+                List<ColumnAndIssueDO> subNoParentColumns = boardColumnMapper.queryColumnsByIssueIds(subNoParentIds, boardId);
+                subNoParentColumns.forEach(columnAndIssueDO -> handleSameColumn(columns,columnAndIssueDO));
             }
         }
     }
 
-    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds) {
-        for (ColumnAndIssueDO column : columns) {
-            List<SubStatus> subStatuses = column.getSubStatuses();
-            getDatas(subStatuses, parentIds, assigneeIds);
-            Collections.sort(subStatuses, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
+    private void handleSameColumn(List<ColumnAndIssueDO> columns, ColumnAndIssueDO columnAndIssueDO) {
+        Optional<ColumnAndIssueDO> sameColumn = columns.stream().filter(columnAndIssue -> columnAndIssue.getColumnId().equals(columnAndIssueDO.getColumnId()))
+                .findFirst();
+        if (sameColumn.isPresent()) {
+            sameColumn.get().getSubStatuses().forEach(subStatus -> columnAndIssueDO.getSubStatuses().forEach(s -> {
+                if (subStatus.getId().equals(s.getId())) {
+                    subStatus.getIssues().addAll(s.getIssues());
+                }
+            }));
+        } else {
+            columns.add(columnAndIssueDO);
         }
-        Collections.sort(parentIds);
-        Collections.sort(assigneeIds);
     }
+
 
     private SprintDO getActiveSprint(Long projectId) {
         return sprintService.getActiveSprint(projectId);
@@ -158,7 +198,7 @@ public class BoardServiceImpl implements BoardService {
             boardSprintDTO.setSprintId(activeSprint.getSprintId());
             boardSprintDTO.setSprintName(activeSprint.getSprintName());
             if (activeSprint.getEndDate() != null) {
-                boardSprintDTO.setDayRemain(dateUtil.differentDaysByMillisecond(new Date(), activeSprint.getEndDate()));
+                boardSprintDTO.setDayRemain(DateUtil.differentDaysByMillisecond(new Date(), activeSprint.getEndDate()));
             }
             return boardSprintDTO;
         }
@@ -197,10 +237,12 @@ public class BoardServiceImpl implements BoardService {
         }
         List<Long> assigneeIds = new ArrayList<>();
         List<Long> parentIds = new ArrayList<>();
+        List<Long> epicIds = new ArrayList<>();
         List<ColumnAndIssueDO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory, filterSql);
-        putDatasAndSort(columns, parentIds, assigneeIds);
+        putDatasAndSort(columns, parentIds, assigneeIds, boardId, epicIds);
         jsonObject.put("parentIds", parentIds);
         jsonObject.put("assigneeIds", assigneeIds);
+        jsonObject.put("epicInfo", !epicIds.isEmpty() ? boardColumnMapper.selectEpicBatchByIds(epicIds) : null);
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         columns.forEach(columnAndIssueDO -> columnAndIssueDO.getSubStatuses().forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> {
             String assigneeName = usersMap.get(issueForBoardDO.getAssigneeId()) != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getName() : null;
@@ -210,7 +252,23 @@ public class BoardServiceImpl implements BoardService {
         })));
         jsonObject.put("columnsData", putColumnData(columns));
         jsonObject.put("currentSprint", putCurrentSprint(activeSprint));
+        //处理用户默认看板设置，保存最近一次的浏览
+        handleUserSetting(boardId, projectId);
         return jsonObject;
+    }
+
+    private void handleUserSetting(Long boardId, Long projectId) {
+        UserSettingDO userSettingDO = new UserSettingDO();
+        userSettingDO.setProjectId(projectId);
+        userSettingDO.setUserId(DetailsHelper.getUserDetails().getUserId());
+        UserSettingDO query = userSettingMapper.selectOne(userSettingDO);
+        if (query == null) {
+            userSettingDO.setDefaultBoardId(boardId);
+            userSettingRepository.create(ConvertHelper.convert(userSettingDO, UserSettingE.class));
+        } else if (query.getDefaultBoardId() != null && !query.getDefaultBoardId().equals(boardId)) {
+            query.setDefaultBoardId(boardId);
+            userSettingRepository.update(ConvertHelper.convert(query, UserSettingE.class));
+        }
     }
 
     private BoardE createBoard(Long projectId, String boardName) {
@@ -316,8 +374,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public List<BoardDTO> queryByProjectId(Long projectId) {
-        BoardDO boardDO = new BoardDO();
-        boardDO.setProjectId(projectId);
-        return ConvertHelper.convertList(boardMapper.select(boardDO), BoardDTO.class);
+        Long userId = DetailsHelper.getUserDetails().getUserId();
+        return ConvertHelper.convertList(boardMapper.queryByProjectIdWithUser(userId, projectId), BoardDTO.class);
     }
 }

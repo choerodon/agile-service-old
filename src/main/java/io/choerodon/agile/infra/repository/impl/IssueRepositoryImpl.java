@@ -10,7 +10,6 @@ import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -23,7 +22,6 @@ import java.util.List;
  * @since 2018-05-14 20:30:48
  */
 @Component
-@Transactional(rollbackFor = CommonException.class)
 public class IssueRepositoryImpl implements IssueRepository {
 
     private static final String UPDATE_ERROR = "error.Issue.update";
@@ -83,8 +81,8 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public Boolean batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds) {
-        issueMapper.batchIssueToVersion(projectId, versionId, issueIds);
+    public Boolean batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds, Date date, Long userId) {
+        issueMapper.batchIssueToVersion(projectId, versionId, issueIds, date, userId);
         return true;
     }
 
@@ -96,7 +94,7 @@ public class IssueRepositoryImpl implements IssueRepository {
 
     @Override
     public int batchRemoveVersion(Long projectId, List<Long> issueIds) {
-        return issueMapper.batchRemoveFromVerion(projectId, issueIds);
+        return issueMapper.batchRemoveFromVersion(projectId, issueIds);
     }
 
     @Override
@@ -105,8 +103,8 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public int issueToDestinationByIds(Long projectId, Long sprintId, List<Long> issueIds, Date date) {
-        return issueMapper.issueToDestinationByIds(projectId, sprintId, issueIds, date);
+    public int issueToDestinationByIds(Long projectId, Long sprintId, List<Long> issueIds, Date date, Long userId) {
+        return issueMapper.issueToDestinationByIds(projectId, sprintId, issueIds, date, userId);
     }
 
     @Override
@@ -120,8 +118,8 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public int issueToSprint(Long projectId, Long sprintId, Long issueId, Date date) {
-        return issueMapper.issueToSprint(projectId, sprintId, issueId, date);
+    public int issueToSprint(Long projectId, Long sprintId, Long issueId, Date date, Long userId) {
+        return issueMapper.issueToSprint(projectId, sprintId, issueId, date, userId);
     }
 
     @Override

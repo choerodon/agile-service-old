@@ -2,6 +2,7 @@ package io.choerodon.agile.infra.dataobject;
 
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.mybatis.domain.AuditDomain;
 
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -12,7 +13,7 @@ import javax.validation.constraints.NotNull;
  * @since 2018-05-15 16:21:18
  */
 @Table(name = "agile_version_issue_rel")
-public class VersionIssueRelDO {
+public class VersionIssueRelDO extends AuditDomain{
 
     /**
      * version id
@@ -28,6 +29,9 @@ public class VersionIssueRelDO {
 
     @Transient
     private String name;
+
+    @Transient
+    private String statusCode;
 
     private String relationType;
 
@@ -71,6 +75,14 @@ public class VersionIssueRelDO {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    public String getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
     }
 
     @Override

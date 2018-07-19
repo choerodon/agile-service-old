@@ -24,6 +24,8 @@ public class BoardDTO {
 
     private Long objectVersionNumber;
 
+    private Boolean userDefault;
+
     public Long getBoardId() {
         return boardId;
     }
@@ -94,5 +96,13 @@ public class BoardDTO {
 
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
+    }
+
+    public Boolean getUserDefault() {
+        return userDefault;
+    }
+
+    public void setUserDefault(Boolean userDefault) {
+        this.userDefault = userDefault;
     }
 }

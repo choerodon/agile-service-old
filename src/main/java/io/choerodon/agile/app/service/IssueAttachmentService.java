@@ -24,4 +24,14 @@ public interface IssueAttachmentService {
      * @return int
      */
     int deleteByIssueId(Long issueId);
+
+    /**
+     * 生成issueAttachment记录并生成日志（用于复制issue）
+     *
+     * @param projectId projectId
+     * @param issueId   issueId
+     * @param fileName  fileName
+     * @param url       url
+     */
+    void dealIssue(Long projectId, Long issueId, String fileName, String url);
 }

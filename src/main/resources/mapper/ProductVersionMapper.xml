@@ -230,10 +230,10 @@
 
     <insert id="issueToDestination">
         INSERT IGNORE INTO agile_version_issue_rel
-        (version_id, issue_id, project_id, relation_type) values
+        (version_id, issue_id, project_id, relation_type, creation_date, last_update_date, created_by, last_updated_by) values
         <foreach collection="versionIssues" item="versionIssue" index="index"
                  separator=",">
-            (#{targetVersionId}, #{versionIssue.issueId}, #{projectId}, #{versionIssue.relationType})
+            (#{targetVersionId}, #{versionIssue.issueId}, #{projectId}, #{versionIssue.relationType}, #{date}, #{date}, #{userId}, #{userId})
         </foreach>
     </insert>
 
@@ -253,14 +253,20 @@
     </select>
 
     <select id="queryIssueByVersionIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
-        SELECT ai.issue_id, avir.relation_type
+        SELECT DISTINCT(ai.issue_id), avir.relation_type
         FROM agile_version_issue_rel avir, agile_issue ai
         WHERE ai.project_id = #{projectId} AND avir.issue_id = ai.issue_id
+               AND avir.relation_type = 'fix'
                AND avir.version_id IN
                <foreach collection="versionIds" item="versionId" index="index"
                         open="(" close=")" separator=",">
                    #{versionId}
                </foreach>
+               AND ai.issue_id NOT IN
+               ( SELECT issue_id
+                 FROM agile_version_issue_rel
+                 WHERE project_id = #{projectId} AND version_id = #{targetVersionId}
+               )
     </select>
 
     <delete id="deleteByVersionIds">
@@ -318,6 +324,27 @@
         LEFT JOIN agile_lookup_value alv ON apv.status_code = alv.value_code
         WHERE
             apv.project_id = #{projectId}
+    </select>
+
+    <select id="selectVersionRelsByIssueId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDO">
+        SELECT
+          avir.version_id AS version_id,
+          avir.issue_id AS issue_id,
+          apv.`name`
+        FROM
+            agile_version_issue_rel avir
+        LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
+        WHERE avir.project_id = #{projectId}
+        AND avir.issue_id = #{issueId}
+    </select>
+
+    <select id="listIds" resultType="java.lang.Long">
+        SELECT
+            version_id
+        FROM
+            agile_product_version
+        ORDER BY
+            version_id
     </select>
 
 </mapper>

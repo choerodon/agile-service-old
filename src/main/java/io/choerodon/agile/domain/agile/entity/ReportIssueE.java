@@ -105,4 +105,18 @@ public class ReportIssueE {
     public String toString() {
         return StringUtil.getToString(this);
     }
+
+    public void initStartSprint(Date startDate) {
+        this.date = startDate;
+        this.type = "startSprint";
+        this.oldValue = 0;
+        this.newValue = 0;
+    }
+
+    public void initEndSprint(Date actualEndDate) {
+        this.date = actualEndDate;
+        this.type = "endSprint";
+        this.oldValue = 0;
+        this.newValue = 0;
+    }
 }

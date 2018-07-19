@@ -52,14 +52,4 @@ public class ProjectInfoController {
                 .orElseThrow(() -> new CommonException("error.projectInfo.queryProjectInfoByProjectId"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("项目code重名校验")
-    @PostMapping("check")
-    public ResponseEntity<Boolean> checkProjectCode(@ApiParam(value = "项目id", required = true)
-                                                    @PathVariable(name = "project_id") Long projectId,
-                                                    @RequestParam String projectName) {
-        return Optional.ofNullable(projectInfoService.checkProjectCode(projectName))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.projectInfo.checkProjectCode"));
-    }
 }

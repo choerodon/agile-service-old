@@ -1,11 +1,12 @@
 package io.choerodon.agile.app.service;
 
-
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -62,7 +63,7 @@ public interface IssueService {
      * @param issueId   issueId
      * @return int
      */
-    int deleteIssue(Long projectId, Long issueId);
+    void deleteIssue(Long projectId, Long issueId);
 
     /**
      * 创建issue子任务
@@ -115,5 +116,42 @@ public interface IssueService {
 
     Page<IssueCommonDTO> listByOptions(Long projectId, String typeCode, PageRequest pageRequest);
 
-    Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String content, PageRequest pageRequest);
+    Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Boolean self, String content, PageRequest pageRequest);
+
+    void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response);
+
+    void exportIssue(Long projectId, Long issueId, HttpServletRequest request, HttpServletResponse response);
+
+    /**
+     * 根据issueId复制一个issue
+     *
+     * @param projectId        projectId
+     * @param issueId          issueId
+     * @param copyConditionDTO copyConditionDTO
+     * @return IssueDTO
+     */
+    IssueDTO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO);
+
+    /**
+     * 根据issueId转换为子任务
+     *
+     * @param projectId             projectId
+     * @param issueTransformSubTask issueTransformSubTask
+     * @return IssueSubDTO
+     */
+    IssueSubDTO transformedSubTask(Long projectId, IssueTransformSubTask issueTransformSubTask);
+
+    List<IssueInfoDTO> listByIssueIds(Long projectId, List<Long> issueIds);
+
+    /**
+     * 参数查询issueList提供给测试模块
+     *
+     * @param projectId   projectId
+     * @param searchDTO   searchDTO
+     * @param pageRequest pageRequest
+     * @return IssueListDTO
+     */
+    Page<IssueListDTO> listIssueWithoutSubToTestComponent(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
+
+    List<IssueCreationNumDTO> queryIssueNumByTimeSlot(Long projectId, String typeCode, Integer timeSlot);
 }

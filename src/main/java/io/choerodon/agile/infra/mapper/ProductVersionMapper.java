@@ -50,7 +50,7 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
 
     List<ProductVersionNameDO> queryPlanVersionNames(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
-    int issueToDestination(@Param("projectId") Long projectId, @Param("targetVersionId") Long targetVersionId, @Param("versionIssues") List<VersionIssueDO> versionIssues);
+    int issueToDestination(@Param("projectId") Long projectId, @Param("targetVersionId") Long targetVersionId, @Param("versionIssues") List<VersionIssueDO> versionIssues, @Param("date") Date date, @Param("userId") Long userId);
 
     int releaseVersion(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("releaseDate") Date releaseDate);
 
@@ -66,7 +66,11 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
 
     List<ProductVersionCommonDO> listByProjectId(@Param("projectId") Long projectId);
 
-    List<VersionIssueDO> queryIssueByVersionIds(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds);
+    List<VersionIssueDO> queryIssueByVersionIds(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds, @Param("targetVersionId") Long targetVersionId);
 
     int deleteByVersionIds(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds);
+
+    List<ProductVersionDO> selectVersionRelsByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+
+    List<Long> listIds();
 }

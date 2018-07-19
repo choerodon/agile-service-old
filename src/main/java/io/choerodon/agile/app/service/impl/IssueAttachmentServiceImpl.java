@@ -74,7 +74,8 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
         }
     }
 
-    private void dealIssue(Long projectId, Long issueId, String fileName, String url) {
+    @Override
+    public void dealIssue(Long projectId, Long issueId, String fileName, String url) {
         IssueAttachmentE issueAttachmentE = new IssueAttachmentE();
         issueAttachmentE.setProjectId(projectId);
         issueAttachmentE.setIssueId(issueId);

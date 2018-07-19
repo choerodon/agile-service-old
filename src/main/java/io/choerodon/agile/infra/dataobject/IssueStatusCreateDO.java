@@ -12,6 +12,10 @@ public class IssueStatusCreateDO {
 
     private String categoryCode;
 
+    private Boolean completed;
+
+    private String name;
+
     public Long getId() {
         return id;
     }
@@ -26,6 +30,22 @@ public class IssueStatusCreateDO {
 
     public void setCategoryCode(String categoryCode) {
         this.categoryCode = categoryCode;
+    }
+
+    public Boolean getCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override

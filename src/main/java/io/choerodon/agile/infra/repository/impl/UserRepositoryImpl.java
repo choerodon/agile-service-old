@@ -24,16 +24,17 @@ public class UserRepositoryImpl implements UserRepository {
     private UserFeignClient userFeignClient;
 
     @Override
-    public String queryUserNameByOption(Long userId, Boolean withId) {
+    public UserDO queryUserNameByOption(Long userId, Boolean withId) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         if (userId == null || userId == 0) {
-            return null;
+            return new UserDO();
         } else {
             UserDO userDO = userFeignClient.query(customUserDetails.getOrganizationId(), userId).getBody();
             if (withId) {
-                return userDO.getLoginName() + "-" + userDO.getRealName();
+                userDO.setRealName(userDO.getLoginName() + userDO.getRealName());
+                return userDO;
             } else {
-                return userDO.getRealName();
+                return userDO;
             }
         }
     }

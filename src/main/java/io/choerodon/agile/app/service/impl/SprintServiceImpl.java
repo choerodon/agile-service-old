@@ -84,6 +84,7 @@ public class SprintServiceImpl implements SprintService {
     private static final String SPRINT_REPORT_ERROR = "error.sprint.report";
     private static final String SPRINT_PLANNING_CODE = "sprint_planning";
     private static final String FIEID_SPRINT = "Sprint";
+    private static final String ISSUE_TYPE_TEST_CODE = "issue_test";
 
     @Override
     public SprintDetailDTO createSprint(Long projectId) {
@@ -119,20 +120,20 @@ public class SprintServiceImpl implements SprintService {
         List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
         String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
         String oldSprintNameStr = sprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
-        String newSprintIdStr = "";
-        String newSprintNameStr = "";
+        StringBuilder newSprintIdStr = new StringBuilder();
+        StringBuilder newSprintNameStr = new StringBuilder();
         int idx = 0;
         for (SprintNameDTO sprintName : sprintNames) {
             if (sprintId.equals(sprintName.getSprintId())) {
                 continue;
             }
             if (idx == 0) {
-                newSprintIdStr = sprintName.getSprintId().toString();
-                newSprintNameStr = sprintName.getSprintName();
+                newSprintIdStr.append(sprintName.getSprintId().toString());
+                newSprintNameStr.append(sprintName.getSprintName());
                 idx++;
             } else {
-                newSprintIdStr = newSprintIdStr + "," + sprintName.getSprintId().toString();
-                newSprintNameStr = newSprintNameStr + "," + sprintName.getSprintName();
+                newSprintIdStr.append("," + sprintName.getSprintId().toString());
+                newSprintNameStr.append("," + sprintName.getSprintName());
             }
         }
         String oldValue = oldSprintIdStr;
@@ -143,8 +144,8 @@ public class SprintServiceImpl implements SprintService {
         dataLogE.setIssueId(issueId);
         dataLogE.setOldValue("".equals(oldValue) ? null : oldValue);
         dataLogE.setOldString("".equals(oldString) ? null : oldString);
-        dataLogE.setNewValue("".equals(newSprintIdStr) ? null : newSprintIdStr);
-        dataLogE.setNewString("".equals(newSprintNameStr) ? null : newSprintNameStr);
+        dataLogE.setNewValue(newSprintIdStr.length() == 0 ? null : newSprintIdStr.toString());
+        dataLogE.setNewString(newSprintNameStr.length() == 0 ? null : newSprintNameStr.toString());
         return dataLogE;
     }
 
@@ -193,7 +194,8 @@ public class SprintServiceImpl implements SprintService {
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
     }
 
-    private String getQuickFilter(List<Long> quickFilterIds) {
+    @Override
+    public String getQuickFilter(List<Long> quickFilterIds) {
         List<String> sqlQuerys = quickFilterMapper.selectSqlQueryByIds(quickFilterIds);
         if (sqlQuerys.isEmpty()) {
             return null;
@@ -204,7 +206,7 @@ public class SprintServiceImpl implements SprintService {
             if (idx != 0) {
                 sql.append(" and " + " ( " + filter + " ) ");
             } else {
-                sql.append(" ( " +filter + " ) ");
+                sql.append(" ( " + filter + " ) ");
                 idx += 1;
             }
         }
@@ -229,7 +231,9 @@ public class SprintServiceImpl implements SprintService {
         SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintMapper.queryActiveSprint(projectId));
         if (activeSprint != null) {
             activeSprintId = activeSprint.getSprintId();
-            List<AssigneeIssueDTO> assigneeIssues = issueSearchAssembler.doListToAssigneeIssueDTO(sprintMapper.queryAssigneeIssueCountById(projectId, activeSprintId, customUserDetails.getUserId(), StringUtil.cast(result.get(ADVANCED_SEARCH_ARGS)), filterSql), usersMap);
+            List<AssigneeIssueDTO> assigneeIssues = issueSearchAssembler.doListToAssigneeIssueDTO(sprintMapper.queryAssigneeIssueCountById(projectId, activeSprintId, customUserDetails.getUserId(), StringUtil.cast(result.get(ADVANCED_SEARCH_ARGS)), filterSql, true), usersMap);
+            List<AssigneeIssueDTO> unassignedIssues = issueSearchAssembler.doListToAssigneeIssueDTO(sprintMapper.queryAssigneeIssueCountById(projectId, activeSprintId, customUserDetails.getUserId(), StringUtil.cast(result.get(ADVANCED_SEARCH_ARGS)), filterSql, false), usersMap);
+            assigneeIssues.addAll(unassignedIssues);
             activeSprint.setAssigneeIssues(assigneeIssues);
             activeSprint.setIssueCount(sprintMapper.queryIssueCount(projectId, activeSprintId));
             activeSprint.setTodoStoryPoint(sprintMapper.queryStoryPoint(projectId, activeSprintId, customUserDetails.getUserId(), CATEGORY_TODO_CODE, StringUtil.cast(result.get(ADVANCED_SEARCH_ARGS)), filterSql));
@@ -241,16 +245,22 @@ public class SprintServiceImpl implements SprintService {
         if (!planSprints.isEmpty()) {
             List<Long> planSprintIds = planSprints.stream().map(SprintSearchDTO::getSprintId).collect(Collectors.toList());
             Map<Long, Integer> issueCountMap = sprintMapper.queryIssueCountMap(projectId, planSprintIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-            Map<Long, List<AssigneeIssueDTO>> assigneeIssueMap = issueSearchAssembler.doListToAssigneeIssueDTO(sprintMapper.queryAssigneeIssueCount(projectId, planSprintIds, customUserDetails.getUserId(), StringUtil.cast(result.get(ADVANCED_SEARCH_ARGS)), filterSql), usersMap).stream().collect(Collectors.groupingBy(AssigneeIssueDTO::getSprintId));
+            Map<Long, List<AssigneeIssueDTO>> assigneeIssueMap = issueSearchAssembler.doListToAssigneeIssueDTO(sprintMapper.queryAssigneeIssueCount(projectId, planSprintIds, customUserDetails.getUserId(), StringUtil.cast(result.get(ADVANCED_SEARCH_ARGS)), filterSql, true), usersMap).stream().collect(Collectors.groupingBy(AssigneeIssueDTO::getSprintId));
+            Map<Long, List<AssigneeIssueDTO>> unassignedIssueMap = issueSearchAssembler.doListToAssigneeIssueDTO(sprintMapper.queryAssigneeIssueCount(projectId, planSprintIds, customUserDetails.getUserId(), StringUtil.cast(result.get(ADVANCED_SEARCH_ARGS)), filterSql, false), usersMap).stream().collect(Collectors.groupingBy(AssigneeIssueDTO::getSprintId));
             planSprints.forEach(planSprint -> {
+                List<AssigneeIssueDTO> assigneeIssues = new ArrayList<>();
+                List<AssigneeIssueDTO> assigneeIssue = assigneeIssueMap.get(planSprint.getSprintId());
+                List<AssigneeIssueDTO> unassignedIssue = unassignedIssueMap.get(planSprint.getSprintId());
+                assigneeIssues.addAll(assigneeIssue != null ? assigneeIssue : new ArrayList<>());
+                assigneeIssues.addAll(unassignedIssue != null ? unassignedIssue : new ArrayList<>());
                 planSprint.setIssueCount(issueCountMap.get(planSprint.getSprintId()));
-                planSprint.setAssigneeIssues(assigneeIssueMap.get(planSprint.getSprintId()));
+                planSprint.setAssigneeIssues(assigneeIssues);
             });
             sprintSearchs.addAll(planSprints);
         }
         Long finalActiveSprintId = activeSprintId;
         Map<Long, List<IssueSearchDTO>> issuesMap = issues.stream().filter(issue -> issue.getSprintId() != null && (Objects.equals(issue.getSprintId(), finalActiveSprintId) || !Objects.equals(issue.getCategoryCode(), CATEGORY_DONE_CODE))).collect(Collectors.groupingBy(IssueSearchDTO::getSprintId));
-        List<IssueSearchDTO> backLogIssue = issues.stream().filter(issue -> (issue.getSprintId() == null || Objects.equals(issue.getSprintId(), 0L)) && !Objects.equals(issue.getCategoryCode(), CATEGORY_DONE_CODE)).collect(Collectors.toList());
+        List<IssueSearchDTO> backLogIssue = issues.stream().filter(issue -> (issue.getSprintId() == null || Objects.equals(issue.getSprintId(), 0L)) && !Objects.equals(issue.getTypeCode(), ISSUE_TYPE_TEST_CODE) && !Objects.equals(issue.getCategoryCode(), CATEGORY_DONE_CODE)).collect(Collectors.toList());
         sprintSearchs.forEach(sprintSearch -> sprintSearch.setIssueSearchDTOList(issuesMap.get(sprintSearch.getSprintId())));
         Integer backlogIssueCount = issueMapper.queryBacklogIssueCount(projectId);
         BackLogIssueDTO backLogIssueDTO = new BackLogIssueDTO(backlogIssueCount, backLogIssue);
@@ -329,6 +339,7 @@ public class SprintServiceImpl implements SprintService {
     }
 
     private void moveNotDoneIssueToTargetSprint(Long projectId, SprintCompleteDTO sprintCompleteDTO) {
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
         Long targetSprintId = sprintCompleteDTO.getIncompleteIssuesDestination();
         List<Long> moveIssueRankIds = sprintMapper.queryIssueIdOrderByRankDesc(projectId, sprintCompleteDTO.getSprintId());
@@ -343,7 +354,7 @@ public class SprintServiceImpl implements SprintService {
             for (Long issueId : moveIssueIds) {
                 newDataLogs.add(getNewDataLog(projectId, issueId, sprintCompleteDTO.getIncompleteIssuesDestination()));
             }
-            issueRepository.issueToDestinationByIds(projectId, targetSprintId, moveIssueIds, new Date());
+            issueRepository.issueToDestinationByIds(projectId, targetSprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
             dataLogCompleteSprint(newDataLogs);
         }
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
@@ -372,7 +383,7 @@ public class SprintServiceImpl implements SprintService {
     public SprintCompleteMessageDTO queryCompleteMessageBySprintId(Long projectId, Long sprintId) {
         SprintCompleteMessageDTO sprintCompleteMessage = new SprintCompleteMessageDTO();
         sprintCompleteMessage.setSprintNames(sprintNameAssembler.doListToDTO(sprintMapper.queryPlanSprintName(projectId)));
-        sprintCompleteMessage.setParentsDoneUnfinishedSubtasks(issueAssembler.issueNumDOToIssueNumDTO(sprintMapper.queryParentsDoneUnfinishedSubtasks(projectId, sprintId)));
+        sprintCompleteMessage.setParentsDoneUnfinishedSubtasks(issueAssembler.issueNumDOListToIssueNumDTO(sprintMapper.queryParentsDoneUnfinishedSubtasks(projectId, sprintId)));
         sprintCompleteMessage.setIncompleteIssues(sprintMapper.queryNotDoneIssueCount(projectId, sprintId));
         sprintCompleteMessage.setPartiallyCompleteIssues(sprintMapper.queryDoneIssueCount(projectId, sprintId));
         return sprintCompleteMessage;
@@ -457,7 +468,10 @@ public class SprintServiceImpl implements SprintService {
 
     private void updateReportIssue(IssueDO reportIssue, Map<Long, SprintReportIssueStatusDO> reportIssueStoryPointsMap, Map<Long, SprintReportIssueStatusDO> reportIssueBeforeStatusMap, Map<Long, SprintReportIssueStatusDO> reportIssueAfterStatusMap, List<Long> issueIdAddList) {
         SprintReportIssueStatusDO issueStoryPoints = reportIssueStoryPointsMap.get(reportIssue.getIssueId());
-        Integer storyPoints = issueStoryPoints == null ? 0 : Integer.parseInt(issueStoryPoints.getStoryPoints());
+        Integer storyPoints = 0;
+        if(issueStoryPoints != null){
+            storyPoints = issueStoryPoints.getStoryPoints() == null ? 0 : Integer.parseInt(issueStoryPoints.getStoryPoints());
+        }
         SprintReportIssueStatusDO issueBeforeStatus = reportIssueBeforeStatusMap.get(reportIssue.getIssueId());
         SprintReportIssueStatusDO issueAfterStatus = reportIssueAfterStatusMap.get(reportIssue.getIssueId());
         String statusCode;

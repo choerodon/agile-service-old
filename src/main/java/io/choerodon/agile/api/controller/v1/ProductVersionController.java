@@ -149,6 +149,18 @@ public class ProductVersionController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation(value = "版本详情")
+    @GetMapping(value = "/{versionId}/detail")
+    public ResponseEntity<ProductVersionDetailDTO> queryVersionByVersionId(@ApiParam(value = "项目id", required = true)
+                                                                                         @PathVariable(name = "project_id") Long projectId,
+                                                                                         @ApiParam(value = "versionId", required = true)
+                                                                                         @PathVariable Long versionId) {
+        return Optional.ofNullable(productVersionService.queryVersionByVersionId(projectId, versionId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException(QUERY_ERROR));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "获取版本下指定状态的issue")
     @GetMapping(value = "/{versionId}/issues")
     public ResponseEntity<List<IssueListDTO>> queryByVersionIdAndStatusCode(@ApiParam(value = "项目id", required = true)
@@ -236,7 +248,7 @@ public class ProductVersionController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation(value = "根据状态查询档版本名")
+    @ApiOperation(value = "根据状态查询版本名")
     @PostMapping(value = "/names")
     public ResponseEntity<List<ProductVersionNameDTO>> queryNameByOptions(@ApiParam(value = "项目id", required = true)
                                                                           @PathVariable(name = "project_id") Long projectId,
@@ -267,5 +279,15 @@ public class ProductVersionController {
         return Optional.ofNullable(productVersionService.mergeVersion(projectId, productVersionMergeDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(REVOKE_ARCHIVED_ERROR));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation(value = "查找所有项目的version ids")
+    @GetMapping(value = "/ids")
+    public ResponseEntity<List<Long>> listIds(@ApiParam(value = "项目id", required = true)
+                                               @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(productVersionService.listIds(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.versionIds.get"));
     }
 }

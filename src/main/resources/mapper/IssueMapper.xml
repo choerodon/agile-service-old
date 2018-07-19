@@ -107,28 +107,60 @@
     <select id="queryVersionIssueRelByIssueId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueRelDO">
         SELECT
             avir.*,
-            apr.name
+            apr.name,
+            apr.status_code
         FROM agile_version_issue_rel avir LEFT JOIN agile_product_version apr ON avir.version_id = apr.version_id
         WHERE avir.issue_id = #{issueId}
     </select>
 
+    <select id="queryVersionNameByIssueIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueRelDO">
+        SELECT
+        avir.*,
+        apr.name
+        FROM agile_version_issue_rel avir LEFT JOIN agile_product_version apr ON avir.version_id = apr.version_id
+        WHERE avir.project_id = #{projectId}
+        <if test='relationType != null and relationType != ""'>
+            AND avir.relation_type = #{relationType}
+        </if>
+        AND avir.issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+    </select>
+
     <select id="queryCloseSprintNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
         SELECT
-        asp.sprint_id, asp.sprint_name
+            asp.sprint_id,
+            asp.sprint_name
         FROM agile_issue_sprint_rel aisr, agile_sprint asp
         WHERE aisr.issue_id = #{issueId} AND aisr.sprint_id = asp.sprint_id AND asp.status_code = 'closed'
     </select>
 
     <select id="querySprintNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
         SELECT
-        asp.sprint_id, asp.sprint_name
+            asp.sprint_id,
+            asp.sprint_name
         FROM agile_issue_sprint_rel aisr, agile_sprint asp
         WHERE aisr.issue_id = #{issueId} AND aisr.sprint_id = asp.sprint_id
     </select>
 
+    <select id="querySprintNameByIssueIds" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+        SELECT
+        aisr.issue_id, asp.sprint_name
+        FROM agile_issue_sprint_rel aisr, agile_sprint asp
+        WHERE aisr.project_id = #{projectId} AND aisr.sprint_id = asp.sprint_id AND asp.status_code = 'closed'
+        AND aisr.issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+    </select>
+
     <select id="queryActiveSprintNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
         SELECT
-        asp.sprint_id, asp.sprint_name
+            asp.sprint_id,
+            asp.sprint_name
         FROM agile_issue_sprint_rel aisr, agile_sprint asp
         WHERE aisr.issue_id = #{issueId} AND aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
     </select>
@@ -168,6 +200,7 @@
             ai.summary,
             ai.priority_code,
             ai.assignee_id,
+            ai.remaining_time,
             ai.project_id,
             ais.category_code                              AS status_code,
             ais.name                                       AS status_name,
@@ -180,6 +213,7 @@
     </select>
 
     <select id="queryIssueListWithoutSub" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT search.* from (
         SELECT
         ai.issue_id,
         ai.type_code,
@@ -187,6 +221,7 @@
         ai.priority_code,
         ai.assignee_id,
         ai.project_id,
+        ai.status_id,
         alv.name AS priority_name,
         ais.category_code AS status_code,
         ais.name AS status_name,
@@ -198,9 +233,6 @@
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
                 AND position(#{searchArgs.summary} IN ai.summary)
-            </if>
-            <if test='searchArgs.issueNum != null and searchArgs.issueNum != ""'>
-                AND position(#{searchArgs.issueNum} IN ai.issue_num)
             </if>
             <if test='searchArgs.assigneeId != null and searchArgs.assigneeId != ""'>
                 AND ai.assignee_id = #{searchArgs.assigneeId}
@@ -228,19 +260,67 @@
                 </foreach>
             </if>
         </if>
+        <if test='otherArgs != null'>
+            <if test='otherArgs.type != null and otherArgs.type != "" and
+            otherArgs.id != null and otherArgs.id.size > 0'>
+                AND ai.issue_id in (
+                SELECT oa.issue_id FROM
+                <if test='otherArgs.type == "component" '>
+                    agile_component_issue_rel oa WHERE oa.component_id
+                </if>
+                <if test='otherArgs.type == "version" '>
+                    agile_version_issue_rel oa WHERE oa.version_id
+                </if>
+                <if test='otherArgs.type == "sprint" '>
+                    agile_issue_sprint_rel oa where oa.sprint_id
+                </if>
+                <if test='otherArgs.type == "label" '>
+                    agile_label_issue_rel oa where oa.label_id
+                </if>
+                in
+                <foreach collection="otherArgs.id" item="id" open="(" separator=","
+                         close=")">
+                    #{id}
+                </foreach>
+                )
+            </if>
+            <if test='otherArgs.issueIds != null and otherArgs.issueIds.size > 0'>
+                AND ai.issue_id in
+                <foreach collection="otherArgs.issueIds" item="issueId" open="(" separator=","
+                         close=")">
+                    #{issueId}
+                </foreach>
+            </if>
+        </if>
+        )search where 1=1
+        <if test='searchArgs != null'>
+            <if test='searchArgs.issueNum != null and searchArgs.issueNum != ""'>
+                AND position(#{searchArgs.issueNum} IN search.issue_num)
+            </if>
+        </if>
+        <if test='content != null and content != ""'>
+            AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE CONCAT(CONCAT('%',
+            #{content}), '%'))
+        </if>
     </select>
 
     <select id="queryIssueByOption" resultType="io.choerodon.agile.infra.dataobject.IssueNumDO">
         SELECT
-        ai.issue_id,   ai.summary,
+        ai.issue_id, ai.summary,
         ai.project_id, ai.type_code,
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task'
-        AND ai.issue_id != #{issueId}
+        <if test="issueId != null">
+            AND ai.issue_id != #{issueId}
+        </if>
+        <if test="issueNum != null">
+            AND ai.issue_num != #{issueNum}
+        </if>
         <if test='content != null'>
-            AND (ai.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR ai.summary LIKE CONCAT(CONCAT('%', #{content}), '%'))
+            AND (ai.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR ai.summary LIKE CONCAT(CONCAT('%',
+            #{content}), '%'))
         </if>
     </select>
 
@@ -399,21 +479,40 @@
     <select id="queryBacklogIssueCount" resultType="java.lang.Integer">
         SELECT COUNT(1)
         FROM agile_issue ai
-        LEFT JOIN agile_issue_sprint_rel aisr ON aisr.issue_id = ai.issue_id,
-        agile_issue_status ais
-        WHERE ai.project_id = #{projectId} AND (aisr.sprint_id IS NULL OR aisr.sprint_id = 0)
+            LEFT JOIN (SELECT
+                           aisr.issue_id,
+                           asp.sprint_id
+                       FROM agile_issue_sprint_rel aisr, agile_sprint asp
+                       WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
+                      ) asp1 ON asp1.issue_id = ai.issue_id
+            ,
+            agile_issue_status ais
+        WHERE ai.project_id = #{projectId} AND (asp1.sprint_id IS NULL OR asp1.sprint_id = 0)
               AND ai.status_id = ais.id AND ais.category_code != 'done'
-              AND ai.type_code NOT IN ('sub_task', 'issue_epic')
+              AND ai.type_code NOT IN ('sub_task', 'issue_epic', 'issue_test')
     </select>
 
     <insert id="batchIssueToVersion">
         INSERT IGNORE INTO agile_version_issue_rel
-        (version_id, issue_id, project_id, relation_type) values
+        (version_id, issue_id, project_id, relation_type, creation_date, last_update_date, created_by, last_updated_by)
+        values
         <foreach collection="issueIds" item="issueId" index="index"
                  separator=",">
-            (#{versionId}, #{issueId}, #{projectId}, 'fix')
+            (#{versionId}, #{issueId}, #{projectId}, 'fix', #{date}, #{date}, #{userId}, #{userId})
         </foreach>
     </insert>
+
+    <select id="queryInVersionIssueIds" resultType="java.lang.Long">
+        SELECT DISTINCT(ai.issue_id)
+        FROM agile_issue ai
+             LEFT JOIN agile_version_issue_rel avir ON avir.issue_id = ai.issue_id
+        WHERE ai.project_id = #{projectId} AND avir.version_id = #{versionId}
+              AND ai.issue_id IN
+              <foreach collection="issueIds" item="issueId" open="("
+                     separator="," close=")">
+                  #{issueId}
+              </foreach>
+    </select>
 
     <update id="batchIssueToEpic">
         UPDATE agile_issue
@@ -488,16 +587,19 @@
         </foreach>
     </select>
 
-    <select id="queryIssueByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+    <select id="queryIssueSprintNotClosed" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
         SELECT
-        ai.issue_id, asp1.sprint_id,
-        ai.status_id
+            ai.issue_id,
+            asp1.sprint_id,
+            ai.status_id
         FROM agile_issue ai
-        LEFT JOIN (SELECT aisr.issue_id, asp.sprint_id
-        FROM agile_issue_sprint_rel aisr, agile_sprint asp
-        WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
-              AND aisr.issue_id = #{issueId}
-        ) asp1 ON asp1.issue_id = ai.issue_id
+            LEFT JOIN (SELECT
+                           aisr.issue_id,
+                           asp.sprint_id
+                       FROM agile_issue_sprint_rel aisr, agile_sprint asp
+                       WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
+                             AND aisr.issue_id = #{issueId}
+                      ) asp1 ON asp1.issue_id = ai.issue_id
         WHERE ai.project_id = #{projectId} AND ai.issue_id = #{issueId}
     </select>
 
@@ -526,10 +628,15 @@
             AND type_code = 'issue_epic'
     </select>
 
-    <delete id="batchRemoveFromVerion">
-        DELETE
-        FROM agile_version_issue_rel
-        WHERE project_id = #{projectId} AND relation_type = 'fix' AND issue_id IN
+    <delete id="batchRemoveFromVersion">
+        DELETE avir
+        FROM
+        agile_version_issue_rel avir,
+        agile_product_version apv
+        WHERE
+        apv.version_id = avir.version_id
+        AND apv.status_code != 'archived'
+        WHERE avir.project_id = #{projectId} AND avir.relation_type = 'fix' AND avir.issue_id IN
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
             #{issueId}
@@ -622,14 +729,13 @@
     </update>
 
     <select id="selectLabelNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueLabelDO">
-        SELECT
-            ail.*
+        SELECT ail.*
         FROM
             agile_label_issue_rel alir,
             agile_issue_label ail
         WHERE
             ail.label_id = alir.label_id
-        AND alir.issue_id = #{issueId}
+            AND alir.issue_id = #{issueId}
     </select>
 
     <select id="listByOptions" resultType="io.choerodon.agile.infra.dataobject.IssueCommonDO">
@@ -640,13 +746,13 @@
             ai.priority_code,
             ai.assignee_id,
             ai.project_id,
-            alv.name AS priority_name,
-            ais.category_code AS status_code,
-            ais.name AS status_name,
-            CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
+            alv.name                                       AS priority_name,
+            ais.category_code                              AS status_code,
+            ais.name                                       AS status_name,
+            CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num
         FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
-        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
-        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+            LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
+            LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         WHERE ai.project_id = #{projectId} AND ai.type_code = #{typeCode} AND ai.type_code != 'sub_task'
     </select>
 
@@ -677,23 +783,388 @@
 
     <insert id="issueToDestinationByIds">
         INSERT IGNORE INTO agile_issue_sprint_rel
-        (issue_id, sprint_id, project_id, creation_date, last_update_date) VALUES
+        (issue_id, sprint_id, project_id, creation_date, last_update_date, created_by, last_updated_by) VALUES
         <foreach collection="issueIds" item="issueId" index="index"
                  separator=",">
-            (#{issueId}, #{sprintId}, #{projectId}, #{date}, #{date})
+            (#{issueId}, #{sprintId}, #{projectId}, #{date}, #{date}, #{userId}, #{userId})
         </foreach>
     </insert>
 
     <insert id="issueToSprint">
         INSERT IGNORE
-        INTO agile_issue_sprint_rel(issue_id, sprint_id, project_id, creation_date, last_update_date)
-        VALUES (#{issueId}, #{sprintId}, #{projectId}, #{date}, #{date})
+        INTO agile_issue_sprint_rel (issue_id, sprint_id, project_id, creation_date, last_update_date, created_by, last_updated_by)
+        VALUES (#{issueId}, #{sprintId}, #{projectId}, #{date}, #{date}, #{userId}, #{userId})
     </insert>
 
     <select id="querySubIssueIdsByIssueId" resultType="java.lang.Long">
         SELECT issue_id
         FROM agile_issue
         WHERE project_id = #{projectId} AND parent_issue_id = #{issueId}
+    </select>
+
+    <select id="queryExportIssues" resultType="io.choerodon.agile.infra.dataobject.ExportIssuesDO">
+        SELECT search.* from (SELECT
+        ai.issue_id,
+        ai.issue_num,
+        ai.summary,
+        ai.assignee_id,
+        ai.reporter_id,
+        alv.name AS type_name,
+        ais.name AS status_name,
+        ai.description,
+        asp1.sprint_name,
+        ai.creation_date,
+        ai.last_update_date,
+        alv1.name AS priority_name,
+        IF((ai.parent_issue_id IS NULL OR ai.parent_issue_id = 0), '否', '是') AS sub_task,
+        ai.estimate_time,
+        ai.remaining_time
+        FROM agile_issue ai
+        LEFT JOIN agile_lookup_value alv ON alv.value_code = ai.type_code
+        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+        LEFT JOIN agile_lookup_value alv1 ON alv1.value_code = ai.priority_code
+        LEFT JOIN (SELECT
+        aisr.issue_id,
+        asp.sprint_name
+        FROM agile_issue_sprint_rel aisr, agile_sprint asp
+        WHERE aisr.project_id = #{projectId} AND aisr.sprint_id = asp.sprint_id
+        AND asp.status_code != 'closed'
+        ) asp1 ON asp1.issue_id = ai.issue_id
+        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task'
+        <if test='searchArgs != null'>
+            <if test='searchArgs.summary != null and searchArgs.summary != "" '>
+                AND position(#{searchArgs.summary} IN ai.summary)
+            </if>
+            <if test='searchArgs.assigneeId != null and searchArgs.assigneeId != ""'>
+                AND ai.assignee_id = #{searchArgs.assigneeId}
+            </if>
+        </if>
+        <if test='advancedSearchArgs != null'>
+            <if test='advancedSearchArgs.typeCode != null and advancedSearchArgs.typeCode.size > 0'>
+                AND ai.type_code IN
+                <foreach collection="advancedSearchArgs.typeCode" item="typeCode" open="(" separator="," close=")">
+                    #{typeCode}
+                </foreach>
+            </if>
+            <if test='advancedSearchArgs.priorityCode != null and advancedSearchArgs.priorityCode.size > 0'>
+                AND ai.priority_code IN
+                <foreach collection="advancedSearchArgs.priorityCode" item="priorityCode" open="(" separator=","
+                         close=")">
+                    #{priorityCode}
+                </foreach>
+            </if>
+            <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
+                AND ais.category_code IN
+                <foreach collection="advancedSearchArgs.statusCode" item="statusCode" open="(" separator=","
+                         close=")">
+                    #{statusCode}
+                </foreach>
+            </if>
+        </if>
+        <if test='otherArgs != null'>
+            <if test='otherArgs.type != null and otherArgs.type != "" and
+                                otherArgs.id != null and otherArgs.id.size > 0'>
+                AND ai.issue_id in (
+                SELECT oa.issue_id FROM
+                <if test='otherArgs.type == "component" '>
+                    agile_component_issue_rel oa WHERE oa.component_id
+                </if>
+                <if test='otherArgs.type == "version" '>
+                    agile_version_issue_rel oa WHERE oa.version_id
+                </if>
+                <if test='otherArgs.type == "sprint" '>
+                    agile_issue_sprint_rel oa where oa.sprint_id
+                </if>
+                in
+                <foreach collection="otherArgs.id" item="issueId" open="(" separator=","
+                         close=")">
+                    #{issueId}
+                </foreach>
+                )
+            </if>
+            <if test='otherArgs.issueIds != null and otherArgs.issueIds.size > 0'>
+                AND ai.issue_id in
+                <foreach collection="otherArgs.issueIds" item="issueId" open="(" separator=","
+                         close=")">
+                    #{issueId}
+                </foreach>
+            </if>
+        </if>
+        )search where 1=1
+        <if test='searchArgs != null'>
+            <if test='searchArgs.issueNum != null and searchArgs.issueNum != ""'>
+                AND position(#{searchArgs.issueNum} IN search.issue_num)
+            </if>
+        </if>
+        <if test='content != null and content != ""'>
+            AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE CONCAT(CONCAT('%',
+            #{content}), '%'))
+        </if>
+    </select>
+
+    <select id="queryExportIssue" resultType="io.choerodon.agile.infra.dataobject.ExportIssuesDO">
+        SELECT
+            ai.issue_id,
+            ai.issue_num,
+            ai.summary,
+            ai.assignee_id,
+            ai.reporter_id,
+            alv.name                                                                          AS type_name,
+            ais.name                                                                          AS status_name,
+            ai.description,
+            asp1.sprint_name,
+            ai.creation_date,
+            ai.last_update_date,
+            alv1.name                                                                         AS priority_name,
+            IF((ai.parent_issue_id IS NULL OR ai.parent_issue_id = 0), '否',
+               '是')                                                                           AS sub_task,
+            ai.estimate_time,
+            ai.remaining_time,
+            ai.estimate_time +
+            sumtime.sumEstimateTime                                                           AS sumEstimateTime,
+            ai.remaining_time +
+            sumtime.sumRemainingTime                                                          AS sumRemainingTime,
+            ai2.epic_name                                                                     AS epicName,
+            ai.story_points                                                                   AS storyPoints,
+            (SELECT alv2.name
+             FROM agile_issue ai1, agile_issue_status ais1, agile_lookup_value alv2
+             WHERE ai1.issue_id = #{issueId} AND ai1.status_id = ais1.id AND ais1.category_code =
+                                                                             alv2.value_code) AS solution
+        FROM agile_issue ai
+            LEFT JOIN (SELECT
+                           parent_issue_id,
+                           SUM(estimate_time)  AS sumEstimateTime,
+                           SUM(remaining_time) AS sumRemainingTime
+                       FROM agile_issue
+                       WHERE parent_issue_id = #{issueId}
+                       GROUP BY parent_issue_id
+                      ) sumtime ON sumtime.parent_issue_id = ai.issue_id
+            LEFT JOIN agile_issue ai2 ON ai.epic_id = ai2.issue_id
+            LEFT JOIN agile_lookup_value alv ON alv.value_code = ai.type_code
+            LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+            LEFT JOIN agile_lookup_value alv1 ON alv1.value_code = ai.priority_code
+            LEFT JOIN (SELECT
+                           aisr.issue_id,
+                           asp.sprint_name
+                       FROM agile_issue_sprint_rel aisr, agile_sprint asp
+                       WHERE aisr.project_id = #{projectId} AND aisr.issue_id = #{issueId}
+                             AND aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
+                      ) asp1 ON asp1.issue_id = ai.issue_id
+        WHERE ai.project_id = #{projectId} AND ai.issue_id = #{issueId}
+    </select>
+
+    <select id="queryVersionNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueRelDO">
+        SELECT
+        avir.*,
+        apr.name
+        FROM agile_version_issue_rel avir LEFT JOIN agile_product_version apr ON avir.version_id = apr.version_id
+        WHERE avir.project_id = #{projectId}
+        <if test='relationType != null and relationType != ""'>
+            AND avir.relation_type = #{relationType}
+        </if>
+        AND avir.issue_id = #{issueId}
+    </select>
+
+    <select id="queryComponentNameByIssueId" resultType="java.lang.String">
+        SELECT aic.name
+        FROM agile_component_issue_rel acir, agile_issue_component aic
+        WHERE acir.project_id = #{projectId} AND acir.issue_id = #{issueId}
+              AND acir.component_id = aic.component_id
+    </select>
+
+    <select id="queryLabelNameByIssueId" resultType="java.lang.String">
+        SELECT ail.label_name
+        FROM agile_label_issue_rel alir, agile_issue_label ail
+        WHERE alir.issue_id = #{issueId} AND alir.label_id = ail.label_id
+              AND ail.project_id = #{projectId}
+    </select>
+
+    <select id="querySubIssuesByIssueId" resultType="io.choerodon.agile.infra.dataobject.ExportIssuesDO">
+        SELECT
+            ai.issue_id,
+            ai.issue_num,
+            ai.summary,
+            ai.assignee_id,
+            ai.reporter_id,
+            alv.name AS type_name,
+            ais.name AS status_name
+        FROM agile_issue ai
+            LEFT JOIN agile_lookup_value alv ON alv.value_code = ai.type_code
+            LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+        WHERE ai.project_id = #{projectId} AND ai.parent_issue_id = #{issueId}
+    </select>
+
+    <select id="queryIssueEpicInfoByIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        select ai.* from agile_issue ai where ai.issue_id in
+        <foreach collection="issueIds" item="issueId" open="(" separator=","
+                 close=")">
+            #{issueId}
+        </foreach>
+    </select>
+
+    <select id="queryIssueByIssueNumOrIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueNumDO">
+        SELECT
+        ai.issue_id, ai.summary,
+        ai.project_id, ai.type_code,
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
+        FROM agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN agile_lookup_value alv ON alv.value_code = ai.type_code
+        WHERE ai.project_id = #{projectId}
+        <choose>
+            <when test="issueId != null">
+                AND ai.issue_id = #{issueId}
+            </when>
+            <when test="issueNum != null">
+                AND ai.issue_num = #{issueNum}
+            </when>
+            <otherwise>
+                AND FALSE
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="listByIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueInfoDO">
+        SELECT
+        ai.issue_id,
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
+        FROM agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        WHERE ai.issue_id IN
+        <foreach collection="issueIds" item="issueId" open="(" separator=","
+                 close=")">
+            #{issueId}
+        </foreach>
+        ORDER BY ai.issue_id
+    </select>
+
+    <select id="listIssueWithoutSubToTestComponent" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT search.* from (
+        SELECT
+        ai.issue_id,
+        ai.type_code,
+        ai.summary,
+        ai.status_id,
+        ai.priority_code,
+        ai.assignee_id,
+        ai.project_id,
+        alv.name AS priority_name,
+        ais.category_code AS status_code,
+        ais.name AS status_name,
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
+        FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task'
+        <if test='searchArgs != null'>
+            <if test='searchArgs.summary != null and searchArgs.summary != "" '>
+                AND position(#{searchArgs.summary} IN ai.summary)
+            </if>
+            <if test='searchArgs.assigneeId != null and searchArgs.assigneeId != ""'>
+                AND ai.assignee_id = #{searchArgs.assigneeId}
+            </if>
+        </if>
+        <if test='advancedSearchArgs != null'>
+            <if test='advancedSearchArgs.typeCode != null and advancedSearchArgs.typeCode.size > 0'>
+                AND ai.type_code IN
+                <foreach collection="advancedSearchArgs.typeCode" item="typeCode" open="(" separator="," close=")">
+                    #{typeCode}
+                </foreach>
+            </if>
+            <if test='advancedSearchArgs.priorityCode != null and advancedSearchArgs.priorityCode.size > 0'>
+                AND ai.priority_code IN
+                <foreach collection="advancedSearchArgs.priorityCode" item="priorityCode" open="(" separator=","
+                         close=")">
+                    #{priorityCode}
+                </foreach>
+            </if>
+            <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
+                AND ais.category_code IN
+                <foreach collection="advancedSearchArgs.statusCode" item="statusCode" open="(" separator=","
+                         close=")">
+                    #{statusCode}
+                </foreach>
+            </if>
+        </if>
+        <if test='otherArgs != null'>
+            <if test='otherArgs.component != null and otherArgs.component.size > 0'>
+                AND ai.issue_id in (
+                SELECT acir.issue_id FROM
+                agile_component_issue_rel acir WHERE acir.component_id
+                in
+                <foreach collection="otherArgs.component" item="componentId" open="(" separator=","
+                         close=")">
+                    #{componentId}
+                </foreach>
+                )
+            </if>
+            <if test='otherArgs.version != null and otherArgs.version.size > 0'>
+                AND ai.issue_id in (
+                SELECT avir.issue_id FROM
+                agile_version_issue_rel avir WHERE avir.version_id
+                in
+                <foreach collection="otherArgs.version" item="versionId" open="(" separator=","
+                         close=")">
+                    #{versionId}
+                </foreach>
+                )
+            </if>
+            <if test='otherArgs.sprint != null and otherArgs.sprint.size > 0'>
+                AND ai.issue_id in (
+                SELECT aisr.issue_id FROM
+                agile_issue_sprint_rel aisr where aisr.sprint_id
+                in
+                <foreach collection="otherArgs.sprint" item="sprintId" open="(" separator=","
+                         close=")">
+                    #{sprintId}
+                </foreach>
+                )
+            </if>
+            <if test='otherArgs.label != null and otherArgs.label.size > 0'>
+                AND ai.issue_id in (
+                SELECT alir.issue_id FROM
+                agile_label_issue_rel alir where alir.label_id
+                in
+                <foreach collection="otherArgs.label" item="labelId" open="(" separator=","
+                         close=")">
+                    #{labelId}
+                </foreach>
+                )
+            </if>
+            <if test='otherArgs.issueIds != null and otherArgs.issueIds.size > 0'>
+                AND ai.issue_id in
+                <foreach collection="otherArgs.issueIds" item="issueId" open="(" separator=","
+                         close=")">
+                    #{issueId}
+                </foreach>
+            </if>
+        </if>
+        )search where search.type_code = 'issue_test'
+        <if test='searchArgs != null'>
+            <if test='searchArgs.issueNum != null and searchArgs.issueNum != ""'>
+                AND position(#{searchArgs.issueNum} IN search.issue_num)
+            </if>
+        </if>
+        <if test='content != null and content != ""'>
+            AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE CONCAT(CONCAT('%',
+            #{content}), '%'))
+        </if>
+    </select>
+
+    <select id="queryIssueNumByTimeSlot" resultType="io.choerodon.agile.infra.dataobject.IssueCreationNumDO">
+        SELECT
+            DATE_FORMAT(creation_date, '%Y-%m-%d') AS creation_day,
+            COUNT(issue_id)                        AS issue_count
+        FROM
+            agile_issue
+        WHERE
+            project_id = #{projectId}
+            AND type_code = #{typeCode}
+            AND DATE_SUB(now(), INTERVAL #{timeSlot} DAY) &lt;= creation_date
+        GROUP BY
+            DATE_FORMAT(creation_date, '%Y-%m-%d')
+        ORDER BY
+            creation_day
     </select>
 
 </mapper>

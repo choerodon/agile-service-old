@@ -1,11 +1,7 @@
 package io.choerodon.agile.infra.mapper;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.choerodon.agile.domain.agile.entity.SprintE;
-import io.choerodon.agile.infra.dataobject.IssueDO;
-import io.choerodon.agile.infra.dataobject.ReportIssueDO;
-import io.choerodon.agile.infra.dataobject.SprintDO;
-import io.choerodon.agile.infra.dataobject.SprintReportIssueStatusDO;
+import io.choerodon.agile.infra.dataobject.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -271,4 +267,55 @@ public interface ReportMapper {
      * @return Boolean
      */
     Boolean checkIssueRemove(@Param("issueId") Long issueId, @Param("date") Date date, @Param("sprintId") Long sprintId);
+
+    /**
+     * 获取累积流量图符合条件的所有issue
+     *
+     * @param projectId projectId
+     * @param filterSql filterSql
+     * @return Long
+     */
+    List<Long> queryAllIssueIdsByFilter(@Param("projectId") Long projectId, @Param("filterSql") String filterSql);
+
+    /**
+     * 获取累积流量图符合条件的所有issue
+     *
+     * @param startDate   startDate
+     * @param endDate     endDate
+     * @param allIssueIds allIssueIds
+     * @param columnIds   columnIds
+     * @return ColumnChangeDO
+     */
+    List<ColumnChangeDO> queryAddIssueDuringDate(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("allIssueIds") List<Long> allIssueIds, @Param("columnIds") List<Long> columnIds);
+
+    /**
+     * 查询时间范围内的列变化（累积流图）
+     *
+     * @param startDate   startDate
+     * @param endDate     endDate
+     * @param allIssueIds allIssueIds
+     * @param columnIds   columnIds
+     * @return ColumnChangeDO
+     */
+    List<ColumnChangeDO> queryChangeIssueDuringDate(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("allIssueIds") List<Long> allIssueIds, @Param("columnIds") List<Long> columnIds);
+
+    List queryReportIssues(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("status") String status, @Param("type") String type);
+
+    List<VersionIssueChangeDO> queryChangeIssue(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+    List<Long> queryIssueIdByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+
+    List<IssueChangeDO> queryChangeFieldIssue(@Param("projectId") Long projectId, @Param("versionIssues") List<VersionIssueChangeDO> versionIssues, @Param("field") String field);
+
+    List<VersionIssueChangeDO> queryCompletedChangeIssue(@Param("projectId") Long projectId, @Param("versionIssues") List<VersionIssueChangeDO> versionIssues, @Param("completed") Boolean completed);
+
+    List<IssueChangeDO> queryChangIssue(@Param("projectId") Long projectId, @Param("changeIssues") List<VersionIssueChangeDO> changeIssues, @Param("field") String field);
+
+    Integer queryTotalField(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("field") String field);
+
+    Integer queryCompleteField(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("field") String field);
+
+    Integer queryUnEstimateCount(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("field") String field);
+
+    Integer queryCompletedIssueCount(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 }

@@ -10,8 +10,6 @@ import java.util.List;
  */
 public class IssueCreateDTO {
 
-    private String issueNum;
-
     private String typeCode;
 
     private String summary;
@@ -22,13 +20,13 @@ public class IssueCreateDTO {
 
     private Long assigneeId;
 
+    private Long reporterId;
+
     private Long projectId;
 
     private Long epicId;
 
     private Long sprintId;
-
-    private Integer storyPoints;
 
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
@@ -36,21 +34,11 @@ public class IssueCreateDTO {
 
     private List<ComponentIssueRelDTO> componentIssueRelDTOList;
 
-    private List<IssueLinkCreateDTO> issueLinkCreateDTOList;
-
     private BigDecimal remainingTime;
 
     private BigDecimal estimateTime;
 
     private String epicName;
-
-    public String getIssueNum() {
-        return issueNum;
-    }
-
-    public void setIssueNum(String issueNum) {
-        this.issueNum = issueNum;
-    }
 
     public String getTypeCode() {
         return typeCode;
@@ -116,14 +104,6 @@ public class IssueCreateDTO {
         this.sprintId = sprintId;
     }
 
-    public Integer getStoryPoints() {
-        return storyPoints;
-    }
-
-    public void setStoryPoints(Integer storyPoints) {
-        this.storyPoints = storyPoints;
-    }
-
     public List<VersionIssueRelDTO> getVersionIssueRelDTOList() {
         return versionIssueRelDTOList;
     }
@@ -148,14 +128,6 @@ public class IssueCreateDTO {
         this.componentIssueRelDTOList = componentIssueRelDTOList;
     }
 
-    public List<IssueLinkCreateDTO> getIssueLinkCreateDTOList() {
-        return issueLinkCreateDTOList;
-    }
-
-    public void setIssueLinkCreateDTOList(List<IssueLinkCreateDTO> issueLinkCreateDTOList) {
-        this.issueLinkCreateDTOList = issueLinkCreateDTOList;
-    }
-
     public BigDecimal getRemainingTime() {
         return remainingTime;
     }
@@ -178,6 +150,14 @@ public class IssueCreateDTO {
 
     public void setEpicName(String epicName) {
         this.epicName = epicName;
+    }
+
+    public Long getReporterId() {
+        return reporterId;
+    }
+
+    public void setReporterId(Long reporterId) {
+        this.reporterId = reporterId;
     }
 
     @Override
