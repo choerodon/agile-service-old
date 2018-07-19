@@ -322,12 +322,12 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         if (productVersionDO == null) {
             throw new CommonException("error.productVersion.get");
         }
-        for (Long issueId : versionIssueIds) {
+        for (Long versionIssueId : versionIssueIds) {
             DataLogE dataLogE = new DataLogE();
             dataLogE.setProjectId(projectId);
-            dataLogE.setIssueId(issueId);
+            dataLogE.setIssueId(versionIssueId);
             dataLogE.setField(FIELD_FIX_VERSION);
-            dataLogE.setNewValue(productVersionDO.getVersionId().toString());
+            dataLogE.setNewValue(versionId.toString());
             dataLogE.setNewString(productVersionDO.getName());
             dataLogRepository.create(dataLogE);
         }
