@@ -306,7 +306,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             throw new CommonException(SOURCE_VERSION_ERROR);
         }
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
+        List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds(), productVersionMergeDTO.getTargetVersionId());
         versionIssueRelRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         if (!versionIssues.isEmpty()) {
             List<Long> versionIssueIds = versionIssues.stream().map(VersionIssueDO::getIssueId).collect(Collectors.toList());

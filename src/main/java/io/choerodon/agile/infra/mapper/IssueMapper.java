@@ -189,4 +189,6 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     List<IssueCreationNumDO> queryIssueNumByTimeSlot(@Param("projectId") Long projectId,
                                                      @Param("typeCode") String typeCode,
                                                      @Param("timeSlot") Integer timeSlot);
+
+    List<Long> queryInVersionIssueIds(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("issueIds") List<Long> issueIds);
 }

@@ -253,14 +253,20 @@
     </select>
 
     <select id="queryIssueByVersionIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
-        SELECT ai.issue_id, avir.relation_type
+        SELECT DISTINCT(ai.issue_id), avir.relation_type
         FROM agile_version_issue_rel avir, agile_issue ai
         WHERE ai.project_id = #{projectId} AND avir.issue_id = ai.issue_id
+               AND avir.relation_type = 'fix'
                AND avir.version_id IN
                <foreach collection="versionIds" item="versionId" index="index"
                         open="(" close=")" separator=",">
                    #{versionId}
                </foreach>
+               AND ai.issue_id NOT IN
+               ( SELECT issue_id
+                 FROM agile_version_issue_rel
+                 WHERE project_id = #{projectId} AND version_id = #{targetVersionId}
+               )
     </select>
 
     <delete id="deleteByVersionIds">

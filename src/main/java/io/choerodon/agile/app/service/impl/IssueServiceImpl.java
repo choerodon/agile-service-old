@@ -820,7 +820,9 @@ public class IssueServiceImpl implements IssueService {
         if (versionId != null && !Objects.equals(versionId, 0L)) {
             productVersionRule.judgeExist(projectId, versionId);
             issueRepository.batchIssueToVersion(projectId, versionId, issueIds, new Date(), customUserDetails.getUserId());
-            dataLogVersionByAdd(projectId, versionId, issueIds);
+            List<Long> logAddIssueIds = new ArrayList<>(issueIds);
+            logAddIssueIds.removeAll(issueMapper.queryInVersionIssueIds(projectId, versionId, issueIds));
+            dataLogVersionByAdd(projectId, versionId, logAddIssueIds);
         } else {
             Map map = getVersionIssueRelsByBatch(projectId, issueIds);
             issueRepository.batchRemoveVersion(projectId, issueIds);
