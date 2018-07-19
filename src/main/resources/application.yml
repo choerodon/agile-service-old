@@ -18,6 +18,14 @@ spring:
             brokers: 127.0.0.1:9092
             zkNodes: 127.0.0.1:2181
         default-binder: kafka
+    config:
+      failFast: true
+      retry:
+        maxAttempts: 6
+        multiplier: 1.5
+        maxInterval: 2000
+      uri: localhost:8010
+      enabled: false
   sleuth:
     integration:
       enabled: false

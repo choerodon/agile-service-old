@@ -45,6 +45,7 @@ env:
     SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES: zookeeper-0.zookeeper-headless.zookeeper.svc.cluster.local:2181,zookeeper-1.zookeeper-headless.zookeeper.svc.cluster.local:2181,zookeeper-2.zookeeper-headless.zookeeper.svc.cluster.local:2181
     SPRING_CLOUD_CONFIG_URI: http://config-server.io-choerodon:8010/
     SERVICES_ATTACHMENT_URL: example.com
+    SPRING_CLOUD_CONFIG_ENABLED: true
 
 metrics:
   path: /prometheus
