@@ -300,7 +300,7 @@ public class ReportServiceImpl implements ReportService {
             List<IssueChangeDTO> unCompletedIssue = changeIssueNowDate(unCompletedIssuesMap, date);
             List<IssueChangeDTO> addIssue = changeIssueNowDate(addIssuesMap, date);
             List<IssueChangeDTO> removeIssue = changeIssueNowDate(removeIssuesMap, date);
-            Integer addCompletedCount = addIssue.stream().filter(addChangIsse -> addChangIsse.getCompleted() && !completedIssueIds.contains(addChangIsse.getIssueId())).collect(Collectors.toList()).size();
+            Integer addCompletedCount = addIssue.stream().filter(addChangeIssue -> addChangeIssue.getCompleted() && !completedIssueIds.contains(addChangeIssue.getIssueId())).collect(Collectors.toList()).size();
             Integer removeCompletedCount = removeIssue.stream().filter(IssueChangeDTO::getCompleted).collect(Collectors.toList()).size();
             nowIssueCount = nowIssueCount - addIssue.size() + removeIssue.size();
             nowCompletedIssueCount = nowCompletedIssueCount - completedIssue.size() + unCompletedIssue.size() - addCompletedCount + removeCompletedCount;
