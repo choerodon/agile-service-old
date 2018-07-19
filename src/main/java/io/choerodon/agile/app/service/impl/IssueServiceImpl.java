@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1556,12 +1557,24 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void copyStoryPointAndRemainingTimeData(IssueDetailDO issueDetailDO, Long projectId, IssueDTO newIssue) {
+        Boolean condition = (issueDetailDO.getStoryPoints() == null || issueDetailDO.getStoryPoints() == 0) &&
+                (issueDetailDO.getEstimateTime() == null || issueDetailDO.getEstimateTime().compareTo(BigDecimal.ZERO) == 0);
+        if (condition) {
+            return;
+        }
         IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO();
         issueUpdateDTO.setStoryPoints(issueDetailDO.getStoryPoints());
         issueUpdateDTO.setRemainingTime(issueDetailDO.getRemainingTime());
         issueUpdateDTO.setIssueId(newIssue.getIssueId());
         issueUpdateDTO.setObjectVersionNumber(newIssue.getObjectVersionNumber());
-        updateIssue(projectId, issueUpdateDTO, Lists.newArrayList(STORY_POINTS_FIELD, REMAIN_TIME_FIELD));
+        List<String> fieldList = new ArrayList<>();
+        if (issueDetailDO.getStoryPoints() != null && issueDetailDO.getStoryPoints() != 0) {
+            fieldList.add(STORY_POINTS_FIELD);
+        }
+        if (issueDetailDO.getRemainingTime() != null && issueDetailDO.getEstimateTime().compareTo(BigDecimal.ZERO) != 0) {
+            fieldList.add(REMAIN_TIME_FIELD);
+        }
+        updateIssue(projectId, issueUpdateDTO, fieldList);
     }
 
     private void copySubIssue(IssueDO issueDO, Long newIssueId, IssueLinkTypeDO issueLinkTypeDO, CopyConditionDTO copyConditionDTO, Long projectId) {
@@ -1577,11 +1590,13 @@ public class IssueServiceImpl implements IssueService {
         //复制冲刺
         handleCreateCopyIssueSprintRel(copyConditionDTO.getSprintValues(), subIssueDetailDO, newSubIssue.getIssueId());
         //复制剩余工作量并记录日志
-        IssueUpdateDTO subIssueUpdateDTO = new IssueUpdateDTO();
-        subIssueUpdateDTO.setRemainingTime(issueDO.getRemainingTime());
-        subIssueUpdateDTO.setIssueId(newSubIssue.getIssueId());
-        subIssueUpdateDTO.setObjectVersionNumber(newSubIssue.getObjectVersionNumber());
-        updateIssue(projectId, subIssueUpdateDTO, Lists.newArrayList(REMAIN_TIME_FIELD));
+        if (issueDO.getEstimateTime() != null && issueDO.getEstimateTime().compareTo(BigDecimal.ZERO) != 0) {
+            IssueUpdateDTO subIssueUpdateDTO = new IssueUpdateDTO();
+            subIssueUpdateDTO.setRemainingTime(issueDO.getRemainingTime());
+            subIssueUpdateDTO.setIssueId(newSubIssue.getIssueId());
+            subIssueUpdateDTO.setObjectVersionNumber(newSubIssue.getObjectVersionNumber());
+            updateIssue(projectId, subIssueUpdateDTO, Lists.newArrayList(REMAIN_TIME_FIELD));
+        }
     }
 
     private void handleCreateCopyIssueSprintRel(Boolean sprintValues, IssueDetailDO issueDetailDO, Long newIssueId) {
