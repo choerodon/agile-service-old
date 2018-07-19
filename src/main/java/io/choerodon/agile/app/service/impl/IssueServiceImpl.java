@@ -1557,9 +1557,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void copyStoryPointAndRemainingTimeData(IssueDetailDO issueDetailDO, Long projectId, IssueDTO newIssue) {
-        Boolean condition = (issueDetailDO.getStoryPoints() == null || issueDetailDO.getStoryPoints() == 0) &&
-                (issueDetailDO.getEstimateTime() == null || issueDetailDO.getEstimateTime().compareTo(BigDecimal.ZERO) == 0);
-        if (condition) {
+        if (issueDetailDO.getStoryPoints() == null && issueDetailDO.getEstimateTime() == null) {
             return;
         }
         IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO();
@@ -1568,10 +1566,10 @@ public class IssueServiceImpl implements IssueService {
         issueUpdateDTO.setIssueId(newIssue.getIssueId());
         issueUpdateDTO.setObjectVersionNumber(newIssue.getObjectVersionNumber());
         List<String> fieldList = new ArrayList<>();
-        if (issueDetailDO.getStoryPoints() != null && issueDetailDO.getStoryPoints() != 0) {
+        if (issueDetailDO.getStoryPoints() != null) {
             fieldList.add(STORY_POINTS_FIELD);
         }
-        if (issueDetailDO.getRemainingTime() != null && issueDetailDO.getEstimateTime().compareTo(BigDecimal.ZERO) != 0) {
+        if (issueDetailDO.getRemainingTime() != null) {
             fieldList.add(REMAIN_TIME_FIELD);
         }
         updateIssue(projectId, issueUpdateDTO, fieldList);
@@ -1590,7 +1588,7 @@ public class IssueServiceImpl implements IssueService {
         //复制冲刺
         handleCreateCopyIssueSprintRel(copyConditionDTO.getSprintValues(), subIssueDetailDO, newSubIssue.getIssueId());
         //复制剩余工作量并记录日志
-        if (issueDO.getEstimateTime() != null && issueDO.getEstimateTime().compareTo(BigDecimal.ZERO) != 0) {
+        if (issueDO.getEstimateTime() != null) {
             IssueUpdateDTO subIssueUpdateDTO = new IssueUpdateDTO();
             subIssueUpdateDTO.setRemainingTime(issueDO.getRemainingTime());
             subIssueUpdateDTO.setIssueId(newSubIssue.getIssueId());
