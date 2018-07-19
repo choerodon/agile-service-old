@@ -1,5 +1,6 @@
 package io.choerodon.agile.domain.agile.repository;
 
+import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 
 import java.util.List;
@@ -16,9 +17,9 @@ public interface UserRepository {
      *
      * @param userId userId
      * @param withId withId
-     * @return String
+     * @return userDO
      */
-    String queryUserNameByOption(Long userId, Boolean withId);
+    UserDO queryUserNameByOption(Long userId, Boolean withId);
 
     Map<Long, UserMessageDO> queryUsersMap(List<Long> assigneeIds, Boolean withLoginName);
 }

@@ -8,7 +8,6 @@ import io.choerodon.agile.infra.dataobject.LabelIssueRelDO;
 import io.choerodon.agile.infra.mapper.LabelIssueRelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,7 +19,6 @@ import java.util.List;
  * @since 2018-05-14 21:31:22
  */
 @Component
-@Transactional(rollbackFor = CommonException.class)
 public class LabelIssueRelRepositoryImpl implements LabelIssueRelRepository {
 
     private static final String UPDATE_ERROR = "error.LabelIssue.update";

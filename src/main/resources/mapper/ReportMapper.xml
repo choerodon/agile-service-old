@@ -114,7 +114,7 @@
         adl.issue_id,
         adl.creation_date as date,
         (select adl2.new_string from agile_data_log adl2 where adl2.field = #{field} and adl2.issue_id =
-        adl.issue_id and adl2.creation_date &lt;= adl.creation_date order by adl2.creation_date desc limit 1) as
+        adl.issue_id and adl2.creation_date &lt; adl.creation_date order by adl2.creation_date desc limit 1) as
         new_value
         FROM
         agile_data_log adl
@@ -177,7 +177,7 @@
         adl.issue_id,
         adl.creation_date as date,
         IFNULL((select adl2.new_string from agile_data_log adl2 where adl2.field = #{field} and adl2.issue_id =
-        adl.issue_id and adl2.creation_date &lt;= adl.creation_date order by adl2.creation_date desc limit 1) ,0)as
+        adl.issue_id and adl2.creation_date &lt; adl.creation_date order by adl2.creation_date desc limit 1) ,0)as
         old_value
         FROM
         agile_data_log adl
@@ -303,7 +303,7 @@
         adl.issue_id,
         adl.creation_date as date,
         IFNULL((select adl2.new_string from agile_data_log adl2 where adl2.field = #{field} and adl2.issue_id =
-        adl.issue_id and adl2.creation_date &lt;= adl.creation_date order by adl2.creation_date desc limit 1) ,0)as
+        adl.issue_id and adl2.creation_date &lt; adl.creation_date order by adl2.creation_date desc limit 1) ,0)as
         old_value
         FROM
         agile_data_log adl
@@ -338,7 +338,7 @@
         adl.issue_id,
         adl.creation_date as date,
         IFNULL((select adl2.new_string from agile_data_log adl2 where adl2.field = #{field} and adl2.issue_id =
-        adl.issue_id and adl2.creation_date &lt;= adl.creation_date order by adl2.creation_date desc limit 1) ,0)as
+        adl.issue_id and adl2.creation_date &lt; adl.creation_date order by adl2.creation_date desc limit 1) ,0)as
         new_value
         FROM
         agile_data_log adl
@@ -898,15 +898,26 @@
                AND avir.issue_id = ai.issue_id AND ai.status_id = ais.id
                <choose>
                    <when test='status == "done"'>
-                       AND ai.type_code != 'sub_task' AND ais.is_completed = TRUE
+                       AND ai.type_code IN ('task', 'bug', 'issue_epic', 'story') AND ais.is_completed = TRUE
                    </when>
-                   <when test='status == "unfinished"'>
+                   <when test='status == "unfinished" and type == "storyPoints"'>
                        AND ais.is_completed = FALSE AND ((ai.type_code = 'story' AND ai.story_points IS NOT NULL)
                        OR ai.type_code IN ('task', 'bug', 'issue_epic'))
                    </when>
-                   <when test='status == "unfinishedUnestimated"'>
+                   <when test='status == "unfinished" and type == "remainingEstimatedTime"'>
+                       AND ais.is_completed = FALSE AND ai.type_code IN ('task', 'bug', 'issue_epic', 'story')
+                       AND ai.remaining_time IS NOT NULL
+                   </when>
+                   <when test='status == "unfinished" and type == "issueCount"'>
+                       AND ais.is_completed = FALSE AND ai.type_code IN ('task', 'bug', 'issue_epic', 'story')
+                   </when>
+                   <when test='status == "unfinishedUnestimated" and type == "storyPoints"'>
                        AND ais.is_completed = FALSE AND ai.type_code = 'story'
                        AND ai.story_points IS NULL
+                   </when>
+                   <when test='status == "unfinishedUnestimated" and type == "remainingEstimatedTime"'>
+                       AND ais.is_completed = FALSE AND ai.type_code IN ('task', 'bug', 'issue_epic', 'story')
+                       AND ai.remaining_time IS NULL
                    </when>
                    <otherwise>
                       AND FALSE
@@ -934,8 +945,11 @@
                             AND creation_date >= #{startDate}
                             AND creation_date &lt;= #{endDate}
                             AND  old_value = #{versionId}
-                    ) b ON b.creation_date = adl.creation_date
+                    ) b ON b.creation_date = adl.creation_date,
+                    agile_issue ai
         WHERE adl.project_id = #{projectId}
+               AND adl.issue_id = ai.issue_id
+               AND ai.type_code IN ('task', 'bug', 'issue_epic', 'story')
                AND adl.field = 'Fix Version'
                AND adl.creation_date >= #{startDate}
                AND adl.creation_date &lt;= #{endDate}
@@ -944,9 +958,10 @@
     </select>
 
     <select id="queryIssueIdByVersionId" resultType="java.lang.Long">
-        SELECT issue_id
-        FROM agile_version_issue_rel
-        WHERE project_id = #{projectId} AND version_id = #{versionId} AND relation_type = 'fix'
+        SELECT ai.issue_id
+        FROM agile_version_issue_rel avir, agile_issue ai
+        WHERE avir.project_id = #{projectId} AND avir.version_id = #{versionId} AND avir.relation_type = 'fix'
+               AND ai.issue_id = avir.issue_id AND ai.type_code IN ('task', 'bug', 'issue_epic', 'story')
     </select>
 
     <select id="queryChangeFieldIssue" resultType="io.choerodon.agile.infra.dataobject.IssueChangeDO">
@@ -968,7 +983,7 @@
                     SELECT MAX(log_id) AS log_id, #{versionIssue.changeDate} AS change_date
                     FROM agile_data_log
                     WHERE project_id = #{projectId} AND field = 'resolution'
-                    AND creation_date &lt; #{versionIssue.changeDate}
+                    AND creation_date &lt;= #{versionIssue.changeDate}
                     AND issue_id IN
                     <foreach collection="versionIssue.issueIds" item="issueId"
                              open="(" close=")" separator=",">
@@ -983,7 +998,7 @@
         AND (
             <foreach collection="versionIssues" item="versionIssue"
                  open="(" close=")" separator=" OR ">
-                ( adl.creation_date &lt;= #{versionIssue.changeDate} AND adl.creation_date > #{versionIssue.preDate}
+                ( adl.creation_date &lt; #{versionIssue.changeDate} AND adl.creation_date >= #{versionIssue.preDate}
                     AND adl.issue_id IN
                     <foreach collection="versionIssue.issueIds" item="issueId"
                              open="(" close=")" separator=",">
@@ -1011,7 +1026,7 @@
                AND (
                    <foreach collection="versionIssues" item="versionIssue"
                       open="(" close=")" separator=" OR ">
-                      ( adl.creation_date &lt;= #{versionIssue.changeDate} AND adl.creation_date > #{versionIssue.preDate}
+                      ( adl.creation_date &lt; #{versionIssue.changeDate} AND adl.creation_date >= #{versionIssue.preDate}
                         AND adl.issue_id IN
                         <foreach collection="versionIssue.issueIds" item="issueId"
                                  open="(" close=")" separator=",">
@@ -1040,7 +1055,7 @@
                             SELECT MAX(log_id) AS log_id, #{changeIssue.changeDate} AS change_date
                             FROM agile_data_log
                             WHERE project_id = #{projectId} AND field = #{field}
-                            AND creation_date &lt; #{changeIssue.changeDate}
+                            AND creation_date &lt;= #{changeIssue.changeDate}
                             AND issue_id IN
                             <foreach collection="changeIssue.issueIds" item="issueId"
                                      open="(" close=")" separator=",">
@@ -1062,7 +1077,7 @@
                     SELECT MAX(log_id) AS log_id, #{changeIssue.changeDate} AS change_date
                     FROM agile_data_log
                     WHERE project_id = #{projectId} AND field = 'resolution'
-                    AND creation_date &lt; #{changeIssue.changeDate}
+                    AND creation_date &lt;= #{changeIssue.changeDate}
                     AND issue_id IN
                     <foreach collection="changeIssue.issueIds" item="issueId"
                              open="(" close=")" separator=",">
@@ -1101,7 +1116,7 @@
                    AND type_code = 'story'
                 </if>
                 <if test='field == "remaining_time"'>
-                   AND type_code != 'sub_task'
+                   AND type_code IN ('task', 'bug', 'issue_epic', 'story')
                 </if>
                 AND issue_id IN
                       <foreach collection="issueIds" item="issueId"
@@ -1119,7 +1134,7 @@
             AND ai.type_code = 'story'
         </if>
         <if test='field == "remaining_time"'>
-            AND ai.type_code != 'sub_task'
+            AND ai.type_code IN ('task', 'bug', 'issue_epic', 'story')
         </if>
         AND ai.issue_id IN
         <foreach collection="issueIds" item="issueId"
@@ -1137,7 +1152,7 @@
             AND ai.type_code = 'story' AND ai.story_points IS NULL
         </if>
         <if test='field == "remaining_time"'>
-            AND ai.type_code != 'sub_task' AND ai.remaining_time IS NULL
+            AND ai.type_code IN ('task', 'bug', 'issue_epic', 'story') AND ai.remaining_time IS NULL
         </if>
         AND ai.issue_id IN
         <foreach collection="issueIds" item="issueId"
@@ -1151,7 +1166,7 @@
         FROM agile_issue ai
         LEFT JOIN agile_issue_status ais ON  ais.id = ai.status_id
         WHERE ai.project_id = #{projectId} AND ais.is_completed = TRUE
-        AND ai.type_code != 'sub_task' AND ai.issue_id IN
+        AND ai.type_code IN ('task', 'bug', 'issue_epic', 'story') AND ai.issue_id IN
         <foreach collection="issueIds" item="issueId"
                  open="(" close=")" separator=",">
             #{issueId}

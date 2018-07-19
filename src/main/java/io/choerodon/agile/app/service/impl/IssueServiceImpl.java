@@ -198,7 +198,13 @@ public class IssueServiceImpl implements IssueService {
         if (issueStatusDO == null) {
             throw new CommonException("error.createIssue.issueStatusNotFound");
         }
-        handleInitIssue(issueE, issueStatusDO.getId());
+        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+        projectInfoDO.setProjectId(issueE.getProjectId());
+        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
+        if (projectInfoE == null) {
+            throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
+        }
+        handleInitIssue(issueE, issueStatusDO.getId(), projectInfoE);
         //创建issue
         Long issueId = issueRepository.create(issueE).getIssueId();
         //若初始状态为已完成，生成日志
@@ -208,7 +214,7 @@ public class IssueServiceImpl implements IssueService {
             issueRepository.issueToSprint(issueE.getProjectId(), issueE.getSprintId(), issueId, new Date(), customUserDetails.getUserId());
         }
         handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
-        handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
+        handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId, projectInfoE);
         handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
         if (issueE.getSprintId() != null && issueE.getSprintId() != 0) {
             handleCreateSprintRel(issueId, issueE.getSprintId(), issueE.getProjectId());
@@ -216,19 +222,13 @@ public class IssueServiceImpl implements IssueService {
         return queryIssue(issueCreateDTO.getProjectId(), issueId);
     }
 
-    private void handleInitIssue(IssueE issueE, Long statusId) {
+    private void handleInitIssue(IssueE issueE, Long statusId, ProjectInfoE projectInfoE) {
         //如果是epic，初始化颜色
         if (ISSUE_EPIC.equals(issueE.getTypeCode())) {
             List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
             issueE.initializationColor(colorList);
         }
         //初始化创建issue设置issue编号、项目默认设置
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        projectInfoDO.setProjectId(issueE.getProjectId());
-        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
-        if (projectInfoE == null) {
-            throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
-        }
         issueE.initializationIssue(statusId, projectInfoE);
         projectInfoRepository.updateIssueMaxNum(issueE.getProjectId());
         //初始化排序
@@ -345,11 +345,11 @@ public class IssueServiceImpl implements IssueService {
             dataLogE.setField(FIELD_ASSIGNEE);
             if (originIssue.getAssigneeId() != null && originIssue.getAssigneeId() != 0) {
                 dataLogE.setOldValue(originIssue.getAssigneeId().toString());
-                dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getAssigneeId(), false));
+                dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getAssigneeId(), false).getRealName());
             }
             if (issueUpdateDTO.getAssigneeId() != 0) {
                 dataLogE.setNewValue(issueUpdateDTO.getAssigneeId().toString());
-                dataLogE.setNewString(userRepository.queryUserNameByOption(issueUpdateDTO.getAssigneeId(), false));
+                dataLogE.setNewString(userRepository.queryUserNameByOption(issueUpdateDTO.getAssigneeId(), false).getRealName());
             } else {
                 dataLogE.setNewValue(null);
                 dataLogE.setNewString(null);
@@ -366,11 +366,11 @@ public class IssueServiceImpl implements IssueService {
             dataLogE.setField(FIELD_REPORTER);
             if (originIssue.getReporterId() != null && originIssue.getReporterId() != 0) {
                 dataLogE.setOldValue(originIssue.getReporterId().toString());
-                dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getReporterId(), false));
+                dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getReporterId(), false).getRealName());
             }
             if (issueUpdateDTO.getReporterId() != 0) {
                 dataLogE.setNewValue(issueUpdateDTO.getReporterId().toString());
-                dataLogE.setNewString(userRepository.queryUserNameByOption(issueUpdateDTO.getReporterId(), false));
+                dataLogE.setNewString(userRepository.queryUserNameByOption(issueUpdateDTO.getReporterId(), false).getRealName());
             }
             dataLogRepository.create(dataLogE);
         }
@@ -699,7 +699,7 @@ public class IssueServiceImpl implements IssueService {
                             IssueDO issueDO = new IssueDO();
                             issueDO.setEpicId(issueE.getIssueId());
                             List<IssueDO> issueDOList = issueMapper.select(issueDO);
-                            issueDOList.parallelStream().forEach(issueEpic -> dataLogEpic(issueEpic.getProjectId(), issueEpic, 0L));
+                            issueDOList.forEach(issueEpic -> dataLogEpic(issueEpic.getProjectId(), issueEpic, 0L));
                             //如果是epic，会把该epic下的issue的epicId置为0
                             issueRepository.batchUpdateIssueEpicId(projectId, issueE.getIssueId());
                         }
@@ -731,8 +731,14 @@ public class IssueServiceImpl implements IssueService {
         if (issueStatusDO == null) {
             throw new CommonException("error.createIssue.issueStatusNotFound");
         }
+        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+        projectInfoDO.setProjectId(subIssueE.getProjectId());
+        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
+        if (projectInfoE == null) {
+            throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
+        }
         //初始化subIssue
-        handleInitSubIssue(subIssueE);
+        handleInitSubIssue(subIssueE, projectInfoE);
         //创建issue
         Long issueId = issueRepository.create(subIssueE).getIssueId();
         //记录日志
@@ -748,7 +754,7 @@ public class IssueServiceImpl implements IssueService {
             issueLinkService.createIssueLinkList(issueSubCreateDTO.getIssueLinkCreateDTOList(), issueId, issueSubCreateDTO.getProjectId());
         }
         handleCreateLabelIssue(issueSubCreateDTO.getLabelIssueRelDTOList(), issueId);
-        handleCreateComponentIssueRel(issueSubCreateDTO.getComponentIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
+        handleCreateComponentIssueRel(issueSubCreateDTO.getComponentIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId, projectInfoE);
         handleCreateVersionIssueRel(issueSubCreateDTO.getVersionIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
         if (subIssueE.getSprintId() != null) {
             handleCreateSprintRel(issueId, subIssueE.getSprintId(), subIssueE.getProjectId());
@@ -756,15 +762,9 @@ public class IssueServiceImpl implements IssueService {
         return queryIssueSub(subIssueE.getProjectId(), issueId);
     }
 
-    private void handleInitSubIssue(IssueE subIssueE) {
+    private void handleInitSubIssue(IssueE subIssueE, ProjectInfoE projectInfoE) {
         IssueE parentIssueE = ConvertHelper.convert(issueMapper.queryIssueSprintNotClosed(subIssueE.getProjectId(), subIssueE.getParentIssueId()), IssueE.class);
         //设置初始状态,跟随父类状态
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        projectInfoDO.setProjectId(subIssueE.getProjectId());
-        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
-        if (projectInfoE == null) {
-            throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
-        }
         subIssueE = parentIssueE.initializationSubIssue(subIssueE, projectInfoE);
         projectInfoRepository.updateIssueMaxNum(subIssueE.getProjectId());
     }
@@ -820,7 +820,9 @@ public class IssueServiceImpl implements IssueService {
         if (versionId != null && !Objects.equals(versionId, 0L)) {
             productVersionRule.judgeExist(projectId, versionId);
             issueRepository.batchIssueToVersion(projectId, versionId, issueIds, new Date(), customUserDetails.getUserId());
-            dataLogVersionByAdd(projectId, versionId, issueIds);
+            List<Long> logAddIssueIds = new ArrayList<>(issueIds);
+            logAddIssueIds.removeAll(issueMapper.queryInVersionIssueIds(projectId, versionId, issueIds));
+            dataLogVersionByAdd(projectId, versionId, logAddIssueIds);
         } else {
             Map map = getVersionIssueRelsByBatch(projectId, issueIds);
             issueRepository.batchRemoveVersion(projectId, issueIds);
@@ -834,7 +836,7 @@ public class IssueServiceImpl implements IssueService {
         issueRule.judgeExist(projectId, epicId);
         //修改epic记录日志
         List<IssueDO> issueDOList = issueMapper.queryIssueEpicInfoByIssueIds(projectId, issueIds);
-        issueDOList.parallelStream().forEach(issueEpic -> dataLogEpic(issueEpic.getProjectId(), issueEpic, epicId));
+        issueDOList.forEach(issueEpic -> dataLogEpic(issueEpic.getProjectId(), issueEpic, epicId));
         issueRepository.batchIssueToEpic(projectId, epicId, issueIds);
         return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>());
     }
@@ -1049,7 +1051,7 @@ public class IssueServiceImpl implements IssueService {
             issueDO.setEpicId(issueE.getIssueId());
             List<IssueDO> issueDOList = issueMapper.select(issueDO);
             //记录日志
-            issueDOList.parallelStream().forEach(issueEpic -> dataLogEpic(issueEpic.getProjectId(), issueEpic, 0L));
+            issueDOList.forEach(issueEpic -> dataLogEpic(issueEpic.getProjectId(), issueEpic, 0L));
             //批量更新
             issueRepository.batchUpdateIssueEpicId(issueE.getProjectId(), issueE.getIssueId());
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
@@ -1141,44 +1143,54 @@ public class IssueServiceImpl implements IssueService {
         });
     }
 
-    private void handleCreateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId) {
+    private void handleCreateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId, ProjectInfoE projectInfoE) {
         if (componentIssueRelDTOList != null && !componentIssueRelDTOList.isEmpty()) {
-            handleComponentIssueRel(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId);
+            handleComponentIssueRelWithHandleAssignee(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId, projectInfoE);
         }
     }
 
-    private void handleComponentIssueRel(List<ComponentIssueRelE> componentIssueRelEList, Long projectId, Long issueId) {
+    private void handleComponentIssueRelNoHandleAssignee(List<ComponentIssueRelE> componentIssueRelEList, Long projectId, Long issueId) {
+        componentIssueRelEList.forEach(componentIssueRelE -> handleComponentIssueRel(componentIssueRelE, projectId, issueId));
+    }
+
+    private void handleComponentIssueRelWithHandleAssignee(List<ComponentIssueRelE> componentIssueRelEList, Long projectId, Long issueId, ProjectInfoE projectInfoE) {
         componentIssueRelEList.forEach(componentIssueRelE -> {
-            componentIssueRelE.setIssueId(issueId);
-            componentIssueRelE.setProjectId(projectId);
-            issueRule.verifyComponentIssueRelData(componentIssueRelE);
-            //重名校验
-            if (componentIssueRelE.getName() != null && componentIssueRelE.getComponentId() == null) {
-                if (issueComponentMapper.checkNameExist(componentIssueRelE.getName(), componentIssueRelE.getProjectId())) {
-                    componentIssueRelE.setComponentId(issueComponentMapper.queryComponentIdByNameAndProjectId(
-                            componentIssueRelE.getName(), componentIssueRelE.getProjectId()));
-                } else {
-                    IssueComponentE issueComponentE = componentIssueRelE.createIssueComponent();
-                    issueComponentE = issueComponentRepository.create(issueComponentE);
-                    componentIssueRelE.setComponentId(issueComponentE.getComponentId());
-                }
-            }
+            handleComponentIssueRel(componentIssueRelE, projectId, issueId);
             //issue经办人可以根据模块策略进行区分
-            handleComponentIssue(componentIssueRelE, issueId);
-            if (issueRule.existComponentIssueRel(componentIssueRelE)) {
-                componentIssueRelRepository.create(componentIssueRelE);
-            }
+            handleComponentIssue(componentIssueRelE, issueId, projectInfoE);
         });
     }
 
-    private void handleComponentIssue(ComponentIssueRelE componentIssueRelE, Long issueId) {
+    private void handleComponentIssueRel(ComponentIssueRelE componentIssueRelE, Long projectId, Long issueId) {
+        componentIssueRelE.setIssueId(issueId);
+        componentIssueRelE.setProjectId(projectId);
+        issueRule.verifyComponentIssueRelData(componentIssueRelE);
+        //重名校验
+        if (componentIssueRelE.getName() != null && componentIssueRelE.getComponentId() == null) {
+            if (issueComponentMapper.checkNameExist(componentIssueRelE.getName(), componentIssueRelE.getProjectId())) {
+                componentIssueRelE.setComponentId(issueComponentMapper.queryComponentIdByNameAndProjectId(
+                        componentIssueRelE.getName(), componentIssueRelE.getProjectId()));
+            } else {
+                IssueComponentE issueComponentE = componentIssueRelE.createIssueComponent();
+                issueComponentE = issueComponentRepository.create(issueComponentE);
+                componentIssueRelE.setComponentId(issueComponentE.getComponentId());
+            }
+        }
+        if (issueRule.existComponentIssueRel(componentIssueRelE)) {
+            componentIssueRelRepository.create(componentIssueRelE);
+        }
+    }
+
+    private void handleComponentIssue(ComponentIssueRelE componentIssueRelE, Long issueId, ProjectInfoE projectInfoE) {
         IssueComponentE issueComponentE = ConvertHelper.convert(issueComponentMapper.selectByPrimaryKey(
                 componentIssueRelE.getComponentId()), IssueComponentE.class);
         if (ISSUE_MANAGER_TYPE.equals(issueComponentE.getDefaultAssigneeRole()) && issueComponentE.getManagerId() !=
                 null && issueComponentE.getManagerId() != 0) {
             //如果模块有选择模块负责人或者经办人的话，对应的issue的负责人要修改
             IssueE issueE = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueE.class);
-            if (issueE.getAssigneeId() == null || issueE.getAssigneeId() == 0) {
+            Boolean condition = (issueE.getAssigneeId() == null || issueE.getAssigneeId() == 0) ||
+                    (projectInfoE.getDefaultAssigneeType() != null);
+            if (condition) {
                 issueE.setAssigneeId(issueComponentE.getManagerId());
                 issueRepository.update(issueE, new String[]{"assigneeId"});
             }
@@ -1384,7 +1396,7 @@ public class IssueServiceImpl implements IssueService {
             List<ComponentIssueRelDO> originComponentIssueRels = getComponentIssueRel(projectId, issueId);
             if (!componentIssueRelDTOList.isEmpty()) {
                 componentIssueRelRepository.deleteByIssueId(issueId);
-                handleComponentIssueRel(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId);
+                handleComponentIssueRelNoHandleAssignee(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId);
             } else {
                 componentIssueRelRepository.deleteByIssueId(issueId);
             }
@@ -1532,13 +1544,7 @@ public class IssueServiceImpl implements IssueService {
             //复制链接
             batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueId, newIssue.getIssueId(), projectId);
             //生成一条复制的关联
-            IssueLinkTypeDO query = new IssueLinkTypeDO();
-            query.setProjectId(issueDetailDO.getProjectId());
-            query.setOutWard("复制");
-            IssueLinkTypeDO issueLinkTypeDO = issueLinkTypeMapper.selectOne(query);
-            if (issueLinkTypeDO != null) {
-                createCopyIssueLink(issueDetailDO.getIssueId(), newIssue.getIssueId(), issueLinkTypeDO.getLinkTypeId());
-            }
+            createCopyIssueLink(issueDetailDO.getIssueId(), newIssue.getIssueId(), projectId);
             //复制故事点和剩余工作量并记录日志
             copyStoryPointAndRemainingTimeData(issueDetailDO, projectId, newIssue);
             //复制冲刺
@@ -1546,7 +1552,7 @@ public class IssueServiceImpl implements IssueService {
             if (copyConditionDTO.getSubTask()) {
                 List<IssueDO> subIssueDOList = issueDetailDO.getSubIssueDOList();
                 if (subIssueDOList != null && !subIssueDOList.isEmpty()) {
-                    subIssueDOList.forEach(issueDO -> copySubIssue(issueDO, newIssue.getIssueId(), issueLinkTypeDO, copyConditionDTO, projectId));
+                    subIssueDOList.forEach(issueDO -> copySubIssue(issueDO, newIssue.getIssueId(), projectId));
                 }
             }
             return queryIssue(projectId, newIssue.getIssueId());
@@ -1556,60 +1562,54 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void copyStoryPointAndRemainingTimeData(IssueDetailDO issueDetailDO, Long projectId, IssueDTO newIssue) {
+        if (issueDetailDO.getStoryPoints() == null && issueDetailDO.getEstimateTime() == null) {
+            return;
+        }
         IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO();
         issueUpdateDTO.setStoryPoints(issueDetailDO.getStoryPoints());
         issueUpdateDTO.setRemainingTime(issueDetailDO.getRemainingTime());
         issueUpdateDTO.setIssueId(newIssue.getIssueId());
         issueUpdateDTO.setObjectVersionNumber(newIssue.getObjectVersionNumber());
-        updateIssue(projectId, issueUpdateDTO, Lists.newArrayList(STORY_POINTS_FIELD, REMAIN_TIME_FIELD));
+        List<String> fieldList = new ArrayList<>();
+        if (issueDetailDO.getStoryPoints() != null) {
+            fieldList.add(STORY_POINTS_FIELD);
+        }
+        if (issueDetailDO.getRemainingTime() != null) {
+            fieldList.add(REMAIN_TIME_FIELD);
+        }
+        updateIssue(projectId, issueUpdateDTO, fieldList);
     }
 
-    private void copySubIssue(IssueDO issueDO, Long newIssueId, IssueLinkTypeDO issueLinkTypeDO, CopyConditionDTO copyConditionDTO, Long projectId) {
+    private void copySubIssue(IssueDO issueDO, Long newIssueId, Long projectId) {
         IssueDetailDO subIssueDetailDO = issueMapper.queryIssueDetail(issueDO.getProjectId(), issueDO.getIssueId());
         IssueSubCreateDTO issueSubCreateDTO = issueAssembler.issueDtoToSubIssueCreateDto(subIssueDetailDO, newIssueId);
         IssueSubDTO newSubIssue = createSubIssue(issueSubCreateDTO);
-        //复制链接
-        batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueDO.getIssueId(), newSubIssue.getIssueId(), projectId);
-        //生成一条复制的关联
-        if (issueLinkTypeDO != null) {
-            createCopyIssueLink(subIssueDetailDO.getIssueId(), newSubIssue.getIssueId(), issueLinkTypeDO.getLinkTypeId());
-        }
-        //复制冲刺
-        handleCreateCopyIssueSprintRel(copyConditionDTO.getSprintValues(), subIssueDetailDO, newSubIssue.getIssueId());
         //复制剩余工作量并记录日志
-        IssueUpdateDTO subIssueUpdateDTO = new IssueUpdateDTO();
-        subIssueUpdateDTO.setRemainingTime(issueDO.getRemainingTime());
-        subIssueUpdateDTO.setIssueId(newSubIssue.getIssueId());
-        subIssueUpdateDTO.setObjectVersionNumber(newSubIssue.getObjectVersionNumber());
-        updateIssue(projectId, subIssueUpdateDTO, Lists.newArrayList(REMAIN_TIME_FIELD));
+        if (issueDO.getRemainingTime() != null) {
+            IssueUpdateDTO subIssueUpdateDTO = new IssueUpdateDTO();
+            subIssueUpdateDTO.setRemainingTime(issueDO.getRemainingTime());
+            subIssueUpdateDTO.setIssueId(newSubIssue.getIssueId());
+            subIssueUpdateDTO.setObjectVersionNumber(newSubIssue.getObjectVersionNumber());
+            updateIssue(projectId, subIssueUpdateDTO, Lists.newArrayList(REMAIN_TIME_FIELD));
+        }
     }
 
     private void handleCreateCopyIssueSprintRel(Boolean sprintValues, IssueDetailDO issueDetailDO, Long newIssueId) {
-        if (sprintValues) {
-            if (issueDetailDO.getActiveSprint() != null && !issueDetailDO.getTypeCode().equals(SUB_TASK)) {
-                //子任务当前活跃冲刺关联会在创建子任务中创建
-                IssueSprintRelDO copy = new IssueSprintRelDO();
-                copy.setProjectId(issueDetailDO.getProjectId());
-                copy.setIssueId(newIssueId);
-                copy.setSprintId(issueDetailDO.getActiveSprint().getSprintId());
-                issueSprintRelRepository.createIssueSprintRel(copy);
-            }
-            if (issueDetailDO.getCloseSprint() != null && !issueDetailDO.getCloseSprint().isEmpty()) {
-                issueDetailDO.getCloseSprint().forEach(sprint -> {
-                    IssueSprintRelDO copy = new IssueSprintRelDO();
-                    copy.setProjectId(issueDetailDO.getProjectId());
-                    copy.setIssueId(newIssueId);
-                    copy.setSprintId(sprint.getSprintId());
-                    issueSprintRelRepository.createIssueSprintRel(copy);
-                });
-            }
+        if (sprintValues && issueDetailDO.getActiveSprint() != null) {
+            IssueSprintRelDO copy = new IssueSprintRelDO();
+            copy.setProjectId(issueDetailDO.getProjectId());
+            copy.setIssueId(newIssueId);
+            copy.setSprintId(issueDetailDO.getActiveSprint().getSprintId());
+            issueSprintRelRepository.createIssueSprintRel(copy);
+            //生成日志
+            handleCreateSprintRel(newIssueId, issueDetailDO.getActiveSprint().getSprintId(), issueDetailDO.getProjectId());
         }
     }
 
     private void batchCreateCopyIssueLink(Boolean condition, Long issueId, Long newIssueId, Long projectId) {
         if (condition) {
             List<IssueLinkE> issueLinkEList = ConvertHelper.convertList(issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId), IssueLinkE.class);
-            issueLinkEList.parallelStream().forEach(issueLinkE -> {
+            issueLinkEList.forEach(issueLinkE -> {
                 IssueLinkE copy = new IssueLinkE();
                 if (issueLinkE.getIssueId().equals(issueId)) {
                     copy.setIssueId(newIssueId);
@@ -1625,12 +1625,18 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void createCopyIssueLink(Long issueId, Long newIssueId, Long linkTypeId) {
-        IssueLinkE issueLinkE = new IssueLinkE();
-        issueLinkE.setLinkedIssueId(issueId);
-        issueLinkE.setLinkTypeId(linkTypeId);
-        issueLinkE.setIssueId(newIssueId);
-        issueLinkRepository.create(issueLinkE);
+    private void createCopyIssueLink(Long issueId, Long newIssueId, Long projectId) {
+        IssueLinkTypeDO query = new IssueLinkTypeDO();
+        query.setProjectId(projectId);
+        query.setOutWard("复制");
+        IssueLinkTypeDO issueLinkTypeDO = issueLinkTypeMapper.selectOne(query);
+        if (issueLinkTypeDO != null) {
+            IssueLinkE issueLinkE = new IssueLinkE();
+            issueLinkE.setLinkedIssueId(issueId);
+            issueLinkE.setLinkTypeId(issueLinkTypeDO.getLinkTypeId());
+            issueLinkE.setIssueId(newIssueId);
+            issueLinkRepository.create(issueLinkE);
+        }
     }
 
     @Override

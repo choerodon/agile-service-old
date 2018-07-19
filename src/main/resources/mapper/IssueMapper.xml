@@ -200,6 +200,7 @@
             ai.summary,
             ai.priority_code,
             ai.assignee_id,
+            ai.remaining_time,
             ai.project_id,
             ais.category_code                              AS status_code,
             ais.name                                       AS status_name,
@@ -500,6 +501,18 @@
             (#{versionId}, #{issueId}, #{projectId}, 'fix', #{date}, #{date}, #{userId}, #{userId})
         </foreach>
     </insert>
+
+    <select id="queryInVersionIssueIds" resultType="java.lang.Long">
+        SELECT DISTINCT(ai.issue_id)
+        FROM agile_issue ai
+             LEFT JOIN agile_version_issue_rel avir ON avir.issue_id = ai.issue_id
+        WHERE ai.project_id = #{projectId} AND avir.version_id = #{versionId}
+              AND ai.issue_id IN
+              <foreach collection="issueIds" item="issueId" open="("
+                     separator="," close=")">
+                  #{issueId}
+              </foreach>
+    </select>
 
     <update id="batchIssueToEpic">
         UPDATE agile_issue

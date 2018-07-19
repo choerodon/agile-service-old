@@ -50,7 +50,13 @@ public class IssueAssembler {
         issueDTO.setIssueCommentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueCommentDOList(), IssueCommentDTO.class));
         issueDTO.setStatusColor(ColorUtil.initializationStatusColor(issueDTO.getStatusCode(), lookupValueMap));
         issueDTO.setSubIssueDTOList(issueDoToSubIssueDto(issueDetailDO.getSubIssueDOList(), lookupValueMap));
-        List<Long> assigneeIdList = Arrays.asList(issueDetailDO.getAssigneeId(), issueDetailDO.getReporterId());
+        List<Long> assigneeIdList = new ArrayList<>();
+        assigneeIdList.add(issueDetailDO.getAssigneeId());
+        assigneeIdList.add(issueDetailDO.getReporterId());
+        Boolean issueCommentCondition = issueDTO.getIssueCommentDTOList() != null && !issueDTO.getIssueCommentDTOList().isEmpty();
+        if (issueCommentCondition) {
+            assigneeIdList.addAll(issueDTO.getIssueCommentDTOList().stream().map(IssueCommentDTO::getUserId).collect(Collectors.toList()));
+        }
         Map<Long, UserMessageDO> userMessageDOMap = userRepository.queryUsersMap(
                 assigneeIdList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
         String assigneeName = userMessageDOMap.get(issueDTO.getAssigneeId()) != null ? userMessageDOMap.get(issueDTO.getAssigneeId()).getName() : null;
@@ -59,6 +65,12 @@ public class IssueAssembler {
         issueDTO.setAssigneeImageUrl(assigneeName != null ? userMessageDOMap.get(issueDTO.getAssigneeId()).getImageUrl() : null);
         issueDTO.setReporterName(reporterName);
         issueDTO.setReporterImageUrl(reporterName != null ? userMessageDOMap.get(issueDTO.getReporterId()).getImageUrl() : null);
+        if (issueCommentCondition) {
+            issueDTO.getIssueCommentDTOList().forEach(issueCommentDTO -> {
+                issueCommentDTO.setUserName(userMessageDOMap.get(issueCommentDTO.getUserId()) != null ? userMessageDOMap.get(issueCommentDTO.getUserId()).getName() : null);
+                issueCommentDTO.setUserImageUrl(userMessageDOMap.get(issueCommentDTO.getUserId()) != null ? userMessageDOMap.get(issueCommentDTO.getUserId()).getImageUrl() : null);
+            });
+        }
         return issueDTO;
     }
 
@@ -254,7 +266,7 @@ public class IssueAssembler {
     public IssueCreateDTO issueDtoToIssueCreateDto(IssueDetailDO issueDetailDO) {
         IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
         BeanUtils.copyProperties(issueDetailDO, issueCreateDTO);
-        issueCreateDTO.setSprintId(0L);
+        issueCreateDTO.setSprintId(null);
         issueCreateDTO.setRemainingTime(null);
         issueCreateDTO.setComponentIssueRelDTOList(copyComponentIssueRel(issueDetailDO.getComponentIssueRelDOList()));
         issueCreateDTO.setVersionIssueRelDTOList(copyVersionIssueRel(issueDetailDO.getVersionIssueRelDOList()));

@@ -28,6 +28,8 @@ public class IssueCommentDTO {
 
     private String userName;
 
+    private String userImageUrl;
+
     private Date lastUpdateDate;
 
     private List<IssueAttachmentDTO> issueAttachmentDTOList;
@@ -102,6 +104,14 @@ public class IssueCommentDTO {
 
     public void setLastUpdateDate(Date lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public String getUserImageUrl() {
+        return userImageUrl;
+    }
+
+    public void setUserImageUrl(String userImageUrl) {
+        this.userImageUrl = userImageUrl;
     }
 
     @Override

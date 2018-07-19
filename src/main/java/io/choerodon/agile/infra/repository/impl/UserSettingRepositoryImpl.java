@@ -8,14 +8,12 @@ import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/7/4
  */
 @Component
-@Transactional(rollbackFor = CommonException.class)
 public class UserSettingRepositoryImpl implements UserSettingRepository {
 
     @Autowired

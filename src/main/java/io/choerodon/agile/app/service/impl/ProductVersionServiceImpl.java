@@ -2,7 +2,9 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
+import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.domain.agile.event.VersionPayload;
+import io.choerodon.agile.domain.agile.repository.DataLogRepository;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.infra.dataobject.IssueCountDO;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
@@ -59,6 +61,8 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private ProductVersionMapper productVersionMapper;
     @Autowired
     private EventProducerTemplate eventProducerTemplate;
+    @Autowired
+    private DataLogRepository dataLogRepository;
 
     private static final String SEARCH_ARGS = "searchArgs";
     public static final String ADVANCE_SEARCH_ARGS = "advancedSearchArgs";
@@ -77,6 +81,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
     private static final String AGILE_SERVICE = "agile-service";
+    private static final String FIELD_FIX_VERSION = "Fix Version";
 
     @Override
     public ProductVersionDetailDTO createVersion(Long projectId, ProductVersionCreateDTO versionCreateDTO) {
@@ -301,13 +306,31 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             throw new CommonException(SOURCE_VERSION_ERROR);
         }
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
+        List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds(), productVersionMergeDTO.getTargetVersionId());
         versionIssueRelRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         if (!versionIssues.isEmpty()) {
+            List<Long> versionIssueIds = versionIssues.stream().map(VersionIssueDO::getIssueId).collect(Collectors.toList());
+            dataLogVersionByAdd(projectId, productVersionMergeDTO.getTargetVersionId(), versionIssueIds);
             productVersionRepository.issueToDestination(projectId, productVersionMergeDTO.getTargetVersionId(), versionIssues, new Date(), customUserDetails.getUserId());
         }
         productVersionRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         return true;
+    }
+
+    private void dataLogVersionByAdd(Long projectId, Long versionId, List<Long> versionIssueIds) {
+        ProductVersionDO productVersionDO = productVersionMapper.selectByPrimaryKey(versionId);
+        if (productVersionDO == null) {
+            throw new CommonException("error.productVersion.get");
+        }
+        for (Long versionIssueId : versionIssueIds) {
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setProjectId(projectId);
+            dataLogE.setIssueId(versionIssueId);
+            dataLogE.setField(FIELD_FIX_VERSION);
+            dataLogE.setNewValue(versionId.toString());
+            dataLogE.setNewString(productVersionDO.getName());
+            dataLogRepository.create(dataLogE);
+        }
     }
 
     @Override

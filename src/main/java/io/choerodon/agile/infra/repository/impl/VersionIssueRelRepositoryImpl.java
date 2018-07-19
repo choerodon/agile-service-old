@@ -8,7 +8,6 @@ import io.choerodon.agile.infra.dataobject.VersionIssueRelDO;
 import io.choerodon.agile.infra.mapper.VersionIssueRelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,7 +17,6 @@ import java.util.List;
  * @since 2018-05-15 16:21:18
  */
 @Component
-@Transactional(rollbackFor = CommonException.class)
 public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository {
 
     private static final String UPDATE_ERROR = "error.VersionIssueRel.update";
