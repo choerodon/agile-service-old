@@ -31,7 +31,7 @@ public class UserRepositoryImpl implements UserRepository {
         } else {
             UserDO userDO = userFeignClient.query(customUserDetails.getOrganizationId(), userId).getBody();
             if (withId) {
-                userDO.setRealName(userDO.getLoginName() + "-" + userDO.getRealName());
+                userDO.setRealName(userDO.getLoginName() + userDO.getRealName());
                 return userDO;
             } else {
                 return userDO;

@@ -50,7 +50,9 @@ public class IssueAssembler {
         issueDTO.setIssueCommentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueCommentDOList(), IssueCommentDTO.class));
         issueDTO.setStatusColor(ColorUtil.initializationStatusColor(issueDTO.getStatusCode(), lookupValueMap));
         issueDTO.setSubIssueDTOList(issueDoToSubIssueDto(issueDetailDO.getSubIssueDOList(), lookupValueMap));
-        List<Long> assigneeIdList = Arrays.asList(issueDetailDO.getAssigneeId(), issueDetailDO.getReporterId());
+        List<Long> assigneeIdList = new ArrayList<>();
+        assigneeIdList.add(issueDetailDO.getAssigneeId());
+        assigneeIdList.add(issueDetailDO.getReporterId());
         Boolean issueCommentCondition = issueDTO.getIssueCommentDTOList() != null && !issueDTO.getIssueCommentDTOList().isEmpty();
         if (issueCommentCondition) {
             assigneeIdList.addAll(issueDTO.getIssueCommentDTOList().stream().map(IssueCommentDTO::getUserId).collect(Collectors.toList()));
