@@ -983,7 +983,7 @@
                     SELECT MAX(log_id) AS log_id, #{versionIssue.changeDate} AS change_date
                     FROM agile_data_log
                     WHERE project_id = #{projectId} AND field = 'resolution'
-                    AND creation_date &lt; #{versionIssue.changeDate}
+                    AND creation_date &lt;= #{versionIssue.changeDate}
                     AND issue_id IN
                     <foreach collection="versionIssue.issueIds" item="issueId"
                              open="(" close=")" separator=",">
@@ -998,7 +998,7 @@
         AND (
             <foreach collection="versionIssues" item="versionIssue"
                  open="(" close=")" separator=" OR ">
-                ( adl.creation_date &lt;= #{versionIssue.changeDate} AND adl.creation_date > #{versionIssue.preDate}
+                ( adl.creation_date &lt; #{versionIssue.changeDate} AND adl.creation_date >= #{versionIssue.preDate}
                     AND adl.issue_id IN
                     <foreach collection="versionIssue.issueIds" item="issueId"
                              open="(" close=")" separator=",">
@@ -1026,7 +1026,7 @@
                AND (
                    <foreach collection="versionIssues" item="versionIssue"
                       open="(" close=")" separator=" OR ">
-                      ( adl.creation_date &lt;= #{versionIssue.changeDate} AND adl.creation_date > #{versionIssue.preDate}
+                      ( adl.creation_date &lt; #{versionIssue.changeDate} AND adl.creation_date >= #{versionIssue.preDate}
                         AND adl.issue_id IN
                         <foreach collection="versionIssue.issueIds" item="issueId"
                                  open="(" close=")" separator=",">
@@ -1055,7 +1055,7 @@
                             SELECT MAX(log_id) AS log_id, #{changeIssue.changeDate} AS change_date
                             FROM agile_data_log
                             WHERE project_id = #{projectId} AND field = #{field}
-                            AND creation_date &lt; #{changeIssue.changeDate}
+                            AND creation_date &lt;= #{changeIssue.changeDate}
                             AND issue_id IN
                             <foreach collection="changeIssue.issueIds" item="issueId"
                                      open="(" close=")" separator=",">
@@ -1077,7 +1077,7 @@
                     SELECT MAX(log_id) AS log_id, #{changeIssue.changeDate} AS change_date
                     FROM agile_data_log
                     WHERE project_id = #{projectId} AND field = 'resolution'
-                    AND creation_date &lt; #{changeIssue.changeDate}
+                    AND creation_date &lt;= #{changeIssue.changeDate}
                     AND issue_id IN
                     <foreach collection="changeIssue.issueIds" item="issueId"
                              open="(" close=")" separator=",">

@@ -296,10 +296,11 @@ public class ReportServiceImpl implements ReportService {
         for (Date date : dateSet) {
             VersionReportDTO versionReportDTO = new VersionReportDTO();
             List<IssueChangeDTO> completedIssue = changeIssueNowDate(completedIssuesMap, date);
+            List<Long> completedIssueIds = completedIssue.stream().map(IssueChangeDTO::getIssueId).collect(Collectors.toList());
             List<IssueChangeDTO> unCompletedIssue = changeIssueNowDate(unCompletedIssuesMap, date);
             List<IssueChangeDTO> addIssue = changeIssueNowDate(addIssuesMap, date);
             List<IssueChangeDTO> removeIssue = changeIssueNowDate(removeIssuesMap, date);
-            Integer addCompletedCount = addIssue.stream().filter(IssueChangeDTO::getCompleted).collect(Collectors.toList()).size();
+            Integer addCompletedCount = addIssue.stream().filter(addChangIsse -> addChangIsse.getCompleted() && !completedIssueIds.contains(addChangIsse.getIssueId())).collect(Collectors.toList()).size();
             Integer removeCompletedCount = removeIssue.stream().filter(IssueChangeDTO::getCompleted).collect(Collectors.toList()).size();
             nowIssueCount = nowIssueCount - addIssue.size() + removeIssue.size();
             nowCompletedIssueCount = nowCompletedIssueCount - completedIssue.size() + unCompletedIssue.size() - addCompletedCount + removeCompletedCount;
@@ -353,24 +354,26 @@ public class ReportServiceImpl implements ReportService {
         for (Date date : dateSet) {
             VersionReportDTO versionReportDTO = new VersionReportDTO();
             List<IssueChangeDTO> fieldChangeIssue = changeIssueNowDate(fieldChangeIssuesMap, date);
+            List<Long> fileChangeIds = fieldChangeIssue.stream().map(IssueChangeDTO::getIssueId).collect(Collectors.toList());
             List<IssueChangeDTO> completedIssue = changeIssueNowDate(completedIssuesMap, date);
             List<IssueChangeDTO> unCompletedIssue = changeIssueNowDate(unCompletedIssuesMap, date);
             List<IssueChangeDTO> addIssue = changeIssueNowDate(addIssuesMap, date);
+            List<Long> addIssueIds = addIssue.stream().map(IssueChangeDTO::getIssueId).collect(Collectors.toList());
             List<IssueChangeDTO> removeIssue = changeIssueNowDate(removeIssuesMap, date);
             Integer changeField = fieldChangeIssue.stream().mapToInt(fieldChange -> Integer.valueOf(fieldChange.getChangeField())).sum();
             Integer changeCompletedField = fieldChangeIssue.stream().filter(IssueChangeDTO::getCompleted).mapToInt(fieldChange -> Integer.valueOf(fieldChange.getChangeField())).sum();
-            Integer addField = changeIssueField(addIssue);
-            Integer addCompletedField = changeCompletedIssueField(addIssue);
+            Integer addField = addChangeIssueField(addIssue, fileChangeIds);
+            Integer addCompletedField = addChangeCompletedIssueField(addIssue, fileChangeIds);
             Integer removeField = changeIssueField(removeIssue);
             Integer removeCompletedField = changeCompletedIssueField(removeIssue);
-            Integer completedField = changeIssueField(completedIssue);
+            Integer completedField = completedChangeIssueField(completedIssue, fileChangeIds);
             Integer unCompletedField = changeIssueField(unCompletedIssue);
             nowIssueCount = nowIssueCount - addIssue.size() + removeIssue.size();
             Integer changUnEstimatedCount = calculationUnEstimated(fieldChangeIssue, field);
             Integer changEstimatedCount = calculationEstimated(fieldChangeIssue, field);
             Integer addUnEstimatedCount = calculationUnEstimated(addIssue, field);
             Integer removeUnEstimatedCount = calculationUnEstimated(removeIssue, field);
-            Integer completedIssueUnEstimatedCount = calculationUnEstimated(completedIssue, field);
+            Integer completedIssueUnEstimatedCount = completedCalculationUnEstimated(completedIssue, field, addIssueIds);
             Integer unCompletedIssueUnEstimatedCount = calculationUnEstimated(unCompletedIssue, field);
             nowUnEstimateCount = nowUnEstimateCount - changUnEstimatedCount + changEstimatedCount - addUnEstimatedCount + removeUnEstimatedCount + completedIssueUnEstimatedCount - unCompletedIssueUnEstimatedCount;
             nowTotalField = nowTotalField - changeField - addField + removeField;
@@ -387,6 +390,24 @@ public class ReportServiceImpl implements ReportService {
             versionReportDTO.setRemoveIssues(removeIssue);
             versionReport.add(versionReportDTO);
         }
+    }
+
+    private Integer completedCalculationUnEstimated(List<IssueChangeDTO> completedIssue, String field, List<Long> addIssueIds) {
+        return completedIssue.stream().filter(fieldChange ->
+                (Objects.equals(fieldChange.getTypeCode(), ISSUE_STORY_CODE) || field.equals(FIELD_TIMEESTIMATE)) && fieldChange.getNewValue() == null && !addIssueIds.contains(fieldChange.getIssueId())
+        ).collect(Collectors.toList()).size();
+    }
+
+    private Integer completedChangeIssueField(List<IssueChangeDTO> completedIssue, List<Long> fileChangeIds) {
+        return completedIssue.stream().filter(fieldChange -> fieldChange.getNewValue() != null && !fileChangeIds.contains(fieldChange.getIssueId())).mapToInt(fieldChange -> Integer.valueOf(fieldChange.getNewValue())).sum();
+    }
+
+    private Integer addChangeCompletedIssueField(List<IssueChangeDTO> addIssue, List<Long> fileChangeIds) {
+        return addIssue.stream().filter(fieldChange -> fieldChange.getCompleted() && fieldChange.getNewValue() != null && !fileChangeIds.contains(fieldChange.getIssueId())).mapToInt(fieldChange -> Integer.valueOf(fieldChange.getNewValue())).sum();
+    }
+
+    private Integer addChangeIssueField(List<IssueChangeDTO> addIssue, List<Long> fileChangeIds) {
+        return addIssue.stream().filter(fieldChange -> fieldChange.getNewValue() != null && !fileChangeIds.contains(fieldChange.getIssueId())).mapToInt(fieldChange -> Integer.valueOf(fieldChange.getNewValue())).sum();
     }
 
     private Integer calculationEstimated(List<IssueChangeDTO> issueChange, String field) {
