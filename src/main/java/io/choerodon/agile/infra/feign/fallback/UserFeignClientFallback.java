@@ -18,11 +18,10 @@ public class UserFeignClientFallback implements UserFeignClient {
 
     private static final String QUERY_ERROR = "error.UserFeign.query";
     private static final String BATCH_QUERY_ERROR = "error.UserFeign.queryList";
-    private static final String QUERY_USER_BY_ID = "error.UserFeign.queryByUserId";
 
     @Override
-    public ResponseEntity<UserDO> queryUserById(Long userId) {
-        throw new CommonException(QUERY_USER_BY_ID);
+    public ResponseEntity<UserDO> query(Long organizationId, Long id) {
+        throw new CommonException(QUERY_ERROR);
     }
 
     @Override

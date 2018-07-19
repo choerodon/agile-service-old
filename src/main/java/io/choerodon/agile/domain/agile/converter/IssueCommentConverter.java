@@ -2,10 +2,8 @@ package io.choerodon.agile.domain.agile.converter;
 
 
 import io.choerodon.agile.api.dto.IssueAttachmentDTO;
-import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.convertor.ConvertorI;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.BeanUtils;
 import io.choerodon.agile.api.dto.IssueCommentDTO;
@@ -20,9 +18,6 @@ import io.choerodon.agile.domain.agile.entity.IssueCommentE;
  */
 @Component
 public class IssueCommentConverter implements ConvertorI<IssueCommentE, IssueCommentDO, IssueCommentDTO> {
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Override
     public IssueCommentE dtoToEntity(IssueCommentDTO issueCommentDTO) {
@@ -56,7 +51,6 @@ public class IssueCommentConverter implements ConvertorI<IssueCommentE, IssueCom
     public IssueCommentDTO doToDto(IssueCommentDO issueCommentDO) {
         IssueCommentDTO issueCommentDTO = new IssueCommentDTO();
         BeanUtils.copyProperties(issueCommentDO, issueCommentDTO);
-        issueCommentDTO.setUserName(userRepository.queryUserNameByOption(issueCommentDTO.getUserId(), true));
         if (issueCommentDO.getIssueAttachmentDOList() != null && !issueCommentDO.getIssueAttachmentDOList().isEmpty()) {
             issueCommentDTO.setIssueAttachmentDTOList(ConvertHelper.convertList(issueCommentDO.getIssueAttachmentDOList(), IssueAttachmentDTO.class));
         }

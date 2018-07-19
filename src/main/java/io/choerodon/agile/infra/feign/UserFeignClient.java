@@ -23,13 +23,15 @@ import java.util.List;
 public interface UserFeignClient {
 
     /**
-     * 根据id查询用户信息
+     * 查询用户信息
      *
-     * @param userId userId
+     * @param organizationId organizationId
+     * @param id             id
      * @return UserDO
      */
-    @RequestMapping(value = "/v1/users/{user_id}/info", method = RequestMethod.GET)
-    ResponseEntity<UserDO> queryUserById(@PathVariable(name = "user_id") Long userId);
+    @RequestMapping(value = "/v1/organizations/{organization_id}/users/{id}", method = RequestMethod.GET)
+    ResponseEntity<UserDO> query(@PathVariable(name = "organization_id") Long organizationId,
+                                 @PathVariable("id") Long id);
 
     @RequestMapping(value = "/v1/users/ids", method = RequestMethod.POST)
     ResponseEntity<List<UserDO>> listUsersByIds(@RequestBody Long[] ids);

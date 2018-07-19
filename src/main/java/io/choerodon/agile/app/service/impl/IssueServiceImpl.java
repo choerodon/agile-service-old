@@ -345,11 +345,11 @@ public class IssueServiceImpl implements IssueService {
             dataLogE.setField(FIELD_ASSIGNEE);
             if (originIssue.getAssigneeId() != null && originIssue.getAssigneeId() != 0) {
                 dataLogE.setOldValue(originIssue.getAssigneeId().toString());
-                dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getAssigneeId(), false));
+                dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getAssigneeId(), false).getRealName());
             }
             if (issueUpdateDTO.getAssigneeId() != 0) {
                 dataLogE.setNewValue(issueUpdateDTO.getAssigneeId().toString());
-                dataLogE.setNewString(userRepository.queryUserNameByOption(issueUpdateDTO.getAssigneeId(), false));
+                dataLogE.setNewString(userRepository.queryUserNameByOption(issueUpdateDTO.getAssigneeId(), false).getRealName());
             } else {
                 dataLogE.setNewValue(null);
                 dataLogE.setNewString(null);
@@ -366,11 +366,11 @@ public class IssueServiceImpl implements IssueService {
             dataLogE.setField(FIELD_REPORTER);
             if (originIssue.getReporterId() != null && originIssue.getReporterId() != 0) {
                 dataLogE.setOldValue(originIssue.getReporterId().toString());
-                dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getReporterId(), false));
+                dataLogE.setOldString(userRepository.queryUserNameByOption(originIssue.getReporterId(), false).getRealName());
             }
             if (issueUpdateDTO.getReporterId() != 0) {
                 dataLogE.setNewValue(issueUpdateDTO.getReporterId().toString());
-                dataLogE.setNewString(userRepository.queryUserNameByOption(issueUpdateDTO.getReporterId(), false));
+                dataLogE.setNewString(userRepository.queryUserNameByOption(issueUpdateDTO.getReporterId(), false).getRealName());
             }
             dataLogRepository.create(dataLogE);
         }
@@ -1148,9 +1148,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void handleComponentIssueRelNoHandleAssignee(List<ComponentIssueRelE> componentIssueRelEList, Long projectId, Long issueId) {
-        componentIssueRelEList.forEach(componentIssueRelE -> {
-            handleComponentIssueRel(componentIssueRelE, projectId, issueId);
-        });
+        componentIssueRelEList.forEach(componentIssueRelE -> handleComponentIssueRel(componentIssueRelE, projectId, issueId));
     }
 
     private void handleComponentIssueRelWithHandleAssignee(List<ComponentIssueRelE> componentIssueRelEList, Long projectId, Long issueId, ProjectInfoE projectInfoE) {
