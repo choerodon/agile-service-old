@@ -37,7 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -199,7 +198,13 @@ public class IssueServiceImpl implements IssueService {
         if (issueStatusDO == null) {
             throw new CommonException("error.createIssue.issueStatusNotFound");
         }
-        handleInitIssue(issueE, issueStatusDO.getId());
+        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+        projectInfoDO.setProjectId(issueE.getProjectId());
+        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
+        if (projectInfoE == null) {
+            throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
+        }
+        handleInitIssue(issueE, issueStatusDO.getId(), projectInfoE);
         //创建issue
         Long issueId = issueRepository.create(issueE).getIssueId();
         //若初始状态为已完成，生成日志
@@ -209,7 +214,7 @@ public class IssueServiceImpl implements IssueService {
             issueRepository.issueToSprint(issueE.getProjectId(), issueE.getSprintId(), issueId, new Date(), customUserDetails.getUserId());
         }
         handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
-        handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
+        handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId, projectInfoE);
         handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
         if (issueE.getSprintId() != null && issueE.getSprintId() != 0) {
             handleCreateSprintRel(issueId, issueE.getSprintId(), issueE.getProjectId());
@@ -217,19 +222,13 @@ public class IssueServiceImpl implements IssueService {
         return queryIssue(issueCreateDTO.getProjectId(), issueId);
     }
 
-    private void handleInitIssue(IssueE issueE, Long statusId) {
+    private void handleInitIssue(IssueE issueE, Long statusId, ProjectInfoE projectInfoE) {
         //如果是epic，初始化颜色
         if (ISSUE_EPIC.equals(issueE.getTypeCode())) {
             List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
             issueE.initializationColor(colorList);
         }
         //初始化创建issue设置issue编号、项目默认设置
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        projectInfoDO.setProjectId(issueE.getProjectId());
-        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
-        if (projectInfoE == null) {
-            throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
-        }
         issueE.initializationIssue(statusId, projectInfoE);
         projectInfoRepository.updateIssueMaxNum(issueE.getProjectId());
         //初始化排序
@@ -732,8 +731,14 @@ public class IssueServiceImpl implements IssueService {
         if (issueStatusDO == null) {
             throw new CommonException("error.createIssue.issueStatusNotFound");
         }
+        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+        projectInfoDO.setProjectId(subIssueE.getProjectId());
+        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
+        if (projectInfoE == null) {
+            throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
+        }
         //初始化subIssue
-        handleInitSubIssue(subIssueE);
+        handleInitSubIssue(subIssueE, projectInfoE);
         //创建issue
         Long issueId = issueRepository.create(subIssueE).getIssueId();
         //记录日志
@@ -749,7 +754,7 @@ public class IssueServiceImpl implements IssueService {
             issueLinkService.createIssueLinkList(issueSubCreateDTO.getIssueLinkCreateDTOList(), issueId, issueSubCreateDTO.getProjectId());
         }
         handleCreateLabelIssue(issueSubCreateDTO.getLabelIssueRelDTOList(), issueId);
-        handleCreateComponentIssueRel(issueSubCreateDTO.getComponentIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
+        handleCreateComponentIssueRel(issueSubCreateDTO.getComponentIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId, projectInfoE);
         handleCreateVersionIssueRel(issueSubCreateDTO.getVersionIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
         if (subIssueE.getSprintId() != null) {
             handleCreateSprintRel(issueId, subIssueE.getSprintId(), subIssueE.getProjectId());
@@ -757,15 +762,9 @@ public class IssueServiceImpl implements IssueService {
         return queryIssueSub(subIssueE.getProjectId(), issueId);
     }
 
-    private void handleInitSubIssue(IssueE subIssueE) {
+    private void handleInitSubIssue(IssueE subIssueE, ProjectInfoE projectInfoE) {
         IssueE parentIssueE = ConvertHelper.convert(issueMapper.queryIssueSprintNotClosed(subIssueE.getProjectId(), subIssueE.getParentIssueId()), IssueE.class);
         //设置初始状态,跟随父类状态
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        projectInfoDO.setProjectId(subIssueE.getProjectId());
-        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
-        if (projectInfoE == null) {
-            throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
-        }
         subIssueE = parentIssueE.initializationSubIssue(subIssueE, projectInfoE);
         projectInfoRepository.updateIssueMaxNum(subIssueE.getProjectId());
     }
@@ -1142,44 +1141,56 @@ public class IssueServiceImpl implements IssueService {
         });
     }
 
-    private void handleCreateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId) {
+    private void handleCreateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId, ProjectInfoE projectInfoE) {
         if (componentIssueRelDTOList != null && !componentIssueRelDTOList.isEmpty()) {
-            handleComponentIssueRel(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId);
+            handleComponentIssueRelWithHandleAssignee(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId, projectInfoE);
         }
     }
 
-    private void handleComponentIssueRel(List<ComponentIssueRelE> componentIssueRelEList, Long projectId, Long issueId) {
+    private void handleComponentIssueRelNoHandleAssignee(List<ComponentIssueRelE> componentIssueRelEList, Long projectId, Long issueId) {
         componentIssueRelEList.forEach(componentIssueRelE -> {
-            componentIssueRelE.setIssueId(issueId);
-            componentIssueRelE.setProjectId(projectId);
-            issueRule.verifyComponentIssueRelData(componentIssueRelE);
-            //重名校验
-            if (componentIssueRelE.getName() != null && componentIssueRelE.getComponentId() == null) {
-                if (issueComponentMapper.checkNameExist(componentIssueRelE.getName(), componentIssueRelE.getProjectId())) {
-                    componentIssueRelE.setComponentId(issueComponentMapper.queryComponentIdByNameAndProjectId(
-                            componentIssueRelE.getName(), componentIssueRelE.getProjectId()));
-                } else {
-                    IssueComponentE issueComponentE = componentIssueRelE.createIssueComponent();
-                    issueComponentE = issueComponentRepository.create(issueComponentE);
-                    componentIssueRelE.setComponentId(issueComponentE.getComponentId());
-                }
-            }
-            //issue经办人可以根据模块策略进行区分
-            handleComponentIssue(componentIssueRelE, issueId);
-            if (issueRule.existComponentIssueRel(componentIssueRelE)) {
-                componentIssueRelRepository.create(componentIssueRelE);
-            }
+            handleComponentIssueRel(componentIssueRelE, projectId, issueId);
         });
     }
 
-    private void handleComponentIssue(ComponentIssueRelE componentIssueRelE, Long issueId) {
+    private void handleComponentIssueRelWithHandleAssignee(List<ComponentIssueRelE> componentIssueRelEList, Long projectId, Long issueId, ProjectInfoE projectInfoE) {
+        componentIssueRelEList.forEach(componentIssueRelE -> {
+            handleComponentIssueRel(componentIssueRelE, projectId, issueId);
+            //issue经办人可以根据模块策略进行区分
+            handleComponentIssue(componentIssueRelE, issueId, projectInfoE);
+        });
+    }
+
+    private void handleComponentIssueRel(ComponentIssueRelE componentIssueRelE, Long projectId, Long issueId) {
+        componentIssueRelE.setIssueId(issueId);
+        componentIssueRelE.setProjectId(projectId);
+        issueRule.verifyComponentIssueRelData(componentIssueRelE);
+        //重名校验
+        if (componentIssueRelE.getName() != null && componentIssueRelE.getComponentId() == null) {
+            if (issueComponentMapper.checkNameExist(componentIssueRelE.getName(), componentIssueRelE.getProjectId())) {
+                componentIssueRelE.setComponentId(issueComponentMapper.queryComponentIdByNameAndProjectId(
+                        componentIssueRelE.getName(), componentIssueRelE.getProjectId()));
+            } else {
+                IssueComponentE issueComponentE = componentIssueRelE.createIssueComponent();
+                issueComponentE = issueComponentRepository.create(issueComponentE);
+                componentIssueRelE.setComponentId(issueComponentE.getComponentId());
+            }
+        }
+        if (issueRule.existComponentIssueRel(componentIssueRelE)) {
+            componentIssueRelRepository.create(componentIssueRelE);
+        }
+    }
+
+    private void handleComponentIssue(ComponentIssueRelE componentIssueRelE, Long issueId, ProjectInfoE projectInfoE) {
         IssueComponentE issueComponentE = ConvertHelper.convert(issueComponentMapper.selectByPrimaryKey(
                 componentIssueRelE.getComponentId()), IssueComponentE.class);
         if (ISSUE_MANAGER_TYPE.equals(issueComponentE.getDefaultAssigneeRole()) && issueComponentE.getManagerId() !=
                 null && issueComponentE.getManagerId() != 0) {
             //如果模块有选择模块负责人或者经办人的话，对应的issue的负责人要修改
             IssueE issueE = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueE.class);
-            if (issueE.getAssigneeId() == null || issueE.getAssigneeId() == 0) {
+            Boolean condition = (issueE.getAssigneeId() == null || issueE.getAssigneeId() == 0) ||
+                    (projectInfoE.getDefaultAssigneeType() != null);
+            if (condition) {
                 issueE.setAssigneeId(issueComponentE.getManagerId());
                 issueRepository.update(issueE, new String[]{"assigneeId"});
             }
@@ -1385,7 +1396,7 @@ public class IssueServiceImpl implements IssueService {
             List<ComponentIssueRelDO> originComponentIssueRels = getComponentIssueRel(projectId, issueId);
             if (!componentIssueRelDTOList.isEmpty()) {
                 componentIssueRelRepository.deleteByIssueId(issueId);
-                handleComponentIssueRel(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId);
+                handleComponentIssueRelNoHandleAssignee(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId);
             } else {
                 componentIssueRelRepository.deleteByIssueId(issueId);
             }
