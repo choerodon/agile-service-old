@@ -1583,7 +1583,7 @@ public class IssueServiceImpl implements IssueService {
         IssueSubCreateDTO issueSubCreateDTO = issueAssembler.issueDtoToSubIssueCreateDto(subIssueDetailDO, newIssueId);
         IssueSubDTO newSubIssue = createSubIssue(issueSubCreateDTO);
         //复制剩余工作量并记录日志
-        if (issueDO.getEstimateTime() != null) {
+        if (issueDO.getRemainingTime() != null) {
             IssueUpdateDTO subIssueUpdateDTO = new IssueUpdateDTO();
             subIssueUpdateDTO.setRemainingTime(issueDO.getRemainingTime());
             subIssueUpdateDTO.setIssueId(newSubIssue.getIssueId());

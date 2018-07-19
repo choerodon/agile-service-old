@@ -200,6 +200,7 @@
             ai.summary,
             ai.priority_code,
             ai.assignee_id,
+            ai.remaining_time,
             ai.project_id,
             ais.category_code                              AS status_code,
             ais.name                                       AS status_name,
