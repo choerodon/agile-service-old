@@ -264,7 +264,7 @@ public class IssueAssembler {
     public IssueCreateDTO issueDtoToIssueCreateDto(IssueDetailDO issueDetailDO) {
         IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
         BeanUtils.copyProperties(issueDetailDO, issueCreateDTO);
-        issueCreateDTO.setSprintId(0L);
+        issueCreateDTO.setSprintId(null);
         issueCreateDTO.setRemainingTime(null);
         issueCreateDTO.setComponentIssueRelDTOList(copyComponentIssueRel(issueDetailDO.getComponentIssueRelDOList()));
         issueCreateDTO.setVersionIssueRelDTOList(copyVersionIssueRel(issueDetailDO.getVersionIssueRelDOList()));

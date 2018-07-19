@@ -1542,13 +1542,7 @@ public class IssueServiceImpl implements IssueService {
             //复制链接
             batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueId, newIssue.getIssueId(), projectId);
             //生成一条复制的关联
-            IssueLinkTypeDO query = new IssueLinkTypeDO();
-            query.setProjectId(issueDetailDO.getProjectId());
-            query.setOutWard("复制");
-            IssueLinkTypeDO issueLinkTypeDO = issueLinkTypeMapper.selectOne(query);
-            if (issueLinkTypeDO != null) {
-                createCopyIssueLink(issueDetailDO.getIssueId(), newIssue.getIssueId(), issueLinkTypeDO.getLinkTypeId());
-            }
+            createCopyIssueLink(issueDetailDO.getIssueId(), newIssue.getIssueId(), projectId);
             //复制故事点和剩余工作量并记录日志
             copyStoryPointAndRemainingTimeData(issueDetailDO, projectId, newIssue);
             //复制冲刺
@@ -1556,7 +1550,7 @@ public class IssueServiceImpl implements IssueService {
             if (copyConditionDTO.getSubTask()) {
                 List<IssueDO> subIssueDOList = issueDetailDO.getSubIssueDOList();
                 if (subIssueDOList != null && !subIssueDOList.isEmpty()) {
-                    subIssueDOList.forEach(issueDO -> copySubIssue(issueDO, newIssue.getIssueId(), issueLinkTypeDO, copyConditionDTO, projectId));
+                    subIssueDOList.forEach(issueDO -> copySubIssue(issueDO, newIssue.getIssueId(), projectId));
                 }
             }
             return queryIssue(projectId, newIssue.getIssueId());
@@ -1584,18 +1578,10 @@ public class IssueServiceImpl implements IssueService {
         updateIssue(projectId, issueUpdateDTO, fieldList);
     }
 
-    private void copySubIssue(IssueDO issueDO, Long newIssueId, IssueLinkTypeDO issueLinkTypeDO, CopyConditionDTO copyConditionDTO, Long projectId) {
+    private void copySubIssue(IssueDO issueDO, Long newIssueId, Long projectId) {
         IssueDetailDO subIssueDetailDO = issueMapper.queryIssueDetail(issueDO.getProjectId(), issueDO.getIssueId());
         IssueSubCreateDTO issueSubCreateDTO = issueAssembler.issueDtoToSubIssueCreateDto(subIssueDetailDO, newIssueId);
         IssueSubDTO newSubIssue = createSubIssue(issueSubCreateDTO);
-        //复制链接
-        batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueDO.getIssueId(), newSubIssue.getIssueId(), projectId);
-        //生成一条复制的关联
-        if (issueLinkTypeDO != null) {
-            createCopyIssueLink(subIssueDetailDO.getIssueId(), newSubIssue.getIssueId(), issueLinkTypeDO.getLinkTypeId());
-        }
-        //复制冲刺
-        handleCreateCopyIssueSprintRel(copyConditionDTO.getSprintValues(), subIssueDetailDO, newSubIssue.getIssueId());
         //复制剩余工作量并记录日志
         if (issueDO.getEstimateTime() != null) {
             IssueUpdateDTO subIssueUpdateDTO = new IssueUpdateDTO();
@@ -1607,24 +1593,14 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void handleCreateCopyIssueSprintRel(Boolean sprintValues, IssueDetailDO issueDetailDO, Long newIssueId) {
-        if (sprintValues) {
-            if (issueDetailDO.getActiveSprint() != null && !issueDetailDO.getTypeCode().equals(SUB_TASK)) {
-                //子任务当前活跃冲刺关联会在创建子任务中创建
-                IssueSprintRelDO copy = new IssueSprintRelDO();
-                copy.setProjectId(issueDetailDO.getProjectId());
-                copy.setIssueId(newIssueId);
-                copy.setSprintId(issueDetailDO.getActiveSprint().getSprintId());
-                issueSprintRelRepository.createIssueSprintRel(copy);
-            }
-            if (issueDetailDO.getCloseSprint() != null && !issueDetailDO.getCloseSprint().isEmpty()) {
-                issueDetailDO.getCloseSprint().forEach(sprint -> {
-                    IssueSprintRelDO copy = new IssueSprintRelDO();
-                    copy.setProjectId(issueDetailDO.getProjectId());
-                    copy.setIssueId(newIssueId);
-                    copy.setSprintId(sprint.getSprintId());
-                    issueSprintRelRepository.createIssueSprintRel(copy);
-                });
-            }
+        if (sprintValues && issueDetailDO.getActiveSprint() != null) {
+            IssueSprintRelDO copy = new IssueSprintRelDO();
+            copy.setProjectId(issueDetailDO.getProjectId());
+            copy.setIssueId(newIssueId);
+            copy.setSprintId(issueDetailDO.getActiveSprint().getSprintId());
+            issueSprintRelRepository.createIssueSprintRel(copy);
+            //生成日志
+            handleCreateSprintRel(newIssueId, issueDetailDO.getActiveSprint().getSprintId(), issueDetailDO.getProjectId());
         }
     }
 
@@ -1647,12 +1623,18 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void createCopyIssueLink(Long issueId, Long newIssueId, Long linkTypeId) {
-        IssueLinkE issueLinkE = new IssueLinkE();
-        issueLinkE.setLinkedIssueId(issueId);
-        issueLinkE.setLinkTypeId(linkTypeId);
-        issueLinkE.setIssueId(newIssueId);
-        issueLinkRepository.create(issueLinkE);
+    private void createCopyIssueLink(Long issueId, Long newIssueId, Long projectId) {
+        IssueLinkTypeDO query = new IssueLinkTypeDO();
+        query.setProjectId(projectId);
+        query.setOutWard("复制");
+        IssueLinkTypeDO issueLinkTypeDO = issueLinkTypeMapper.selectOne(query);
+        if (issueLinkTypeDO != null) {
+            IssueLinkE issueLinkE = new IssueLinkE();
+            issueLinkE.setLinkedIssueId(issueId);
+            issueLinkE.setLinkTypeId(issueLinkTypeDO.getLinkTypeId());
+            issueLinkE.setIssueId(newIssueId);
+            issueLinkRepository.create(issueLinkE);
+        }
     }
 
     @Override
