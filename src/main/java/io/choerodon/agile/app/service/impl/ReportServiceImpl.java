@@ -370,7 +370,7 @@ public class ReportServiceImpl implements ReportService {
             Integer unCompletedField = changeIssueField(unCompletedIssue);
             nowIssueCount = nowIssueCount - addIssue.size() + removeIssue.size();
             Integer changUnEstimatedCount = calculationUnEstimated(fieldChangeIssue, field);
-            Integer changEstimatedCount = calculationEstimated(fieldChangeIssue, field);
+            Integer changEstimatedCount = calculationEstimated(fieldChangeIssue, field, addIssueIds);
             Integer addUnEstimatedCount = calculationUnEstimated(addIssue, field);
             Integer removeUnEstimatedCount = calculationUnEstimated(removeIssue, field);
             Integer completedIssueUnEstimatedCount = completedCalculationUnEstimated(completedIssue, field, addIssueIds);
@@ -410,9 +410,9 @@ public class ReportServiceImpl implements ReportService {
         return addIssue.stream().filter(fieldChange -> fieldChange.getNewValue() != null && !fileChangeIds.contains(fieldChange.getIssueId())).mapToInt(fieldChange -> Integer.valueOf(fieldChange.getNewValue())).sum();
     }
 
-    private Integer calculationEstimated(List<IssueChangeDTO> issueChange, String field) {
+    private Integer calculationEstimated(List<IssueChangeDTO> issueChange, String field, List<Long> addIssueIds) {
         return issueChange.stream().filter(fieldChange ->
-                (Objects.equals(fieldChange.getTypeCode(), ISSUE_STORY_CODE) || field.equals(FIELD_TIMEESTIMATE)) && fieldChange.getOldValue() == null
+                (Objects.equals(fieldChange.getTypeCode(), ISSUE_STORY_CODE) || field.equals(FIELD_TIMEESTIMATE)) && fieldChange.getOldValue() == null && !addIssueIds.contains(fieldChange.getIssueId())
         ).collect(Collectors.toList()).size();
     }
 
