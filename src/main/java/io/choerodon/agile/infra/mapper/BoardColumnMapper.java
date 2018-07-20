@@ -85,4 +85,13 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
     List<ColumnAndIssueDO> queryColumnsByIssueIds(@Param("issueIds") List<Long> issueIds, @Param("boardId") Long boardId);
 
     List<EpicIdWithNameDO> selectEpicBatchByIds(@Param("epicIds") List<Long> epicIds);
+
+    /**
+     * 根据看板id和projectId查询列idList
+     *
+     * @param boardId boardId
+     * @param projectId projectId
+     * @return Long
+     */
+    List<Long> queryColumnIdsByBoardId(@Param("boardId") Long boardId,@Param("projectId") Long projectId);
 }
