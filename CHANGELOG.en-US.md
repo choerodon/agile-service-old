@@ -1,7 +1,7 @@
 # Changelog
 All notable changes about agile service will be documented in this file.
 
-## [0.8.1] - 2018-07-20
+## [0.8.0] - 2018-07-20
 
 ### Added
 
