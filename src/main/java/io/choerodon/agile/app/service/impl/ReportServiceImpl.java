@@ -747,26 +747,30 @@ public class ReportServiceImpl implements ReportService {
         if (projectInfoDO == null) {
             throw new CommonException("error.cumulativeFlow.projectInfoNotFound");
         }
+        if (cumulativeFlowFilterDTO.getBoardId() == null) {
+            throw new CommonException("error.cumulativeFlow.boardIdNotFound");
+        }
+        List<Long> columnIds = boardColumnMapper.queryColumnIdsByBoardId(cumulativeFlowFilterDTO.getBoardId(), projectId);
         //设置时间区间
         Date startDate = projectInfoDO.getCreationDate();
         Date endDate = new Date();
         List<ColumnChangeDTO> result = new ArrayList<>();
         //所有在当前时间内创建的issue
-        handleCumulativeFlowAddDuringDate(allIssueIds, result, startDate, endDate, cumulativeFlowFilterDTO.getColumnIds());
+        handleCumulativeFlowAddDuringDate(allIssueIds, result, startDate, endDate, columnIds);
         //所有在当前时间内状态改变的issue
-        handleCumulativeFlowChangeDuringDate(startDate, endDate, cumulativeFlowFilterDTO.getColumnIds(), allIssueIds, result);
+        handleCumulativeFlowChangeDuringDate(startDate, endDate, columnIds, allIssueIds, result);
         //过滤并排序
         List<ColumnChangeDTO> columnChangeDTOList = new ArrayList<>();
         columnChangeDTOList.addAll(result.stream().filter(columnChangeDTO ->
                 columnChangeDTO.getColumnTo() != null && !columnChangeDTO.getColumnFrom().equals(columnChangeDTO.getColumnTo()))
                 .sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList()));
         //对传入时间点的数据给与坐标
-        List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(cumulativeFlowFilterDTO.getColumnIds()));
+        List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(columnIds));
         cumulativeFlowDiagramDTOList.parallelStream().forEachOrdered(cumulativeFlowDiagramDTO -> {
             handleColumnCoordinate(columnChangeDTOList, cumulativeFlowDiagramDTO, cumulativeFlowFilterDTO.getStartDate(), cumulativeFlowFilterDTO.getEndDate());
             cumulativeFlowDiagramDTO.setCoordinateDTOList(getCumulativeFlowDiagramDuringDate(cumulativeFlowDiagramDTO, cumulativeFlowFilterDTO));
         });
-        return cumulativeFlowDiagramDTOList;
+        return cumulativeFlowDiagramDTOList.stream().filter(cumulativeFlowDiagramDTO -> cumulativeFlowFilterDTO.getColumnIds().contains(cumulativeFlowDiagramDTO.getColumnId())).collect(Collectors.toList());
     }
 }
 

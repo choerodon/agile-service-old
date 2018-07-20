@@ -1608,7 +1608,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void batchCreateCopyIssueLink(Boolean condition, Long issueId, Long newIssueId, Long projectId) {
         if (condition) {
-            List<IssueLinkE> issueLinkEList = ConvertHelper.convertList(issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId), IssueLinkE.class);
+            List<IssueLinkE> issueLinkEList = ConvertHelper.convertList(issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId,false), IssueLinkE.class);
             issueLinkEList.forEach(issueLinkE -> {
                 IssueLinkE copy = new IssueLinkE();
                 if (issueLinkE.getIssueId().equals(issueId)) {

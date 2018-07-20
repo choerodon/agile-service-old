@@ -40,7 +40,7 @@ public class IssueLinkServiceImpl implements IssueLinkService {
                 issueLinkRepository.create(issueLinkE);
             }
         });
-        return listIssueLinkByIssueId(issueId, projectId);
+        return listIssueLinkByIssueId(issueId, projectId,false);
     }
 
 
@@ -50,8 +50,8 @@ public class IssueLinkServiceImpl implements IssueLinkService {
     }
 
     @Override
-    public List<IssueLinkDTO> listIssueLinkByIssueId(Long issueId, Long projectId) {
-        return issueLinkAssembler.issueLinkDoToDto(issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId));
+    public List<IssueLinkDTO> listIssueLinkByIssueId(Long issueId, Long projectId,Boolean issueTest) {
+        return issueLinkAssembler.issueLinkDoToDto(issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId,issueTest));
     }
 
 }

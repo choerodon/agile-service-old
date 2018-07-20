@@ -57,10 +57,12 @@ public class IssueLinkController {
     @ApiOperation("根据issueId查询issueLink")
     @GetMapping(value = "/{issueId}")
     public ResponseEntity<List<IssueLinkDTO>> listIssueLinkByIssueId(@ApiParam(value = "项目id", required = true)
-                                                                      @PathVariable(name = "project_id") Long projectId,
-                                                                      @ApiParam(value = "issueId", required = true)
-                                                                      @PathVariable Long issueId) {
-        return Optional.ofNullable(issueLinkService.listIssueLinkByIssueId(issueId, projectId))
+                                                                     @PathVariable(name = "project_id") Long projectId,
+                                                                     @ApiParam(value = "issueId", required = true)
+                                                                     @PathVariable Long issueId,
+                                                                     @ApiParam(value = "是否包含测试任务")
+                                                                     @RequestParam(required = false,defaultValue = "false") Boolean issueTest) {
+        return Optional.ofNullable(issueLinkService.listIssueLinkByIssueId(issueId, projectId, issueTest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.IssueLink.listIssueLinkByIssueId"));
     }
