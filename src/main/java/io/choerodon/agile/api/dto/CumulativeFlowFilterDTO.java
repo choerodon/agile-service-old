@@ -15,6 +15,8 @@ public class CumulativeFlowFilterDTO {
 
     private Date endDate;
 
+    private Long boardId;
+
     private List<Long> quickFilterIds;
 
     private List<Long> columnIds;
@@ -49,6 +51,14 @@ public class CumulativeFlowFilterDTO {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public Long getBoardId() {
+        return boardId;
+    }
+
+    public void setBoardId(Long boardId) {
+        this.boardId = boardId;
     }
 
     @Override

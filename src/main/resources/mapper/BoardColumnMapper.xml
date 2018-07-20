@@ -313,4 +313,13 @@
         </foreach>
     </select>
 
+    <select id="queryColumnIdsByBoardId" resultType="java.lang.Long">
+        SELECT abc.column_id
+        FROM
+            agile_board_column abc
+        WHERE
+            abc.project_id = #{projectId} AND abc.board_id = #{boardId}
+        ORDER BY abc.sequence
+    </select>
+
 </mapper>

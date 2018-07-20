@@ -56,6 +56,9 @@
                 WHERE
                     ail.issue_id = #{issueId}
                     AND ai.project_id = #{projectId}
+                    <if test="issueTest">
+                        AND ai.type_code != "issue_test"
+                    </if>
                 UNION ALL
                 SELECT
                     ail1.*,
@@ -79,6 +82,9 @@
                 WHERE
                     ail1.linked_issue_id = #{issueId}
                     AND ai1.project_id = #{projectId}
+                    <if test="issueTest">
+                        AND ai1.type_code != "issue_test"
+                    </if>
             ) a
         ORDER BY
             a.link_type_name
