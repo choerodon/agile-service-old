@@ -64,7 +64,6 @@ public class ReportServiceImpl implements ReportService {
     private static final String SPRINT_CLOSED = "closed";
     private static final String VERSION_ARCHIVED_CODE = "archived";
     private static final String VERSION_REPORT_ERROR = "error.report.version";
-    private static final String TODO = "todo";
     private static final String ISSUE_STORY_CODE = "story";
 
     @Override
