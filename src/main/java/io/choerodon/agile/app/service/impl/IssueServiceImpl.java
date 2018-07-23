@@ -128,6 +128,8 @@ public class IssueServiceImpl implements IssueService {
     private EventProducerTemplate eventProducerTemplate;
     @Autowired
     private UserFeignClient userFeignClient;
+    @Autowired
+    private SprintService sprintService;
 
 
     private static final String STATUS_CODE_TODO = "todo";
@@ -1435,8 +1437,16 @@ public class IssueServiceImpl implements IssueService {
         return issueCommonDTOPage;
     }
 
+    private Long getActiveSprintId(Long projectId) {
+        SprintDO sprintDO = sprintService.getActiveSprint(projectId);
+        if (sprintDO != null) {
+            return sprintDO.getSprintId();
+        }
+        return null;
+    }
+
     @Override
-    public Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Long sprintId, Boolean self, String content, PageRequest pageRequest) {
+    public Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Boolean onlyActiveSprint, Boolean self, String content, PageRequest pageRequest) {
         //连表查询需要设置主表别名
         pageRequest.resetOrder("ai", new HashMap<>());
         IssueNumDO issueNumDO = null;
@@ -1446,8 +1456,9 @@ public class IssueServiceImpl implements IssueService {
                 pageRequest.setSize(pageRequest.getSize() - 1);
             }
         }
+        Long activeSprintId = onlyActiveSprint ? getActiveSprintId(projectId) : null;
         Page<IssueNumDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
-                issueMapper.queryIssueByOption(projectId, issueId, issueNum, sprintId, self, content));
+                issueMapper.queryIssueByOption(projectId, issueId, issueNum, activeSprintId, self, content));
         if (self && issueNumDO != null) {
             issueDOPage.getContent().add(0, issueNumDO);
             issueDOPage.setSize(issueDOPage.getSize() + 1);
