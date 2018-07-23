@@ -116,7 +116,7 @@ public interface IssueService {
 
     Page<IssueCommonDTO> listByOptions(Long projectId, String typeCode, PageRequest pageRequest);
 
-    Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Boolean self, String content, PageRequest pageRequest);
+    Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Long sprintId, Boolean self, String content, PageRequest pageRequest);
 
     void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response);
 
