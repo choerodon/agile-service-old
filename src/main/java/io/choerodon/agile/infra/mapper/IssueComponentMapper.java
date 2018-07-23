@@ -30,7 +30,8 @@ public interface IssueComponentMapper extends BaseMapper<IssueComponentDO> {
      */
     Long queryComponentIdByNameAndProjectId(@Param("name") String name, @Param("projectId") Long projectId);
 
-    List selectComponentWithIssueNum(@Param("projectId") Long projectId, @Param("componentId") Long componentId);
+    List selectComponentWithIssueNum(@Param("projectId") Long projectId, @Param("componentId") Long componentId,
+                                     @Param("noIssueTest") Boolean noIssueTest);
 
     List queryIssuesByComponentId(@Param("projectId") Long projectId, @Param("componentId") Long componentId);
 }

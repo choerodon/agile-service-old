@@ -28,9 +28,10 @@ public interface IssueLinkMapper extends BaseMapper<IssueLinkDO> {
      *
      * @param issueId   issueId
      * @param projectId projectId
+     * @param noIssueTest noIssueTest
      * @return IssueLinkDO
      */
-    List<IssueLinkDO> queryIssueLinkByIssueId(@Param("issueId") Long issueId, @Param("projectId") Long projectId,@Param("issueTest") Boolean issueTest);
+    List<IssueLinkDO> queryIssueLinkByIssueId(@Param("issueId") Long issueId, @Param("projectId") Long projectId,@Param("noIssueTest") Boolean noIssueTest);
 
     /**
      * 批量更新issue链接关系到别的issueLinkType
