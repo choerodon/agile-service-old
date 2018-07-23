@@ -56,7 +56,7 @@
                 WHERE
                     ail.issue_id = #{issueId}
                     AND ai.project_id = #{projectId}
-                    <if test="issueTest">
+                    <if test="noIssueTest">
                         AND ai.type_code != "issue_test"
                     </if>
                 UNION ALL
@@ -82,7 +82,7 @@
                 WHERE
                     ail1.linked_issue_id = #{issueId}
                     AND ai1.project_id = #{projectId}
-                    <if test="issueTest">
+                    <if test="noIssueTest">
                         AND ai1.type_code != "issue_test"
                     </if>
             ) a

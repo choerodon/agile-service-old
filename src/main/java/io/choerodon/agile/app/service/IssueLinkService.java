@@ -33,8 +33,8 @@ public interface IssueLinkService {
      *
      * @param issueId   issueId
      * @param projectId projectId
-     * @param issueTest issueTest
+     * @param noIssueTest noIssueTest
      * @return IssueLinkDTO
      */
-    List<IssueLinkDTO> listIssueLinkByIssueId(Long issueId, Long projectId,Boolean issueTest);
+    List<IssueLinkDTO> listIssueLinkByIssueId(Long issueId, Long projectId,Boolean noIssueTest);
 }

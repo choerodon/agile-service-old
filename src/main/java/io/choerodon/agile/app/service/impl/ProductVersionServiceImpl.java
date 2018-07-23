@@ -274,6 +274,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         return ConvertHelper.convertList(productVersionMapper.listByProjectId(projectId), ProductVersionDTO.class);
     }
 
+    @Override
     public ProductVersionDetailDTO archivedVersion(Long projectId, Long versionId) {
         ProductVersionDO versionDO = new ProductVersionDO();
         versionDO.setProjectId(projectId);
