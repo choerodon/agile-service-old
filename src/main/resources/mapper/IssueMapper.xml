@@ -312,7 +312,7 @@
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         WHERE ai.project_id = #{projectId} AND ai.type_code != 'issue_epic'
-        <if test="sprintId != null">
+        <if test="activeSprintId != null">
             AND ai.issue_id IN (
             SELECT
                issue_id
@@ -320,7 +320,7 @@
                agile_issue_sprint_rel
             WHERE
                project_id = #{projectId}
-            AND sprint_id = #{sprintId})
+            AND sprint_id = #{activeSprintId})
         </if>
         <if test="issueId != null">
             AND ai.issue_id != #{issueId}
