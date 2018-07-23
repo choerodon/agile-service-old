@@ -194,7 +194,7 @@
         LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
         , agile_version_issue_rel avir, agile_issue_status ais
         WHERE ai.project_id = #{projectId} AND avir.version_id = #{versionId} AND avir.relation_type = 'fix'
-        AND ai.issue_id = avir.issue_id AND ai.status_id = ais.id
+        AND ai.issue_id = avir.issue_id AND ai.status_id = ais.id AND ai.type_code != 'issue_test'
         <if test="statusCode != null">
             AND ais.category_code = #{statusCode}
         </if>
