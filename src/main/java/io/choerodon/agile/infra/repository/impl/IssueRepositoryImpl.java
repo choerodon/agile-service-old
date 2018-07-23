@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.service.IIssueService;
+import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.MoveIssueDO;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -35,6 +36,7 @@ public class IssueRepositoryImpl implements IssueRepository {
     private IIssueService iIssueService;
 
     @Override
+    @DataLog(type = "issue")
     public IssueE update(IssueE issueE, String[] fieldList) {
         IssueDO issueDO = ConvertHelper.convert(issueE, IssueDO.class);
         if (iIssueService.updateOptional(issueDO, fieldList) != 1) {
