@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.repository;
 
-import io.choerodon.agile.infra.dataobject.IssueSprintRelDO;
+import io.choerodon.agile.domain.agile.entity.IssueSprintRelE;
 
 /**
  * @author dinghuang123@gmail.com
@@ -10,10 +10,10 @@ import io.choerodon.agile.infra.dataobject.IssueSprintRelDO;
 public interface IssueSprintRelRepository {
 
     /**
-     * 批量创建冲刺issue关联
+     * 创建冲刺issue关联
      *
-     * @param issueSprintRelDO issueSprintRelDO
-     * @return IssueSprintRelDO
+     * @param issueSprintRelE issueSprintRelE
+     * @return IssueSprintRelE
      */
-    IssueSprintRelDO createIssueSprintRel(IssueSprintRelDO issueSprintRelDO);
+    IssueSprintRelE createIssueSprintRel(IssueSprintRelE issueSprintRelE);
 }

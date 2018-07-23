@@ -1,20 +1,35 @@
 package io.choerodon.agile.infra.common.aspect;
 
+import io.choerodon.agile.api.dto.SprintNameDTO;
+import io.choerodon.agile.app.assembler.SprintNameAssembler;
+import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.domain.agile.entity.IssueSprintRelE;
+import io.choerodon.agile.domain.agile.repository.DataLogRepository;
+import io.choerodon.agile.domain.agile.repository.UserRepository;
+import io.choerodon.agile.infra.common.annotation.DataLog;
+import io.choerodon.agile.infra.dataobject.IssueDO;
+import io.choerodon.agile.infra.dataobject.IssueStatusDO;
+import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
+import io.choerodon.agile.infra.dataobject.SprintDO;
+import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 日志切面
@@ -28,6 +43,67 @@ public class LogDataAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(LogDataAspect.class);
 
+    private static final String ISSUE = "issue";
+    private static final String SPRINT = "sprint";
+    private static final String LABEL = "label";
+    private static final String COMPONENT = "component";
+    private static final String VERSION = "version";
+    private static final String ATTACHMENT = "attachment";
+    private static final String EPIC_NAME_FIELD = "epicName";
+    private static final String FIELD_EPIC_NAME = "Epic Name";
+    private static final String SUMMARY_FIELD = "summary";
+    private static final String DESCRIPTION = "description";
+    private static final String FIELD_DESCRIPTION_NULL = "[{\"insert\":\"\n\"}]";
+    private static final String FIELD_PRIORITY = "priority";
+    private static final String PRIORITY_CODE_FIELD = "priorityCode";
+    private static final String FIELD_ASSIGNEE = "assignee";
+    private static final String ASSIGNEE_ID_FIELD = "assigneeId";
+    private static final String REPORTER_ID_FIELD = "reporterId";
+    private static final String FIELD_REPORTER = "reporter";
+    private static final String SPRINT_ID_FIELD = "sprintId";
+    private static final String FIELD_SPRINT = "Sprint";
+    private static final String NEW_STRING = "newString";
+    private static final String NEW_VALUE = "newValue";
+    private static final String OLD_STRING = "oldString";
+    private static final String OLD_VALUE = "oldValue";
+    private static final String SUB_TASK = "sub_task";
+    private static final String STORY_POINTS_FIELD = "storyPoints";
+    private static final String EPIC_ID_FIELD = "epicId";
+    private static final String FIELD_STORY_POINTS = "Story Points";
+    private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
+    private static final String ERROR_EPIC_NOT_FOUND = "error.dataLogEpic.epicNotFound";
+    private static final String FIELD_EPIC_LINK = "Epic Link";
+    private static final String FIELD_EPIC_CHILD = "Epic Child";
+    private static final String REMAIN_TIME_FIELD = "remainingTime";
+    private static final String FIELD_TIMEESTIMATE = "timeestimate";
+    private static final String STATUS_ID = "statusId";
+    private static final String FIELD_STATUS = "status";
+    private static final String FIELD_RESOLUTION = "resolution";
+    private static final String RANK_FIELD = "rank";
+    private static final String FIELD_RANK = "Rank";
+    private static final String RANK_HIGHER = "评级更高";
+    private static final String RANK_LOWER = "评级更低";
+    private static final String TYPE_CODE = "typeCode";
+    private static final String ISSUE_EPIC = "issue_epic";
+    private static final String FIELD_ISSUETYPE = "issuetype";
+
+    @Autowired
+    private IssueStatusMapper issueStatusMapper;
+    @Autowired
+    private IssueMapper issueMapper;
+    @Autowired
+    private DataLogRepository dataLogRepository;
+    @Autowired
+    private LookupValueMapper lookupValueMapper;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private SprintNameAssembler sprintNameAssembler;
+    @Autowired
+    private SprintMapper sprintMapper;
+    @Autowired
+    private ProjectInfoMapper projectInfoMapper;
+
     /**
      * 定义拦截规则：拦截Spring管理的后缀为RepositoryImpl的bean中带有@DataLog注解的方法。
      */
@@ -37,42 +113,405 @@ public class LogDataAspect {
 
     @Around("updateMethodPointcut()")
     public Object Interceptor(ProceedingJoinPoint pjp) {
+        Object result;
         long beginTime = System.currentTimeMillis();
         MethodSignature signature = (MethodSignature) pjp.getSignature();
-        Method method = signature.getMethod(); //获取被拦截的方法
-        String methodName = method.getName(); //获取被拦截的方法名
-        Set<Object> allParams = new LinkedHashSet<>(); //保存所有请求参数，用于输出到日志中
+        //获取被拦截的方法
+        Method method = signature.getMethod();
+        DataLog dataLog = method.getAnnotation(DataLog.class);
+        //获取被拦截的方法名
+        String methodName = method.getName();
         Object[] args = pjp.getArgs();
         logger.info("开始记录日志：{}", methodName);
-
-        Object result = null;
-        for (Object arg : args) {
-            if (arg instanceof Map<?, ?>) {
-                //提取方法中的MAP参数，用于记录进日志中
-                @SuppressWarnings("unchecked")
-                Map<String, Object> map = (Map<String, Object>) arg;
-                allParams.add(map);
-            } else if (arg instanceof IssueE) {
-
-
-            } else {
-                //allParams.add(arg);
+        if (dataLog != null && args != null) {
+            switch (dataLog.type()) {
+                case ISSUE:
+                    handleIssueDataLog(args);
+                    break;
+                case SPRINT:
+                    handleSprintDataLog(args);
+                    break;
+                case LABEL:
+                    break;
+                case COMPONENT:
+                    break;
+                case VERSION:
+                    break;
+                case ATTACHMENT:
+                    break;
+                default:
+                    break;
             }
+        } else {
+            throw new CommonException("error.LogDataAspect.update");
         }
-
         try {
             // 一切正常的情况下，继续执行被拦截的方法
             result = pjp.proceed();
         } catch (Throwable e) {
             logger.info("exception: ", e);
-            result = new CommonException("");
+            throw new CommonException("error.LogDataAspect.update");
         }
-
         if (result != null) {
             long costMs = System.currentTimeMillis() - beginTime;
             logger.info("{}请求结束，耗时：{}ms", methodName, costMs);
         }
         return result;
+    }
+
+    private void handleSprintDataLog(Object[] args) {
+        IssueSprintRelE issueSprintRelE = null;
+        for (Object arg : args) {
+            if (arg instanceof IssueSprintRelE) {
+                issueSprintRelE = (IssueSprintRelE) arg;
+            }
+        }
+        if (issueSprintRelE != null) {
+            SprintDO sprintDO = sprintMapper.selectByPrimaryKey(issueSprintRelE.getSprintId());
+            createDataLog(issueSprintRelE.getProjectId(), issueSprintRelE.getIssueId(),
+                    FIELD_SPRINT, null, issueSprintRelE.getSprintId().toString(), null, sprintDO.getSprintName());
+        }
+    }
+
+    private void handleIssueDataLog(Object[] args) {
+        IssueE issueE = null;
+        List<String> field = null;
+        for (Object arg : args) {
+            if (arg instanceof IssueE) {
+                issueE = (IssueE) arg;
+            } else if (arg instanceof String[]) {
+                field = Arrays.asList((String[]) arg);
+            }
+        }
+        if (issueE != null && field != null && !field.isEmpty()) {
+            IssueDO originIssueDO = issueMapper.selectByPrimaryKey(issueE.getIssueId());
+            handleIssueEpicName(field, originIssueDO, issueE);
+            handleIssueSummary(field, originIssueDO, issueE);
+            handleDescription(field, originIssueDO, issueE);
+            handlePriority(field, originIssueDO, issueE);
+            handleAssignee(field, originIssueDO, issueE);
+            handleReporter(field, originIssueDO, issueE);
+            handleSprint(field, originIssueDO, issueE);
+            handleStoryPoints(field, originIssueDO, issueE);
+            handleIssueEpic(field, originIssueDO, issueE);
+            handleRemainTime(field, originIssueDO, issueE);
+            handleStatus(field, originIssueDO, issueE);
+            handleRank(field, originIssueDO, issueE);
+            handleType(field, originIssueDO, issueE);
+        }
+    }
+
+    private void handleType(List<String> field, IssueDO originIssueDO, IssueE issueE) {
+        if (field.contains(TYPE_CODE) && !originIssueDO.getTypeCode().equals(issueE.getTypeCode())) {
+            String originTypeName = lookupValueMapper.selectNameByValueCode(originIssueDO.getTypeCode());
+            String currentTypeName = lookupValueMapper.selectNameByValueCode(issueE.getTypeCode());
+            DataLogE dataLogE = new DataLogE();
+            dataLogE.setField(FIELD_ISSUETYPE);
+            dataLogE.setIssueId(originIssueDO.getIssueId());
+            dataLogE.setProjectId(originIssueDO.getProjectId());
+            dataLogE.setOldString(originTypeName);
+            dataLogE.setNewString(currentTypeName);
+            dataLogRepository.create(dataLogE);
+        }
+    }
+
+    private void handleRank(List<String> field, IssueDO originIssueDO, IssueE issueE) {
+        if (field.contains(RANK_FIELD) && !originIssueDO.getRank().equals(issueE.getRank())) {
+            SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(originIssueDO.getIssueId()));
+            Long sprintId;
+            if (field.contains(SPRINT_ID_FIELD)) {
+                sprintId = issueE.getSprintId();
+            } else {
+                sprintId = activeSprintName.getSprintId();
+            }
+            Boolean condition = (sprintId == 0 && activeSprintName == null) || (activeSprintName != null && sprintId.equals(activeSprintName.getSprintId()));
+            if (condition && originIssueDO.getRank() != null && issueE.getRank() != null) {
+                if (originIssueDO.getRank().compareTo(issueE.getRank()) < 0) {
+                    createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
+                            FIELD_RANK, null, RANK_HIGHER, null, null);
+                } else {
+                    createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
+                            FIELD_RANK, null, RANK_LOWER, null, null);
+                }
+            }
+        }
+    }
+
+    private void handleStatus(List<String> field, IssueDO originIssueDO, IssueE issueE) {
+        if (field.contains(STATUS_ID) && !originIssueDO.getStatusId().equals(issueE.getStatusId())) {
+            if (originIssueDO.getStatusId().equals(issueE.getStatusId())) {
+                return;
+            }
+            IssueStatusDO originStatus = issueStatusMapper.selectByPrimaryKey(originIssueDO.getStatusId());
+            IssueStatusDO currentStatus = issueStatusMapper.selectByPrimaryKey(issueE.getStatusId());
+            createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
+                    FIELD_STATUS, originStatus.getName(), currentStatus.getName(),
+                    originIssueDO.getStatusId().toString(),
+                    issueE.getStatusId().toString());
+            Boolean condition = (originStatus.getCompleted() != null && originStatus.getCompleted()) || (currentStatus.getCompleted() != null && currentStatus.getCompleted());
+            if (condition) {
+                dataLogResolution(originIssueDO.getProjectId(), originIssueDO.getIssueId(), originStatus, currentStatus);
+            }
+        }
+    }
+
+    private void handleRemainTime(List<String> field, IssueDO originIssueDO, IssueE issueE) {
+        if (field.contains(REMAIN_TIME_FIELD) && !originIssueDO.getRemainingTime().equals(issueE.getRemainingTime())) {
+            String oldData = null;
+            String newData = null;
+            if (originIssueDO.getRemainingTime() != null) {
+                oldData = originIssueDO.getRemainingTime().toString();
+            }
+            if (issueE.getRemainingTime() != null) {
+                newData = issueE.getRemainingTime().toString();
+            }
+            createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
+                    FIELD_TIMEESTIMATE, oldData, oldData, newData, newData);
+        }
+    }
+
+    private void handleStoryPoints(List<String> field, IssueDO originIssueDO, IssueE issueE) {
+        if (field.contains(STORY_POINTS_FIELD) && !originIssueDO.getStoryPoints().equals(issueE.getStoryPoints())) {
+            String oldString = null;
+            String newString = null;
+            if (originIssueDO.getStoryPoints() != null) {
+                oldString = originIssueDO.getStoryPoints().toString();
+            }
+            if (issueE.getStoryPoints() != null) {
+                newString = issueE.getStoryPoints().toString();
+            }
+            createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
+                    FIELD_STORY_POINTS, oldString, newString, null, null);
+        }
+    }
+
+    private void handleSprint(List<String> field, IssueDO originIssueDO, IssueE issueE) {
+        Boolean updateSprint = (field.contains(SPRINT_ID_FIELD) && !originIssueDO.getSprintId().equals(issueE.getSprintId()))
+                || (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L));
+        if (updateSprint) {
+            SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(originIssueDO.getIssueId()));
+            List<SprintNameDTO> closeSprintNames = sprintNameAssembler.doListToDTO(issueMapper.queryCloseSprintNameByIssueId(originIssueDO.getIssueId()));
+            SprintNameDTO sprintName = sprintNameAssembler.doToDTO(sprintMapper.querySprintNameBySprintId(originIssueDO.getProjectId(), issueE.getSprintId()));
+            Boolean condition = !((activeSprintName == null && sprintName == null) || (sprintName != null && activeSprintName != null && Objects.equals(sprintName.getSprintId(), activeSprintName.getSprintId())));
+            if (condition) {
+                Map<String, String> valuesMap = dealSprint(closeSprintNames, activeSprintName, sprintName);
+                createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(), FIELD_SPRINT,
+                        "".equals(valuesMap.get(OLD_STRING)) ? null : valuesMap.get(OLD_STRING),
+                        "".equals(valuesMap.get(NEW_STRING)) ? null : valuesMap.get(NEW_STRING),
+                        "".equals(valuesMap.get(OLD_VALUE)) ? null : valuesMap.get(OLD_VALUE),
+                        "".equals(valuesMap.get(NEW_VALUE)) ? null : valuesMap.get(NEW_VALUE));
+                if (!originIssueDO.getTypeCode().equals(SUB_TASK)) {
+                    dataLogSubIssueSprint(issueE.getIssueId(), originIssueDO.getProjectId(), valuesMap);
+                }
+            }
+        }
+    }
+
+    private void handleReporter(List<String> field, IssueDO originIssueDO, IssueE issueE) {
+        if (field.contains(REPORTER_ID_FIELD) && !originIssueDO.getReporterId().equals(issueE.getReporterId())) {
+            String oldValue = null;
+            String newValue = null;
+            String oldString = null;
+            String newString = null;
+            if (originIssueDO.getReporterId() != null && originIssueDO.getReporterId() != 0) {
+                oldValue = originIssueDO.getReporterId().toString();
+                oldString = userRepository.queryUserNameByOption(originIssueDO.getReporterId(), false).getRealName();
+            }
+            if (issueE.getReporterId() != 0) {
+                newValue = issueE.getReporterId().toString();
+                newString = userRepository.queryUserNameByOption(issueE.getReporterId(), false).getRealName();
+            }
+            createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
+                    FIELD_REPORTER, oldString, newString, oldValue, newValue);
+        }
+    }
+
+    private void handleAssignee(List<String> field, IssueDO originIssueDO, IssueE issueE) {
+        if (field.contains(ASSIGNEE_ID_FIELD) && !originIssueDO.getAssigneeId().equals(issueE.getAssigneeId())) {
+            String oldValue = null;
+            String newValue = null;
+            String oldString = null;
+            String newString = null;
+            if (originIssueDO.getAssigneeId() != null && originIssueDO.getAssigneeId() != 0) {
+                oldValue = originIssueDO.getAssigneeId().toString();
+                oldString = userRepository.queryUserNameByOption(originIssueDO.getAssigneeId(), false).getRealName();
+            }
+            if (issueE.getAssigneeId() != 0) {
+                newValue = issueE.getAssigneeId().toString();
+                newString = userRepository.queryUserNameByOption(issueE.getAssigneeId(), false).getRealName();
+            }
+            createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
+                    FIELD_ASSIGNEE, oldString, newString, oldValue, newValue);
+        }
+    }
+
+    private void handlePriority(List<String> field, IssueDO originIssueDO, IssueE issueE) {
+        if (field.contains(PRIORITY_CODE_FIELD) && !originIssueDO.getPriorityCode().equals(issueE.getPriorityCode())) {
+            createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
+                    FIELD_PRIORITY, lookupValueMapper.selectNameByValueCode(originIssueDO.getPriorityCode())
+                    , lookupValueMapper.selectNameByValueCode(issueE.getPriorityCode()), null, null);
+        }
+    }
+
+    private void handleDescription(List<String> field, IssueDO originIssueDO, IssueE issueE) {
+        if (field.contains(DESCRIPTION) && !originIssueDO.getDescription().equals(issueE.getDescription())) {
+            if (!FIELD_DESCRIPTION_NULL.equals(issueE.getDescription())) {
+                createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
+                        DESCRIPTION, originIssueDO.getDescription(), issueE.getDescription(), null, null);
+            } else {
+                createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
+                        DESCRIPTION, originIssueDO.getDescription(), null, null, null);
+            }
+        }
+    }
+
+    private void handleIssueSummary(List<String> field, IssueDO originIssueDO, IssueE issueE) {
+        if (field.contains(SUMMARY_FIELD) && !originIssueDO.getSummary().equals(issueE.getSummary())) {
+            createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
+                    SUMMARY_FIELD, originIssueDO.getSummary(), issueE.getSummary(), null, null);
+        }
+    }
+
+    private void handleIssueEpicName(List<String> field, IssueDO originIssueDO, IssueE issueE) {
+        if (field.contains(EPIC_NAME_FIELD) && !originIssueDO.getEpicName().equals(issueE.getEpicName())) {
+            createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
+                    FIELD_EPIC_NAME, originIssueDO.getEpicName(), issueE.getEpicName(), null, null);
+        }
+    }
+
+    private void handleIssueEpic(List<String> field, IssueDO originIssueDO, IssueE issueE) {
+        if (field.contains(EPIC_ID_FIELD)) {
+            createIssueEpicLog(issueE.getEpicId(), originIssueDO);
+        }
+    }
+
+    public void createIssueEpicLog(Long epicId, IssueDO originIssueDO) {
+        ProjectInfoDO query = new ProjectInfoDO();
+        query.setProjectId(originIssueDO.getProjectId());
+        ProjectInfoDO projectInfoDO = projectInfoMapper.selectOne(query);
+        if (projectInfoDO == null) {
+            throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
+        }
+        if ((originIssueDO.getEpicId() == null || originIssueDO.getEpicId() == 0)) {
+            dataLogCreateEpicId(epicId, originIssueDO, projectInfoDO);
+        } else {
+            dataLogChangeEpicId(epicId, originIssueDO, projectInfoDO);
+        }
+    }
+
+    private void dataLogResolution(Long projectId, Long issueId, IssueStatusDO originStatus, IssueStatusDO currentStatus) {
+        Boolean condition = (originStatus.getCompleted() == null || !originStatus.getCompleted()) || (currentStatus.getCompleted() == null || !currentStatus.getCompleted());
+        if (condition) {
+            String oldValue = null;
+            String newValue = null;
+            String oldString = null;
+            String newString = null;
+            if (originStatus.getCompleted()) {
+                oldValue = originStatus.getId().toString();
+                oldString = originStatus.getName();
+            } else if (currentStatus.getCompleted()) {
+                newValue = currentStatus.getId().toString();
+                newString = currentStatus.getName();
+            }
+            createDataLog(projectId, issueId, FIELD_RESOLUTION, oldString, newString, oldValue, newValue);
+        }
+    }
+
+    private void dataLogCreateEpicId(Long epicId, IssueDO originIssueDO, ProjectInfoDO projectInfoDO) {
+        IssueDO issueEpic = queryIssueByIssueIdAndProjectId(originIssueDO.getProjectId(), epicId);
+        if (issueEpic == null) {
+            throw new CommonException(ERROR_EPIC_NOT_FOUND);
+        } else {
+            createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(), FIELD_EPIC_LINK,
+                    null, projectInfoDO.getProjectCode() + "-" + issueEpic.getIssueNum(),
+                    null, issueEpic.getIssueId().toString());
+            createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(), FIELD_EPIC_CHILD,
+                    null, projectInfoDO.getProjectCode() + "-" + issueEpic.getIssueNum(),
+                    null, issueEpic.getIssueId().toString());
+        }
+    }
+
+    private void dataLogChangeEpicId(Long epicId, IssueDO originIssueDO, ProjectInfoDO projectInfoDO) {
+        IssueDO oldIssueEpic = queryIssueByIssueIdAndProjectId(originIssueDO.getProjectId(), originIssueDO.getEpicId());
+        if (oldIssueEpic == null) {
+            throw new CommonException(ERROR_EPIC_NOT_FOUND);
+        } else {
+            if (epicId == null || epicId == 0) {
+                createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(), FIELD_EPIC_LINK,
+                        projectInfoDO.getProjectCode() + "-" + oldIssueEpic.getIssueNum(),
+                        null, oldIssueEpic.getIssueId().toString(), null);
+            } else {
+                IssueDO newIssueEpic = queryIssueByIssueIdAndProjectId(originIssueDO.getProjectId(), epicId);
+                if (newIssueEpic == null) {
+                    throw new CommonException(ERROR_EPIC_NOT_FOUND);
+                } else {
+                    createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(), FIELD_EPIC_LINK,
+                            projectInfoDO.getProjectCode() + "-" + oldIssueEpic.getIssueNum(),
+                            projectInfoDO.getProjectCode() + "-" + newIssueEpic.getIssueNum(),
+                            oldIssueEpic.getIssueId().toString(), newIssueEpic.getIssueId().toString());
+                    createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(), FIELD_EPIC_CHILD,
+                            null, projectInfoDO.getProjectCode() + "-" + originIssueDO.getIssueNum(),
+                            null, originIssueDO.getIssueId().toString());
+                }
+            }
+            createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(), FIELD_EPIC_CHILD,
+                    projectInfoDO.getProjectCode() + "-" + originIssueDO.getIssueNum(), null,
+                    originIssueDO.getIssueId().toString(), null);
+        }
+    }
+
+    private IssueDO queryIssueByIssueIdAndProjectId(Long projectId, Long issueId) {
+        IssueDO issueDO = new IssueDO();
+        issueDO.setIssueId(issueId);
+        issueDO.setProjectId(projectId);
+        return issueMapper.selectOne(issueDO);
+    }
+
+    private void dataLogSubIssueSprint(Long issueId, Long projectId, Map<String, String> valuesMap) {
+        List<IssueE> issueEList = ConvertHelper.convertList(issueMapper.queryIssueSubList(projectId, issueId), IssueE.class);
+        issueEList.forEach(issueE -> createDataLog(projectId, issueE.getIssueId(), FIELD_SPRINT,
+                "".equals(valuesMap.get(OLD_STRING)) ? null : valuesMap.get(OLD_STRING),
+                "".equals(valuesMap.get(NEW_STRING)) ? null : valuesMap.get(NEW_STRING),
+                "".equals(valuesMap.get(OLD_VALUE)) ? null : valuesMap.get(OLD_VALUE),
+                "".equals(valuesMap.get(NEW_VALUE)) ? null : valuesMap.get(NEW_VALUE)));
+    }
+
+    private void createDataLog(Long projectId, Long issueId, String field, String oldString,
+                               String newString, String oldValue, String newValue) {
+        DataLogE dataLogE = new DataLogE();
+        dataLogE.setProjectId(projectId);
+        dataLogE.setIssueId(issueId);
+        dataLogE.setField(field);
+        dataLogE.setOldString(oldString);
+        dataLogE.setNewString(newString);
+        dataLogE.setOldValue(oldValue);
+        dataLogE.setNewValue(newValue);
+        dataLogRepository.create(dataLogE);
+    }
+
+    private Map<String, String> dealSprint(List<SprintNameDTO> closeSprintNames, SprintNameDTO activeSprintName, SprintNameDTO sprintName) {
+        Map<String, String> valuesMap = new HashMap<>();
+        String oldValue;
+        String oldString;
+        String newValue;
+        String newString;
+        String closeSprintIdStr = closeSprintNames.stream().map(closeSprintName -> closeSprintName.getSprintId().toString()).collect(Collectors.joining(","));
+        String closeSprintNameStr = closeSprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
+        oldValue = newValue = closeSprintIdStr;
+        oldString = newString = closeSprintNameStr;
+        if (activeSprintName != null) {
+            oldValue = ("".equals(oldValue) ? activeSprintName.getSprintId().toString() : oldValue + "," + activeSprintName.getSprintId().toString());
+            oldString = ("".equals(oldString) ? activeSprintName.getSprintName() : oldString + "," + activeSprintName.getSprintName());
+        }
+        if (sprintName != null) {
+            newValue = ("".equals(newValue) ? sprintName.getSprintId().toString() : newValue + "," + sprintName.getSprintId().toString());
+            newString = ("".equals(newString) ? sprintName.getSprintName() : newString + "," + sprintName.getSprintName());
+        }
+        valuesMap.put(OLD_VALUE, oldValue);
+        valuesMap.put(OLD_STRING, oldString);
+        valuesMap.put(NEW_VALUE, newValue);
+        valuesMap.put(NEW_STRING, newString);
+        return valuesMap;
     }
 
 }
