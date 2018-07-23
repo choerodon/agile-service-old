@@ -229,7 +229,7 @@
         FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
         LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task'
+        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task' AND ai.type_code != 'issue_test'
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
                 AND position(#{searchArgs.summary} IN ai.summary)
@@ -311,7 +311,17 @@
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task'
+        WHERE ai.project_id = #{projectId} AND ai.type_code != 'issue_epic'
+        <if test="activeSprintId != null">
+            AND ai.issue_id IN (
+            SELECT
+               issue_id
+            FROM
+               agile_issue_sprint_rel
+            WHERE
+               project_id = #{projectId}
+            AND sprint_id = #{activeSprintId})
+        </if>
         <if test="issueId != null">
             AND ai.issue_id != #{issueId}
         </if>

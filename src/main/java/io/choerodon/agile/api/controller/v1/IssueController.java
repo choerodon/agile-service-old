@@ -130,7 +130,7 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("分页搜索查询issue列表(不包含子任务)")
+    @ApiOperation("分页搜索查询issue列表(包含子任务)")
     @CustomPageRequest
     @GetMapping(value = "/summary")
     public ResponseEntity<Page<IssueNumDTO>> queryIssueByOption(@ApiIgnore
@@ -143,11 +143,13 @@ public class IssueController {
                                                                 @RequestParam(required = false) Long issueId,
                                                                 @ApiParam(value = "issueNum")
                                                                 @RequestParam(required = false) String issueNum,
+                                                                @ApiParam(value = "only active sprint", required = true)
+                                                                @RequestParam Boolean onlyActiveSprint,
                                                                 @ApiParam(value = "是否包含自身", required = true)
                                                                 @RequestParam() Boolean self,
                                                                 @ApiParam(value = "搜索内容", required = false)
                                                                 @RequestParam(required = false) String content) {
-        return Optional.ofNullable(issueService.queryIssueByOption(projectId, issueId, issueNum, self, content, pageRequest))
+        return Optional.ofNullable(issueService.queryIssueByOption(projectId, issueId, issueNum, onlyActiveSprint, self, content, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssueByOption"));
     }

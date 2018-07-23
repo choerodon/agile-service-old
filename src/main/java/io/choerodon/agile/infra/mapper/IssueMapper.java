@@ -134,6 +134,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     List queryIssueByOption(@Param("projectId") Long projectId,
                             @Param("issueId") Long issueId,
                             @Param("issueNum") String issueNum,
+                            @Param("activeSprintId") Long activeSprintId,
                             @Param("self") Boolean self,
                             @Param("content") String content);
 

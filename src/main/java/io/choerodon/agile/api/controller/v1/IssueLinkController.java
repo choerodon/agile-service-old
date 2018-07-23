@@ -61,8 +61,9 @@ public class IssueLinkController {
                                                                      @ApiParam(value = "issueId", required = true)
                                                                      @PathVariable Long issueId,
                                                                      @ApiParam(value = "是否包含测试任务")
-                                                                     @RequestParam(required = false,defaultValue = "false") Boolean issueTest) {
-        return Optional.ofNullable(issueLinkService.listIssueLinkByIssueId(issueId, projectId, issueTest))
+                                                                     @RequestParam(required = false,name = "no_issue_test",defaultValue = "false")
+                                                                                 Boolean noIssueTest) {
+        return Optional.ofNullable(issueLinkService.listIssueLinkByIssueId(issueId, projectId, noIssueTest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.IssueLink.listIssueLinkByIssueId"));
     }

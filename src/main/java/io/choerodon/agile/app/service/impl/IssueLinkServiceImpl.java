@@ -50,8 +50,8 @@ public class IssueLinkServiceImpl implements IssueLinkService {
     }
 
     @Override
-    public List<IssueLinkDTO> listIssueLinkByIssueId(Long issueId, Long projectId,Boolean issueTest) {
-        return issueLinkAssembler.issueLinkDoToDto(issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId,issueTest));
+    public List<IssueLinkDTO> listIssueLinkByIssueId(Long issueId, Long projectId,Boolean noIssueTest) {
+        return issueLinkAssembler.issueLinkDoToDto(issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId,noIssueTest));
     }
 
 }

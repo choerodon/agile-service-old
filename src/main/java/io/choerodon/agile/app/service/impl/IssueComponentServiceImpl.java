@@ -103,9 +103,9 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     }
 
     @Override
-    public List<ComponentForListDTO> queryComponentByProjectId(Long projectId, Long componentId) {
+    public List<ComponentForListDTO> queryComponentByProjectId(Long projectId, Long componentId, Boolean noIssueTest) {
         List<ComponentForListDTO> componentForListDTOList = ConvertHelper.convertList(
-                issueComponentMapper.selectComponentWithIssueNum(projectId, componentId), ComponentForListDTO.class);
+                issueComponentMapper.selectComponentWithIssueNum(projectId, componentId, noIssueTest), ComponentForListDTO.class);
         List<Long> assigneeIds = componentForListDTOList.stream().filter(componentForListDTO -> componentForListDTO.getManagerId() != null
                 && !Objects.equals(componentForListDTO.getManagerId(), 0L)).map(ComponentForListDTO::getManagerId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
