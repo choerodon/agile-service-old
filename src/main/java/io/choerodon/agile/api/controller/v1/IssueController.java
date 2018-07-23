@@ -143,11 +143,13 @@ public class IssueController {
                                                                 @RequestParam(required = false) Long issueId,
                                                                 @ApiParam(value = "issueNum")
                                                                 @RequestParam(required = false) String issueNum,
+                                                                @ApiParam(value = "sprint id")
+                                                                @RequestParam(required = false) Long sprintId,
                                                                 @ApiParam(value = "是否包含自身", required = true)
                                                                 @RequestParam() Boolean self,
                                                                 @ApiParam(value = "搜索内容", required = false)
                                                                 @RequestParam(required = false) String content) {
-        return Optional.ofNullable(issueService.queryIssueByOption(projectId, issueId, issueNum, self, content, pageRequest))
+        return Optional.ofNullable(issueService.queryIssueByOption(projectId, issueId, issueNum, sprintId, self, content, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssueByOption"));
     }
