@@ -23,7 +23,7 @@ public class IssueSprintRelRepositoryImpl implements IssueSprintRelRepository {
     private IssueSprintRelMapper issueSprintRelMapper;
 
     @Override
-    @DataLog(type = "")
+    @DataLog(type = "sprint")
     public IssueSprintRelE createIssueSprintRel(IssueSprintRelE issueSprintRelE) {
         IssueSprintRelDO issueSprintRelDO = ConvertHelper.convert(issueSprintRelE, IssueSprintRelDO.class);
         if (issueSprintRelMapper.insert(issueSprintRelDO) != 1) {

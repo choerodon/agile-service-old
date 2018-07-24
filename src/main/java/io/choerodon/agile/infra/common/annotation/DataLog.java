@@ -10,5 +10,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER, ElementType.METHOD})
 public @interface DataLog {
+
     String type() default "";
+
+    boolean single() default true;
 }

@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.domain.service.IIssueService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.MoveIssueDO;
@@ -46,6 +47,7 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
+    @DataLog(type = "issueCreate")
     public IssueE create(IssueE issueE) {
         IssueDO issueDO = ConvertHelper.convert(issueE, IssueDO.class);
         if (issueMapper.insert(issueDO) != 1) {
@@ -83,8 +85,9 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public Boolean batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds, Date date, Long userId) {
-        issueMapper.batchIssueToVersion(projectId, versionId, issueIds, date, userId);
+    @DataLog(type = "batchToVersion", single = false)
+    public Boolean batchIssueToVersion(VersionIssueRelE versionIssueRelE) {
+        issueMapper.batchIssueToVersion(versionIssueRelE.getProjectId(), versionIssueRelE.getVersionId(), versionIssueRelE.getIssueIds(), versionIssueRelE.getCreationDate(), versionIssueRelE.getCreatedBy());
         return true;
     }
 
@@ -95,6 +98,7 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
+    @DataLog(type = "batchRemoveVersion", single = false)
     public int batchRemoveVersion(Long projectId, List<Long> issueIds) {
         return issueMapper.batchRemoveFromVersion(projectId, issueIds);
     }
@@ -115,6 +119,7 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
+    @DataLog(type = "batchRemoveSprint", single = false)
     public int removeIssueFromSprintByIssueIds(Long projectId, List<Long> issueIds) {
         return issueMapper.removeIssueFromSprintByIssueIds(projectId, issueIds);
     }

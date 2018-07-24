@@ -2,6 +2,10 @@ package io.choerodon.agile.domain.agile.entity;
 
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.core.oauth.DetailsHelper;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author dinghuang123@gmail.com
@@ -22,6 +26,36 @@ public class VersionIssueRelE {
     private Long projectId;
 
     private String relationType;
+
+    private Date creationDate;
+
+    private Long createdBy;
+
+    private List<Long> issueIds;
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Long getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public List<Long> getIssueIds() {
+        return issueIds;
+    }
+
+    public void setIssueIds(List<Long> issueIds) {
+        this.issueIds = issueIds;
+    }
 
     public Long getVersionId() {
         return versionId;
@@ -82,5 +116,13 @@ public class VersionIssueRelE {
 
     public void setRelationType(String relationType) {
         this.relationType = relationType;
+    }
+
+    public void createBatchIssueToVersionE(Long projectId, Long versionId, List<Long> issueIds) {
+        this.projectId = projectId;
+        this.versionId = versionId;
+        this.issueIds = issueIds;
+        this.creationDate = new Date();
+        this.createdBy = DetailsHelper.getUserDetails().getUserId();
     }
 }

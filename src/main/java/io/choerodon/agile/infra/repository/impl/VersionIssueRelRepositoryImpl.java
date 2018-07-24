@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
@@ -37,6 +38,7 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
     }
 
     @Override
+    @DataLog(type = "versionCreate")
     public List<VersionIssueRelE> create(VersionIssueRelE versionIssueRelE) {
         VersionIssueRelDO versionIssueRelDO = ConvertHelper.convert(versionIssueRelE, VersionIssueRelDO.class);
         if (versionIssueRelMapper.insert(versionIssueRelDO) != 1) {

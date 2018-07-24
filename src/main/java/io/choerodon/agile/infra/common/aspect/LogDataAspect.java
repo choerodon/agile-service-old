@@ -5,13 +5,11 @@ import io.choerodon.agile.app.assembler.SprintNameAssembler;
 import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.IssueSprintRelE;
+import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.domain.agile.repository.DataLogRepository;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.annotation.DataLog;
-import io.choerodon.agile.infra.dataobject.IssueDO;
-import io.choerodon.agile.infra.dataobject.IssueStatusDO;
-import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
-import io.choerodon.agile.infra.dataobject.SprintDO;
+import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -25,11 +23,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import sun.misc.Version;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static javax.xml.transform.OutputKeys.VERSION;
 
 /**
  * 日志切面
@@ -44,10 +45,13 @@ public class LogDataAspect {
     private static final Logger logger = LoggerFactory.getLogger(LogDataAspect.class);
 
     private static final String ISSUE = "issue";
+    private static final String ISSUE_CREATE = "issueCreate";
     private static final String SPRINT = "sprint";
     private static final String LABEL = "label";
+    private static final String VERSION_CREATE = "versionCreate";
     private static final String COMPONENT = "component";
-    private static final String VERSION = "version";
+    private static final String BATCH_TO_VERSION = "batchToVersion";
+    private static final String BATCH_REMOVE_VERSION = "batchRemoveVersion";
     private static final String ATTACHMENT = "attachment";
     private static final String EPIC_NAME_FIELD = "epicName";
     private static final String FIELD_EPIC_NAME = "Epic Name";
@@ -86,6 +90,7 @@ public class LogDataAspect {
     private static final String TYPE_CODE = "typeCode";
     private static final String ISSUE_EPIC = "issue_epic";
     private static final String FIELD_ISSUETYPE = "issuetype";
+    private static final String FIELD_FIX_VERSION = "Fix Version";
 
     @Autowired
     private IssueStatusMapper issueStatusMapper;
@@ -103,6 +108,8 @@ public class LogDataAspect {
     private SprintMapper sprintMapper;
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
+    @Autowired
+    private ProductVersionMapper productVersionMapper;
 
     /**
      * 定义拦截规则：拦截Spring管理的后缀为RepositoryImpl的bean中带有@DataLog注解的方法。
@@ -112,8 +119,8 @@ public class LogDataAspect {
     }
 
     @Around("updateMethodPointcut()")
-    public Object Interceptor(ProceedingJoinPoint pjp) {
-        Object result;
+    public Object interceptor(ProceedingJoinPoint pjp) {
+        Object result = null;
         long beginTime = System.currentTimeMillis();
         MethodSignature signature = (MethodSignature) pjp.getSignature();
         //获取被拦截的方法
@@ -124,30 +131,52 @@ public class LogDataAspect {
         Object[] args = pjp.getArgs();
         logger.info("开始记录日志：{}", methodName);
         if (dataLog != null && args != null) {
-            switch (dataLog.type()) {
-                case ISSUE:
-                    handleIssueDataLog(args);
-                    break;
-                case SPRINT:
-                    handleSprintDataLog(args);
-                    break;
-                case LABEL:
-                    break;
-                case COMPONENT:
-                    break;
-                case VERSION:
-                    break;
-                case ATTACHMENT:
-                    break;
-                default:
-                    break;
+            if (dataLog.single()) {
+                switch (dataLog.type()) {
+                    case ISSUE:
+                        handleIssueDataLog(args);
+                        break;
+                    case ISSUE_CREATE:
+                        handleIssueCreateDataLog(pjp, result);
+                        break;
+                    case SPRINT:
+                        handleSprintDataLog(args);
+                        break;
+                    case VERSION_CREATE:
+                        handleVersionCreateDataLog(args);
+                        break;
+                    case LABEL:
+                        break;
+                    case COMPONENT:
+                        break;
+                    case VERSION:
+                        break;
+                    case ATTACHMENT:
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                switch (dataLog.type()) {
+                    case BATCH_TO_VERSION:
+                        batchToVersionDataLog(args);
+                        break;
+                    case BATCH_REMOVE_VERSION:
+                        batchRemoveVersionDataLog(args);
+                        break;
+                    default:
+                        break;
+                }
             }
+
         } else {
             throw new CommonException("error.LogDataAspect.update");
         }
         try {
             // 一切正常的情况下，继续执行被拦截的方法
-            result = pjp.proceed();
+            if (result == null) {
+                result = pjp.proceed();
+            }
         } catch (Throwable e) {
             logger.info("exception: ", e);
             throw new CommonException("error.LogDataAspect.update");
@@ -157,6 +186,90 @@ public class LogDataAspect {
             logger.info("{}请求结束，耗时：{}ms", methodName, costMs);
         }
         return result;
+    }
+
+    private void handleVersionCreateDataLog(Object[] args) {
+        VersionIssueRelE versionIssueRelE = null;
+        for (Object arg : args) {
+            if (arg instanceof VersionIssueRelE) {
+                versionIssueRelE = (VersionIssueRelE) arg;
+            }
+        }
+        if (versionIssueRelE != null) {
+            createDataLog(versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), FIELD_FIX_VERSION,
+                    null, productVersionMapper.selectByPrimaryKey(versionIssueRelE.getVersionId()).getName(),
+                    null, versionIssueRelE.getVersionId().toString());
+        }
+
+    }
+
+    @SuppressWarnings("unchecked")
+    private void batchRemoveVersionDataLog(Object[] args) {
+        Long projectId = null;
+        List<Long> issueIds = null;
+        for (Object arg : args) {
+            if (arg instanceof Long) {
+                projectId = (Long) arg;
+            } else if (arg instanceof List) {
+                issueIds = (List<Long>) arg;
+            }
+        }
+        if (projectId != null && issueIds != null && !issueIds.isEmpty()) {
+            Map map = new HashMap();
+            for (Long issueId : issueIds) {
+                map.put(issueId, productVersionMapper.selectVersionRelsByIssueId(projectId, issueId));
+            }
+            for (Object object : map.entrySet()) {
+                Map.Entry entry = (Map.Entry<Long, List<ProductVersionDO>>) object;
+                Long issueId = Long.parseLong(entry.getKey().toString());
+                List<ProductVersionDO> versionIssueRelDOList = (List<ProductVersionDO>) entry.getValue();
+                //todo 修改成sql批量操作
+                for (ProductVersionDO productVersionDO : versionIssueRelDOList) {
+                    createDataLog(projectId, issueId, FIELD_FIX_VERSION, productVersionDO.getName(),
+                            null, productVersionDO.getVersionId().toString(), null);
+                }
+            }
+        }
+    }
+
+    private void batchToVersionDataLog(Object[] args) {
+        VersionIssueRelE versionIssueRelE = null;
+        for (Object arg : args) {
+            if (arg instanceof VersionIssueRelE) {
+                versionIssueRelE = (VersionIssueRelE) arg;
+            }
+        }
+        if (versionIssueRelE != null) {
+            ProductVersionDO productVersionDO = productVersionMapper.selectByPrimaryKey(versionIssueRelE.getVersionId());
+            if (productVersionDO == null) {
+                throw new CommonException("error.productVersion.get");
+            }
+            //todo 修改成sql批量操作
+            for (Long issueId : versionIssueRelE.getIssueIds()) {
+                DataLogE dataLogE = new DataLogE();
+                dataLogE.setProjectId(versionIssueRelE.getProjectId());
+                dataLogE.setIssueId(issueId);
+                dataLogE.setField(FIELD_FIX_VERSION);
+                dataLogE.setNewValue(productVersionDO.getVersionId().toString());
+                dataLogE.setNewString(productVersionDO.getName());
+                dataLogRepository.create(dataLogE);
+            }
+        }
+    }
+
+    private void handleIssueCreateDataLog(ProceedingJoinPoint pjp, Object result) {
+        //若创建issue的初始状态为已完成，生成日志
+        try {
+            result = pjp.proceed();
+            IssueE issueE = (IssueE) result;
+            IssueStatusDO issueStatusDO = issueStatusMapper.selectByPrimaryKey(issueE.getStatusId());
+            if ((issueStatusDO.getCompleted() != null && issueStatusDO.getCompleted())) {
+                createDataLog(issueE.getProjectId(), issueE.getIssueId(), FIELD_RESOLUTION, null,
+                        issueStatusDO.getName(), null, issueStatusDO.getId().toString());
+            }
+        } catch (Throwable throwable) {
+            throw new CommonException("error.LogDataAspect.update");
+        }
     }
 
     private void handleSprintDataLog(Object[] args) {
@@ -224,7 +337,7 @@ public class LogDataAspect {
             } else {
                 sprintId = activeSprintName.getSprintId();
             }
-            Boolean condition = (sprintId == 0 && activeSprintName == null) || (activeSprintName != null && sprintId.equals(activeSprintName.getSprintId()));
+            Boolean condition = (sprintId != null) && ((sprintId == 0 && activeSprintName == null) || (activeSprintName != null && sprintId.equals(activeSprintName.getSprintId())));
             if (condition && originIssueDO.getRank() != null && issueE.getRank() != null) {
                 if (originIssueDO.getRank().compareTo(issueE.getRank()) < 0) {
                     createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
