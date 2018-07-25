@@ -260,7 +260,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleUpdateIssue(IssueUpdateDTO issueUpdateDTO, List<String> fieldList, Long projectId) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        IssueDO originIssue = issueMapper.selectByPrimaryKey(issueUpdateDTO.getIssueId());
+        IssueDO originIssue = issueMapper.queryIssueWithNoCloseSprint(issueUpdateDTO.getIssueId());
         IssueE issueE = issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO);
         //处理用户，前端可能会传0，处理为null
         issueE.initializationIssueUser();
@@ -268,9 +268,11 @@ public class IssueServiceImpl implements IssueService {
             IssueE oldIssue = ConvertHelper.convert(originIssue, IssueE.class);
             //处理子任务的冲刺
             List<Long> issueIds = issueMapper.querySubIssueIdsByIssueId(projectId, issueE.getIssueId());
-            issueIds.add(issueE.getIssueId());
-            BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, issueE.getSprintId(), issueIds);
-            issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+            if(!Objects.equals(oldIssue.getSprintId(),issueUpdateDTO.getSprintId())){
+                issueIds.add(issueE.getIssueId());
+                BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, issueE.getSprintId(), issueIds);
+                issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+            }
             if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
                 issueRepository.issueToDestinationByIds(projectId, issueE.getSprintId(), issueIds, new Date(), customUserDetails.getUserId());
             }
@@ -794,7 +796,7 @@ public class IssueServiceImpl implements IssueService {
                 handleVersionIssueRel(versionIssueRelES, projectId, issueId);
             } else {
                 VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
-                versionIssueRelE.createBatchDeleteVersionIssueRel(projectId,issueId,versionType);
+                versionIssueRelE.createBatchDeleteVersionIssueRel(projectId, issueId, versionType);
                 versionIssueRelRepository.batchDeleteByIssueIdAndType(versionIssueRelE);
             }
         }

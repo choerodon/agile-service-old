@@ -515,13 +515,13 @@
     <select id="queryInVersionIssueIds" resultType="java.lang.Long">
         SELECT DISTINCT(ai.issue_id)
         FROM agile_issue ai
-             LEFT JOIN agile_version_issue_rel avir ON avir.issue_id = ai.issue_id
+        LEFT JOIN agile_version_issue_rel avir ON avir.issue_id = ai.issue_id
         WHERE ai.project_id = #{projectId} AND avir.version_id = #{versionId}
-              AND ai.issue_id IN
-              <foreach collection="issueIds" item="issueId" open="("
-                     separator="," close=")">
-                  #{issueId}
-              </foreach>
+        AND ai.issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
     </select>
 
     <update id="batchIssueToEpic">
@@ -1176,5 +1176,15 @@
         ORDER BY
             creation_day
     </select>
+
+    <select id="queryIssueWithNoCloseSprint" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT
+            ai.*,
+            asp.sprint_id
+        FROM agile_issue ai LEFT JOIN agile_issue_sprint_rel aisr ON ai.issue_id = aisr.issue_Id
+            LEFT JOIN agile_sprint asp ON asp.sprint_id = aisr.sprint_id
+        WHERE aisr.issue_id = #{issueId} AND aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
+    </select>
+
 
 </mapper>
