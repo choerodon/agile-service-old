@@ -893,12 +893,14 @@ public class IssueServiceImpl implements IssueService {
                 newSprintIdStr.append("," + sprintName.getSprintId().toString());
             }
         }
+        StringBuilder newSprintIdStrChange = new StringBuilder();
+        StringBuilder newSprintNameStrChange = new StringBuilder();
         if (sprintDO != null) {
-            newSprintIdStr.append(newSprintIdStr.length() == 0 ? sprintDO.getSprintId().toString() : newSprintIdStr.toString() + "," + sprintDO.getSprintId().toString());
-            newSprintNameStr.append(newSprintNameStr.length() == 0 ? sprintDO.getSprintName() : newSprintNameStr.toString() + "," + sprintDO.getSprintName());
+            newSprintIdStrChange.append(newSprintIdStr.length() == 0 ? sprintDO.getSprintId().toString() : newSprintIdStr.toString() + "," + sprintDO.getSprintId().toString());
+            newSprintNameStrChange.append(newSprintNameStr.length() == 0 ? sprintDO.getSprintName() : newSprintNameStr.toString() + "," + sprintDO.getSprintName());
         }
 
-        dataLogEList.add(returnDataLogE(projectId, issueId, oldSprintIdStr, oldSprintNameStr, newSprintIdStr, newSprintNameStr));
+        dataLogEList.add(returnDataLogE(projectId, issueId, oldSprintIdStr, oldSprintNameStr, newSprintIdStrChange, newSprintNameStrChange));
     }
 
     private List<DataLogE> getSprintDataLogByMove(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO) {
