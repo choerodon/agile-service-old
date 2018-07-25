@@ -1149,7 +1149,7 @@
                 </foreach>
             </if>
         </if>
-        )search where search.type_code = 'issue_test'
+        )search
         <if test='searchArgs != null'>
             <if test='searchArgs.issueNum != null and searchArgs.issueNum != ""'>
                 AND position(#{searchArgs.issueNum} IN search.issue_num)
