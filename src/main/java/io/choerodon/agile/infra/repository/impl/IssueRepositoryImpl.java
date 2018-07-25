@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.domain.service.IIssueService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
@@ -92,6 +93,7 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
+    @DataLog(type = "batchToEpic", single = false)
     public Boolean batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds) {
         issueMapper.batchIssueToEpic(projectId, epicId, issueIds);
         return true;
@@ -120,8 +122,8 @@ public class IssueRepositoryImpl implements IssueRepository {
 
     @Override
     @DataLog(type = "batchRemoveSprint", single = false)
-    public int removeIssueFromSprintByIssueIds(Long projectId, List<Long> issueIds) {
-        return issueMapper.removeIssueFromSprintByIssueIds(projectId, issueIds);
+    public int removeIssueFromSprintByIssueIds(BatchRemoveSprintE batchRemoveSprintE) {
+        return issueMapper.removeIssueFromSprintByIssueIds(batchRemoveSprintE.getProjectId(), batchRemoveSprintE.getIssueIds());
     }
 
     @Override

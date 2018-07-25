@@ -33,4 +33,10 @@
             AND apv.status_code != 'archived';
     </delete>
 
+    <select id="queryByIssueIdAndProjectIdNoArchived" resultType="java.lang.Long">
+        SELECT avir.version_id from
+            agile_version_issue_rel avir ,agile_product_version apv
+        where apv.version_id = avir.version_id
+        and apv.status_code != 'archived' and avir.project_id = #{projectId} and avir.issue_id = #{issueId}
+    </select>
 </mapper>

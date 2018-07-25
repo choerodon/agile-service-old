@@ -1,6 +1,7 @@
 package io.choerodon.agile.domain.agile.repository;
 
 import io.choerodon.agile.domain.agile.entity.LabelIssueRelE;
+import io.choerodon.agile.infra.dataobject.LabelIssueRelDO;
 
 import java.util.List;
 
@@ -12,14 +13,6 @@ import java.util.List;
  * @since 2018-05-14 21:31:22
  */
 public interface LabelIssueRelRepository {
-
-    /**
-     * 更新敏捷开发Issue标签关联
-     *
-     * @param labelIssueRelE labelIssueRelE
-     * @return LabelIssueRelE
-     */
-    LabelIssueRelE update(LabelIssueRelE labelIssueRelE);
 
     /**
      * 添加一个敏捷开发Issue标签关联
@@ -36,4 +29,19 @@ public interface LabelIssueRelRepository {
      * @return int
      */
     int deleteByIssueId(Long issueId);
+
+    /**
+     * 根据issueId批量删除labelIssue
+     *
+     * @param issueId issueId
+     * @return int
+     */
+    int batchDeleteByIssueId(Long issueId);
+
+    /**
+     * 根据查询条件删除
+     * @param labelIssueRelDO labelIssueRelDO
+     * @return int
+     */
+    int delete(LabelIssueRelDO labelIssueRelDO);
 }

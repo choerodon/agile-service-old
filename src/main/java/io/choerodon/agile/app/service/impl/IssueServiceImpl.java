@@ -62,6 +62,8 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private LabelIssueRelRepository labelIssueRelRepository;
     @Autowired
+    private LabelIssueRelMapper labelIssueRelMapper;
+    @Autowired
     private VersionIssueRelRepository versionIssueRelRepository;
     @Autowired
     private IssueAssembler issueAssembler;
@@ -266,39 +268,41 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueDTO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList) {
-        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        IssueDO originIssue = issueMapper.selectByPrimaryKey(issueUpdateDTO.getIssueId());
         if (fieldList != null && !fieldList.isEmpty()) {
-            IssueE issueE = issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO);
-            //处理用户，前端可能会传0，处理为null
-            issueE.initializationIssueUser();
-            if (fieldList.contains(SPRINT_ID_FIELD)) {
-                IssueE oldIssue = ConvertHelper.convert(originIssue, IssueE.class);
-                //处理子任务的冲刺
-                List<Long> issueIds = issueMapper.querySubIssueIdsByIssueId(projectId, issueE.getIssueId());
-                issueIds.add(issueE.getIssueId());
-                //todo 日志处理
-                List<DataLogE> dataLogEList = getSprintDataLogByMove(projectId, issueE.getSprintId(), issueIds);
-                dataLogSprintByMove(dataLogEList);
-                issueRepository.removeIssueFromSprintByIssueIds(projectId, issueIds);
-                if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
-                    issueRepository.issueToDestinationByIds(projectId, issueE.getSprintId(), issueIds, new Date(), customUserDetails.getUserId());
-                }
-                if (oldIssue.isIssueRank()) {
-                    calculationRank(projectId, issueE);
-                    fieldList.add(RANK_FIELD);
-                }
-            }
-            issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
+            //处理issue自己字段
+            handleUpdateIssue(issueUpdateDTO, fieldList, projectId);
         }
         Long issueId = issueUpdateDTO.getIssueId();
         handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId);
         handleUpdateComponentIssueRel(issueUpdateDTO.getComponentIssueRelDTOList(), projectId, issueId);
-        if (issueUpdateDTO.getVersionType() != null) {
-            handleUpdateVersionIssueRel(issueUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId, issueUpdateDTO.getVersionType());
-        }
+        handleUpdateVersionIssueRel(issueUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId, issueUpdateDTO.getVersionType());
         return queryIssue(projectId, issueId);
     }
+
+    private void handleUpdateIssue(IssueUpdateDTO issueUpdateDTO, List<String> fieldList, Long projectId) {
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
+        IssueDO originIssue = issueMapper.selectByPrimaryKey(issueUpdateDTO.getIssueId());
+        IssueE issueE = issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO);
+        //处理用户，前端可能会传0，处理为null
+        issueE.initializationIssueUser();
+        if (fieldList.contains(SPRINT_ID_FIELD)) {
+            IssueE oldIssue = ConvertHelper.convert(originIssue, IssueE.class);
+            //处理子任务的冲刺
+            List<Long> issueIds = issueMapper.querySubIssueIdsByIssueId(projectId, issueE.getIssueId());
+            issueIds.add(issueE.getIssueId());
+            BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, issueE.getSprintId(), issueIds);
+            issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+            if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
+                issueRepository.issueToDestinationByIds(projectId, issueE.getSprintId(), issueIds, new Date(), customUserDetails.getUserId());
+            }
+            if (oldIssue.isIssueRank()) {
+                calculationRank(projectId, issueE);
+                fieldList.add(RANK_FIELD);
+            }
+        }
+        issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
+    }
+
 
     @Override
     public List<EpicDataDTO> listEpic(Long projectId) {
@@ -356,12 +360,6 @@ public class IssueServiceImpl implements IssueService {
                     //不是子任务的issue删除子任务
                     if (!(SUB_TASK).equals(issueE.getTypeCode())) {
                         if ((ISSUE_EPIC).equals(issueE.getTypeCode())) {
-                            //Epic删除后更改为0的日志记录
-                            IssueDO issueDO = new IssueDO();
-                            issueDO.setEpicId(issueE.getIssueId());
-                            List<IssueDO> issueDOList = issueMapper.select(issueDO);
-                            //处理epic日志信息
-                            issueDOList.forEach(issueEpic -> logDataAspect.createIssueEpicLog(0L, issueEpic));
                             //如果是epic，会把该epic下的issue的epicId置为0
                             issueRepository.batchUpdateIssueEpicId(projectId, issueE.getIssueId());
                         }
@@ -446,10 +444,6 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public List<IssueSearchDTO> batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds) {
         issueRule.judgeExist(projectId, epicId);
-        //修改epic记录日志
-        List<IssueDO> issueDOList = issueMapper.queryIssueEpicInfoByIssueIds(projectId, issueIds);
-        //todo 修改epic记录日志
-        issueDOList.forEach(issueEpic -> logDataAspect.createIssueEpicLog(epicId, issueEpic));
         issueRepository.batchIssueToEpic(projectId, epicId, issueIds);
         return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>());
     }
@@ -457,7 +451,7 @@ public class IssueServiceImpl implements IssueService {
     private void dataLogRank(Long projectId, MoveIssueDTO moveIssueDTO, String rankStr, Long sprintId) {
         for (Long issueId : moveIssueDTO.getIssueIds()) {
             SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
-            //todo 修改成sql批量
+            //todo 这一块不懂怎么处理
             if ((sprintId == 0 && activeSprintName == null) || (activeSprintName != null
                     && sprintId.equals(activeSprintName.getSprintId()))) {
                 DataLogE dataLogE = new DataLogE();
@@ -470,6 +464,7 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
+<<<<<<< HEAD
     private SprintDO getSprintById(Long sprintId) {
         return sprintMapper.selectByPrimaryKey(sprintId);
     }
@@ -535,6 +530,8 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
+=======
+>>>>>>> [ADD] 标签与模块日志AOP实现
     @Override
     public List<IssueSearchDTO> batchIssueToSprint(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO) {
         sprintRule.judgeExist(projectId, sprintId);
@@ -552,10 +549,8 @@ public class IssueServiceImpl implements IssueService {
         List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
         //处理子任务
         moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
-        //todo 日志处理不懂要怎么处理
-        List<DataLogE> dataLogEList = getSprintDataLogByMove(projectId, sprintId, moveIssueIds);
-        dataLogSprintByMove(dataLogEList);
-        issueRepository.removeIssueFromSprintByIssueIds(projectId, moveIssueIds);
+        BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, moveIssueIds);
+        issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
         if (sprintId != null && !Objects.equals(sprintId, 0L)) {
             issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
         }
@@ -656,11 +651,6 @@ public class IssueServiceImpl implements IssueService {
             issueE.setEpicId(0L);
         } else if (issueE.getTypeCode().equals(ISSUE_EPIC)) {
             // 如果之前类型是epic，会把该epic下的issue的epicId置为0
-            IssueDO issueDO = new IssueDO();
-            issueDO.setEpicId(issueE.getIssueId());
-            List<IssueDO> issueDOList = issueMapper.select(issueDO);
-            //todo 可以sql批量记录日志
-            issueDOList.forEach(issueEpic -> logDataAspect.createIssueEpicLog(0L, issueEpic));
             issueRepository.batchUpdateIssueEpicId(issueE.getProjectId(), issueE.getIssueId());
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
             issueE.setColorCode(null);
@@ -726,10 +716,6 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void handleComponentIssueRelNoHandleAssignee(List<ComponentIssueRelE> componentIssueRelEList, Long projectId, Long issueId) {
-        componentIssueRelEList.forEach(componentIssueRelE -> handleComponentIssueRel(componentIssueRelE, projectId, issueId));
-    }
-
     private void handleComponentIssueRelWithHandleAssignee(List<ComponentIssueRelE> componentIssueRelEList, Long projectId, Long issueId, ProjectInfoE projectInfoE) {
         componentIssueRelEList.forEach(componentIssueRelE -> {
             handleComponentIssueRel(componentIssueRelE, projectId, issueId);
@@ -754,7 +740,6 @@ public class IssueServiceImpl implements IssueService {
             }
         }
         if (issueRule.existComponentIssueRel(componentIssueRelE)) {
-            //todo 日志处理
             componentIssueRelRepository.create(componentIssueRelE);
         }
     }
@@ -782,7 +767,7 @@ public class IssueServiceImpl implements IssueService {
             if (originIdx == originLabels.size() - 1) {
                 originLabelNames.append(label.getLabelName());
             } else {
-                originLabelNames.append(label.getLabelName() + " ");
+                originLabelNames.append(label.getLabelName()).append(" ");
             }
         }
         return originLabelNames.length() == 0 ? null : originLabelNames.toString();
@@ -820,19 +805,30 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleUpdateLabelIssue(List<LabelIssueRelDTO> labelIssueRelDTOList, Long issueId) {
         if (labelIssueRelDTOList != null) {
-            List<IssueLabelDO> originLabels = issueMapper.selectLabelNameByIssueId(issueId);
             if (!labelIssueRelDTOList.isEmpty()) {
-                labelIssueRelRepository.deleteByIssueId(issueId);
+                LabelIssueRelDO labelIssueRelDO = new LabelIssueRelDO();
+                labelIssueRelDO.setIssueId(issueId);
+                List<LabelIssueRelE> originLabels = ConvertHelper.convertList(labelIssueRelMapper.select(labelIssueRelDO), LabelIssueRelE.class);
                 List<LabelIssueRelE> labelIssueEList = ConvertHelper.convertList(labelIssueRelDTOList, LabelIssueRelE.class);
+                List<LabelIssueRelE> labelIssueCreateList = labelIssueEList.stream().filter(labelIssueRelE ->
+                        labelIssueRelE.getLabelId() != null).collect(Collectors.toList());
+                List<Long> curLabelIds = originLabels.stream().
+                        map(LabelIssueRelE::getLabelId).collect(Collectors.toList());
+                labelIssueCreateList.forEach(labelIssueRelE -> {
+                    if (!curLabelIds.contains(labelIssueRelE.getLabelId())) {
+                        LabelIssueRelDO delete = new LabelIssueRelDO();
+                        delete.setIssueId(issueId);
+                        delete.setLabelId(labelIssueRelE.getLabelId());
+                        labelIssueRelRepository.delete(delete);
+                    }
+                });
                 labelIssueEList.forEach(labelIssueRelE -> {
                     labelIssueRelE.setIssueId(issueId);
                     handleLabelIssue(labelIssueRelE);
                 });
             } else {
-                labelIssueRelRepository.deleteByIssueId(issueId);
+                labelIssueRelRepository.batchDeleteByIssueId(issueId);
             }
-            //todo 日志记录
-            dataLogLabel(originLabels, labelIssueRelDTOList, issueId);
             //没有issue使用的标签进行垃圾回收
             issueLabelRepository.labelGarbageCollection();
         }
@@ -901,14 +897,28 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void handleUpdateVersionIssueRel(List<VersionIssueRelDTO> versionIssueRelDTOList, Long projectId, Long issueId, String versionType) {
-        if (versionIssueRelDTOList != null) {
+        if (versionIssueRelDTOList != null && versionType != null) {
             List<VersionIssueRelDO> originVersionIssueRels = getVersionIssueRels(projectId, issueId);
             List<VersionIssueRelDTO> versionIssueRelDTOS;
             if (!versionIssueRelDTOList.isEmpty()) {
                 //归档状态的版本之间的关联不删除
-                versionIssueRelRepository.batchDeleteByIssueIdAndType(projectId, issueId, versionType);
-                handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId);
+                List<VersionIssueRelE> versionIssueRelES = ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class);
+                List<VersionIssueRelE> versionIssueRelCreate = versionIssueRelES.stream().filter(versionIssueRelE ->
+                        versionIssueRelE.getVersionId() != null).collect(Collectors.toList());
+                List<Long> curVersionIds = versionIssueRelMapper.queryByIssueIdAndProjectIdNoArchived(projectId, issueId);
+                versionIssueRelCreate.forEach(versionIssueRelE -> {
+                    if (!curVersionIds.contains(versionIssueRelE.getVersionId())) {
+                        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
+                        versionIssueRelDO.setIssueId(issueId);
+                        versionIssueRelDO.setVersionId(versionIssueRelE.getVersionId());
+                        versionIssueRelDO.setProjectId(projectId);
+                        //todo 日志记录
+//                        versionIssueRelRepository.delete(versionIssueRelDO);
+                    }
+                });
+                handleVersionIssueRel(versionIssueRelES, projectId, issueId);
             } else {
+                //todo 日志记录
                 versionIssueRelRepository.batchDeleteByIssueIdAndType(projectId, issueId, versionType);
             }
             versionIssueRelDTOS = ConvertHelper.convertList(getVersionIssueRels(projectId, issueId), VersionIssueRelDTO.class);
@@ -973,16 +983,27 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleUpdateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId) {
         if (componentIssueRelDTOList != null) {
-            List<ComponentIssueRelDO> originComponentIssueRels = getComponentIssueRel(projectId, issueId);
             if (!componentIssueRelDTOList.isEmpty()) {
-                componentIssueRelRepository.deleteByIssueId(issueId);
-                handleComponentIssueRelNoHandleAssignee(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId);
+                List<ComponentIssueRelE> componentIssueRelEList = ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class);
+                List<ComponentIssueRelE> componentIssueRelCreate = componentIssueRelEList.stream().filter(componentIssueRelE ->
+                        componentIssueRelE.getComponentId() != null).collect(Collectors.toList());
+                List<Long> curComponentIds = getComponentIssueRel(projectId, issueId).stream().
+                        map(ComponentIssueRelDO::getComponentId).collect(Collectors.toList());
+                componentIssueRelCreate.forEach(componentIssueRelE -> {
+                    if (!curComponentIds.contains(componentIssueRelE.getComponentId())) {
+                        ComponentIssueRelDO componentIssueRelDO = new ComponentIssueRelDO();
+                        componentIssueRelDO.setIssueId(issueId);
+                        componentIssueRelDO.setComponentId(componentIssueRelE.getComponentId());
+                        componentIssueRelDO.setProjectId(projectId);
+                        componentIssueRelRepository.delete(componentIssueRelDO);
+                    }
+                });
+                componentIssueRelEList.forEach(componentIssueRelE -> {
+                    handleComponentIssueRel(componentIssueRelE, projectId, issueId);
+                });
             } else {
                 componentIssueRelRepository.deleteByIssueId(issueId);
             }
-            List<ComponentIssueRelDO> curComponentIssueRels = getComponentIssueRel(projectId, issueId);
-            //todo 日志记录
-            dataLogComponent(projectId, issueId, originComponentIssueRels, curComponentIssueRels);
         }
     }
 

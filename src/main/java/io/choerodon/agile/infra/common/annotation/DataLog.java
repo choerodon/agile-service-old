@@ -14,4 +14,5 @@ public @interface DataLog {
     String type() default "";
 
     boolean single() default true;
+
 }
