@@ -8,7 +8,6 @@ import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.*;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -73,11 +72,6 @@ public class LogDataAspect {
     private static final String FIELD_REPORTER = "reporter";
     private static final String SPRINT_ID_FIELD = "sprintId";
     private static final String FIELD_SPRINT = "Sprint";
-    private static final String NEW_STRING = "newString";
-    private static final String NEW_VALUE = "newValue";
-    private static final String OLD_STRING = "oldString";
-    private static final String OLD_VALUE = "oldValue";
-    private static final String SUB_TASK = "sub_task";
     private static final String STORY_POINTS_FIELD = "storyPoints";
     private static final String EPIC_ID_FIELD = "epicId";
     private static final String FIELD_STORY_POINTS = "Story Points";
@@ -1066,15 +1060,6 @@ public class LogDataAspect {
         return issueMapper.selectOne(issueDO);
     }
 
-    private void dataLogSubIssueSprint(Long issueId, Long projectId, Map<String, String> valuesMap) {
-        List<IssueE> issueEList = ConvertHelper.convertList(issueMapper.queryIssueSubList(projectId, issueId), IssueE.class);
-        issueEList.forEach(issueE -> createDataLog(projectId, issueE.getIssueId(), FIELD_SPRINT,
-                "".equals(valuesMap.get(OLD_STRING)) ? null : valuesMap.get(OLD_STRING),
-                "".equals(valuesMap.get(NEW_STRING)) ? null : valuesMap.get(NEW_STRING),
-                "".equals(valuesMap.get(OLD_VALUE)) ? null : valuesMap.get(OLD_VALUE),
-                "".equals(valuesMap.get(NEW_VALUE)) ? null : valuesMap.get(NEW_VALUE)));
-    }
-
     private void createDataLog(Long projectId, Long issueId, String field, String oldString,
                                String newString, String oldValue, String newValue) {
         DataLogE dataLogE = new DataLogE();
@@ -1086,31 +1071,6 @@ public class LogDataAspect {
         dataLogE.setOldValue(oldValue);
         dataLogE.setNewValue(newValue);
         dataLogRepository.create(dataLogE);
-    }
-
-    private Map<String, String> dealSprint(List<SprintNameDTO> closeSprintNames, SprintNameDTO activeSprintName, SprintNameDTO sprintName) {
-        Map<String, String> valuesMap = new HashMap<>();
-        String oldValue;
-        String oldString;
-        String newValue;
-        String newString;
-        String closeSprintIdStr = closeSprintNames.stream().map(closeSprintName -> closeSprintName.getSprintId().toString()).collect(Collectors.joining(","));
-        String closeSprintNameStr = closeSprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
-        oldValue = newValue = closeSprintIdStr;
-        oldString = newString = closeSprintNameStr;
-        if (activeSprintName != null) {
-            oldValue = ("".equals(oldValue) ? activeSprintName.getSprintId().toString() : oldValue + "," + activeSprintName.getSprintId().toString());
-            oldString = ("".equals(oldString) ? activeSprintName.getSprintName() : oldString + "," + activeSprintName.getSprintName());
-        }
-        if (sprintName != null) {
-            newValue = ("".equals(newValue) ? sprintName.getSprintId().toString() : newValue + "," + sprintName.getSprintId().toString());
-            newString = ("".equals(newString) ? sprintName.getSprintName() : newString + "," + sprintName.getSprintName());
-        }
-        valuesMap.put(OLD_VALUE, oldValue);
-        valuesMap.put(OLD_STRING, oldString);
-        valuesMap.put(NEW_VALUE, newValue);
-        valuesMap.put(NEW_STRING, newString);
-        return valuesMap;
     }
 
 }
