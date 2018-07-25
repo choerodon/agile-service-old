@@ -32,6 +32,7 @@ public class IssueCommentRepositoryImpl implements IssueCommentRepository {
     private IIssueCommentService iIssueCommentService;
 
     @Override
+    @DataLog(type = "updateComment")
     public IssueCommentE update(IssueCommentE issueCommentE, String[] fieldList) {
         IssueCommentDO issueCommentDO = ConvertHelper.convert(issueCommentE, IssueCommentDO.class);
         if (iIssueCommentService.updateOptional(issueCommentDO, fieldList) != 1) {

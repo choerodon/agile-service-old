@@ -26,7 +26,7 @@ public interface ComponentIssueRelRepository {
      * @param issueId issueId
      * @return int
      */
-    int deleteByIssueId(Long issueId);
+    int batchComponentDelete(Long issueId);
 
     /**
      * 删除componentIssueRel
@@ -37,4 +37,12 @@ public interface ComponentIssueRelRepository {
     int delete(ComponentIssueRelDO componentIssueRelDO);
 
     void deleteByComponentId(Long projectId, Long componentId);
+
+    /**
+     * 根据issueId删除
+     *
+     * @param issueId issueId
+     * @return int
+     */
+    int deleteByIssueId(Long issueId);
 }

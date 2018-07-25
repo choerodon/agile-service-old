@@ -122,8 +122,6 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private SprintNameAssembler sprintNameAssembler;
     @Autowired
-    private BoardService boardService;
-    @Autowired
     private IssueLinkTypeMapper issueLinkTypeMapper;
     @Autowired
     private IssueLinkMapper issueLinkMapper;
@@ -268,17 +266,23 @@ public class IssueServiceImpl implements IssueService {
             IssueE oldIssue = ConvertHelper.convert(originIssue, IssueE.class);
             //处理子任务的冲刺
             List<Long> issueIds = issueMapper.querySubIssueIdsByIssueId(projectId, issueE.getIssueId());
-            if(!Objects.equals(oldIssue.getSprintId(),issueUpdateDTO.getSprintId())){
-                issueIds.add(issueE.getIssueId());
+            Boolean exitSprint = issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L);
+            Boolean condition = (!Objects.equals(oldIssue.getSprintId(), issueUpdateDTO.getSprintId()));
+            issueIds.add(issueE.getIssueId());
+            if (condition) {
                 BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, issueE.getSprintId(), issueIds);
                 issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
             }
-            if (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L)) {
+            if (exitSprint) {
+                if (oldIssue.getSprintId() == null || oldIssue.getSprintId() == 0) {
+                    issueIds.add(issueE.getIssueId());
+                }
                 issueRepository.issueToDestinationByIds(projectId, issueE.getSprintId(), issueIds, new Date(), customUserDetails.getUserId());
             }
             if (oldIssue.isIssueRank()) {
                 calculationRank(projectId, issueE);
                 fieldList.add(RANK_FIELD);
+                issueE.setOriginSprintId(originIssue.getSprintId());
             }
         }
         issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
@@ -432,7 +436,7 @@ public class IssueServiceImpl implements IssueService {
     private void dataLogRank(Long projectId, MoveIssueDTO moveIssueDTO, String rankStr, Long sprintId) {
         for (Long issueId : moveIssueDTO.getIssueIds()) {
             SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
-            //todo 这一块不懂怎么处理
+            //todo 日志不好解耦
             if ((sprintId == 0 && activeSprintName == null) || (activeSprintName != null
                     && sprintId.equals(activeSprintName.getSprintId()))) {
                 DataLogE dataLogE = new DataLogE();
@@ -518,7 +522,7 @@ public class IssueServiceImpl implements IssueService {
         sprintRule.judgeExist(projectId, sprintId);
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
-        //todo 日志处理,这一块不懂要怎么处理
+        //todo 日志处理,不好解耦，而且日志记录评级有问题
         if (moveIssueDTO.getBefore()) {
             beforeRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
             dataLogRank(projectId, moveIssueDTO, RANK_HIGHER, sprintId);
@@ -828,7 +832,7 @@ public class IssueServiceImpl implements IssueService {
                 });
                 componentIssueRelEList.forEach(componentIssueRelE -> handleComponentIssueRel(componentIssueRelE, projectId, issueId));
             } else {
-                componentIssueRelRepository.deleteByIssueId(issueId);
+                componentIssueRelRepository.batchComponentDelete(issueId);
             }
         }
     }

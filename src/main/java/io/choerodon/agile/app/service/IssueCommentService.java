@@ -29,9 +29,10 @@ public interface IssueCommentService {
      *
      * @param issueCommentUpdateDTO issueCommentUpdateDTO
      * @param fieldList             fieldList
+     * @param projectId             projectId
      * @return IssueCommentDTO
      */
-    IssueCommentDTO updateIssueComment(IssueCommentUpdateDTO issueCommentUpdateDTO, List<String> fieldList);
+    IssueCommentDTO updateIssueComment(IssueCommentUpdateDTO issueCommentUpdateDTO, List<String> fieldList,Long projectId);
 
     /**
      * 根据issueId和项目id查询IssueComment列表

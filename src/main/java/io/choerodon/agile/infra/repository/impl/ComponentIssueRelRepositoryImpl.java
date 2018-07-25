@@ -26,7 +26,7 @@ public class ComponentIssueRelRepositoryImpl implements ComponentIssueRelReposit
     private ComponentIssueRelMapper componentIssueRelMapper;
 
     @Override
-    @DataLog(type = "createComponent")
+    @DataLog(type = "componentCreate")
     public List<ComponentIssueRelE> create(ComponentIssueRelE componentIssueRelE) {
         ComponentIssueRelDO componentIssueRelDO = ConvertHelper.convert(componentIssueRelE, ComponentIssueRelDO.class);
         if (componentIssueRelMapper.insert(componentIssueRelDO) != 1) {
@@ -39,10 +39,8 @@ public class ComponentIssueRelRepositoryImpl implements ComponentIssueRelReposit
 
     @Override
     @DataLog(type = "batchComponentDelete",single = false)
-    public int deleteByIssueId(Long issueId) {
-        ComponentIssueRelDO componentIssueRelDO = new ComponentIssueRelDO();
-        componentIssueRelDO.setIssueId(issueId);
-        return componentIssueRelMapper.delete(componentIssueRelDO);
+    public int batchComponentDelete(Long issueId) {
+        return deleteComponentIssueRel(issueId);
     }
 
     @Override
@@ -61,5 +59,16 @@ public class ComponentIssueRelRepositoryImpl implements ComponentIssueRelReposit
             throw new CommonException("error.componentIssueRel.delete");
         }
 
+    }
+
+    @Override
+    public int deleteByIssueId(Long issueId) {
+        return deleteComponentIssueRel(issueId);
+    }
+
+    private int deleteComponentIssueRel(Long issueId){
+        ComponentIssueRelDO componentIssueRelDO = new ComponentIssueRelDO();
+        componentIssueRelDO.setIssueId(issueId);
+        return componentIssueRelMapper.delete(componentIssueRelDO);
     }
 }

@@ -50,11 +50,12 @@ public class IssueCommentServiceImpl implements IssueCommentService {
     }
 
     @Override
-    public IssueCommentDTO updateIssueComment(IssueCommentUpdateDTO issueCommentUpdateDTO, List<String> fieldList) {
+    public IssueCommentDTO updateIssueComment(IssueCommentUpdateDTO issueCommentUpdateDTO, List<String> fieldList, Long projectId) {
         if (fieldList != null && !fieldList.isEmpty()) {
-            IssueCommentE issueCommentE = issueCommentRepository.update(issueCommentAssembler.
-                    issueCommentUpdateDtoToEntity(issueCommentUpdateDTO), fieldList.toArray(new String[fieldList.size()]));
-            return queryByProjectIdAndCommentId(issueCommentE.getProjectId(), issueCommentE.getCommentId());
+            IssueCommentE issueCommentE = issueCommentAssembler.
+                    issueCommentUpdateDtoToEntity(issueCommentUpdateDTO);
+            issueCommentRepository.update(issueCommentE, fieldList.toArray(new String[fieldList.size()]));
+            return queryByProjectIdAndCommentId(projectId, issueCommentE.getCommentId());
         } else {
             return null;
         }
