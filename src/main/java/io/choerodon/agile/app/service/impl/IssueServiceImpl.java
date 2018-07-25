@@ -11,7 +11,6 @@ import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
-import io.choerodon.agile.infra.common.aspect.LogDataAspect;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.feign.UserFeignClient;
@@ -73,8 +72,6 @@ public class IssueServiceImpl implements IssueService {
     private IssueSearchAssembler issueSearchAssembler;
     @Autowired
     private IssueMapper issueMapper;
-    @Autowired
-    private LogDataAspect logDataAspect;
     @Autowired
     private ProductVersionRule productVersionRule;
     @Autowired
@@ -449,74 +446,6 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-<<<<<<< HEAD
-    private SprintDO getSprintById(Long sprintId) {
-        return sprintMapper.selectByPrimaryKey(sprintId);
-    }
-
-    private DataLogE returnDataLogE(Long projectId, Long issueId, String oldSprintIdStr, String oldSprintNameStr, StringBuilder newSprintIdStr, StringBuilder newSprintNameStr) {
-        DataLogE dataLogE = new DataLogE();
-        dataLogE.setProjectId(projectId);
-        dataLogE.setIssueId(issueId);
-        dataLogE.setField(FIELD_SPRINT);
-        dataLogE.setOldValue("".equals(oldSprintIdStr) ? null : oldSprintIdStr);
-        dataLogE.setOldString("".equals(oldSprintNameStr) ? null : oldSprintNameStr);
-        dataLogE.setNewValue(newSprintIdStr.length() == 0 ? null : newSprintIdStr.toString());
-        dataLogE.setNewString(newSprintNameStr.length() == 0 ? null : newSprintNameStr.toString());
-        return dataLogE;
-    }
-
-    private void addToSprintDataLogList(Long projectId, SprintNameDTO activeSprintName, SprintDO sprintDO, Long issueId, List<DataLogE> dataLogEList) {
-        StringBuilder newSprintIdStr = new StringBuilder();
-        StringBuilder newSprintNameStr = new StringBuilder();
-        List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
-        String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
-        String oldSprintNameStr = sprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
-        int idx = 0;
-        for (SprintNameDTO sprintName : sprintNames) {
-            if (activeSprintName != null && activeSprintName.getSprintId().equals(sprintName.getSprintId())) {
-                continue;
-            }
-            if (idx == 0) {
-                newSprintNameStr.append(sprintName.getSprintName());
-                newSprintIdStr.append(sprintName.getSprintId().toString());
-                idx++;
-            } else {
-                newSprintNameStr.append("," + sprintName.getSprintName());
-                newSprintIdStr.append("," + sprintName.getSprintId().toString());
-            }
-        }
-        StringBuilder newSprintIdStrChange = new StringBuilder();
-        StringBuilder newSprintNameStrChange = new StringBuilder();
-        if (sprintDO != null) {
-            newSprintIdStrChange.append(newSprintIdStr.length() == 0 ? sprintDO.getSprintId().toString() : newSprintIdStr.toString() + "," + sprintDO.getSprintId().toString());
-            newSprintNameStrChange.append(newSprintNameStr.length() == 0 ? sprintDO.getSprintName() : newSprintNameStr.toString() + "," + sprintDO.getSprintName());
-        }
-
-        dataLogEList.add(returnDataLogE(projectId, issueId, oldSprintIdStr, oldSprintNameStr, newSprintIdStrChange, newSprintNameStrChange));
-    }
-
-    private List<DataLogE> getSprintDataLogByMove(Long projectId, Long sprintId, List<Long> issueIds) {
-        SprintDO sprintDO = getSprintById(sprintId);
-        List<DataLogE> dataLogEList = new ArrayList<>();
-        for (Long issueId : issueIds) {
-            SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
-            if (activeSprintName != null && sprintId.equals(activeSprintName.getSprintId())) {
-                continue;
-            }
-            addToSprintDataLogList(projectId, activeSprintName, sprintDO, issueId, dataLogEList);
-        }
-        return dataLogEList;
-    }
-
-    private void dataLogSprintByMove(List<DataLogE> dataLogEList) {
-        for (DataLogE dataLogE : dataLogEList) {
-            dataLogRepository.create(dataLogE);
-        }
-    }
-
-=======
->>>>>>> [ADD] 标签与模块日志AOP实现
     @Override
     public List<IssueSearchDTO> batchIssueToSprint(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO) {
         sprintRule.judgeExist(projectId, sprintId);

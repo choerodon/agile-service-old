@@ -145,15 +145,12 @@ public class LogDataAspect {
     @Around("updateMethodPointcut()")
     public Object interceptor(ProceedingJoinPoint pjp) {
         Object result = null;
-        long beginTime = System.currentTimeMillis();
         MethodSignature signature = (MethodSignature) pjp.getSignature();
         //获取被拦截的方法
         Method method = signature.getMethod();
         DataLog dataLog = method.getAnnotation(DataLog.class);
         //获取被拦截的方法名
-        String methodName = method.getName();
         Object[] args = pjp.getArgs();
-        logger.info("开始记录日志：{}", methodName);
         if (dataLog != null && args != null) {
             if (dataLog.single()) {
                 switch (dataLog.type()) {
@@ -251,10 +248,6 @@ public class LogDataAspect {
             logger.info("exception: ", e);
             throw new CommonException(ERROR_UPDATE);
         }
-        if (result != null) {
-            long costMs = System.currentTimeMillis() - beginTime;
-            logger.info("{}请求结束，耗时：{}ms", methodName, costMs);
-        }
         return result;
     }
 
@@ -311,42 +304,6 @@ public class LogDataAspect {
         }
         return result;
     }
-
-
-    @SuppressWarnings("unchecked")
-    private void batchToDestinationSprint(Object[] args) {
-        Long projectId = (Long) args[0];
-        Long targetSprintId = (Long) args[1];
-        List<Long> moveIssueIds = (List<Long>) args[2];
-        if (projectId != null && targetSprintId != null && !moveIssueIds.isEmpty()) {
-            moveIssueIds.forEach(issueId -> handleBatchToDestinationSprint(projectId, issueId, targetSprintId));
-        }
-    }
-
-    private void handleBatchToDestinationSprint(Long projectId, Long issueId, Long targetSprintId) {
-        String newValue;
-        String newString;
-        String oldValue;
-        String oldString;
-        List<SprintNameDTO> closeSprintNames = sprintNameAssembler.doListToDTO(issueMapper.queryCloseSprintNameByIssueId(issueId));
-        SprintNameDTO sprintName = sprintNameAssembler.doToDTO(sprintMapper.querySprintNameBySprintId(projectId, targetSprintId));
-        String closeSprintIdStr = closeSprintNames.stream().map(closeSprintName -> closeSprintName.getSprintId().toString()).collect(Collectors.joining(","));
-        String closeSprintNameStr = closeSprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
-        newValue = closeSprintIdStr;
-        newString = closeSprintNameStr;
-        oldValue = closeSprintIdStr;
-        oldString = closeSprintNameStr;
-        if (sprintName != null) {
-            newValue = ("".equals(oldValue) ? sprintName.getSprintId().toString() : oldValue + "," + sprintName.getSprintId().toString());
-            newString = ("".equals(oldString) ? sprintName.getSprintName() : oldString + "," + sprintName.getSprintName());
-        }
-        oldValue = ("".equals(oldValue) ? null : oldValue);
-        oldString = ("".equals(oldString) ? null : oldString);
-        newValue = ("".equals(newValue) ? null : newValue);
-        newString = ("".equals(newString) ? null : newString);
-        createDataLog(projectId, issueId, FIELD_SPRINT, oldString, newString, oldValue, newValue);
-    }
-
 
     private void batchRemoveSprintBySprintId(Object[] args) {
         Long projectId = (Long) args[0];
