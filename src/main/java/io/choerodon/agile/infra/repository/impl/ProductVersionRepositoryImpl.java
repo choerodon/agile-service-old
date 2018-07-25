@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.converter.ProductVersionConverter;
@@ -58,7 +59,8 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     }
 
     @Override
-    public Boolean issueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDO> versionIssues, Date date, Long userId) {
+    @DataLog(type = "batchMoveVersion")
+    public Boolean batchIssueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDO> versionIssues, Date date, Long userId) {
         versionMapper.issueToDestination(projectId, targetVersionId, versionIssues, date, userId);
         return true;
     }

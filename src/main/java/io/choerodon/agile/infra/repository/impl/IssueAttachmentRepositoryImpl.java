@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.IssueAttachmentE;
@@ -23,6 +24,7 @@ public class IssueAttachmentRepositoryImpl implements IssueAttachmentRepository 
     private IssueAttachmentMapper issueAttachmentMapper;
 
     @Override
+    @DataLog(type = "createAttachment")
     public IssueAttachmentE create(IssueAttachmentE issueAttachmentE) {
         IssueAttachmentDO issueAttachmentDO = ConvertHelper.convert(issueAttachmentE, IssueAttachmentDO.class);
         if (issueAttachmentMapper.insert(issueAttachmentDO) != 1) {
@@ -32,6 +34,7 @@ public class IssueAttachmentRepositoryImpl implements IssueAttachmentRepository 
     }
 
     @Override
+    @DataLog(type = "deleteAttachment")
     public Boolean deleteById(Long attachmentId) {
         IssueAttachmentDO issueAttachmentDO = issueAttachmentMapper.selectByPrimaryKey(attachmentId);
         if (issueAttachmentDO == null) {

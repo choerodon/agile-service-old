@@ -71,18 +71,10 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public Boolean removeFromSprint(Long projectId, Long sprintId) {
+    @DataLog(type = "batchRemoveSprintBySprintId",single = false)
+    public Boolean batchRemoveFromSprint(Long projectId, Long sprintId) {
         issueMapper.removeFromSprint(projectId, sprintId);
         return true;
-    }
-
-    @Override
-    public IssueE updateSelective(IssueE issueE) {
-        IssueDO issueDO = ConvertHelper.convert(issueE, IssueDO.class);
-        if (issueMapper.updateByPrimaryKeySelective(issueDO) != 1) {
-            throw new CommonException("error.issue.update");
-        }
-        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDO.getIssueId()), IssueE.class);
     }
 
     @Override
@@ -111,6 +103,7 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
+    @DataLog(type = "batchToDestinationSprint",single = false)
     public int issueToDestinationByIds(Long projectId, Long sprintId, List<Long> issueIds, Date date, Long userId) {
         return issueMapper.issueToDestinationByIds(projectId, sprintId, issueIds, date, userId);
     }
@@ -124,11 +117,6 @@ public class IssueRepositoryImpl implements IssueRepository {
     @DataLog(type = "batchRemoveSprint", single = false)
     public int removeIssueFromSprintByIssueIds(BatchRemoveSprintE batchRemoveSprintE) {
         return issueMapper.removeIssueFromSprintByIssueIds(batchRemoveSprintE.getProjectId(), batchRemoveSprintE.getIssueIds());
-    }
-
-    @Override
-    public int issueToSprint(Long projectId, Long sprintId, Long issueId, Date date, Long userId) {
-        return issueMapper.issueToSprint(projectId, sprintId, issueId, date, userId);
     }
 
     @Override

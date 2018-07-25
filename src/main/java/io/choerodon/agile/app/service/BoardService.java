@@ -3,8 +3,6 @@ package io.choerodon.agile.app.service;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.BoardDTO;
 import io.choerodon.agile.api.dto.IssueMoveDTO;
-import io.choerodon.agile.domain.agile.entity.IssueE;
-import io.choerodon.agile.infra.dataobject.IssueDO;
 
 import java.util.List;
 
@@ -30,5 +28,4 @@ public interface BoardService {
 
     List<BoardDTO> queryByProjectId(Long projectId);
 
-    void dataLogStatus(IssueDO originIssue, IssueE currentIssue);
 }

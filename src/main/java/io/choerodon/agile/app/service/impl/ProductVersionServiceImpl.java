@@ -2,9 +2,7 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
-import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.domain.agile.event.VersionPayload;
-import io.choerodon.agile.domain.agile.repository.DataLogRepository;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.infra.dataobject.IssueCountDO;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
@@ -61,8 +59,6 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private ProductVersionMapper productVersionMapper;
     @Autowired
     private EventProducerTemplate eventProducerTemplate;
-    @Autowired
-    private DataLogRepository dataLogRepository;
 
     private static final String SEARCH_ARGS = "searchArgs";
     public static final String ADVANCE_SEARCH_ARGS = "advancedSearchArgs";
@@ -81,7 +77,6 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
     private static final String AGILE_SERVICE = "agile-service";
-    private static final String FIELD_FIX_VERSION = "Fix Version";
 
     @Override
     public ProductVersionDetailDTO createVersion(Long projectId, ProductVersionCreateDTO versionCreateDTO) {
@@ -115,11 +110,11 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         if (fixTargetVersionId != null && !Objects.equals(fixTargetVersionId, 0L)) {
             List<VersionIssueDO> versionIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, FIX_RELATION_TYPE);
-            productVersionRepository.issueToDestination(projectId, fixTargetVersionId, versionIssues, new Date(), customUserDetails.getUserId());
+            productVersionRepository.batchIssueToDestination(projectId, fixTargetVersionId, versionIssues, new Date(), customUserDetails.getUserId());
         }
         if (influenceTargetVersionId != null && !Objects.equals(influenceTargetVersionId, 0L)) {
             List<VersionIssueDO> versionIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, INFLUENCE_RELATION_TYPE);
-            productVersionRepository.issueToDestination(projectId, influenceTargetVersionId, versionIssues, new Date(), customUserDetails.getUserId());
+            productVersionRepository.batchIssueToDestination(projectId, influenceTargetVersionId, versionIssues, new Date(), customUserDetails.getUserId());
         }
         versionIssueRelRepository.deleteByVersionId(projectId, versionId);
         return simpleDeleteVersion(projectId, versionId);
@@ -235,7 +230,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             List<VersionIssueDO> incompleteIssues = productVersionMapper.queryIncompleteIssues(projectId, productVersionRelease.getVersionId());
             if (!incompleteIssues.isEmpty()) {
                 versionIssueRelRepository.deleteIncompleteIssueByVersionId(projectId, productVersionRelease.getVersionId());
-                productVersionRepository.issueToDestination(projectId, productVersionRelease.getTargetVersionId(), incompleteIssues, new Date(), customUserDetails.getUserId());
+                productVersionRepository.batchIssueToDestination(projectId, productVersionRelease.getTargetVersionId(), incompleteIssues, new Date(), customUserDetails.getUserId());
             }
         }
         productVersionRepository.releaseVersion(projectId, productVersionRelease.getVersionId(), productVersionRelease.getReleaseDate());
@@ -310,28 +305,10 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds(), productVersionMergeDTO.getTargetVersionId());
         versionIssueRelRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         if (!versionIssues.isEmpty()) {
-            List<Long> versionIssueIds = versionIssues.stream().map(VersionIssueDO::getIssueId).collect(Collectors.toList());
-            dataLogVersionByAdd(projectId, productVersionMergeDTO.getTargetVersionId(), versionIssueIds);
-            productVersionRepository.issueToDestination(projectId, productVersionMergeDTO.getTargetVersionId(), versionIssues, new Date(), customUserDetails.getUserId());
+            productVersionRepository.batchIssueToDestination(projectId, productVersionMergeDTO.getTargetVersionId(), versionIssues, new Date(), customUserDetails.getUserId());
         }
         productVersionRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         return true;
-    }
-
-    private void dataLogVersionByAdd(Long projectId, Long versionId, List<Long> versionIssueIds) {
-        ProductVersionDO productVersionDO = productVersionMapper.selectByPrimaryKey(versionId);
-        if (productVersionDO == null) {
-            throw new CommonException("error.productVersion.get");
-        }
-        for (Long versionIssueId : versionIssueIds) {
-            DataLogE dataLogE = new DataLogE();
-            dataLogE.setProjectId(projectId);
-            dataLogE.setIssueId(versionIssueId);
-            dataLogE.setField(FIELD_FIX_VERSION);
-            dataLogE.setNewValue(versionId.toString());
-            dataLogE.setNewString(productVersionDO.getName());
-            dataLogRepository.create(dataLogE);
-        }
     }
 
     @Override

@@ -28,6 +28,7 @@ public class LabelIssueRelRepositoryImpl implements LabelIssueRelRepository {
     private LabelIssueRelMapper labelIssueRelMapper;
 
     @Override
+    @DataLog(type = "labelCreate")
     public List<LabelIssueRelE> create(LabelIssueRelE labelIssueRelE) {
         LabelIssueRelDO labelIssueRelDO = ConvertHelper.convert(labelIssueRelE, LabelIssueRelDO.class);
         if (labelIssueRelMapper.insert(labelIssueRelDO) != 1) {

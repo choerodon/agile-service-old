@@ -125,4 +125,10 @@ public class VersionIssueRelE {
         this.creationDate = new Date();
         this.createdBy = DetailsHelper.getUserDetails().getUserId();
     }
+
+    public void createBatchDeleteVersionIssueRel(Long projectId, Long issueId, String relationType) {
+        this.projectId = projectId;
+        this.issueId = issueId;
+        this.relationType = relationType;
+    }
 }

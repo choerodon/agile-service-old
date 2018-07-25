@@ -1,6 +1,5 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.domain.agile.repository.DataLogRepository;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -37,9 +36,6 @@ import java.util.List;
 public class IssueAttachmentServiceImpl implements IssueAttachmentService {
 
     private static final String BACKETNAME = "agile-service";
-    private static final String FIELD_ATTACHMENT = "Attachment";
-    private static final String ACTION_UPLOAD = "upload";
-    private static final String ACTION_DELETE = "delete";
 
     @Autowired
     private FileFeignClient fileFeignClient;
@@ -56,24 +52,6 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
     @Value("${services.attachment.url}")
     private String attachmentUrl;
 
-    private void dataLogAttachment(Long projectId, Long issueId, String url, Long attachmentId, String action) {
-        DataLogE dataLogE = new DataLogE();
-        dataLogE.setProjectId(projectId);
-        dataLogE.setField(FIELD_ATTACHMENT);
-        dataLogE.setIssueId(issueId);
-        if (ACTION_UPLOAD.equals(action)) {
-            dataLogE.setNewValue(attachmentId.toString());
-            dataLogE.setNewString(url);
-            dataLogRepository.create(dataLogE);
-        } else if (ACTION_DELETE.equals(action)) {
-            dataLogE.setOldValue(attachmentId.toString());
-            dataLogE.setOldString(url);
-            dataLogE.setNewValue(null);
-            dataLogE.setNewString(null);
-            dataLogRepository.create(dataLogE);
-        }
-    }
-
     @Override
     public void dealIssue(Long projectId, Long issueId, String fileName, String url) {
         IssueAttachmentE issueAttachmentE = new IssueAttachmentE();
@@ -82,8 +60,8 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
         issueAttachmentE.setFileName(fileName);
         issueAttachmentE.setUrl(url);
         issueAttachmentE.setCommentId(1L);
-        IssueAttachmentE result = issueAttachmentRepository.create(issueAttachmentE);
-        dataLogAttachment(projectId, issueId, url, result.getAttachmentId(), ACTION_UPLOAD);
+        issueAttachmentE.setAttachmentId(1L);
+        issueAttachmentRepository.create(issueAttachmentE);
     }
 
     private String dealUrl(String url) {
@@ -131,9 +109,7 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
         if (response == null || response.getStatusCode() != HttpStatus.OK) {
             throw new CommonException("error.attachment.delete");
         }
-        Boolean result = issueAttachmentRepository.deleteById(issueAttachmentE.getAttachmentId());
-        dataLogAttachment(projectId, issueAttachmentE.getIssueId(), issueAttachmentE.getUrl(), issueAttachmentId, ACTION_DELETE);
-        return result;
+        return issueAttachmentRepository.deleteById(issueAttachmentE.getAttachmentId());
     }
 
     @Override

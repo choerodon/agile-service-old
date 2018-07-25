@@ -43,9 +43,7 @@ public interface IssueRepository {
      */
     int delete(Long projectId, Long issueId);
 
-    Boolean removeFromSprint(Long projectId, Long sprintId);
-
-    IssueE updateSelective(IssueE issueE);
+    Boolean batchRemoveFromSprint(Long projectId, Long sprintId);
 
     Boolean batchIssueToVersion(VersionIssueRelE versionIssueRelE);
 
@@ -67,8 +65,6 @@ public interface IssueRepository {
     int batchUpdateIssueRank(Long projectId, List<MoveIssueDO> moveIssueDOS);
 
     int removeIssueFromSprintByIssueIds(BatchRemoveSprintE batchRemoveSprintE);
-
-    int issueToSprint(Long projectId, Long sprintId, Long issueId, Date date, Long userId);
 
     int deleteIssueFromSprintByIssueId(Long projectId, Long issueId);
 }

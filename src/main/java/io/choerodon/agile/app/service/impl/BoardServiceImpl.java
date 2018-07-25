@@ -34,7 +34,6 @@ public class BoardServiceImpl implements BoardService {
     private static final String CONTRAINT_ISSUE_WITHOUT_SUBTASK = "issue_without_sub_task";
     private static final String STORY_POINTS = "story_point";
     private static final String PARENT_CHILD = "parent_child";
-    private static final String FIELD_STATUS = "status";
 
     @Autowired
     private BoardRepository boardRepository;
@@ -68,12 +67,6 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private QuickFilterMapper quickFilterMapper;
-
-    @Autowired
-    private IssueStatusMapper issueStatusMapper;
-
-    @Autowired
-    private DataLogRepository dataLogRepository;
 
     @Autowired
     private UserSettingMapper userSettingMapper;
@@ -168,7 +161,7 @@ public class BoardServiceImpl implements BoardService {
             });
             if (!subNoParentIds.isEmpty()) {
                 List<ColumnAndIssueDO> subNoParentColumns = boardColumnMapper.queryColumnsByIssueIds(subNoParentIds, boardId);
-                subNoParentColumns.forEach(columnAndIssueDO -> handleSameColumn(columns,columnAndIssueDO));
+                subNoParentColumns.forEach(columnAndIssueDO -> handleSameColumn(columns, columnAndIssueDO));
             }
         }
     }
@@ -319,48 +312,6 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
-    private void dataLogResolution(Long projectId, Long issueId, IssueStatusDO originStatus, IssueStatusDO currentStatus) {
-        if ((originStatus.getCompleted() == null || !originStatus.getCompleted()) || (currentStatus.getCompleted() == null || !currentStatus.getCompleted())) {
-            DataLogE dataLogE = new DataLogE();
-            dataLogE.setProjectId(projectId);
-            dataLogE.setIssueId(issueId);
-            dataLogE.setField("resolution");
-            if (originStatus.getCompleted()) {
-                dataLogE.setOldValue(originStatus.getId().toString());
-                dataLogE.setOldString(originStatus.getName());
-                dataLogE.setNewValue(null);
-                dataLogE.setNewString(null);
-            } else if (currentStatus.getCompleted()) {
-                dataLogE.setOldValue(null);
-                dataLogE.setOldString(null);
-                dataLogE.setNewValue(currentStatus.getId().toString());
-                dataLogE.setNewString(currentStatus.getName());
-            }
-            dataLogRepository.create(dataLogE);
-        }
-    }
-
-    @Override
-    public void dataLogStatus(IssueDO originIssue, IssueE currentIssue) {
-        if (originIssue.getStatusId().equals(currentIssue.getStatusId())) {
-            return;
-        }
-        DataLogE dataLogE = new DataLogE();
-        dataLogE.setProjectId(originIssue.getProjectId());
-        dataLogE.setIssueId(currentIssue.getIssueId());
-        dataLogE.setField(FIELD_STATUS);
-        dataLogE.setOldValue(originIssue.getStatusId().toString());
-        IssueStatusDO originStatus = issueStatusMapper.selectByPrimaryKey(originIssue.getStatusId());
-        IssueStatusDO currentStatus = issueStatusMapper.selectByPrimaryKey(currentIssue.getStatusId());
-        dataLogE.setOldString(originStatus.getName());
-        dataLogE.setNewValue(currentIssue.getStatusId().toString());
-        dataLogE.setNewString(currentStatus.getName());
-        dataLogRepository.create(dataLogE);
-        if ((originStatus.getCompleted() != null && originStatus.getCompleted()) || (currentStatus.getCompleted() != null && currentStatus.getCompleted())) {
-            dataLogResolution(originIssue.getProjectId(), currentIssue.getIssueId(), originStatus, currentStatus);
-        }
-    }
-
     @Override
     public IssueMoveDTO move(Long projectId, Long issueId, IssueMoveDTO issueMoveDTO) {
         Long boardId = issueMoveDTO.getBoardId();
@@ -368,8 +319,7 @@ public class BoardServiceImpl implements BoardService {
         BoardDO boardDO = boardMapper.selectByPrimaryKey(boardId);
         checkColumnContraint(projectId, issueMoveDTO, boardDO.getColumnConstraint(), issueDO.getStatusId());
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
-        dataLogStatus(issueDO, issueE);
-        return ConvertHelper.convert(issueRepository.updateSelective(issueE), IssueMoveDTO.class);
+        return ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);
     }
 
     @Override

@@ -13,17 +13,15 @@ import io.choerodon.core.exception.CommonException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import sun.misc.Version;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,20 +42,26 @@ public class LogDataAspect {
     private static final String ISSUE = "issue";
     private static final String ISSUE_CREATE = "issueCreate";
     private static final String SPRINT = "sprint";
-    private static final String LABEL = "label";
     private static final String VERSION_CREATE = "versionCreate";
-    private static final String COMPONENT = "component";
     private static final String COMPONENT_CREATE = "componentCreate";
     private static final String COMPONENT_DELETE = "componentDelete";
     private static final String LABEL_DELETE = "labelDelete";
     private static final String LABEL_CREATE = "labelCreate";
+    private static final String VERSION_DELETE = "versionDelete";
+    private static final String BATCH_DELETE_VERSION = "batchDeleteVersion";
     private static final String BATCH_COMPONENT_DELETE = "batchComponentDelete";
     private static final String BATCH_TO_VERSION = "batchToVersion";
     private static final String BATCH_REMOVE_VERSION = "batchRemoveVersion";
     private static final String BATCH_TO_EPIC = "batchToEpic";
     private static final String BATCH_REMOVE_SPRINT = "batchRemoveSprint";
+    private static final String BATCH_REMOVE_SPRINT_BY_SPRINT_ID = "batchRemoveSprintBySprintId";
+    private static final String BATCH_TO_DESTINATION_SPRINT = "batchToDestinationSprint";
     private static final String BATCH_DELETE_LABEL = "batchDeleteLabel";
-    private static final String ATTACHMENT = "attachment";
+    private static final String CREATE_ATTACHMENT = "createAttachment";
+    private static final String DELETE_ATTACHMENT = "deleteAttachment";
+    private static final String CREATE_COMMENT = "createComment";
+    private static final String DELETE_COMMENT = "deleteComment";
+    private static final String CREATE_WORKLOG = "createWorkLog";
     private static final String EPIC_NAME_FIELD = "epicName";
     private static final String FIELD_EPIC_NAME = "Epic Name";
     private static final String SUMMARY_FIELD = "summary";
@@ -93,11 +97,18 @@ public class LogDataAspect {
     private static final String RANK_HIGHER = "评级更高";
     private static final String RANK_LOWER = "评级更低";
     private static final String TYPE_CODE = "typeCode";
-    private static final String ISSUE_EPIC = "issue_epic";
     private static final String FIELD_ISSUETYPE = "issuetype";
     private static final String FIELD_FIX_VERSION = "Fix Version";
+    private static final String BATCH_MOVE_TO_VERSION = "batchMoveVersion";
+    private static final String FIX_VERSION = "fix";
+    private static final String FIELD_VERSION = "Version";
     private static final String FIELD_COMPONENT = "Component";
     private static final String FIELD_LABELS = "labels";
+    private static final String FIELD_ATTACHMENT = "Attachment";
+    private static final String FIELD_COMMENT = "Comment";
+    private static final String FIELD_TIMESPENT = "timespent";
+    private static final String FIELD_WORKLOGID = "WorklogId";
+    private static final String ERROR_UPDATE = "error.LogDataAspect.update";
 
     @Autowired
     private IssueStatusMapper issueStatusMapper;
@@ -123,6 +134,10 @@ public class LogDataAspect {
     private IssueComponentMapper issueComponentMapper;
     @Autowired
     private ComponentIssueRelMapper componentIssueRelMapper;
+    @Autowired
+    private IssueAttachmentMapper issueAttachmentMapper;
+    @Autowired
+    private DataLogMapper dataLogMapper;
 
     /**
      * 定义拦截规则：拦截Spring管理的后缀为RepositoryImpl的bean中带有@DataLog注解的方法。
@@ -150,13 +165,16 @@ public class LogDataAspect {
                         handleIssueDataLog(args);
                         break;
                     case ISSUE_CREATE:
-                        handleIssueCreateDataLog(pjp, result);
+                        result = handleIssueCreateDataLog(pjp);
                         break;
                     case SPRINT:
                         handleSprintDataLog(args);
                         break;
                     case VERSION_CREATE:
                         handleVersionCreateDataLog(args);
+                        break;
+                    case VERSION_DELETE:
+                        handleVersionDeleteDataLog(args);
                         break;
                     case COMPONENT_CREATE:
                         handleComponentCreateDataLog(args);
@@ -165,10 +183,27 @@ public class LogDataAspect {
                         handleComponentDeleteDataLog(args);
                         break;
                     case LABEL_DELETE:
-                        handleLabelDeleteDataLog(args,pjp, result);
+                        result = handleLabelDeleteDataLog(args, pjp);
                         break;
-                    case ATTACHMENT:
+                    case LABEL_CREATE:
+                        result = handleLabelCreateDataLog(args, pjp);
                         break;
+                    case CREATE_ATTACHMENT:
+                        result = handleCreateAttachmentDataLog(args, pjp);
+                        break;
+                    case DELETE_ATTACHMENT:
+                        handleDeleteAttachmentDataLog(args);
+                        break;
+                    case CREATE_COMMENT:
+                        result = handleCreateCommentDataLog(args, pjp);
+                        break;
+                    case DELETE_COMMENT:
+                        handleDeleteCommentDataLog(args);
+                        break;
+                    case CREATE_WORKLOG:
+                        result = handleCreateWorkLogDataLog(args, pjp);
+                        break;
+
                     default:
                         break;
                 }
@@ -192,13 +227,25 @@ public class LogDataAspect {
                     case BATCH_DELETE_LABEL:
                         batchDeleteLabelDataLog(args);
                         break;
+                    case BATCH_DELETE_VERSION:
+                        batchDeleteVersionDataLog(args);
+                        break;
+                    case BATCH_MOVE_TO_VERSION:
+                        batchMoveVersionDataLog(args);
+                        break;
+                    case BATCH_REMOVE_SPRINT_BY_SPRINT_ID:
+                        batchRemoveSprintBySprintId(args);
+                        break;
+                    case BATCH_TO_DESTINATION_SPRINT:
+                        batchToDestinationSprint(args);
+                        break;
                     default:
                         break;
                 }
             }
 
         } else {
-            throw new CommonException("error.LogDataAspect.update");
+            throw new CommonException(ERROR_UPDATE);
         }
         try {
             // 一切正常的情况下，继续执行被拦截的方法
@@ -207,7 +254,7 @@ public class LogDataAspect {
             }
         } catch (Throwable e) {
             logger.info("exception: ", e);
-            throw new CommonException("error.LogDataAspect.update");
+            throw new CommonException(ERROR_UPDATE);
         }
         if (result != null) {
             long costMs = System.currentTimeMillis() - beginTime;
@@ -216,25 +263,249 @@ public class LogDataAspect {
         return result;
     }
 
-    private void handleLabelDeleteDataLog(Object[] args,ProceedingJoinPoint pjp, Object result) {
+    private Object handleCreateWorkLogDataLog(Object[] args, ProceedingJoinPoint pjp) {
+        WorkLogE workLogE = null;
+        Object result = null;
+        for (Object arg : args) {
+            if (arg instanceof WorkLogE) {
+                workLogE = (WorkLogE) arg;
+            }
+        }
+        if (workLogE != null) {
+            try {
+                result = pjp.proceed();
+                workLogE = (WorkLogE) result;
+                DataLogDO dataLogDO = dataLogMapper.selectLastWorkLogById(workLogE.getProjectId(), workLogE.getIssueId(), FIELD_TIMESPENT);
+                String oldString = null;
+                String newString = null;
+                String oldValue = null;
+                String newValue = null;
+                if (dataLogDO != null) {
+                    oldValue = dataLogDO.getNewValue();
+                    oldString = dataLogDO.getNewString();
+                    BigDecimal newTime = new BigDecimal(dataLogDO.getNewValue());
+                    newValue = newTime.add(workLogE.getWorkTime()).toString();
+                    newString = newTime.add(workLogE.getWorkTime()).toString();
+                } else {
+                    newValue = workLogE.getWorkTime().toString();
+                    newString = workLogE.getWorkTime().toString();
+                }
+                createDataLog(workLogE.getProjectId(), workLogE.getIssueId(), FIELD_TIMESPENT,
+                        oldString, newString, oldValue, newValue);
+                createDataLog(workLogE.getProjectId(), workLogE.getIssueId(), FIELD_WORKLOGID,
+                        workLogE.getLogId().toString(), null, workLogE.getLogId().toString(), null);
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private void batchToDestinationSprint(Object[] args) {
+        Long projectId = (Long) args[0];
+        Long targetSprintId = (Long) args[1];
+        List<Long> moveIssueIds = (List<Long>) args[2];
+        if (projectId != null && targetSprintId != null && !moveIssueIds.isEmpty()) {
+            moveIssueIds.forEach(issueId -> {
+                String newValue;
+                String newString;
+                String oldValue;
+                String oldString;
+                List<SprintNameDTO> closeSprintNames = sprintNameAssembler.doListToDTO(issueMapper.queryCloseSprintNameByIssueId(issueId));
+                SprintNameDTO sprintName = sprintNameAssembler.doToDTO(sprintMapper.querySprintNameBySprintId(projectId, targetSprintId));
+                String closeSprintIdStr = closeSprintNames.stream().map(closeSprintName -> closeSprintName.getSprintId().toString()).collect(Collectors.joining(","));
+                String closeSprintNameStr = closeSprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
+                newValue = closeSprintIdStr;
+                newString = closeSprintNameStr;
+                oldValue = closeSprintIdStr;
+                oldString = closeSprintNameStr;
+                if (sprintName != null) {
+                    newValue = ("".equals(oldValue) ? sprintName.getSprintId().toString() : oldValue + "," + sprintName.getSprintId().toString());
+                    newString = ("".equals(oldString) ? sprintName.getSprintName() : oldString + "," + sprintName.getSprintName());
+                }
+                oldValue = ("".equals(oldValue) ? null : oldValue);
+                oldString = ("".equals(oldString) ? null : oldString);
+                newValue = ("".equals(newValue) ? null : newValue);
+                newString = ("".equals(newString) ? null : newString);
+                createDataLog(projectId, issueId, FIELD_SPRINT, oldString, newString, oldValue, newValue);
+            });
+        }
+    }
+
+    private void batchRemoveSprintBySprintId(Object[] args) {
+        Long projectId = (Long) args[0];
+        Long sprintId = (Long) args[1];
+        if (projectId != null && sprintId != null) {
+            List<Long> moveIssueIds = sprintMapper.queryIssueIds(projectId, sprintId);
+            handleBatchRemoveSprint(projectId, moveIssueIds, sprintId);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void batchMoveVersionDataLog(Object[] args) {
+        Long projectId = (Long) args[0];
+        Long targetVersionId = (Long) args[1];
+        List<VersionIssueDO> versionIssueDOS = (List<VersionIssueDO>) args[2];
+        if (projectId != null && targetVersionId != null && !versionIssueDOS.isEmpty()) {
+            ProductVersionDO productVersionDO = productVersionMapper.selectByPrimaryKey(targetVersionId);
+            if (productVersionDO == null) {
+                throw new CommonException("error.productVersion.get");
+            }
+            //批量sql
+            for (VersionIssueDO versionIssueDO : versionIssueDOS) {
+                String field = FIX_VERSION.equals(versionIssueDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+                createDataLog(projectId, versionIssueDO.getIssueId(), field, null,
+                        productVersionDO.getName(), null, targetVersionId.toString());
+            }
+        }
+    }
+
+    private void handleDeleteCommentDataLog(Object[] args) {
+        IssueCommentDO issueCommentDO = null;
+        for (Object arg : args) {
+            if (arg instanceof IssueCommentDO) {
+                issueCommentDO = (IssueCommentDO) arg;
+            }
+        }
+        if (issueCommentDO != null) {
+            createDataLog(issueCommentDO.getProjectId(), issueCommentDO.getIssueId(), FIELD_COMMENT,
+                    issueCommentDO.getCommentText(), null, issueCommentDO.getCommentId().toString(), null);
+        }
+    }
+
+    private Object handleCreateCommentDataLog(Object[] args, ProceedingJoinPoint pjp) {
+        IssueCommentE issueCommentE = null;
+        Object result = null;
+        for (Object arg : args) {
+            if (arg instanceof IssueCommentE) {
+                issueCommentE = (IssueCommentE) arg;
+            }
+        }
+        if (issueCommentE != null) {
+            try {
+                result = pjp.proceed();
+                issueCommentE = (IssueCommentE) result;
+                createDataLog(issueCommentE.getProjectId(), issueCommentE.getIssueId(), FIELD_COMMENT,
+                        null, issueCommentE.getCommentText(), null, issueCommentE.getCommentId().toString());
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    private void handleDeleteAttachmentDataLog(Object[] args) {
+        Long attachmentId = null;
+        for (Object arg : args) {
+            if (arg instanceof Long) {
+                attachmentId = (Long) arg;
+            }
+        }
+        if (attachmentId != null) {
+            IssueAttachmentDO issueAttachmentDO = issueAttachmentMapper.selectByPrimaryKey(attachmentId);
+            createDataLog(issueAttachmentDO.getProjectId(), issueAttachmentDO.getIssueId(), FIELD_ATTACHMENT,
+                    issueAttachmentDO.getUrl(), null, issueAttachmentDO.getAttachmentId().toString(), null);
+        }
+    }
+
+    private Object handleCreateAttachmentDataLog(Object[] args, ProceedingJoinPoint pjp) {
+        IssueAttachmentE issueAttachmentE = null;
+        Object result = null;
+        for (Object arg : args) {
+            if (arg instanceof IssueAttachmentE) {
+                issueAttachmentE = (IssueAttachmentE) arg;
+            }
+        }
+        if (issueAttachmentE != null) {
+            try {
+                result = pjp.proceed();
+                issueAttachmentE = (IssueAttachmentE) result;
+                createDataLog(issueAttachmentE.getProjectId(), issueAttachmentE.getIssueId(), FIELD_ATTACHMENT,
+                        null, issueAttachmentE.getUrl(), null, issueAttachmentE.getAttachmentId().toString());
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    private void batchDeleteVersionDataLog(Object[] args) {
+        VersionIssueRelE versionIssueRelE = null;
+        for (Object arg : args) {
+            if (arg instanceof VersionIssueRelE) {
+                versionIssueRelE = (VersionIssueRelE) arg;
+            }
+        }
+        if (versionIssueRelE != null) {
+            List<ProductVersionDO> productVersionDOS = productVersionMapper.queryVersionRelByIssueIdAndType(
+                    versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), versionIssueRelE.getRelationType());
+            //todo 修改成批量sql
+            Long issueId = versionIssueRelE.getIssueId();
+            String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+            productVersionDOS.forEach(productVersionDO -> createDataLog(productVersionDO.getProjectId(), issueId, field,
+                    productVersionDO.getName(), null, productVersionDO.getVersionId().toString(), null));
+        }
+    }
+
+    private void handleVersionDeleteDataLog(Object[] args) {
+        VersionIssueRelE versionIssueRelE = null;
+        for (Object arg : args) {
+            if (arg instanceof VersionIssueRelE) {
+                versionIssueRelE = (VersionIssueRelE) arg;
+            }
+        }
+        if (versionIssueRelE != null) {
+            String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+            createDataLog(versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), field,
+                    productVersionMapper.selectByPrimaryKey(versionIssueRelE.getVersionId()).getName(), null,
+                    versionIssueRelE.getVersionId().toString(), null);
+        }
+    }
+
+    private Object handleLabelCreateDataLog(Object[] args, ProceedingJoinPoint pjp) {
+        LabelIssueRelE labelIssueRelE = null;
+        Object result = null;
+        for (Object arg : args) {
+            if (arg instanceof LabelIssueRelE) {
+                labelIssueRelE = (LabelIssueRelE) arg;
+            }
+        }
+        if (labelIssueRelE != null) {
+            result = createLabelDataLog(labelIssueRelE.getLabelId(), labelIssueRelE.getIssueId(), pjp);
+        }
+        return result;
+    }
+
+    private Object createLabelDataLog(Long labelId, Long issueId, ProceedingJoinPoint pjp) {
+        IssueLabelDO issueLabelDO = issueLabelMapper.selectByPrimaryKey(labelId);
+        List<IssueLabelDO> originLabels = issueMapper.selectLabelNameByIssueId(issueId);
+        Object result = null;
+        try {
+            result = pjp.proceed();
+            List<IssueLabelDO> curLabels = issueMapper.selectLabelNameByIssueId(issueId);
+            createDataLog(issueLabelDO.getProjectId(), issueId, FIELD_LABELS, getOriginLabelNames(originLabels),
+                    getOriginLabelNames(curLabels), null, null);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        return result;
+    }
+
+
+    private Object handleLabelDeleteDataLog(Object[] args, ProceedingJoinPoint pjp) {
         LabelIssueRelDO labelIssueRelDO = null;
+        Object result = null;
         for (Object arg : args) {
             if (arg instanceof LabelIssueRelDO) {
                 labelIssueRelDO = (LabelIssueRelDO) arg;
             }
         }
         if (labelIssueRelDO != null) {
-            IssueLabelDO issueLabelDO = issueLabelMapper.selectByPrimaryKey(labelIssueRelDO.getLabelId());
-            List<IssueLabelDO> originLabels = issueMapper.selectLabelNameByIssueId(labelIssueRelDO.getIssueId());
-            try {
-                result = pjp.proceed();
-                List<IssueLabelDO> curLabels = issueMapper.selectLabelNameByIssueId(labelIssueRelDO.getIssueId());
-                createDataLog(issueLabelDO.getProjectId(), labelIssueRelDO.getIssueId(), FIELD_LABELS, getOriginLabelNames(originLabels),
-                        getOriginLabelNames(curLabels), null, null);
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
+            result = createLabelDataLog(labelIssueRelDO.getLabelId(), labelIssueRelDO.getIssueId(), pjp);
         }
+        return result;
     }
 
     private void batchDeleteLabelDataLog(Object[] args) {
@@ -385,7 +656,8 @@ public class LogDataAspect {
             }
         }
         if (versionIssueRelE != null) {
-            createDataLog(versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), FIELD_FIX_VERSION,
+            String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+            createDataLog(versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), field,
                     null, productVersionMapper.selectByPrimaryKey(versionIssueRelE.getVersionId()).getName(),
                     null, versionIssueRelE.getVersionId().toString());
         }
@@ -413,7 +685,8 @@ public class LogDataAspect {
                 List<ProductVersionDO> versionIssueRelDOList = (List<ProductVersionDO>) entry.getValue();
                 //todo 修改成sql批量操作
                 for (ProductVersionDO productVersionDO : versionIssueRelDOList) {
-                    createDataLog(projectId, issueId, FIELD_FIX_VERSION, productVersionDO.getName(),
+                    String field = FIX_VERSION.equals(productVersionDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+                    createDataLog(projectId, issueId, field, productVersionDO.getName(),
                             null, productVersionDO.getVersionId().toString(), null);
                 }
             }
@@ -434,19 +707,16 @@ public class LogDataAspect {
             }
             //todo 修改成sql批量操作
             for (Long issueId : versionIssueRelE.getIssueIds()) {
-                DataLogE dataLogE = new DataLogE();
-                dataLogE.setProjectId(versionIssueRelE.getProjectId());
-                dataLogE.setIssueId(issueId);
-                dataLogE.setField(FIELD_FIX_VERSION);
-                dataLogE.setNewValue(productVersionDO.getVersionId().toString());
-                dataLogE.setNewString(productVersionDO.getName());
-                dataLogRepository.create(dataLogE);
+                String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+                createDataLog(versionIssueRelE.getProjectId(), issueId, field, null,
+                        productVersionDO.getName(), null, productVersionDO.getVersionId().toString());
             }
         }
     }
 
-    private void handleIssueCreateDataLog(ProceedingJoinPoint pjp, Object result) {
+    private Object handleIssueCreateDataLog(ProceedingJoinPoint pjp) {
         //若创建issue的初始状态为已完成，生成日志
+        Object result;
         try {
             result = pjp.proceed();
             IssueE issueE = (IssueE) result;
@@ -456,8 +726,9 @@ public class LogDataAspect {
                         issueStatusDO.getName(), null, issueStatusDO.getId().toString());
             }
         } catch (Throwable throwable) {
-            throw new CommonException("error.LogDataAspect.update");
+            throw new CommonException(ERROR_UPDATE);
         }
+        return result;
     }
 
     private void handleSprintDataLog(Object[] args) {
@@ -558,16 +829,19 @@ public class LogDataAspect {
 
     private void handleRemainTime(List<String> field, IssueDO originIssueDO, IssueE issueE) {
         if (field.contains(REMAIN_TIME_FIELD) && !originIssueDO.getRemainingTime().equals(issueE.getRemainingTime())) {
+            BigDecimal zero = new BigDecimal(0);
             String oldData = null;
-            String newData = null;
-            if (originIssueDO.getRemainingTime() != null) {
+            String newData;
+            if (originIssueDO.getRemainingTime() != null && originIssueDO.getRemainingTime().compareTo(zero) > 0) {
                 oldData = originIssueDO.getRemainingTime().toString();
-            }
-            if (issueE.getRemainingTime() != null) {
                 newData = issueE.getRemainingTime().toString();
+            } else {
+                newData = zero.toString();
             }
-            createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
-                    FIELD_TIMEESTIMATE, oldData, oldData, newData, newData);
+            if (!originIssueDO.getRemainingTime().equals(issueE.getRemainingTime())) {
+                createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
+                        FIELD_TIMEESTIMATE, oldData, oldData, newData, newData);
+            }
         }
     }
 
@@ -590,23 +864,28 @@ public class LogDataAspect {
         Boolean updateSprint = (field.contains(SPRINT_ID_FIELD) && !originIssueDO.getSprintId().equals(issueE.getSprintId()))
                 || (issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L));
         if (updateSprint) {
-            SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(originIssueDO.getIssueId()));
-            List<SprintNameDTO> closeSprintNames = sprintNameAssembler.doListToDTO(issueMapper.queryCloseSprintNameByIssueId(originIssueDO.getIssueId()));
-            SprintNameDTO sprintName = sprintNameAssembler.doToDTO(sprintMapper.querySprintNameBySprintId(originIssueDO.getProjectId(), issueE.getSprintId()));
-            Boolean condition = !((activeSprintName == null && sprintName == null) || (sprintName != null && activeSprintName != null && Objects.equals(sprintName.getSprintId(), activeSprintName.getSprintId())));
-            if (condition) {
-                Map<String, String> valuesMap = dealSprint(closeSprintNames, activeSprintName, sprintName);
-                createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(), FIELD_SPRINT,
-                        "".equals(valuesMap.get(OLD_STRING)) ? null : valuesMap.get(OLD_STRING),
-                        "".equals(valuesMap.get(NEW_STRING)) ? null : valuesMap.get(NEW_STRING),
-                        "".equals(valuesMap.get(OLD_VALUE)) ? null : valuesMap.get(OLD_VALUE),
-                        "".equals(valuesMap.get(NEW_VALUE)) ? null : valuesMap.get(NEW_VALUE));
-                if (!originIssueDO.getTypeCode().equals(SUB_TASK)) {
-                    dataLogSubIssueSprint(issueE.getIssueId(), originIssueDO.getProjectId(), valuesMap);
-                }
+            createSprintDataLog(originIssueDO, issueE);
+        }
+    }
+
+    private void createSprintDataLog(IssueDO originIssueDO, IssueE issueE) {
+        SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(originIssueDO.getIssueId()));
+        List<SprintNameDTO> closeSprintNames = sprintNameAssembler.doListToDTO(issueMapper.queryCloseSprintNameByIssueId(originIssueDO.getIssueId()));
+        SprintNameDTO sprintName = sprintNameAssembler.doToDTO(sprintMapper.querySprintNameBySprintId(originIssueDO.getProjectId(), issueE.getSprintId()));
+        Boolean condition = !((activeSprintName == null && sprintName == null) || (sprintName != null && activeSprintName != null && Objects.equals(sprintName.getSprintId(), activeSprintName.getSprintId())));
+        if (condition) {
+            Map<String, String> valuesMap = dealSprint(closeSprintNames, activeSprintName, sprintName);
+            createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(), FIELD_SPRINT,
+                    "".equals(valuesMap.get(OLD_STRING)) ? null : valuesMap.get(OLD_STRING),
+                    "".equals(valuesMap.get(NEW_STRING)) ? null : valuesMap.get(NEW_STRING),
+                    "".equals(valuesMap.get(OLD_VALUE)) ? null : valuesMap.get(OLD_VALUE),
+                    "".equals(valuesMap.get(NEW_VALUE)) ? null : valuesMap.get(NEW_VALUE));
+            if (!originIssueDO.getTypeCode().equals(SUB_TASK)) {
+                dataLogSubIssueSprint(issueE.getIssueId(), originIssueDO.getProjectId(), valuesMap);
             }
         }
     }
+
 
     private void handleReporter(List<String> field, IssueDO originIssueDO, IssueE issueE) {
         if (field.contains(REPORTER_ID_FIELD) && !originIssueDO.getReporterId().equals(issueE.getReporterId())) {

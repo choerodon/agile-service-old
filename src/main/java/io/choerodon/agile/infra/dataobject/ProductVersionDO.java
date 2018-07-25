@@ -30,6 +30,8 @@ public class ProductVersionDO extends AuditDomain {
     private String oldStatusCode;
     @Transient
     private String status;
+    @Transient
+    private String relationType;
     @NotNull
     private Long projectId;
     private Long objectVersionNumber;
@@ -104,6 +106,14 @@ public class ProductVersionDO extends AuditDomain {
 
     public void setOldStatusCode(String oldStatusCode) {
         this.oldStatusCode = oldStatusCode;
+    }
+
+    public String getRelationType() {
+        return relationType;
+    }
+
+    public void setRelationType(String relationType) {
+        this.relationType = relationType;
     }
 
     @Override

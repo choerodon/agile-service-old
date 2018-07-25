@@ -73,4 +73,13 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
     List<ProductVersionDO> selectVersionRelsByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
     List<Long> listIds();
+
+    /**
+     * 根据issueId和类型查询版本关联
+     * @param projectId projectId
+     * @param issueId issueId
+     * @param relationType relationType
+     * @return ProductVersionDO
+     */
+    List<ProductVersionDO> queryVersionRelByIssueIdAndType(@Param("projectId")Long projectId,@Param("issueId") Long issueId, @Param("relationType")String relationType);
 }

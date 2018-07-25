@@ -57,12 +57,14 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
     }
 
     @Override
-    public int batchDeleteByIssueIdAndType(Long projectId,Long issueId, String versionType) {
-        return versionIssueRelMapper.batchDeleteByIssueIdAndType(projectId,issueId,versionType);
+    @DataLog(type = "batchDeleteVersion")
+    public int batchDeleteByIssueIdAndType(VersionIssueRelE versionIssueRelE) {
+        return versionIssueRelMapper.batchDeleteByIssueIdAndType(versionIssueRelE.getProjectId(),
+                versionIssueRelE.getIssueId(), versionIssueRelE.getRelationType());
     }
 
     @Override
-    public int deleteByVersionId(Long projectId,Long versionId) {
+    public int deleteByVersionId(Long projectId, Long versionId) {
         VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
         versionIssueRelDO.setProjectId(projectId);
         versionIssueRelDO.setVersionId(versionId);
@@ -78,5 +80,11 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
     @Override
     public int deleteByVersionIds(Long projectId, List<Long> versionIds) {
         return versionIssueRelMapper.deleteByVersionIds(projectId, versionIds);
+    }
+
+    @Override
+    @DataLog(type = "versionDelete")
+    public int delete(VersionIssueRelDO versionIssueRelDO) {
+        return versionIssueRelMapper.delete(versionIssueRelDO);
     }
 }
