@@ -2,8 +2,6 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
-import io.choerodon.agile.domain.agile.entity.DataLogE;
-import io.choerodon.agile.domain.agile.repository.DataLogRepository;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
 import io.choerodon.agile.infra.common.utils.RankUtil;
@@ -65,8 +63,6 @@ public class SprintServiceImpl implements SprintService {
     private SprintRule sprintRule;
     @Autowired
     private QuickFilterMapper quickFilterMapper;
-    @Autowired
-    private DataLogRepository dataLogRepository;
 
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String SPRINT_DATA = "sprintData";
@@ -83,7 +79,6 @@ public class SprintServiceImpl implements SprintService {
     private static final String REMOVE = "remove";
     private static final String SPRINT_REPORT_ERROR = "error.sprint.report";
     private static final String SPRINT_PLANNING_CODE = "sprint_planning";
-    private static final String FIEID_SPRINT = "Sprint";
     private static final String ISSUE_TYPE_TEST_CODE = "issue_test";
 
     @Override
@@ -116,55 +111,6 @@ public class SprintServiceImpl implements SprintService {
         return sprintUpdateAssembler.entityToDto(sprintRepository.updateSprint(sprintE));
     }
 
-    private DataLogE getAllDataLogByDelete(Long projectId, Long sprintId, Long issueId) {
-        List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
-        String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
-        String oldSprintNameStr = sprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
-        StringBuilder newSprintIdStr = new StringBuilder();
-        StringBuilder newSprintNameStr = new StringBuilder();
-        int idx = 0;
-        for (SprintNameDTO sprintName : sprintNames) {
-            if (sprintId.equals(sprintName.getSprintId())) {
-                continue;
-            }
-            if (idx == 0) {
-                newSprintIdStr.append(sprintName.getSprintId().toString());
-                newSprintNameStr.append(sprintName.getSprintName());
-                idx++;
-            } else {
-                newSprintIdStr.append("," + sprintName.getSprintId().toString());
-                newSprintNameStr.append("," + sprintName.getSprintName());
-            }
-        }
-        String oldValue = oldSprintIdStr;
-        String oldString = oldSprintNameStr;
-        DataLogE dataLogE = new DataLogE();
-        dataLogE.setProjectId(projectId);
-        dataLogE.setField(FIEID_SPRINT);
-        dataLogE.setIssueId(issueId);
-        dataLogE.setOldValue("".equals(oldValue) ? null : oldValue);
-        dataLogE.setOldString("".equals(oldString) ? null : oldString);
-        dataLogE.setNewValue(newSprintIdStr.length() == 0 ? null : newSprintIdStr.toString());
-        dataLogE.setNewString(newSprintNameStr.length() == 0 ? null : newSprintNameStr.toString());
-        return dataLogE;
-    }
-
-    private List<DataLogE> getDeleteDataLog(Long projectId, Long sprintId) {
-        List<Long> moveIssueIds = sprintMapper.queryIssueIds(projectId, sprintId);
-        moveIssueIds.addAll(issueMapper.querySubTaskIds(projectId, sprintId));
-        List<DataLogE> dataLogEList = new ArrayList<>();
-        for (Long issueId : moveIssueIds) {
-            dataLogEList.add(getAllDataLogByDelete(projectId, sprintId, issueId));
-        }
-        return dataLogEList;
-    }
-
-    private void dataLogDeleteSprint(List<DataLogE> dataLogEList) {
-        for (DataLogE dataLogE : dataLogEList) {
-            dataLogRepository.create(dataLogE);
-        }
-    }
-
     @Override
     public Boolean deleteSprint(Long projectId, Long sprintId) {
         SprintDO sprintDO = new SprintDO();
@@ -175,11 +121,10 @@ public class SprintServiceImpl implements SprintService {
             throw new CommonException(NOT_FOUND_ERROR);
         }
         sprintE.judgeDelete();
-        List<DataLogE> dataLogEList = getDeleteDataLog(projectId, sprintId);
+        //todo 日志处理
         moveIssueToBacklog(projectId, sprintId);
-        issueRepository.removeFromSprint(projectId, sprintId);
+        issueRepository.batchRemoveFromSprint(projectId, sprintId);
         sprintRepository.deleteSprint(sprintE);
-        dataLogDeleteSprint(dataLogEList);
         return true;
     }
 
@@ -191,6 +136,7 @@ public class SprintServiceImpl implements SprintService {
         if (moveIssueDOS.isEmpty()) {
             return;
         }
+        //todo 日志处理
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
     }
 
@@ -304,40 +250,6 @@ public class SprintServiceImpl implements SprintService {
         return true;
     }
 
-    private DataLogE getNewDataLog(Long projectId, Long issueId, Long destinationSprintId) {
-        String newValue;
-        String newString;
-        String oldValue;
-        String oldString;
-        List<SprintNameDTO> closeSprintNames = sprintNameAssembler.doListToDTO(issueMapper.queryCloseSprintNameByIssueId(issueId));
-        SprintNameDTO sprintName = sprintNameAssembler.doToDTO(sprintMapper.querySprintNameBySprintId(projectId, destinationSprintId));
-        String closeSprintIdStr = closeSprintNames.stream().map(closeSprintName -> closeSprintName.getSprintId().toString()).collect(Collectors.joining(","));
-        String closeSprintNameStr = closeSprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
-        newValue = closeSprintIdStr;
-        newString = closeSprintNameStr;
-        oldValue = closeSprintIdStr;
-        oldString = closeSprintNameStr;
-        if (sprintName != null) {
-            newValue = ("".equals(oldValue) ? sprintName.getSprintId().toString() : oldValue + "," + sprintName.getSprintId().toString());
-            newString = ("".equals(oldString) ? sprintName.getSprintName() : oldString + "," + sprintName.getSprintName());
-        }
-        DataLogE result = new DataLogE();
-        result.setProjectId(projectId);
-        result.setField(FIEID_SPRINT);
-        result.setIssueId(issueId);
-        result.setOldValue("".equals(oldValue) ? null : oldValue);
-        result.setOldString("".equals(oldString) ? null : oldString);
-        result.setNewValue("".equals(newValue) ? null : newValue);
-        result.setNewString("".equals(newString) ? null : newString);
-        return result;
-    }
-
-    private void dataLogCompleteSprint(List<DataLogE> dataLogEList) {
-        for (DataLogE dataLogE : dataLogEList) {
-            dataLogRepository.create(dataLogE);
-        }
-    }
-
     private void moveNotDoneIssueToTargetSprint(Long projectId, SprintCompleteDTO sprintCompleteDTO) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
@@ -350,12 +262,7 @@ public class SprintServiceImpl implements SprintService {
         List<Long> moveIssueIds = sprintMapper.queryIssueIds(projectId, sprintCompleteDTO.getSprintId());
         moveIssueIds.addAll(issueMapper.querySubTaskIds(projectId, sprintCompleteDTO.getSprintId()));
         if (targetSprintId != null && !Objects.equals(targetSprintId, 0L)) {
-            List<DataLogE> newDataLogs = new ArrayList<>();
-            for (Long issueId : moveIssueIds) {
-                newDataLogs.add(getNewDataLog(projectId, issueId, sprintCompleteDTO.getIncompleteIssuesDestination()));
-            }
             issueRepository.issueToDestinationByIds(projectId, targetSprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
-            dataLogCompleteSprint(newDataLogs);
         }
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
     }

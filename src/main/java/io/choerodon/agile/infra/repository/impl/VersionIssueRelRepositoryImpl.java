@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
@@ -37,6 +38,7 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
     }
 
     @Override
+    @DataLog(type = "versionCreate")
     public List<VersionIssueRelE> create(VersionIssueRelE versionIssueRelE) {
         VersionIssueRelDO versionIssueRelDO = ConvertHelper.convert(versionIssueRelE, VersionIssueRelDO.class);
         if (versionIssueRelMapper.insert(versionIssueRelDO) != 1) {
@@ -55,12 +57,14 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
     }
 
     @Override
-    public int batchDeleteByIssueIdAndType(Long projectId,Long issueId, String versionType) {
-        return versionIssueRelMapper.batchDeleteByIssueIdAndType(projectId,issueId,versionType);
+    @DataLog(type = "batchDeleteVersion")
+    public int batchDeleteByIssueIdAndType(VersionIssueRelE versionIssueRelE) {
+        return versionIssueRelMapper.batchDeleteByIssueIdAndType(versionIssueRelE.getProjectId(),
+                versionIssueRelE.getIssueId(), versionIssueRelE.getRelationType());
     }
 
     @Override
-    public int deleteByVersionId(Long projectId,Long versionId) {
+    public int deleteByVersionId(Long projectId, Long versionId) {
         VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
         versionIssueRelDO.setProjectId(projectId);
         versionIssueRelDO.setVersionId(versionId);
@@ -76,5 +80,11 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
     @Override
     public int deleteByVersionIds(Long projectId, List<Long> versionIds) {
         return versionIssueRelMapper.deleteByVersionIds(projectId, versionIds);
+    }
+
+    @Override
+    @DataLog(type = "versionDelete")
+    public int delete(VersionIssueRelDO versionIssueRelDO) {
+        return versionIssueRelMapper.delete(versionIssueRelDO);
     }
 }

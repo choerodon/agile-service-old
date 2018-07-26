@@ -25,4 +25,13 @@ public interface VersionIssueRelMapper extends BaseMapper<VersionIssueRelDO> {
      * @return int
      */
     int batchDeleteByIssueIdAndType(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("versionType") String versionType);
+
+    /**
+     * 查询当前版本关联（不包括归档的）
+     *
+     * @param projectId projectId
+     * @param issueId   issueId
+     * @return Long
+     */
+    List<Long> queryByIssueIdAndProjectIdNoArchived(@Param("projectId")Long projectId, @Param("issueId")Long issueId);
 }

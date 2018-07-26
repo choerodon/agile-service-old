@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.service.IIssueCommentService;
+import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.IssueCommentE;
@@ -31,6 +32,7 @@ public class IssueCommentRepositoryImpl implements IssueCommentRepository {
     private IIssueCommentService iIssueCommentService;
 
     @Override
+    @DataLog(type = "updateComment")
     public IssueCommentE update(IssueCommentE issueCommentE, String[] fieldList) {
         IssueCommentDO issueCommentDO = ConvertHelper.convert(issueCommentE, IssueCommentDO.class);
         if (iIssueCommentService.updateOptional(issueCommentDO, fieldList) != 1) {
@@ -40,6 +42,7 @@ public class IssueCommentRepositoryImpl implements IssueCommentRepository {
     }
 
     @Override
+    @DataLog(type = "createComment")
     public IssueCommentE create(IssueCommentE issueCommentE) {
         IssueCommentDO issueCommentDO = ConvertHelper.convert(issueCommentE, IssueCommentDO.class);
         if (issueCommentMapper.insert(issueCommentDO) != 1) {
@@ -49,10 +52,8 @@ public class IssueCommentRepositoryImpl implements IssueCommentRepository {
     }
 
     @Override
-    public int delete(Long projectId, Long id) {
-        IssueCommentDO issueCommentDO = new IssueCommentDO();
-        issueCommentDO.setProjectId(projectId);
-        issueCommentDO.setCommentId(id);
+    @DataLog(type = "deleteComment")
+    public int delete(IssueCommentDO issueCommentDO) {
         int isDelete = issueCommentMapper.delete(issueCommentDO);
         if (isDelete != 1) {
             throw new CommonException(DELETE_ERROR);

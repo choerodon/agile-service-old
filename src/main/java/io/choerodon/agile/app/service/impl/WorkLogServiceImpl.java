@@ -2,18 +2,13 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.WorkLogDTO;
 import io.choerodon.agile.app.service.WorkLogService;
-import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.WorkLogE;
-import io.choerodon.agile.domain.agile.repository.DataLogRepository;
 import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.domain.agile.repository.WorkLogRepository;
-import io.choerodon.agile.infra.dataobject.DataLogDO;
-import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.dataobject.WorkLogDO;
-import io.choerodon.agile.infra.mapper.DataLogMapper;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.WorkLogMapper;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -40,9 +35,7 @@ public class WorkLogServiceImpl implements WorkLogService {
     private static final String NO_SET_PREDICTION_TIME = "no_set_prediction_time";
     private static final String SET_TO = "set_to";
     private static final String REDUCE = "reduce";
-    private static final String FIELD_TIMEESTIMATE = "timeestimate";
-    private static final String FIELD_TIMESPENT = "timespent";
-    private static final String FIELD_WORKLOGID = "WorklogId";
+    private static final String REMAINING_TIME_FIELD = "remainingTime";
 
     @Autowired
     private WorkLogRepository workLogRepository;
@@ -59,17 +52,10 @@ public class WorkLogServiceImpl implements WorkLogService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private DataLogRepository dataLogRepository;
-
-    @Autowired
-    private DataLogMapper dataLogMapper;
-
-
     private void setTo(Long issueId, BigDecimal predictionTime) {
         IssueE issueE = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueE.class);
         issueE.setRemainingTime(predictionTime);
-        issueRepository.updateSelective(issueE);
+        issueRepository.update(issueE,new String[]{REMAINING_TIME_FIELD});
     }
 
     private BigDecimal getRemainTime(IssueE issueE, BigDecimal theTime) {
@@ -81,7 +67,7 @@ public class WorkLogServiceImpl implements WorkLogService {
         IssueE issueE = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueE.class);
         if (issueE.getRemainingTime() != null) {
             issueE.setRemainingTime(getRemainTime(issueE, predictionTime));
-            issueRepository.updateSelective(issueE);
+            issueRepository.update(issueE,new String[]{REMAINING_TIME_FIELD});
         }
     }
 
@@ -89,58 +75,8 @@ public class WorkLogServiceImpl implements WorkLogService {
         IssueE issueE = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueE.class);
         if (issueE.getRemainingTime() != null) {
             issueE.setRemainingTime(getRemainTime(issueE, workTime));
-            issueRepository.updateSelective(issueE);
+            issueRepository.update(issueE,new String[]{REMAINING_TIME_FIELD});
         }
-    }
-
-    private void dataLogWorkLog(Long projectId, WorkLogDTO workLogDTO, IssueDO originIssueDO, IssueDO issueDO, WorkLogE workLogE) {
-        DataLogE timeestimateLog = new DataLogE();
-        timeestimateLog.setProjectId(projectId);
-        timeestimateLog.setIssueId(workLogDTO.getIssueId());
-        timeestimateLog.setField(FIELD_TIMEESTIMATE);
-        BigDecimal zero = new BigDecimal(0);
-        if (originIssueDO.getRemainingTime() != null && originIssueDO.getRemainingTime().compareTo(zero) > 0) {
-            timeestimateLog.setOldValue(originIssueDO.getRemainingTime().toString());
-            timeestimateLog.setOldString(originIssueDO.getRemainingTime().toString());
-            timeestimateLog.setNewValue(issueDO.getRemainingTime().toString());
-            timeestimateLog.setNewString(issueDO.getRemainingTime().toString());
-            dataLogRepository.create(timeestimateLog);
-        } else {
-            timeestimateLog.setNewValue(zero.toString());
-            timeestimateLog.setNewString(zero.toString());
-            List<DataLogDO> data = dataLogMapper.select(ConvertHelper.convert(timeestimateLog, DataLogDO.class));
-            if (data == null || data.isEmpty()) {
-                dataLogRepository.create(timeestimateLog);
-            }
-        }
-
-        DataLogDO dataLogDO = dataLogMapper.selectLastWorkLogById(projectId, workLogDTO.getIssueId(), FIELD_TIMESPENT);
-        DataLogE timeSpentLog = new DataLogE();
-        if (dataLogDO != null) {
-            timeSpentLog.setProjectId(projectId);
-            timeSpentLog.setIssueId(workLogDTO.getIssueId());
-            timeSpentLog.setField(FIELD_TIMESPENT);
-            timeSpentLog.setOldValue(dataLogDO.getNewValue());
-            timeSpentLog.setOldString(dataLogDO.getNewString());
-            BigDecimal newValue = new BigDecimal(dataLogDO.getNewValue());
-            timeSpentLog.setNewValue(newValue.add(workLogDTO.getWorkTime()).toString());
-            timeSpentLog.setNewString(newValue.add(workLogDTO.getWorkTime()).toString());
-        } else {
-            timeSpentLog.setProjectId(projectId);
-            timeSpentLog.setIssueId(workLogDTO.getIssueId());
-            timeSpentLog.setField(FIELD_TIMESPENT);
-            timeSpentLog.setNewValue(workLogDTO.getWorkTime().toString());
-            timeSpentLog.setNewString(workLogDTO.getWorkTime().toString());
-        }
-        dataLogRepository.create(timeSpentLog);
-
-        DataLogE workLogIdE = new DataLogE();
-        workLogIdE.setProjectId(projectId);
-        workLogIdE.setField(FIELD_WORKLOGID);
-        workLogIdE.setIssueId(workLogDTO.getIssueId());
-        workLogIdE.setOldValue(workLogE.getLogId().toString());
-        workLogIdE.setOldString(workLogE.getLogId().toString());
-        dataLogRepository.create(workLogIdE);
     }
 
     @Override
@@ -148,7 +84,6 @@ public class WorkLogServiceImpl implements WorkLogService {
         if (!projectId.equals(workLogDTO.getProjectId())) {
             throw new CommonException("error.projectId.notEqual");
         }
-        IssueDO originIssueDO = issueMapper.selectByPrimaryKey(workLogDTO.getIssueId());
         if (workLogDTO.getResidualPrediction() != null) {
             switch (workLogDTO.getResidualPrediction()) {
                 case SELF_ADJUSTMENT:
@@ -168,7 +103,6 @@ public class WorkLogServiceImpl implements WorkLogService {
         }
         WorkLogE workLogE = ConvertHelper.convert(workLogDTO, WorkLogE.class);
         workLogE = workLogRepository.create(workLogE);
-        dataLogWorkLog(projectId, workLogDTO, originIssueDO, issueMapper.selectByPrimaryKey(workLogDTO.getIssueId()), workLogE);
         return queryWorkLogById(workLogE.getProjectId(), workLogE.getLogId());
     }
 

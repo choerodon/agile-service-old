@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.repository.LabelIssueRelRepository;
+import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.LabelIssueRelE;
@@ -21,22 +22,13 @@ import java.util.List;
 @Component
 public class LabelIssueRelRepositoryImpl implements LabelIssueRelRepository {
 
-    private static final String UPDATE_ERROR = "error.LabelIssue.update";
     private static final String INSERT_ERROR = "error.LabelIssue.insert";
 
     @Autowired
     private LabelIssueRelMapper labelIssueRelMapper;
 
     @Override
-    public LabelIssueRelE update(LabelIssueRelE labelIssueRelE) {
-        LabelIssueRelDO labelIssueRelDO = ConvertHelper.convert(labelIssueRelE, LabelIssueRelDO.class);
-        if (labelIssueRelMapper.updateByPrimaryKeySelective(labelIssueRelDO) != 1) {
-            throw new CommonException(UPDATE_ERROR);
-        }
-        return ConvertHelper.convert(labelIssueRelMapper.selectByPrimaryKey(labelIssueRelDO.getIssueId()), LabelIssueRelE.class);
-    }
-
-    @Override
+    @DataLog(type = "labelCreate")
     public List<LabelIssueRelE> create(LabelIssueRelE labelIssueRelE) {
         LabelIssueRelDO labelIssueRelDO = ConvertHelper.convert(labelIssueRelE, LabelIssueRelDO.class);
         if (labelIssueRelMapper.insert(labelIssueRelDO) != 1) {
@@ -52,6 +44,20 @@ public class LabelIssueRelRepositoryImpl implements LabelIssueRelRepository {
         LabelIssueRelDO labelIssueDO1 = new LabelIssueRelDO();
         labelIssueDO1.setIssueId(issueId);
         return labelIssueRelMapper.delete(labelIssueDO1);
+    }
+
+    @Override
+    @DataLog(type = "batchDeleteLabel", single = false)
+    public int batchDeleteByIssueId(Long issueId) {
+        LabelIssueRelDO delete = new LabelIssueRelDO();
+        delete.setIssueId(issueId);
+        return labelIssueRelMapper.delete(delete);
+    }
+
+    @Override
+    @DataLog(type = "labelDelete")
+    public int delete(LabelIssueRelDO labelIssueRelDO) {
+        return labelIssueRelMapper.delete(labelIssueRelDO);
     }
 
 }

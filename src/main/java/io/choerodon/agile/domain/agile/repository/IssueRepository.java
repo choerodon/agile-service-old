@@ -1,6 +1,8 @@
 package io.choerodon.agile.domain.agile.repository;
 
+import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.infra.dataobject.MoveIssueDO;
 
 import java.util.Date;
@@ -41,11 +43,9 @@ public interface IssueRepository {
      */
     int delete(Long projectId, Long issueId);
 
-    Boolean removeFromSprint(Long projectId, Long sprintId);
+    Boolean batchRemoveFromSprint(Long projectId, Long sprintId);
 
-    IssueE updateSelective(IssueE issueE);
-
-    Boolean batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds, Date date, Long userId);
+    Boolean batchIssueToVersion(VersionIssueRelE versionIssueRelE);
 
     Boolean batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds);
 
@@ -64,9 +64,7 @@ public interface IssueRepository {
 
     int batchUpdateIssueRank(Long projectId, List<MoveIssueDO> moveIssueDOS);
 
-    int removeIssueFromSprintByIssueIds(Long projectId, List<Long> issueIds);
-
-    int issueToSprint(Long projectId, Long sprintId, Long issueId, Date date, Long userId);
+    int removeIssueFromSprintByIssueIds(BatchRemoveSprintE batchRemoveSprintE);
 
     int deleteIssueFromSprintByIssueId(Long projectId, Long issueId);
 }

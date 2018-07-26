@@ -1,6 +1,7 @@
 package io.choerodon.agile.domain.agile.repository;
 
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
+import io.choerodon.agile.infra.dataobject.VersionIssueRelDO;
 
 import java.util.List;
 
@@ -38,12 +39,10 @@ public interface VersionIssueRelRepository {
     /**
      * 通过查询条件批量删除issue版本关联（不包含已归档的版本）
      *
-     * @param projectId   projectId
-     * @param issueId     issueId
-     * @param versionType versionType
+     * @param versionIssueRelE   versionIssueRelE
      * @return int
      */
-    int batchDeleteByIssueIdAndType(Long projectId, Long issueId, String versionType);
+    int batchDeleteByIssueIdAndType(VersionIssueRelE versionIssueRelE);
 
     /**
      * 根据id删除
@@ -57,4 +56,11 @@ public interface VersionIssueRelRepository {
     Boolean deleteIncompleteIssueByVersionId(Long projectId, Long versionId);
 
     int deleteByVersionIds(Long projectId, List<Long> versionIds);
+
+    /**
+     * 根据查询条件删除版本关联
+     * @param versionIssueRelDO versionIssueRelDO
+     * @return int
+     */
+    int delete(VersionIssueRelDO versionIssueRelDO);
 }

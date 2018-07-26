@@ -192,4 +192,12 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                                      @Param("timeSlot") Integer timeSlot);
 
     List<Long> queryInVersionIssueIds(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("issueIds") List<Long> issueIds);
+
+    /**
+     * 查询issue和issue没有关闭的冲刺
+     *
+     * @param issueId issueId
+     * @return IssueDO
+     */
+    IssueDO queryIssueWithNoCloseSprint(@Param("issueId")Long issueId);
 }

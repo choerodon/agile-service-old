@@ -7,8 +7,6 @@ public class MoveIssueDO {
     private Long issueId;
     private String rank;
 
-    public MoveIssueDO(){}
-
     public MoveIssueDO(Long issueId, String rank) {
         this.issueId = issueId;
         this.rank = rank;
@@ -29,4 +27,5 @@ public class MoveIssueDO {
     public void setRank(String rank) {
         this.rank = rank;
     }
+
 }

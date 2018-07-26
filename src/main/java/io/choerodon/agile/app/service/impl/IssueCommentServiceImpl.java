@@ -6,9 +6,7 @@ import io.choerodon.agile.api.dto.IssueCommentDTO;
 import io.choerodon.agile.api.dto.IssueCommentUpdateDTO;
 import io.choerodon.agile.app.assembler.IssueCommentAssembler;
 import io.choerodon.agile.app.service.IssueCommentService;
-import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.domain.agile.entity.IssueCommentE;
-import io.choerodon.agile.domain.agile.repository.DataLogRepository;
 import io.choerodon.agile.domain.agile.repository.IssueCommentRepository;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.IssueCommentDO;
@@ -33,16 +31,12 @@ import java.util.List;
 @Transactional(rollbackFor = Exception.class)
 public class IssueCommentServiceImpl implements IssueCommentService {
 
-    private static final String FIELD_COMMENT = "Comment";
-
     @Autowired
     private IssueCommentRepository issueCommentRepository;
     @Autowired
     private IssueCommentAssembler issueCommentAssembler;
     @Autowired
     private IssueCommentMapper issueCommentMapper;
-    @Autowired
-    private DataLogRepository dataLogRepository;
     @Autowired
     private UserRepository userRepository;
 
@@ -56,11 +50,12 @@ public class IssueCommentServiceImpl implements IssueCommentService {
     }
 
     @Override
-    public IssueCommentDTO updateIssueComment(IssueCommentUpdateDTO issueCommentUpdateDTO, List<String> fieldList) {
+    public IssueCommentDTO updateIssueComment(IssueCommentUpdateDTO issueCommentUpdateDTO, List<String> fieldList, Long projectId) {
         if (fieldList != null && !fieldList.isEmpty()) {
-            IssueCommentE issueCommentE = issueCommentRepository.update(issueCommentAssembler.
-                    issueCommentUpdateDtoToEntity(issueCommentUpdateDTO), fieldList.toArray(new String[fieldList.size()]));
-            return queryByProjectIdAndCommentId(issueCommentE.getProjectId(), issueCommentE.getCommentId());
+            IssueCommentE issueCommentE = issueCommentAssembler.
+                    issueCommentUpdateDtoToEntity(issueCommentUpdateDTO);
+            issueCommentRepository.update(issueCommentE, fieldList.toArray(new String[fieldList.size()]));
+            return queryByProjectIdAndCommentId(projectId, issueCommentE.getCommentId());
         } else {
             return null;
         }
@@ -71,17 +66,11 @@ public class IssueCommentServiceImpl implements IssueCommentService {
         return ConvertHelper.convertList(issueCommentMapper.queryIssueCommentList(projectId, issueId), IssueCommentDTO.class);
     }
 
-    private void dataLogComment(Long projectId, IssueCommentDO originIssueComment) {
-        DataLogE dataLogE = new DataLogE();
-        dataLogE.setProjectId(projectId);
-        dataLogE.setIssueId(originIssueComment.getIssueId());
-        dataLogE.setField(FIELD_COMMENT);
-        dataLogE.setOldValue(originIssueComment.getCommentText());
-        dataLogRepository.create(dataLogE);
-    }
-
-    private IssueCommentDO getCommentById(Long commentId) {
-        IssueCommentDO issueCommentDO = issueCommentMapper.selectByPrimaryKey(commentId);
+    private IssueCommentDO getCommentById(Long projectId, Long commentId) {
+        IssueCommentDO issueCommentDO = new IssueCommentDO();
+        issueCommentDO.setProjectId(projectId);
+        issueCommentDO.setCommentId(commentId);
+        issueCommentDO = issueCommentMapper.selectOne(issueCommentDO);
         if (issueCommentDO == null) {
             throw new CommonException("error.comment.get");
         }
@@ -90,10 +79,8 @@ public class IssueCommentServiceImpl implements IssueCommentService {
 
     @Override
     public int deleteIssueComment(Long projectId, Long commentId) {
-        IssueCommentDO originIssueComment = getCommentById(commentId);
-        int result = issueCommentRepository.delete(projectId, commentId);
-        dataLogComment(projectId, originIssueComment);
-        return result;
+        IssueCommentDO issueCommentDO = getCommentById(projectId, commentId);
+        return issueCommentRepository.delete(issueCommentDO);
     }
 
     @Override

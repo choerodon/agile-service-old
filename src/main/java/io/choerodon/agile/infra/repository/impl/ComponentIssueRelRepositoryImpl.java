@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
@@ -25,6 +26,7 @@ public class ComponentIssueRelRepositoryImpl implements ComponentIssueRelReposit
     private ComponentIssueRelMapper componentIssueRelMapper;
 
     @Override
+    @DataLog(type = "componentCreate")
     public List<ComponentIssueRelE> create(ComponentIssueRelE componentIssueRelE) {
         ComponentIssueRelDO componentIssueRelDO = ConvertHelper.convert(componentIssueRelE, ComponentIssueRelDO.class);
         if (componentIssueRelMapper.insert(componentIssueRelDO) != 1) {
@@ -36,9 +38,14 @@ public class ComponentIssueRelRepositoryImpl implements ComponentIssueRelReposit
     }
 
     @Override
-    public int deleteByIssueId(Long issueId) {
-        ComponentIssueRelDO componentIssueRelDO = new ComponentIssueRelDO();
-        componentIssueRelDO.setIssueId(issueId);
+    @DataLog(type = "batchComponentDelete",single = false)
+    public int batchComponentDelete(Long issueId) {
+        return deleteComponentIssueRel(issueId);
+    }
+
+    @Override
+    @DataLog(type = "componentDelete")
+    public int delete(ComponentIssueRelDO componentIssueRelDO) {
         return componentIssueRelMapper.delete(componentIssueRelDO);
     }
 
@@ -52,5 +59,16 @@ public class ComponentIssueRelRepositoryImpl implements ComponentIssueRelReposit
             throw new CommonException("error.componentIssueRel.delete");
         }
 
+    }
+
+    @Override
+    public int deleteByIssueId(Long issueId) {
+        return deleteComponentIssueRel(issueId);
+    }
+
+    private int deleteComponentIssueRel(Long issueId){
+        ComponentIssueRelDO componentIssueRelDO = new ComponentIssueRelDO();
+        componentIssueRelDO.setIssueId(issueId);
+        return componentIssueRelMapper.delete(componentIssueRelDO);
     }
 }

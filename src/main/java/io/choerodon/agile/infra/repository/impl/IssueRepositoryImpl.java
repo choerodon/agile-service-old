@@ -1,6 +1,9 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
+import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.domain.service.IIssueService;
+import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.MoveIssueDO;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -35,6 +38,7 @@ public class IssueRepositoryImpl implements IssueRepository {
     private IIssueService iIssueService;
 
     @Override
+    @DataLog(type = "issue")
     public IssueE update(IssueE issueE, String[] fieldList) {
         IssueDO issueDO = ConvertHelper.convert(issueE, IssueDO.class);
         if (iIssueService.updateOptional(issueDO, fieldList) != 1) {
@@ -44,6 +48,7 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
+    @DataLog(type = "issueCreate")
     public IssueE create(IssueE issueE) {
         IssueDO issueDO = ConvertHelper.convert(issueE, IssueDO.class);
         if (issueMapper.insert(issueDO) != 1) {
@@ -66,33 +71,28 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public Boolean removeFromSprint(Long projectId, Long sprintId) {
+    @DataLog(type = "batchRemoveSprintBySprintId",single = false)
+    public Boolean batchRemoveFromSprint(Long projectId, Long sprintId) {
         issueMapper.removeFromSprint(projectId, sprintId);
         return true;
     }
 
     @Override
-    public IssueE updateSelective(IssueE issueE) {
-        IssueDO issueDO = ConvertHelper.convert(issueE, IssueDO.class);
-        if (issueMapper.updateByPrimaryKeySelective(issueDO) != 1) {
-            throw new CommonException("error.issue.update");
-        }
-        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDO.getIssueId()), IssueE.class);
-    }
-
-    @Override
-    public Boolean batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds, Date date, Long userId) {
-        issueMapper.batchIssueToVersion(projectId, versionId, issueIds, date, userId);
+    @DataLog(type = "batchToVersion", single = false)
+    public Boolean batchIssueToVersion(VersionIssueRelE versionIssueRelE) {
+        issueMapper.batchIssueToVersion(versionIssueRelE.getProjectId(), versionIssueRelE.getVersionId(), versionIssueRelE.getIssueIds(), versionIssueRelE.getCreationDate(), versionIssueRelE.getCreatedBy());
         return true;
     }
 
     @Override
+    @DataLog(type = "batchToEpic", single = false)
     public Boolean batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds) {
         issueMapper.batchIssueToEpic(projectId, epicId, issueIds);
         return true;
     }
 
     @Override
+    @DataLog(type = "batchRemoveVersion", single = false)
     public int batchRemoveVersion(Long projectId, List<Long> issueIds) {
         return issueMapper.batchRemoveFromVersion(projectId, issueIds);
     }
@@ -113,13 +113,9 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public int removeIssueFromSprintByIssueIds(Long projectId, List<Long> issueIds) {
-        return issueMapper.removeIssueFromSprintByIssueIds(projectId, issueIds);
-    }
-
-    @Override
-    public int issueToSprint(Long projectId, Long sprintId, Long issueId, Date date, Long userId) {
-        return issueMapper.issueToSprint(projectId, sprintId, issueId, date, userId);
+    @DataLog(type = "batchRemoveSprint", single = false)
+    public int removeIssueFromSprintByIssueIds(BatchRemoveSprintE batchRemoveSprintE) {
+        return issueMapper.removeIssueFromSprintByIssueIds(batchRemoveSprintE.getProjectId(), batchRemoveSprintE.getIssueIds());
     }
 
     @Override

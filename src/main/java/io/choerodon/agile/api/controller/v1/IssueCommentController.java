@@ -59,7 +59,7 @@ public class IssueCommentController {
         issueCommentRule.verifyUpdateData(projectId, issueCommentUpdate);
         IssueCommentUpdateDTO issueCommentUpdateDTO = new IssueCommentUpdateDTO();
         List<String> stringList = verifyUpdateUtil.verifyUpdateData(issueCommentUpdate, issueCommentUpdateDTO);
-        return Optional.ofNullable(issueCommentService.updateIssueComment(issueCommentUpdateDTO, stringList))
+        return Optional.ofNullable(issueCommentService.updateIssueComment(issueCommentUpdateDTO, stringList,projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.IssueComment.updateIssueComment"));
     }

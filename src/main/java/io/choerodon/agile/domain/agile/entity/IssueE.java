@@ -63,6 +63,16 @@ public class IssueE {
 
     private String epicName;
 
+    private Long originSprintId;
+
+    public Long getOriginSprintId() {
+        return originSprintId;
+    }
+
+    public void setOriginSprintId(Long originSprintId) {
+        this.originSprintId = originSprintId;
+    }
+
     public Long getIssueId() {
         return issueId;
     }
