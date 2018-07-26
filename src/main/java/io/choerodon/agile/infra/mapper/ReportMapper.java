@@ -318,4 +318,18 @@ public interface ReportMapper {
     Integer queryUnEstimateCount(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("field") String field);
 
     Integer queryCompletedIssueCount(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
+    List<VelocitySprintDO> selectRecentSprint(@Param("projectId") Long projectId);
+
+    List<VelocitySprintDO> selectByIssueCountCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+
+    List<VelocitySprintDO> selectByIssueCountCompleted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+
+    List<VelocitySprintDO> selectByStoryPointCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+
+    List<VelocitySprintDO> selectByStoryPointCompleted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+
+    List<VelocitySprintDO> selectByRemainTimeCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+
+    List<VelocitySprintDO> selectByRemainTimeCompleted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
 }

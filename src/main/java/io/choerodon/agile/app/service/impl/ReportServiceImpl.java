@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.assembler.ReportAssembler;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -770,6 +772,66 @@ public class ReportServiceImpl implements ReportService {
             cumulativeFlowDiagramDTO.setCoordinateDTOList(getCumulativeFlowDiagramDuringDate(cumulativeFlowDiagramDTO, cumulativeFlowFilterDTO));
         });
         return cumulativeFlowDiagramDTOList.stream().filter(cumulativeFlowDiagramDTO -> cumulativeFlowFilterDTO.getColumnIds().contains(cumulativeFlowDiagramDTO.getColumnId())).collect(Collectors.toList());
+    }
+
+    private String getNowTime() {
+        Date d = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(d);
+    }
+
+    private List<VelocitySprintDO> dealResult(List<VelocitySprintDO> committedList, List<VelocitySprintDO> completedList, List<VelocitySprintDO> sprintDOList, List<VelocitySprintDO> result) {
+        for (VelocitySprintDO temp : sprintDOList) {
+            for (VelocitySprintDO committed : committedList) {
+                if (temp.getSprintId().equals(committed.getSprintId())) {
+                    temp.setCommittedIssueCount(committed.getIssueCount());
+                    temp.setCommittedStoryPoints(committed.getStoryPoints());
+                    temp.setCommittedRemainTime(committed.getRemainTime());
+                    break;
+                }
+            }
+            for (VelocitySprintDO completed : completedList) {
+                if (temp.getSprintId().equals(completed.getSprintId())) {
+                    temp.setCompletedIssueCount(completed.getIssueCount());
+                    temp.setCommittedStoryPoints(completed.getStoryPoints());
+                    temp.setCompletedRemainTime(completed.getRemainTime());
+                    break;
+                }
+            }
+            result.add(temp);
+        }
+        return result;
+    }
+
+    @Override
+    public List<VelocitySprintDTO> queryVelocityChart(Long projectId, String type) {
+        List<VelocitySprintDO> sprintDOList = reportMapper.selectRecentSprint(projectId);
+        List<Long> ids = new ArrayList<>();
+        for (VelocitySprintDO velocitySprintDO : sprintDOList) {
+            ids.add(velocitySprintDO.getSprintId());
+        }
+        String now = getNowTime();
+        List<VelocitySprintDO> result = new ArrayList<>();
+        switch (type) {
+            case "issue_count":
+                List<VelocitySprintDO> issueCountCommitted = reportMapper.selectByIssueCountCommitted(projectId, ids, now);
+                List<VelocitySprintDO> issueCountCompleted = reportMapper.selectByIssueCountCompleted(projectId, ids, now);
+                dealResult(issueCountCommitted, issueCountCompleted, sprintDOList, result);
+                break;
+            case "story_point":
+                List<VelocitySprintDO> storyPointCommitted = reportMapper.selectByStoryPointCommitted(projectId, ids, now);
+                List<VelocitySprintDO> storyPointCompleted = reportMapper.selectByStoryPointCompleted(projectId, ids, now);
+                dealResult(storyPointCommitted, storyPointCompleted, sprintDOList, result);
+                break;
+            case "remain_time":
+                List<VelocitySprintDO> remainTimeCommitted = reportMapper.selectByRemainTimeCommitted(projectId, ids, now);
+                List<VelocitySprintDO> remainTimecompleted = reportMapper.selectByRemainTimeCompleted(projectId, ids, now);
+                dealResult(remainTimeCommitted, remainTimecompleted, sprintDOList, result);
+                break;
+            default:
+                break;
+        }
+        return ConvertHelper.convertList(result, VelocitySprintDTO.class);
     }
 }
 

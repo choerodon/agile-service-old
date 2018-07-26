@@ -1,10 +1,8 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO;
-import io.choerodon.agile.api.dto.CumulativeFlowFilterDTO;
-import io.choerodon.agile.api.dto.IssueListDTO;
-import io.choerodon.agile.api.dto.ReportIssueDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.ReportService;
+import io.choerodon.agile.infra.dataobject.VelocitySprintDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
@@ -98,6 +96,18 @@ public class ReportController {
         return Optional.ofNullable(reportService.queryVersionLineChart(projectId, versionId, type))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(VERSION_LINE_CHART_ERROR));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation(value = "速度图")
+    @GetMapping(value = "/velocity_chart")
+    public ResponseEntity<List<VelocitySprintDTO>> queryVelocityChart(@ApiParam(value = "项目id", required = true)
+                                                                  @PathVariable(name = "project_id") Long projectId,
+                                                                      @ApiParam(value = "统计类型", required = true)
+                                                                  @RequestParam String type) {
+        return Optional.ofNullable(reportService.queryVelocityChart(projectId, type))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.velocityChart.get"));
     }
 
 }
