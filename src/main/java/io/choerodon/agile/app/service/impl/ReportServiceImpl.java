@@ -793,7 +793,7 @@ public class ReportServiceImpl implements ReportService {
             for (VelocitySprintDO completed : completedList) {
                 if (temp.getSprintId().equals(completed.getSprintId())) {
                     temp.setCompletedIssueCount(completed.getIssueCount());
-                    temp.setCommittedStoryPoints(completed.getStoryPoints());
+                    temp.setCompletedStoryPoints(completed.getStoryPoints());
                     temp.setCompletedRemainTime(completed.getRemainTime());
                     break;
                 }
