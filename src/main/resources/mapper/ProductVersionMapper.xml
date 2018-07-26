@@ -31,6 +31,7 @@
         apv.release_date, apv.status_code,
         apv.project_id,
         apv.object_version_number,
+        apv.sequence,
         alv. NAME AS STATUS
         FROM
         agile_product_version apv
@@ -40,7 +41,10 @@
                  open="(" close=")" separator=",">
             #{versionId}
         </foreach>
-        ORDER BY apv.version_id DESC
+        order by field(apv.version_id,
+        <foreach collection="versionIds" item="versionId" index="index" separator=",">
+            #{versionId}
+        </foreach>)
     </select>
 
     <select id="isRepeatName" resultType="java.lang.Boolean">
@@ -57,10 +61,14 @@
 
     <select id="queryVersionByprojectId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDataDO">
         SELECT
-            version_id,       name,
-            description,      start_date,
-            release_date,     status_code,
-            project_id,       object_version_number
+            version_id,
+            name,
+            description,
+            start_date,
+            release_date,
+            status_code,
+            project_id,
+            object_version_number
         FROM agile_product_version
         WHERE project_id = #{projectId} AND status_code = 'version_planning'
     </select>
@@ -153,30 +161,30 @@
             apv.project_id,
             (
                 SELECT COUNT(1)
-                FROM agile_version_issue_rel avir , agile_issue ai
+                FROM agile_version_issue_rel avir, agile_issue ai
                 WHERE avir.version_id = #{versionId} AND avir.relation_type = 'fix' AND ai.issue_id = avir.issue_id
-                AND ai.type_code != 'issue_test'
-            ) AS issue_count,
+                      AND ai.type_code != 'issue_test'
+            )        AS issue_count,
             (
                 SELECT COUNT(1)
                 FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
                 WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix'
-                AND ai.status_id = ais.id AND ais.category_code = 'done' AND ai.type_code != 'issue_test'
-            ) AS done_issue_count,
+                      AND ai.status_id = ais.id AND ais.category_code = 'done' AND ai.type_code != 'issue_test'
+            )        AS done_issue_count,
             (
                 SELECT COUNT(1)
                 FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
                 WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix'
-                AND ai.status_id = ais.id AND ais.category_code = 'doing' AND ai.type_code != 'issue_test'
-            ) AS doing_issue_count,
+                      AND ai.status_id = ais.id AND ais.category_code = 'doing' AND ai.type_code != 'issue_test'
+            )        AS doing_issue_count,
             (
                 SELECT COUNT(1)
                 FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
                 WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix'
-                AND ai.status_id = ais.id AND ais.category_code = 'todo' AND ai.type_code != 'issue_test'
-            ) AS todo_issue_count
+                      AND ai.status_id = ais.id AND ais.category_code = 'todo' AND ai.type_code != 'issue_test'
+            )        AS todo_issue_count
         FROM agile_product_version apv
-              LEFT JOIN agile_lookup_value alv ON alv.value_code = apv.status_code
+            LEFT JOIN agile_lookup_value alv ON alv.value_code = apv.status_code
         WHERE apv.project_id = #{projectId} AND apv.version_id = #{versionId}
     </select>
 
@@ -207,24 +215,29 @@
     </select>
 
     <select id="queryIssueCountByVersionId" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
-        SELECT  ais.id AS id, ais.name AS name, COUNT(1) AS issueCount
+        SELECT
+            ais.id   AS id,
+            ais.name AS name,
+            COUNT(1) AS issueCount
         FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
         WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix'
               AND ai.status_id = ais.id AND ai.project_id = #{projectId} AND ais.category_code = #{categoryCode}
               AND ai.type_code != 'issue_test'
-              GROUP BY ais.id
+        GROUP BY ais.id
     </select>
 
     <select id="queryNotDoneIssueCount" resultType="java.lang.Integer">
         SELECT COUNT(1)
         FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
         WHERE avir.version_id = #{versionId} AND ai.project_id = #{projectId}
-               AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix' AND ai.status_id = ais.id
-               AND ais.category_code != 'done'
+              AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix' AND ai.status_id = ais.id
+              AND ais.category_code != 'done'
     </select>
 
     <select id="queryPlanVersionNames" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
-        SELECT version_id, name
+        SELECT
+            version_id,
+            name
         FROM agile_product_version
         WHERE project_id = #{projectId} AND version_id != #{versionId}
               AND status_code = 'version_planning'
@@ -232,43 +245,49 @@
 
     <insert id="issueToDestination">
         INSERT IGNORE INTO agile_version_issue_rel
-        (version_id, issue_id, project_id, relation_type, creation_date, last_update_date, created_by, last_updated_by) values
+        (version_id, issue_id, project_id, relation_type, creation_date, last_update_date, created_by, last_updated_by)
+        values
         <foreach collection="versionIssues" item="versionIssue" index="index"
                  separator=",">
-            (#{targetVersionId}, #{versionIssue.issueId}, #{projectId}, #{versionIssue.relationType}, #{date}, #{date}, #{userId}, #{userId})
+            (#{targetVersionId}, #{versionIssue.issueId}, #{projectId}, #{versionIssue.relationType}, #{date}, #{date},
+            #{userId}, #{userId})
         </foreach>
     </insert>
 
     <select id="queryIncompleteIssues" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
-        SELECT ai.issue_id, avir.relation_type
+        SELECT
+            ai.issue_id,
+            avir.relation_type
         FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
         WHERE avir.version_id = #{versionId} AND ai.project_id = #{projectId}
-               AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix' AND ai.status_id = ais.id
-               AND ais.category_code != 'done'
+              AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix' AND ai.status_id = ais.id
+              AND ais.category_code != 'done'
     </select>
 
     <select id="queryIssuesByRelationType" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
-        SELECT ai.issue_id, avir.relation_type
+        SELECT
+            ai.issue_id,
+            avir.relation_type
         FROM agile_version_issue_rel avir, agile_issue ai
         WHERE avir.version_id = #{versionId} AND ai.project_id = #{projectId} AND avir.relation_type = #{relationType}
-        AND avir.issue_id = ai.issue_id
+              AND avir.issue_id = ai.issue_id
     </select>
 
     <select id="queryIssueByVersionIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
         SELECT DISTINCT(ai.issue_id), avir.relation_type
         FROM agile_version_issue_rel avir, agile_issue ai
         WHERE ai.project_id = #{projectId} AND avir.issue_id = ai.issue_id
-               AND avir.relation_type = 'fix'
-               AND avir.version_id IN
-               <foreach collection="versionIds" item="versionId" index="index"
-                        open="(" close=")" separator=",">
-                   #{versionId}
-               </foreach>
-               AND ai.issue_id NOT IN
-               ( SELECT issue_id
-                 FROM agile_version_issue_rel
-                 WHERE project_id = #{projectId} AND version_id = #{targetVersionId}
-               )
+        AND avir.relation_type = 'fix'
+        AND avir.version_id IN
+        <foreach collection="versionIds" item="versionId" index="index"
+                 open="(" close=")" separator=",">
+            #{versionId}
+        </foreach>
+        AND ai.issue_id NOT IN
+        ( SELECT issue_id
+        FROM agile_version_issue_rel
+        WHERE project_id = #{projectId} AND version_id = #{targetVersionId}
+        )
     </select>
 
     <delete id="deleteByVersionIds">
@@ -283,9 +302,9 @@
 
     <update id="releaseVersion">
         UPDATE agile_product_version
-        SET status_code = 'released',
-             release_date = #{releaseDate},
-             old_status_code = 'version_planning'
+        SET status_code     = 'released',
+            release_date    = #{releaseDate},
+            old_status_code = 'version_planning'
         WHERE project_id = #{projectId} AND version_id = #{versionId}
     </update>
 
@@ -293,28 +312,30 @@
         SELECT COUNT(1)
         FROM agile_version_issue_rel avir, agile_issue ai
         WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = #{relationType}
-               AND ai.project_id = #{projectId}
+              AND ai.project_id = #{projectId}
     </select>
 
     <select id="queryVersionNames" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
-        SELECT version_id, name
+        SELECT
+            version_id,
+            name
         FROM agile_product_version
         WHERE project_id = #{projectId} AND version_id != #{versionId}
-               AND status_code != 'archived'
+              AND status_code != 'archived'
     </select>
 
     <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
         SELECT version_id, name, status_code
         FROM agile_product_version
         WHERE project_id = #{projectId}
-              <if test="statusCodes != null and statusCodes.size > 0">
-                  AND status_code IN
-                  <foreach collection="statusCodes" item="statusCode"
-                         open="(" close=")" separator=",">
-                     #{statusCode}
-                  </foreach>
-              </if>
-              ORDER BY version_id DESC
+        <if test="statusCodes != null and statusCodes.size > 0">
+            AND status_code IN
+            <foreach collection="statusCodes" item="statusCode"
+                     open="(" close=")" separator=",">
+                #{statusCode}
+            </foreach>
+        </if>
+        ORDER BY version_id DESC
     </select>
 
     <select id="listByProjectId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionCommonDO">
@@ -323,27 +344,26 @@
             alv.`name` AS status_name
         FROM
             agile_product_version apv
-        LEFT JOIN agile_lookup_value alv ON apv.status_code = alv.value_code
+            LEFT JOIN agile_lookup_value alv ON apv.status_code = alv.value_code
         WHERE
             apv.project_id = #{projectId}
     </select>
 
     <select id="selectVersionRelsByIssueId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDO">
         SELECT
-          avir.version_id AS version_id,
-          avir.issue_id AS issue_id,
-          apv.`name`,
-          avir.relation_type
+            avir.version_id AS version_id,
+            avir.issue_id   AS issue_id,
+            apv.`name`,
+            avir.relation_type
         FROM
             agile_version_issue_rel avir
-        LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
+            LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
         WHERE avir.project_id = #{projectId}
-        AND avir.issue_id = #{issueId}
+              AND avir.issue_id = #{issueId}
     </select>
 
     <select id="listIds" resultType="java.lang.Long">
-        SELECT
-            version_id
+        SELECT version_id
         FROM
             agile_product_version
         ORDER BY
@@ -352,16 +372,49 @@
 
     <select id="queryVersionRelByIssueIdAndType" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDO">
         SELECT
-        avir.version_id AS version_id,
-        avir.issue_id AS issue_id,
-        apv.`name`,
-        avir.relation_type
+            avir.version_id AS version_id,
+            avir.issue_id   AS issue_id,
+            apv.`name`,
+            avir.relation_type
         FROM
-        agile_version_issue_rel avir
-        LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
+            agile_version_issue_rel avir
+            LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
         WHERE avir.project_id = #{projectId}
-        AND avir.issue_id = #{issueId}
-        AND avir.relation_type = #{relationType}
+              AND avir.issue_id = #{issueId}
+              AND avir.relation_type = #{relationType}
+    </select>
+
+    <update id="batchUpdateSequence">
+        UPDATE agile_product_version
+        SET sequence = (sequence + 1)
+        WHERE sequence &gt;= #{sequence} AND project_id = #{projectId}
+    </update>
+
+    <select id="queryMaxSequenceByProject" resultType="java.lang.Integer">
+        SELECT apv.sequence
+        FROM
+            agile_product_version apv
+        WHERE apv.project_id = #{projectId}
+        ORDER BY sequence DESC
+        LIMIT 1;
+    </select>
+
+    <select id="queryMaxAfterSequence" resultType="java.lang.Integer">
+        SELECT apv.sequence
+        FROM
+            agile_product_version apv
+        WHERE apv.project_id = #{projectId} AND apv.sequence &lt; #{sequence}
+        ORDER BY sequence DESC
+        LIMIT 1;
+    </select>
+
+    <select id="queryMinBeforeSequence" resultType="java.lang.Integer">
+        SELECT apv.sequence
+        FROM
+        agile_product_version apv
+        WHERE apv.project_id = #{projectId} AND apv.sequence  &gt; #{sequence}
+        ORDER BY sequence ASC
+        LIMIT 1;
     </select>
 
 </mapper>

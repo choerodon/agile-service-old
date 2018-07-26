@@ -138,6 +138,22 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                             @Param("self") Boolean self,
                             @Param("content") String content);
 
+    /**
+     * 根据参数查询issue列表，不对外开放
+     *
+     * @param projectId projectId
+     * @param issueId   issueId
+     * @param issueNum  issueNum
+     * @param self      self
+     * @param content   content
+     * @return IssueNumDO
+     */
+    List<IssueNumDO> queryIssueByOptionForAgile(@Param("projectId") Long projectId,
+                                                @Param("issueId") Long issueId,
+                                                @Param("issueNum") String issueNum,
+                                                @Param("self") Boolean self,
+                                                @Param("content") String content);
+
     List<ExportIssuesDO> queryExportIssues(@Param("projectId") Long projectId,
                                            @Param("searchArgs") Map<String, Object> searchArgs,
                                            @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
@@ -199,5 +215,5 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @param issueId issueId
      * @return IssueDO
      */
-    IssueDO queryIssueWithNoCloseSprint(@Param("issueId")Long issueId);
+    IssueDO queryIssueWithNoCloseSprint(@Param("issueId") Long issueId);
 }

@@ -19,10 +19,19 @@ public class ProductVersionE {
     private String status;
     private Long projectId;
     private Long objectVersionNumber;
+    private Integer sequence;
 
     private static final String VERSION_DATE_ERROR = "error.versionDate.startAfterReleaseDate";
     private static final String VERSION_ARCHIVED_CODE = "archived";
     private static final String VERSION_STATUS_PLAN_CODE = "version_planning";
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
 
     public Long getVersionId() {
         return versionId;
@@ -124,4 +133,5 @@ public class ProductVersionE {
         this.oldStatusCode = this.statusCode;
         this.statusCode = VERSION_STATUS_PLAN_CODE;
     }
+
 }

@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
+import io.choerodon.agile.domain.agile.converter.ProductVersionConverter;
 import io.choerodon.agile.domain.agile.event.VersionPayload;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.infra.dataobject.IssueCountDO;
@@ -22,6 +23,7 @@ import io.choerodon.agile.infra.common.utils.SearchUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;
+import io.choerodon.mybatis.pagehelper.domain.Sort;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * Created by jian_zhang02@163.com on 2018/5/14.
@@ -59,6 +63,8 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private ProductVersionMapper productVersionMapper;
     @Autowired
     private EventProducerTemplate eventProducerTemplate;
+    @Autowired
+    private ProductVersionConverter productVersionConverter;
 
     private static final String SEARCH_ARGS = "searchArgs";
     public static final String ADVANCE_SEARCH_ARGS = "advancedSearchArgs";
@@ -88,6 +94,9 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         productVersionRule.judgeName(productVersionE.getProjectId(), productVersionE.getVersionId(), productVersionE.getName());
         //设置状态
         productVersionE.setStatusCode(VERSION_PLANNING);
+        //设置编号
+        Integer sequence = productVersionMapper.queryMaxSequenceByProject(projectId);
+        productVersionE.setSequence(sequence == null ? 0 : sequence + 1);
         ProductVersionDetailDTO result = new ProductVersionDetailDTO();
         VersionPayload versionPayload = new VersionPayload();
         Exception exception = eventProducerTemplate.execute("versionCreate", AGILE_SERVICE, versionPayload,
@@ -179,14 +188,14 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     }
 
     @Override
-    public List<ProductVersionDataDTO> queryVersionByprojectId(Long projectId) {
+    public List<ProductVersionDataDTO> queryVersionByProjectId(Long projectId) {
         List<ProductVersionDataDTO> productVersions = versionDataAssembler.doListToDTO(productVersionMapper.queryVersionByprojectId(projectId));
         if (!productVersions.isEmpty()) {
-            List<Long> productVersionIds = productVersions.stream().map(ProductVersionDataDTO::getVersionId).collect(Collectors.toList());
-            Map<Long, Integer> issueCountMap = productVersionMapper.queryIssueCount(projectId, productVersionIds, null).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-            Map<Long, Integer> doneIssueCountMap = productVersionMapper.queryIssueCount(projectId, productVersionIds, CATEGORY_DONE_CODE).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-            Map<Long, Integer> notEstimateMap = productVersionMapper.queryNotEstimate(projectId, productVersionIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-            Map<Long, Integer> totalEstimateMap = productVersionMapper.queryTotalEstimate(projectId, productVersionIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            List<Long> productVersionIds = productVersions.stream().map(ProductVersionDataDTO::getVersionId).collect(toList());
+            Map<Long, Integer> issueCountMap = productVersionMapper.queryIssueCount(projectId, productVersionIds, null).stream().collect(toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> doneIssueCountMap = productVersionMapper.queryIssueCount(projectId, productVersionIds, CATEGORY_DONE_CODE).stream().collect(toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> notEstimateMap = productVersionMapper.queryNotEstimate(projectId, productVersionIds).stream().collect(toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> totalEstimateMap = productVersionMapper.queryTotalEstimate(projectId, productVersionIds).stream().collect(toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
             productVersions.forEach(productVersion -> {
                 productVersion.setIssueCount(issueCountMap.get(productVersion.getVersionId()));
                 productVersion.setDoneIssueCount(doneIssueCountMap.get(productVersion.getVersionId()));
@@ -322,5 +331,51 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     @Override
     public List<Long> listIds(Long projectId) {
         return productVersionMapper.listIds();
+    }
+
+    @Override
+    public ProductVersionPageDTO dragVersion(Long projectId, VersionSequenceDTO versionSequenceDTO) {
+        ProductVersionE productVersionE = productVersionConverter.doToEntity(queryVersionByProjectIdAndVersionId(
+                versionSequenceDTO.getVersionId(), projectId));
+        if (productVersionE == null) {
+            throw new CommonException(NOT_FOUND);
+        } else {
+            Integer sequence;
+            if (versionSequenceDTO.getAfterSequence() == null) {
+                Integer maxSequence = productVersionMapper.queryMaxAfterSequence(versionSequenceDTO.getBeforeSequence(), projectId);
+                sequence = maxSequence != null ? maxSequence + 1 : versionSequenceDTO.getBeforeSequence();
+            } else {
+                sequence = versionSequenceDTO.getAfterSequence() + 1;
+            }
+            if (versionSequenceDTO.getBeforeSequence() == null) {
+                Integer minSequence = productVersionMapper.queryMinBeforeSequence(versionSequenceDTO.getAfterSequence(), projectId);
+                if (minSequence == null) {
+                    productVersionE.setSequence(sequence);
+                    productVersionRepository.updateVersion(productVersionE);
+                } else {
+                    productVersionRepository.batchUpdateSequence(sequence, projectId);
+                }
+            } else {
+                if (sequence >= versionSequenceDTO.getBeforeSequence()) {
+                    productVersionRepository.batchUpdateSequence(sequence, projectId);
+                    if(versionSequenceDTO.getAfterSequence() == null){
+                        productVersionE.setSequence(sequence);
+                        productVersionRepository.updateVersion(productVersionE);
+                    }
+                } else {
+                    productVersionE.setSequence(sequence);
+                    productVersionRepository.updateVersion(productVersionE);
+                }
+            }
+        }
+        return productVersionPageAssembler.doToDto(queryVersionByProjectIdAndVersionId(
+                versionSequenceDTO.getVersionId(), projectId));
+    }
+
+    private ProductVersionDO queryVersionByProjectIdAndVersionId(Long versionId, Long projectId) {
+        ProductVersionDO productVersionDO = new ProductVersionDO();
+        productVersionDO.setVersionId(versionId);
+        productVersionDO.setProjectId(projectId);
+        return productVersionMapper.selectOne(productVersionDO);
     }
 }

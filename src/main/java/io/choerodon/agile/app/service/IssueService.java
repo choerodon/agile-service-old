@@ -154,4 +154,18 @@ public interface IssueService {
     Page<IssueListDTO> listIssueWithoutSubToTestComponent(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
 
     List<IssueCreationNumDTO> queryIssueNumByTimeSlot(Long projectId, String typeCode, Integer timeSlot);
+
+    /**
+     * 参数查询issue列表，不对外开放
+     *
+     * @param projectId   projectId
+     * @param issueId     issueId
+     * @param issueNum    issueNum
+     * @param self        self
+     * @param content     content
+     * @param pageRequest pageRequest
+     * @return IssueNumDTO
+     */
+    Page<IssueNumDTO> queryIssueByOptionForAgile(Long projectId, Long issueId, String issueNum,
+                                                 Boolean self, String content, PageRequest pageRequest);
 }

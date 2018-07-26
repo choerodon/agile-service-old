@@ -77,7 +77,7 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private IssueComponentRepository issueComponentRepository;
     @Autowired
-    private ProductVersionRepository productVersionRepository;
+    private ProductVersionService productVersionService;
     @Autowired
     private IssueLabelRepository issueLabelRepository;
     @Autowired
@@ -169,7 +169,7 @@ public class IssueServiceImpl implements IssueService {
     private String attachmentUrl;
 
     @Override
-    public IssueDTO createIssue(IssueCreateDTO issueCreateDTO) {
+    public synchronized IssueDTO createIssue(IssueCreateDTO issueCreateDTO) {
         IssueE issueE = issueAssembler.issueCreateDtoToIssueE(issueCreateDTO);
         //设置初始状态,如果有todo，就用todo，否则为doing，最后为done
         List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(issueE.getProjectId());
@@ -614,8 +614,9 @@ public class IssueServiceImpl implements IssueService {
                 if (productVersionMapper.isRepeatName(productVersionE.getProjectId(), productVersionE.getName())) {
                     versionIssueRelE.setVersionId(productVersionMapper.queryVersionIdByNameAndProjectId(productVersionE.getName(), productVersionE.getProjectId()));
                 } else {
-                    productVersionE = productVersionRepository.createVersion(productVersionE);
-                    versionIssueRelE.setVersionId(productVersionE.getVersionId());
+                    ProductVersionCreateDTO productVersionCreateDTO = issueAssembler.productVersionEntityToProductVersionCreateDto(productVersionE);
+                    ProductVersionDetailDTO productVersionDetailDTO = productVersionService.createVersion(projectId, productVersionCreateDTO);
+                    versionIssueRelE.setVersionId(productVersionDetailDTO.getVersionId());
                 }
             }
             if (issueRule.existVersionIssueRel(versionIssueRelE)) {
@@ -1327,5 +1328,31 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public List<IssueCreationNumDTO> queryIssueNumByTimeSlot(Long projectId, String typeCode, Integer timeSlot) {
         return ConvertHelper.convertList(issueMapper.queryIssueNumByTimeSlot(projectId, typeCode, timeSlot), IssueCreationNumDTO.class);
+    }
+
+    @Override
+    public Page<IssueNumDTO> queryIssueByOptionForAgile(Long projectId, Long issueId, String issueNum, Boolean self, String content, PageRequest pageRequest) {
+        pageRequest.resetOrder("ai", new HashMap<>());
+        IssueNumDO issueNumDO = null;
+        if (self) {
+            issueNumDO = issueMapper.queryIssueByIssueNumOrIssueId(projectId, issueId, issueNum);
+            if (issueNumDO != null) {
+                pageRequest.setSize(pageRequest.getSize() - 1);
+            }
+        }
+        Page<IssueNumDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
+                issueMapper.queryIssueByOptionForAgile(projectId, issueId, issueNum, self, content));
+        if (self && issueNumDO != null) {
+            issueDOPage.getContent().add(0, issueNumDO);
+            issueDOPage.setSize(issueDOPage.getSize() + 1);
+        }
+        Page<IssueNumDTO> issueListDTOPage = new Page<>();
+        issueListDTOPage.setNumber(issueDOPage.getNumber());
+        issueListDTOPage.setNumberOfElements(issueDOPage.getNumberOfElements());
+        issueListDTOPage.setSize(issueDOPage.getSize());
+        issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
+        issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
+        issueListDTOPage.setContent(issueAssembler.issueNumDOListToIssueNumDTO(issueDOPage.getContent()));
+        return issueListDTOPage;
     }
 }

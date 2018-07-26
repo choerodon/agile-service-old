@@ -14,6 +14,7 @@ public class ProductVersionPageDTO {
     private Date releaseDate;
     private String statusCode;
     private String status;
+    private Integer sequence;
     private Long projectId;
     private Long objectVersionNumber;
 
@@ -87,5 +88,13 @@ public class ProductVersionPageDTO {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
     }
 }

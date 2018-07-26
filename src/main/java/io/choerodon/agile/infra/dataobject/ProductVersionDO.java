@@ -36,6 +36,8 @@ public class ProductVersionDO extends AuditDomain {
     private Long projectId;
     private Long objectVersionNumber;
 
+    private Integer sequence;
+
     public Long getVersionId() {
         return versionId;
     }
@@ -114,6 +116,14 @@ public class ProductVersionDO extends AuditDomain {
 
     public void setRelationType(String relationType) {
         this.relationType = relationType;
+    }
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
     }
 
     @Override

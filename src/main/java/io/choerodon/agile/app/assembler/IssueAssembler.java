@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.domain.agile.entity.ProductVersionE;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.*;
@@ -333,5 +334,11 @@ public class IssueAssembler {
             issueChangeDTOS.add(issueChangeDTO);
         });
         return issueChangeDTOS;
+    }
+
+    public ProductVersionCreateDTO productVersionEntityToProductVersionCreateDto(ProductVersionE productVersionE) {
+        ProductVersionCreateDTO productVersionCreateDTO = new ProductVersionCreateDTO();
+        BeanUtils.copyProperties(productVersionE,productVersionCreateDTO);
+        return productVersionCreateDTO;
     }
 }

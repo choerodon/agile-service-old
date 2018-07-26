@@ -315,13 +315,34 @@
         <if test="activeSprintId != null">
             AND ai.issue_id IN (
             SELECT
-               issue_id
+            issue_id
             FROM
-               agile_issue_sprint_rel
+            agile_issue_sprint_rel
             WHERE
-               project_id = #{projectId}
+            project_id = #{projectId}
             AND sprint_id = #{activeSprintId})
         </if>
+        <if test="issueId != null">
+            AND ai.issue_id != #{issueId}
+        </if>
+        <if test="issueNum != null">
+            AND ai.issue_num != #{issueNum}
+        </if>
+        <if test='content != null'>
+            AND (ai.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR ai.summary LIKE CONCAT(CONCAT('%',
+            #{content}), '%'))
+        </if>
+    </select>
+
+    <select id="queryIssueByOptionForAgile" resultType="io.choerodon.agile.infra.dataobject.IssueNumDO">
+        SELECT
+        ai.issue_id, ai.summary,
+        ai.project_id, ai.type_code,
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
+        FROM agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        WHERE ai.project_id = #{projectId} AND ai.type_code != 'issue_epic'
+        AND ai.type_code != 'sub_task' AND ai.type_code != 'issue_test'
         <if test="issueId != null">
             AND ai.issue_id != #{issueId}
         </if>
@@ -914,52 +935,52 @@
 
     <select id="queryExportIssue" resultType="io.choerodon.agile.infra.dataobject.ExportIssuesDO">
         SELECT
-        ai.issue_id,
-        ai.issue_num,
-        ai.summary,
-        ai.assignee_id,
-        ai.reporter_id,
-        alv.name AS type_name,
-        ais.name AS status_name,
-        ai.description,
-        asp1.sprint_name,
-        ai.creation_date,
-        ai.last_update_date,
-        alv1.name AS priority_name,
-        IF((ai.parent_issue_id IS NULL OR ai.parent_issue_id = 0), '否',
-        '是') AS sub_task,
-        ai.estimate_time,
-        ai.remaining_time,
-        ai.estimate_time +
-        sumtime.sumEstimateTime AS sumEstimateTime,
-        ai.remaining_time +
-        sumtime.sumRemainingTime AS sumRemainingTime,
-        ai2.epic_name AS epicName,
-        ai.story_points AS storyPoints,
-        (SELECT alv2.name
-        FROM agile_issue ai1, agile_issue_status ais1, agile_lookup_value alv2
-        WHERE ai1.issue_id = #{issueId} AND ai1.status_id = ais1.id AND ais1.category_code =
-        alv2.value_code) AS solution
+            ai.issue_id,
+            ai.issue_num,
+            ai.summary,
+            ai.assignee_id,
+            ai.reporter_id,
+            alv.name                                                                          AS type_name,
+            ais.name                                                                          AS status_name,
+            ai.description,
+            asp1.sprint_name,
+            ai.creation_date,
+            ai.last_update_date,
+            alv1.name                                                                         AS priority_name,
+            IF((ai.parent_issue_id IS NULL OR ai.parent_issue_id = 0), '否',
+               '是')                                                                           AS sub_task,
+            ai.estimate_time,
+            ai.remaining_time,
+            ai.estimate_time +
+            sumtime.sumEstimateTime                                                           AS sumEstimateTime,
+            ai.remaining_time +
+            sumtime.sumRemainingTime                                                          AS sumRemainingTime,
+            ai2.epic_name                                                                     AS epicName,
+            ai.story_points                                                                   AS storyPoints,
+            (SELECT alv2.name
+             FROM agile_issue ai1, agile_issue_status ais1, agile_lookup_value alv2
+             WHERE ai1.issue_id = #{issueId} AND ai1.status_id = ais1.id AND ais1.category_code =
+                                                                             alv2.value_code) AS solution
         FROM agile_issue ai
-        LEFT JOIN (SELECT
-        parent_issue_id,
-        SUM(estimate_time) AS sumEstimateTime,
-        SUM(remaining_time) AS sumRemainingTime
-        FROM agile_issue
-        WHERE parent_issue_id = #{issueId}
-        GROUP BY parent_issue_id
-        ) sumtime ON sumtime.parent_issue_id = ai.issue_id
-        LEFT JOIN agile_issue ai2 ON ai.epic_id = ai2.issue_id
-        LEFT JOIN agile_lookup_value alv ON alv.value_code = ai.type_code
-        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
-        LEFT JOIN agile_lookup_value alv1 ON alv1.value_code = ai.priority_code
-        LEFT JOIN (SELECT
-        aisr.issue_id,
-        asp.sprint_name
-        FROM agile_issue_sprint_rel aisr, agile_sprint asp
-        WHERE aisr.project_id = #{projectId} AND aisr.issue_id = #{issueId}
-        AND aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
-        ) asp1 ON asp1.issue_id = ai.issue_id
+            LEFT JOIN (SELECT
+                           parent_issue_id,
+                           SUM(estimate_time)  AS sumEstimateTime,
+                           SUM(remaining_time) AS sumRemainingTime
+                       FROM agile_issue
+                       WHERE parent_issue_id = #{issueId}
+                       GROUP BY parent_issue_id
+                      ) sumtime ON sumtime.parent_issue_id = ai.issue_id
+            LEFT JOIN agile_issue ai2 ON ai.epic_id = ai2.issue_id
+            LEFT JOIN agile_lookup_value alv ON alv.value_code = ai.type_code
+            LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+            LEFT JOIN agile_lookup_value alv1 ON alv1.value_code = ai.priority_code
+            LEFT JOIN (SELECT
+                           aisr.issue_id,
+                           asp.sprint_name
+                       FROM agile_issue_sprint_rel aisr, agile_sprint asp
+                       WHERE aisr.project_id = #{projectId} AND aisr.issue_id = #{issueId}
+                             AND aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
+                      ) asp1 ON asp1.issue_id = ai.issue_id
         WHERE ai.project_id = #{projectId} AND ai.issue_id = #{issueId}
     </select>
 
@@ -979,14 +1000,14 @@
         SELECT aic.name
         FROM agile_component_issue_rel acir, agile_issue_component aic
         WHERE acir.project_id = #{projectId} AND acir.issue_id = #{issueId}
-        AND acir.component_id = aic.component_id
+              AND acir.component_id = aic.component_id
     </select>
 
     <select id="queryLabelNameByIssueId" resultType="java.lang.String">
         SELECT ail.label_name
         FROM agile_label_issue_rel alir, agile_issue_label ail
         WHERE alir.issue_id = #{issueId} AND alir.label_id = ail.label_id
-        AND ail.project_id = #{projectId}
+              AND ail.project_id = #{projectId}
     </select>
 
     <select id="querySubIssuesByIssueId" resultType="io.choerodon.agile.infra.dataobject.ExportIssuesDO">
@@ -1149,7 +1170,7 @@
                 </foreach>
             </if>
         </if>
-        )search
+        )search where 1=1
         <if test='searchArgs != null'>
             <if test='searchArgs.issueNum != null and searchArgs.issueNum != ""'>
                 AND position(#{searchArgs.issueNum} IN search.issue_num)
