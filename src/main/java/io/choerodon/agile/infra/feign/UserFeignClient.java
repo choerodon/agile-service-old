@@ -1,16 +1,15 @@
 package io.choerodon.agile.infra.feign;
 
 import io.choerodon.agile.api.dto.ProjectDTO;
+import io.choerodon.agile.api.dto.UserDTO;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback;
+import io.choerodon.core.domain.Page;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -44,5 +43,17 @@ public interface UserFeignClient {
      */
     @GetMapping(value = "/v1/projects/{id}")
     ResponseEntity<ProjectDTO> queryProject(@PathVariable("id") Long id);
+
+    /**
+     * 根据projectId和param模糊查询loginName和realName两列
+     *
+     * @param id          id
+     * @param pageRequest pageRequest
+     * @param param       param
+     * @return UserDTO
+     */
+    @RequestMapping(value = "/v1/projects/{id}/users", method = RequestMethod.GET)
+    ResponseEntity<Page<UserDTO>> list(@PathVariable("id") Long id, @RequestParam("pageRequest") PageRequest pageRequest,
+                                       @RequestParam("param") String param);
 }
 

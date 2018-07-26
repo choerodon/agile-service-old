@@ -23,14 +23,12 @@ import io.choerodon.agile.infra.common.utils.SearchUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;
-import io.choerodon.mybatis.pagehelper.domain.Sort;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -347,30 +345,36 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             } else {
                 sequence = versionSequenceDTO.getAfterSequence() + 1;
             }
-            if (versionSequenceDTO.getBeforeSequence() == null) {
-                Integer minSequence = productVersionMapper.queryMinBeforeSequence(versionSequenceDTO.getAfterSequence(), projectId);
-                if (minSequence == null) {
-                    productVersionE.setSequence(sequence);
-                    productVersionRepository.updateVersion(productVersionE);
-                } else {
-                    productVersionRepository.batchUpdateSequence(sequence, projectId);
-                }
-            } else {
-                if (sequence >= versionSequenceDTO.getBeforeSequence()) {
-                    productVersionRepository.batchUpdateSequence(sequence, projectId);
-                    if(versionSequenceDTO.getAfterSequence() == null){
-                        productVersionE.setSequence(sequence);
-                        productVersionRepository.updateVersion(productVersionE);
-                    }
-                } else {
-                    productVersionE.setSequence(sequence);
-                    productVersionRepository.updateVersion(productVersionE);
-                }
-            }
+            handleSequence(versionSequenceDTO, sequence, projectId, productVersionE);
+
         }
         return productVersionPageAssembler.doToDto(queryVersionByProjectIdAndVersionId(
                 versionSequenceDTO.getVersionId(), projectId));
     }
+
+    private void handleSequence(VersionSequenceDTO versionSequenceDTO, Integer sequence, Long projectId, ProductVersionE productVersionE) {
+        if (versionSequenceDTO.getBeforeSequence() == null) {
+            Integer minSequence = productVersionMapper.queryMinBeforeSequence(versionSequenceDTO.getAfterSequence(), projectId);
+            if (minSequence == null) {
+                productVersionE.setSequence(sequence);
+                productVersionRepository.updateVersion(productVersionE);
+            } else {
+                productVersionRepository.batchUpdateSequence(sequence, projectId);
+            }
+        } else {
+            if (sequence >= versionSequenceDTO.getBeforeSequence()) {
+                productVersionRepository.batchUpdateSequence(sequence, projectId);
+                if (versionSequenceDTO.getAfterSequence() == null) {
+                    productVersionE.setSequence(sequence);
+                    productVersionRepository.updateVersion(productVersionE);
+                }
+            } else {
+                productVersionE.setSequence(sequence);
+                productVersionRepository.updateVersion(productVersionE);
+            }
+        }
+    }
+
 
     private ProductVersionDO queryVersionByProjectIdAndVersionId(Long versionId, Long projectId) {
         ProductVersionDO productVersionDO = new ProductVersionDO();
