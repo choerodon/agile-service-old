@@ -1,14 +1,19 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.api.dto.UserDTO;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,5 +58,15 @@ public class UserRepositoryImpl implements UserRepository {
             }
         }
         return userMessageMap;
+    }
+
+    @Override
+    public List<UserDTO> queryUsersByNameAndProjectId(Long projectId, String name) {
+        ResponseEntity<Page<UserDTO>> userList = userFeignClient.list(projectId, new PageRequest(), name);
+        if (userList != null) {
+            return userList.getBody().getContent();
+        } else {
+            return new ArrayList<>();
+        }
     }
 }

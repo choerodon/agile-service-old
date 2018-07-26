@@ -291,6 +291,22 @@
                     #{issueId}
                 </foreach>
             </if>
+            <if test='otherArgs.assigneeIds != null and otherArgs.assigneeIds.size > 0'>
+                AND ai.assignee_id in
+                <foreach collection="otherArgs.assigneeIds" item="assigneeId" open="(" separator=","
+                         close=")">
+                    #{assigneeId}
+                </foreach>
+            </if>
+            <if test='otherArgs.sprintIds != null and otherArgs.sprintIds.size > 0'>
+                AND ai.issue_id in (
+                select aisr.issue_id from agile_issue_sprint_rel aisr where aisr.sprint_id in
+                <foreach collection="otherArgs.sprintIds" item="sprintId" open="(" separator=","
+                         close=")">
+                    #{sprintId}
+                </foreach>
+                )
+            </if>
         </if>
         )search where 1=1
         <if test='searchArgs != null'>

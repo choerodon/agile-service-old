@@ -2,7 +2,6 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.ReportService;
-import io.choerodon.agile.infra.dataobject.VelocitySprintDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
