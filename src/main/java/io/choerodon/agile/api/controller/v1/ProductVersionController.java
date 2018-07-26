@@ -37,6 +37,7 @@ public class ProductVersionController {
     private static final String UPDATE_ERROR = "error.version.update";
     private static final String DELETE_ERROR = "error.version.delete";
     private static final String QUERY_ERROR = "error.version.query";
+    private static final String DRAG_ERROR = "error.version.dragVersion";
     private static final String CHECK_ERROR = "error.version.check";
     private static final String QUERY_VERSION_ERROR = "error.versionData.query";
     private static final String VERSION_STATISTICS_ERROR = "error.versionStatistics.query";
@@ -107,7 +108,7 @@ public class ProductVersionController {
                                                                      @ApiParam(value = "查询参数", required = false)
                                                                      @RequestBody(required = false) Map<String, Object> searchParamMap,
                                                                      @ApiParam(value = "分页信息", required = true)
-                                                                     @SortDefault(value = "versionId", direction = Sort.Direction.DESC)
+                                                                     @SortDefault(value = "sequence", direction = Sort.Direction.DESC)
                                                                      @ApiIgnore PageRequest pageRequest) {
         return Optional.ofNullable(productVersionService.queryByProjectId(projectId, pageRequest, searchParamMap))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -131,7 +132,7 @@ public class ProductVersionController {
     @GetMapping
     public ResponseEntity<List<ProductVersionDataDTO>> queryVersionByProjectId(@ApiParam(value = "项目id", required = true)
                                                                                @PathVariable(name = "project_id") Long projectId) {
-        return Optional.ofNullable(productVersionService.queryVersionByprojectId(projectId))
+        return Optional.ofNullable(productVersionService.queryVersionByProjectId(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_VERSION_ERROR));
     }
@@ -289,5 +290,17 @@ public class ProductVersionController {
         return Optional.ofNullable(productVersionService.listIds(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.versionIds.get"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation(value = "拖动版本位置")
+    @PutMapping(value = "/drag")
+    public ResponseEntity<ProductVersionPageDTO> dragVersion(@ApiParam(value = "项目id", required = true)
+                                                                     @PathVariable(name = "project_id") Long projectId,
+                                                                     @ApiParam(value = "排序对象", required = true)
+                                                                     @RequestBody VersionSequenceDTO versionSequenceDTO) {
+        return Optional.ofNullable(productVersionService.dragVersion(projectId, versionSequenceDTO))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException(DRAG_ERROR));
     }
 }

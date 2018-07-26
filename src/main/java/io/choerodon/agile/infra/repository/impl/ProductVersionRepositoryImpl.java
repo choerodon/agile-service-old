@@ -85,4 +85,9 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
         return versionMapper.deleteByVersionIds(projectId, versionIds);
     }
 
+    @Override
+    public int batchUpdateSequence(Integer sequence, Long projectId) {
+        return versionMapper.batchUpdateSequence(sequence,projectId);
+    }
+
 }

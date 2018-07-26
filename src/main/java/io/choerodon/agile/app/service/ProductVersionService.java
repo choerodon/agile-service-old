@@ -28,7 +28,7 @@ public interface ProductVersionService {
 
     Boolean repeatName(Long projectId, String name);
 
-    List<ProductVersionDataDTO> queryVersionByprojectId(Long projectId);
+    List<ProductVersionDataDTO> queryVersionByProjectId(Long projectId);
 
     ProductVersionStatisticsDTO queryVersionStatisticsByVersionId(Long projectId, Long versionId);
 
@@ -55,4 +55,13 @@ public interface ProductVersionService {
     ProductVersionDetailDTO queryVersionByVersionId(Long projectId, Long versionId);
 
     List<Long> listIds(Long projectId);
+
+    /**
+     * 拖动版本排序
+     *
+     * @param projectId          projectId
+     * @param versionSequenceDTO versionSequenceDTO
+     * @return ProductVersionPageDTO
+     */
+    ProductVersionPageDTO dragVersion(Long projectId, VersionSequenceDTO versionSequenceDTO);
 }

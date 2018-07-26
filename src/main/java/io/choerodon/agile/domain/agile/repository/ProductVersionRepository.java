@@ -24,4 +24,13 @@ public interface ProductVersionRepository {
     ProductVersionE updateVersion(ProductVersionE versionE);
 
     int deleteByVersionIds(Long projectId, List<Long> versionIds);
+
+    /**
+     * 批量更新排序
+     *
+     * @param sequence  sequence
+     * @param projectId projectId
+     * @return int
+     */
+    int batchUpdateSequence(Integer sequence, Long projectId);
 }
