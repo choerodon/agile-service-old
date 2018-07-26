@@ -1,9 +1,7 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO;
-import io.choerodon.agile.api.dto.CumulativeFlowFilterDTO;
-import io.choerodon.agile.api.dto.IssueListDTO;
-import io.choerodon.agile.api.dto.ReportIssueDTO;
+import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.infra.dataobject.VelocitySprintDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
@@ -38,4 +36,6 @@ public interface ReportService {
     Page<IssueListDTO> queryIssueByOptions(Long projectId, Long versionId, String status, String type, PageRequest pageRequest);
 
     Map<String, Object> queryVersionLineChart(Long projectId, Long versionId, String type);
+
+    List<VelocitySprintDTO> queryVelocityChart(Long projectId, String type);
 }
