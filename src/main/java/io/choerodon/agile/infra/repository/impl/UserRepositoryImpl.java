@@ -52,9 +52,9 @@ public class UserRepositoryImpl implements UserRepository {
             assigneeIdList.toArray(assigneeIds);
             List<UserDO> userDOS = userFeignClient.listUsersByIds(assigneeIds).getBody();
             if (withLoginName) {
-                userDOS.forEach(userDO -> userMessageMap.put(userDO.getId(), new UserMessageDO(userDO.getLoginName() + userDO.getRealName(), userDO.getImageUrl())));
+                userDOS.forEach(userDO -> userMessageMap.put(userDO.getId(), new UserMessageDO(userDO.getLoginName() + userDO.getRealName(), userDO.getImageUrl(),userDO.getEmail())));
             } else {
-                userDOS.forEach(userDO -> userMessageMap.put(userDO.getId(), new UserMessageDO(userDO.getRealName(), userDO.getImageUrl())));
+                userDOS.forEach(userDO -> userMessageMap.put(userDO.getId(), new UserMessageDO(userDO.getRealName(), userDO.getImageUrl(),userDO.getEmail())));
             }
         }
         return userMessageMap;

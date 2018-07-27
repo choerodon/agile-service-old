@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.assembler.ReportAssembler;
@@ -7,6 +8,7 @@ import io.choerodon.agile.app.service.ReportService;
 import io.choerodon.agile.domain.agile.converter.SprintConverter;
 import io.choerodon.agile.domain.agile.entity.ReportIssueE;
 import io.choerodon.agile.domain.agile.entity.SprintE;
+import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -38,6 +40,8 @@ public class ReportServiceImpl implements ReportService {
     @Autowired
     private ReportMapper reportMapper;
     @Autowired
+    private LookupValueMapper lookupValueMapper;
+    @Autowired
     private SprintConverter sprintConverter;
     @Autowired
     private ColumnStatusRelMapper columnStatusRelMapper;
@@ -51,6 +55,8 @@ public class ReportServiceImpl implements ReportService {
     private IssueAssembler issueAssembler;
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
+    @Autowired
+    private UserRepository userRepository;
 
     private static final String STORY_POINTS = "storyPoints";
     private static final String REMAINING_ESTIMATED_TIME = "remainingEstimatedTime";
@@ -66,6 +72,15 @@ public class ReportServiceImpl implements ReportService {
     private static final String VERSION_ARCHIVED_CODE = "archived";
     private static final String VERSION_REPORT_ERROR = "error.report.version";
     private static final String ISSUE_STORY_CODE = "story";
+    private static final String ASSIGNEE = "assignee";
+    private static final String COMPONENT = "component";
+    private static final String ISSUE_TYPE = "issueType";
+    private static final String FIX_VERSION = "fixVersion";
+    private static final String PRIORITY = "priority";
+    private static final String STATUS = "status";
+    private static final String SPRINT = "sprint";
+    private static final String EPIC = "epic";
+    private static final String RESOLUTION = "resolution";
 
     @Override
     public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
@@ -831,6 +846,66 @@ public class ReportServiceImpl implements ReportService {
                 break;
         }
         return ConvertHelper.convertList(result, VelocitySprintDTO.class);
+    }
+
+    @Override
+    public List<PieChartDTO> queryPieChart(Long projectId, String fieldName) {
+        //todo 饼图统计
+        Integer total = reportMapper.queryIssueCountNoTest(projectId);
+        switch (fieldName) {
+            case ASSIGNEE:
+                return handlePieChartByAssignee(projectId, total);
+            case COMPONENT:
+                break;
+            case ISSUE_TYPE:
+                return handlePieChartByType(projectId, total, "type_code");
+            case FIX_VERSION:
+                break;
+            case PRIORITY:
+                return handlePieChartByType(projectId, total, "priority_code");
+            case STATUS:
+                return handlePieChartByType(projectId, total, "status_id");
+            case SPRINT:
+                break;
+            case EPIC:
+                break;
+            case RESOLUTION:
+                break;
+            default:
+                break;
+        }
+        return new ArrayList<>();
+    }
+
+    private List<PieChartDTO> handlePieChartByType(Long projectId, Integer total, String fieldName) {
+        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, fieldName, true, total);
+        return reportAssembler.pieChartDoToDto(pieChartDOS);
+    }
+
+    private List<PieChartDTO> handlePieChartByAssignee(Long projectId, Integer total) {
+        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "assignee_id", false, total);
+        List<PieChartDTO> pieChartDTOList = reportAssembler.pieChartDoToDto(pieChartDOS);
+        if (pieChartDTOList != null && !pieChartDTOList.isEmpty()) {
+            List<Long> userIds = pieChartDTOList.stream().map(pieChartDTO -> Long.parseLong(pieChartDTO.getName())).collect(Collectors.toList());
+            Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(userIds, true);
+            pieChartDTOList.parallelStream().forEach(pieChartDTO -> {
+                JSONObject jsonObject = new JSONObject();
+                if (pieChartDTO.getName() != null && usersMap.get(Long.parseLong(pieChartDTO.getName())) != null) {
+                    String assigneeName = usersMap.get(Long.parseLong(pieChartDTO.getName())).getName();
+                    String assigneeImageUrl = usersMap.get(Long.parseLong(pieChartDTO.getName())).getImageUrl();
+                    String email = usersMap.get(Long.parseLong(pieChartDTO.getName())).getEmail();
+                    jsonObject.put("assigneeName", assigneeName);
+                    jsonObject.put("assigneeImageUrl", assigneeImageUrl);
+                    jsonObject.put("email", email);
+                } else {
+                    jsonObject.put("assigneeName", null);
+                    jsonObject.put("assigneeImageUrl", null);
+                    jsonObject.put("email", null);
+                }
+                pieChartDTO.setJsonObject(jsonObject);
+            });
+        }
+        return pieChartDTOList;
     }
 }
 

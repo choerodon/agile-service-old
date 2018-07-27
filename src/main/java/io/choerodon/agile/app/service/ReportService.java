@@ -37,4 +37,13 @@ public interface ReportService {
     Map<String, Object> queryVersionLineChart(Long projectId, Long versionId, String type);
 
     List<VelocitySprintDTO> queryVelocityChart(Long projectId, String type);
+
+    /**
+     * 根据项目id和字段名称查询饼图
+     *
+     * @param projectId projectId
+     * @param fieldName fieldName
+     * @return PieChartDTO
+     */
+    List<PieChartDTO> queryPieChart(Long projectId, String fieldName);
 }
