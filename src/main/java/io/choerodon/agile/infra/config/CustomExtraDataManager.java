@@ -2,8 +2,8 @@ package io.choerodon.agile.infra.config;
 
 import io.choerodon.core.swagger.ChoerodonRouteData;
 import io.choerodon.swagger.annotation.ChoerodonExtraData;
-import io.choerodon.swagger.custom.extra.ExtraData;
-import io.choerodon.swagger.custom.extra.ExtraDataManager;
+import io.choerodon.swagger.swagger.extra.ExtraData;
+import io.choerodon.swagger.swagger.extra.ExtraDataManager;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/23.

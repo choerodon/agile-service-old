@@ -1,11 +1,11 @@
 package io.choerodon.agile.api.eventhandler;
 
+import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.app.service.BoardService;
 import io.choerodon.agile.app.service.IssueLinkTypeService;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.domain.agile.event.ProjectEvent;
-import io.choerodon.core.event.EventPayload;
-import io.choerodon.event.consumer.annotation.EventListener;
+import io.choerodon.core.saga.SagaTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class AgileEventHandler {
 
-    private static final String IAM_SERVICE = "iam-service";
     private static final String BOARD = "-board";
 
     @Autowired
@@ -39,15 +38,19 @@ public class AgileEventHandler {
     /**
      * 创建项目事件
      *
-     * @param payload payload
+     * @param data data
      */
-    @EventListener(topic = IAM_SERVICE, businessType = "createProject")
-    public void handleProjectCreateEvent(EventPayload<ProjectEvent> payload) {
-        ProjectEvent projectEvent = payload.getData();
+    @SagaTask(code = "agileInitProject",
+            description = "agile消费创建项目事件初始化项目数据",
+            sagaCode = "iam-create-project",
+            seq = 1)
+    public String handleProjectInitByConsumeSagaTask(String data) {
+        ProjectEvent projectEvent = JSONObject.parseObject(data, ProjectEvent.class);
         loggerInfo(projectEvent);
         boardService.initBoard(projectEvent.getProjectId(), projectEvent.getProjectName() + BOARD);
         projectInfoService.initializationProjectInfo(projectEvent);
         issueLinkTypeService.initIssueLinkType(projectEvent.getProjectId());
+        return data;
     }
 
 }

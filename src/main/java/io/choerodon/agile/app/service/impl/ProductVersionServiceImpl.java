@@ -141,6 +141,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
                 (String uuid) -> {
                     Boolean deleteResult = productVersionRepository.deleteVersion(versionE);
                     versionPayload.setVersionId(versionE.getVersionId());
+                    versionPayload.setProjectId(versionE.getProjectId());
                     BeanUtils.copyProperties(deleteResult, result);
                 }
         );
