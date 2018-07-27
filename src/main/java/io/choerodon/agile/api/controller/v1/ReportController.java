@@ -101,9 +101,9 @@ public class ReportController {
     @ApiOperation(value = "速度图")
     @GetMapping(value = "/velocity_chart")
     public ResponseEntity<List<VelocitySprintDTO>> queryVelocityChart(@ApiParam(value = "项目id", required = true)
-                                                                  @PathVariable(name = "project_id") Long projectId,
+                                                                      @PathVariable(name = "project_id") Long projectId,
                                                                       @ApiParam(value = "统计类型", required = true)
-                                                                  @RequestParam String type) {
+                                                                      @RequestParam String type) {
         return Optional.ofNullable(reportService.queryVelocityChart(projectId, type))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.velocityChart.get"));
@@ -113,10 +113,11 @@ public class ReportController {
     @ApiOperation("查询饼图")
     @GetMapping(value = "/pie_chart")
     public ResponseEntity<List<PieChartDTO>> queryPieChart(@ApiParam(value = "项目id", required = true)
-                                                                    @PathVariable(name = "project_id") Long projectId,
-                                                                    @ApiParam(value = "字段名称", required = true)
-                                                                    @RequestParam String fieldName) {
-        return Optional.ofNullable(reportService.queryPieChart(projectId,fieldName))
+                                                           @PathVariable(name = "project_id") Long projectId,
+                                                           @ApiParam(value = "字段名称:assignee、component、issueType、" +
+                                                                   "fixVersion、priority、status、sprint、epic、resolution", required = true)
+                                                           @RequestParam String fieldName) {
+        return Optional.ofNullable(reportService.queryPieChart(projectId, fieldName))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.report.queryPieChart"));
     }

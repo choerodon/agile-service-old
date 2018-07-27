@@ -1418,9 +1418,27 @@
                 <if test="typeCode!=null and typeCode!=''">
                     alv.name AS typeName,
                 </if>
+                <if test="fieldName == 'epic_id'">
+                    ai2.epic_name AS typeName,
+                </if>
             </when>
             <otherwise>
-                '',
+                <if test="fieldName == 'resolution'">
+                    other.is_completed AS name,
+                    ( CASE other.is_completed
+                    WHEN 0 THEN '未解决'
+                    WHEN 1 THEN '解决'
+                    ELSE NULL
+                    END) AS typeName,
+                </if>
+                <if test="fieldName == 'component_id' or fieldName == 'version_id'">
+                    other.${fieldName} AS name,
+                    otherName.name as typeName,
+                </if>
+                <if test="fieldName == 'sprint_id'">
+                    other.${fieldName} AS name,
+                    otherName.sprint_name as typeName,
+                </if>
             </otherwise>
         </choose>
         count( * ) AS value
@@ -1437,20 +1455,70 @@
                 </otherwise>
             </choose>
         </if>
+        <if test="fieldName == 'epic_id'">
+            LEFT JOIN agile_issue ai2 on ai2.issue_id = ai.${fieldName}
+        </if>
+        <if test="!own">
+            <if test="fieldName == 'resolution'">
+                LEFT JOIN agile_issue_status other on ai.status_id = other.id
+            </if>
+            <if test="fieldName == 'component_id'">
+                LEFT JOIN agile_component_issue_rel other on ai.issue_id = other.issue_id
+                LEFT JOIN agile_issue_component otherName on other.${fieldName} = otherName.${fieldName}
+            </if>
+            <if test="fieldName == 'version_id'">
+                LEFT JOIN agile_version_issue_rel other on ai.issue_id = other.issue_id and other.relation_type = 'fix'
+                LEFT JOIN agile_product_version otherName on other.${fieldName} = otherName.${fieldName}
+            </if>
+            <if test="fieldName == 'sprint_id'">
+                LEFT JOIN agile_issue_sprint_rel other on ai.issue_id = other.issue_id
+                LEFT JOIN agile_sprint otherName on other.${fieldName} = otherName.${fieldName}
+            </if>
+        </if>
         WHERE
         ai.project_id = #{projectId}
         AND ai.type_code != "issue_test"
+        <if test="fieldName == 'epic_id'">
+            AND ai.type_code != "issue_epic"
+        </if>
         GROUP BY
-        ai.${fieldName})pieData
+        <choose>
+            <when test="own">
+                ai.${fieldName}
+            </when>
+            <otherwise>
+                <choose>
+                    <when test="fieldName == 'resolution'">
+                        other.is_completed
+                    </when>
+                    <otherwise>
+                        other.${fieldName}
+                    </otherwise>
+                </choose>
+            </otherwise>
+        </choose>
+        )pieData ORDER BY pieData.value DESC
     </select>
 
-    <select id="queryIssueCountNoTest" resultType="java.lang.Integer">
+    <select id="queryIssueCountByFieldName" resultType="java.lang.Integer">
         SELECT count(*)
         FROM
-            agile_issue ai
+        agile_issue ai
+        <if test="fieldName == 'component_id'">
+            left join agile_component_issue_rel other on ai.issue_id = other.issue_id
+        </if>
+        <if test="fieldName == 'version_id'">
+            LEFT JOIN agile_version_issue_rel other on ai.issue_id = other.issue_id and other.relation_type = 'fix'
+        </if>
+        <if test="fieldName == 'sprint_id'">
+            LEFT JOIN agile_issue_sprint_rel other on ai.issue_id = other.issue_id
+        </if>
         WHERE
-            ai.project_id = #{projectId}
-            AND type_code != "issue_test"
+        ai.project_id = #{projectId}
+        AND type_code != "issue_test"
+        <if test="fieldName == 'epic_id'">
+            AND type_code != "issue_epic"
+        </if>
     </select>
 
 </mapper>

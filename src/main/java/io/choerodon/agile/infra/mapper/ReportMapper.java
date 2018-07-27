@@ -347,11 +347,13 @@ public interface ReportMapper {
                                           @Param("fieldName") String fieldName, @Param("typeCode") Boolean typeCode,
                                           @Param("total") Integer total);
 
+
     /**
-     * 查询不是测试类型的issue的总数
+     * 根据参数查询issue总数
      *
      * @param projectId projectId
+     * @param fieldName fieldName
      * @return Integer
      */
-    Integer queryIssueCountNoTest(@Param("projectId") Long projectId);
+    Integer queryIssueCountByFieldName(@Param("projectId") Long projectId, @Param("fieldName") String fieldName);
 }
