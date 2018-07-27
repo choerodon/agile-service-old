@@ -81,6 +81,8 @@ public class ReportServiceImpl implements ReportService {
     private static final String SPRINT = "sprint";
     private static final String EPIC = "epic";
     private static final String RESOLUTION = "resolution";
+    private static final String EPIC_ID = "epic_id";
+
 
     @Override
     public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
@@ -851,38 +853,39 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public List<PieChartDTO> queryPieChart(Long projectId, String fieldName) {
         //todo 饼图统计
-        Integer total = reportMapper.queryIssueCountNoTest(projectId);
         switch (fieldName) {
             case ASSIGNEE:
-                return handlePieChartByAssignee(projectId, total);
+                return handlePieChartByAssignee(projectId);
             case COMPONENT:
-                break;
+                return handlePieChartByType(projectId, "component_id", false, false);
             case ISSUE_TYPE:
-                return handlePieChartByType(projectId, total, "type_code");
+                return handlePieChartByType(projectId, "type_code", true, true);
             case FIX_VERSION:
-                break;
+                return handlePieChartByType(projectId, "version_id", false, false);
             case PRIORITY:
-                return handlePieChartByType(projectId, total, "priority_code");
+                return handlePieChartByType(projectId, "priority_code", true, true);
             case STATUS:
-                return handlePieChartByType(projectId, total, "status_id");
+                return handlePieChartByType(projectId, "status_id", true, true);
             case SPRINT:
-                break;
+                return handlePieChartByType(projectId, "sprint_id", false, false);
             case EPIC:
-                break;
+                return handlePieChartByType(projectId, EPIC_ID, true, false);
             case RESOLUTION:
-                break;
+                return handlePieChartByType(projectId, RESOLUTION, false, false);
             default:
                 break;
         }
         return new ArrayList<>();
     }
 
-    private List<PieChartDTO> handlePieChartByType(Long projectId, Integer total, String fieldName) {
-        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, fieldName, true, total);
+    private List<PieChartDTO> handlePieChartByType(Long projectId, String fieldName, Boolean own, Boolean typeCode) {
+        Integer total = reportMapper.queryIssueCountByFieldName(projectId, fieldName);
+        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, own, fieldName, typeCode, total);
         return reportAssembler.pieChartDoToDto(pieChartDOS);
     }
 
-    private List<PieChartDTO> handlePieChartByAssignee(Long projectId, Integer total) {
+    private List<PieChartDTO> handlePieChartByAssignee(Long projectId) {
+        Integer total = reportMapper.queryIssueCountByFieldName(projectId, "assignee_id");
         List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "assignee_id", false, total);
         List<PieChartDTO> pieChartDTOList = reportAssembler.pieChartDoToDto(pieChartDOS);
         if (pieChartDTOList != null && !pieChartDTOList.isEmpty()) {
