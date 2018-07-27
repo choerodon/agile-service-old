@@ -1410,34 +1410,37 @@
     </select>
 
     <select id="queryPieChartByParam" resultType="io.choerodon.agile.infra.dataobject.PieChartDO">
-        select *,pieData.value/#{total} as percent from (
+        select *,(pieData.value/#{total})*100 as percent from (
         SELECT
         <choose>
             <when test="own">
-                ai.${fieldName} AS NAME,
-                <if test="typeCode!=null and typeCode!=''">
-                    alv.name AS typeName,
+                ai.${fieldName} AS type_name,
+                <if test="typeCode">
+                    alv.name AS name,
                 </if>
                 <if test="fieldName == 'epic_id'">
-                    ai2.epic_name AS typeName,
+                    ai2.epic_name AS name,
+                </if>
+                <if test="fieldName == 'status_id'">
+                    ais.name AS name,
                 </if>
             </when>
             <otherwise>
                 <if test="fieldName == 'resolution'">
-                    other.is_completed AS name,
+                    other.is_completed AS type_name,
                     ( CASE other.is_completed
                     WHEN 0 THEN '未解决'
                     WHEN 1 THEN '解决'
                     ELSE NULL
-                    END) AS typeName,
+                    END) AS name,
                 </if>
                 <if test="fieldName == 'component_id' or fieldName == 'version_id'">
-                    other.${fieldName} AS name,
-                    otherName.name as typeName,
+                    other.${fieldName} AS type_name,
+                    otherName.name as name,
                 </if>
                 <if test="fieldName == 'sprint_id'">
-                    other.${fieldName} AS name,
-                    otherName.sprint_name as typeName,
+                    other.${fieldName} AS type_name,
+                    otherName.sprint_name as name,
                 </if>
             </otherwise>
         </choose>
@@ -1445,15 +1448,10 @@
         FROM
         agile_issue ai
         <if test="typeCode!=null and typeCode!=''">
-            <choose>
-                <when test="fieldName == 'status_id'">
-                    LEFT JOIN agile_issue_status ais on ais.id = ai.${fieldName}
-                    LEFT JOIN agile_lookup_value alv on ais.category_code = alv.value_code
-                </when>
-                <otherwise>
-                    LEFT JOIN agile_lookup_value alv on ai.${fieldName} = alv.value_code
-                </otherwise>
-            </choose>
+            LEFT JOIN agile_lookup_value alv on ai.${fieldName} = alv.value_code
+        </if>
+        <if test="fieldName == 'status_id'">
+            LEFT JOIN agile_issue_status ais on ais.id = ai.${fieldName}
         </if>
         <if test="fieldName == 'epic_id'">
             LEFT JOIN agile_issue ai2 on ai2.issue_id = ai.${fieldName}

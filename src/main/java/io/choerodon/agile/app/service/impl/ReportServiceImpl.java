@@ -852,7 +852,6 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<PieChartDTO> queryPieChart(Long projectId, String fieldName) {
-        //todo 饼图统计
         switch (fieldName) {
             case ASSIGNEE:
                 return handlePieChartByAssignee(projectId);
@@ -865,7 +864,7 @@ public class ReportServiceImpl implements ReportService {
             case PRIORITY:
                 return handlePieChartByType(projectId, "priority_code", true, true);
             case STATUS:
-                return handlePieChartByType(projectId, "status_id", true, true);
+                return handlePieChartByType(projectId, "status_id", true, false);
             case SPRINT:
                 return handlePieChartByType(projectId, "sprint_id", false, false);
             case EPIC:
