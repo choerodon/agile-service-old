@@ -11,11 +11,14 @@ public class UserMessageDO {
 
     private String imageUrl;
 
+    private String email;
+
     public UserMessageDO(){}
 
-    public UserMessageDO(String name, String imageUrl) {
+    public UserMessageDO(String name, String imageUrl,String email) {
         this.name = name;
         this.imageUrl = imageUrl;
+        this.email = email;
     }
 
     public String getName() {
@@ -32,6 +35,14 @@ public class UserMessageDO {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override

@@ -109,4 +109,16 @@ public class ReportController {
                 .orElseThrow(() -> new CommonException("error.velocityChart.get"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("查询饼图")
+    @GetMapping(value = "/pie_chart")
+    public ResponseEntity<List<PieChartDTO>> queryPieChart(@ApiParam(value = "项目id", required = true)
+                                                                    @PathVariable(name = "project_id") Long projectId,
+                                                                    @ApiParam(value = "字段名称", required = true)
+                                                                    @RequestParam String fieldName) {
+        return Optional.ofNullable(reportService.queryPieChart(projectId,fieldName))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.report.queryPieChart"));
+    }
+
 }

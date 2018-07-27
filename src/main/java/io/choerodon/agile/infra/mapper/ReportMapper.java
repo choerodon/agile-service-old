@@ -332,4 +332,26 @@ public interface ReportMapper {
     List<VelocitySprintDO> selectByRemainTimeCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
 
     List<VelocitySprintDO> selectByRemainTimeCompleted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+
+    /**
+     * 根据参数查询统计信息
+     *
+     * @param projectId projectId
+     * @param own       是否是自身表字段 是true 不是false
+     * @param fieldName fieldName 字段名
+     * @param typeCode  是否关联键值表 是true 不是false
+     * @param total     total
+     * @return PieChartDO
+     */
+    List<PieChartDO> queryPieChartByParam(@Param("projectId") Long projectId, @Param("own") Boolean own,
+                                          @Param("fieldName") String fieldName, @Param("typeCode") Boolean typeCode,
+                                          @Param("total") Integer total);
+
+    /**
+     * 查询不是测试类型的issue的总数
+     *
+     * @param projectId projectId
+     * @return Integer
+     */
+    Integer queryIssueCountNoTest(@Param("projectId") Long projectId);
 }

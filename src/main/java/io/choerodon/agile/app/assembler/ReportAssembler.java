@@ -2,8 +2,10 @@ package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.dto.ColumnChangeDTO;
 import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO;
+import io.choerodon.agile.api.dto.PieChartDTO;
 import io.choerodon.agile.infra.dataobject.ColumnChangeDO;
 import io.choerodon.agile.infra.dataobject.ColumnDO;
+import io.choerodon.agile.infra.dataobject.PieChartDO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -38,5 +40,15 @@ public class ReportAssembler {
             columnChangeDTOList.add(columnChangeDTO);
         });
         return columnChangeDTOList;
+    }
+
+    public List<PieChartDTO> pieChartDoToDto(List<PieChartDO> pieChartDOS) {
+        List<PieChartDTO> pieChartDTOS = new ArrayList<>();
+        pieChartDOS.parallelStream().forEach(pieChartDO -> {
+            PieChartDTO pieChartDTO = new PieChartDTO();
+            BeanUtils.copyProperties(pieChartDO,pieChartDTO);
+            pieChartDTOS.add(pieChartDTO);
+        });
+        return pieChartDTOS;
     }
 }
