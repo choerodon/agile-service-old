@@ -1423,7 +1423,7 @@
             </otherwise>
         </choose>
         count( * ) AS value,
-        value/#{total} AS percent
+        count( * )/#{total} AS percent
         FROM
         agile_issue ai
         <if test="typeCode!=null and typeCode!=''">

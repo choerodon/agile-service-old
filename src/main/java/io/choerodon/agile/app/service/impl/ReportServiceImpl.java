@@ -886,7 +886,9 @@ public class ReportServiceImpl implements ReportService {
         List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "assignee_id", false, total);
         List<PieChartDTO> pieChartDTOList = reportAssembler.pieChartDoToDto(pieChartDOS);
         if (pieChartDTOList != null && !pieChartDTOList.isEmpty()) {
-            List<Long> userIds = pieChartDTOList.stream().map(pieChartDTO -> Long.parseLong(pieChartDTO.getName())).collect(Collectors.toList());
+            List<Long> userIds = pieChartDTOList.stream().filter(pieChartDTO ->
+                    pieChartDTO.getName() != null || !"0".equals(pieChartDTO.getName())).map(pieChartDTO ->
+                    Long.parseLong(pieChartDTO.getName())).collect(Collectors.toList());
             Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(userIds, true);
             pieChartDTOList.parallelStream().forEach(pieChartDTO -> {
                 JSONObject jsonObject = new JSONObject();
