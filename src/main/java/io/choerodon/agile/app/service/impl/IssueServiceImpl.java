@@ -327,6 +327,7 @@ public class IssueServiceImpl implements IssueService {
         Exception exception = eventProducerTemplate.execute("deleteIssue", AGILE_SERVICE, issuePayload,
                 (String uuid) -> {
                     issuePayload.setIssueId(issueId);
+                    issuePayload.setProjectId(projectId);
                     IssueE issueE = queryIssueByProjectIdAndIssueId(projectId, issueId);
                     if (issueE == null) {
                         throw new CommonException(ERROR_ISSUE_NOT_FOUND);
