@@ -232,11 +232,13 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public Page<IssueListDTO> listIssueWithoutSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
         //处理用户搜索
-        String userName = (String) searchDTO.getOtherArgs().get("assigneeName");
-        if (userName != null) {
-            List<UserDTO> userDTOS = userRepository.queryUsersByNameAndProjectId(projectId, userName);
-            if (userDTOS != null && !userDTOS.isEmpty()) {
-                searchDTO.getOtherArgs().put("assigneeIds",userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));
+        if (searchDTO.getOtherArgs() != null && searchDTO.getOtherArgs().get("assigneeName") != null) {
+            String userName = (String) searchDTO.getOtherArgs().get("assigneeName");
+            if (userName != null) {
+                List<UserDTO> userDTOS = userRepository.queryUsersByNameAndProjectId(projectId, userName);
+                if (userDTOS != null && !userDTOS.isEmpty()) {
+                    searchDTO.getOtherArgs().put("assigneeIds", userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));
+                }
             }
         }
         //连表查询需要设置主表别名

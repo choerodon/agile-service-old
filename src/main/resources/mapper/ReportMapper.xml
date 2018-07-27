@@ -1410,25 +1410,25 @@
     </select>
 
     <select id="queryPieChartByParam" resultType="io.choerodon.agile.infra.dataobject.PieChartDO">
+        select *,pieData.value/#{total} as percent from (
         SELECT
         <choose>
             <when test="own">
                 ai.${fieldName} AS NAME,
                 <if test="typeCode!=null and typeCode!=''">
-                alv.name AS typeName,
+                    alv.name AS typeName,
                 </if>
             </when>
             <otherwise>
                 '',
             </otherwise>
         </choose>
-        count( * ) AS value,
-        count( * )/#{total} AS percent
+        count( * ) AS value
         FROM
         agile_issue ai
         <if test="typeCode!=null and typeCode!=''">
             <choose>
-                <when test="fieldName = 'status_id'">
+                <when test="fieldName == 'status_id'">
                     LEFT JOIN agile_issue_status ais on ais.id = ai.${fieldName}
                     LEFT JOIN agile_lookup_value alv on ais.category_code = alv.value_code
                 </when>
@@ -1439,9 +1439,9 @@
         </if>
         WHERE
         ai.project_id = #{projectId}
-        AND type_code != "issue_test"
+        AND ai.type_code != "issue_test"
         GROUP BY
-        ai.${fieldName}
+        ai.${fieldName})pieData
     </select>
 
     <select id="queryIssueCountNoTest" resultType="java.lang.Integer">
