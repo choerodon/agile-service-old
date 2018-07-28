@@ -1460,8 +1460,7 @@
             )
         ORDER BY DATE_FORMAT(last_update_date,'%Y-%m-%d')
     </select>
-
-<<<<<<< 66b544cdad7ca318068f423c4146fb9599fae762
+    
     <select id="queryPieChartByParam" resultType="io.choerodon.agile.infra.dataobject.PieChartDO">
         select *,(pieData.value/#{total})*100 as percent from (
         SELECT
