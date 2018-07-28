@@ -852,7 +852,6 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<PieChartDTO> queryPieChart(Long projectId, String fieldName) {
-        //todo 饼图统计
         switch (fieldName) {
             case ASSIGNEE:
                 return handlePieChartByAssignee(projectId);
@@ -865,7 +864,7 @@ public class ReportServiceImpl implements ReportService {
             case PRIORITY:
                 return handlePieChartByType(projectId, "priority_code", true, true);
             case STATUS:
-                return handlePieChartByType(projectId, "status_id", true, true);
+                return handlePieChartByType(projectId, "status_id", true, false);
             case SPRINT:
                 return handlePieChartByType(projectId, "sprint_id", false, false);
             case EPIC:
@@ -890,20 +889,19 @@ public class ReportServiceImpl implements ReportService {
         List<PieChartDTO> pieChartDTOList = reportAssembler.pieChartDoToDto(pieChartDOS);
         if (pieChartDTOList != null && !pieChartDTOList.isEmpty()) {
             List<Long> userIds = pieChartDTOList.stream().filter(pieChartDTO ->
-                    pieChartDTO.getName() != null && !"0".equals(pieChartDTO.getName())).map(pieChartDTO ->
-                    Long.parseLong(pieChartDTO.getName())).collect(Collectors.toList());
+                    pieChartDTO.getTypeName() != null && !"0".equals(pieChartDTO.getTypeName())).map(pieChartDTO ->
+                    Long.parseLong(pieChartDTO.getTypeName())).collect(Collectors.toList());
             Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(userIds, true);
             pieChartDTOList.parallelStream().forEach(pieChartDTO -> {
                 JSONObject jsonObject = new JSONObject();
-                if (pieChartDTO.getName() != null && usersMap.get(Long.parseLong(pieChartDTO.getName())) != null) {
-                    String assigneeName = usersMap.get(Long.parseLong(pieChartDTO.getName())).getName();
-                    String assigneeImageUrl = usersMap.get(Long.parseLong(pieChartDTO.getName())).getImageUrl();
-                    String email = usersMap.get(Long.parseLong(pieChartDTO.getName())).getEmail();
-                    jsonObject.put("assigneeName", assigneeName);
+                if (pieChartDTO.getTypeName() != null && usersMap.get(Long.parseLong(pieChartDTO.getTypeName())) != null) {
+                    String assigneeName = usersMap.get(Long.parseLong(pieChartDTO.getTypeName())).getName();
+                    String assigneeImageUrl = usersMap.get(Long.parseLong(pieChartDTO.getTypeName())).getImageUrl();
+                    String email = usersMap.get(Long.parseLong(pieChartDTO.getTypeName())).getEmail();
+                    pieChartDTO.setName(assigneeName);
                     jsonObject.put("assigneeImageUrl", assigneeImageUrl);
                     jsonObject.put("email", email);
                 } else {
-                    jsonObject.put("assigneeName", null);
                     jsonObject.put("assigneeImageUrl", null);
                     jsonObject.put("email", null);
                 }
