@@ -1570,7 +1570,8 @@
         <if test="fieldName == 'epic_id'">
             AND type_code != "issue_epic"
         </if>
-=======
+    </select>
+
     <select id="selectIssueByEpicId" resultType="io.choerodon.agile.infra.dataobject.DateIssueIdsDO">
         SELECT
             DATE_FORMAT(
