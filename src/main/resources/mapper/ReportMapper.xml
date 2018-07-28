@@ -1696,7 +1696,6 @@
         WHERE
             ai.project_id = #{projectId}
         AND ai.epic_id = #{epicId}
->>>>>>> [ADD]史诗图api开发
     </select>
 
 </mapper>
