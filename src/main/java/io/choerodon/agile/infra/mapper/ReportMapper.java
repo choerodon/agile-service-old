@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -356,4 +357,15 @@ public interface ReportMapper {
      * @return Integer
      */
     Integer queryIssueCountByFieldName(@Param("projectId") Long projectId, @Param("fieldName") String fieldName);
+
+    List<DateIssueIdsDO> selectCompletedIssueIds(@Param("projectId") Long projectId);
+
+    List<DateIssueIdsDO> selectEpicStoryPointsAll(@Param("projectId") Long projectId);
+
+    List<DateIssueIdsDO> selectEpicRemainTime(@Param("projectId") Long projectId);
+
+    List<DateIssueIdsDO> selectIssueByEpicId(@Param("projectId") Long projectId, @Param("epicId") Long epicId);
+
+    List<EpicChartListDO> selectEpicIssueList(@Param("projectId") Long projectId, @Param("epicId") Long epicId);
+
 }

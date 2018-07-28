@@ -2,6 +2,8 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.ReportService;
+import io.choerodon.agile.infra.dataobject.EpicChartDO;
+import io.choerodon.agile.infra.dataobject.EpicChartListDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
@@ -120,6 +122,31 @@ public class ReportController {
         return Optional.ofNullable(reportService.queryPieChart(projectId, fieldName))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.report.queryPieChart"));
+    }
+
+    @ApiOperation(value = "史诗图")
+    @GetMapping(value = "/epic_chart")
+    public ResponseEntity<List<EpicChartDO>> queryEpicChart(@ApiParam(value = "项目id", required = true)
+                                                                      @PathVariable(name = "project_id") Long projectId,
+                                                            @ApiParam(value = "epic id", required = true)
+                                                                      @RequestParam Long epicId,
+                                                            @ApiParam(value = "统计类型", required = true)
+                                                                      @RequestParam String type) {
+        return Optional.ofNullable(reportService.queryEpicChart(projectId, epicId, type))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.epicChart.get"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation(value = "史诗图问题列表")
+    @GetMapping(value = "/epic_issue_list")
+    public ResponseEntity<List<EpicChartListDO>> queryEpicChartList(@ApiParam(value = "项目id", required = true)
+                                                            @PathVariable(name = "project_id") Long projectId,
+                                                                    @ApiParam(value = "epic id", required = true)
+                                                            @RequestParam Long epicId) {
+        return Optional.ofNullable(reportService.queryEpicChartList(projectId, epicId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.epicChartList.get"));
     }
 
 }
