@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sun.javafx.collections.MappingChange;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.assembler.ReportAssembler;
@@ -909,6 +910,250 @@ public class ReportServiceImpl implements ReportService {
             });
         }
         return pieChartDTOList;
+    }
+
+    private List<DateIssueIdsDO> getCompletedIssueIds(Long projectId) {
+        return reportMapper.selectCompletedIssueIds(projectId);
+    }
+
+    private Map getEpicAllMap(Long projectId, Long epicId) {
+        List<DateIssueIdsDO> allIssueIds = reportMapper.selectIssueByEpicId(projectId, epicId);
+        Map allMap = new HashMap();
+        List<Long> allIds = new ArrayList<>();
+        String groupDay3 = null;
+        for (DateIssueIdsDO tmp2 : allIssueIds) {
+            if (!tmp2.getGroupDay().equals(groupDay3) && groupDay3 != null) {
+                List<Long> take = new ArrayList<>();
+                take.addAll(allIds);
+                allMap.put(groupDay3, take);
+            }
+            groupDay3 = tmp2.getGroupDay();
+            if (!allIds.contains(tmp2.getIssueId())) {
+                allIds.add(tmp2.getIssueId());
+            }
+        }
+        if (groupDay3 != null) {
+            allMap.put(groupDay3, allIds);
+        }
+        return allMap;
+    }
+
+    private Map getEpicCompletedMap(Long projectId, Map allMap) {
+        Map completedMap = new HashMap();
+        List<DateIssueIdsDO> completedIssueIds = getCompletedIssueIds(projectId);
+        List<Long> issueIds = new ArrayList<>();
+        String groupDay = null;
+        for (DateIssueIdsDO tmp : completedIssueIds) {
+            List<Long> epicIssueIds = (List<Long>) allMap.get(tmp.getGroupDay());
+            if (epicIssueIds == null || !epicIssueIds.contains(tmp.getIssueId())) continue;
+            if (!tmp.getGroupDay().equals(groupDay) && groupDay != null) {
+                List<Long> take = new ArrayList<>();
+                take.addAll(issueIds);
+                completedMap.put(groupDay, take);
+            }
+            groupDay = tmp.getGroupDay();
+            if (issueIds.contains(tmp.getIssueId())) {
+                if (tmp.getCompleted() == 0) {
+                    issueIds.remove(tmp.getIssueId());
+                }
+            } else {
+                if (tmp.getCompleted() == 1) {
+                    issueIds.add(tmp.getIssueId());
+                }
+            }
+        }
+        if (groupDay != null) {
+            completedMap.put(groupDay, issueIds);
+        }
+        return completedMap;
+    }
+
+    private List<EpicChartDO> dealIssueCountData(Long projectId, Long epicId) {
+        List<EpicChartDO> result = new ArrayList<>();
+        Map allMap = getEpicAllMap(projectId, epicId);
+        Map completedMap = getEpicCompletedMap(projectId, allMap);
+        Iterator<Map.Entry<String, List<Long>>> entries = allMap.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<String, List<Long>> entry = entries.next();
+            EpicChartDO epicChartDO = new EpicChartDO();
+            String groupDay = entry.getKey();
+            epicChartDO.setGroupDay(groupDay);
+            List<Long> ids = (List<Long>) entry.getValue();
+            epicChartDO.setIssueCount(ids.size());
+            epicChartDO.setIssueCompletedCount(((List<Long>)completedMap.get(groupDay)).size());
+            result.add(epicChartDO);
+        }
+        return result;
+    }
+
+    private List<EpicChartDO> dealStoryPointData(Long projectId, Long epicId, List<DateIssueIdsDO> storyPointsAll) {
+        List<EpicChartDO> result = new ArrayList<>();
+        Map allMap = getEpicAllMap(projectId, epicId);
+        Map completedMap = getEpicCompletedMap(projectId, allMap);
+        String groupDay2 = null;
+        int completedSum = 0;
+        int allSum = 0;
+        List<Long> spIds = new ArrayList<>();
+        Map<Long, Integer> issueValue = new HashMap();
+        List<Long> spIds2 = new ArrayList<>();
+        int estimateCount = 0;
+        Map<Long, Integer> issueValue2 = new HashMap<>();
+        for (DateIssueIdsDO cnt : storyPointsAll){
+            List<Long> epicIssueIds = (List<Long>) allMap.get(cnt.getGroupDay());
+            if (epicIssueIds == null || !epicIssueIds.contains(cnt.getIssueId())) continue;
+            if (!cnt.getGroupDay().equals(groupDay2) && groupDay2 != null) {
+                EpicChartDO epicChartDO = new EpicChartDO();
+                epicChartDO.setGroupDay(groupDay2);
+                epicChartDO.setCompletedStoryPoints(completedSum);
+                epicChartDO.setAllStoryPoints(allSum);
+                int issueCount = ((List<Long>) allMap.get(groupDay2)).size();
+                int unEstimateIssueCount = issueCount - estimateCount;
+                epicChartDO.setIssueCount(issueCount);
+                epicChartDO.setUnEstimateIssueCount(unEstimateIssueCount);
+                result.add(epicChartDO);
+            }
+            groupDay2 = cnt.getGroupDay();
+            if (spIds2.contains(cnt.getIssueId())) {
+                if (cnt.getStoryPoint() == null) {
+                    estimateCount -= 1;
+                }
+                allSum = allSum - issueValue2.get(cnt.getIssueId()) + cnt.getStoryPoint();
+                issueValue2.put(cnt.getIssueId(), cnt.getStoryPoint());
+            } else {
+                estimateCount += 1;
+                allSum = allSum + cnt.getStoryPoint();
+                spIds2.add(cnt.getIssueId());
+                issueValue2.put(cnt.getIssueId(), cnt.getStoryPoint());
+            }
+            List<Long> completedList = (List<Long>) completedMap.get(cnt.getGroupDay());
+            if (completedList == null) continue;
+            if (spIds.contains(cnt.getIssueId())) {
+                if (completedList.contains(cnt.getIssueId())) {
+                    completedSum = completedSum - issueValue.get(cnt.getIssueId()) + cnt.getStoryPoint();
+                    issueValue.put(cnt.getIssueId(), cnt.getStoryPoint());
+                } else {
+                    completedSum = completedSum - issueValue.get(cnt.getIssueId());
+                    issueValue.remove(cnt.getIssueId());
+                    spIds.remove(cnt.getIssueId());
+                }
+            } else {
+                if (completedList.contains(cnt.getIssueId())) {
+                    completedSum = completedSum + cnt.getStoryPoint();
+                    spIds.add(cnt.getIssueId());
+                    issueValue.put(cnt.getIssueId(), cnt.getStoryPoint());
+                }
+            }
+        }
+        if (groupDay2 != null) {
+            EpicChartDO epicChartDO = new EpicChartDO();
+            epicChartDO.setGroupDay(groupDay2);
+            epicChartDO.setCompletedStoryPoints(completedSum);
+            epicChartDO.setAllStoryPoints(allSum);
+            int issueCount = allMap.get(groupDay2) == null ? 0 : ((List<Long>) allMap.get(groupDay2)).size();
+            int unEstimateIssueCount = issueCount - estimateCount;
+            epicChartDO.setIssueCount(issueCount);
+            epicChartDO.setUnEstimateIssueCount(unEstimateIssueCount);
+            result.add(epicChartDO);
+        }
+        return result;
+    }
+
+    private List<EpicChartDO> dealRemainTimeData(Long projectId, Long epicId, List<DateIssueIdsDO> remainTimesAll) {
+        List<EpicChartDO> result = new ArrayList<>();
+        Map allMap = getEpicAllMap(projectId, epicId);
+        Map completedMap = getEpicCompletedMap(projectId, allMap);
+        String groupDay2 = null;
+        int completedSum = 0;
+        int allSum = 0;
+        List<Long> spIds = new ArrayList<>();
+        Map<Long, Integer> issueValue = new HashMap();
+        List<Long> spIds2 = new ArrayList<>();
+        int estimateCount = 0;
+        Map<Long, Integer> issueValue2 = new HashMap<>();
+        for (DateIssueIdsDO cnt : remainTimesAll){
+            List<Long> epicIssueIds = (List<Long>) allMap.get(cnt.getGroupDay());
+            if (epicIssueIds == null || !epicIssueIds.contains(cnt.getIssueId())) continue;
+            if (!cnt.getGroupDay().equals(groupDay2) && groupDay2 != null) {
+                EpicChartDO epicChartDO = new EpicChartDO();
+                epicChartDO.setGroupDay(groupDay2);
+                epicChartDO.setCompletedRemainTimes(completedSum);
+                epicChartDO.setAllRemainTimes(allSum);
+                int issueCount = ((List<Long>) allMap.get(groupDay2)).size();
+                int unEstimateIssueCount = issueCount - estimateCount;
+                epicChartDO.setIssueCount(issueCount);
+                epicChartDO.setUnEstimateIssueCount(unEstimateIssueCount);
+                result.add(epicChartDO);
+            }
+            groupDay2 = cnt.getGroupDay();
+            if (spIds2.contains(cnt.getIssueId())) {
+                if (cnt.getRemainTime() == null) {
+                    estimateCount -= 1;
+                }
+                allSum = allSum - issueValue2.get(cnt.getIssueId()) + cnt.getRemainTime();
+                issueValue2.put(cnt.getIssueId(), cnt.getRemainTime());
+            } else {
+                estimateCount += 1;
+                allSum = allSum + cnt.getRemainTime();
+                spIds2.add(cnt.getIssueId());
+                issueValue2.put(cnt.getIssueId(), cnt.getRemainTime());
+            }
+            List<Long> completedList = (List<Long>) completedMap.get(cnt.getGroupDay());
+            if (completedList == null) continue;
+            if (spIds.contains(cnt.getIssueId())) {
+                if (completedList.contains(cnt.getIssueId())) {
+                    completedSum = completedSum - issueValue.get(cnt.getIssueId()) + cnt.getRemainTime();
+                    issueValue.put(cnt.getIssueId(), cnt.getRemainTime());
+                } else {
+                    completedSum = completedSum - issueValue.get(cnt.getIssueId());
+                    issueValue.remove(cnt.getIssueId());
+                    spIds.remove(cnt.getIssueId());
+                }
+            } else {
+                if (completedList.contains(cnt.getIssueId())) {
+                    completedSum = completedSum + cnt.getRemainTime();
+                    spIds.add(cnt.getIssueId());
+                    issueValue.put(cnt.getIssueId(), cnt.getRemainTime());
+                }
+            }
+        }
+        if (groupDay2 != null) {
+            EpicChartDO epicChartDO = new EpicChartDO();
+            epicChartDO.setGroupDay(groupDay2);
+            epicChartDO.setCompletedRemainTimes(completedSum);
+            epicChartDO.setAllRemainTimes(allSum);
+            int issueCount = allMap.get(groupDay2) == null ? 0 : ((List<Long>) allMap.get(groupDay2)).size();
+            int unEstimateIssueCount = issueCount - estimateCount;
+            epicChartDO.setIssueCount(issueCount);
+            epicChartDO.setUnEstimateIssueCount(unEstimateIssueCount);
+            result.add(epicChartDO);
+        }
+        return result;
+    }
+
+    @Override
+    public List<EpicChartDO> queryEpicChart(Long projectId, Long epicId, String type) {
+        List<EpicChartDO> result = null;
+        switch (type) {
+            case "story_point":
+                List<DateIssueIdsDO> storyPointsAll = reportMapper.selectEpicStoryPointsAll(projectId);
+                result = dealStoryPointData(projectId, epicId, storyPointsAll);
+                break;
+            case "issue_count":
+                result = dealIssueCountData(projectId, epicId);
+                break;
+            case "remain_time":
+                List<DateIssueIdsDO> remainTimesAll = reportMapper.selectEpicRemainTime(projectId);
+                result = dealRemainTimeData(projectId, epicId, remainTimesAll);
+                break;
+            default:
+                break;
+        }
+        return result;
+    }
+
+    @Override
+    public List<EpicChartListDO> queryEpicChartList(Long projectId, Long epicId) {
+        return reportMapper.selectEpicIssueList(projectId, epicId);
     }
 }
 

@@ -1,6 +1,8 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.infra.dataobject.EpicChartDO;
+import io.choerodon.agile.infra.dataobject.EpicChartListDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
@@ -46,4 +48,8 @@ public interface ReportService {
      * @return PieChartDTO
      */
     List<PieChartDTO> queryPieChart(Long projectId, String fieldName);
+
+    List<EpicChartDO> queryEpicChart(Long projectId, Long epicId, String type);
+
+    List<EpicChartListDO> queryEpicChartList(Long projectId, Long epicId);
 }

@@ -1408,7 +1408,60 @@
         ORDER BY sprint_id DESC
         LIMIT 7
     </select>
+    
+    <select id="selectCompletedIssueIds" resultType="io.choerodon.agile.infra.dataobject.DateIssueIdsDO">
+        SELECT
+          DATE_FORMAT(adl3.last_update_date,'%Y-%m-%d') AS group_day,
+            adl3.issue_id,
+          IF(adl3.new_string IS NOT NULL, 1, 0) AS completed
+        FROM
+            agile_data_log adl3
+        WHERE
+            project_id = #{projectId}
+        AND adl3.log_id IN (
+            SELECT
+                MAX(adl2.log_id) AS log_id
+            FROM
+                agile_data_log adl2
+            WHERE
+                adl2.project_id = #{projectId}
+            AND adl2.field = 'resolution'
+            GROUP BY
+                DATE_FORMAT(adl2.last_update_date,'%Y-%m-%d'),adl2.issue_id
+        )
+        ORDER BY DATE_FORMAT(last_update_date,'%Y-%m-%d')
+    </select>
 
+    <select id="selectEpicStoryPointsAll" resultType="io.choerodon.agile.infra.dataobject.DateIssueIdsDO">
+        SELECT
+            DATE_FORMAT(
+                last_update_date,
+                '%Y-%m-%d'
+            ) AS group_day,
+          issue_id,
+          new_string AS story_point
+        FROM
+            agile_data_log
+        WHERE
+            log_id IN (
+                SELECT
+                    MAX(adl.log_id) AS log_id
+                FROM
+                    agile_data_log adl
+                WHERE
+                    adl.field = 'Story Points'
+                AND adl.project_id = #{projectId}
+                GROUP BY
+                    DATE_FORMAT(
+                        adl.last_update_date,
+                        '%Y-%m-%d'
+                    ),
+                    adl.issue_id
+            )
+        ORDER BY DATE_FORMAT(last_update_date,'%Y-%m-%d')
+    </select>
+
+<<<<<<< 66b544cdad7ca318068f423c4146fb9599fae762
     <select id="queryPieChartByParam" resultType="io.choerodon.agile.infra.dataobject.PieChartDO">
         select *,(pieData.value/#{total})*100 as percent from (
         SELECT
@@ -1517,6 +1570,133 @@
         <if test="fieldName == 'epic_id'">
             AND type_code != "issue_epic"
         </if>
+=======
+    <select id="selectIssueByEpicId" resultType="io.choerodon.agile.infra.dataobject.DateIssueIdsDO">
+        SELECT
+            DATE_FORMAT(
+                last_update_date,
+                '%Y-%m-%d'
+            ) AS group_day,
+            new_value AS issue_id
+        FROM
+            agile_data_log
+        WHERE
+            log_id IN (
+                SELECT
+                    MAX(adl.log_id) AS log_id
+                FROM
+                    agile_data_log adl
+                WHERE
+                    adl.field = 'Epic Child'
+                AND adl.project_id = #{projectId} AND adl.issue_id = #{epicId}
+                GROUP BY
+                    DATE_FORMAT(
+                        adl.last_update_date,
+                        '%Y-%m-%d'
+                    ),
+                    adl.issue_id
+            )
+        ORDER BY
+            DATE_FORMAT(
+                last_update_date,
+                '%Y-%m-%d'
+            )
+    </select>
+
+    <select id="selectEpicRemainTime" resultType="io.choerodon.agile.infra.dataobject.DateIssueIdsDO">
+        SELECT
+            DATE_FORMAT(
+                last_update_date,
+                '%Y-%m-%d'
+            ) AS group_day,
+            issue_id,
+            SUM(new_value) AS remain_time
+        FROM
+            agile_data_log
+        WHERE
+            log_id IN (
+                SELECT
+                    MAX(adl.log_id) AS log_id
+                FROM
+                    agile_data_log adl
+                WHERE
+                    adl.field = 'timeestimate'
+                AND adl.project_id = #{projectId}
+                GROUP BY
+                    DATE_FORMAT(
+                        adl.last_update_date,
+                        '%Y-%m-%d'
+                    ),
+                    adl.issue_id
+            )
+        OR log_id IN (
+            SELECT
+                MAX(adl1.log_id) AS log_id
+            FROM
+                agile_data_log adl1
+            WHERE
+                adl1.field = 'timespent'
+            AND adl1.project_id = #{projectId}
+            GROUP BY
+                DATE_FORMAT(
+                    adl1.last_update_date,
+                    '%Y-%m-%d'
+                ),
+                adl1.issue_id
+        )
+        GROUP BY
+        DATE_FORMAT(
+                last_update_date,
+                '%Y-%m-%d'
+            ),
+            issue_id
+        ORDER BY
+            DATE_FORMAT(
+                last_update_date,
+                '%Y-%m-%d'
+            )
+    </select>
+
+    <select id="selectEpicIssueList" resultType="io.choerodon.agile.infra.dataobject.EpicChartListDO">
+        SELECT
+            ai.issue_id,
+            CONCAT_WS(
+                '-',
+                api.project_code,
+                ai.issue_num
+            ) AS issue_num,
+            ai.summary,
+            ai.type_code,
+            ai.priority_code,
+            ais.`name` AS status_name,
+            ai.story_points,
+            ai.remaining_time + SUM(awl.work_time) AS remain_time,
+          IF(t.new_value IS NULL, 0, 1) AS completed
+        FROM
+            agile_issue ai
+        LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
+        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+        LEFT JOIN agile_work_log awl ON awl.issue_id = ai.issue_id
+        LEFT JOIN (
+            SELECT
+             issue_id, new_value
+            FROM
+                agile_data_log
+            WHERE
+                log_id IN (
+                    SELECT
+                        MAX(adl1.log_id) AS log_id
+                    FROM
+                        agile_data_log adl1
+                    WHERE
+                        adl1.field = 'resolution'
+                    AND adl1.project_id = #{projectId}
+                )
+        ) t ON ai.issue_id = t.issue_id
+        WHERE
+            ai.project_id = #{projectId}
+        AND ai.epic_id = #{epicId}
+>>>>>>> [ADD]史诗图api开发
     </select>
 
 </mapper>
