@@ -979,7 +979,7 @@ public class ReportServiceImpl implements ReportService {
             epicChartDO.setGroupDay(groupDay);
             List<Long> ids = (List<Long>) entry.getValue();
             epicChartDO.setIssueCount(ids.size());
-            epicChartDO.setIssueCompletedCount(((List<Long>)completedMap.get(groupDay)).size());
+            epicChartDO.setIssueCompletedCount(completedMap.get(groupDay) == null ? 0 : ((List<Long>)completedMap.get(groupDay)).size());
             result.add(epicChartDO);
         }
         return result;
@@ -1005,10 +1005,7 @@ public class ReportServiceImpl implements ReportService {
                 epicChartDO.setGroupDay(groupDay2);
                 epicChartDO.setCompletedStoryPoints(completedSum);
                 epicChartDO.setAllStoryPoints(allSum);
-                int issueCount = ((List<Long>) allMap.get(groupDay2)).size();
-                int unEstimateIssueCount = issueCount - estimateCount;
-                epicChartDO.setIssueCount(issueCount);
-                epicChartDO.setUnEstimateIssueCount(unEstimateIssueCount);
+                epicChartDO.setUnEstimateIssueCount(estimateCount);
                 result.add(epicChartDO);
             }
             groupDay2 = cnt.getGroupDay();
@@ -1048,13 +1045,28 @@ public class ReportServiceImpl implements ReportService {
             epicChartDO.setGroupDay(groupDay2);
             epicChartDO.setCompletedStoryPoints(completedSum);
             epicChartDO.setAllStoryPoints(allSum);
-            int issueCount = allMap.get(groupDay2) == null ? 0 : ((List<Long>) allMap.get(groupDay2)).size();
-            int unEstimateIssueCount = issueCount - estimateCount;
-            epicChartDO.setIssueCount(issueCount);
-            epicChartDO.setUnEstimateIssueCount(unEstimateIssueCount);
             result.add(epicChartDO);
         }
-        return result;
+        List<EpicChartDO> res = new ArrayList<>();
+        Iterator<Map.Entry<String, List<Long>>> entries = allMap.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<String, List<Long>> entry = entries.next();
+            EpicChartDO e = new EpicChartDO();
+            e.setGroupDay(entry.getKey());
+            int issueCount = allMap.get(entry.getKey()) == null ? 0 : ((List<Long>) allMap.get(entry.getKey())).size();
+            int unEstimateIssueCount = issueCount;
+            for (EpicChartDO tmp : result) {
+                if (tmp.getGroupDay().equals(entry.getKey())) {
+                    e.setAllStoryPoints(tmp.getAllStoryPoints());
+                    e.setCompletedStoryPoints(tmp.getCompletedStoryPoints());
+                    unEstimateIssueCount = unEstimateIssueCount - e.getUnEstimateIssueCount();
+                }
+            }
+            e.setIssueCount(issueCount);
+            e.setUnEstimateIssueCount(unEstimateIssueCount);
+            res.add(e);
+        }
+        return res;
     }
 
     private List<EpicChartDO> dealRemainTimeData(Long projectId, Long epicId, List<DateIssueIdsDO> remainTimesAll) {
@@ -1077,10 +1089,7 @@ public class ReportServiceImpl implements ReportService {
                 epicChartDO.setGroupDay(groupDay2);
                 epicChartDO.setCompletedRemainTimes(completedSum);
                 epicChartDO.setAllRemainTimes(allSum);
-                int issueCount = ((List<Long>) allMap.get(groupDay2)).size();
-                int unEstimateIssueCount = issueCount - estimateCount;
-                epicChartDO.setIssueCount(issueCount);
-                epicChartDO.setUnEstimateIssueCount(unEstimateIssueCount);
+                epicChartDO.setUnEstimateIssueCount(estimateCount);
                 result.add(epicChartDO);
             }
             groupDay2 = cnt.getGroupDay();
@@ -1120,13 +1129,28 @@ public class ReportServiceImpl implements ReportService {
             epicChartDO.setGroupDay(groupDay2);
             epicChartDO.setCompletedRemainTimes(completedSum);
             epicChartDO.setAllRemainTimes(allSum);
-            int issueCount = allMap.get(groupDay2) == null ? 0 : ((List<Long>) allMap.get(groupDay2)).size();
-            int unEstimateIssueCount = issueCount - estimateCount;
-            epicChartDO.setIssueCount(issueCount);
-            epicChartDO.setUnEstimateIssueCount(unEstimateIssueCount);
             result.add(epicChartDO);
         }
-        return result;
+        List<EpicChartDO> res = new ArrayList<>();
+        Iterator<Map.Entry<String, List<Long>>> entries = allMap.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<String, List<Long>> entry = entries.next();
+            EpicChartDO e = new EpicChartDO();
+            e.setGroupDay(entry.getKey());
+            int issueCount = allMap.get(entry.getKey()) == null ? 0 : ((List<Long>) allMap.get(entry.getKey())).size();
+            int unEstimateIssueCount = issueCount;
+            for (EpicChartDO tmp : result) {
+                if (tmp.getGroupDay().equals(entry.getKey())) {
+                    e.setAllRemainTimes(tmp.getAllStoryPoints());
+                    e.setCompletedRemainTimes(tmp.getCompletedStoryPoints());
+                    unEstimateIssueCount = unEstimateIssueCount - e.getUnEstimateIssueCount();
+                }
+            }
+            e.setIssueCount(issueCount);
+            e.setUnEstimateIssueCount(unEstimateIssueCount);
+            res.add(e);
+        }
+        return res;
     }
 
     @Override
