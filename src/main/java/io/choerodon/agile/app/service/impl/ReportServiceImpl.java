@@ -1044,6 +1044,7 @@ public class ReportServiceImpl implements ReportService {
             EpicChartDO epicChartDO = new EpicChartDO();
             epicChartDO.setGroupDay(groupDay2);
             epicChartDO.setCompletedStoryPoints(completedSum);
+            epicChartDO.setUnEstimateIssueCount(estimateCount);
             epicChartDO.setAllStoryPoints(allSum);
             result.add(epicChartDO);
         }
@@ -1060,6 +1061,7 @@ public class ReportServiceImpl implements ReportService {
                     e.setAllStoryPoints(tmp.getAllStoryPoints());
                     e.setCompletedStoryPoints(tmp.getCompletedStoryPoints());
                     unEstimateIssueCount = unEstimateIssueCount - tmp.getUnEstimateIssueCount();
+                    break;
                 }
             }
             e.setIssueCount(issueCount);
@@ -1128,6 +1130,7 @@ public class ReportServiceImpl implements ReportService {
             EpicChartDO epicChartDO = new EpicChartDO();
             epicChartDO.setGroupDay(groupDay2);
             epicChartDO.setCompletedRemainTimes(completedSum);
+            epicChartDO.setUnEstimateIssueCount(estimateCount);
             epicChartDO.setAllRemainTimes(allSum);
             result.add(epicChartDO);
         }
@@ -1141,9 +1144,10 @@ public class ReportServiceImpl implements ReportService {
             int unEstimateIssueCount = issueCount;
             for (EpicChartDO tmp : result) {
                 if (tmp.getGroupDay().equals(entry.getKey())) {
-                    e.setAllRemainTimes(tmp.getAllStoryPoints());
-                    e.setCompletedRemainTimes(tmp.getCompletedStoryPoints());
+                    e.setAllRemainTimes(tmp.getAllRemainTimes());
+                    e.setCompletedRemainTimes(tmp.getCompletedRemainTimes());
                     unEstimateIssueCount = unEstimateIssueCount - tmp.getUnEstimateIssueCount();
+                    break;
                 }
             }
             e.setIssueCount(issueCount);
