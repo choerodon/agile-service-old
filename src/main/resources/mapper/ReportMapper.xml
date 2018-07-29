@@ -1577,7 +1577,7 @@
                 last_update_date,
                 '%Y-%m-%d'
             ) AS group_day,
-            new_value AS issue_id
+            issue_id
         FROM
             agile_data_log
         WHERE
@@ -1587,15 +1587,15 @@
                 FROM
                     agile_data_log adl
                 WHERE
-                    adl.field = 'Epic Child'
-                AND adl.project_id = #{projectId} AND adl.issue_id = #{epicId}
+                    adl.field = 'Epic Link'
+                AND adl.project_id = #{projectId} AND (adl.old_value = #{epicId} OR adl.new_value = #{epicId})
                 GROUP BY
                     DATE_FORMAT(
                         adl.last_update_date,
                         '%Y-%m-%d'
                     ),
                     adl.issue_id
-            )
+            ) AND new_value is not NULL
         ORDER BY
             DATE_FORMAT(
                 last_update_date,
