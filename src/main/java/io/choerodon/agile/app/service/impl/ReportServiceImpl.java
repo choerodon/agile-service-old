@@ -1059,7 +1059,7 @@ public class ReportServiceImpl implements ReportService {
                 if (tmp.getGroupDay().equals(entry.getKey())) {
                     e.setAllStoryPoints(tmp.getAllStoryPoints());
                     e.setCompletedStoryPoints(tmp.getCompletedStoryPoints());
-                    unEstimateIssueCount = unEstimateIssueCount - e.getUnEstimateIssueCount();
+                    unEstimateIssueCount = unEstimateIssueCount - tmp.getUnEstimateIssueCount();
                 }
             }
             e.setIssueCount(issueCount);
@@ -1143,7 +1143,7 @@ public class ReportServiceImpl implements ReportService {
                 if (tmp.getGroupDay().equals(entry.getKey())) {
                     e.setAllRemainTimes(tmp.getAllStoryPoints());
                     e.setCompletedRemainTimes(tmp.getCompletedStoryPoints());
-                    unEstimateIssueCount = unEstimateIssueCount - e.getUnEstimateIssueCount();
+                    unEstimateIssueCount = unEstimateIssueCount - tmp.getUnEstimateIssueCount();
                 }
             }
             e.setIssueCount(issueCount);
