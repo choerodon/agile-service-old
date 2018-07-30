@@ -67,4 +67,13 @@ public interface IssueRepository {
     int removeIssueFromSprintByIssueIds(BatchRemoveSprintE batchRemoveSprintE);
 
     int deleteIssueFromSprintByIssueId(Long projectId, Long issueId);
+
+    /**
+     * 批量更新epic的排序
+     *
+     * @param sequence  sequence
+     * @param projectId projectId
+     * @return int
+     */
+    int batchUpdateSequence(Integer sequence, Long projectId);
 }

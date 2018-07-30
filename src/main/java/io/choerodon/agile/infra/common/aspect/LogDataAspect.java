@@ -8,6 +8,7 @@ import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -412,7 +413,6 @@ public class LogDataAspect {
         if (versionIssueRelE != null) {
             List<ProductVersionDO> productVersionDOS = productVersionMapper.queryVersionRelByIssueIdAndType(
                     versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), versionIssueRelE.getRelationType());
-            //todo 修改成批量sql
             Long issueId = versionIssueRelE.getIssueId();
             String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
             productVersionDOS.forEach(productVersionDO -> createDataLog(productVersionDO.getProjectId(), issueId, field,
@@ -488,7 +488,6 @@ public class LogDataAspect {
         }
         if (issueId != null) {
             IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
-            //todo 要不要设置value
             List<IssueLabelDO> originLabels = issueMapper.selectLabelNameByIssueId(issueId);
             createDataLog(issueDO.getProjectId(), issueId, FIELD_LABELS, getOriginLabelNames(originLabels),
                     null, null, null);
@@ -590,7 +589,6 @@ public class LogDataAspect {
             ComponentIssueRelDO componentIssueRelDO = new ComponentIssueRelDO();
             componentIssueRelDO.setIssueId(issueId);
             List<ComponentIssueRelDO> componentIssueRelDOList = componentIssueRelMapper.select(componentIssueRelDO);
-            //todo sql批量执行
             if (componentIssueRelDOList != null && !componentIssueRelDOList.isEmpty()) {
                 componentIssueRelDOList.forEach(componentIssueRel -> createDataLog(componentIssueRel.getProjectId(), componentIssueRel.getIssueId(),
                         FIELD_COMPONENT, issueComponentMapper.selectByPrimaryKey(componentIssueRel.getComponentId()).getName(), null,
@@ -667,7 +665,6 @@ public class LogDataAspect {
             Map.Entry entry = (Map.Entry<Long, List<ProductVersionDO>>) object;
             Long issueId = Long.parseLong(entry.getKey().toString());
             List<ProductVersionDO> versionIssueRelDOList = (List<ProductVersionDO>) entry.getValue();
-            //todo 修改成sql批量操作
             for (ProductVersionDO productVersionDO : versionIssueRelDOList) {
                 String field = FIX_VERSION.equals(productVersionDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
                 createDataLog(projectId, issueId, field, productVersionDO.getName(),
@@ -689,7 +686,6 @@ public class LogDataAspect {
             if (productVersionDO == null) {
                 throw new CommonException("error.productVersion.get");
             }
-            //todo 修改成sql批量操作
             for (Long issueId : versionIssueRelE.getIssueIds()) {
                 String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
                 createDataLog(versionIssueRelE.getProjectId(), issueId, field, null,
@@ -699,17 +695,27 @@ public class LogDataAspect {
     }
 
     private Object handleIssueCreateDataLog(ProceedingJoinPoint pjp) {
-        //若创建issue的初始状态为已完成，生成日志
         Object result;
         try {
             result = pjp.proceed();
             IssueE issueE = (IssueE) result;
-            IssueStatusDO issueStatusDO = issueStatusMapper.selectByPrimaryKey(issueE.getStatusId());
-            if ((issueStatusDO.getCompleted() != null && issueStatusDO.getCompleted())) {
-                createDataLog(issueE.getProjectId(), issueE.getIssueId(), FIELD_RESOLUTION, null,
-                        issueStatusDO.getName(), null, issueStatusDO.getId().toString());
+            if (issueE != null) {
+                //若创建issue的初始状态为已完成，生成日志
+                IssueStatusDO issueStatusDO = issueStatusMapper.selectByPrimaryKey(issueE.getStatusId());
+                if ((issueStatusDO.getCompleted() != null && issueStatusDO.getCompleted())) {
+                    createDataLog(issueE.getProjectId(), issueE.getIssueId(), FIELD_RESOLUTION, null,
+                            issueStatusDO.getName(), null, issueStatusDO.getId().toString());
+                }
+                if (issueE.getEpicId() != null && !issueE.getEpicId().equals(0L)) {
+                    //选择EPIC要生成日志
+                    Long epicId = issueE.getEpicId();
+                    issueE.setEpicId(null);
+                    createIssueEpicLog(epicId, ConvertHelper.convert(issueE, IssueDO.class));
+                }
             }
+
         } catch (Throwable throwable) {
+            logger.info(ERROR_UPDATE, throwable);
             throw new CommonException(ERROR_UPDATE);
         }
         return result;

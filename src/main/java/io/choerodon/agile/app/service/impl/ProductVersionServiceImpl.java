@@ -83,7 +83,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private static final String AGILE_SERVICE = "agile-service";
 
     @Override
-    public ProductVersionDetailDTO createVersion(Long projectId, ProductVersionCreateDTO versionCreateDTO) {
+    public synchronized ProductVersionDetailDTO createVersion(Long projectId, ProductVersionCreateDTO versionCreateDTO) {
         if (!projectId.equals(versionCreateDTO.getProjectId())) {
             throw new CommonException(NOT_EQUAL_ERROR);
         }
@@ -333,7 +333,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     }
 
     @Override
-    public ProductVersionPageDTO dragVersion(Long projectId, VersionSequenceDTO versionSequenceDTO) {
+    public synchronized ProductVersionPageDTO dragVersion(Long projectId, VersionSequenceDTO versionSequenceDTO) {
         ProductVersionE productVersionE = productVersionConverter.doToEntity(queryVersionByProjectIdAndVersionId(
                 versionSequenceDTO.getVersionId(), projectId));
         if (productVersionE == null) {

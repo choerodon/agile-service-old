@@ -15,6 +15,15 @@ public class EpicDataDTO {
     private Integer totalEstimate;
     private String color;
     private Long objectVersionNumber;
+    private Integer epicSequence;
+
+    public Integer getEpicSequence() {
+        return epicSequence;
+    }
+
+    public void setEpicSequence(Integer epicSequence) {
+        this.epicSequence = epicSequence;
+    }
 
     public Long getIssueId() {
         return issueId;

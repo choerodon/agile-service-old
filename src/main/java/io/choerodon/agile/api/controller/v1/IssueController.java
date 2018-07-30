@@ -375,4 +375,16 @@ public class IssueController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.timeSlotCount.get"));
     }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation(value = "拖动epic位置")
+    @PutMapping(value = "/epic_drag")
+    public ResponseEntity<EpicDataDTO> dragEpic(@ApiParam(value = "项目id", required = true)
+                                                             @PathVariable(name = "project_id") Long projectId,
+                                                             @ApiParam(value = "排序对象", required = true)
+                                                             @RequestBody EpicSequenceDTO epicSequenceDTO) {
+        return Optional.ofNullable(issueService.dragEpic(projectId, epicSequenceDTO))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.issueController.dragEpic"));
+    }
 }

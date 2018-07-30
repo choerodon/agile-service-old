@@ -65,6 +65,16 @@ public class IssueE {
 
     private Long originSprintId;
 
+    private Integer epicSequence;
+
+    public Integer getEpicSequence() {
+        return epicSequence;
+    }
+
+    public void setEpicSequence(Integer epicSequence) {
+        this.epicSequence = epicSequence;
+    }
+
     public Long getOriginSprintId() {
         return originSprintId;
     }

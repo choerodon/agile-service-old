@@ -245,6 +245,12 @@
                     #{typeCode}
                 </foreach>
             </if>
+            <if test='advancedSearchArgs.assigneeIds != null and advancedSearchArgs.assigneeIds.size > 0'>
+                AND ai.assignee_id IN
+                <foreach collection="advancedSearchArgs.assigneeIds" item="assigneeId" open="(" separator="," close=")">
+                    #{assigneeId}
+                </foreach>
+            </if>
             <if test='advancedSearchArgs.priorityCode != null and advancedSearchArgs.priorityCode.size > 0'>
                 AND ai.priority_code IN
                 <foreach collection="advancedSearchArgs.priorityCode" item="priorityCode" open="(" separator=","
@@ -271,11 +277,14 @@
                 <if test='otherArgs.type == "version" '>
                     agile_version_issue_rel oa WHERE oa.version_id
                 </if>
-                <if test='otherArgs.type == "sprint" '>
-                    agile_issue_sprint_rel oa where oa.sprint_id
+                <if test='otherArgs.type == "epic" '>
+                    agile_issue oa where oa.epic_id
                 </if>
                 <if test='otherArgs.type == "label" '>
                     agile_label_issue_rel oa where oa.label_id
+                </if>
+                <if test='otherArgs.type =="sprint"'>
+                    agile_issue_sprint_rel oa where oa.sprint_id
                 </if>
                 in
                 <foreach collection="otherArgs.id" item="id" open="(" separator=","
@@ -290,22 +299,6 @@
                          close=")">
                     #{issueId}
                 </foreach>
-            </if>
-            <if test='otherArgs.assigneeIds != null and otherArgs.assigneeIds.size > 0'>
-                AND ai.assignee_id in
-                <foreach collection="otherArgs.assigneeIds" item="assigneeId" open="(" separator=","
-                         close=")">
-                    #{assigneeId}
-                </foreach>
-            </if>
-            <if test='otherArgs.sprintIds != null and otherArgs.sprintIds.size > 0'>
-                AND ai.issue_id in (
-                select aisr.issue_id from agile_issue_sprint_rel aisr where aisr.sprint_id in
-                <foreach collection="otherArgs.sprintIds" item="sprintId" open="(" separator=","
-                         close=")">
-                    #{sprintId}
-                </foreach>
-                )
             </if>
         </if>
         )search where 1=1
@@ -379,9 +372,25 @@
             ai.project_id,
             ai.epic_name,
             alv.name AS color,
-            ai.object_version_number
+            ai.object_version_number,
+            ai.epic_sequence
         FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
         WHERE ai.project_id = #{projectId} AND ai.type_code = 'issue_epic'
+        ORDER BY ai.epic_sequence DESC
+    </select>
+
+    <select id="queryEpicListByEpic" resultType="io.choerodon.agile.infra.dataobject.EpicDataDO">
+        SELECT
+            ai.issue_id,
+            ai.summary,
+            ai.description,
+            ai.project_id,
+            ai.epic_name,
+            alv.name AS color,
+            ai.object_version_number,
+            ai.epic_sequence
+        FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
+        WHERE ai.project_id = #{projectId} AND ai.issue_id = #{issueId}
     </select>
 
     <select id="queryTotalEstimateByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
@@ -673,6 +682,7 @@
         WHERE
             project_id = #{projectId}
             AND type_code = 'issue_epic'
+        ORDER BY epic_sequence DESC
     </select>
 
     <delete id="batchRemoveFromVersion">
@@ -1235,5 +1245,20 @@
             ai.issue_id = #{issueId}
     </select>
 
+    <update id="batchUpdateSequence">
+        UPDATE agile_issue
+        SET sequence = (sequence + 1)
+        WHERE sequence &gt;= #{sequence} AND project_id = #{projectId} AND type_code = 'issue_epic'
+    </update>
+
+    <select id="queryMaxEpicSequenceByProject" resultType="java.lang.Integer">
+        SELECT ai.epic_sequence
+        FROM
+            agile_issue ai
+        WHERE ai.project_id = #{projectId}
+              AND ai.type_code = 'issue_epic'
+        ORDER BY ai.epic_sequence DESC
+        LIMIT 1;
+    </select>
 
 </mapper>

@@ -102,4 +102,13 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue.groovy') {
         renameColumn(columnDataType: 'VARCHAR(50)', newColumnName: 'color_code', oldColumnName: 'color_code', remarks: '颜色代码', tableName: 'agile_issue')
     }
 
+    changeSet(id: '2018-07-30-add-column', author: 'dinghuang123@gmail.com') {
+        addColumn(tableName: 'agile_issue') {
+            column(name: 'epic_sequence', type: 'int', remarks: '排序字段')
+        }
+        sql(stripComments: true, splitStatements: false, endDelimiter: ';') {
+            "update agile_issue set epic_sequence = issue_id where type_code = 'issue_epic';"
+        }
+    }
+
 }
