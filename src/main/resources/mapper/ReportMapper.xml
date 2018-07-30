@@ -1181,219 +1181,308 @@
         </foreach>
     </select>
 
-    <select id="selectByIssueCountCommitted" resultType="io.choerodon.agile.infra.dataobject.VelocitySprintDO">
-        SELECT aisr.sprint_id, asp.sprint_name,COUNT(aisr.issue_id) AS issue_count
-        FROM agile_issue_sprint_rel aisr
-        LEFT JOIN agile_sprint asp ON aisr.sprint_id = asp.sprint_id
-        WHERE aisr.project_id = #{projectId} AND aisr.sprint_id IN
-        <foreach collection="ids" item="id"
-                 open="(" close=")" separator=",">
-            #{id}
-        </foreach>
-        GROUP BY aisr.sprint_id,asp.sprint_name
-    </select>
 
-    <select id="selectByIssueCountCompleted" resultType="io.choerodon.agile.infra.dataobject.VelocitySprintDO">
-        SELECT aisr.sprint_id, asp.sprint_name,COUNT(aisr.issue_id) AS issue_count
-        FROM agile_issue_sprint_rel aisr
-        LEFT JOIN agile_sprint asp ON aisr.sprint_id = asp.sprint_id
-        WHERE aisr.project_id = #{projectId} AND aisr.issue_id IN (
-        SELECT issue_id
-        FROM agile_data_log
-        WHERE
-        log_id IN (
-        SELECT MAX(adl.log_id) AS log_id
-        FROM agile_data_log adl
-        WHERE adl.field = 'resolution' AND project_id = #{projectId}
-        AND adl.last_update_date &lt;= (
-        SELECT CASE status_code WHEN 'closed' THEN actual_end_date
-        WHEN 'archived' THEN actual_end_date
-        ELSE #{now} END
-        FROM agile_sprint
-        WHERE project_id = #{projectId} AND aisr.sprint_id = sprint_id
-        )
-        GROUP BY adl.issue_id
-        ) AND new_value IS NOT NULL
-        ) AND aisr.sprint_id IN
-        <foreach collection="ids" item="id"
-                 open="(" close=")" separator=",">
-            #{id}
-        </foreach>
-        GROUP BY aisr.sprint_id,asp.sprint_name
-    </select>
-
-    <select id="selectByStoryPointCommitted" resultType="io.choerodon.agile.infra.dataobject.VelocitySprintDO">
-        SELECT aisr.sprint_id, asp.sprint_name,SUM(issues.new_string) AS story_points
-        FROM agile_issue_sprint_rel aisr
-        LEFT JOIN (
-        SELECT issue_id, new_string, last_update_date
-        FROM agile_data_log
-        WHERE
-        log_id IN (
-        SELECT MAX(adl.log_id) AS log_id
-        FROM agile_data_log adl
-        WHERE adl.field = 'Story Points' AND project_id = #{projectId}
-        GROUP BY adl.issue_id
-        )
-        ) issues ON issues.issue_id = aisr.issue_id AND issues.last_update_date &lt;= (
-        SELECT CASE status_code WHEN 'closed' THEN actual_end_date
-        WHEN 'archived' THEN actual_end_date
-        ELSE #{now} END
-        FROM agile_sprint
-        WHERE project_id = #{projectId} AND aisr.sprint_id = sprint_id
-        )
-        LEFT JOIN agile_sprint asp ON aisr.sprint_id = asp.sprint_id
-        WHERE aisr.project_id = #{projectId} AND aisr.sprint_id IN
-        <foreach collection="ids" item="id"
-                 open="(" close=")" separator=",">
-            #{id}
-        </foreach>
-        GROUP BY aisr.sprint_id,asp.sprint_name
-    </select>
-
-    <select id="selectByStoryPointCompleted" resultType="io.choerodon.agile.infra.dataobject.VelocitySprintDO">
-        SELECT aisr.sprint_id, asp.sprint_name,SUM(issues.new_string) AS story_points
+    <select id="selectByIssueCountCommitted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDO">
+        SELECT
+            aisr.sprint_id,
+            aisr.issue_id
         FROM
-        agile_issue_sprint_rel aisr
-        LEFT JOIN (
-        SELECT issue_id, new_string, last_update_date
-        FROM agile_data_log
-        WHERE
-        log_id IN (
-        SELECT MAX(adl.log_id) AS log_id
-        FROM agile_data_log adl
-        WHERE adl.field = 'Story Points' AND project_id = #{projectId}
-        GROUP BY adl.issue_id
-        )
-        ) issues ON issues.issue_id = aisr.issue_id AND issues.last_update_date &lt;= (
-        SELECT CASE status_code WHEN 'closed' THEN actual_end_date
-        WHEN 'archived' THEN actual_end_date
-        ELSE #{now} END
-        FROM agile_sprint
-        WHERE project_id = #{projectId} AND aisr.sprint_id = sprint_id
-        )
-        LEFT JOIN agile_sprint asp ON aisr.sprint_id = asp.sprint_id
-        WHERE aisr.project_id = #{projectId} AND aisr.issue_id IN (
-        SELECT issue_id
-        FROM agile_data_log
-        WHERE
-        log_id IN (
-        SELECT MAX(adl.log_id) AS log_id
-        FROM agile_data_log adl
-        WHERE adl.field = 'resolution' AND project_id = #{projectId}
-        AND adl.last_update_date &lt;= (
-        SELECT CASE status_code WHEN 'closed' THEN actual_end_date
-        WHEN 'archived' THEN actual_end_date
-        ELSE #{now} END
-        FROM agile_sprint
-        WHERE project_id = #{projectId} AND aisr.sprint_id = sprint_id
-        )
-        GROUP BY adl.issue_id
-        ) AND new_value IS NOT NULL
-        ) AND aisr.sprint_id IN
-        <foreach collection="ids" item="id"
-                 open="(" close=")" separator=",">
-            #{id}
-        </foreach>
-        GROUP BY aisr.sprint_id,asp.sprint_name
+          agile_issue_sprint_rel aisr
+        WHERE aisr.project_id = #{projectId}
     </select>
 
-    <select id="selectByRemainTimeCommitted" resultType="io.choerodon.agile.infra.dataobject.VelocitySprintDO">
-        SELECT aisr.sprint_id, asp.sprint_name,SUM(issues.new_value) AS remain_time
-        FROM agile_issue_sprint_rel aisr
-        LEFT JOIN (
-        SELECT issue_id, new_value, last_update_date
-        FROM agile_data_log
-        WHERE log_id IN (
-        SELECT MAX(adl.log_id) AS log_id
-        FROM agile_data_log adl
-        WHERE adl.field = 'timeestimate' AND project_id = #{projectId}
-        GROUP BY adl.issue_id
-        )
-        UNION ALL
-        ( SELECT issue_id, new_value, last_update_date
-        FROM agile_data_log
-        WHERE
-        log_id IN (
-        SELECT MAX(adl.log_id) AS log_id
-        FROM agile_data_log adl
-        WHERE adl.field = 'timespent' AND project_id = #{projectId}
-        GROUP BY adl.issue_id
-        )
-        )
-        ) issues ON issues.issue_id = aisr.issue_id
-        AND issues.last_update_date &lt;= (
-        SELECT CASE status_code WHEN 'closed' THEN actual_end_date
-        WHEN 'archived' THEN actual_end_date
-        ELSE #{now} END
-        FROM agile_sprint
-        WHERE project_id = #{projectId} AND aisr.sprint_id = sprint_id
-        )
-        LEFT JOIN agile_sprint asp ON aisr.sprint_id = asp.sprint_id
-        WHERE aisr.project_id = #{projectId} AND aisr.sprint_id IN
-        <foreach collection="ids" item="id"
-                 open="(" close=")" separator=",">
-            #{id}
-        </foreach>
-        GROUP BY aisr.sprint_id,asp.sprint_name
-    </select>
-
-    <select id="selectByRemainTimeCompleted" resultType="io.choerodon.agile.infra.dataobject.VelocitySprintDO">
-        SELECT aisr.sprint_id, asp.sprint_name, SUM(issues.new_value) AS remain_time
+    <select id="selectByIssueCountCompleted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDO">
+        SELECT
+            aisr.sprint_id,
+            aisr.issue_id
         FROM
-        agile_issue_sprint_rel aisr
-        LEFT JOIN (
-        SELECT issue_id, new_value, last_update_date
-        FROM agile_data_log
+        agile_issue_sprint_rel aisr,
+        (
+            SELECT
+                t2.sprint_id,
+                t2.issue_id,
+                IF(adl2.new_value IS NULL,0 ,1) AS completed
+            FROM
+            agile_data_log adl2,
+            (
+                SELECT
+                    aisr.sprint_id,
+                    aisr.issue_id,
+                    max(adl1.log_id) AS log_id
+                FROM
+                    agile_issue_sprint_rel aisr,
+                    agile_sprint asp,
+                    agile_data_log adl1
+                WHERE
+                    aisr.project_id = #{projectId}
+                    AND aisr.sprint_id = asp.sprint_id
+                    AND adl1.project_id = #{projectId}
+                    AND aisr.issue_id = adl1.issue_id
+                    AND adl1.field = 'resolution'
+                    AND adl1.last_update_date &lt;= IF (asp.actual_end_date IS NULL, #{now}, asp.actual_end_date)
+                GROUP BY aisr.sprint_id, aisr.issue_id
+        ) t2
         WHERE
-        log_id IN (
-        SELECT MAX(adl.log_id) AS log_id
-        FROM agile_data_log adl
-        WHERE adl.field = 'timeestimate' AND project_id = #{projectId}
-        GROUP BY adl.issue_id
-        )
-        UNION ALL
-        ( SELECT issue_id, new_value, last_update_date
-        FROM agile_data_log
+            adl2.project_id = #{projectId}
+            AND adl2.log_id = t2.log_id
+        ) t3
         WHERE
-        log_id IN (
-        SELECT MAX(adl.log_id) AS log_id
-        FROM agile_data_log adl
-        WHERE adl.field = 'timespent' AND project_id = #{projectId}
-        GROUP BY adl.issue_id
-        )
-        )
-        ) issues ON issues.issue_id = aisr.issue_id AND issues.last_update_date &lt;= (
-        SELECT CASE status_code WHEN 'closed' THEN actual_end_date
-        WHEN 'archived' THEN actual_end_date
-        ELSE #{now} END
-        FROM agile_sprint
-        WHERE project_id = #{projectId} AND aisr.sprint_id = sprint_id
-        )
-        LEFT JOIN agile_sprint asp ON aisr.sprint_id = asp.sprint_id
-        WHERE aisr.project_id = #{projectId} AND aisr.issue_id IN (
-        SELECT issue_id
-        FROM agile_data_log
+            aisr.project_id = #{projectId}
+            AND aisr.sprint_id = t3.sprint_id
+            AND aisr.issue_id = t3.issue_id
+            AND t3.completed = 1
+    </select>
+
+
+    <select id="selectByStoryPointAndNumCommitted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDO">
+        SELECT
+            t1.sprint_id,
+            t1.issue_id,
+            IFNULL(adl.new_string,0) AS story_point
+        FROM
+        agile_data_log adl,
+        (
+            SELECT
+            aisr.sprint_id,
+            aisr.issue_id,
+            max(adl1.log_id) AS log_id
+            FROM
+            agile_issue_sprint_rel aisr,
+            agile_sprint asp,
+            agile_data_log adl1
+            WHERE
+            aisr.project_id = #{projectId}
+            AND aisr.sprint_id = asp.sprint_id
+            AND adl1.project_id = #{projectId}
+            AND aisr.issue_id = adl1.issue_id
+            AND adl1.field = 'Story Points'
+            AND adl1.last_update_date &lt;= IF (asp.actual_end_date IS NULL, #{now}, asp.actual_end_date)
+            GROUP BY aisr.sprint_id, aisr.issue_id
+        ) t1
         WHERE
-        log_id IN (
-        SELECT MAX(adl.log_id) AS log_id
-        FROM agile_data_log adl
-        WHERE adl.field = 'resolution' AND project_id = #{projectId}
-        AND adl.last_update_date &lt;= (
-        SELECT CASE status_code WHEN 'closed' THEN actual_end_date
-        WHEN 'archived' THEN actual_end_date
-        ELSE #{now} END
-        FROM agile_sprint
-        WHERE project_id = #{projectId} AND aisr.sprint_id = sprint_id
-        )
-        GROUP BY adl.issue_id
-        ) AND new_value IS NOT NULL
-        ) AND aisr.sprint_id IN
+        adl.project_id = #{projectId}
+        AND adl.log_id = t1.log_id
+        AND t1.sprint_id IN
         <foreach collection="ids" item="id"
                  open="(" close=")" separator=",">
             #{id}
         </foreach>
-        GROUP BY aisr.sprint_id,asp.sprint_name
+    </select>
+
+    <select id="selectByStoryPointAndNumCompleted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDO">
+        SELECT
+            t1.sprint_id,
+            t1.issue_id,
+            IFNULL(adl.new_string,0) AS story_point
+        FROM
+        agile_data_log adl,
+        (
+            SELECT
+                aisr.sprint_id,
+                aisr.issue_id,
+                max(adl1.log_id) AS log_id
+            FROM
+                agile_issue_sprint_rel aisr,
+                agile_sprint asp,
+                agile_data_log adl1
+            WHERE
+                aisr.project_id = #{projectId}
+                AND aisr.sprint_id = asp.sprint_id
+                AND adl1.project_id = #{projectId}
+                AND aisr.issue_id = adl1.issue_id
+                AND adl1.field = 'Story Points'
+                AND adl1.last_update_date &lt;= IF (asp.actual_end_date IS NULL, #{now}, asp.actual_end_date)
+            GROUP BY aisr.sprint_id, aisr.issue_id
+        ) t1,
+        (
+            SELECT
+            t2.sprint_id,
+            t2.issue_id,
+            IF(adl2.new_value IS NULL,0 ,1) AS completed
+            FROM
+            agile_data_log adl2,
+            (
+                SELECT
+                    aisr.sprint_id,
+                    aisr.issue_id,
+                    max(adl1.log_id) AS log_id
+                FROM
+                    agile_issue_sprint_rel aisr,
+                    agile_sprint asp,
+                    agile_data_log adl1
+                WHERE
+                    aisr.project_id = #{projectId}
+                    AND aisr.sprint_id = asp.sprint_id
+                    AND adl1.project_id = #{projectId}
+                    AND aisr.issue_id = adl1.issue_id
+                    AND adl1.field = 'resolution'
+                    AND adl1.last_update_date &lt;= IF (asp.actual_end_date IS NULL, #{now}, asp.actual_end_date)
+                GROUP BY aisr.sprint_id, aisr.issue_id
+        ) t2
+        WHERE
+            adl2.project_id = #{projectId}
+            AND adl2.log_id = t2.log_id
+            ) t3
+            WHERE
+            adl.project_id = #{projectId}
+            AND adl.log_id = t1.log_id
+            AND t1.sprint_id = t3.sprint_id
+            AND adl.issue_id = t3.issue_id
+            AND t3.completed = 1
+            AND t1.sprint_id IN
+                <foreach collection="ids" item="id"
+                         open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+    </select>
+
+
+    <select id="selectByRemainTimeCommitted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDO">
+        SELECT
+        t1.sprint_id,
+        t1.issue_id,
+        adl.new_value + IFNULL(t5.work_times,0) AS remain_time
+        FROM
+        agile_data_log adl,
+        (
+        SELECT
+        aisr.sprint_id,
+        aisr.issue_id,
+        max(adl1.log_id) AS log_id
+        FROM
+        agile_issue_sprint_rel aisr,
+        agile_sprint asp,
+        agile_data_log adl1
+        WHERE
+        aisr.project_id = #{projectId}
+        AND aisr.sprint_id = asp.sprint_id
+        AND adl1.project_id = #{projectId}
+        AND aisr.issue_id = adl1.issue_id
+        AND adl1.field = 'timeestimate'
+        AND adl1.last_update_date &lt;= IF(asp.actual_end_date IS NULL,#{now}, asp.actual_end_date)
+        GROUP BY
+        aisr.sprint_id,
+        aisr.issue_id
+        ) t1
+        LEFT JOIN (
+        SELECT t4.sprint_id,t4.issue_id,SUM(adlf.new_value) AS work_times FROM agile_data_log adlf,
+        (SELECT
+        aisr.sprint_id,
+        aisr.issue_id,
+        max(adl1.log_id) AS log_id
+        FROM
+        agile_issue_sprint_rel aisr,
+        agile_sprint asp,
+        agile_data_log adl1
+        WHERE
+        aisr.project_id = #{projectId}
+        AND aisr.sprint_id = asp.sprint_id
+        AND adl1.project_id = #{projectId}
+        AND aisr.issue_id = adl1.issue_id
+        AND adl1.field = 'timespent'
+        AND adl1.last_update_date &lt;= IF (asp.actual_end_date IS NULL, #{now}, asp.actual_end_date)
+        GROUP BY aisr.sprint_id, aisr.issue_id) t4 WHERE adlf.project_id = #{projectId} AND adlf.log_id = t4.log_id
+        GROUP BY t4.sprint_id,t4.issue_id
+        ) t5 ON t1.sprint_id = t5.sprint_id AND t1.issue_id = t5.issue_id
+        WHERE
+        adl.project_id = #{projectId}
+        AND adl.log_id = t1.log_id
+        AND t1.sprint_id IN
+        <foreach collection="ids" item="id"
+                 open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="selectByRemainTimeCompleted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDO">
+        SELECT
+        t1.sprint_id,
+        t1.issue_id,
+        adl.new_value + IFNULL(t5.work_times,0) AS remain_time
+        FROM
+        agile_data_log adl,
+        (
+        SELECT
+        aisr.sprint_id,
+        aisr.issue_id,
+        max(adl1.log_id) AS log_id
+        FROM
+        agile_issue_sprint_rel aisr,
+        agile_sprint asp,
+        agile_data_log adl1
+        WHERE
+        aisr.project_id = #{projectId}
+        AND aisr.sprint_id = asp.sprint_id
+        AND adl1.project_id = #{projectId}
+        AND aisr.issue_id = adl1.issue_id
+        AND adl1.field = 'timeestimate'
+        AND adl1.last_update_date &lt;= IF(asp.actual_end_date IS NULL,#{now}, asp.actual_end_date)
+        GROUP BY
+        aisr.sprint_id,
+        aisr.issue_id
+        ) t1
+        LEFT JOIN (
+        SELECT t4.sprint_id,t4.issue_id,SUM(adlf.new_value) AS work_times FROM agile_data_log adlf,
+        (SELECT
+        aisr.sprint_id,
+        aisr.issue_id,
+        max(adl1.log_id) AS log_id
+        FROM
+        agile_issue_sprint_rel aisr,
+        agile_sprint asp,
+        agile_data_log adl1
+        WHERE
+        aisr.project_id = #{projectId}
+        AND aisr.sprint_id = asp.sprint_id
+        AND adl1.project_id = #{projectId}
+        AND aisr.issue_id = adl1.issue_id
+        AND adl1.field = 'timespent'
+        AND adl1.last_update_date &lt;= IF (asp.actual_end_date IS NULL, #{now}, asp.actual_end_date)
+        GROUP BY aisr.sprint_id, aisr.issue_id) t4 WHERE adlf.project_id = #{projectId} AND adlf.log_id = t4.log_id
+        GROUP BY t4.sprint_id,t4.issue_id
+        ) t5 ON t1.sprint_id = t5.sprint_id AND t1.issue_id = t5.issue_id,
+        (
+        SELECT
+        t2.sprint_id,
+        t2.issue_id,
+        IF (adl2.new_value IS NULL, 0, 1) AS completed
+        FROM
+        agile_data_log adl2,
+        (
+        SELECT
+        aisr.sprint_id,
+        aisr.issue_id,
+        max(adl1.log_id) AS log_id
+        FROM
+        agile_issue_sprint_rel aisr,
+        agile_sprint asp,
+        agile_data_log adl1
+        WHERE
+        aisr.project_id = #{projectId}
+        AND aisr.sprint_id = asp.sprint_id
+        AND adl1.project_id = #{projectId}
+        AND aisr.issue_id = adl1.issue_id
+        AND adl1.field = 'resolution'
+        AND adl1.last_update_date &lt;=IF (asp.actual_end_date IS NULL, #{now},asp.actual_end_date)
+        GROUP BY
+        aisr.sprint_id,
+        aisr.issue_id
+        ) t2
+        WHERE
+        adl2.project_id = #{projectId}
+        AND adl2.log_id = t2.log_id
+        ) t3
+        WHERE
+        adl.project_id = #{projectId}
+        AND adl.log_id = t1.log_id
+        AND t1.sprint_id = t3.sprint_id
+        AND adl.issue_id = t3.issue_id
+        AND t3.completed = 1
+        AND t1.sprint_id IN
+        <foreach collection="ids" item="id"
+                 open="(" close=")" separator=",">
+            #{id}
+        </foreach>
     </select>
 
 
@@ -1670,16 +1759,26 @@
             ai.priority_code,
             ais.`name` AS status_name,
             ai.story_points,
-            ai.remaining_time + SUM(awl.work_time) AS remain_time,
-          IF(t.new_value IS NULL, 0, 1) AS completed
+            ai.remaining_time + IFNULL(aw.work_times,0) AS remain_time,
+            IF (t.new_value IS NULL, 0, 1) AS completed
         FROM
             agile_issue ai
         LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
         LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
-        LEFT JOIN agile_work_log awl ON awl.issue_id = ai.issue_id
         LEFT JOIN (
             SELECT
-             issue_id, new_value
+                awl.issue_id,
+                SUM(awl.work_time) AS work_times
+            FROM
+                agile_work_log awl
+            WHERE project_id = #{projectId}
+            GROUP BY
+                awl.issue_id
+        ) aw ON aw.issue_id = ai.issue_id
+        LEFT JOIN (
+            SELECT
+                issue_id,
+                new_value
             FROM
                 agile_data_log
             WHERE
