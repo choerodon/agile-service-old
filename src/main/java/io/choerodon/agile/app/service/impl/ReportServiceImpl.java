@@ -798,24 +798,64 @@ public class ReportServiceImpl implements ReportService {
         return sdf.format(d);
     }
 
-    private List<VelocitySprintDO> dealResult(List<VelocitySprintDO> committedList, List<VelocitySprintDO> completedList, List<VelocitySprintDO> sprintDOList, List<VelocitySprintDO> result) {
+    private List<VelocitySprintDO> dealStoryPointResult(List<VelocitySingleDO> committedList, List<VelocitySingleDO> completedList, List<VelocitySprintDO> sprintDOList, List<VelocitySprintDO> result) {
         for (VelocitySprintDO temp : sprintDOList) {
-            for (VelocitySprintDO committed : committedList) {
-                if (temp.getSprintId().equals(committed.getSprintId())) {
-                    temp.setCommittedIssueCount(committed.getIssueCount());
-                    temp.setCommittedStoryPoints(committed.getStoryPoints());
-                    temp.setCommittedRemainTime(committed.getRemainTime());
-                    break;
+            int committedStoryPoints = 0;
+            int completedStoryPoints = 0;
+            for (VelocitySingleDO committed : committedList) {
+                if (committed.getSprintId().equals(temp.getSprintId())) {
+                    committedStoryPoints += committed.getStoryPoint();
                 }
             }
-            for (VelocitySprintDO completed : completedList) {
-                if (temp.getSprintId().equals(completed.getSprintId())) {
-                    temp.setCompletedIssueCount(completed.getIssueCount());
-                    temp.setCompletedStoryPoints(completed.getStoryPoints());
-                    temp.setCompletedRemainTime(completed.getRemainTime());
-                    break;
+            for (VelocitySingleDO completed : completedList) {
+                if (completed.getSprintId().equals(temp.getSprintId())) {
+                    completedStoryPoints += completed.getStoryPoint();
                 }
             }
+            temp.setCommittedStoryPoints(committedStoryPoints);
+            temp.setCompletedStoryPoints(completedStoryPoints);
+            result.add(temp);
+        }
+        return result;
+    }
+
+    private List<VelocitySprintDO> dealIssueCountResult(List<VelocitySingleDO> committedList, List<VelocitySingleDO> completedList, List<VelocitySprintDO> sprintDOList, List<VelocitySprintDO> result) {
+        for (VelocitySprintDO temp : sprintDOList) {
+            int committedIssueNum = 0;
+            int completedIssueNum = 0;
+            for (VelocitySingleDO committed : committedList) {
+                if (committed.getSprintId().equals(temp.getSprintId())) {
+                    committedIssueNum += 1;
+                }
+            }
+            for (VelocitySingleDO completed : completedList) {
+                if (completed.getSprintId().equals(temp.getSprintId())) {
+                    completedIssueNum += 1;
+                }
+            }
+            temp.setCommittedIssueCount(committedIssueNum);
+            temp.setCompletedIssueCount(completedIssueNum);
+            result.add(temp);
+        }
+        return result;
+    }
+
+    private List<VelocitySprintDO> dealRemainTimeResult(List<VelocitySingleDO> committedList, List<VelocitySingleDO> completedList, List<VelocitySprintDO> sprintDOList, List<VelocitySprintDO> result) {
+        for (VelocitySprintDO temp : sprintDOList) {
+            int committedRemainTime = 0;
+            int completedRemainTime = 0;
+            for (VelocitySingleDO committed : committedList) {
+                if (committed.getSprintId().equals(temp.getSprintId())) {
+                    committedRemainTime += committed.getRemainTime();
+                }
+            }
+            for (VelocitySingleDO completed : completedList) {
+                if (completed.getSprintId().equals(temp.getSprintId())) {
+                    completedRemainTime += completed.getRemainTime();
+                }
+            }
+            temp.setCommittedRemainTime(committedRemainTime);
+            temp.setCompletedRemainTime(completedRemainTime);
             result.add(temp);
         }
         return result;
@@ -832,19 +872,19 @@ public class ReportServiceImpl implements ReportService {
         List<VelocitySprintDO> result = new ArrayList<>();
         switch (type) {
             case "issue_count":
-                List<VelocitySprintDO> issueCountCommitted = reportMapper.selectByIssueCountCommitted(projectId, ids, now);
-                List<VelocitySprintDO> issueCountCompleted = reportMapper.selectByIssueCountCompleted(projectId, ids, now);
-                dealResult(issueCountCommitted, issueCountCompleted, sprintDOList, result);
+                List<VelocitySingleDO> issueCountCommitted = reportMapper.selectByIssueCountCommitted(projectId, ids, now);
+                List<VelocitySingleDO> issueCountCompleted = reportMapper.selectByIssueCountCompleted(projectId, ids, now);
+                dealIssueCountResult(issueCountCommitted, issueCountCompleted, sprintDOList, result);
                 break;
             case "story_point":
-                List<VelocitySprintDO> storyPointCommitted = reportMapper.selectByStoryPointCommitted(projectId, ids, now);
-                List<VelocitySprintDO> storyPointCompleted = reportMapper.selectByStoryPointCompleted(projectId, ids, now);
-                dealResult(storyPointCommitted, storyPointCompleted, sprintDOList, result);
+                List<VelocitySingleDO> storyPointCommitted = reportMapper.selectByStoryPointAndNumCommitted(projectId, ids, now);
+                List<VelocitySingleDO> storyPointCompleted = reportMapper.selectByStoryPointAndNumCompleted(projectId, ids, now);
+                dealStoryPointResult(storyPointCommitted, storyPointCompleted, sprintDOList, result);
                 break;
             case "remain_time":
-                List<VelocitySprintDO> remainTimeCommitted = reportMapper.selectByRemainTimeCommitted(projectId, ids, now);
-                List<VelocitySprintDO> remainTimecompleted = reportMapper.selectByRemainTimeCompleted(projectId, ids, now);
-                dealResult(remainTimeCommitted, remainTimecompleted, sprintDOList, result);
+                List<VelocitySingleDO> remainTimeCommitted = reportMapper.selectByRemainTimeCommitted(projectId, ids, now);
+                List<VelocitySingleDO> remainTimecompleted = reportMapper.selectByRemainTimeCompleted(projectId, ids, now);
+                dealRemainTimeResult(remainTimeCommitted, remainTimecompleted, sprintDOList, result);
                 break;
             default:
                 break;

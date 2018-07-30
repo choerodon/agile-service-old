@@ -16,19 +16,19 @@ public class VelocitySprintDO {
 
     private int storyPoints;
 
-    private BigDecimal remainTime;
+    private int remainTime;
 
-    private Long committedIssueCount;
+    private int committedIssueCount;
 
-    private Long completedIssueCount;
+    private int completedIssueCount;
 
     private int committedStoryPoints;
 
     private int completedStoryPoints;
 
-    private BigDecimal committedRemainTime;
+    private int committedRemainTime;
 
-    private BigDecimal completedRemainTime;
+    private int completedRemainTime;
 
 
     public void setSprintId(Long sprintId) {
@@ -63,28 +63,28 @@ public class VelocitySprintDO {
         return storyPoints;
     }
 
-    public void setRemainTime(BigDecimal remainTime) {
+    public void setRemainTime(int remainTime) {
         this.remainTime = remainTime;
     }
 
-    public BigDecimal getRemainTime() {
+    public int getRemainTime() {
         return remainTime;
     }
 
-    public Long getCommittedIssueCount() {
-        return committedIssueCount;
-    }
-
-    public void setCommittedIssueCount(Long committedIssueCount) {
+    public void setCommittedIssueCount(int committedIssueCount) {
         this.committedIssueCount = committedIssueCount;
     }
 
-    public Long getCompletedIssueCount() {
-        return completedIssueCount;
+    public int getCommittedIssueCount() {
+        return committedIssueCount;
     }
 
-    public void setCompletedIssueCount(Long completedIssueCount) {
+    public void setCompletedIssueCount(int completedIssueCount) {
         this.completedIssueCount = completedIssueCount;
+    }
+
+    public int getCompletedIssueCount() {
+        return completedIssueCount;
     }
 
     public int getCommittedStoryPoints() {
@@ -103,19 +103,19 @@ public class VelocitySprintDO {
         this.completedStoryPoints = completedStoryPoints;
     }
 
-    public void setCommittedRemainTime(BigDecimal committedRemainTime) {
+    public void setCommittedRemainTime(int committedRemainTime) {
         this.committedRemainTime = committedRemainTime;
     }
 
-    public BigDecimal getCommittedRemainTime() {
+    public int getCommittedRemainTime() {
         return committedRemainTime;
     }
 
-    public BigDecimal getCompletedRemainTime() {
-        return completedRemainTime;
+    public void setCompletedRemainTime(int completedRemainTime) {
+        this.completedRemainTime = completedRemainTime;
     }
 
-    public void setCompletedRemainTime(BigDecimal completedRemainTime) {
-        this.completedRemainTime = completedRemainTime;
+    public int getCompletedRemainTime() {
+        return completedRemainTime;
     }
 }

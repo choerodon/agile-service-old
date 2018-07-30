@@ -321,17 +321,17 @@ public interface ReportMapper {
 
     List<VelocitySprintDO> selectRecentSprint(@Param("projectId") Long projectId);
 
-    List<VelocitySprintDO> selectByIssueCountCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+    List<VelocitySingleDO> selectByIssueCountCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
 
-    List<VelocitySprintDO> selectByIssueCountCompleted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+    List<VelocitySingleDO> selectByIssueCountCompleted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
 
-    List<VelocitySprintDO> selectByStoryPointCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+    List<VelocitySingleDO> selectByStoryPointAndNumCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
 
-    List<VelocitySprintDO> selectByStoryPointCompleted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+    List<VelocitySingleDO> selectByStoryPointAndNumCompleted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
 
-    List<VelocitySprintDO> selectByRemainTimeCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+    List<VelocitySingleDO> selectByRemainTimeCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
 
-    List<VelocitySprintDO> selectByRemainTimeCompleted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+    List<VelocitySingleDO> selectByRemainTimeCompleted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
 
     /**
      * 根据参数查询统计信息
