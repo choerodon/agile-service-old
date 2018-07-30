@@ -3,6 +3,7 @@ package io.choerodon.agile.api.controller.v1;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.app.service.IssueService;
@@ -159,19 +160,19 @@ public class IssueController {
     @CustomPageRequest
     @GetMapping(value = "/agile/summary")
     public ResponseEntity<Page<IssueNumDTO>> queryIssueByOptionForAgile(@ApiIgnore
-                                                                @ApiParam(value = "分页信息", required = true)
-                                                                @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
-                                                                        PageRequest pageRequest,
-                                                                @ApiParam(value = "项目id", required = true)
-                                                                @PathVariable(name = "project_id") Long projectId,
-                                                                @ApiParam(value = "issueId")
-                                                                @RequestParam(required = false) Long issueId,
-                                                                @ApiParam(value = "issueNum")
-                                                                @RequestParam(required = false) String issueNum,
-                                                                @ApiParam(value = "是否包含自身", required = true)
-                                                                @RequestParam() Boolean self,
-                                                                @ApiParam(value = "搜索内容")
-                                                                @RequestParam(required = false) String content) {
+                                                                        @ApiParam(value = "分页信息", required = true)
+                                                                        @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
+                                                                                PageRequest pageRequest,
+                                                                        @ApiParam(value = "项目id", required = true)
+                                                                        @PathVariable(name = "project_id") Long projectId,
+                                                                        @ApiParam(value = "issueId")
+                                                                        @RequestParam(required = false) Long issueId,
+                                                                        @ApiParam(value = "issueNum")
+                                                                        @RequestParam(required = false) String issueNum,
+                                                                        @ApiParam(value = "是否包含自身", required = true)
+                                                                        @RequestParam() Boolean self,
+                                                                        @ApiParam(value = "搜索内容")
+                                                                        @RequestParam(required = false) String content) {
         return Optional.ofNullable(issueService.queryIssueByOptionForAgile(projectId, issueId, issueNum, self, content, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssueByOptionForAgile"));
@@ -380,11 +381,42 @@ public class IssueController {
     @ApiOperation(value = "拖动epic位置")
     @PutMapping(value = "/epic_drag")
     public ResponseEntity<EpicDataDTO> dragEpic(@ApiParam(value = "项目id", required = true)
-                                                             @PathVariable(name = "project_id") Long projectId,
-                                                             @ApiParam(value = "排序对象", required = true)
-                                                             @RequestBody EpicSequenceDTO epicSequenceDTO) {
+                                                @PathVariable(name = "project_id") Long projectId,
+                                                @ApiParam(value = "排序对象", required = true)
+                                                @RequestBody EpicSequenceDTO epicSequenceDTO) {
         return Optional.ofNullable(issueService.dragEpic(projectId, epicSequenceDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issueController.dragEpic"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("统计issue相关信息（测试模块用）")
+    @PostMapping(value = "/test_component/statistic")
+    public ResponseEntity<List<PieChartDTO>> issueStatistic(@ApiParam(value = "项目id", required = true)
+                                                            @PathVariable(name = "project_id") Long projectId,
+                                                            @ApiParam(value = "查询类型(version、component、label)", required = true)
+                                                            @RequestParam String type,
+                                                            @ApiParam(value = "需要排除的issue类型列表")
+                                                            @RequestBody List<String> issueTypes) {
+        return Optional.ofNullable(issueService.issueStatistic(projectId, type, issueTypes))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.Issue.issueStatistic"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("分页过滤查询issue列表(不包含子任务，包含详情),测试模块用")
+    @CustomPageRequest
+    @PostMapping(value = "/test_component/no_sub_detail")
+    public ResponseEntity<Page<IssueComponentDetailDTO>> listIssueWithoutSubDetail(@ApiIgnore
+                                                                                       @ApiParam(value = "分页信息", required = true)
+                                                                                       @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
+                                                                                               PageRequest pageRequest,
+                                                                                   @ApiParam(value = "项目id", required = true)
+                                                                                       @PathVariable(name = "project_id") Long projectId,
+                                                                                   @ApiParam(value = "查询参数", required = true)
+                                                                                       @RequestBody(required = false) SearchDTO searchDTO) {
+        return Optional.ofNullable(issueService.listIssueWithoutSubDetail(projectId, searchDTO, pageRequest))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.Issue.listIssueWithoutSubDetail"));
     }
 }

@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
@@ -177,4 +178,24 @@ public interface IssueService {
      * @return EpicDataDTO
      */
     EpicDataDTO dragEpic(Long projectId, EpicSequenceDTO epicSequenceDTO);
+
+    /**
+     * 查询issue统计信息
+     *
+     * @param projectId  projectId
+     * @param type       type
+     * @param issueTypes issueTypes要排除的issue类型
+     * @return PieChartDTO
+     */
+    List<PieChartDTO> issueStatistic(Long projectId, String type, List<String> issueTypes);
+
+    /**
+     * 测试模块查询issue详情列表
+     *
+     * @param projectId   projectId
+     * @param searchDTO   searchDTO
+     * @param pageRequest pageRequest
+     * @return IssueComponentDetailTO
+     */
+    Page<IssueComponentDetailDTO> listIssueWithoutSubDetail(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
 }

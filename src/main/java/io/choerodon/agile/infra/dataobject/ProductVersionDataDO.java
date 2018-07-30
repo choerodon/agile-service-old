@@ -14,6 +14,15 @@ public class ProductVersionDataDO {
     private String statusCode;
     private Long projectId;
     private Long objectVersionNumber;
+    private Integer sequence;
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
 
     public Long getVersionId() {
         return versionId;

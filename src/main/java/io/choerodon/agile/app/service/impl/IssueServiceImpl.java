@@ -73,6 +73,8 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private IssueMapper issueMapper;
     @Autowired
+    private ReportAssembler reportAssembler;
+    @Autowired
     private ProductVersionRule productVersionRule;
     @Autowired
     private IssueComponentRepository issueComponentRepository;
@@ -151,6 +153,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String EPIC_COLOR_TYPE = "epic_color";
     private static final String STORY_TYPE = "story";
     private static final String FIELD_STORY_POINTS = "Story Points";
+    private static final String ASSIGNEE = "assignee";
     private static final String FIELD_RANK = "Rank";
     private static final String RANK_HIGHER = "评级更高";
     private static final String RANK_LOWER = "评级更低";
@@ -165,6 +168,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String ERROR_ISSUE_NOT_FOUND = "error.Issue.queryIssue";
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
     private static final String AGILE_SERVICE = "agile-service";
+    private static final String SEARCH = "search";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -236,8 +240,8 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public Page<IssueListDTO> listIssueWithoutSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
         //处理用户搜索
-        if (searchDTO.getAdvancedSearchArgs() != null && searchDTO.getAdvancedSearchArgs().get("assignee") != null) {
-            String userName = (String) searchDTO.getOtherArgs().get("assignee");
+        if (searchDTO.getSearchArgs() != null && searchDTO.getSearchArgs().get(ASSIGNEE) != null) {
+            String userName = (String) searchDTO.getSearchArgs().get(ASSIGNEE);
             if (userName != null) {
                 List<UserDTO> userDTOS = userRepository.queryUsersByNameAndProjectId(projectId, userName);
                 if (userDTOS != null && !userDTOS.isEmpty()) {
@@ -246,7 +250,7 @@ public class IssueServiceImpl implements IssueService {
             }
         }
         //连表查询需要设置主表别名
-        pageRequest.resetOrder("search", new HashMap<>());
+        pageRequest.resetOrder(SEARCH, new HashMap<>());
         Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
                 issueMapper.queryIssueListWithoutSub(projectId, searchDTO.getSearchArgs(),
                         searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
@@ -1329,7 +1333,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public Page<IssueListDTO> listIssueWithoutSubToTestComponent(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
         //连表查询需要设置主表别名
-        pageRequest.resetOrder("search", new HashMap<>());
+        pageRequest.resetOrder(SEARCH, new HashMap<>());
         Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
                 issueMapper.listIssueWithoutSubToTestComponent(projectId, searchDTO.getSearchArgs(),
                         searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
@@ -1380,6 +1384,9 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public synchronized EpicDataDTO dragEpic(Long projectId, EpicSequenceDTO epicSequenceDTO) {
+        if (epicSequenceDTO.getAfterSequence() == null && epicSequenceDTO.getBeforeSequence() == null) {
+            throw new CommonException("error.dragEpic.noSequence");
+        }
         IssueDO issueDO = new IssueDO();
         issueDO.setIssueId(epicSequenceDTO.getEpicId());
         issueDO.setProjectId(projectId);
@@ -1394,9 +1401,34 @@ public class IssueServiceImpl implements IssueService {
                 sequence = epicSequenceDTO.getAfterSequence() + 1;
             }
             handleSequence(epicSequenceDTO, sequence, projectId, issueE);
-
         }
         return epicDataAssembler.doToEntity(issueMapper.queryEpicListByEpic(epicSequenceDTO.getEpicId(), projectId));
+    }
+
+    @Override
+    public List<PieChartDTO> issueStatistic(Long projectId, String type, List<String> issueTypes) {
+        return reportAssembler.pieChartDoToDto(issueMapper.issueStatistic(projectId, type, issueTypes));
+    }
+
+    @Override
+    public Page<IssueComponentDetailDTO> listIssueWithoutSubDetail(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
+        //连表查询需要设置主表别名
+        pageRequest.resetOrder(SEARCH, new HashMap<>());
+        Page<IssueComponentDetailDO> issueComponentDetailDOPage = PageHelper.doPageAndSort(pageRequest, () ->
+                issueMapper.listIssueWithoutSubDetail(projectId, searchDTO.getSearchArgs(),
+                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
+        return handleIssueComponentDetailPageDoToDto(issueComponentDetailDOPage);
+    }
+
+    private Page<IssueComponentDetailDTO> handleIssueComponentDetailPageDoToDto(Page<IssueComponentDetailDO> issueComponentDetailDOPage) {
+        Page<IssueComponentDetailDTO> issueComponentDetailDTOPage = new Page<>();
+        issueComponentDetailDTOPage.setNumber(issueComponentDetailDOPage.getNumber());
+        issueComponentDetailDTOPage.setNumberOfElements(issueComponentDetailDOPage.getNumberOfElements());
+        issueComponentDetailDTOPage.setSize(issueComponentDetailDOPage.getSize());
+        issueComponentDetailDTOPage.setTotalElements(issueComponentDetailDOPage.getTotalElements());
+        issueComponentDetailDTOPage.setTotalPages(issueComponentDetailDOPage.getTotalPages());
+        issueComponentDetailDTOPage.setContent(issueAssembler.issueComponentDetailDoToDto(issueComponentDetailDOPage.getContent()));
+        return issueComponentDetailDTOPage;
     }
 
     private void handleSequence(EpicSequenceDTO epicSequenceDTO, Integer sequence, Long projectId, IssueE issueE) {
@@ -1415,6 +1447,5 @@ public class IssueServiceImpl implements IssueService {
                 issueRepository.update(issueE, new String[]{EPIC_SEQUENCE});
             }
         }
-
     }
 }

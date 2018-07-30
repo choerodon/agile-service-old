@@ -77,6 +77,34 @@
         </collection>
     </resultMap>
 
+    <resultMap type="io.choerodon.agile.infra.dataobject.IssueComponentDetailDO" id="issueComponentDetail">
+        <id column="issue_id" property="issueId"/>
+        <id column="type_code" property="typeCode"/>
+        <id column="summary" property="summary"/>
+        <id column="status_id" property="statusId"/>
+        <id column="priority_code" property="priorityCode"/>
+        <id column="assignee_id" property="assigneeId"/>
+        <id column="project_id" property="projectId"/>
+        <id column="priority_name" property="priorityName"/>
+        <id column="status_code" property="statusCode"/>
+        <id column="status_name" property="statusName"/>
+        <id column="issue_num" property="issueNum"/>
+        <id column="reporter_id" property="reporterId"/>
+        <id column="last_update_date" property="lastUpdateDate"/>
+        <id column="creation_date" property="creationDate"/>
+        <id column="epic_name" property="epicName"/>
+        <id column="epic_color" property="epicColor"/>
+        <collection property="versionIssueRelDOList" column="issue_id"
+                    ofType="io.choerodon.agile.infra.dataobject.IssueComponentDetailDO"
+                    select="queryVersionIssueRelByIssueId"/>
+        <collection property="labelIssueRelDOList" column="issue_id"
+                    ofType="io.choerodon.agile.infra.dataobject.IssueComponentDetailDO"
+                    select="queryLabelIssueByIssueId"/>
+        <collection property="componentIssueRelDOList" column="issue_id"
+                    ofType="io.choerodon.agile.infra.dataobject.IssueComponentDetailDO"
+                    select="queryComponentIssueRelByIssueId"/>
+    </resultMap>
+
     <delete id="removeFromSprint">
         DELETE
         FROM agile_issue_sprint_rel
@@ -1208,6 +1236,126 @@
         </if>
     </select>
 
+    <select id="listIssueWithoutSubDetail" resultMap="issueComponentDetail">
+        SELECT search.* from (
+        SELECT
+        ai.issue_id,
+        ai.type_code,
+        ai.summary,
+        ai.status_id,
+        ai.priority_code,
+        ai.assignee_id,
+        ai.project_id,
+        ai.last_update_date,
+        ai.creation_date,
+        ai.reporter_id,
+        ai2.epic_name,
+        alv2.name as epic_color,
+        alv.name AS priority_name,
+        ais.category_code AS status_code,
+        ais.name AS status_name,
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
+        FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
+        LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code
+        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task'
+        <if test='searchArgs != null'>
+            <if test='searchArgs.summary != null and searchArgs.summary != "" '>
+                AND position(#{searchArgs.summary} IN ai.summary)
+            </if>
+            <if test='searchArgs.assigneeId != null and searchArgs.assigneeId != ""'>
+                AND ai.assignee_id = #{searchArgs.assigneeId}
+            </if>
+        </if>
+        <if test='advancedSearchArgs != null'>
+            <if test='advancedSearchArgs.typeCode != null and advancedSearchArgs.typeCode.size > 0'>
+                AND ai.type_code IN
+                <foreach collection="advancedSearchArgs.typeCode" item="typeCode" open="(" separator="," close=")">
+                    #{typeCode}
+                </foreach>
+            </if>
+            <if test='advancedSearchArgs.priorityCode != null and advancedSearchArgs.priorityCode.size > 0'>
+                AND ai.priority_code IN
+                <foreach collection="advancedSearchArgs.priorityCode" item="priorityCode" open="(" separator=","
+                         close=")">
+                    #{priorityCode}
+                </foreach>
+            </if>
+            <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
+                AND ais.category_code IN
+                <foreach collection="advancedSearchArgs.statusCode" item="statusCode" open="(" separator=","
+                         close=")">
+                    #{statusCode}
+                </foreach>
+            </if>
+        </if>
+        <if test='otherArgs != null'>
+            <if test='otherArgs.component != null and otherArgs.component.size > 0'>
+                AND ai.issue_id in (
+                SELECT acir.issue_id FROM
+                agile_component_issue_rel acir WHERE acir.component_id
+                in
+                <foreach collection="otherArgs.component" item="componentId" open="(" separator=","
+                         close=")">
+                    #{componentId}
+                </foreach>
+                )
+            </if>
+            <if test='otherArgs.version != null and otherArgs.version.size > 0'>
+                AND ai.issue_id in (
+                SELECT avir.issue_id FROM
+                agile_version_issue_rel avir WHERE avir.version_id
+                in
+                <foreach collection="otherArgs.version" item="versionId" open="(" separator=","
+                         close=")">
+                    #{versionId}
+                </foreach>
+                )
+            </if>
+            <if test='otherArgs.sprint != null and otherArgs.sprint.size > 0'>
+                AND ai.issue_id in (
+                SELECT aisr.issue_id FROM
+                agile_issue_sprint_rel aisr where aisr.sprint_id
+                in
+                <foreach collection="otherArgs.sprint" item="sprintId" open="(" separator=","
+                         close=")">
+                    #{sprintId}
+                </foreach>
+                )
+            </if>
+            <if test='otherArgs.label != null and otherArgs.label.size > 0'>
+                AND ai.issue_id in (
+                SELECT alir.issue_id FROM
+                agile_label_issue_rel alir where alir.label_id
+                in
+                <foreach collection="otherArgs.label" item="labelId" open="(" separator=","
+                         close=")">
+                    #{labelId}
+                </foreach>
+                )
+            </if>
+            <if test='otherArgs.issueIds != null and otherArgs.issueIds.size > 0'>
+                AND ai.issue_id in
+                <foreach collection="otherArgs.issueIds" item="issueId" open="(" separator=","
+                         close=")">
+                    #{issueId}
+                </foreach>
+            </if>
+        </if>
+        )search where 1=1
+        <if test='searchArgs != null'>
+            <if test='searchArgs.issueNum != null and searchArgs.issueNum != ""'>
+                AND position(#{searchArgs.issueNum} IN search.issue_num)
+            </if>
+        </if>
+        <if test='content != null and content != ""'>
+            AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE CONCAT(CONCAT('%',
+            #{content}), '%'))
+        </if>
+    </select>
+
     <select id="queryIssueNumByTimeSlot" resultType="io.choerodon.agile.infra.dataobject.IssueCreationNumDO">
         SELECT
             DATE_FORMAT(creation_date, '%Y-%m-%d') AS creation_day,
@@ -1259,6 +1407,62 @@
               AND ai.type_code = 'issue_epic'
         ORDER BY ai.epic_sequence DESC
         LIMIT 1;
+    </select>
+
+    <select id="issueStatistic" resultType="io.choerodon.agile.infra.dataobject.PieChartDO">
+        select * from (
+        SELECT
+        <if test="type!=null and type!=''">
+            <if test="type == 'component'">
+                other.component_id AS type_name,
+                otherName.name as name,
+            </if>
+            <if test="type == 'version'">
+                other.version_id AS type_name,
+                otherName.name as name,
+            </if>
+            <if test="type == 'label'">
+                other.label_id AS type_name,
+                otherName.label_name as name,
+            </if>
+        </if>
+        count( * ) AS value
+        FROM
+        agile_issue ai
+        <if test="type!=null and type!=''">
+            <if test="type == 'component'">
+                LEFT JOIN agile_component_issue_rel other on ai.issue_id = other.issue_id
+                LEFT JOIN agile_issue_component otherName on other.component_id = otherName.component_id
+            </if>
+            <if test="type == 'version'">
+                LEFT JOIN agile_version_issue_rel other on ai.issue_id = other.issue_id and other.relation_type = 'fix'
+                LEFT JOIN agile_product_version otherName on other.version_id = otherName.version_id
+            </if>
+            <if test="type == 'label'">
+                LEFT JOIN agile_label_issue_rel other on ai.issue_id = other.issue_id
+                LEFT JOIN agile_issue_label otherName on other.label_id = otherName.label_id
+            </if>
+        </if>
+        WHERE
+        ai.project_id = #{projectId}
+        <if test="issueTypes!=null and issueTypes.size > 0">
+            <foreach collection="issueTypes" item="issueType">
+                AND ai.type_code != #{issueType}
+            </foreach>
+        </if>
+        <if test="type!=null and type!=''">
+            GROUP BY
+            <if test="type == 'component'">
+                other.component_id
+            </if>
+            <if test="type == 'version'">
+                other.version_id
+            </if>
+            <if test="type == 'label'">
+                other.label_id
+            </if>
+        </if>
+        )pieData ORDER BY pieData.value DESC
     </select>
 
 </mapper>

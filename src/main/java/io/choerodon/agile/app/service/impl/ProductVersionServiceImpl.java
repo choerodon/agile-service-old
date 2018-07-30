@@ -334,6 +334,9 @@ public class ProductVersionServiceImpl implements ProductVersionService {
 
     @Override
     public synchronized ProductVersionPageDTO dragVersion(Long projectId, VersionSequenceDTO versionSequenceDTO) {
+        if (versionSequenceDTO.getAfterSequence() == null && versionSequenceDTO.getBeforeSequence() == null) {
+            throw new CommonException("error.dragVersion.noSequence");
+        }
         ProductVersionE productVersionE = productVersionConverter.doToEntity(queryVersionByProjectIdAndVersionId(
                 versionSequenceDTO.getVersionId(), projectId));
         if (productVersionE == null) {
