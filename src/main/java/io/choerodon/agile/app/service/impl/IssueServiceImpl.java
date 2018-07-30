@@ -147,6 +147,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String REMAIN_TIME_FIELD = "remainingTime";
     private static final String STATUS_ID = "statusId";
     private static final String PARENT_ISSUE_ID = "parentIssueId";
+    private static final String EPIC_SEQUENCE = "epicSequence";
     private static final String EPIC_COLOR_TYPE = "epic_color";
     private static final String STORY_TYPE = "story";
     private static final String FIELD_STORY_POINTS = "Story Points";
@@ -201,6 +202,9 @@ public class IssueServiceImpl implements IssueService {
         if (ISSUE_EPIC.equals(issueE.getTypeCode())) {
             List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
             issueE.initializationColor(colorList);
+            //排序编号
+            Integer sequence = issueMapper.queryMaxEpicSequenceByProject(issueE.getProjectId());
+            issueE.setEpicSequence(sequence == null ? 0 : sequence + 1);
         }
         //初始化创建issue设置issue编号、项目默认设置
         issueE.initializationIssue(statusId, projectInfoE);
@@ -232,12 +236,12 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public Page<IssueListDTO> listIssueWithoutSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
         //处理用户搜索
-        if (searchDTO.getOtherArgs() != null && searchDTO.getOtherArgs().get("assigneeName") != null) {
-            String userName = (String) searchDTO.getOtherArgs().get("assigneeName");
+        if (searchDTO.getAdvancedSearchArgs() != null && searchDTO.getAdvancedSearchArgs().get("assignee") != null) {
+            String userName = (String) searchDTO.getOtherArgs().get("assignee");
             if (userName != null) {
                 List<UserDTO> userDTOS = userRepository.queryUsersByNameAndProjectId(projectId, userName);
                 if (userDTOS != null && !userDTOS.isEmpty()) {
-                    searchDTO.getOtherArgs().put("assigneeIds", userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));
+                    searchDTO.getAdvancedSearchArgs().put("assigneeIds", userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));
                 }
             }
         }
@@ -444,7 +448,6 @@ public class IssueServiceImpl implements IssueService {
     private void dataLogRank(Long projectId, MoveIssueDTO moveIssueDTO, String rankStr, Long sprintId) {
         for (Long issueId : moveIssueDTO.getIssueIds()) {
             SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
-            //todo 日志不好解耦
             if ((sprintId == 0 && activeSprintName == null) || (activeSprintName != null
                     && sprintId.equals(activeSprintName.getSprintId()))) {
                 DataLogE dataLogE = new DataLogE();
@@ -462,13 +465,16 @@ public class IssueServiceImpl implements IssueService {
         sprintRule.judgeExist(projectId, sprintId);
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
-        //todo 日志处理,不好解耦，而且日志记录评级有问题
         if (moveIssueDTO.getBefore()) {
             beforeRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
-            dataLogRank(projectId, moveIssueDTO, RANK_HIGHER, sprintId);
+            if (moveIssueDTO.getRankIndex() != null && (moveIssueDTO.getRankIndex())) {
+                dataLogRank(projectId, moveIssueDTO, RANK_HIGHER, sprintId);
+            }
         } else {
             afterRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
-            dataLogRank(projectId, moveIssueDTO, RANK_LOWER, sprintId);
+            if (moveIssueDTO.getRankIndex() != null && (moveIssueDTO.getRankIndex())) {
+                dataLogRank(projectId, moveIssueDTO, RANK_LOWER, sprintId);
+            }
         }
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
         List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
@@ -558,7 +564,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueDTO updateIssueTypeCode(IssueE issueE, IssueUpdateTypeDTO issueUpdateTypeDTO) {
+    public synchronized IssueDTO updateIssueTypeCode(IssueE issueE, IssueUpdateTypeDTO issueUpdateTypeDTO) {
         String originType = issueE.getTypeCode();
         if (originType.equals(SUB_TASK)) {
             issueE.setParentIssueId(null);
@@ -574,18 +580,22 @@ public class IssueServiceImpl implements IssueService {
             issueE.initializationColor(colorList);
             issueE.setRemainingTime(null);
             issueE.setEpicId(0L);
+            //排序编号
+            Integer sequence = issueMapper.queryMaxEpicSequenceByProject(issueE.getProjectId());
+            issueE.setEpicSequence(sequence == null ? 0 : sequence + 1);
         } else if (issueE.getTypeCode().equals(ISSUE_EPIC)) {
             // 如果之前类型是epic，会把该epic下的issue的epicId置为0
             issueRepository.batchUpdateIssueEpicId(issueE.getProjectId(), issueE.getIssueId());
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
             issueE.setColorCode(null);
             issueE.setEpicName(null);
+            issueE.setEpicSequence(null);
             //rank值重置
             calculationRank(issueE.getProjectId(), issueE);
         } else {
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
         }
-        issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, FIELD_STORY_POINTS, RANK_FIELD});
+        issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, FIELD_STORY_POINTS, RANK_FIELD, EPIC_SEQUENCE});
         return queryIssue(issueE.getProjectId(), issueE.getIssueId());
     }
 
@@ -1027,11 +1037,12 @@ public class IssueServiceImpl implements IssueService {
                 }
                 issueE.setTypeCode(SUB_TASK);
                 issueE.setRank(null);
+                issueE.setEpicSequence(null);
                 issueE.setParentIssueId(issueTransformSubTask.getParentIssueId());
                 issueRule.verifySubTask(issueTransformSubTask.getParentIssueId());
                 //删除链接
                 issueLinkRepository.deleteByIssueId(issueE.getIssueId());
-                issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, RANK_FIELD, STATUS_ID, PARENT_ISSUE_ID});
+                issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, RANK_FIELD, STATUS_ID, PARENT_ISSUE_ID, EPIC_SEQUENCE});
                 return queryIssueSub(projectId, issueE.getIssueId());
             } else {
                 throw new CommonException("error.IssueRule.subTaskError");
@@ -1365,5 +1376,45 @@ public class IssueServiceImpl implements IssueService {
         issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
         issueListDTOPage.setContent(issueAssembler.issueNumDOListToIssueNumDTO(issueDOPage.getContent()));
         return issueListDTOPage;
+    }
+
+    @Override
+    public synchronized EpicDataDTO dragEpic(Long projectId, EpicSequenceDTO epicSequenceDTO) {
+        IssueDO issueDO = new IssueDO();
+        issueDO.setIssueId(epicSequenceDTO.getEpicId());
+        issueDO.setProjectId(projectId);
+        IssueE issueE = ConvertHelper.convert(issueMapper.selectOne(issueDO), IssueE.class);
+        if (issueE == null) {
+            throw new CommonException("error.issue.notFound");
+        } else {
+            Integer sequence;
+            if (epicSequenceDTO.getAfterSequence() == null) {
+                sequence = epicSequenceDTO.getBeforeSequence();
+            } else {
+                sequence = epicSequenceDTO.getAfterSequence() + 1;
+            }
+            handleSequence(epicSequenceDTO, sequence, projectId, issueE);
+
+        }
+        return epicDataAssembler.doToEntity(issueMapper.queryEpicListByEpic(epicSequenceDTO.getEpicId(), projectId));
+    }
+
+    private void handleSequence(EpicSequenceDTO epicSequenceDTO, Integer sequence, Long projectId, IssueE issueE) {
+        if (epicSequenceDTO.getBeforeSequence() == null) {
+            issueE.setEpicSequence(sequence);
+            issueRepository.update(issueE, new String[]{EPIC_SEQUENCE});
+        } else {
+            if (sequence >= epicSequenceDTO.getBeforeSequence()) {
+                issueRepository.batchUpdateSequence(sequence, projectId);
+                if (epicSequenceDTO.getAfterSequence() == null) {
+                    issueE.setEpicSequence(sequence);
+                    issueRepository.update(issueE, new String[]{EPIC_SEQUENCE});
+                }
+            } else {
+                issueE.setEpicSequence(sequence);
+                issueRepository.update(issueE, new String[]{EPIC_SEQUENCE});
+            }
+        }
+
     }
 }

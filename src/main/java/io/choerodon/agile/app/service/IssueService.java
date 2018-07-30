@@ -168,4 +168,13 @@ public interface IssueService {
      */
     Page<IssueNumDTO> queryIssueByOptionForAgile(Long projectId, Long issueId, String issueNum,
                                                  Boolean self, String content, PageRequest pageRequest);
+
+    /**
+     * 拖动epic
+     *
+     * @param projectId       projectId
+     * @param epicSequenceDTO epicSequenceDTO
+     * @return EpicDataDTO
+     */
+    EpicDataDTO dragEpic(Long projectId, EpicSequenceDTO epicSequenceDTO);
 }

@@ -71,7 +71,7 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    @DataLog(type = "batchRemoveSprintBySprintId",single = false)
+    @DataLog(type = "batchRemoveSprintBySprintId", single = false)
     public Boolean batchRemoveFromSprint(Long projectId, Long sprintId) {
         issueMapper.removeFromSprint(projectId, sprintId);
         return true;
@@ -121,5 +121,10 @@ public class IssueRepositoryImpl implements IssueRepository {
     @Override
     public int deleteIssueFromSprintByIssueId(Long projectId, Long issueId) {
         return issueMapper.deleteIssueFromSprintByIssueId(projectId, issueId);
+    }
+
+    @Override
+    public int batchUpdateSequence(Integer sequence, Long projectId) {
+        return issueMapper.batchUpdateSequence(sequence, projectId);
     }
 }

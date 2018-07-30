@@ -9,6 +9,15 @@ public class MoveIssueDTO {
     private List<Long> issueIds;
     private Boolean isBefore;
     private Long outsetIssueId;
+    private Boolean rankIndex;
+
+    public Boolean getRankIndex() {
+        return rankIndex;
+    }
+
+    public void setRankIndex(Boolean rankIndex) {
+        this.rankIndex = rankIndex;
+    }
 
     public List<Long> getIssueIds() {
         return issueIds;

@@ -82,7 +82,7 @@ public class SprintServiceImpl implements SprintService {
     private static final String ISSUE_TYPE_TEST_CODE = "issue_test";
 
     @Override
-    public SprintDetailDTO createSprint(Long projectId) {
+    public synchronized SprintDetailDTO createSprint(Long projectId) {
         ProjectInfoDO projectInfo = new ProjectInfoDO();
         projectInfo.setProjectId(projectId);
         projectInfo = projectInfoMapper.selectOne(projectInfo);
@@ -121,7 +121,6 @@ public class SprintServiceImpl implements SprintService {
             throw new CommonException(NOT_FOUND_ERROR);
         }
         sprintE.judgeDelete();
-        //todo 日志处理
         moveIssueToBacklog(projectId, sprintId);
         issueRepository.batchRemoveFromSprint(projectId, sprintId);
         sprintRepository.deleteSprint(sprintE);
@@ -136,7 +135,6 @@ public class SprintServiceImpl implements SprintService {
         if (moveIssueDOS.isEmpty()) {
             return;
         }
-        //todo 日志处理
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
     }
 

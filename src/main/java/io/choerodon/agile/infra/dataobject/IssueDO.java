@@ -125,6 +125,8 @@ public class IssueDO extends AuditDomain {
 
     private String epicName;
 
+    private Integer epicSequence;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -323,6 +325,14 @@ public class IssueDO extends AuditDomain {
 
     public void setTypeName(String typeName) {
         this.typeName = typeName;
+    }
+
+    public Integer getEpicSequence() {
+        return epicSequence;
+    }
+
+    public void setEpicSequence(Integer epicSequence) {
+        this.epicSequence = epicSequence;
     }
 
     @Override

@@ -216,4 +216,30 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @return IssueDO
      */
     IssueDO queryIssueWithNoCloseSprint(@Param("issueId") Long issueId);
+
+    /**
+     * 根据id查询epic
+     *
+     * @param issueId   issueId
+     * @param projectId projectId
+     * @return EpicDataDO
+     */
+    EpicDataDO queryEpicListByEpic(@Param("issueId") Long issueId, @Param("projectId") Long projectId);
+
+    /**
+     * 批量更新epic的排序
+     *
+     * @param sequence  sequence
+     * @param projectId projectId
+     * @return int
+     */
+    int batchUpdateSequence(@Param("sequence") Integer sequence, @Param("projectId") Long projectId);
+
+    /**
+     * 查询epic的最大排序
+     *
+     * @param projectId projectId
+     * @return Integer
+     */
+    Integer queryMaxEpicSequenceByProject(@Param("projectId") Long projectId);
 }
