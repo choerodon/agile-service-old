@@ -68,9 +68,11 @@
             release_date,
             status_code,
             project_id,
+            sequence,
             object_version_number
         FROM agile_product_version
         WHERE project_id = #{projectId} AND status_code = 'version_planning'
+        ORDER BY sequence DESC
     </select>
 
     <select id="queryIssueCount" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
@@ -411,8 +413,8 @@
     <select id="queryMinBeforeSequence" resultType="java.lang.Integer">
         SELECT apv.sequence
         FROM
-        agile_product_version apv
-        WHERE apv.project_id = #{projectId} AND apv.sequence  &gt; #{sequence}
+            agile_product_version apv
+        WHERE apv.project_id = #{projectId} AND apv.sequence &gt; #{sequence}
         ORDER BY sequence ASC
         LIMIT 1;
     </select>

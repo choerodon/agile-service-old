@@ -18,6 +18,7 @@ public class ProductVersionDataDTO {
     private Integer totalEstimate;
     private Long projectId;
     private Long objectVersionNumber;
+    private Integer sequence;
 
     public Long getVersionId() {
         return versionId;
@@ -113,5 +114,13 @@ public class ProductVersionDataDTO {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
     }
 }

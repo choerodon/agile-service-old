@@ -338,7 +338,36 @@ public class IssueAssembler {
 
     public ProductVersionCreateDTO productVersionEntityToProductVersionCreateDto(ProductVersionE productVersionE) {
         ProductVersionCreateDTO productVersionCreateDTO = new ProductVersionCreateDTO();
-        BeanUtils.copyProperties(productVersionE,productVersionCreateDTO);
+        BeanUtils.copyProperties(productVersionE, productVersionCreateDTO);
         return productVersionCreateDTO;
+    }
+
+    public List<IssueComponentDetailDTO> issueComponentDetailDoToDto(List<IssueComponentDetailDO> issueComponentDetailDOS) {
+        LookupValueDO lookupValueDO = new LookupValueDO();
+        lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
+        Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
+        List<IssueComponentDetailDTO> issueComponentDetailDTOS = new ArrayList<>();
+        List<Long> userIds = issueComponentDetailDOS.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueComponentDetailDO::getAssigneeId).collect(Collectors.toList());
+        userIds.addAll(issueComponentDetailDOS.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).
+                map(IssueComponentDetailDO::getReporterId).collect(Collectors.toList()));
+        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(userIds.stream().distinct().collect(Collectors.toList()), true);
+        issueComponentDetailDOS.parallelStream().forEachOrdered(issueDO -> {
+            String assigneeName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getName() : null;
+            String reporterName = usersMap.get(issueDO.getReporterId()) != null ? usersMap.get(issueDO.getReporterId()).getName() : null;
+            String assigneeImageUrl = assigneeName != null ? usersMap.get(issueDO.getAssigneeId()).getImageUrl() : null;
+            String reporterImageUrl = reporterName != null ? usersMap.get(issueDO.getReporterId()).getImageUrl() : null;
+            IssueComponentDetailDTO issueComponentDetailDTO = new IssueComponentDetailDTO();
+            BeanUtils.copyProperties(issueDO, issueComponentDetailDTO);
+            issueComponentDetailDTO.setAssigneeName(assigneeName);
+            issueComponentDetailDTO.setReporterName(reporterName);
+            issueComponentDetailDTO.setStatusColor(ColorUtil.initializationStatusColor(issueComponentDetailDTO.getStatusCode(), lookupValueMap));
+            issueComponentDetailDTO.setAssigneeImageUrl(assigneeImageUrl);
+            issueComponentDetailDTO.setReporterImageUrl(reporterImageUrl);
+            issueComponentDetailDTO.setComponentIssueRelDTOList(copyComponentIssueRel(issueDO.getComponentIssueRelDOList()));
+            issueComponentDetailDTO.setVersionIssueRelDTOList(copyVersionIssueRel(issueDO.getVersionIssueRelDOList()));
+            issueComponentDetailDTO.setLabelIssueRelDTOList(copyLabelIssueRel(issueDO.getLabelIssueRelDOList(), issueDO.getProjectId()));
+            issueComponentDetailDTOS.add(issueComponentDetailDTO);
+        });
+        return issueComponentDetailDTOS;
     }
 }

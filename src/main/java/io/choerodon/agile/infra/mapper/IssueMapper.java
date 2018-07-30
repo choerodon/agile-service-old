@@ -242,4 +242,28 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @return Integer
      */
     Integer queryMaxEpicSequenceByProject(@Param("projectId") Long projectId);
+
+    /**
+     * 返回issue统计信息
+     *
+     * @param projectId  projectId
+     * @param type       type查询的类型
+     * @param issueTypes issueTypes要排除的issue类型
+     * @return PieChartDO
+     */
+    List<PieChartDO> issueStatistic(@Param("projectId") Long projectId, @Param("type") String type, @Param("issueTypes") List<String> issueTypes);
+
+    /**
+     * 返回issue的详情列表（测试模块用）
+     *
+     * @param projectId          projectId
+     * @param searchArgs         searchArgs
+     * @param advancedSearchArgs advancedSearchArgs
+     * @param otherArgs          otherArgs
+     * @param content            content
+     * @return IssueComponentDetailDO
+     */
+    List<IssueComponentDetailDO> listIssueWithoutSubDetail(@Param("projectId")Long projectId,@Param("searchArgs") Map<String, Object> searchArgs,
+                                                           @Param("advancedSearchArgs")Map<String, Object> advancedSearchArgs,
+                                                           @Param("otherArgs") Map<String, Object> otherArgs, @Param("content")String content);
 }
