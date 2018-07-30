@@ -779,10 +779,10 @@ public class LogDataAspect {
     private void handleRank(List<String> field, IssueDO originIssueDO, IssueE issueE) {
         if (field.contains(RANK_FIELD) && !Objects.equals(originIssueDO.getRank(), issueE.getRank())) {
             SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(originIssueDO.getIssueId()));
-            Long sprintId;
+            Long sprintId = null;
             if (field.contains(SPRINT_ID_FIELD)) {
                 sprintId = issueE.getSprintId();
-            } else {
+            } else if (activeSprintName != null) {
                 sprintId = activeSprintName.getSprintId();
             }
             if ((issueE.getOriginSprintId() != null && issueE.getSprintId().equals(issueE.getOriginSprintId()))) {
