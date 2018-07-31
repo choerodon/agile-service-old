@@ -54,6 +54,20 @@ public class ReportController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("查询燃尽图坐标信息")
+    @GetMapping(value = "/{sprintId}/burn_down_report/coordinate")
+    public ResponseEntity<Map<String, Integer>> queryBurnDownCoordinate(@ApiParam(value = "项目id", required = true)
+                                                                    @PathVariable(name = "project_id") Long projectId,
+                                                                      @ApiParam(value = "sprintId", required = true)
+                                                                    @PathVariable Long sprintId,
+                                                                      @ApiParam(value = "类型(storyPoints、remainingEstimatedTime、issueCount)", required = true)
+                                                                    @RequestParam String type) {
+        return Optional.ofNullable(reportService.queryBurnDownCoordinate(projectId, sprintId, type))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.report.queryBurnDownCoordinate"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查看项目累积流量图")
     @PostMapping(value = "/cumulative_flow_diagram")
     public ResponseEntity<List<CumulativeFlowDiagramDTO>> queryCumulativeFlowDiagram(@ApiParam(value = "项目id", required = true)

@@ -28,6 +28,16 @@ public class IssueForBoardDO {
 
     private Long epicId;
 
+    private String rank;
+
+    public String getRank() {
+        return rank;
+    }
+
+    public void setRank(String rank) {
+        this.rank = rank;
+    }
+
     public Long getIssueId() {
         return issueId;
     }

@@ -377,7 +377,8 @@
             avir.version_id AS version_id,
             avir.issue_id   AS issue_id,
             apv.`name`,
-            avir.relation_type
+            avir.relation_type,
+            avir.project_id
         FROM
             agile_version_issue_rel avir
             LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id

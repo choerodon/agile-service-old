@@ -363,9 +363,9 @@ public class IssueAssembler {
             issueComponentDetailDTO.setStatusColor(ColorUtil.initializationStatusColor(issueComponentDetailDTO.getStatusCode(), lookupValueMap));
             issueComponentDetailDTO.setAssigneeImageUrl(assigneeImageUrl);
             issueComponentDetailDTO.setReporterImageUrl(reporterImageUrl);
-            issueComponentDetailDTO.setComponentIssueRelDTOList(copyComponentIssueRel(issueDO.getComponentIssueRelDOList()));
-            issueComponentDetailDTO.setVersionIssueRelDTOList(copyVersionIssueRel(issueDO.getVersionIssueRelDOList()));
-            issueComponentDetailDTO.setLabelIssueRelDTOList(copyLabelIssueRel(issueDO.getLabelIssueRelDOList(), issueDO.getProjectId()));
+            issueComponentDetailDTO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
+            issueComponentDetailDTO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
+            issueComponentDetailDTO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
             issueComponentDetailDTOS.add(issueComponentDetailDTO);
         });
         return issueComponentDetailDTOS;
