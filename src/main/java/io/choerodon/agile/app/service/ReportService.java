@@ -1,8 +1,8 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.*;
-import io.choerodon.agile.infra.dataobject.EpicChartDO;
-import io.choerodon.agile.infra.dataobject.EpicChartListDO;
+import io.choerodon.agile.infra.dataobject.GroupDataChartDO;
+import io.choerodon.agile.infra.dataobject.GroupDataChartListDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
@@ -49,9 +49,13 @@ public interface ReportService {
      */
     List<PieChartDTO> queryPieChart(Long projectId, String fieldName);
 
-    List<EpicChartDO> queryEpicChart(Long projectId, Long epicId, String type);
+    List<GroupDataChartDO> queryEpicChart(Long projectId, Long epicId, String type);
 
-    List<EpicChartListDO> queryEpicChartList(Long projectId, Long epicId);
+    List<GroupDataChartDO> queryVersionChart(Long projectId, Long versionId, String type);
+
+    List<GroupDataChartListDO> queryEpicChartList(Long projectId, Long epicId);
+
+    List<GroupDataChartListDO> queryVersionChartList(Long projectId, Long versionId);
 
     /**
      * 查询燃尽图坐标信息
