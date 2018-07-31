@@ -2,7 +2,8 @@ package io.choerodon.agile.infra.dataobject;
 
 
 /**
- * Created by hande on 2018/7/28.
+ * Created by HuangFuqiang@choerodon.io on 2018/7/28.
+ * Email: fuqianghuang01@gmail.com
  */
 public class EpicChartDO {
 

@@ -1758,6 +1758,7 @@
             ai.type_code,
             ai.priority_code,
             ais.`name` AS status_name,
+            alv.name AS status_color,
             ai.story_points,
             ai.remaining_time + IFNULL(aw.work_times,0) AS remain_time,
             IF (t.new_value IS NULL, 0, 1) AS completed
@@ -1765,6 +1766,10 @@
             agile_issue ai
         LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
         LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+        LEFT JOIN agile_lookup_value alv ON alv.value_code = CASE ais.category_code WHEN 'todo' THEN 'issue_status_color_todo'
+                                                                                      WHEN 'doing' THEN 'issue_status_color_doing'
+                                                                                      WHEN 'done' THEN 'issue_status_color_done'
+                                                                                      ELSE 'issue_status_color_todo' END
         LEFT JOIN (
             SELECT
                 awl.issue_id,
@@ -1790,6 +1795,7 @@
                     WHERE
                         adl1.field = 'resolution'
                     AND adl1.project_id = #{projectId}
+                    GROUP BY adl1.issue_id
                 )
         ) t ON ai.issue_id = t.issue_id
         WHERE
