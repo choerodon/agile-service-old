@@ -52,4 +52,14 @@ public interface ReportService {
     List<EpicChartDO> queryEpicChart(Long projectId, Long epicId, String type);
 
     List<EpicChartListDO> queryEpicChartList(Long projectId, Long epicId);
+
+    /**
+     * 查询燃尽图坐标信息
+     *
+     * @param projectId projectId
+     * @param sprintId  sprintId
+     * @param type      type
+     * @return Coordinate
+     */
+    Map<String, Integer> queryBurnDownCoordinate(Long projectId, Long sprintId, String type);
 }

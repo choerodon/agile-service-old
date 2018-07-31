@@ -46,6 +46,7 @@
         alv.name AS ai_priority_name,
         ai.parent_issue_id AS ai_parent_issue_id,
         ai.type_code AS ai_type_code,
+        ai.rank AS ai_rank,
         ai.epic_id AS ai_epic_id,
         ai.object_version_number AS ai_object_version_number
         FROM

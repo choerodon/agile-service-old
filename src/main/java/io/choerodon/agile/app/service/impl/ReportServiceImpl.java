@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
@@ -84,10 +85,14 @@ public class ReportServiceImpl implements ReportService {
     private static final String EPIC_ID = "epic_id";
 
 
-
-
     @Override
     public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
+        List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
+        return ConvertHelper.convertList(reportIssueEList.stream().
+                sorted(Comparator.comparing(ReportIssueE::getDate)).collect(Collectors.toList()), ReportIssueDTO.class);
+    }
+
+    private List<ReportIssueE> getBurnDownReport(Long projectId, Long sprintId, String type) {
         List<ReportIssueE> reportIssueEList = new ArrayList<>();
         SprintDO sprintDO = new SprintDO();
         sprintDO.setSprintId(sprintId);
@@ -112,10 +117,24 @@ public class ReportServiceImpl implements ReportService {
         } else {
             throw new CommonException(REPORT_SPRINT_ERROR);
         }
-        return ConvertHelper.convertList(reportIssueEList.stream().
-                sorted(Comparator.comparing(ReportIssueE::getDate)).collect(Collectors.toList()), ReportIssueDTO.class);
+        return reportIssueEList;
     }
 
+    private Map<String, Integer> handleSameDay(List<ReportIssueE> reportIssueEList) {
+        DateFormat bf = new SimpleDateFormat("yyyy-MM-dd");
+        Map<String, Integer> report = new HashMap<>();
+        reportIssueEList.parallelStream().forEachOrdered(reportIssueE -> {
+            if (reportIssueE.getStatistical()) {
+                String date = bf.format(reportIssueE.getDate());
+                if (report.get(date) == null) {
+                    report.put(date, reportIssueE.getNewValue() - reportIssueE.getOldValue());
+                } else {
+                    report.put(date, report.get(date) + reportIssueE.getNewValue() - reportIssueE.getOldValue());
+                }
+            }
+        });
+        return report;
+    }
 
     @Override
     public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
@@ -1312,6 +1331,12 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public List<EpicChartListDO> queryEpicChartList(Long projectId, Long epicId) {
         return reportMapper.selectEpicIssueList(projectId, epicId);
+    }
+
+    @Override
+    public Map<String, Integer> queryBurnDownCoordinate(Long projectId, Long sprintId, String type) {
+        List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
+        return handleSameDay(reportIssueEList);
     }
 }
 

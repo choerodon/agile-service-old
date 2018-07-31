@@ -111,6 +111,7 @@ public class ReportIssueE {
         this.type = "startSprint";
         this.oldValue = 0;
         this.newValue = 0;
+        this.statistical = true;
     }
 
     public void initEndSprint(Date actualEndDate) {
@@ -118,5 +119,6 @@ public class ReportIssueE {
         this.type = "endSprint";
         this.oldValue = 0;
         this.newValue = 0;
+        this.statistical = true;
     }
 }

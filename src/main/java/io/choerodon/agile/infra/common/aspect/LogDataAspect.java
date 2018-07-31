@@ -428,7 +428,12 @@ public class LogDataAspect {
             }
         }
         if (versionIssueRelDO != null) {
-            String field = FIX_VERSION.equals(versionIssueRelDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+            String field;
+            if (versionIssueRelDO.getRelationType() == null) {
+                field = FIELD_FIX_VERSION;
+            } else {
+                field = FIX_VERSION.equals(versionIssueRelDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+            }
             createDataLog(versionIssueRelDO.getProjectId(), versionIssueRelDO.getIssueId(), field,
                     productVersionMapper.selectByPrimaryKey(versionIssueRelDO.getVersionId()).getName(), null,
                     versionIssueRelDO.getVersionId().toString(), null);
@@ -631,7 +636,12 @@ public class LogDataAspect {
             }
         }
         if (versionIssueRelE != null) {
-            String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+            String field;
+            if (versionIssueRelE.getRelationType() == null) {
+                field = FIELD_FIX_VERSION;
+            } else {
+                field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+            }
             createDataLog(versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), field,
                     null, productVersionMapper.selectByPrimaryKey(versionIssueRelE.getVersionId()).getName(),
                     null, versionIssueRelE.getVersionId().toString());
@@ -666,7 +676,12 @@ public class LogDataAspect {
             Long issueId = Long.parseLong(entry.getKey().toString());
             List<ProductVersionDO> versionIssueRelDOList = (List<ProductVersionDO>) entry.getValue();
             for (ProductVersionDO productVersionDO : versionIssueRelDOList) {
-                String field = FIX_VERSION.equals(productVersionDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+                String field;
+                if (productVersionDO.getRelationType() == null) {
+                    field = FIELD_FIX_VERSION;
+                } else {
+                    field = FIX_VERSION.equals(productVersionDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+                }
                 createDataLog(projectId, issueId, field, productVersionDO.getName(),
                         null, productVersionDO.getVersionId().toString(), null);
             }
@@ -687,8 +702,7 @@ public class LogDataAspect {
                 throw new CommonException("error.productVersion.get");
             }
             for (Long issueId : versionIssueRelE.getIssueIds()) {
-                String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
-                createDataLog(versionIssueRelE.getProjectId(), issueId, field, null,
+                createDataLog(versionIssueRelE.getProjectId(), issueId, FIELD_FIX_VERSION, null,
                         productVersionDO.getName(), null, productVersionDO.getVersionId().toString());
             }
         }
