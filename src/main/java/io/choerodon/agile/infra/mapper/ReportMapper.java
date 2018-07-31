@@ -359,12 +359,15 @@ public interface ReportMapper {
 
     List<DateIssueIdsDO> selectCompletedIssueIds(@Param("projectId") Long projectId);
 
-    List<DateIssueIdsDO> selectEpicStoryPointsAll(@Param("projectId") Long projectId);
+    List<DateIssueIdsDO> selectStoryPointsAll(@Param("projectId") Long projectId);
 
     List<DateIssueIdsDO> selectEpicRemainTime(@Param("projectId") Long projectId);
 
     List<DateIssueIdsDO> selectIssueByEpicId(@Param("projectId") Long projectId, @Param("epicId") Long epicId);
 
-    List<EpicChartListDO> selectEpicIssueList(@Param("projectId") Long projectId, @Param("epicId") Long epicId);
+    List<GroupDataChartListDO> selectEpicIssueList(@Param("projectId") Long projectId, @Param("epicId") Long epicId);
 
+    List<DateIssueIdsDO> selectIssueByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+
+    List<GroupDataChartListDO> selectVersionIssueList(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 }
