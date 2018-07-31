@@ -1,7 +1,8 @@
 package io.choerodon.agile.infra.dataobject;
 
 /**
- * Created by hande on 2018/7/28.
+ * Created by HuangFuqiang@choerodon.io on 2018/7/28.
+ * Email: fuqianghuang01@gmail.com
  */
 public class EpicChartListDO {
 
@@ -17,9 +18,9 @@ public class EpicChartListDO {
 
     private String statusName;
 
-    private int storyPoints;
+    private Integer storyPoints;
 
-    private int remainTime;
+    private Integer remainTime;
 
     private int completed;
 
@@ -71,20 +72,20 @@ public class EpicChartListDO {
         this.statusName = statusName;
     }
 
-    public int getStoryPoints() {
-        return storyPoints;
-    }
-
-    public void setStoryPoints(int storyPoints) {
+    public void setStoryPoints(Integer storyPoints) {
         this.storyPoints = storyPoints;
     }
 
-    public int getRemainTime() {
-        return remainTime;
+    public Integer getStoryPoints() {
+        return storyPoints;
     }
 
-    public void setRemainTime(int remainTime) {
+    public void setRemainTime(Integer remainTime) {
         this.remainTime = remainTime;
+    }
+
+    public Integer getRemainTime() {
+        return remainTime;
     }
 
     public int getCompleted() {
