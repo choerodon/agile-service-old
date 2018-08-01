@@ -302,8 +302,8 @@
             </if>
             <if test='searchArgs.epic != null and searchArgs.epic != "" '>
                 AND ai.issue_id in (
-                SELECT ai3.issue_id FROM agile_issue ai3
-                where position(#{searchArgs.epic} IN ai3.epic_name) )
+                SELECT ai3.issue_id FROM agile_issue ai3 ,agile_issue ai4
+                where ai3.epic_id = ai4.issue_id and position(#{searchArgs.epic} IN ai4.epic_name) )
             </if>
             <if test='searchArgs.version != null and searchArgs.version != "" '>
                 AND ai.issue_id in (
