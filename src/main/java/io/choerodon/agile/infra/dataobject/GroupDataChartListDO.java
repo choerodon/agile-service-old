@@ -24,6 +24,8 @@ public class GroupDataChartListDO {
 
     private int completed;
 
+    private String statusColor;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -94,5 +96,13 @@ public class GroupDataChartListDO {
 
     public void setCompleted(int completed) {
         this.completed = completed;
+    }
+
+    public void setStatusColor(String statusColor) {
+        this.statusColor = statusColor;
+    }
+
+    public String getStatusColor() {
+        return statusColor;
     }
 }
