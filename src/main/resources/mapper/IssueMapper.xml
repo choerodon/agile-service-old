@@ -294,6 +294,28 @@
                 </foreach>
             </if>
         </if>
+        <if test='searchArgs != null'>
+            <if test='searchArgs.component != null and searchArgs.component != "" '>
+                AND ai.issue_id in (
+                SELECT acir.issue_id FROM agile_component_issue_rel acir,agile_issue_component aic
+                where acir.component_id = aic.component_id and position(#{searchArgs.component} IN aic.name) )
+            </if>
+            <if test='searchArgs.epic != null and searchArgs.epic != "" '>
+                AND ai.issue_id in (
+                SELECT ai3.issue_id FROM agile_issue ai3
+                where position(#{searchArgs.epic} IN ai3.epic_name) )
+            </if>
+            <if test='searchArgs.version != null and searchArgs.version != "" '>
+                AND ai.issue_id in (
+                SELECT avir.issue_id FROM agile_version_issue_rel avir,agile_product_version apv
+                where avir.version_id = apv.version_id and position(#{searchArgs.version} IN apv.name) )
+            </if>
+            <if test='searchArgs.sprint != null and searchArgs.sprint != "" '>
+                AND ai.issue_id in (
+                SELECT aisr.issue_id FROM agile_issue_sprint_rel aisr,agile_sprint as2
+                where aisr.sprint_id = as2.sprint_id and position(#{searchArgs.sprint} IN as2.sprint_name) )
+            </if>
+        </if>
         <if test='otherArgs != null'>
             <if test='otherArgs.type != null and otherArgs.type != "" and
             otherArgs.id != null and otherArgs.id.size > 0'>
