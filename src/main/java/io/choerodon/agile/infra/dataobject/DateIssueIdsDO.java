@@ -1,11 +1,9 @@
 package io.choerodon.agile.infra.dataobject;
 
-import scala.collection.parallel.immutable.ParRange;
-
-import java.math.BigDecimal;
 
 /**
- * Created by hande on 2018/7/28.
+ * Created by HuangFuqiang@choerodon.io on 2018/7/28.
+ * Email: fuqianghuang01@gmail.com
  */
 public class DateIssueIdsDO {
 

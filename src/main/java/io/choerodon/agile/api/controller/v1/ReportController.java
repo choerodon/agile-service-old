@@ -117,9 +117,9 @@ public class ReportController {
     @ApiOperation(value = "速度图")
     @GetMapping(value = "/velocity_chart")
     public ResponseEntity<List<VelocitySprintDTO>> queryVelocityChart(@ApiParam(value = "项目id", required = true)
-                                                                      @PathVariable(name = "project_id") Long projectId,
-                                                                      @ApiParam(value = "统计类型", required = true)
-                                                                      @RequestParam String type) {
+                                                                       @PathVariable(name = "project_id") Long projectId,
+                                                                       @ApiParam(value = "统计类型", required = true)
+                                                                       @RequestParam String type) {
         return Optional.ofNullable(reportService.queryVelocityChart(projectId, type))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.velocityChart.get"));
@@ -141,11 +141,11 @@ public class ReportController {
     @ApiOperation(value = "史诗图")
     @GetMapping(value = "/epic_chart")
     public ResponseEntity<List<GroupDataChartDO>> queryEpicChart(@ApiParam(value = "项目id", required = true)
-                                                                      @PathVariable(name = "project_id") Long projectId,
-                                                                 @ApiParam(value = "epic id", required = true)
-                                                                      @RequestParam Long epicId,
-                                                                 @ApiParam(value = "统计类型", required = true)
-                                                                      @RequestParam String type) {
+                                                                  @PathVariable(name = "project_id") Long projectId,
+                                                                  @ApiParam(value = "epic id", required = true)
+                                                                  @RequestParam Long epicId,
+                                                                  @ApiParam(value = "统计类型", required = true)
+                                                                  @RequestParam String type) {
         return Optional.ofNullable(reportService.queryEpicChart(projectId, epicId, type))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.epicChart.get"));
@@ -155,9 +155,9 @@ public class ReportController {
     @ApiOperation(value = "史诗图问题列表")
     @GetMapping(value = "/epic_issue_list")
     public ResponseEntity<List<GroupDataChartListDO>> queryEpicChartList(@ApiParam(value = "项目id", required = true)
-                                                            @PathVariable(name = "project_id") Long projectId,
-                                                                         @ApiParam(value = "epic id", required = true)
-                                                            @RequestParam Long epicId) {
+                                                                          @PathVariable(name = "project_id") Long projectId,
+                                                                          @ApiParam(value = "epic id", required = true)
+                                                                          @RequestParam Long epicId) {
         return Optional.ofNullable(reportService.queryEpicChartList(projectId, epicId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.epicChartList.get"));
@@ -166,11 +166,11 @@ public class ReportController {
     @ApiOperation(value = "版本图重构api")
     @GetMapping(value = "/version_chart")
     public ResponseEntity<List<GroupDataChartDO>> queryVersionChart(@ApiParam(value = "项目id", required = true)
-                                                                 @PathVariable(name = "project_id") Long projectId,
-                                                                 @ApiParam(value = "version id", required = true)
-                                                                 @RequestParam Long versionId,
-                                                                 @ApiParam(value = "统计类型", required = true)
-                                                                 @RequestParam String type) {
+                                                                     @PathVariable(name = "project_id") Long projectId,
+                                                                     @ApiParam(value = "version id", required = true)
+                                                                     @RequestParam Long versionId,
+                                                                     @ApiParam(value = "统计类型", required = true)
+                                                                     @RequestParam String type) {
         return Optional.ofNullable(reportService.queryVersionChart(projectId, versionId, type))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.versionChart.get"));
@@ -180,9 +180,9 @@ public class ReportController {
     @ApiOperation(value = "版本图问题列表重构api")
     @GetMapping(value = "/version_issue_list")
     public ResponseEntity<List<GroupDataChartListDO>> queryVersionChartList(@ApiParam(value = "项目id", required = true)
-                                                                         @PathVariable(name = "project_id") Long projectId,
-                                                                         @ApiParam(value = "version id", required = true)
-                                                                         @RequestParam Long versionId) {
+                                                                             @PathVariable(name = "project_id") Long projectId,
+                                                                             @ApiParam(value = "version id", required = true)
+                                                                             @RequestParam Long versionId) {
         return Optional.ofNullable(reportService.queryVersionChartList(projectId, versionId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.versionChartList.get"));
