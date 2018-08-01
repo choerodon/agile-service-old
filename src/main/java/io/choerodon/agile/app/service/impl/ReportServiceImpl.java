@@ -86,6 +86,8 @@ public class ReportServiceImpl implements ReportService {
     private static final String TYPE_ISSUE_COUNT = "issue_count";
     private static final String TYPE_STORY_POINT = "story_point";
     private static final String TYPE_REMAIN_TIME = "remain_time";
+    private static final String ALLSUM = "allSum";
+    private static final String ESTIMATECOUNT = "estimateCount";
 
 
     @Override
@@ -1003,6 +1005,18 @@ public class ReportServiceImpl implements ReportService {
         return allMap;
     }
 
+    private void manageCompleteMapOperation(List<Long> issueIds, DateIssueIdsDO tmp) {
+        if (issueIds.contains(tmp.getIssueId())) {
+            if (tmp.getCompleted() == 0) {
+                issueIds.remove(tmp.getIssueId());
+            }
+        } else {
+            if (tmp.getCompleted() == 1) {
+                issueIds.add(tmp.getIssueId());
+            }
+        }
+    }
+
     private Map getCompletedMap(Long projectId, Map allMap) {
         Map completedMap = new HashMap();
         List<DateIssueIdsDO> completedIssueIds = getCompletedIssueIds(projectId);
@@ -1010,21 +1024,14 @@ public class ReportServiceImpl implements ReportService {
         String groupDay = null;
         for (DateIssueIdsDO tmp : completedIssueIds) {
             List<Long> epicIssueIds = (List<Long>) allMap.get(tmp.getGroupDay());
-            if (epicIssueIds == null || !epicIssueIds.contains(tmp.getIssueId())) continue;
-            if (!tmp.getGroupDay().equals(groupDay) && groupDay != null) {
-                List<Long> take = new ArrayList<>();
-                take.addAll(issueIds);
-                completedMap.put(groupDay, take);
-            }
-            groupDay = tmp.getGroupDay();
-            if (issueIds.contains(tmp.getIssueId())) {
-                if (tmp.getCompleted() == 0) {
-                    issueIds.remove(tmp.getIssueId());
+            if (epicIssueIds != null && epicIssueIds.contains(tmp.getIssueId())) {
+                if (!tmp.getGroupDay().equals(groupDay) && groupDay != null) {
+                    List<Long> take = new ArrayList<>();
+                    take.addAll(issueIds);
+                    completedMap.put(groupDay, take);
                 }
-            } else {
-                if (tmp.getCompleted() == 1) {
-                    issueIds.add(tmp.getIssueId());
-                }
+                groupDay = tmp.getGroupDay();
+                manageCompleteMapOperation(issueIds, tmp);
             }
         }
         if (groupDay != null) {
@@ -1039,12 +1046,7 @@ public class ReportServiceImpl implements ReportService {
         Map completedMap = getCompletedMap(projectId, allMap);
         Set<Map.Entry<String, List<Long>>> entriest = allMap.entrySet();
         List<Map.Entry<String, List<Long>>> entries = new LinkedList<>(entriest);
-        Collections.sort(entries, new Comparator<Map.Entry<String, List<Long>>>(){
-            @Override
-            public int compare(Map.Entry<String, List<Long>> ele1, Map.Entry<String, List<Long>> ele2){
-                return ele1.getKey().compareTo(ele2.getKey());
-            }
-        });
+        Collections.sort(entries, (Map.Entry<String, List<Long>> ele1, Map.Entry<String, List<Long>> ele2) -> ele1.getKey().compareTo(ele2.getKey()));
         int preCompletedCount = 0;
         for (Map.Entry<String, List<Long>> entry : entries) {
             GroupDataChartDO groupDataChartDO = new GroupDataChartDO();
@@ -1115,6 +1117,55 @@ public class ReportServiceImpl implements ReportService {
         return groupDataChartDO;
     }
 
+    private JSONObject setAllSumAndCountSp(List<Long> spIds2, DateIssueIdsDO cnt, int allSum, int estimateCount, Map<Long, Integer> issueValue2, int point) {
+        if (spIds2.contains(cnt.getIssueId())) {
+            if (cnt.getStoryPoint() == null) {
+                estimateCount -= 1;
+            }
+            allSum = allSum - issueValue2.get(cnt.getIssueId()) + point;
+            issueValue2.put(cnt.getIssueId(), point);
+        } else {
+            if (cnt.getStoryPoint() != null) {
+                estimateCount += 1;
+                allSum = allSum + point;
+                spIds2.add(cnt.getIssueId());
+                issueValue2.put(cnt.getIssueId(), point);
+            }
+        }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(ALLSUM, allSum);
+        jsonObject.put(ESTIMATECOUNT, estimateCount);
+        return jsonObject;
+    }
+
+    private int setCompletedSumSp(List<Long> spIds, DateIssueIdsDO cnt, List<Long> completedList, int completedSum, Map<Long, Integer> issueValue, int point) {
+        if (spIds.contains(cnt.getIssueId())) {
+            if (completedList.contains(cnt.getIssueId())) {
+                completedSum = completedSum - issueValue.get(cnt.getIssueId()) + point;
+                issueValue.put(cnt.getIssueId(), point);
+            } else {
+                completedSum = completedSum - issueValue.get(cnt.getIssueId());
+                issueValue.remove(cnt.getIssueId());
+                spIds.remove(cnt.getIssueId());
+            }
+        } else {
+            if (completedList.contains(cnt.getIssueId())) {
+                completedSum = completedSum + point;
+                spIds.add(cnt.getIssueId());
+                issueValue.put(cnt.getIssueId(), point);
+            }
+        }
+        return completedSum;
+    }
+
+    private int manageNullCompletedSp(Map<Long, Integer> issueValue, DateIssueIdsDO cnt, int completedSum, int point) {
+        if (issueValue != null && issueValue.get(cnt.getIssueId()) != null && !cnt.getStoryPoint().equals(issueValue.get(cnt.getIssueId()))){
+            completedSum = completedSum - issueValue.get(cnt.getIssueId()) + point;
+            issueValue.put(cnt.getIssueId(), point);
+        }
+        return completedSum;
+    }
+
     private List<GroupDataChartDO> dealStoryPointData(Long projectId, List<DateIssueIdsDO> storyPointsAll, List<DateIssueIdsDO> allIssueIds) {
         List<GroupDataChartDO> result = new ArrayList<>();
         Map allMap = getAllMap(allIssueIds);
@@ -1130,51 +1181,21 @@ public class ReportServiceImpl implements ReportService {
         setAllIssuesAndSortSp(allIssueIds, storyPointsAll);
         for (DateIssueIdsDO cnt : storyPointsAll){
             List<Long> epicIssueIds = (List<Long>) allMap.get(cnt.getGroupDay());
-            if (epicIssueIds == null || !epicIssueIds.contains(cnt.getIssueId())) {
-                continue;
-            }
-            if (!cnt.getGroupDay().equals(groupDay2) && groupDay2 != null) {
-                result.add(setGroupDataSp(groupDay2, completedSum, allSum, estimateCount));
-            }
-            groupDay2 = cnt.getGroupDay();
-            int point = cnt.getStoryPoint() == null ? 0 : cnt.getStoryPoint();
-            if (spIds2.contains(cnt.getIssueId())) {
-                if (cnt.getStoryPoint() == null) {
-                    estimateCount -= 1;
+            if (epicIssueIds != null && epicIssueIds.contains(cnt.getIssueId())) {
+                if (!cnt.getGroupDay().equals(groupDay2) && groupDay2 != null) {
+                    result.add(setGroupDataSp(groupDay2, completedSum, allSum, estimateCount));
                 }
-                allSum = allSum - issueValue2.get(cnt.getIssueId()) + point;
-                issueValue2.put(cnt.getIssueId(), point);
-            } else {
-                if (cnt.getStoryPoint() != null) {
-                    estimateCount += 1;
-                    allSum = allSum + point;
-                    spIds2.add(cnt.getIssueId());
-                    issueValue2.put(cnt.getIssueId(), point);
+                groupDay2 = cnt.getGroupDay();
+                int point = cnt.getStoryPoint() == null ? 0 : cnt.getStoryPoint();
+                JSONObject jsonObject = setAllSumAndCountSp(spIds2, cnt, allSum, estimateCount, issueValue2, point);
+                allSum = Integer.parseInt(jsonObject.get(ALLSUM).toString());
+                estimateCount = Integer.parseInt(jsonObject.get(ESTIMATECOUNT).toString());
+                List<Long> completedList = (List<Long>) completedMap.get(cnt.getGroupDay());
+                if (completedList == null) {
+                    completedSum = manageNullCompletedSp(issueValue, cnt, completedSum, point);
+                    continue;
                 }
-            }
-            List<Long> completedList = (List<Long>) completedMap.get(cnt.getGroupDay());
-            if (completedList == null) {
-                if (issueValue != null && issueValue.get(cnt.getIssueId()) != null && !cnt.getStoryPoint().equals(issueValue.get(cnt.getIssueId()))){
-                    completedSum = completedSum - issueValue.get(cnt.getIssueId()) + point;
-                    issueValue.put(cnt.getIssueId(), point);
-                }
-                continue;
-            }
-            if (spIds.contains(cnt.getIssueId())) {
-                if (completedList.contains(cnt.getIssueId())) {
-                    completedSum = completedSum - issueValue.get(cnt.getIssueId()) + point;
-                    issueValue.put(cnt.getIssueId(), point);
-                } else {
-                    completedSum = completedSum - issueValue.get(cnt.getIssueId());
-                    issueValue.remove(cnt.getIssueId());
-                    spIds.remove(cnt.getIssueId());
-                }
-            } else {
-                if (completedList.contains(cnt.getIssueId())) {
-                    completedSum = completedSum + point;
-                    spIds.add(cnt.getIssueId());
-                    issueValue.put(cnt.getIssueId(), point);
-                }
+                completedSum = setCompletedSumSp(spIds, cnt, completedList, completedSum, issueValue, point);
             }
         }
         if (groupDay2 != null) {
@@ -1184,21 +1205,11 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void sortEpicData(List<DateIssueIdsDO> list) {
-        Collections.sort(list, new Comparator<DateIssueIdsDO>() {
-            @Override
-            public int compare(DateIssueIdsDO o1, DateIssueIdsDO o2) {
-                return o1.getGroupDay().compareTo(o2.getGroupDay());
-            }
-        });
+        Collections.sort(list, Comparator.comparing(DateIssueIdsDO::getGroupDay));
     }
 
     private void sortEpicDataRes(List<GroupDataChartDO> list) {
-        Collections.sort(list, new Comparator<GroupDataChartDO>() {
-            @Override
-            public int compare(GroupDataChartDO o1, GroupDataChartDO o2) {
-                return o1.getGroupDay().compareTo(o2.getGroupDay());
-            }
-        });
+        Collections.sort(list, Comparator.comparing(GroupDataChartDO::getGroupDay));
     }
 
     private void setAllIssuesAndSortRt(List<DateIssueIdsDO> allIssueIds, List<DateIssueIdsDO> remainTimesAll){
@@ -1255,6 +1266,55 @@ public class ReportServiceImpl implements ReportService {
         return groupDataChartDO;
     }
 
+    private JSONObject setAllSumAndCountRt(List<Long> spIds2, DateIssueIdsDO cnt, int estimateCount, int allSum, Map<Long, Integer> issueValue2, int remainTime) {
+        if (spIds2.contains(cnt.getIssueId())) {
+            if (cnt.getRemainTime() == null) {
+                estimateCount -= 1;
+            }
+            allSum = allSum - issueValue2.get(cnt.getIssueId()) + remainTime;
+            issueValue2.put(cnt.getIssueId(), remainTime);
+        } else {
+            if (cnt.getRemainTime() != null) {
+                estimateCount += 1;
+                allSum = allSum + remainTime;
+                spIds2.add(cnt.getIssueId());
+                issueValue2.put(cnt.getIssueId(), remainTime);
+            }
+        }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(ALLSUM, allSum);
+        jsonObject.put(ESTIMATECOUNT, estimateCount);
+        return jsonObject;
+    }
+
+    private int setCompletedSumRt(List<Long> spIds, DateIssueIdsDO cnt, List<Long> completedList, Map<Long, Integer> issueValue, int completedSum, int remainTime) {
+        if (spIds.contains(cnt.getIssueId())) {
+            if (completedList.contains(cnt.getIssueId())) {
+                issueValue.put(cnt.getIssueId(), remainTime);
+                completedSum = completedSum - issueValue.get(cnt.getIssueId()) + remainTime;
+            } else {
+                completedSum = completedSum - issueValue.get(cnt.getIssueId());
+                issueValue.remove(cnt.getIssueId());
+                spIds.remove(cnt.getIssueId());
+            }
+        } else {
+            if (completedList.contains(cnt.getIssueId())) {
+                completedSum = completedSum + remainTime;
+                spIds.add(cnt.getIssueId());
+                issueValue.put(cnt.getIssueId(), remainTime);
+            }
+        }
+        return completedSum;
+    }
+
+    private int manageNullCompletedRt(Map<Long, Integer> issueValue, DateIssueIdsDO cnt, int completedSum, int remainTime) {
+        if (issueValue != null && issueValue.get(cnt.getIssueId()) != null && !cnt.getRemainTime().equals(issueValue.get(cnt.getIssueId()))){
+            completedSum = completedSum - issueValue.get(cnt.getIssueId()) + remainTime;
+            issueValue.put(cnt.getIssueId(), remainTime);
+        }
+        return completedSum;
+    }
+
     private List<GroupDataChartDO> dealRemainTimeData(Long projectId, List<DateIssueIdsDO> remainTimesAll, List<DateIssueIdsDO> allIssueIds) {
         List<GroupDataChartDO> result = new ArrayList<>();
         Map allMap = getAllMap(allIssueIds);
@@ -1270,51 +1330,21 @@ public class ReportServiceImpl implements ReportService {
         setAllIssuesAndSortRt(allIssueIds, remainTimesAll);
         for (DateIssueIdsDO cnt : remainTimesAll){
             List<Long> epicIssueIds = (List<Long>) allMap.get(cnt.getGroupDay());
-            if (epicIssueIds == null || !epicIssueIds.contains(cnt.getIssueId())) {
-                continue;
-            }
-            if (!cnt.getGroupDay().equals(groupDay2) && groupDay2 != null) {
-                result.add(setGroupDataRt(groupDay2, completedSum, allSum, estimateCount));
-            }
-            groupDay2 = cnt.getGroupDay();
-            int remainTime = cnt.getRemainTime() == null ? 0 : cnt.getRemainTime();
-            if (spIds2.contains(cnt.getIssueId())) {
-                if (cnt.getRemainTime() == null) {
-                    estimateCount -= 1;
+            if (epicIssueIds != null && epicIssueIds.contains(cnt.getIssueId())) {
+                if (!cnt.getGroupDay().equals(groupDay2) && groupDay2 != null) {
+                    result.add(setGroupDataRt(groupDay2, completedSum, allSum, estimateCount));
                 }
-                allSum = allSum - issueValue2.get(cnt.getIssueId()) + remainTime;
-                issueValue2.put(cnt.getIssueId(), remainTime);
-            } else {
-                if (cnt.getRemainTime() != null) {
-                    estimateCount += 1;
-                    allSum = allSum + remainTime;
-                    spIds2.add(cnt.getIssueId());
-                    issueValue2.put(cnt.getIssueId(), remainTime);
+                groupDay2 = cnt.getGroupDay();
+                int remainTime = cnt.getRemainTime() == null ? 0 : cnt.getRemainTime();
+                JSONObject jsonObject = setAllSumAndCountRt(spIds2, cnt, estimateCount, allSum, issueValue2, remainTime);
+                allSum = Integer.parseInt(jsonObject.get(ALLSUM).toString());
+                estimateCount = Integer.parseInt(jsonObject.get(ESTIMATECOUNT).toString());
+                List<Long> completedList = (List<Long>) completedMap.get(cnt.getGroupDay());
+                if (completedList == null) {
+                    completedSum = manageNullCompletedRt(issueValue, cnt, completedSum, remainTime);
+                    continue;
                 }
-            }
-            List<Long> completedList = (List<Long>) completedMap.get(cnt.getGroupDay());
-            if (completedList == null) {
-                if (issueValue != null && issueValue.get(cnt.getIssueId()) != null && !cnt.getRemainTime().equals(issueValue.get(cnt.getIssueId()))){
-                    completedSum = completedSum - issueValue.get(cnt.getIssueId()) + remainTime;
-                    issueValue.put(cnt.getIssueId(), remainTime);
-                }
-                continue;
-            }
-            if (spIds.contains(cnt.getIssueId())) {
-                if (completedList.contains(cnt.getIssueId())) {
-                    issueValue.put(cnt.getIssueId(), remainTime);
-                    completedSum = completedSum - issueValue.get(cnt.getIssueId()) + remainTime;
-                } else {
-                    completedSum = completedSum - issueValue.get(cnt.getIssueId());
-                    issueValue.remove(cnt.getIssueId());
-                    spIds.remove(cnt.getIssueId());
-                }
-            } else {
-                if (completedList.contains(cnt.getIssueId())) {
-                    completedSum = completedSum + remainTime;
-                    spIds.add(cnt.getIssueId());
-                    issueValue.put(cnt.getIssueId(), remainTime);
-                }
+                completedSum = setCompletedSumRt(spIds, cnt, completedList, issueValue, completedSum, remainTime);
             }
         }
         if (groupDay2 != null) {
