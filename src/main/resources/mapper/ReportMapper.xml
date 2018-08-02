@@ -1901,4 +1901,1048 @@
             AND ai.type_code != 'issue_test'
     </select>
 
+    <select id="selectByStoryPointCompletedFinal" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+        SELECT
+            t11.group_day AS group_day,
+	        SUM(t11.story_points) AS completed_story_points
+        FROM
+            (
+                SELECT
+                    t2.group_day,
+                    t2.issue_id,
+                    adl2.new_string AS story_points
+                FROM
+                    (
+                        SELECT
+                            t1.group_day,
+                            adl.issue_id,
+                            MAX(adl.log_id) AS log_id
+                        FROM
+                            (
+                                SELECT DISTINCT
+                                    (
+                                        DATE_FORMAT(
+                                            last_update_date,
+                                            '%Y-%m-%d'
+                                        )
+                                    ) group_day
+                                FROM
+                                    agile_data_log
+                                WHERE
+                                    issue_id IN (
+                                        SELECT
+                                            issue_id
+                                        FROM
+                                            agile_issue
+                                        WHERE
+                                            epic_id = #{epicId}
+                                    )
+                                AND field IN (
+                                    'resolution',
+                                    'Story Points'
+                                )
+                                ORDER BY
+                                    group_day
+                            ) t1,
+                            agile_data_log adl
+                        WHERE
+                            t1.group_day >= DATE_FORMAT(
+                                adl.last_update_date,
+                                '%Y-%m-%d'
+                            )
+                        AND adl.issue_id IN (
+                            SELECT
+                                issue_id
+                            FROM
+                                agile_issue
+                            WHERE
+                                epic_id = #{epicId}
+                        )
+                        AND adl.field = 'Story Points'
+                        GROUP BY
+                            t1.group_day,
+                            adl.issue_id
+                    ) t2,
+                    agile_data_log adl2
+                WHERE
+                    t2.log_id = adl2.log_id
+            ) t11,
+            (
+                SELECT
+                    t10.group_day,
+                    t10.issue_id
+                FROM
+                    agile_data_log adl9,
+                    (
+                        SELECT
+                            t1.group_day,
+                            adl.issue_id,
+                            MAX(adl.log_id) AS log_id
+                        FROM
+                            (
+                                SELECT DISTINCT
+                                    (
+                                        DATE_FORMAT(
+                                            last_update_date,
+                                            '%Y-%m-%d'
+                                        )
+                                    ) group_day
+                                FROM
+                                    agile_data_log
+                                WHERE
+                                    issue_id IN (
+                                        SELECT
+                                            issue_id
+                                        FROM
+                                            agile_issue
+                                        WHERE
+                                            epic_id = #{epicId}
+                                    )
+                                AND field IN (
+                                    'resolution',
+                                    'Story Points'
+                                )
+                                ORDER BY
+                                    group_day
+                            ) t1,
+                            agile_data_log adl
+                        WHERE
+                            t1.group_day >= DATE_FORMAT(
+                                adl.last_update_date,
+                                '%Y-%m-%d'
+                            )
+                        AND adl.issue_id IN (
+                            SELECT
+                                issue_id
+                            FROM
+                                agile_issue
+                            WHERE
+                                epic_id = #{epicId}
+                        )
+                        AND adl.field = 'resolution'
+                        GROUP BY
+                            t1.group_day,
+                            adl.issue_id
+                    ) t10
+                WHERE
+                    adl9.log_id = t10.log_id
+                AND adl9.new_value IS NOT NULL
+            ) t12
+        WHERE
+            t11.group_day = t12.group_day
+        AND t11.issue_id = t12.issue_id
+        GROUP BY
+            t11.group_day
+    </select>
+
+    <select id="selectByStoryPointAllFinal" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+        SELECT
+            t2.group_day AS group_day,
+            SUM(adl2.new_string) AS all_story_points
+        FROM
+            (
+                SELECT
+                    t1.group_day,
+                    adl.issue_id,
+                    MAX(adl.log_id) AS log_id
+                FROM
+                    (
+                        SELECT DISTINCT
+                            (
+                                DATE_FORMAT(
+                                    last_update_date,
+                                    '%Y-%m-%d'
+                                )
+                            ) group_day
+                        FROM
+                            agile_data_log
+                        WHERE
+                            issue_id IN (
+                                SELECT
+                                    issue_id
+                                FROM
+                                    agile_issue
+                                WHERE
+                                    epic_id = #{epicId}
+                            )
+                        AND field IN (
+                            'resolution',
+                            'Story Points'
+                        )
+                        ORDER BY
+                            group_day
+                    ) t1,
+                    agile_data_log adl
+                WHERE
+                    t1.group_day >= DATE_FORMAT(
+                        adl.last_update_date,
+                        '%Y-%m-%d'
+                    )
+                AND adl.issue_id IN (
+                    SELECT
+                        issue_id
+                    FROM
+                        agile_issue
+                    WHERE
+                        epic_id = #{epicId}
+                )
+                AND adl.field = 'Story Points'
+                GROUP BY
+                    t1.group_day,
+                    adl.issue_id
+            ) t2,
+            agile_data_log adl2
+        WHERE
+            t2.log_id = adl2.log_id
+        GROUP BY
+            t2.group_day
+    </select>
+
+    <select id="selectByStoryPointCountAll" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+        SELECT
+            t2.group_day,
+            COUNT(adl3.issue_id) AS issue_count
+        FROM
+            agile_data_log adl3,
+            (
+                SELECT
+                    t1.group_day AS group_day,
+                    adl.issue_id AS issue_id,
+                    MAX(adl.log_id) AS log_id
+                FROM
+                    (
+                        SELECT DISTINCT
+                            (
+                                DATE_FORMAT(
+                                    last_update_date,
+                                    '%Y-%m-%d'
+                                )
+                            ) group_day
+                        FROM
+                            agile_data_log
+                        WHERE
+                            issue_id IN (
+                                SELECT
+                                    issue_id
+                                FROM
+                                    agile_issue
+                                WHERE
+                                    epic_id = #{epicId}
+                            )
+                        AND field IN (
+                            'resolution',
+                            'Story Points'
+                        )
+                        ORDER BY
+                            group_day
+                    ) t1,
+                    agile_data_log adl
+                WHERE
+                    t1.group_day >= DATE_FORMAT(
+                        adl.last_update_date,
+                        '%Y-%m-%d'
+                    )
+                AND adl.field = 'Epic Link'
+                AND adl.issue_id IN (
+                    SELECT
+                        issue_id
+                    FROM
+                        agile_issue
+                    WHERE
+                        epic_id = #{epicId}
+                )
+                GROUP BY
+                    t1.group_day,
+                    adl.issue_id
+            ) t2
+        WHERE
+            adl3.log_id = t2.log_id
+        AND adl3.new_value = #{epicId}
+        GROUP BY t2.group_day
+    </select>
+
+    <select id="selectByStoryPointCountEstimate" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+        SELECT
+            t3.group_day AS  group_day,
+            COUNT(adl.issue_id) AS un_estimate_issue_count
+        FROM
+            agile_data_log adl,
+            (
+                SELECT
+                    t1.group_day AS group_day,
+                    adl.issue_id AS issue_id,
+                    MAX(adl.log_id) AS log_id
+                FROM
+                    (
+                        SELECT DISTINCT
+                            (
+                                DATE_FORMAT(
+                                    last_update_date,
+                                    '%Y-%m-%d'
+                                )
+                            ) group_day
+                        FROM
+                            agile_data_log
+                        WHERE
+                            issue_id IN (
+                                SELECT
+                                    issue_id
+                                FROM
+                                    agile_issue
+                                WHERE
+                                    epic_id = #{epicId}
+                            )
+                        AND field IN (
+                            'resolution',
+                            'Story Points'
+                        )
+                        ORDER BY
+                            group_day
+                    ) t1,
+                    agile_data_log adl
+                WHERE
+                    t1.group_day >= DATE_FORMAT(
+                        adl.last_update_date,
+                        '%Y-%m-%d'
+                    )
+                AND adl.field = 'Story Points'
+                AND adl.issue_id IN (
+                    SELECT
+                        issue_id
+                    FROM
+                        agile_issue
+                    WHERE
+                        epic_id = #{epicId}
+                )
+                GROUP BY
+                    t1.group_day,
+                    adl.issue_id
+            ) t3
+        WHERE
+            adl.log_id = t3.log_id
+        AND adl.new_string IS NOT NULL
+        GROUP BY
+            t3.group_day
+    </select>
+
+    <select id="selectByRemainTimeRemainCompleted" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+        SELECT
+            t11.group_day AS group_day,
+            SUM(t11.remain_time) AS completed_remain_times
+        FROM
+            (
+                SELECT
+                    t2.group_day,
+                    t2.issue_id,
+                    adl2.new_string AS remain_time
+                FROM
+                    (
+                        SELECT
+                            t1.group_day,
+                            adl.issue_id,
+                            MAX(adl.log_id) AS log_id
+                        FROM
+                            (
+                                SELECT DISTINCT
+                                    (
+                                        DATE_FORMAT(
+                                            last_update_date,
+                                            '%Y-%m-%d'
+                                        )
+                                    ) group_day
+                                FROM
+                                    agile_data_log
+                                WHERE
+                                    issue_id IN (
+                                        SELECT
+                                            issue_id
+                                        FROM
+                                            agile_issue
+                                        WHERE
+                                            epic_id = #{epicId}
+                                    )
+                                AND field IN (
+                                    'resolution',
+                                    'timeestimate',
+                      'timespent'
+                                )
+                                ORDER BY
+                                    group_day
+                            ) t1,
+                            agile_data_log adl
+                        WHERE
+                            t1.group_day >= DATE_FORMAT(
+                                adl.last_update_date,
+                                '%Y-%m-%d'
+                            )
+                        AND adl.issue_id IN (
+                            SELECT
+                                issue_id
+                            FROM
+                                agile_issue
+                            WHERE
+                                epic_id = #{epicId}
+                        )
+                        AND adl.field = 'timeestimate'
+                        GROUP BY
+                            t1.group_day,
+                            adl.issue_id
+                    ) t2,
+                    agile_data_log adl2
+                WHERE
+                    t2.log_id = adl2.log_id
+            ) t11,
+            (
+                SELECT
+                    t10.group_day,
+                    t10.issue_id
+                FROM
+                    agile_data_log adl9,
+                    (
+                        SELECT
+                            t1.group_day,
+                            adl.issue_id,
+                            MAX(adl.log_id) AS log_id
+                        FROM
+                            (
+                                SELECT DISTINCT
+                                    (
+                                        DATE_FORMAT(
+                                            last_update_date,
+                                            '%Y-%m-%d'
+                                        )
+                                    ) group_day
+                                FROM
+                                    agile_data_log
+                                WHERE
+                                    issue_id IN (
+                                        SELECT
+                                            issue_id
+                                        FROM
+                                            agile_issue
+                                        WHERE
+                                            epic_id = #{epicId}
+                                    )
+                                AND field IN (
+                                    'resolution',
+                                    'timeestimate'
+                      'timespent'
+                                )
+                                ORDER BY
+                                    group_day
+                            ) t1,
+                            agile_data_log adl
+                        WHERE
+                            t1.group_day >= DATE_FORMAT(
+                                adl.last_update_date,
+                                '%Y-%m-%d'
+                            )
+                        AND adl.issue_id IN (
+                            SELECT
+                                issue_id
+                            FROM
+                                agile_issue
+                            WHERE
+                                epic_id = #{epicId}
+                        )
+                        AND adl.field = 'resolution'
+                        GROUP BY
+                            t1.group_day,
+                            adl.issue_id
+                    ) t10
+                WHERE
+                    adl9.log_id = t10.log_id
+                AND adl9.new_value IS NOT NULL
+            ) t12
+        WHERE
+            t11.group_day = t12.group_day
+        AND t11.issue_id = t12.issue_id
+        GROUP BY
+            t11.group_day
+    </select>
+
+    <select id="selectByRemainTimeWorkLogCompleted" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+        SELECT
+            t11.group_day AS group_day,
+            SUM(t11.work_time) AS completed_remain_times
+        FROM
+            (
+                SELECT
+                    t2.group_day,
+                    t2.issue_id,
+                    adl2.new_string AS work_time
+                FROM
+                    (
+                        SELECT
+                            t1.group_day,
+                            adl.issue_id,
+                            MAX(adl.log_id) AS log_id
+                        FROM
+                            (
+                                SELECT DISTINCT
+                                    (
+                                        DATE_FORMAT(
+                                            last_update_date,
+                                            '%Y-%m-%d'
+                                        )
+                                    ) group_day
+                                FROM
+                                    agile_data_log
+                                WHERE
+                                    issue_id IN (
+                                        SELECT
+                                            issue_id
+                                        FROM
+                                            agile_issue
+                                        WHERE
+                                            epic_id = #{epicId}
+                                    )
+                                AND field IN (
+                                    'resolution',
+                                    'timeestimate',
+                      'timespent'
+                                )
+                                ORDER BY
+                                    group_day
+                            ) t1,
+                            agile_data_log adl
+                        WHERE
+                            t1.group_day >= DATE_FORMAT(
+                                adl.last_update_date,
+                                '%Y-%m-%d'
+                            )
+                        AND adl.issue_id IN (
+                            SELECT
+                                issue_id
+                            FROM
+                                agile_issue
+                            WHERE
+                                epic_id = #{epicId}
+                        )
+                        AND adl.field = 'timespent'
+                        GROUP BY
+                            t1.group_day,
+                            adl.issue_id
+                    ) t2,
+                    agile_data_log adl2
+                WHERE
+                    t2.log_id = adl2.log_id
+            ) t11,
+            (
+                SELECT
+                    t10.group_day,
+                    t10.issue_id
+                FROM
+                    agile_data_log adl9,
+                    (
+                        SELECT
+                            t1.group_day,
+                            adl.issue_id,
+                            MAX(adl.log_id) AS log_id
+                        FROM
+                            (
+                                SELECT DISTINCT
+                                    (
+                                        DATE_FORMAT(
+                                            last_update_date,
+                                            '%Y-%m-%d'
+                                        )
+                                    ) group_day
+                                FROM
+                                    agile_data_log
+                                WHERE
+                                    issue_id IN (
+                                        SELECT
+                                            issue_id
+                                        FROM
+                                            agile_issue
+                                        WHERE
+                                            epic_id = #{epicId}
+                                    )
+                                AND field IN (
+                                    'resolution',
+                                    'timeestimate'
+                      'timespent'
+                                )
+                                ORDER BY
+                                    group_day
+                            ) t1,
+                            agile_data_log adl
+                        WHERE
+                            t1.group_day >= DATE_FORMAT(
+                                adl.last_update_date,
+                                '%Y-%m-%d'
+                            )
+                        AND adl.issue_id IN (
+                            SELECT
+                                issue_id
+                            FROM
+                                agile_issue
+                            WHERE
+                                epic_id = #{epicId}
+                        )
+                        AND adl.field = 'resolution'
+                        GROUP BY
+                            t1.group_day,
+                            adl.issue_id
+                    ) t10
+                WHERE
+                    adl9.log_id = t10.log_id
+                AND adl9.new_value IS NOT NULL
+            ) t12
+        WHERE
+            t11.group_day = t12.group_day
+        AND t11.issue_id = t12.issue_id
+        GROUP BY
+            t11.group_day
+    </select>
+
+    <select id="selectByRemainTimeRemainAll" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+        SELECT
+            t2.group_day AS group_day,
+            SUM(adl2.new_string) AS all_remain_times
+        FROM
+            (
+                SELECT
+                    t1.group_day,
+                    adl.issue_id,
+                    MAX(adl.log_id) AS log_id
+                FROM
+                    (
+                        SELECT DISTINCT
+                            (
+                                DATE_FORMAT(
+                                    last_update_date,
+                                    '%Y-%m-%d'
+                                )
+                            ) group_day
+                        FROM
+                            agile_data_log
+                        WHERE
+                            issue_id IN (
+                                SELECT
+                                    issue_id
+                                FROM
+                                    agile_issue
+                                WHERE
+                                    epic_id = #{epicId}
+                            )
+                        AND field IN (
+                            'resolution',
+                            'timeestimate',
+                  'timespent'
+                        )
+                        ORDER BY
+                            group_day
+                    ) t1,
+                    agile_data_log adl
+                WHERE
+                    t1.group_day >= DATE_FORMAT(
+                        adl.last_update_date,
+                        '%Y-%m-%d'
+                    )
+                AND adl.issue_id IN (
+                    SELECT
+                        issue_id
+                    FROM
+                        agile_issue
+                    WHERE
+                        epic_id = #{epicId}
+                )
+                AND adl.field = 'timeestimate'
+                GROUP BY
+                    t1.group_day,
+                    adl.issue_id
+            ) t2,
+            agile_data_log adl2
+        WHERE
+            t2.log_id = adl2.log_id
+        GROUP BY
+            t2.group_day
+    </select>
+
+    <select id="selectByRemainTimeWorkLogAll" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+        SELECT
+            t2.group_day AS group_day,
+            SUM(adl2.new_string) AS all_remain_times
+        FROM
+            (
+                SELECT
+                    t1.group_day,
+                    adl.issue_id,
+                    MAX(adl.log_id) AS log_id
+                FROM
+                    (
+                        SELECT DISTINCT
+                            (
+                                DATE_FORMAT(
+                                    last_update_date,
+                                    '%Y-%m-%d'
+                                )
+                            ) group_day
+                        FROM
+                            agile_data_log
+                        WHERE
+                            issue_id IN (
+                                SELECT
+                                    issue_id
+                                FROM
+                                    agile_issue
+                                WHERE
+                                    epic_id = #{epicId}
+                            )
+                        AND field IN (
+                            'resolution',
+                            'timeestimate',
+                  'timespent'
+                        )
+                        ORDER BY
+                            group_day
+                    ) t1,
+                    agile_data_log adl
+                WHERE
+                    t1.group_day >= DATE_FORMAT(
+                        adl.last_update_date,
+                        '%Y-%m-%d'
+                    )
+                AND adl.issue_id IN (
+                    SELECT
+                        issue_id
+                    FROM
+                        agile_issue
+                    WHERE
+                        epic_id = #{epicId}
+                )
+                AND adl.field = 'timespent'
+                GROUP BY
+                    t1.group_day,
+                    adl.issue_id
+            ) t2,
+            agile_data_log adl2
+        WHERE
+            t2.log_id = adl2.log_id
+        GROUP BY
+            t2.group_day
+    </select>
+
+    <select id="selectByRemainTimeCountAll" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+        SELECT
+            t2.group_day,
+            COUNT(adl3.issue_id) AS issue_count
+        FROM
+            agile_data_log adl3,
+            (
+                SELECT
+                    t1.group_day AS group_day,
+                    adl.issue_id AS issue_id,
+                    MAX(adl.log_id) AS log_id
+                FROM
+                    (
+                        SELECT DISTINCT
+                            (
+                                DATE_FORMAT(
+                                    last_update_date,
+                                    '%Y-%m-%d'
+                                )
+                            ) group_day
+                        FROM
+                            agile_data_log
+                        WHERE
+                            issue_id IN (
+                                SELECT
+                                    issue_id
+                                FROM
+                                    agile_issue
+                                WHERE
+                                    epic_id = #{epicId}
+                            )
+                        AND field IN (
+                            'resolution',
+                            'timeestimate',
+                            'timespent'
+                        )
+                        ORDER BY
+                            group_day
+                    ) t1,
+                    agile_data_log adl
+                WHERE
+                    t1.group_day >= DATE_FORMAT(
+                        adl.last_update_date,
+                        '%Y-%m-%d'
+                    )
+                AND adl.field = 'Epic Link'
+                AND adl.issue_id IN (
+                    SELECT
+                        issue_id
+                    FROM
+                        agile_issue
+                    WHERE
+                        epic_id = #{epicId}
+                )
+                GROUP BY
+                    t1.group_day,
+                    adl.issue_id
+            ) t2
+        WHERE
+            adl3.log_id = t2.log_id
+        AND adl3.new_value = #{epicId}
+        GROUP BY
+            t2.group_day
+    </select>
+
+    <select id="selectByRemainTimeCountEstimate" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+        SELECT
+            t3.group_day,
+            COUNT(adl.issue_id)
+        FROM
+            agile_data_log adl,
+            (
+                SELECT
+                    t1.group_day AS group_day,
+                    adl.issue_id AS issue_id,
+                    MAX(adl.log_id) AS log_id
+                FROM
+                    (
+                        SELECT DISTINCT
+                            (
+                                DATE_FORMAT(
+                                    last_update_date,
+                                    '%Y-%m-%d'
+                                )
+                            ) group_day
+                        FROM
+                            agile_data_log
+                        WHERE
+                            issue_id IN (
+                                SELECT
+                                    issue_id
+                                FROM
+                                    agile_issue
+                                WHERE
+                                    epic_id = #{epicId}
+                            )
+                        AND field IN (
+                            'resolution',
+                  'timeestimate',
+                  'timespent'
+                        )
+                        ORDER BY
+                            group_day
+                    ) t1,
+                    agile_data_log adl
+                WHERE
+                    t1.group_day >= DATE_FORMAT(
+                        adl.last_update_date,
+                        '%Y-%m-%d'
+                    )
+                AND adl.field = 'timeestimate'
+                AND adl.issue_id IN (
+                    SELECT
+                        issue_id
+                    FROM
+                        agile_issue
+                    WHERE
+                        epic_id = #{epicId}
+                )
+                GROUP BY
+                    t1.group_day,
+                    adl.issue_id
+            ) t3
+        WHERE
+            adl.log_id = t3.log_id
+        AND adl.new_string IS NOT NULL
+        GROUP BY
+            t3.group_day
+    </select>
+
+    <select id="selectByIssueCountCompletedFinal" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+        SELECT
+            t2.group_day,
+            COUNT(adl3.issue_id) AS issue_completed_count
+        FROM
+            agile_data_log adl3,
+            (
+                SELECT
+                    t1.group_day AS group_day,
+                    adl.issue_id AS issue_id,
+                    MAX(adl.log_id) AS log_id
+                FROM
+                    (
+                        SELECT DISTINCT
+                            (
+                                DATE_FORMAT(
+                                    last_update_date,
+                                    '%Y-%m-%d'
+                                )
+                            ) group_day
+                        FROM
+                            agile_data_log
+                        WHERE
+                            issue_id IN (
+                                SELECT
+                                    issue_id
+                                FROM
+                                    agile_issue
+                                WHERE
+                                    epic_id = #{epicId}
+                            )
+                        AND field IN (
+                            'Epic Link',
+                  'resolution'
+                        )
+                        ORDER BY
+                            group_day
+                    ) t1,
+                    agile_data_log adl
+                WHERE
+                    t1.group_day >= DATE_FORMAT(
+                        adl.last_update_date,
+                        '%Y-%m-%d'
+                    )
+                AND adl.field = 'Epic Link'
+                AND adl.issue_id IN (
+                    SELECT
+                        issue_id
+                    FROM
+                        agile_issue
+                    WHERE
+                        epic_id = #{epicId}
+                )
+                GROUP BY
+                    t1.group_day,
+                    adl.issue_id
+            ) t2,
+        (
+                SELECT
+                    t10.group_day,
+                    t10.issue_id
+                FROM
+                    agile_data_log adl9,
+                    (
+                        SELECT
+                            t1.group_day,
+                            adl.issue_id,
+                            MAX(adl.log_id) AS log_id
+                        FROM
+                            (
+                                SELECT DISTINCT
+                                    (
+                                        DATE_FORMAT(
+                                            last_update_date,
+                                            '%Y-%m-%d'
+                                        )
+                                    ) group_day
+                                FROM
+                                    agile_data_log
+                                WHERE
+                                    issue_id IN (
+                                        SELECT
+                                            issue_id
+                                        FROM
+                                            agile_issue
+                                        WHERE
+                                            epic_id = #{epicId}
+                                    )
+                                AND field IN (
+                                    'Epic Link',
+                      'resolution'
+                                )
+                                ORDER BY
+                                    group_day
+                            ) t1,
+                            agile_data_log adl
+                        WHERE
+                            t1.group_day >= DATE_FORMAT(
+                                adl.last_update_date,
+                                '%Y-%m-%d'
+                            )
+                        AND adl.issue_id IN (
+                            SELECT
+                                issue_id
+                            FROM
+                                agile_issue
+                            WHERE
+                                epic_id = #{epicId}
+                        )
+                        AND adl.field = 'resolution'
+                        GROUP BY
+                            t1.group_day,
+                            adl.issue_id
+                    ) t10
+                WHERE
+                    adl9.log_id = t10.log_id
+                AND adl9.new_value IS NOT NULL
+            ) t12
+        WHERE
+            adl3.log_id = t2.log_id
+        AND t12.group_day = t2.group_day AND t12.issue_id = t2.issue_id
+        AND adl3.new_value = #{epicId}
+        GROUP BY
+            t2.group_day
+    </select>
+
+    <select id="selectByIssueCountAllFinal" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+        SELECT
+            t2.group_day,
+            COUNT(adl3.issue_id) AS issue_count
+        FROM
+            agile_data_log adl3,
+            (
+                SELECT
+                    t1.group_day AS group_day,
+                    adl.issue_id AS issue_id,
+                    MAX(adl.log_id) AS log_id
+                FROM
+                    (
+                        SELECT DISTINCT
+                            (
+                                DATE_FORMAT(
+                                    last_update_date,
+                                    '%Y-%m-%d'
+                                )
+                            ) group_day
+                        FROM
+                            agile_data_log
+                        WHERE
+                            issue_id IN (
+                                SELECT
+                                    issue_id
+                                FROM
+                                    agile_issue
+                                WHERE
+                                    epic_id = #{epicId}
+                            )
+                        AND field IN (
+                            'Epic Link',
+                  'resolution'
+                        )
+                        ORDER BY
+                            group_day
+                    ) t1,
+                    agile_data_log adl
+                WHERE
+                    t1.group_day >= DATE_FORMAT(
+                        adl.last_update_date,
+                        '%Y-%m-%d'
+                    )
+                AND adl.field = 'Epic Link'
+                AND adl.issue_id IN (
+                    SELECT
+                        issue_id
+                    FROM
+                        agile_issue
+                    WHERE
+                        epic_id = #{epicId}
+                )
+                GROUP BY
+                    t1.group_day,
+                    adl.issue_id
+            ) t2
+        WHERE
+            adl3.log_id = t2.log_id
+        AND adl3.new_value = #{epicId}
+        GROUP BY
+            t2.group_day
+    </select>
+
 </mapper>
