@@ -2693,7 +2693,7 @@
     <select id="selectByRemainTimeCountEstimate" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
         SELECT
             t3.group_day,
-            COUNT(adl.issue_id)
+            COUNT(adl.issue_id) AS un_estimate_issue_count
         FROM
             agile_data_log adl,
             (
