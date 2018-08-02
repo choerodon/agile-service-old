@@ -129,7 +129,7 @@
     </select>
 
     <select id="hasIssue" resultType="java.lang.Boolean">
-        SELECT IF(COUNT(1) = 0, FALSE, TRUE)
+        SELECT CASE COUNT(1) WHEN 0 THEN FALSE ELSE TRUE END
         FROM agile_issue ai
         LEFT JOIN agile_issue_sprint_rel aisr ON aisr.issue_id = ai.issue_id
         WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_epic')

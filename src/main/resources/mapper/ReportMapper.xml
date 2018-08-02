@@ -792,8 +792,8 @@
 
 
     <select id="queryAllIssueIdsByFilter" resultType="java.lang.Long">
-        select * from agile_issue ai where ai.project_id = #{projectId}
-        AND ai.type_code != 'issue_test'
+        select * from agile_issue ai LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id where ai.project_id = #{projectId}
+        AND ai.type_code != 'issue_test' and ai2.type_code != 'issue_test'
         <if test='filterSql != null'>
             AND ai.issue_id IN (${filterSql})
         </if>
@@ -1614,9 +1614,11 @@
                 LEFT JOIN agile_sprint otherName on other.${fieldName} = otherName.${fieldName}
             </if>
         </if>
+        LEFT JOIN agile_issue ai3 on ai.parent_issue_id = ai3.issue_id
         WHERE
         ai.project_id = #{projectId}
         AND ai.type_code != "issue_test"
+        and ai3.type_code != "issue_test"
         <if test="fieldName == 'epic_id'">
             AND ai.type_code != "issue_epic"
         </if>
