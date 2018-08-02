@@ -370,4 +370,29 @@ public interface ReportMapper {
     List<DateIssueIdsDO> selectIssueByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
     List<GroupDataChartListDO> selectVersionIssueList(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+
+    List<GroupDataChartDO> selectByStoryPointCompletedFinal(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+
+    List<GroupDataChartDO> selectByStoryPointAllFinal(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+
+    List<GroupDataChartDO> selectByStoryPointCountAll(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+
+    List<GroupDataChartDO> selectByStoryPointCountEstimate(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+
+    List<GroupDataChartDO> selectByRemainTimeRemainCompleted(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+
+    List<GroupDataChartDO> selectByRemainTimeWorkLogCompleted(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+
+    List<GroupDataChartDO> selectByRemainTimeRemainAll(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+
+    List<GroupDataChartDO> selectByRemainTimeWorkLogAll(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+
+    List<GroupDataChartDO> selectByRemainTimeCountAll(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+
+    List<GroupDataChartDO> selectByRemainTimeCountEstimate(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+
+    List<GroupDataChartDO> selectByIssueCountCompletedFinal(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+
+    List<GroupDataChartDO> selectByIssueCountAllFinal(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+
 }
