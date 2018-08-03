@@ -1530,24 +1530,24 @@ public class ReportServiceImpl implements ReportService {
         List<GroupDataChartDO> result = null;
         switch (type) {
             case TYPE_STORY_POINT:
-                List<GroupDataChartDO> storyPointsAll = reportMapper.selectByStoryPointAllFinal(projectId, epicId);
-                List<GroupDataChartDO> storyPointsCompleted = reportMapper.selectByStoryPointCompletedFinal(projectId, epicId);
-                List<GroupDataChartDO> storyPointCountAll = reportMapper.selectByStoryPointCountAll(projectId, epicId);
-                List<GroupDataChartDO> storyPointCountEstimate = reportMapper.selectByStoryPointCountEstimate(projectId, epicId);
+                List<GroupDataChartDO> storyPointsAll = reportMapper.selectByStoryPointAllFinal(projectId, epicId, "epic_chart");
+                List<GroupDataChartDO> storyPointsCompleted = reportMapper.selectByStoryPointCompletedFinal(projectId, epicId, "epic_chart");
+                List<GroupDataChartDO> storyPointCountAll = reportMapper.selectByStoryPointCountAll(projectId, epicId, "epic_chart");
+                List<GroupDataChartDO> storyPointCountEstimate = reportMapper.selectByStoryPointCountEstimate(projectId, epicId, "epic_chart");
                 result = dealStoryPointFinal(storyPointsAll, storyPointsCompleted, storyPointCountAll, storyPointCountEstimate);
                 break;
             case TYPE_ISSUE_COUNT:
-                List<GroupDataChartDO> issueCountAll = reportMapper.selectByIssueCountAllFinal(projectId, epicId);
-                List<GroupDataChartDO> issueCountCompleted = reportMapper.selectByIssueCountCompletedFinal(projectId, epicId);
+                List<GroupDataChartDO> issueCountAll = reportMapper.selectByIssueCountAllFinal(projectId, epicId, "epic_chart");
+                List<GroupDataChartDO> issueCountCompleted = reportMapper.selectByIssueCountCompletedFinal(projectId, epicId, "epic_chart");
                 result = dealIssueCountFinal(issueCountAll, issueCountCompleted);
                 break;
             case TYPE_REMAIN_TIME:
-                List<GroupDataChartDO> remainTimeRemainCompleted = reportMapper.selectByRemainTimeRemainCompleted(projectId, epicId);
-                List<GroupDataChartDO> remainTimeWorkLogCompleted = reportMapper.selectByRemainTimeWorkLogCompleted(projectId, epicId);
-                List<GroupDataChartDO> remainTimeRemainAll = reportMapper.selectByRemainTimeRemainAll(projectId, epicId);
-                List<GroupDataChartDO> remainTimeWorkLogAll = reportMapper.selectByRemainTimeWorkLogAll(projectId, epicId);
-                List<GroupDataChartDO> remainTimeCountAll = reportMapper.selectByRemainTimeCountAll(projectId, epicId);
-                List<GroupDataChartDO> remainTimeCountEstimate = reportMapper.selectByRemainTimeCountEstimate(projectId, epicId);
+                List<GroupDataChartDO> remainTimeRemainCompleted = reportMapper.selectByRemainTimeRemainCompleted(projectId, epicId, "epic_chart");
+                List<GroupDataChartDO> remainTimeWorkLogCompleted = reportMapper.selectByRemainTimeWorkLogCompleted(projectId, epicId, "epic_chart");
+                List<GroupDataChartDO> remainTimeRemainAll = reportMapper.selectByRemainTimeRemainAll(projectId, epicId, "epic_chart");
+                List<GroupDataChartDO> remainTimeWorkLogAll = reportMapper.selectByRemainTimeWorkLogAll(projectId, epicId, "epic_chart");
+                List<GroupDataChartDO> remainTimeCountAll = reportMapper.selectByRemainTimeCountAll(projectId, epicId, "epic_chart");
+                List<GroupDataChartDO> remainTimeCountEstimate = reportMapper.selectByRemainTimeCountEstimate(projectId, epicId, "epic_chart");
                 result = dealRemainTimeFinal(remainTimeRemainCompleted, remainTimeWorkLogCompleted, remainTimeRemainAll, remainTimeWorkLogAll, remainTimeCountAll, remainTimeCountEstimate);
                 break;
             default:
@@ -1567,21 +1567,52 @@ public class ReportServiceImpl implements ReportService {
         return handleSameDay(reportIssueEList);
     }
 
+//    @Override
+//    public List<GroupDataChartDO> queryVersionChart(Long projectId, Long versionId, String type) {
+//        List<GroupDataChartDO> result = null;
+//        List<DateIssueIdsDO> allIssueIds = reportMapper.selectIssueByVersionId(projectId, versionId);
+//        switch (type) {
+//            case TYPE_ISSUE_COUNT:
+//                result = dealIssueCountData(projectId, allIssueIds);
+//                break;
+//            case TYPE_STORY_POINT:
+//                List<DateIssueIdsDO> storyPointsAll = reportMapper.selectStoryPointsAll(projectId);
+//                result = dealStoryPointData(projectId, storyPointsAll, allIssueIds);
+//                break;
+//            case TYPE_REMAIN_TIME:
+//                List<DateIssueIdsDO> remainTimesAll = reportMapper.selectEpicRemainTime(projectId);
+//                result = dealRemainTimeData(projectId, remainTimesAll, allIssueIds);
+//                break;
+//            default:
+//                break;
+//        }
+//        return result == null ? new ArrayList<>() : result;
+//    }
+
     @Override
     public List<GroupDataChartDO> queryVersionChart(Long projectId, Long versionId, String type) {
         List<GroupDataChartDO> result = null;
-        List<DateIssueIdsDO> allIssueIds = reportMapper.selectIssueByVersionId(projectId, versionId);
         switch (type) {
-            case TYPE_ISSUE_COUNT:
-                result = dealIssueCountData(projectId, allIssueIds);
-                break;
             case TYPE_STORY_POINT:
-                List<DateIssueIdsDO> storyPointsAll = reportMapper.selectStoryPointsAll(projectId);
-                result = dealStoryPointData(projectId, storyPointsAll, allIssueIds);
+                List<GroupDataChartDO> storyPointsAll = reportMapper.selectByStoryPointAllFinal(projectId, versionId, "version_chart");
+                List<GroupDataChartDO> storyPointsCompleted = reportMapper.selectByStoryPointCompletedFinal(projectId, versionId, "version_chart");
+                List<GroupDataChartDO> storyPointCountAll = reportMapper.selectByStoryPointCountAll(projectId, versionId, "version_chart");
+                List<GroupDataChartDO> storyPointCountEstimate = reportMapper.selectByStoryPointCountEstimate(projectId, versionId, "version_chart");
+                result = dealStoryPointFinal(storyPointsAll, storyPointsCompleted, storyPointCountAll, storyPointCountEstimate);
+                break;
+            case TYPE_ISSUE_COUNT:
+                List<GroupDataChartDO> issueCountAll = reportMapper.selectByIssueCountAllFinal(projectId, versionId, "version_chart");
+                List<GroupDataChartDO> issueCountCompleted = reportMapper.selectByIssueCountCompletedFinal(projectId, versionId, "version_chart");
+                result = dealIssueCountFinal(issueCountAll, issueCountCompleted);
                 break;
             case TYPE_REMAIN_TIME:
-                List<DateIssueIdsDO> remainTimesAll = reportMapper.selectEpicRemainTime(projectId);
-                result = dealRemainTimeData(projectId, remainTimesAll, allIssueIds);
+                List<GroupDataChartDO> remainTimeRemainCompleted = reportMapper.selectByRemainTimeRemainCompleted(projectId, versionId, "version_chart");
+                List<GroupDataChartDO> remainTimeWorkLogCompleted = reportMapper.selectByRemainTimeWorkLogCompleted(projectId, versionId, "version_chart");
+                List<GroupDataChartDO> remainTimeRemainAll = reportMapper.selectByRemainTimeRemainAll(projectId, versionId, "version_chart");
+                List<GroupDataChartDO> remainTimeWorkLogAll = reportMapper.selectByRemainTimeWorkLogAll(projectId, versionId, "version_chart");
+                List<GroupDataChartDO> remainTimeCountAll = reportMapper.selectByRemainTimeCountAll(projectId, versionId, "version_chart");
+                List<GroupDataChartDO> remainTimeCountEstimate = reportMapper.selectByRemainTimeCountEstimate(projectId, versionId, "version_chart");
+                result = dealRemainTimeFinal(remainTimeRemainCompleted, remainTimeWorkLogCompleted, remainTimeRemainAll, remainTimeWorkLogAll, remainTimeCountAll, remainTimeCountEstimate);
                 break;
             default:
                 break;

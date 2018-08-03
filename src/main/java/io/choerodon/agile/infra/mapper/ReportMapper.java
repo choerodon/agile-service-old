@@ -371,28 +371,28 @@ public interface ReportMapper {
 
     List<GroupDataChartListDO> selectVersionIssueList(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
-    List<GroupDataChartDO> selectByStoryPointCompletedFinal(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+    List<GroupDataChartDO> selectByStoryPointCompletedFinal(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByStoryPointAllFinal(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+    List<GroupDataChartDO> selectByStoryPointAllFinal(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByStoryPointCountAll(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+    List<GroupDataChartDO> selectByStoryPointCountAll(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByStoryPointCountEstimate(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+    List<GroupDataChartDO> selectByStoryPointCountEstimate(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeRemainCompleted(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+    List<GroupDataChartDO> selectByRemainTimeRemainCompleted(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeWorkLogCompleted(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+    List<GroupDataChartDO> selectByRemainTimeWorkLogCompleted(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeRemainAll(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+    List<GroupDataChartDO> selectByRemainTimeRemainAll(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeWorkLogAll(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+    List<GroupDataChartDO> selectByRemainTimeWorkLogAll(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeCountAll(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+    List<GroupDataChartDO> selectByRemainTimeCountAll(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeCountEstimate(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+    List<GroupDataChartDO> selectByRemainTimeCountEstimate(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByIssueCountCompletedFinal(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+    List<GroupDataChartDO> selectByIssueCountCompletedFinal(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByIssueCountAllFinal(@Param("projectId") Long projectId,@Param("epicId") Long epicId);
+    List<GroupDataChartDO> selectByIssueCountAllFinal(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
 
 }
