@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
+import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 import spock.lang.Stepwise
 
@@ -31,6 +32,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(AgileTestConfiguration)
+@ActiveProfiles("test")
 @Stepwise
 class IssueControllerSpec extends Specification {
 

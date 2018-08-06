@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by jian_zhang02@163.com on 2018/5/16.
@@ -12,7 +13,25 @@ public class SprintSearchDO {
     private Date startDate;
     private Date endDate;
     private String statusCode;
+    private List<AssigneeIssueDO> assigneeIssueDOList;
     private String objectVersionNumber;
+    private List<IssueSearchDO> issueSearchDOList;
+
+    public List<IssueSearchDO> getIssueSearchDOList() {
+        return issueSearchDOList;
+    }
+
+    public void setIssueSearchDOList(List<IssueSearchDO> issueSearchDOList) {
+        this.issueSearchDOList = issueSearchDOList;
+    }
+
+    public List<AssigneeIssueDO> getAssigneeIssueDOList() {
+        return assigneeIssueDOList;
+    }
+
+    public void setAssigneeIssueDOList(List<AssigneeIssueDO> assigneeIssueDOList) {
+        this.assigneeIssueDOList = assigneeIssueDOList;
+    }
 
     public Long getSprintId() {
         return sprintId;

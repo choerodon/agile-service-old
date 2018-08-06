@@ -5,7 +5,6 @@ import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by jian_zhang02@163.com on 2018/5/15.
@@ -32,13 +31,13 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     String queryMinRank(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    SprintSearchDO queryActiveSprint(@Param("projectId") Long projectId);
+    SprintSearchDO queryActiveSprint(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-    List<SprintSearchDO> queryPlanSprint(@Param("projectId") Long projectId);
+    List<SprintSearchDO> queryPlanSprint(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     int queryIssueCount(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    int queryStoryPoint(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("userId") Long userId, @Param("categoryCode") String categoryCode, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql);
+    int queryStoryPoint(@Param("categoryCode") String categoryCode, @Param("issueIds") List<Long> issueIds, @Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
     List<IssueCountDO> queryIssueCountMap(@Param("projectId") Long projectId, @Param("sprintIds") List<Long> sprintIds);
 
@@ -50,9 +49,9 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     int queryNotDoneIssueCount(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    List<AssigneeIssueDO> queryAssigneeIssueCount(@Param("projectId") Long projectId, @Param("sprintIds") List<Long> sprintIds,  @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql, @Param("assigned") Boolean assigned);
+    List<AssigneeIssueDO> queryAssigneeIssueCount(@Param("sprintIds") List<Long> sprintIds, @Param("issueIds") List<Long> issueIds, @Param("assigned") Boolean assigned);
 
-    List<AssigneeIssueDO> queryAssigneeIssueCountById(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId,  @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql, @Param("assigned") Boolean assigned);
+    List<AssigneeIssueDO> queryAssigneeIssueCountById(@Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds, @Param("assigned") Boolean assigned);
 
     List<Long> queryIssueIdOrderByRankDesc(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
@@ -63,4 +62,8 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
     SprintNameDO querySprintNameBySprintId(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
     List<Long> queryAllRankIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+
+    List<Long> queryAssigneeIdsByIssueIds( @Param("issueIds")List<Long> issueIds);
+
+    List<IssueSearchDO> queryBacklogIssues(@Param("projectId")Long projectId);
 }

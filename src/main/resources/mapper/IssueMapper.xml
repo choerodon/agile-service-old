@@ -553,7 +553,22 @@
         FROM agile_version_issue_rel avir, agile_product_version apv
         WHERE apv.project_id = #{projectId} AND avir.version_id = apv.version_id AND avir.relation_type = 'fix'
         ) apv1 ON apv1.issue_id = ai.issue_id
-        WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_epic')
+        WHERE ai.issue_id IN
+        <foreach collection="issueIds" item="issueId" index="index"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
+        order by field(ai.issue_id,
+        <foreach collection="issueIds" item="issueId" index="index" separator=",">
+            #{issueId}
+        </foreach>)
+    </select>
+
+    <select id="querySprintIssueIdsByCondition" resultType="java.lang.Long">
+        SELECT
+        ai.issue_id
+        FROM agile_issue ai
+        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task' AND ai.type_code != 'issue_epic' AND ai.type_code != 'issue_test'
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.versionId != null'>
                 AND ai.issue_id IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id =

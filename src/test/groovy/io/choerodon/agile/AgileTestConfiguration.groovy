@@ -27,6 +27,7 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.security.jwt.JwtHelper
 import org.springframework.security.jwt.crypto.sign.MacSigner
 import org.springframework.security.jwt.crypto.sign.Signer
+import org.springframework.test.context.ActiveProfiles
 import spock.mock.DetachedMockFactory
 
 import javax.annotation.PostConstruct
