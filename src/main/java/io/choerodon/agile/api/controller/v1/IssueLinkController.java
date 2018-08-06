@@ -67,4 +67,16 @@ public class IssueLinkController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.IssueLink.listIssueLinkByIssueId"));
     }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("根据issueId查询issueLink,外接测试项目")
+    @GetMapping(value = "/issues")
+    public ResponseEntity<List<IssueLinkDTO>> listIssueLinkByBatch(@ApiParam(value = "项目id", required = true)
+                                                                    @PathVariable(name = "project_id") Long projectId,
+                                                                    @ApiParam(value = "issueIds", required = true)
+                                                                    @RequestParam List<Long> issueIds) {
+        return Optional.ofNullable(issueLinkService.listIssueLinkByBatch(projectId, issueIds))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.IssueLink.listIssueLinkByBatch"));
+    }
 }

@@ -41,4 +41,6 @@ public interface IssueLinkMapper extends BaseMapper<IssueLinkDO> {
      * @return int
      */
     int batchUpdateRelToIssueLinkType(@Param("issueLinkTypeId") Long issueLinkTypeId, @Param("toIssueLinkTypeId") Long toIssueLinkTypeId);
+
+    List<IssueLinkDO> listIssueLinkByBatch(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 }
