@@ -54,4 +54,9 @@ public class IssueLinkServiceImpl implements IssueLinkService {
         return issueLinkAssembler.issueLinkDoToDto(issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId,noIssueTest));
     }
 
+    @Override
+    public List<IssueLinkDTO> listIssueLinkByBatch(Long projectId, List<Long> issueIds) {
+        return issueLinkAssembler.issueLinkDoToDto(issueLinkMapper.listIssueLinkByBatch(projectId, issueIds));
+    }
+
 }

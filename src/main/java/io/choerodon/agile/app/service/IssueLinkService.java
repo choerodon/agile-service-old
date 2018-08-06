@@ -37,4 +37,6 @@ public interface IssueLinkService {
      * @return IssueLinkDTO
      */
     List<IssueLinkDTO> listIssueLinkByIssueId(Long issueId, Long projectId,Boolean noIssueTest);
+
+    List<IssueLinkDTO> listIssueLinkByBatch(Long projectId, List<Long> issueIds);
 }
