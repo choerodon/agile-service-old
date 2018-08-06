@@ -30,7 +30,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<EpicDataDO> queryEpicList(@Param("projectId") Long projectId);
 
-    List<IssueSearchDO> searchIssue(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql);
+    List<IssueSearchDO> searchIssue(@Param("issueIds") List<Long> issueIds,@Param("projectId")Long projectId);
 
     Integer queryBacklogIssueCount(@Param("projectId") Long projectId);
 
@@ -263,7 +263,18 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @param content            content
      * @return IssueComponentDetailDO
      */
-    List<IssueComponentDetailDO> listIssueWithoutSubDetail(@Param("projectId")Long projectId,@Param("searchArgs") Map<String, Object> searchArgs,
-                                                           @Param("advancedSearchArgs")Map<String, Object> advancedSearchArgs,
-                                                           @Param("otherArgs") Map<String, Object> otherArgs, @Param("content")String content);
+    List<IssueComponentDetailDO> listIssueWithoutSubDetail(@Param("projectId") Long projectId, @Param("searchArgs") Map<String, Object> searchArgs,
+                                                           @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
+                                                           @Param("otherArgs") Map<String, Object> otherArgs, @Param("content") String content);
+
+    /**
+     * 待办事项查询相关issue的issueIds
+     *
+     * @param projectId          projectId
+     * @param userId             userId
+     * @param advancedSearchArgs advancedSearchArgs
+     * @param filterSql          filterSql
+     * @return issueIds
+     */
+    List<Long> querySprintIssueIdsByCondition(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql);
 }

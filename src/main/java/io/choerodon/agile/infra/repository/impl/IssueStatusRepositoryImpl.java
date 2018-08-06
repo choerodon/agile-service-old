@@ -56,6 +56,6 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
 
     @Override
     public Boolean checkSameStatus(Long projectId, String statusName) {
-        return issueStatusMapper.checkSameStatus(projectId, statusName) == 0 ? false : true;
+        return issueStatusMapper.checkSameStatus(projectId, statusName) != 0;
     }
 }

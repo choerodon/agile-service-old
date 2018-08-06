@@ -18,7 +18,7 @@ import java.util.List;
  * @since 2018/5/24
  */
 @Component
-@FeignClient(value = "iam-service", fallback = UserFeignClientFallback.class)
+@FeignClient(value = "iam-service",fallback = UserFeignClientFallback.class)
 public interface UserFeignClient {
 
     /**

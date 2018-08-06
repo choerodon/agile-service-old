@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
@@ -41,8 +40,6 @@ public class ReportServiceImpl implements ReportService {
     private SprintServiceImpl sprintService;
     @Autowired
     private ReportMapper reportMapper;
-    @Autowired
-    private LookupValueMapper lookupValueMapper;
     @Autowired
     private SprintConverter sprintConverter;
     @Autowired
@@ -804,10 +801,9 @@ public class ReportServiceImpl implements ReportService {
         //所有在当前时间内状态改变的issue
         handleCumulativeFlowChangeDuringDate(startDate, endDate, columnIds, allIssueIds, result);
         //过滤并排序
-        List<ColumnChangeDTO> columnChangeDTOList = new ArrayList<>();
-        columnChangeDTOList.addAll(result.stream().filter(columnChangeDTO ->
+        List<ColumnChangeDTO> columnChangeDTOList = result.stream().filter(columnChangeDTO ->
                 columnChangeDTO.getColumnTo() != null && !columnChangeDTO.getColumnFrom().equals(columnChangeDTO.getColumnTo()))
-                .sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList()));
+                .sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList());
         //对传入时间点的数据给与坐标
         List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(columnIds));
         cumulativeFlowDiagramDTOList.parallelStream().forEachOrdered(cumulativeFlowDiagramDTO -> {
