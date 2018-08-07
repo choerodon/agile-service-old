@@ -5,7 +5,7 @@ import io.choerodon.agile.app.service.BoardService;
 import io.choerodon.agile.app.service.IssueLinkTypeService;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.domain.agile.event.ProjectEvent;
-import io.choerodon.core.saga.SagaTask;
+import io.choerodon.asgard.saga.annotation.SagaTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
