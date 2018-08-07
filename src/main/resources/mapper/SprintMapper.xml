@@ -192,7 +192,7 @@
         apv1.name AS version_name
         FROM
         (select * from agile_issue ai4 WHERE
-        ai4.issue_id
+        ai4.issue_id in
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
             #{issueId}
@@ -213,7 +213,7 @@
         ) asp1 ON asp1.issue_id = ai2.issue_id
         LEFT JOIN
         (
-        select * from agile_version_issue_rel avir1 where avir1.relation_type = 'fix')avir  left join
+        select avir.*,apv.name from (select avir1.* from agile_version_issue_rel avir1 where avir1.relation_type = 'fix')avir  left join
         agile_product_version apv on avir.version_id = apv.version_id
         ) apv1
         ON apv1.issue_id = ai2.issue_id

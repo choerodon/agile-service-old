@@ -97,6 +97,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         productVersionE.setSequence(sequence == null ? 0 : sequence + 1);
         ProductVersionDetailDTO result = new ProductVersionDetailDTO();
         VersionPayload versionPayload = new VersionPayload();
+        //todo 创建版本修改为saga
         Exception exception = eventProducerTemplate.execute("versionCreate", AGILE_SERVICE, versionPayload,
                 (String uuid) -> {
                     ProductVersionE productVersionE1 = productVersionRepository.createVersion(productVersionE);
@@ -137,6 +138,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         }
         Boolean result = false;
         VersionPayload versionPayload = new VersionPayload();
+        //todo 删除版本修改为saga
         Exception exception = eventProducerTemplate.execute("versionDelete", AGILE_SERVICE, versionPayload,
                 (String uuid) -> {
                     Boolean deleteResult = productVersionRepository.deleteVersion(versionE);
