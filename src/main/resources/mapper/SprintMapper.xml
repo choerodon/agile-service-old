@@ -190,7 +190,17 @@
         alv2.name AS color,
         apv1.version_id AS version_id,
         apv1.name AS version_name
-        FROM agile_issue ai2
+        FROM
+        (select * from agile_issue ai4 WHERE
+        ai4.issue_id
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+        order by field(ai4.issue_id,
+        <foreach collection="issueIds" item="issueId" index="index" separator=",">
+            #{issueId}
+        </foreach>) )ai2
         LEFT JOIN agile_issue_status ais ON ai2.status_id = ais.id
         LEFT JOIN agile_project_info api ON ai2.project_id = api.project_id
         LEFT JOIN agile_lookup_value alv ON ai2.priority_code = alv.value_code
@@ -201,19 +211,13 @@
         FROM agile_issue_sprint_rel aisr2, agile_sprint asp2
         WHERE aisr2.sprint_id = asp2.sprint_id AND asp2.status_code != 'closed'
         ) asp1 ON asp1.issue_id = ai2.issue_id
-        LEFT JOIN (SELECT avir.issue_id, avir.version_id, apv.name
-        FROM agile_version_issue_rel avir, agile_product_version apv
-        WHERE avir.version_id = apv.version_id AND avir.relation_type = 'fix'
-        ) apv1 ON apv1.issue_id = ai2.issue_id
-        WHERE ai2.issue_id in
-        <foreach collection="issueIds" item="issueId" open="("
-                 separator="," close=")">
-            #{issueId}
-        </foreach>
-        order by field(ai2.issue_id,
-        <foreach collection="issueIds" item="issueId" index="index" separator=",">
-            #{issueId}
-        </foreach>)
+        LEFT JOIN
+        (
+        select * from agile_version_issue_rel avir1 where avir1.relation_type = 'fix')avir  left join
+        agile_product_version apv on avir.version_id = apv.version_id
+        ) apv1
+        ON apv1.issue_id = ai2.issue_id
+
     </sql>
 
     <select id="queryActiveSprint" resultMap="SprintSearchDO">
