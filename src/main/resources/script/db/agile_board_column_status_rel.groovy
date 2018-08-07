@@ -22,4 +22,10 @@ databaseChangeLog(logicalFilePath:'agile_board_column_status_rel.groovyoovy') {
             column(name: "last_update_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
     }
+
+    changeSet(id: '2018-08-07-agile-board-column-status-rel-add-index', author: 'dinghuang123@gmail.com') {
+        createIndex(indexName: "idx_status_id", tableName: "agile_board_column_status_rel") {
+            column(name: "status_id")
+        }
+    }
 }

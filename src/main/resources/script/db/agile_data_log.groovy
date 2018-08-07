@@ -34,4 +34,22 @@ databaseChangeLog(logicalFilePath:'agile_data_log.groovy') {
             column(name: "field")
         }
     }
+
+    changeSet(id: '2018-08-07-agile-data-log-add-index', author: 'dinghuang123@gmail.com') {
+        createIndex(indexName: "idx_old_value", tableName: "agile_data_log") {
+            column(name: "old_value(10)")
+        }
+        createIndex(indexName: "idx_new_value", tableName: "agile_data_log") {
+            column(name: "new_value(10)")
+        }
+        createIndex(indexName: "idx_old_string", tableName: "agile_data_log") {
+            column(name: "old_string(10)")
+        }
+        createIndex(indexName: "idx_new_string", tableName: "agile_data_log") {
+            column(name: "new_string(10)")
+        }
+        createIndex(indexName: "idx_creation_date", tableName: "agile_data_log") {
+            column(name: "creation_date")
+        }
+    }
 }

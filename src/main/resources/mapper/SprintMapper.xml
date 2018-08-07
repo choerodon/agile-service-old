@@ -93,7 +93,7 @@
         ) apv1 ON apv1.issue_id = ai.issue_id
         WHERE aisr.sprint_id is null and ais.category_code != 'done'
         and ai.type_code != 'sub_task' and ai.type_code != 'issue_test'
-        and ai.type_code != 'issue_epic'
+        and ai.type_code != 'issue_epic' and ai.project_id = #{projectId}
     </select>
 
 
