@@ -54,6 +54,7 @@ public class LogDataAspect {
     private static final String BATCH_REMOVE_SPRINT = "batchRemoveSprint";
     private static final String BATCH_REMOVE_SPRINT_BY_SPRINT_ID = "batchRemoveSprintBySprintId";
     private static final String BATCH_DELETE_LABEL = "batchDeleteLabel";
+    private static final String BATCH_UPDATE_ISSUE_STATUS = "batchUpdateIssueStatus";
     private static final String CREATE_ATTACHMENT = "createAttachment";
     private static final String DELETE_ATTACHMENT = "deleteAttachment";
     private static final String CREATE_COMMENT = "createComment";
@@ -233,6 +234,9 @@ public class LogDataAspect {
                     case BATCH_REMOVE_SPRINT_BY_SPRINT_ID:
                         batchRemoveSprintBySprintId(args);
                         break;
+                    case BATCH_UPDATE_ISSUE_STATUS:
+                        batchUpdateIssueStatusDataLog(args);
+                        break;
                     default:
                         break;
                 }
@@ -250,6 +254,29 @@ public class LogDataAspect {
             throw new CommonException(ERROR_UPDATE);
         }
         return result;
+    }
+
+    private synchronized void batchUpdateIssueStatusDataLog(Object[] args) {
+        IssueStatusE issueStatusE = null;
+        for (Object arg : args) {
+            if (arg instanceof IssueStatusE) {
+                issueStatusE = (IssueStatusE) arg;
+            }
+        }
+        if (issueStatusE != null && issueStatusE.getCompleted() != null) {
+            Long projectId = issueStatusE.getProjectId();
+            List<IssueDO> issueDOS = issueMapper.queryIssuesByStatusId(issueStatusE.getId());
+            if (issueDOS != null && !issueDOS.isEmpty()) {
+                if (issueStatusE.getCompleted()) {
+                    issueDOS.forEach(issueDO -> createDataLog(projectId, issueDO.getIssueId(),
+                            FIELD_RESOLUTION, null, issueDO.getStatusName(), null, issueDO.getStatusId().toString()));
+                } else {
+                    issueDOS.forEach(issueDO -> createDataLog(projectId, issueDO.getIssueId(),
+                            FIELD_RESOLUTION, issueDO.getStatusName(), null, issueDO.getStatusId().toString(), null));
+                }
+            }
+
+        }
     }
 
     private void handleUpdateCommentDataLog(Object[] args) {

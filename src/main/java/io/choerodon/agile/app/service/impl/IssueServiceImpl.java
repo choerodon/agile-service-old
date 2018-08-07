@@ -242,7 +242,7 @@ public class IssueServiceImpl implements IssueService {
         //处理用户搜索
         if (searchDTO.getSearchArgs() != null && searchDTO.getSearchArgs().get(ASSIGNEE) != null) {
             String userName = (String) searchDTO.getSearchArgs().get(ASSIGNEE);
-            if (userName != null) {
+            if (userName != null && !"".equals(userName)) {
                 List<UserDTO> userDTOS = userRepository.queryUsersByNameAndProjectId(projectId, userName);
                 if (userDTOS != null && !userDTOS.isEmpty()) {
                     searchDTO.getAdvancedSearchArgs().put("assigneeIds", userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));

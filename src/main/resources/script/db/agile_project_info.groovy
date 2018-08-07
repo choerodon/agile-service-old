@@ -35,4 +35,10 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_project_info.groovy') {
         }
     }
 
+    changeSet(id: '2018-08-07-agile-project-info-index', author: 'dinghuang123@gmail.com') {
+        createIndex(indexName: "idx_project_id", tableName: "agile_project_info") {
+            column(name: "project_id")
+        }
+    }
+
 }

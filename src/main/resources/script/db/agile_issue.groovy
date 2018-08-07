@@ -111,4 +111,9 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue.groovy') {
         }
     }
 
+    changeSet(id: '2018-08-07-agile-issue-add-index', author: 'dinghuang123@gmail.com') {
+        createIndex(indexName: "idx_project_id", tableName: "agile_issue") {
+            column(name: "project_id")
+        }
+    }
 }
