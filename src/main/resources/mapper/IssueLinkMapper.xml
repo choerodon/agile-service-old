@@ -126,7 +126,6 @@
                     #{issueId}
                 </foreach>
             AND ai.project_id = #{projectId}
-            AND ai.type_code != "issue_test"
             UNION ALL
             SELECT
             ail1.*,
@@ -154,7 +153,6 @@
                     #{issueId}
                 </foreach>
             AND ai1.project_id = #{projectId}
-            AND ai1.type_code != "issue_test"
         ) a
         ORDER BY
         a.link_type_name
