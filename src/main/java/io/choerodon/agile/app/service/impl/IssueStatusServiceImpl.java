@@ -167,7 +167,6 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             throw new CommonException("error.projectId.notEqual");
         }
         IssueStatusE issueStatusE = ConvertHelper.convert(issueStatusDTO, IssueStatusE.class);
-        //todo 更改了已完成的话要生成issue对应的日志
         return ConvertHelper.convert(issueStatusRepository.update(issueStatusE), IssueStatusDTO.class);
     }
 

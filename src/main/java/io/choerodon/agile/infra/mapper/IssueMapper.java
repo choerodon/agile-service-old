@@ -277,4 +277,11 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @return issueIds
      */
     List<Long> querySprintIssueIdsByCondition(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql);
+
+    /**
+     * 根据状态id查询状态下的所有issue
+     * @param statusId statusId
+     * @return IssueDO
+     */
+    List<IssueDO> queryIssuesByStatusId(@Param("statusId")Long statusId);
 }

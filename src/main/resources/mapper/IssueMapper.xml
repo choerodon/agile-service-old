@@ -1502,4 +1502,12 @@
         )pieData ORDER BY pieData.value DESC
     </select>
 
+    <select id="queryIssuesByStatusId" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT ai.issue_id,ai.status_id,ais.name as status_name
+        FROM
+            agile_issue ai left join agile_issue_status ais on ai.status_id = ais.id
+        WHERE ai.status_id = #{statusId}
+    </select>
+
+
 </mapper>
