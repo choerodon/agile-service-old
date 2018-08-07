@@ -334,6 +334,7 @@ public class IssueServiceImpl implements IssueService {
     public void deleteIssue(Long projectId, Long issueId) {
         //删除issue发送消息
         IssuePayload issuePayload = new IssuePayload();
+        //todo 发送消息修改为saga
         Exception exception = eventProducerTemplate.execute("deleteIssue", AGILE_SERVICE, issuePayload,
                 (String uuid) -> {
                     issuePayload.setIssueId(issueId);
