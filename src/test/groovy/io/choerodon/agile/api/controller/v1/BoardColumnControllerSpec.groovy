@@ -18,12 +18,16 @@ import org.springframework.context.annotation.Import
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
+import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Stepwise
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Import(AgileTestConfiguration)
+@ActiveProfiles("test")
+@Stepwise
 class BoardColumnControllerSpec extends Specification {
 
     @Autowired
