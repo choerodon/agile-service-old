@@ -284,4 +284,10 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @return IssueDO
      */
     List<IssueDO> queryIssuesByStatusId(@Param("statusId")Long statusId);
+
+    List<UserMapIssueDO> listIssuesByProjectIdSprint(@Param("projectId") Long projectId);
+
+    List<UserMapIssueDO> listIssuesByProjectIdVersion(@Param("projectId") Long projectId);
+
+    List<UserMapIssueDO> listIssuesByProjectIdNone(@Param("projectId") Long projectId);
 }

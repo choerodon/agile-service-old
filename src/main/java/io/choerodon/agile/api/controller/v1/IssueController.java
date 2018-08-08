@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
+import io.choerodon.agile.infra.dataobject.IssueDO;
+import io.choerodon.agile.infra.dataobject.UserMapIssueDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.app.service.IssueService;
@@ -418,5 +420,17 @@ public class IssueController {
         return Optional.ofNullable(issueService.listIssueWithoutSubDetail(projectId, searchDTO, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.listIssueWithoutSubDetail"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("故事地图查询issues,type:'sprint, version, none'")
+    @GetMapping(value = "/user_map/issues")
+    public ResponseEntity<List<UserMapIssueDTO>> listIssuesByProjectId(@ApiParam(value = "项目id", required = true)
+                                                                       @PathVariable(name = "project_id") Long projectId,
+                                                                       @ApiParam(value = "type", required = true)
+                                                                       @RequestParam String type) {
+        return Optional.ofNullable(issueService.listIssuesByProjectId(projectId, type))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.Issue.listIssuesByProjectId"));
     }
 }

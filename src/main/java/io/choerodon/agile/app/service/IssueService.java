@@ -3,6 +3,8 @@ package io.choerodon.agile.app.service;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
+import io.choerodon.agile.infra.dataobject.IssueDO;
+import io.choerodon.agile.infra.dataobject.UserMapIssueDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
@@ -198,4 +200,6 @@ public interface IssueService {
      * @return IssueComponentDetailTO
      */
     Page<IssueComponentDetailDTO> listIssueWithoutSubDetail(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
+
+    List<UserMapIssueDTO> listIssuesByProjectId(Long projectId, String type);
 }
