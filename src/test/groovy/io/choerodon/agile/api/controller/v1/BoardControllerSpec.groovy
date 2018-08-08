@@ -1,30 +1,21 @@
 package io.choerodon.agile.api.controller.v1
 
-import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.BoardColumnDTO
 import io.choerodon.agile.api.dto.BoardDTO
-import io.choerodon.agile.api.dto.ColumnSortDTO
-import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO
 import io.choerodon.agile.api.dto.IssueMoveDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
-import io.choerodon.agile.app.service.BoardColumnService
 import io.choerodon.agile.app.service.BoardService
-import io.choerodon.agile.domain.agile.event.ProjectEvent
-import io.choerodon.agile.infra.dataobject.BoardColumnDO
 import io.choerodon.agile.infra.dataobject.BoardDO
 import io.choerodon.agile.infra.dataobject.ColumnAndIssueDO
 import io.choerodon.agile.infra.dataobject.IssueDO
 import io.choerodon.agile.infra.dataobject.IssueStatusDO
-import io.choerodon.agile.infra.mapper.BoardColumnMapper
 import io.choerodon.agile.infra.mapper.BoardMapper
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.IssueStatusMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.cloud.sleuth.TraceKeys
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -64,7 +55,7 @@ class BoardControllerSpec extends Specification {
     private IssueMapper issueMapper
 
     @Shared
-    def projectId = 1L
+    def projectId = 2L
     def boardName = "board-1"
     def changeBoardName = "boardChange-2"
     def boardNameExtra = "boardExtra-3"
@@ -133,13 +124,18 @@ class BoardControllerSpec extends Specification {
     }
 
     def 'queryScrumBoardById'() {
+        given:
+        BoardDO boardDO = new BoardDO()
+        boardDO.name = changeBoardName
+        BoardDO selectd = boardMapper.selectOne(boardDO)
+        Long boardId = selectd.getBoardId()
         when:
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board/{boardId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 BoardDTO.class,
                 projectId,
-                1L)
+                boardId)
         then:
         entity.statusCode.is2xxSuccessful()
         entity.body.name == changeBoardName
@@ -183,13 +179,18 @@ class BoardControllerSpec extends Specification {
     }
 
     def 'queryByOptions'() {
+        given:
+        BoardDO boardDO = new BoardDO()
+        boardDO.name = changeBoardName
+        BoardDO selectd = boardMapper.selectOne(boardDO)
+        Long boardId = selectd.getBoardId()
         when:
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board/{boardId}/all_data",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 JSONObject.class,
                 projectId,
-                1L)
+                boardId)
         then:
         entity.statusCode.is2xxSuccessful()
         JSONObject result = entity.body

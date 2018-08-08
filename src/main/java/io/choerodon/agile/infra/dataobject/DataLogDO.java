@@ -7,6 +7,7 @@ import io.choerodon.mybatis.domain.AuditDomain;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/6/14.
@@ -34,6 +35,9 @@ public class DataLogDO extends AuditDomain {
     private String newString;
 
     private Long issueId;
+
+    @Transient
+    private String categoryCode;
 
     public Long getLogId() {
         return logId;
@@ -97,5 +101,13 @@ public class DataLogDO extends AuditDomain {
 
     public void setIssueId(Long issueId) {
         this.issueId = issueId;
+    }
+
+    public void setCategoryCode(String categoryCode) {
+        this.categoryCode = categoryCode;
+    }
+
+    public String getCategoryCode() {
+        return categoryCode;
     }
 }

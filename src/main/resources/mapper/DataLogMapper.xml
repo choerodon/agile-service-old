@@ -4,13 +4,18 @@
 
     <select id="selectByIssueId" resultType="io.choerodon.agile.infra.dataobject.DataLogDO">
         SELECT
-            *
+            adl.*,
+            ais.category_code
         FROM
-            agile_data_log
+            agile_data_log adl
+        LEFT JOIN agile_issue_status ais ON adl.field = 'status'
+        AND adl.new_value = ais.id
         WHERE
-            project_id = #{projectId}
-        AND issue_id = #{issueId}
-        ORDER BY last_update_date DESC,created_by
+            adl.project_id = #{projectId}
+        AND adl.issue_id = #{issueId}
+        ORDER BY
+            adl.last_update_date DESC,
+            adl.created_by
     </select>
 
     <select id="selectLastWorkLogById" resultType="io.choerodon.agile.infra.dataobject.DataLogDO">

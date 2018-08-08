@@ -33,6 +33,8 @@ public class DataLogDTO {
 
     private String imageUrl;
 
+    private String categoryCode;
+
     public Long getLogId() {
         return logId;
     }
@@ -127,5 +129,13 @@ public class DataLogDTO {
 
     public String getImageUrl() {
         return imageUrl;
+    }
+
+    public void setCategoryCode(String categoryCode) {
+        this.categoryCode = categoryCode;
+    }
+
+    public String getCategoryCode() {
+        return categoryCode;
     }
 }
