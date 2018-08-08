@@ -1508,5 +1508,169 @@
         WHERE ai.status_id = #{statusId}
     </select>
 
+    <select id="listIssuesByProjectIdSprint" resultType="io.choerodon.agile.infra.dataobject.UserMapIssueDO">
+        SELECT
+            aisr.sprint_id,
+            asp.sprint_name,
+            ai.issue_id,
+            ai.assignee_id,
+            ai.priority_code,
+            ai.summary,
+            ai.type_code,
+            ai.story_points,
+            CONCAT_WS(
+                '-',
+                api.project_code,
+                ai.issue_num
+            ) AS issue_num,
+            ais.category_code AS  status_code,
+            ais.`name` AS status_name
+        FROM
+            agile_issue_sprint_rel aisr
+        LEFT JOIN agile_sprint asp ON aisr.sprint_id = asp.sprint_id
+        LEFT JOIN agile_issue ai ON aisr.issue_id = ai.issue_id
+        AND ai.type_code NOT IN (
+            'issue_test',
+            'sub_task',
+            'issue_epic'
+        )
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+        WHERE
+            aisr.project_id =  #{projectId}
+        UNION ALL
+            SELECT
+                NULL,
+                NULL,
+                ai.issue_id,
+                ai.assignee_id,
+                ai.priority_code,
+                ai.summary,
+                ai.type_code,
+                ai.story_points,
+                CONCAT_WS(
+                    '-',
+                    api.project_code,
+                    ai.issue_num
+                ) AS issue_num,
+                ais.category_code AS  status_code,
+                ais.`name` AS status_name
+            FROM
+                agile_issue ai
+            LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+            LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+            WHERE
+                ai.project_id =  #{projectId}
+            AND issue_id NOT IN (
+                SELECT
+                    issue_id
+                FROM
+                    agile_issue_sprint_rel
+                WHERE
+                    project_id = #{projectId}
+            )
+            AND ai.type_code NOT IN (
+                'issue_test',
+                'sub_task',
+                'issue_epic'
+            )
+    </select>
+
+    <select id="listIssuesByProjectIdVersion" resultType="io.choerodon.agile.infra.dataobject.UserMapIssueDO">
+        SELECT
+            avir.version_id,
+            apv.`name` AS version_name,
+            ai.issue_id,
+            ai.assignee_id,
+            ai.priority_code,
+            ai.summary,
+            ai.type_code,
+            ai.story_points,
+            CONCAT_WS(
+                '-',
+                api.project_code,
+                ai.issue_num
+            ) AS issue_num,
+            ais.category_code AS  status_code,
+            ais.`name` AS status_name
+        FROM
+            agile_version_issue_rel avir
+        LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
+        LEFT JOIN agile_issue ai ON avir.issue_id = ai.issue_id
+        AND ai.type_code NOT IN (
+            'issue_test',
+            'sub_task',
+            'issue_epic'
+        )
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+        WHERE
+            avir.project_id = #{projectId}
+        UNION ALL
+            SELECT
+                NULL,
+                NULL,
+                ai.issue_id,
+                ai.assignee_id,
+                ai.priority_code,
+                ai.summary,
+                ai.type_code,
+                ai.story_points,
+                CONCAT_WS(
+                    '-',
+                    api.project_code,
+                    ai.issue_num
+                ) AS issue_num,
+                ais.category_code AS  status_code,
+                ais.`name` AS status_name
+            FROM
+                agile_issue ai
+            LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+            LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+            WHERE
+                ai.project_id = #{projectId}
+            AND issue_id NOT IN (
+                SELECT
+                    issue_id
+                FROM
+                    agile_version_issue_rel avir
+                WHERE
+                    project_id = #{projectId}
+            )
+            AND ai.type_code NOT IN (
+                'issue_test',
+                'sub_task',
+                'issue_epic'
+            )
+    </select>
+
+    <select id="listIssuesByProjectIdNone" resultType="io.choerodon.agile.infra.dataobject.UserMapIssueDO">
+        SELECT
+            ai.issue_id,
+            ai.assignee_id,
+            ai.priority_code,
+            ai.summary,
+            ai.type_code,
+            ai.story_points,
+            CONCAT_WS(
+                '-',
+                api.project_code,
+                ai.issue_num
+            ) AS issue_num,
+            ais.category_code AS  status_code,
+            ais.`name` AS status_name
+        FROM
+            agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+        WHERE
+            ai.project_id = #{projectId}
+        AND ai.type_code NOT IN (
+            'issue_test',
+            'sub_task',
+            'issue_epic'
+        )
+    </select>
+
 
 </mapper>

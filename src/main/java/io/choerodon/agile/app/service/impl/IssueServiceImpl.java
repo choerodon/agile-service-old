@@ -132,6 +132,8 @@ public class IssueServiceImpl implements IssueService {
     private UserFeignClient userFeignClient;
     @Autowired
     private SprintService sprintService;
+    @Autowired
+    private UserMapIssueAssembler userMapIssueAssembler;
 
 
     private static final String STATUS_CODE_TODO = "todo";
@@ -1448,5 +1450,24 @@ public class IssueServiceImpl implements IssueService {
                 issueRepository.update(issueE, new String[]{EPIC_SEQUENCE});
             }
         }
+    }
+
+    @Override
+    public List<UserMapIssueDTO> listIssuesByProjectId(Long projectId, String type) {
+        List<UserMapIssueDTO> userMapIssueDTOList = null;
+        switch (type) {
+            case "sprint":
+                userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId));
+                break;
+            case "version":
+                userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdVersion(projectId));
+                break;
+            case "none":
+                userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdNone(projectId));
+                break;
+            default:
+                break;
+        }
+        return userMapIssueDTOList;
     }
 }
