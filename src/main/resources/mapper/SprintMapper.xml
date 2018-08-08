@@ -178,6 +178,7 @@
         ai2.issue_id,
         CONCAT_WS('-', api.project_code, ai2.issue_num) AS issue_num,
         ai2.type_code, ai2.summary,
+        ai2.rank,
         ai2.reporter_id, ai2.description,
         ai2.assignee_id, ai2.project_id,
         ai2.epic_id, asp1.sprint_id as is_sprint_id,
@@ -196,11 +197,7 @@
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
             #{issueId}
-        </foreach>
-        order by field(ai4.issue_id,
-        <foreach collection="issueIds" item="issueId" index="index" separator=",">
-            #{issueId}
-        </foreach>) )ai2
+        </foreach>)ai2
         LEFT JOIN agile_issue_status ais ON ai2.status_id = ais.id
         LEFT JOIN agile_project_info api ON ai2.project_id = api.project_id
         LEFT JOIN agile_lookup_value alv ON ai2.priority_code = alv.value_code
@@ -213,8 +210,14 @@
         ) asp1 ON asp1.issue_id = ai2.issue_id
         LEFT JOIN
         (
-        select avir.*,apv.name from (select avir1.* from agile_version_issue_rel avir1 where avir1.relation_type = 'fix')avir  left join
-        agile_product_version apv on avir.version_id = apv.version_id
+            SELECT
+            avir.version_id,
+            avir.issue_id,
+            apv.NAME
+            FROM
+            agile_version_issue_rel avir
+            LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
+            where	avir.relation_type = 'fix'
         ) apv1
         ON apv1.issue_id = ai2.issue_id
 
@@ -233,7 +236,7 @@
         (<include refid="queryActiveSprintSql"/>)spa left join
         (<include refid="querySprintIssueByIssueIds"/>)qsii on qsii.is_sprint_id = spa.sprint_id left join
         (<include refid="queryAssigneeIssueBySprintId"/>)qais
-        on spa.sprint_id = qais.asi_sprint_id
+        on spa.sprint_id = qais.asi_sprint_id order by qsii.rank ASC
     </select>
 
     <sql id="queryPlanSprintSql">
@@ -256,10 +259,10 @@
         qais.issue_count,
         qsii.*
         from
-        (<include refid="queryPlanSprintSql"/>)spa left join
-        (<include refid="querySprintIssueByIssueIds"/>)qsii on qsii.is_sprint_id = spa.sprint_id left join
-        (<include refid="queryAssigneeIssueBySprintId"/>)qais
-        on spa.sprint_id = qais.asi_sprint_id
+        (<include refid="queryPlanSprintSql"/>)spa
+        left join(<include refid="querySprintIssueByIssueIds"/>)qsii on qsii.is_sprint_id = spa.sprint_id
+        left join (<include refid="queryAssigneeIssueBySprintId"/>)qais
+        on spa.sprint_id = qais.asi_sprint_id order by qsii.rank ASC
     </select>
 
     <select id="queryAssigneeIssueBySprintId" parameterType="java.util.Map"
@@ -271,7 +274,7 @@
         FROM (
         SELECT
         aisr.sprint_id,
-        case when ai.assignee_id is null then 0 else ai.assignee_id end AS assignee_id,
+        ai.assignee_id,
         ai.story_points, ai.remaining_time
         FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
         WHERE aisr.issue_id = ai.issue_id

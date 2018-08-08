@@ -60,7 +60,6 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
         issueAttachmentE.setFileName(fileName);
         issueAttachmentE.setUrl(url);
         issueAttachmentE.setCommentId(1L);
-        issueAttachmentE.setAttachmentId(1L);
         issueAttachmentRepository.create(issueAttachmentE);
     }
 

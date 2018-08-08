@@ -179,7 +179,8 @@ public class SprintServiceImpl implements SprintService {
         Long activeSprintId = Long.MIN_VALUE;
         List<Long> assigneeIds = sprintMapper.queryAssigneeIdsByIssueIds(issueIds);
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
-        SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintMapper.queryActiveSprint(projectId, issueIds), usersMap);
+        SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprint(projectId, issueIds);
+        SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDO, usersMap);
         if (activeSprint != null) {
             activeSprint.setIssueCount(activeSprint.getIssueSearchDTOList().size());
             activeSprint.setTodoStoryPoint(sprintMapper.queryStoryPoint(CATEGORY_TODO_CODE, issueIds, projectId, activeSprintId));
@@ -187,7 +188,8 @@ public class SprintServiceImpl implements SprintService {
             activeSprint.setDoneStoryPoint(sprintMapper.queryStoryPoint(CATEGORY_DONE_CODE, issueIds, projectId, activeSprintId));
             sprintSearchs.add(activeSprint);
         }
-        List<SprintSearchDTO> planSprints = sprintSearchAssembler.doListToDTO(sprintMapper.queryPlanSprint(projectId, issueIds), usersMap);
+        List<SprintSearchDO> sprintSearchDTOS = sprintMapper.queryPlanSprint(projectId, issueIds);
+        List<SprintSearchDTO> planSprints = sprintSearchAssembler.doListToDTO(sprintSearchDTOS, usersMap);
         if (!planSprints.isEmpty()) {
             planSprints.parallelStream().forEachOrdered(planSprint -> planSprint.setIssueCount(planSprint.getIssueSearchDTOList().size()));
             sprintSearchs.addAll(planSprints);
