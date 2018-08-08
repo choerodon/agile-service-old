@@ -21,28 +21,30 @@
     </select>
 
     <select id="selectComponentWithIssueNum" resultType="io.choerodon.agile.infra.dataobject.ComponentForListDO">
-        SELECT
-            aic.component_id,
-            aic.project_id,
-            aic.`name`,
-            aic.description,
-            aic.manager_id,
-            aic.default_assignee_role,
-            aic.object_version_number,
-            COUNT(acir.issue_id) AS issue_count
-        FROM
-            agile_issue_component aic
-        LEFT JOIN agile_component_issue_rel acir ON aic.component_id = acir.component_id
+        select
+        aic.component_id,
+        aic.project_id,
+        aic.`name`,
+        aic.description,
+        aic.manager_id,
+        aic.default_assignee_role,
+        aic.object_version_number,
+        case when aa.issue_count is null then 0 else aa.issue_count end
+        from agile_issue_component aic left join (
+        select acir.component_id,count(*) as issue_count from agile_component_issue_rel acir
         LEFT JOIN agile_issue ai ON ai.issue_id = acir.issue_id
-        WHERE
-            aic.project_id = #{projectId}
-            <if test="noIssueTest">
-                AND ai.type_code != 'issue_test'
-            </if>
-            <if test="componentId != null">
-                AND  aic.component_id != #{componentId}
-            </if>
-        GROUP BY aic.component_id DESC
+        where acir.project_id = #{projectId}
+        <if test="noIssueTest">
+            AND ai.type_code != 'issue_test'
+        </if>
+        GROUP BY
+        acir.component_id
+        )aa on aic.component_id = aa.component_id
+        where project_id = #{projectId}
+        <if test="componentId != null">
+            AND  aic.component_id != #{componentId}
+        </if>
+        order by aic.component_id desc
     </select>
 
     <select id="queryIssuesByComponentId" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
