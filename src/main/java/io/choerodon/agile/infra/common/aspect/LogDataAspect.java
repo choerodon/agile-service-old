@@ -772,7 +772,7 @@ public class LogDataAspect {
         if (issueSprintRelE != null) {
             SprintDO sprintDO = sprintMapper.selectByPrimaryKey(issueSprintRelE.getSprintId());
             createDataLog(issueSprintRelE.getProjectId(), issueSprintRelE.getIssueId(),
-                    FIELD_SPRINT, null, issueSprintRelE.getSprintId().toString(), null, sprintDO.getSprintName());
+                    FIELD_SPRINT, null, sprintDO.getSprintName(), null,issueSprintRelE.getSprintId().toString());
         }
     }
 
