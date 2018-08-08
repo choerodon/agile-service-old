@@ -171,6 +171,9 @@ public class IssueServiceImpl implements IssueService {
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
     private static final String AGILE_SERVICE = "agile-service";
     private static final String SEARCH = "search";
+    private static final String USERMAP_TYPE_SPRINT = "sprint";
+    private static final String USERMAP_TYPE_VERSION = "version";
+    private static final String USERMAP_TYPE_NONE = "none";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -1456,13 +1459,13 @@ public class IssueServiceImpl implements IssueService {
     public List<UserMapIssueDTO> listIssuesByProjectId(Long projectId, String type) {
         List<UserMapIssueDTO> userMapIssueDTOList = null;
         switch (type) {
-            case "sprint":
+            case USERMAP_TYPE_SPRINT:
                 userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId));
                 break;
-            case "version":
+            case USERMAP_TYPE_VERSION:
                 userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdVersion(projectId));
                 break;
-            case "none":
+            case USERMAP_TYPE_NONE:
                 userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdNone(projectId));
                 break;
             default:
