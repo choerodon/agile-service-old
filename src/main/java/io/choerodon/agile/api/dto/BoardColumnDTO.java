@@ -115,4 +115,21 @@ public class BoardColumnDTO {
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
     }
+
+    @Override
+    public String toString() {
+        return "BoardColumnDTO{" +
+                "columnId=" + columnId +
+                ", name='" + name + '\'' +
+                ", boardId=" + boardId +
+                ", minNum=" + minNum +
+                ", maxNum=" + maxNum +
+                ", categoryCode='" + categoryCode + '\'' +
+                ", projectId=" + projectId +
+                ", sequence=" + sequence +
+                ", color='" + color + '\'' +
+                ", colorCode='" + colorCode + '\'' +
+                ", objectVersionNumber=" + objectVersionNumber +
+                '}';
+    }
 }
