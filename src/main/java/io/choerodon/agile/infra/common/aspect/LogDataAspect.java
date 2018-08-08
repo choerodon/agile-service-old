@@ -914,7 +914,7 @@ public class LogDataAspect {
                 oldValue = originIssueDO.getReporterId().toString();
                 oldString = userRepository.queryUserNameByOption(originIssueDO.getReporterId(), false).getRealName();
             }
-            if (issueE.getReporterId() != 0) {
+            if (issueE.getReporterId() != null && issueE.getReporterId() != 0) {
                 newValue = issueE.getReporterId().toString();
                 newString = userRepository.queryUserNameByOption(issueE.getReporterId(), false).getRealName();
             }

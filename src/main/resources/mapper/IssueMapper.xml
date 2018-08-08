@@ -594,7 +594,6 @@
         <if test='filterSql != null'>
             AND ai.issue_id IN (${filterSql})
         </if>
-        ORDER BY ai.rank ASC
     </select>
 
     <select id="queryBacklogIssueCount" resultType="java.lang.Integer">

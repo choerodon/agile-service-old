@@ -40,10 +40,10 @@ public class AgileEventHandler {
      *
      * @param data data
      */
-    @SagaTask(code = "agileInitProject",
+    @SagaTask(code = "agile-init-project",
             description = "agile消费创建项目事件初始化项目数据",
             sagaCode = "iam-create-project",
-            seq = 1)
+            seq = 2)
     public String handleProjectInitByConsumeSagaTask(String data) {
         ProjectEvent projectEvent = JSONObject.parseObject(data, ProjectEvent.class);
         loggerInfo(projectEvent);

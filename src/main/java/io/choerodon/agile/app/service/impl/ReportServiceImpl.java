@@ -184,19 +184,21 @@ public class ReportServiceImpl implements ReportService {
                 Objects.equals(columnChangeDTO.getColumnFrom(), cumulativeFlowDiagramDTO.getColumnId().toString())
                         || Objects.equals(columnChangeDTO.getColumnTo(), cumulativeFlowDiagramDTO.getColumnId().toString())).collect(Collectors.toList());
         if (columnChange != null && !columnChange.isEmpty()) {
-            int count = 1;
+            int count = 0;
             addStartColumnChangeByDate(cumulativeFlowDiagramDTO, startDate);
             for (ColumnChangeDTO columnChangeDTO : columnChange) {
                 if (columnChangeDTO.getColumnFrom().equals(cumulativeFlowDiagramDTO.getColumnId().toString())) {
                     CoordinateDTO coordinateDTO = new CoordinateDTO();
                     coordinateDTO.setDate(columnChangeDTO.getDate());
                     coordinateDTO.setColumnChangeDTO(columnChangeDTO);
-                    coordinateDTO.setIssueCount(count--);
+                    count--;
+                    coordinateDTO.setIssueCount(count);
                     cumulativeFlowDiagramDTO.getCoordinateDTOList().add(coordinateDTO);
                 } else {
                     CoordinateDTO coordinateDTO = new CoordinateDTO();
                     coordinateDTO.setDate(columnChangeDTO.getDate());
-                    coordinateDTO.setIssueCount(count++);
+                    count++;
+                    coordinateDTO.setIssueCount(count);
                     coordinateDTO.setColumnChangeDTO(columnChangeDTO);
                     cumulativeFlowDiagramDTO.getCoordinateDTOList().add(coordinateDTO);
                 }
