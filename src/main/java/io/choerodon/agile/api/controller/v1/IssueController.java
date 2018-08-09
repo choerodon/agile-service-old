@@ -423,7 +423,7 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("故事地图查询issues,type:'sprint, version, none',pageType:'usermap,backlog'")
+    @ApiOperation("故事地图查询issues,type:'sprint, version, none', pageType:'usermap,backlog'")
     @GetMapping(value = "/user_map/issues")
     public ResponseEntity<List<UserMapIssueDTO>> listIssuesByProjectId(@ApiParam(value = "项目id", required = true)
                                                                        @PathVariable(name = "project_id") Long projectId,
