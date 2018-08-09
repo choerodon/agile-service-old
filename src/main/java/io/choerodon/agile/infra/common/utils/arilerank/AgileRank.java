@@ -12,14 +12,14 @@ import java.util.List;
  */
 public class AgileRank implements Comparable<AgileRank> {
     public static final AgileNumeralSystem NUMERAL_SYSTEM;
-    public static final AgileDecimal ZERO_DECIMAL;
-    public static final AgileDecimal ONE_DECIMAL;
-    public static final AgileDecimal EIGHT_DECIMAL;
-    public static final AgileDecimal MIN_DECIMAL;
-    public static final AgileDecimal MAX_DECIMAL;
-    public static final AgileDecimal MID_DECIMAL;
-    public static final AgileDecimal INITIAL_MIN_DECIMAL;
-    public static final AgileDecimal INITIAL_MAX_DECIMAL;
+    private static final AgileDecimal ZERO_DECIMAL;
+    private static final AgileDecimal ONE_DECIMAL;
+    private static final AgileDecimal EIGHT_DECIMAL;
+    private static final AgileDecimal MIN_DECIMAL;
+    private static final AgileDecimal MAX_DECIMAL;
+    private static final AgileDecimal MID_DECIMAL;
+    private static final AgileDecimal INITIAL_MIN_DECIMAL;
+    private static final AgileDecimal INITIAL_MAX_DECIMAL;
     private final String value;
     private AgileRankBucket bucket;
     private AgileDecimal decimal;
@@ -275,18 +275,22 @@ public class AgileRank implements Comparable<AgileRank> {
         }
     }
 
+    @Override
     public boolean equals(Object o) {
-        return !(o instanceof AgileRank)?false:this == o || this.value.equals(((AgileRank)o).value);
+        return o instanceof AgileRank && (this == o || this.value.equals(((AgileRank) o).value));
     }
 
+    @Override
     public int hashCode() {
         return this.value.hashCode();
     }
 
+    @Override
     public String toString() {
         return this.value;
     }
 
+    @Override
     public int compareTo(AgileRank o) {
         return this.value.compareTo(o.value);
     }

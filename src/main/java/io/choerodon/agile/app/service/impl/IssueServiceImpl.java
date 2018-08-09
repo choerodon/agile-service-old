@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
@@ -15,12 +16,14 @@ import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.asgard.saga.annotation.Saga;
+import io.choerodon.asgard.saga.dto.StartInstanceDTO;
+import io.choerodon.asgard.saga.feign.SagaClient;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
-import io.choerodon.event.producer.execute.EventProducerTemplate;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.apache.poi.hssf.usermodel.*;
@@ -127,13 +130,13 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private IssueSprintRelRepository issueSprintRelRepository;
     @Autowired
-    private EventProducerTemplate eventProducerTemplate;
-    @Autowired
     private UserFeignClient userFeignClient;
     @Autowired
     private SprintService sprintService;
     @Autowired
     private UserMapIssueAssembler userMapIssueAssembler;
+    @Autowired
+    private SagaClient sagaClient;
 
 
     private static final String STATUS_CODE_TODO = "todo";
@@ -169,7 +172,6 @@ public class IssueServiceImpl implements IssueService {
     private static final String PROJECT_ERROR = "error.project.notFound";
     private static final String ERROR_ISSUE_NOT_FOUND = "error.Issue.queryIssue";
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
-    private static final String AGILE_SERVICE = "agile-service";
     private static final String SEARCH = "search";
     private static final String USERMAP_TYPE_SPRINT = "sprint";
     private static final String USERMAP_TYPE_VERSION = "version";
@@ -335,54 +337,52 @@ public class IssueServiceImpl implements IssueService {
         dataLogRepository.delete(dataLogE);
     }
 
+    @Saga(code = "agile-delete-issue", description = "删除issue", inputSchemaClass = IssuePayload.class)
     @Override
     public void deleteIssue(Long projectId, Long issueId) {
-        //删除issue发送消息
-        IssuePayload issuePayload = new IssuePayload();
-        //todo 发送消息修改为saga
-        Exception exception = eventProducerTemplate.execute("deleteIssue", AGILE_SERVICE, issuePayload,
-                (String uuid) -> {
-                    issuePayload.setIssueId(issueId);
-                    issuePayload.setProjectId(projectId);
-                    IssueE issueE = queryIssueByProjectIdAndIssueId(projectId, issueId);
-                    if (issueE == null) {
-                        throw new CommonException(ERROR_ISSUE_NOT_FOUND);
-                    }
-                    //删除issueLink
-                    issueLinkRepository.deleteByIssueId(issueE.getIssueId());
-                    //删除标签关联
-                    labelIssueRelRepository.deleteByIssueId(issueE.getIssueId());
-                    //没有issue使用的标签进行垃圾回收
-                    issueLabelRepository.labelGarbageCollection();
-                    //删除模块关联
-                    componentIssueRelRepository.deleteByIssueId(issueE.getIssueId());
-                    //删除版本关联
-                    versionIssueRelRepository.deleteByIssueId(issueE.getIssueId());
-                    //删除冲刺关联
-                    issueRepository.deleteIssueFromSprintByIssueId(projectId, issueId);
-                    //删除评论信息
-                    issueCommentService.deleteByIssueId(issueE.getIssueId());
-                    //删除附件
-                    issueAttachmentService.deleteByIssueId(issueE.getIssueId());
-                    //不是子任务的issue删除子任务
-                    if (!(SUB_TASK).equals(issueE.getTypeCode())) {
-                        if ((ISSUE_EPIC).equals(issueE.getTypeCode())) {
-                            //如果是epic，会把该epic下的issue的epicId置为0
-                            issueRepository.batchUpdateIssueEpicId(projectId, issueE.getIssueId());
-                        }
-                        List<IssueDO> issueDOList = issueMapper.queryIssueSubList(projectId, issueE.getIssueId());
-                        if (issueDOList != null && !issueDOList.isEmpty()) {
-                            issueDOList.forEach(subIssue -> deleteIssue(subIssue.getProjectId(), subIssue.getIssueId()));
-                        }
-                    }
-                    //删除日志信息
-                    dataLogDeleteByIssueId(projectId, issueId);
-                    issueRepository.delete(projectId, issueE.getIssueId());
+        try {
+            IssueE issueE = queryIssueByProjectIdAndIssueId(projectId, issueId);
+            if (issueE == null) {
+                throw new CommonException(ERROR_ISSUE_NOT_FOUND);
+            }
+            //删除issueLink
+            issueLinkRepository.deleteByIssueId(issueE.getIssueId());
+            //删除标签关联
+            labelIssueRelRepository.deleteByIssueId(issueE.getIssueId());
+            //没有issue使用的标签进行垃圾回收
+            issueLabelRepository.labelGarbageCollection();
+            //删除模块关联
+            componentIssueRelRepository.deleteByIssueId(issueE.getIssueId());
+            //删除版本关联
+            versionIssueRelRepository.deleteByIssueId(issueE.getIssueId());
+            //删除冲刺关联
+            issueRepository.deleteIssueFromSprintByIssueId(projectId, issueId);
+            //删除评论信息
+            issueCommentService.deleteByIssueId(issueE.getIssueId());
+            //删除附件
+            issueAttachmentService.deleteByIssueId(issueE.getIssueId());
+            //不是子任务的issue删除子任务
+            if (!(SUB_TASK).equals(issueE.getTypeCode())) {
+                if ((ISSUE_EPIC).equals(issueE.getTypeCode())) {
+                    //如果是epic，会把该epic下的issue的epicId置为0
+                    issueRepository.batchUpdateIssueEpicId(projectId, issueE.getIssueId());
                 }
-        );
-        Optional.ofNullable(exception).map(e -> {
-            throw new CommonException(exception.getMessage());
-        });
+                List<IssueDO> issueDOList = issueMapper.queryIssueSubList(projectId, issueE.getIssueId());
+                if (issueDOList != null && !issueDOList.isEmpty()) {
+                    issueDOList.forEach(subIssue -> deleteIssue(subIssue.getProjectId(), subIssue.getIssueId()));
+                }
+            }
+            //删除日志信息
+            dataLogDeleteByIssueId(projectId, issueId);
+            issueRepository.delete(projectId, issueE.getIssueId());
+            //删除issue发送消息
+            IssuePayload issuePayload = new IssuePayload();
+            issuePayload.setIssueId(issueId);
+            issuePayload.setProjectId(projectId);
+            sagaClient.startSaga("agile-delete-issue", new StartInstanceDTO(JSON.toJSONString(issuePayload), "", ""));
+        } catch (Exception e) {
+            throw new CommonException(e.getMessage());
+        }
     }
 
     @Override
