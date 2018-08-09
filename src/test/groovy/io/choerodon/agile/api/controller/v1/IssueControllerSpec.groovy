@@ -6,20 +6,29 @@ import io.choerodon.agile.api.dto.ComponentIssueRelDTO
 import io.choerodon.agile.api.dto.IssueComponentDTO
 import io.choerodon.agile.api.dto.IssueCreateDTO
 import io.choerodon.agile.api.dto.IssueDTO
+import io.choerodon.agile.api.dto.UserMapIssueDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.domain.agile.event.ProjectEvent
 import io.choerodon.agile.domain.agile.repository.UserRepository
+import io.choerodon.agile.infra.dataobject.IssueDO
+import io.choerodon.agile.infra.dataobject.IssueSprintRelDO
 import io.choerodon.agile.infra.dataobject.ProjectInfoDO
+import io.choerodon.agile.infra.dataobject.SprintDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.IssueMapper
+import io.choerodon.agile.infra.mapper.IssueSprintRelMapper
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper
+import io.choerodon.agile.infra.mapper.SprintMapper
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.event.producer.execute.EventProducerTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
 import spock.lang.Specification
@@ -55,6 +64,12 @@ class IssueControllerSpec extends Specification {
 
     @Autowired
     SagaClient sagaClient
+
+    @Autowired
+    private SprintMapper sprintMapper
+
+    @Autowired
+    private IssueSprintRelMapper issueSprintRelMapper
 
     @Autowired
     ProjectInfoMapper projectInfoMapper
@@ -182,6 +197,56 @@ class IssueControllerSpec extends Specification {
         "story"      | "story"
         "task"       | "task"
         "issue_epic" | "issue_epic"
+    }
+
+    def 'listIssuesByProjectId'() {
+        given:
+            def type = 'sprint'
+            def pageType = 'usermap'
+            IssueDO issueDO = new IssueDO()
+            issueDO.projectId = projectId
+            issueDO.typeCode = 'issue_epic'
+            issueDO.priorityCode = 'medium'
+            issueDO.reporterId = 1L
+            issueDO.statusId = 1L
+            issueMapper.insert(issueDO)
+            IssueDO issue = issueMapper.selectByPrimaryKey(1L)
+            SprintDO sprintDO = new SprintDO()
+            sprintDO.projectId = projectId
+            sprintDO.sprintName = "测试sprint"
+            sprintDO.statusCode = 'started'
+            sprintMapper.insert(sprintDO)
+            issue.epicId = issueDO.getIssueId()
+            issueMapper.updateByPrimaryKey(issue)
+            IssueSprintRelDO issueSprintRelDO = new IssueSprintRelDO()
+            issueSprintRelDO.projectId = projectId
+            issueSprintRelDO.issueId = issue.getIssueId()
+            issueSprintRelDO.sprintId = sprintDO.getSprintId()
+            issueSprintRelMapper.insert(issueSprintRelDO)
+            Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
+            UserMessageDO userMessageDO = new UserMessageDO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
+            userMessageDOMap.put(1, userMessageDO)
+            userRepository.queryUsersMap(*_) >> userMessageDOMap
+        when:
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/user_map/issues?type={type}&pageType={pageType}",
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                List.class,
+                projectId,
+                type,
+                pageType)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+        List<UserMapIssueDTO> userMapIssueDTOList = entity.body
+        def count = 0
+        for (UserMapIssueDTO userMapIssueDTO : userMapIssueDTOList) {
+            if (userMapIssueDTO.sprintId != null) {
+                count += 1
+                userMapIssueDTO.getIssueId() == issue.getIssueId()
+            }
+        }
+        count == 1
     }
 
     def "删除issue"() {
