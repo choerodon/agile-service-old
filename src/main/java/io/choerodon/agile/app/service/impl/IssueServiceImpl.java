@@ -136,10 +136,7 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private UserMapIssueAssembler userMapIssueAssembler;
     @Autowired
-    private SagaClient sagaClient;
-    @Autowired
     private QuickFilterMapper quickFilterMapper;
-
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -181,6 +178,13 @@ public class IssueServiceImpl implements IssueService {
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
+
+    private final SagaClient sagaClient;
+
+    @Autowired
+    public IssueServiceImpl(SagaClient sagaClient) {
+        this.sagaClient = sagaClient;
+    }
 
     @Override
     public synchronized IssueDTO createIssue(IssueCreateDTO issueCreateDTO) {
