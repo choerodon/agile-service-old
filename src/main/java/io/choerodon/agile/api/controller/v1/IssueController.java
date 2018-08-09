@@ -427,9 +427,17 @@ public class IssueController {
     @GetMapping(value = "/user_map/issues")
     public ResponseEntity<List<UserMapIssueDTO>> listIssuesByProjectId(@ApiParam(value = "项目id", required = true)
                                                                        @PathVariable(name = "project_id") Long projectId,
-                                                                       @ApiParam(value = "type", required = true)
-                                                                       @RequestParam String type) {
-        return Optional.ofNullable(issueService.listIssuesByProjectId(projectId, type))
+                                                                       @ApiParam(value = "type:sprint, version, none", required = true)
+                                                                       @RequestParam String type,
+                                                                       @ApiParam(value = "故事页面or待办页面 pageType:usermap,backlog", required = true)
+                                                                       @RequestParam String pageType,
+                                                                       @ApiParam(value = "search item，my problem", required = false)
+                                                                       @RequestParam(required = false) Long assigneeId,
+                                                                       @ApiParam(value = "search item，only story", required = false)
+                                                                       @RequestParam(required = false) Boolean onlyStory,
+                                                                       @ApiParam(value = "quick filter", required = false)
+                                                                       @RequestParam(required = false) List<Long> quickFilterIds) {
+        return Optional.ofNullable(issueService.listIssuesByProjectId(projectId, type, pageType, assigneeId, onlyStory, quickFilterIds))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.listIssuesByProjectId"));
     }

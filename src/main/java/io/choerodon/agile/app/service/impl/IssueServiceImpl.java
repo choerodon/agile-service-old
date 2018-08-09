@@ -137,6 +137,8 @@ public class IssueServiceImpl implements IssueService {
     private UserMapIssueAssembler userMapIssueAssembler;
     @Autowired
     private SagaClient sagaClient;
+    @Autowired
+    private QuickFilterMapper quickFilterMapper;
 
 
     private static final String STATUS_CODE_TODO = "todo";
@@ -1455,22 +1457,44 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
+    private String getQuickFilter(List<Long> quickFilterIds) {
+        List<String> sqlQuerys = quickFilterMapper.selectSqlQueryByIds(quickFilterIds);
+        if (sqlQuerys.isEmpty()) {
+            return null;
+        }
+        int idx = 0;
+        StringBuilder sql = new StringBuilder("select issue_id from agile_issue where ");
+        for (String filter : sqlQuerys) {
+            if (idx == 0) {
+                sql.append(" ( " + filter + " ) ");
+                idx += 1;
+            } else {
+                sql.append(" and " + " ( " + filter + " ) ");
+            }
+        }
+        return sql.toString();
+    }
+
     @Override
-    public List<UserMapIssueDTO> listIssuesByProjectId(Long projectId, String type) {
+    public List<UserMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds) {
         List<UserMapIssueDTO> userMapIssueDTOList = null;
+        String filterSql = null;
+        if (quickFilterIds != null && !quickFilterIds.isEmpty()) {
+            filterSql = getQuickFilter(quickFilterIds);
+        }
         switch (type) {
             case USERMAP_TYPE_SPRINT:
-                userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId));
+                userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId, pageType, assigneeId, onlyStory, filterSql));
                 break;
             case USERMAP_TYPE_VERSION:
-                userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdVersion(projectId));
+                userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdVersion(projectId, pageType, assigneeId, onlyStory, filterSql));
                 break;
             case USERMAP_TYPE_NONE:
-                userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdNone(projectId));
+                userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdNone(projectId, pageType, assigneeId, onlyStory, filterSql));
                 break;
             default:
                 break;
         }
-        return userMapIssueDTOList;
+        return userMapIssueDTOList == null ? new ArrayList<>() : userMapIssueDTOList;
     }
 }
