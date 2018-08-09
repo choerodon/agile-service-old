@@ -1518,6 +1518,7 @@
             ai.summary,
             ai.type_code,
             ai.story_points,
+            ai.epic_id,
             CONCAT_WS(
                 '-',
                 api.project_code,
@@ -1534,10 +1535,25 @@
             'sub_task',
             'issue_epic'
         )
+        <if test='onlyStory != null and onlyStory == true'>
+            AND ai.type_code = 'story'
+        </if>
+        <if test='assigneeId != null'>
+            AND ai.assignee_id = #{assigneeId}
+        </if>
+        <if test='filterSql != null'>
+            AND ai.issue_id IN (${filterSql})
+        </if>
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
             aisr.project_id =  #{projectId}
+        <if test="pageType != null and pageType == 'usermap'">
+            AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
+        </if>
+        <if test="pageType != null and pageType == 'backlog'">
+            AND (ai.epic_id IS NULL OR ai.epic_id = 0)
+        </if>
         UNION ALL
             SELECT
                 NULL,
@@ -1548,6 +1564,7 @@
                 ai.summary,
                 ai.type_code,
                 ai.story_points,
+                ai.epic_id,
                 CONCAT_WS(
                     '-',
                     api.project_code,
@@ -1574,6 +1591,21 @@
                 'sub_task',
                 'issue_epic'
             )
+            <if test="pageType != null and pageType == 'usermap'">
+                AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
+            </if>
+            <if test="pageType != null and pageType == 'backlog'">
+                AND (ai.epic_id IS NULL OR ai.epic_id = 0)
+            </if>
+            <if test='onlyStory != null and onlyStory == true'>
+                AND ai.type_code = 'story'
+            </if>
+            <if test='assigneeId != null'>
+                AND ai.assignee_id = #{assigneeId}
+            </if>
+            <if test='filterSql != null'>
+                AND ai.issue_id IN (${filterSql})
+            </if>
     </select>
 
     <select id="listIssuesByProjectIdVersion" resultType="io.choerodon.agile.infra.dataobject.UserMapIssueDO">
@@ -1586,6 +1618,7 @@
             ai.summary,
             ai.type_code,
             ai.story_points,
+            ai.epic_id,
             CONCAT_WS(
                 '-',
                 api.project_code,
@@ -1602,10 +1635,25 @@
             'sub_task',
             'issue_epic'
         )
+        <if test='onlyStory != null and onlyStory == true'>
+            AND ai.type_code = 'story'
+        </if>
+        <if test='assigneeId != null'>
+            AND ai.assignee_id = #{assigneeId}
+        </if>
+        <if test='filterSql != null'>
+            AND ai.issue_id IN (${filterSql})
+        </if>
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
             avir.project_id = #{projectId}
+        <if test="pageType != null and pageType == 'usermap'">
+            AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
+        </if>
+        <if test="pageType != null and pageType == 'backlog'">
+            AND (ai.epic_id IS NULL OR ai.epic_id = 0)
+        </if>
         UNION ALL
             SELECT
                 NULL,
@@ -1616,6 +1664,7 @@
                 ai.summary,
                 ai.type_code,
                 ai.story_points,
+                ai.epic_id,
                 CONCAT_WS(
                     '-',
                     api.project_code,
@@ -1642,6 +1691,21 @@
                 'sub_task',
                 'issue_epic'
             )
+        <if test="pageType != null and pageType == 'usermap'">
+            AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
+        </if>
+        <if test="pageType != null and pageType == 'backlog'">
+            AND (ai.epic_id IS NULL OR ai.epic_id = 0)
+        </if>
+        <if test='onlyStory != null and onlyStory == true'>
+            AND ai.type_code = 'story'
+        </if>
+        <if test='assigneeId != null'>
+            AND ai.assignee_id = #{assigneeId}
+        </if>
+        <if test='filterSql != null'>
+            AND ai.issue_id IN (${filterSql})
+        </if>
     </select>
 
     <select id="listIssuesByProjectIdNone" resultType="io.choerodon.agile.infra.dataobject.UserMapIssueDO">
@@ -1652,6 +1716,7 @@
             ai.summary,
             ai.type_code,
             ai.story_points,
+            ai.epic_id,
             CONCAT_WS(
                 '-',
                 api.project_code,
@@ -1670,6 +1735,21 @@
             'sub_task',
             'issue_epic'
         )
+        <if test="pageType != null and pageType == 'usermap'">
+            AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
+        </if>
+        <if test="pageType != null and pageType == 'backlog'">
+            AND (ai.epic_id IS NULL OR ai.epic_id = 0)
+        </if>
+        <if test='onlyStory != null and onlyStory == true'>
+            AND ai.type_code = 'story'
+        </if>
+        <if test='assigneeId != null'>
+            AND ai.assignee_id = #{assigneeId}
+        </if>
+        <if test='filterSql != null'>
+            AND ai.issue_id IN (${filterSql})
+        </if>
     </select>
 
 

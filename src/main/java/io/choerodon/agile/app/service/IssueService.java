@@ -201,5 +201,5 @@ public interface IssueService {
      */
     Page<IssueComponentDetailDTO> listIssueWithoutSubDetail(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
 
-    List<UserMapIssueDTO> listIssuesByProjectId(Long projectId, String type);
+    List<UserMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds);
 }

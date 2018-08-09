@@ -38,6 +38,8 @@ public class UserMapIssueDTO {
 
     private String statusColor;
 
+    private Long epicId;
+
     public Long getSprintId() {
         return sprintId;
     }
@@ -164,5 +166,13 @@ public class UserMapIssueDTO {
 
     public String getStatusName() {
         return statusName;
+    }
+
+    public void setEpicId(Long epicId) {
+        this.epicId = epicId;
+    }
+
+    public Long getEpicId() {
+        return epicId;
     }
 }

@@ -32,6 +32,8 @@ public class UserMapIssueDO {
 
     private String statusName;
 
+    private Long epicId;
+
     public Long getSprintId() {
         return sprintId;
     }
@@ -135,5 +137,13 @@ public class UserMapIssueDO {
 
     public String getStatusName() {
         return statusName;
+    }
+
+    public void setEpicId(Long epicId) {
+        this.epicId = epicId;
+    }
+
+    public Long getEpicId() {
+        return epicId;
     }
 }
