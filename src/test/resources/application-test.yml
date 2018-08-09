@@ -27,3 +27,20 @@ eureka:
 services:
   attachment:
     url: example.com
+choerodon:
+  event:
+    consumer:
+      enabled: false # 是否开启，不设置默认开启
+      queue-type: kafka # 消息队列类型
+      enable-duplicate-remove: true # 是否开启去重
+      failed-strategy: nothing # 失败策略。支持nothing(什么都不做), send_back_event_store(回传到event store)两种
+      retry:
+        enabled: true # 是否开启重试功能
+      kafka:
+        bootstrap-servers: 10.211.97.63:9092 # kafka地址
+  saga:
+    consumer:
+      enabled: false # 是否启用消费端
+      thread-num: 5  # 消费线程数
+      max-poll-size: 200 # 每次拉取的最大消息数量
+      poll-interval-ms: 1000 # 拉取消息的间隔(毫秒)，默认1000毫秒

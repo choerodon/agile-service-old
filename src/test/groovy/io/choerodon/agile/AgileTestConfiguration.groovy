@@ -3,9 +3,12 @@ package io.choerodon.agile
 import com.alibaba.fastjson.JSON
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
+import io.choerodon.agile.app.service.IssueService
+import io.choerodon.agile.app.service.impl.IssueServiceImpl
 import io.choerodon.agile.domain.agile.event.ProjectEvent
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper
+import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.oauth.CustomUserDetails
 import io.choerodon.event.producer.execute.EventProducerTemplate
 import io.choerodon.liquibase.LiquibaseConfig
@@ -75,6 +78,12 @@ class AgileTestConfiguration {
     @Primary
     UserRepository userRepository() {
         detachedMockFactory.Mock(UserRepository)
+    }
+
+    @Bean("issueService")
+    @Primary
+    IssueService issueService() {
+        new IssueServiceImpl(detachedMockFactory.Mock(SagaClient))
     }
 
     @Bean("mockEventProducerTemplate")

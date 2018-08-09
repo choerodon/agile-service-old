@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.choerodon.agile.infra.common.utils.StringUtil;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
  * Email: fuqianghuang01@gmail.com
@@ -74,5 +76,10 @@ public class IssueComponentDTO {
 
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
+    }
+
+    @Override
+    public String toString() {
+        return StringUtil.getToString(this);
     }
 }

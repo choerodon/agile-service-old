@@ -125,12 +125,13 @@ public class ReportServiceImpl implements ReportService {
 
     private Map<String, Integer> handleSameDay(List<ReportIssueE> reportIssueEList) {
         DateFormat bf = new SimpleDateFormat("yyyy-MM-dd");
-        Map<String, Integer> report = new HashMap<>();
-        reportIssueEList.parallelStream().forEachOrdered(reportIssueE -> {
+        TreeMap<String, Integer> report = new TreeMap<>();
+        reportIssueEList.forEach(reportIssueE -> {
             if (reportIssueE.getStatistical()) {
                 String date = bf.format(reportIssueE.getDate());
                 if (report.get(date) == null) {
-                    report.put(date, reportIssueE.getNewValue() - reportIssueE.getOldValue());
+                    Integer count = report.lastEntry() == null ? 0 : report.lastEntry().getValue();
+                    report.put(date, count + reportIssueE.getNewValue() - reportIssueE.getOldValue());
                 } else {
                     report.put(date, report.get(date) + reportIssueE.getNewValue() - reportIssueE.getOldValue());
                 }
@@ -1008,15 +1009,15 @@ public class ReportServiceImpl implements ReportService {
         if (issueIds.contains(tmp.getIssueId())) {
             if (tmp.getCompleted() == 0) {
                 issueIds.remove(tmp.getIssueId());
-                sum -= (tmp.getStoryPoint() == null ? 0 :tmp.getStoryPoint());
+                sum -= (tmp.getStoryPoint() == null ? 0 : tmp.getStoryPoint());
             }
         } else {
             if (tmp.getCompleted() == 1) {
                 issueIds.add(tmp.getIssueId());
-                sum += (tmp.getStoryPoint() == null ? 0 :tmp.getStoryPoint());
+                sum += (tmp.getStoryPoint() == null ? 0 : tmp.getStoryPoint());
             }
         }
-        return  sum;
+        return sum;
     }
 
     private Map getCompletedMap(Long projectId, Map allMap, List<DateIssueIdsDO> storyPointsAll, Map pointMap) {
@@ -1066,7 +1067,7 @@ public class ReportServiceImpl implements ReportService {
             groupDataChartDO.setGroupDay(groupDay);
             List<Long> ids = entry.getValue();
             groupDataChartDO.setIssueCount(ids.size());
-            int completedI = completedMap.get(groupDay) == null ? preCompletedCount : ((List<Long>)completedMap.get(groupDay)).size();
+            int completedI = completedMap.get(groupDay) == null ? preCompletedCount : ((List<Long>) completedMap.get(groupDay)).size();
             groupDataChartDO.setIssueCompletedCount(completedI);
             preCompletedCount = completedI;
             result.add(groupDataChartDO);
@@ -1076,7 +1077,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void setAllIssuesAndSortSp(List<DateIssueIdsDO> allIssueIds, List<DateIssueIdsDO> storyPointsAll) {
-        for (DateIssueIdsDO dateIssueIdsDO : allIssueIds){
+        for (DateIssueIdsDO dateIssueIdsDO : allIssueIds) {
             int flag = 0;
             for (DateIssueIdsDO cnt : storyPointsAll) {
                 if (dateIssueIdsDO.getGroupDay().equals(cnt.getGroupDay())) {
@@ -1218,7 +1219,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private int manageNullCompletedSp(Map<Long, Integer> issueValue, DateIssueIdsDO cnt, int completedSum, int point) {
-        if (issueValue != null && issueValue.get(cnt.getIssueId()) != null && !cnt.getStoryPoint().equals(issueValue.get(cnt.getIssueId()))){
+        if (issueValue != null && issueValue.get(cnt.getIssueId()) != null && !cnt.getStoryPoint().equals(issueValue.get(cnt.getIssueId()))) {
             completedSum = completedSum - issueValue.get(cnt.getIssueId()) + point;
             issueValue.put(cnt.getIssueId(), point);
         }
@@ -1254,7 +1255,7 @@ public class ReportServiceImpl implements ReportService {
         int estimateCount = 0;
         Map<Long, Integer> issueValue2 = new HashMap<>();
         setAllIssuesAndSortSp(allIssueIds, storyPointsAll);
-        for (DateIssueIdsDO cnt : storyPointsAll){
+        for (DateIssueIdsDO cnt : storyPointsAll) {
             List<Long> epicIssueIds = getJudgeAllMap(allMap, cnt.getGroupDay());
             if (epicIssueIds != null && epicIssueIds.contains(cnt.getIssueId())) {
                 if (!cnt.getGroupDay().equals(groupDay2) && groupDay2 != null) {
@@ -1287,8 +1288,8 @@ public class ReportServiceImpl implements ReportService {
         Collections.sort(list, Comparator.comparing(GroupDataChartDO::getGroupDay));
     }
 
-    private void setAllIssuesAndSortRt(List<DateIssueIdsDO> allIssueIds, List<DateIssueIdsDO> remainTimesAll){
-        for (DateIssueIdsDO dateIssueIdsDO : allIssueIds){
+    private void setAllIssuesAndSortRt(List<DateIssueIdsDO> allIssueIds, List<DateIssueIdsDO> remainTimesAll) {
+        for (DateIssueIdsDO dateIssueIdsDO : allIssueIds) {
             int flag = 0;
             for (DateIssueIdsDO cnt : remainTimesAll) {
                 if (dateIssueIdsDO.getGroupDay().equals(cnt.getGroupDay())) {
@@ -1383,7 +1384,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private int manageNullCompletedRt(Map<Long, Integer> issueValue, DateIssueIdsDO cnt, int completedSum, int remainTime) {
-        if (issueValue != null && issueValue.get(cnt.getIssueId()) != null && !cnt.getRemainTime().equals(issueValue.get(cnt.getIssueId()))){
+        if (issueValue != null && issueValue.get(cnt.getIssueId()) != null && !cnt.getRemainTime().equals(issueValue.get(cnt.getIssueId()))) {
             completedSum = completedSum - issueValue.get(cnt.getIssueId()) + remainTime;
             issueValue.put(cnt.getIssueId(), remainTime);
         }
@@ -1403,7 +1404,7 @@ public class ReportServiceImpl implements ReportService {
         int estimateCount = 0;
         Map<Long, Integer> issueValue2 = new HashMap<>();
         setAllIssuesAndSortRt(allIssueIds, remainTimesAll);
-        for (DateIssueIdsDO cnt : remainTimesAll){
+        for (DateIssueIdsDO cnt : remainTimesAll) {
             List<Long> epicIssueIds = (List<Long>) allMap.get(cnt.getGroupDay());
             if (epicIssueIds != null && epicIssueIds.contains(cnt.getIssueId())) {
                 if (!cnt.getGroupDay().equals(groupDay2) && groupDay2 != null) {
@@ -1475,8 +1476,8 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private List<GroupDataChartDO> dealRemainTimeFinal(List<GroupDataChartDO> remainTimeRemainCompleted, List<GroupDataChartDO> remainTimeWorkLogCompleted,
-                                List<GroupDataChartDO> remainTimeRemainAll,List<GroupDataChartDO> remainTimeWorkLogAll,
-                                List<GroupDataChartDO> remainTimeCountAll, List<GroupDataChartDO> remainTimeCountEstimate){
+                                                       List<GroupDataChartDO> remainTimeRemainAll, List<GroupDataChartDO> remainTimeWorkLogAll,
+                                                       List<GroupDataChartDO> remainTimeCountAll, List<GroupDataChartDO> remainTimeCountEstimate) {
         for (GroupDataChartDO g1 : remainTimeCountAll) {
             for (GroupDataChartDO g2 : remainTimeRemainCompleted) {
                 if (g1.getGroupDay().equals(g2.getGroupDay())) {
@@ -1512,7 +1513,7 @@ public class ReportServiceImpl implements ReportService {
         return remainTimeCountAll;
     }
 
-    private List<GroupDataChartDO> dealIssueCountFinal(List<GroupDataChartDO> issueCountAll,List<GroupDataChartDO> issueCountCompleted) {
+    private List<GroupDataChartDO> dealIssueCountFinal(List<GroupDataChartDO> issueCountAll, List<GroupDataChartDO> issueCountCompleted) {
         for (GroupDataChartDO g1 : issueCountAll) {
             for (GroupDataChartDO g2 : issueCountCompleted) {
                 if (g1.getGroupDay().equals(g2.getGroupDay())) {
@@ -1562,7 +1563,8 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public Map<String, Integer> queryBurnDownCoordinate(Long projectId, Long sprintId, String type) {
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
-        return handleSameDay(reportIssueEList);
+        return handleSameDay(reportIssueEList.stream().
+                sorted(Comparator.comparing(ReportIssueE::getDate)).collect(Collectors.toList()));
     }
 
 //    @Override
