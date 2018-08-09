@@ -8,6 +8,10 @@ package io.choerodon.agile.infra.common.utils;
  */
 public class MybatisFunctionTestUtil {
 
+    private MybatisFunctionTestUtil() {
+        new MybatisFunctionTestUtil();
+    }
+
     public static String ifFunction(Boolean result, String param, String paramTwo) {
         return result ? param : paramTwo;
     }

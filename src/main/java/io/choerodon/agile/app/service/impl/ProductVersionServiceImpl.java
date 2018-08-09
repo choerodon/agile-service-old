@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.domain.agile.converter.ProductVersionConverter;
@@ -7,12 +8,14 @@ import io.choerodon.agile.domain.agile.event.VersionPayload;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.infra.dataobject.IssueCountDO;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
+import io.choerodon.asgard.saga.annotation.Saga;
+import io.choerodon.asgard.saga.dto.StartInstanceDTO;
+import io.choerodon.asgard.saga.feign.SagaClient;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
-import io.choerodon.event.producer.execute.EventProducerTemplate;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.agile.app.service.ProductVersionService;
@@ -60,9 +63,9 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     @Autowired
     private ProductVersionMapper productVersionMapper;
     @Autowired
-    private EventProducerTemplate eventProducerTemplate;
-    @Autowired
     private ProductVersionConverter productVersionConverter;
+    @Autowired
+    private SagaClient sagaClient;
 
     private static final String SEARCH_ARGS = "searchArgs";
     public static final String ADVANCE_SEARCH_ARGS = "advancedSearchArgs";
@@ -80,35 +83,34 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private static final String SOURCE_VERSION_ERROR = "error.sourceVersionIds.notNull";
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
-    private static final String AGILE_SERVICE = "agile-service";
 
+    @Saga(code = "agile-create-version", description = "创建版本", inputSchemaClass = VersionPayload.class)
     @Override
     public synchronized ProductVersionDetailDTO createVersion(Long projectId, ProductVersionCreateDTO versionCreateDTO) {
-        if (!projectId.equals(versionCreateDTO.getProjectId())) {
-            throw new CommonException(NOT_EQUAL_ERROR);
+        try{
+            if (!projectId.equals(versionCreateDTO.getProjectId())) {
+                throw new CommonException(NOT_EQUAL_ERROR);
+            }
+            ProductVersionE productVersionE = productVersionCreateAssembler.dtoToEntity(versionCreateDTO);
+            productVersionE.checkDate();
+            productVersionRule.judgeName(productVersionE.getProjectId(), productVersionE.getVersionId(), productVersionE.getName());
+            //设置状态
+            productVersionE.setStatusCode(VERSION_PLANNING);
+            //设置编号
+            Integer sequence = productVersionMapper.queryMaxSequenceByProject(projectId);
+            productVersionE.setSequence(sequence == null ? 0 : sequence + 1);
+            ProductVersionDetailDTO result = new ProductVersionDetailDTO();
+            ProductVersionE query = productVersionRepository.createVersion(productVersionE);
+            BeanUtils.copyProperties(query, result);
+            VersionPayload versionPayload = new VersionPayload();
+            versionPayload.setVersionId(query.getVersionId());
+            versionPayload.setProjectId(query.getProjectId());
+            sagaClient.startSaga("agile-create-version", new StartInstanceDTO(JSON.toJSONString(versionPayload), "", ""));
+            return result;
+        }catch (Exception e){
+            throw new CommonException(e.getMessage());
         }
-        ProductVersionE productVersionE = productVersionCreateAssembler.dtoToEntity(versionCreateDTO);
-        productVersionE.checkDate();
-        productVersionRule.judgeName(productVersionE.getProjectId(), productVersionE.getVersionId(), productVersionE.getName());
-        //设置状态
-        productVersionE.setStatusCode(VERSION_PLANNING);
-        //设置编号
-        Integer sequence = productVersionMapper.queryMaxSequenceByProject(projectId);
-        productVersionE.setSequence(sequence == null ? 0 : sequence + 1);
-        ProductVersionDetailDTO result = new ProductVersionDetailDTO();
-        VersionPayload versionPayload = new VersionPayload();
-        //todo 创建版本修改为saga
-        Exception exception = eventProducerTemplate.execute("versionCreate", AGILE_SERVICE, versionPayload,
-                (String uuid) -> {
-                    ProductVersionE productVersionE1 = productVersionRepository.createVersion(productVersionE);
-                    versionPayload.setVersionId(productVersionE1.getVersionId());
-                    BeanUtils.copyProperties(productVersionE1, result);
-                }
-        );
-        Optional.ofNullable(exception).map(e -> {
-            throw new CommonException(exception.getMessage());
-        });
-        return result;
+
     }
 
     @Override
@@ -128,29 +130,25 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         return simpleDeleteVersion(projectId, versionId);
     }
 
+    @Saga(code = "agile-delete-version", description = "删除版本", inputSchemaClass = VersionPayload.class)
     private Boolean simpleDeleteVersion(Long projectId, Long versionId) {
-        ProductVersionDO versionDO = new ProductVersionDO();
-        versionDO.setProjectId(projectId);
-        versionDO.setVersionId(versionId);
-        ProductVersionE versionE = productVersionCreateAssembler.doToEntity(productVersionMapper.selectOne(versionDO));
-        if (versionE == null) {
-            throw new CommonException(NOT_FOUND);
+        try{
+            ProductVersionDO versionDO = new ProductVersionDO();
+            versionDO.setProjectId(projectId);
+            versionDO.setVersionId(versionId);
+            ProductVersionE versionE = productVersionCreateAssembler.doToEntity(productVersionMapper.selectOne(versionDO));
+            if (versionE == null) {
+                throw new CommonException(NOT_FOUND);
+            }
+            Boolean deleteResult = productVersionRepository.deleteVersion(versionE);
+            VersionPayload versionPayload = new VersionPayload();
+            versionPayload.setVersionId(versionE.getVersionId());
+            versionPayload.setProjectId(versionE.getProjectId());
+            sagaClient.startSaga("agile-delete-version", new StartInstanceDTO(JSON.toJSONString(versionPayload), "", ""));
+            return deleteResult;
+        }catch (Exception e){
+            throw new CommonException(e.getMessage());
         }
-        Boolean result = false;
-        VersionPayload versionPayload = new VersionPayload();
-        //todo 删除版本修改为saga
-        Exception exception = eventProducerTemplate.execute("versionDelete", AGILE_SERVICE, versionPayload,
-                (String uuid) -> {
-                    Boolean deleteResult = productVersionRepository.deleteVersion(versionE);
-                    versionPayload.setVersionId(versionE.getVersionId());
-                    versionPayload.setProjectId(versionE.getProjectId());
-                    BeanUtils.copyProperties(deleteResult, result);
-                }
-        );
-        Optional.ofNullable(exception).map(e -> {
-            throw new CommonException(exception.getMessage());
-        });
-        return result;
     }
 
     @Override

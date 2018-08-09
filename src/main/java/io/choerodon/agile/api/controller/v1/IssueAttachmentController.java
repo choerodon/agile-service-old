@@ -54,7 +54,7 @@ public class IssueAttachmentController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("上传附件，直接返回地址")
-    @RequestMapping(value = "/upload_for_address", method = {RequestMethod.POST})
+    @PostMapping(value = "/upload_for_address")
     public ResponseEntity<List<String>> uploadForAddress(@ApiParam(value = "project id", required = true)
                                                           @PathVariable(name = "project_id") Long projectId,
                                                           HttpServletRequest request) {

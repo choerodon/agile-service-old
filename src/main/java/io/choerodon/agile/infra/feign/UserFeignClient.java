@@ -28,11 +28,11 @@ public interface UserFeignClient {
      * @param id             id
      * @return UserDO
      */
-    @RequestMapping(value = "/v1/organizations/{organization_id}/users/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/v1/organizations/{organization_id}/users/{id}")
     ResponseEntity<UserDO> query(@PathVariable(name = "organization_id") Long organizationId,
                                  @PathVariable("id") Long id);
 
-    @RequestMapping(value = "/v1/users/ids", method = RequestMethod.POST)
+    @PostMapping(value = "/v1/users/ids")
     ResponseEntity<List<UserDO>> listUsersByIds(@RequestBody Long[] ids);
 
     /**
@@ -52,7 +52,7 @@ public interface UserFeignClient {
      * @param param       param
      * @return UserDTO
      */
-    @RequestMapping(value = "/v1/projects/{id}/users", method = RequestMethod.GET)
+    @GetMapping(value = "/v1/projects/{id}/users")
     ResponseEntity<Page<UserDTO>> list(@PathVariable("id") Long id, @RequestParam("pageRequest") PageRequest pageRequest,
                                        @RequestParam("param") String param);
 }
