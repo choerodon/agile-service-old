@@ -56,34 +56,13 @@ class BoardControllerSpec extends Specification {
 
     @Shared
     def projectId = 2L
-    def boardName = "board-1"
+    def boardName = "board-test2"
     def changeBoardName = "boardChange-2"
     def boardNameExtra = "boardExtra-3"
-    List<IssueStatusDO> issueStatusDOList
-    def typeCode = "story"
-    def priorityCode = "high"
 
+    @Shared
+    def boardId
 
-    def setup() {
-        boardService.initBoard(projectId, boardName)
-        IssueStatusDO issueStatusDO = new IssueStatusDO()
-        issueStatusDO.setProjectId(projectId)
-        issueStatusDOList = issueStatusMapper.select(issueStatusDO)
-        Collections.sort(issueStatusDOList, new Comparator<IssueStatusDO>() {
-            @Override
-            int compare(IssueStatusDO o1, IssueStatusDO o2) {
-                return o1.getId().compareTo(o2.getId())
-            }
-        })
-        IssueStatusDO issueStatus = issueStatusDOList.get(0)
-        IssueDO issueDO = new IssueDO()
-        issueDO.projectId = projectId
-        issueDO.typeCode = typeCode
-        issueDO.statusId = issueStatus.getId()
-        issueDO.priorityCode = priorityCode
-        issueDO.reporterId = 1L
-        issueMapper.insert(issueDO)
-    }
 
     def 'createScrumBoard'() {
         given:
@@ -105,9 +84,9 @@ class BoardControllerSpec extends Specification {
     def 'updateScrumBoard'() {
         given:
         BoardDO boardDO = new BoardDO()
-        boardDO.name = boardName
+        boardDO.name = boardNameExtra
         BoardDO selectd = boardMapper.selectOne(boardDO)
-        def boardId = selectd.getBoardId()
+        boardId = selectd.getBoardId()
         selectd.name = changeBoardName
 
         when:
@@ -124,11 +103,6 @@ class BoardControllerSpec extends Specification {
     }
 
     def 'queryScrumBoardById'() {
-        given:
-        BoardDO boardDO = new BoardDO()
-        boardDO.name = changeBoardName
-        BoardDO selectd = boardMapper.selectOne(boardDO)
-        Long boardId = selectd.getBoardId()
         when:
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board/{boardId}",
                 HttpMethod.GET,
@@ -144,9 +118,10 @@ class BoardControllerSpec extends Specification {
     def 'move'() {
         given:
         IssueMoveDTO issueMoveDTO = new IssueMoveDTO()
-        issueMoveDTO.issueId = 1L
+        IssueDO issue = issueMapper.selectByPrimaryKey(1L)
+        issueMoveDTO.issueId = issue.getIssueId()
         issueMoveDTO.statusId = 2L
-        issueMoveDTO.boardId = 1L
+        issueMoveDTO.boardId = boardId
         issueMoveDTO.originColumnId = 1L
         issueMoveDTO.columnId = 2L
         issueMoveDTO.objectVersionNumber = 1L
@@ -155,13 +130,12 @@ class BoardControllerSpec extends Specification {
         HttpEntity<IssueMoveDTO> issueMoveDTOHttpEntity = new HttpEntity<>(issueMoveDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board/issue/{issueId}/move",
                                  HttpMethod.POST,
-                 issueMoveDTOHttpEntity,
-                 IssueMoveDTO.class,
-                 projectId,
-                 1L)
+                                 issueMoveDTOHttpEntity,
+                                 IssueMoveDTO.class,
+                                 projectId,
+                                 1L)
         then:
         entity.statusCode.is2xxSuccessful()
-        entity.body.statusId == 2L
         IssueDO issueDO = issueMapper.selectByPrimaryKey(1L)
         issueDO.statusId == 2L
     }
@@ -175,15 +149,10 @@ class BoardControllerSpec extends Specification {
                 projectId)
         then:
         entity.statusCode.is2xxSuccessful()
-        entity.body.size() == 6
+        entity.body.size() == 1
     }
 
     def 'queryByOptions'() {
-        given:
-        BoardDO boardDO = new BoardDO()
-        boardDO.name = changeBoardName
-        BoardDO selectd = boardMapper.selectOne(boardDO)
-        Long boardId = selectd.getBoardId()
         when:
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board/{boardId}/all_data",
                 HttpMethod.GET,
@@ -200,19 +169,16 @@ class BoardControllerSpec extends Specification {
     }
 
     def 'deleteScrumBoard'() {
-        given:
-        BoardDO boardDO = new BoardDO();
-        boardDO.boardId = 1L
         when:
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board/{boardId}",
                 HttpMethod.DELETE,
                 new HttpEntity<>(),
                 ResponseEntity.class,
                 projectId,
-                1L)
+                boardId)
         then:
         entity.statusCode.is2xxSuccessful()
-        BoardDO result = boardMapper.selectOne(boardDO)
+        BoardDO result = boardMapper.selectByPrimaryKey(boardId)
         result == null
     }
 
