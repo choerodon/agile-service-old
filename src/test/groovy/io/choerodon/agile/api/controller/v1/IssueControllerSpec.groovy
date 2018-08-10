@@ -87,7 +87,7 @@ class IssueControllerSpec extends Specification {
         userMessageDOMap.put(1, userMessageDO)
         userRepository.queryUsersMap(*_) >> userMessageDOMap
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/user_map/issues?type={type}&pageType={pageType}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/storymap/issues?type={type}&pageType={pageType}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 List.class,
