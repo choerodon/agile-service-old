@@ -169,5 +169,27 @@ public class SprintController {
                 .orElseThrow(() -> new CommonException(QUERY_ERROR));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation(value = "查询项目下创建冲刺时当前默认的名称")
+    @GetMapping(value = "/current_create_name")
+    public ResponseEntity<String> queryCurrentSprintCreateName(@ApiParam(value = "项目id", required = true)
+                                                                @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(sprintService.queryCurrentSprintCreateName(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.CurrentSprintCreateName.get"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation(value = "根据项目id和冲刺名称创建冲刺")
+    @PostMapping(value = "/create")
+    public ResponseEntity<SprintDetailDTO> createBySprintName(@ApiParam(value = "项目id", required = true)
+                                                               @PathVariable(name = "project_id") Long projectId,
+                                                               @ApiParam(value = "冲刺名称", required = true)
+                                                               @RequestParam String sprintName) {
+        return Optional.ofNullable(sprintService.createBySprintName(projectId, sprintName))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.createBySprintName.post"));
+    }
+
 
 }

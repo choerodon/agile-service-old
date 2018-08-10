@@ -4,8 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
-import io.choerodon.agile.infra.dataobject.IssueDO;
-import io.choerodon.agile.infra.dataobject.UserMapIssueDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.app.service.IssueService;
@@ -189,6 +187,16 @@ public class IssueController {
         return Optional.ofNullable(issueService.listEpic(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Epic.listEpic"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("故事地图查询epic")
+    @GetMapping(value = "/storymap/epics")
+    public ResponseEntity<List<StoryMapEpicDTO>> listStoryMapEpic(@ApiParam(value = "项目id", required = true)
+                                                                   @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(issueService.listStoryMapEpic(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.Epic.listStoryMapEpic"));
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
@@ -423,19 +431,19 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("故事地图查询issues,type:'sprint, version, none', pageType:'usermap,backlog'")
-    @GetMapping(value = "/user_map/issues")
-    public ResponseEntity<List<UserMapIssueDTO>> listIssuesByProjectId(@ApiParam(value = "项目id", required = true)
+    @ApiOperation("故事地图查询issues,type:'sprint, version, none', pageType:'storymap,backlog'")
+    @GetMapping(value = "/storymap/issues")
+    public ResponseEntity<List<StoryMapIssueDTO>> listIssuesByProjectId(@ApiParam(value = "项目id", required = true)
                                                                        @PathVariable(name = "project_id") Long projectId,
-                                                                       @ApiParam(value = "type:sprint, version, none", required = true)
+                                                                        @ApiParam(value = "type:sprint, version, none", required = true)
                                                                        @RequestParam String type,
-                                                                       @ApiParam(value = "故事页面or待办页面 pageType:usermap,backlog", required = true)
+                                                                        @ApiParam(value = "故事页面or待办页面 pageType:storymap,backlog", required = true)
                                                                        @RequestParam String pageType,
-                                                                       @ApiParam(value = "search item，my problem", required = false)
+                                                                        @ApiParam(value = "search item，my problem", required = false)
                                                                        @RequestParam(required = false) Long assigneeId,
-                                                                       @ApiParam(value = "search item，only story", required = false)
+                                                                        @ApiParam(value = "search item，only story", required = false)
                                                                        @RequestParam(required = false) Boolean onlyStory,
-                                                                       @ApiParam(value = "quick filter", required = false)
+                                                                        @ApiParam(value = "quick filter", required = false)
                                                                        @RequestParam(required = false) List<Long> quickFilterIds) {
         return Optional.ofNullable(issueService.listIssuesByProjectId(projectId, type, pageType, assigneeId, onlyStory, quickFilterIds))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

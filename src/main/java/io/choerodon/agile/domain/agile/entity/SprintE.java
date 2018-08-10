@@ -116,7 +116,7 @@ public class SprintE {
         this.statusCode = STATUS_SPRINT_PLANNING_CODE;
     }
 
-    private String assembleName(String sprintName) {
+    public String assembleName(String sprintName) {
         char[] chars = sprintName.trim().toCharArray();
         StringBuilder num = new StringBuilder();
         int index = 0;

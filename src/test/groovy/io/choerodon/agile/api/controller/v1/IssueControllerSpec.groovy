@@ -1,20 +1,10 @@
 package io.choerodon.agile.api.controller.v1
 
-import com.alibaba.fastjson.JSON
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.ComponentIssueRelDTO
-import io.choerodon.agile.api.dto.IssueComponentDTO
-import io.choerodon.agile.api.dto.IssueCreateDTO
-import io.choerodon.agile.api.dto.IssueDTO
-import io.choerodon.agile.api.dto.UserMapIssueDTO
+import io.choerodon.agile.api.dto.StoryMapIssueDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
-import io.choerodon.agile.domain.agile.event.ProjectEvent
 import io.choerodon.agile.domain.agile.repository.UserRepository
-import io.choerodon.agile.infra.dataobject.IssueDO
-import io.choerodon.agile.infra.dataobject.IssueSprintRelDO
-import io.choerodon.agile.infra.dataobject.ProjectInfoDO
-import io.choerodon.agile.infra.dataobject.SprintDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.IssueSprintRelMapper
@@ -28,7 +18,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
 import spock.lang.Specification
@@ -92,13 +81,13 @@ class IssueControllerSpec extends Specification {
     def 'listIssuesByProjectId'() {
         given:
         def type = 'sprint'
-        def pageType = 'usermap'
+        def pageType = 'storymap'
         Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
         UserMessageDO userMessageDO = new UserMessageDO("admin", "admin.png", "admin@gmail.com")
         userMessageDOMap.put(1, userMessageDO)
         userRepository.queryUsersMap(*_) >> userMessageDOMap
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/user_map/issues?type={type}&pageType={pageType}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/storymap/issues?type={type}&pageType={pageType}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 List.class,
@@ -108,12 +97,12 @@ class IssueControllerSpec extends Specification {
 
         then:
         entity.statusCode.is2xxSuccessful()
-        List<UserMapIssueDTO> userMapIssueDTOList = entity.body
+        List<StoryMapIssueDTO> storyMapIssueDTOList = entity.body
         def count = 0
-        for (UserMapIssueDTO userMapIssueDTO : userMapIssueDTOList) {
-            if (userMapIssueDTO.sprintId != null) {
+        for (StoryMapIssueDTO storyMapIssueDTO : storyMapIssueDTOList) {
+            if (storyMapIssueDTO.sprintId != null) {
                 count += 1
-                userMapIssueDTO.issueId == 1L
+                storyMapIssueDTO.issueId == 1L
             }
         }
         count == 1

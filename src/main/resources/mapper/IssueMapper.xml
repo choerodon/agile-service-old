@@ -429,6 +429,45 @@
         ORDER BY ai.epic_sequence DESC
     </select>
 
+    <select id="queryStoryMapEpicList" resultType="io.choerodon.agile.infra.dataobject.StoryMapEpicDO">
+        SELECT
+            ai.issue_id,
+            ai.summary,
+            ai.description,
+            ai.project_id,
+            ai.epic_name,
+            alv. NAME AS color,
+            ai.object_version_number,
+            ai.epic_sequence,
+            CONCAT_WS(
+                '-',
+                api.project_code,
+                ai.issue_num
+            ) AS issue_num,
+            alv2. NAME AS status_color,
+            ais. NAME AS status_name
+        FROM
+            agile_issue ai
+        LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
+        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN agile_lookup_value alv2 ON alv2.value_code = CASE ais.category_code
+        WHEN 'todo' THEN
+            'issue_status_color_todo'
+        WHEN 'doing' THEN
+            'issue_status_color_doing'
+        WHEN 'done' THEN
+            'issue_status_color_done'
+        ELSE
+            'issue_status_color_todo'
+        END
+        WHERE
+            ai.project_id = #{projectId}
+        AND ai.type_code = 'issue_epic'
+        ORDER BY
+            ai.epic_sequence DESC
+    </select>
+
     <select id="queryEpicListByEpic" resultType="io.choerodon.agile.infra.dataobject.EpicDataDO">
         SELECT
             ai.issue_id,
@@ -1508,7 +1547,7 @@
         WHERE ai.status_id = #{statusId}
     </select>
 
-    <select id="listIssuesByProjectIdSprint" resultType="io.choerodon.agile.infra.dataobject.UserMapIssueDO">
+    <select id="listIssuesByProjectIdSprint" resultType="io.choerodon.agile.infra.dataobject.StoryMapIssueDO">
         SELECT
             aisr.sprint_id,
             asp.sprint_name,
@@ -1519,6 +1558,7 @@
             ai.type_code,
             ai.story_points,
             ai.epic_id,
+            ai.object_version_number,
             CONCAT_WS(
                 '-',
                 api.project_code,
@@ -1548,7 +1588,7 @@
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
             aisr.project_id =  #{projectId}
-        <if test="pageType != null and pageType == 'usermap'">
+        <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
         <if test="pageType != null and pageType == 'backlog'">
@@ -1565,6 +1605,7 @@
                 ai.type_code,
                 ai.story_points,
                 ai.epic_id,
+                ai.object_version_number,
                 CONCAT_WS(
                     '-',
                     api.project_code,
@@ -1591,7 +1632,7 @@
                 'sub_task',
                 'issue_epic'
             )
-            <if test="pageType != null and pageType == 'usermap'">
+            <if test="pageType != null and pageType == 'storymap'">
                 AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
             </if>
             <if test="pageType != null and pageType == 'backlog'">
@@ -1608,7 +1649,7 @@
             </if>
     </select>
 
-    <select id="listIssuesByProjectIdVersion" resultType="io.choerodon.agile.infra.dataobject.UserMapIssueDO">
+    <select id="listIssuesByProjectIdVersion" resultType="io.choerodon.agile.infra.dataobject.StoryMapIssueDO">
         SELECT
             avir.version_id,
             apv.`name` AS version_name,
@@ -1619,6 +1660,7 @@
             ai.type_code,
             ai.story_points,
             ai.epic_id,
+            ai.object_version_number,
             CONCAT_WS(
                 '-',
                 api.project_code,
@@ -1648,7 +1690,7 @@
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
             avir.project_id = #{projectId}
-        <if test="pageType != null and pageType == 'usermap'">
+        <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
         <if test="pageType != null and pageType == 'backlog'">
@@ -1665,6 +1707,7 @@
                 ai.type_code,
                 ai.story_points,
                 ai.epic_id,
+                ai.object_version_number,
                 CONCAT_WS(
                     '-',
                     api.project_code,
@@ -1691,7 +1734,7 @@
                 'sub_task',
                 'issue_epic'
             )
-        <if test="pageType != null and pageType == 'usermap'">
+        <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
         <if test="pageType != null and pageType == 'backlog'">
@@ -1708,7 +1751,7 @@
         </if>
     </select>
 
-    <select id="listIssuesByProjectIdNone" resultType="io.choerodon.agile.infra.dataobject.UserMapIssueDO">
+    <select id="listIssuesByProjectIdNone" resultType="io.choerodon.agile.infra.dataobject.StoryMapIssueDO">
         SELECT
             ai.issue_id,
             ai.assignee_id,
@@ -1717,6 +1760,7 @@
             ai.type_code,
             ai.story_points,
             ai.epic_id,
+            ai.object_version_number,
             CONCAT_WS(
                 '-',
                 api.project_code,
@@ -1735,7 +1779,7 @@
             'sub_task',
             'issue_epic'
         )
-        <if test="pageType != null and pageType == 'usermap'">
+        <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
         <if test="pageType != null and pageType == 'backlog'">

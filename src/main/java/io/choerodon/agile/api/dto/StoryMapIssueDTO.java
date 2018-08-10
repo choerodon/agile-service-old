@@ -4,7 +4,7 @@ package io.choerodon.agile.api.dto;
  * Created by HuangFuqiang@choerodon.io on 2018/8/8.
  * Email: fuqianghuang01@gmail.com
  */
-public class UserMapIssueDTO {
+public class StoryMapIssueDTO {
 
     private Long sprintId;
 
@@ -39,6 +39,8 @@ public class UserMapIssueDTO {
     private String statusColor;
 
     private Long epicId;
+
+    private Long objectVersionNumber;
 
     public Long getSprintId() {
         return sprintId;
@@ -174,5 +176,13 @@ public class UserMapIssueDTO {
 
     public Long getEpicId() {
         return epicId;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
     }
 }

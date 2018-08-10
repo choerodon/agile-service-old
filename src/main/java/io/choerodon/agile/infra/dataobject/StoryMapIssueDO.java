@@ -4,7 +4,7 @@ package io.choerodon.agile.infra.dataobject;
  * Created by HuangFuqiang@choerodon.io on 2018/8/8.
  * Email: fuqianghuang01@gmail.com
  */
-public class UserMapIssueDO {
+public class StoryMapIssueDO {
 
     private Long sprintId;
 
@@ -33,6 +33,8 @@ public class UserMapIssueDO {
     private String statusName;
 
     private Long epicId;
+
+    private Long objectVersionNumber;
 
     public Long getSprintId() {
         return sprintId;
@@ -145,5 +147,13 @@ public class UserMapIssueDO {
 
     public Long getEpicId() {
         return epicId;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
     }
 }

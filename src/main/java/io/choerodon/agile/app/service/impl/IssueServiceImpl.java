@@ -134,7 +134,7 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private SprintService sprintService;
     @Autowired
-    private UserMapIssueAssembler userMapIssueAssembler;
+    private StoryMapIssueAssembler storyMapIssueAssembler;
     @Autowired
     private QuickFilterMapper quickFilterMapper;
 
@@ -172,9 +172,9 @@ public class IssueServiceImpl implements IssueService {
     private static final String ERROR_ISSUE_NOT_FOUND = "error.Issue.queryIssue";
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
     private static final String SEARCH = "search";
-    private static final String USERMAP_TYPE_SPRINT = "sprint";
-    private static final String USERMAP_TYPE_VERSION = "version";
-    private static final String USERMAP_TYPE_NONE = "none";
+    private static final String STORYMAP_TYPE_SPRINT = "sprint";
+    private static final String STORYMAP_TYPE_VERSION = "version";
+    private static final String STORYMAP_TYPE_NONE = "none";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -334,6 +334,25 @@ public class IssueServiceImpl implements IssueService {
             });
         }
         return epicDataList;
+    }
+
+    @Override
+    public List<StoryMapEpicDTO> listStoryMapEpic(Long projectId) {
+        List<StoryMapEpicDTO> storyMapEpicDTOList = ConvertHelper.convertList(issueMapper.queryStoryMapEpicList(projectId), StoryMapEpicDTO.class);
+        if (!storyMapEpicDTOList.isEmpty()) {
+            List<Long> epicIds = storyMapEpicDTOList.stream().map(StoryMapEpicDTO::getIssueId).collect(Collectors.toList());
+            Map<Long, Integer> issueCountMap = issueMapper.queryIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> doneIssueCountMap = issueMapper.queryDoneIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> notEstimateIssueCountMap = issueMapper.queryNotEstimateIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> totalEstimateMap = issueMapper.queryTotalEstimateByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            storyMapEpicDTOList.forEach(epicData -> {
+                epicData.setDoneIssueCount(doneIssueCountMap.get(epicData.getIssueId()));
+                epicData.setIssueCount(issueCountMap.get(epicData.getIssueId()));
+                epicData.setNotEstimate(notEstimateIssueCountMap.get(epicData.getIssueId()));
+                epicData.setTotalEstimate(totalEstimateMap.get(epicData.getIssueId()));
+            });
+        }
+        return storyMapEpicDTOList;
     }
 
     private void dataLogDeleteByIssueId(Long projectId, Long issueId) {
@@ -1480,25 +1499,25 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public List<UserMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds) {
-        List<UserMapIssueDTO> userMapIssueDTOList = null;
+    public List<StoryMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds) {
+        List<StoryMapIssueDTO> storyMapIssueDTOList = null;
         String filterSql = null;
         if (quickFilterIds != null && !quickFilterIds.isEmpty()) {
             filterSql = getQuickFilter(quickFilterIds);
         }
         switch (type) {
-            case USERMAP_TYPE_SPRINT:
-                userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId, pageType, assigneeId, onlyStory, filterSql));
+            case STORYMAP_TYPE_SPRINT:
+                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId, pageType, assigneeId, onlyStory, filterSql));
                 break;
-            case USERMAP_TYPE_VERSION:
-                userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdVersion(projectId, pageType, assigneeId, onlyStory, filterSql));
+            case STORYMAP_TYPE_VERSION:
+                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdVersion(projectId, pageType, assigneeId, onlyStory, filterSql));
                 break;
-            case USERMAP_TYPE_NONE:
-                userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdNone(projectId, pageType, assigneeId, onlyStory, filterSql));
+            case STORYMAP_TYPE_NONE:
+                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdNone(projectId, pageType, assigneeId, onlyStory, filterSql));
                 break;
             default:
                 break;
         }
-        return userMapIssueDTOList == null ? new ArrayList<>() : userMapIssueDTOList;
+        return storyMapIssueDTOList == null ? new ArrayList<>() : storyMapIssueDTOList;
     }
 }

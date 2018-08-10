@@ -78,6 +78,7 @@ public class SprintServiceImpl implements SprintService {
     private static final String REMOVE = "remove";
     private static final String SPRINT_REPORT_ERROR = "error.sprint.report";
     private static final String SPRINT_PLANNING_CODE = "sprint_planning";
+    private static final String STATUS_SPRINT_PLANNING_CODE = "sprint_planning";
 
     @Override
     public synchronized SprintDetailDTO createSprint(Long projectId) {
@@ -381,5 +382,32 @@ public class SprintServiceImpl implements SprintService {
         reportIssue.setStoryPoints(storyPoints);
         reportIssue.setStatusCode(statusCode);
         reportIssue.setStatusName(statusName);
+    }
+
+    @Override
+    public String queryCurrentSprintCreateName(Long projectId) {
+        ProjectInfoDO projectInfo = new ProjectInfoDO();
+        projectInfo.setProjectId(projectId);
+        projectInfo = projectInfoMapper.selectOne(projectInfo);
+        if (projectInfo == null) {
+            throw new CommonException(PROJECT_NOT_FOUND_ERROR);
+        }
+        SprintDO sprintDO = sprintMapper.queryLastSprint(projectId);
+        SprintE sprint = new SprintE();
+        if (sprintDO == null) {
+            return projectInfo.getProjectCode().trim() + " 1";
+        } else {
+            SprintE sprintE = sprintCreateAssembler.doToEntity(sprintDO);
+            return sprintE.assembleName(sprintE.getSprintName());
+        }
+    }
+
+    @Override
+    public SprintDetailDTO createBySprintName(Long projectId, String sprintName) {
+        SprintE sprintE = new SprintE();
+        sprintE.setProjectId(projectId);
+        sprintE.setSprintName(sprintName);
+        sprintE.setStatusCode(STATUS_SPRINT_PLANNING_CODE);
+        return sprintCreateAssembler.entityToDto(sprintRepository.createSprint(sprintE));
     }
 }

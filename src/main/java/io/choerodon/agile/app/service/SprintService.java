@@ -35,4 +35,8 @@ public interface SprintService {
     Page<IssueListDTO> queryIssueByOptions(Long projectId, Long sprintId, String status, PageRequest pageRequest);
 
     String getQuickFilter(List<Long> quickFilterIds);
+
+    String queryCurrentSprintCreateName(Long projectId);
+
+    SprintDetailDTO createBySprintName(Long projectId, String sprintName);
 }
