@@ -431,13 +431,13 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("故事地图查询issues,type:'sprint, version, none', pageType:'usermap,backlog'")
+    @ApiOperation("故事地图查询issues,type:'sprint, version, none', pageType:'storymap,backlog'")
     @GetMapping(value = "/storymap/issues")
     public ResponseEntity<List<StoryMapIssueDTO>> listIssuesByProjectId(@ApiParam(value = "项目id", required = true)
                                                                        @PathVariable(name = "project_id") Long projectId,
                                                                         @ApiParam(value = "type:sprint, version, none", required = true)
                                                                        @RequestParam String type,
-                                                                        @ApiParam(value = "故事页面or待办页面 pageType:usermap,backlog", required = true)
+                                                                        @ApiParam(value = "故事页面or待办页面 pageType:storymap,backlog", required = true)
                                                                        @RequestParam String pageType,
                                                                         @ApiParam(value = "search item，my problem", required = false)
                                                                        @RequestParam(required = false) Long assigneeId,

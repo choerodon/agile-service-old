@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class UserMapIssueAssembler {
+public class StoryMapIssueAssembler {
 
     @Autowired
     private UserRepository userRepository;
@@ -32,7 +32,7 @@ public class UserMapIssueAssembler {
 
     private static final String ISSUE_STATUS_COLOR = "issue_status_color";
 
-    public List<StoryMapIssueDTO> userMapIssueDOToDTO(List<StoryMapIssueDO> storyMapIssueDOList) {
+    public List<StoryMapIssueDTO> storyMapIssueDOToDTO(List<StoryMapIssueDO> storyMapIssueDOList) {
         LookupValueDO lookupValueDO = new LookupValueDO();
         lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
         List<StoryMapIssueDTO> storyMapIssueDTOList = new ArrayList<>();

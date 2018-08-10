@@ -81,7 +81,7 @@ class IssueControllerSpec extends Specification {
     def 'listIssuesByProjectId'() {
         given:
         def type = 'sprint'
-        def pageType = 'usermap'
+        def pageType = 'storymap'
         Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
         UserMessageDO userMessageDO = new UserMessageDO("admin", "admin.png", "admin@gmail.com")
         userMessageDOMap.put(1, userMessageDO)

@@ -134,7 +134,7 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private SprintService sprintService;
     @Autowired
-    private UserMapIssueAssembler userMapIssueAssembler;
+    private StoryMapIssueAssembler storyMapIssueAssembler;
     @Autowired
     private QuickFilterMapper quickFilterMapper;
 
@@ -172,9 +172,9 @@ public class IssueServiceImpl implements IssueService {
     private static final String ERROR_ISSUE_NOT_FOUND = "error.Issue.queryIssue";
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
     private static final String SEARCH = "search";
-    private static final String USERMAP_TYPE_SPRINT = "sprint";
-    private static final String USERMAP_TYPE_VERSION = "version";
-    private static final String USERMAP_TYPE_NONE = "none";
+    private static final String STORYMAP_TYPE_SPRINT = "sprint";
+    private static final String STORYMAP_TYPE_VERSION = "version";
+    private static final String STORYMAP_TYPE_NONE = "none";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -1506,14 +1506,14 @@ public class IssueServiceImpl implements IssueService {
             filterSql = getQuickFilter(quickFilterIds);
         }
         switch (type) {
-            case USERMAP_TYPE_SPRINT:
-                storyMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId, pageType, assigneeId, onlyStory, filterSql));
+            case STORYMAP_TYPE_SPRINT:
+                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId, pageType, assigneeId, onlyStory, filterSql));
                 break;
-            case USERMAP_TYPE_VERSION:
-                storyMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdVersion(projectId, pageType, assigneeId, onlyStory, filterSql));
+            case STORYMAP_TYPE_VERSION:
+                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdVersion(projectId, pageType, assigneeId, onlyStory, filterSql));
                 break;
-            case USERMAP_TYPE_NONE:
-                storyMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdNone(projectId, pageType, assigneeId, onlyStory, filterSql));
+            case STORYMAP_TYPE_NONE:
+                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdNone(projectId, pageType, assigneeId, onlyStory, filterSql));
                 break;
             default:
                 break;

@@ -1588,7 +1588,7 @@
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
             aisr.project_id =  #{projectId}
-        <if test="pageType != null and pageType == 'usermap'">
+        <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
         <if test="pageType != null and pageType == 'backlog'">
@@ -1632,7 +1632,7 @@
                 'sub_task',
                 'issue_epic'
             )
-            <if test="pageType != null and pageType == 'usermap'">
+            <if test="pageType != null and pageType == 'storymap'">
                 AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
             </if>
             <if test="pageType != null and pageType == 'backlog'">
@@ -1690,7 +1690,7 @@
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
             avir.project_id = #{projectId}
-        <if test="pageType != null and pageType == 'usermap'">
+        <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
         <if test="pageType != null and pageType == 'backlog'">
@@ -1734,7 +1734,7 @@
                 'sub_task',
                 'issue_epic'
             )
-        <if test="pageType != null and pageType == 'usermap'">
+        <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
         <if test="pageType != null and pageType == 'backlog'">
@@ -1779,7 +1779,7 @@
             'sub_task',
             'issue_epic'
         )
-        <if test="pageType != null and pageType == 'usermap'">
+        <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
         <if test="pageType != null and pageType == 'backlog'">
