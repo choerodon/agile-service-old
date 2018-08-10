@@ -7,8 +7,19 @@ import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.impl.IssueServiceImpl
 import io.choerodon.agile.domain.agile.event.ProjectEvent
 import io.choerodon.agile.domain.agile.repository.UserRepository
+import io.choerodon.agile.infra.dataobject.IssueDO
+import io.choerodon.agile.infra.dataobject.IssueSprintRelDO
+import io.choerodon.agile.infra.dataobject.ProductVersionDO
+import io.choerodon.agile.infra.dataobject.SprintDO
+import io.choerodon.agile.infra.dataobject.VersionIssueRelDO
+import io.choerodon.agile.infra.mapper.IssueMapper
+import io.choerodon.agile.infra.mapper.IssueSprintRelMapper
+import io.choerodon.agile.infra.mapper.ProductVersionMapper
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper
+import io.choerodon.agile.infra.mapper.SprintMapper
+import io.choerodon.agile.infra.mapper.VersionIssueRelMapper
 import io.choerodon.asgard.saga.feign.SagaClient
+import io.choerodon.core.convertor.ApplicationContextHelper
 import io.choerodon.core.oauth.CustomUserDetails
 import io.choerodon.event.producer.execute.EventProducerTemplate
 import io.choerodon.liquibase.LiquibaseConfig
@@ -18,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Primary
@@ -30,7 +42,6 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.security.jwt.JwtHelper
 import org.springframework.security.jwt.crypto.sign.MacSigner
 import org.springframework.security.jwt.crypto.sign.Signer
-import org.springframework.test.context.ActiveProfiles
 import spock.mock.DetachedMockFactory
 
 import javax.annotation.PostConstruct
@@ -49,6 +60,12 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class AgileTestConfiguration {
 
     private final detachedMockFactory = new DetachedMockFactory()
+
+    @Autowired
+    ApplicationContext applicationContext;
+
+    @Autowired
+    ApplicationContextHelper applicationContextHelper;
 
     @Value('${choerodon.oauth.jwt.key:choerodon}')
     String key
@@ -73,6 +90,21 @@ class AgileTestConfiguration {
 
     @Autowired
     ProjectInfoMapper projectInfoMapper
+
+    @Autowired
+    private IssueMapper issueMapper
+
+    @Autowired
+    private IssueSprintRelMapper issueSprintRelMapper
+
+    @Autowired
+    private VersionIssueRelMapper versionIssueRelMapper
+
+    @Autowired
+    private SprintMapper sprintMapper
+
+    @Autowired
+    private ProductVersionMapper productVersionMapper
 
     @Bean("mockUserRepository")
     @Primary
@@ -103,13 +135,9 @@ class AgileTestConfiguration {
     void init() {
         //初始化表，有些初始化表Groovy在H2database中需要修改，所以拷贝了groovy脚本并修改，然后修改yml配置中的初始化脚本路径
         liquibaseExecutor.execute()
-        setTestRestTemplateJWT()
-        // 创建数据库函数（用于解决项目Mysql的函数在H2数据库中不存在）
         initSqlFunction()
-        //todo 初始化项目，有待解决，目前是在每个测试方法执行前执行一次（可以通过SQL执行初始化项目）
-//        initProject()
-        //线程休眠后，可以通过http://ip:port/h2-console管理内存数据库，端口号可以根据日志查看
-//        Thread.sleep(6000000000)
+        setTestRestTemplateJWT()
+        applicationContextHelper.setApplicationContext(applicationContext)
     }
 
     void initSqlFunction() {
@@ -124,13 +152,6 @@ class AgileTestConfiguration {
         conn.close()
     }
 
-    void initProject() {
-        ProjectEvent projectEvent = new ProjectEvent()
-        projectEvent.setProjectId(1L)
-        projectEvent.setProjectCode("AG")
-        String data = JSON.toJSONString(projectEvent)
-        agileEventHandler.handleProjectInitByConsumeSagaTask(data)
-    }
 
     private void setTestRestTemplateJWT() {
         testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory())
@@ -142,6 +163,7 @@ class AgileTestConfiguration {
                 return clientHttpRequestExecution.execute(httpRequest, bytes)
             }
         }])
+        initProjectData()
     }
 
     static String createJWT(final String key, final ObjectMapper objectMapper) {
@@ -158,6 +180,76 @@ class AgileTestConfiguration {
             e.printStackTrace()
         }
         return jwtToken
+    }
+
+    private void initProjectData() {
+        initProject()
+        initIssues()
+        initSprint()
+        initVersion()
+    }
+
+    private void initProject() {
+        ProjectEvent projectEvent = new ProjectEvent()
+        projectEvent.setProjectId(1L)
+        projectEvent.setProjectCode("AGILE")
+        projectEvent.setProjectName("agile")
+        String data = JSON.toJSONString(projectEvent)
+        agileEventHandler.handleProjectInitByConsumeSagaTask(data)
+    }
+
+    private void initIssues() {
+        IssueDO epicIssue = new IssueDO()
+        epicIssue.issueId = 1L
+        epicIssue.issueNum = 1
+        epicIssue.projectId = 1L
+        epicIssue.priorityCode = 'high'
+        epicIssue.reporterId = 1L
+        epicIssue.statusId = 1L
+        epicIssue.typeCode = 'issue_epic'
+        epicIssue.summary = 'epic-test'
+        issueMapper.insert(epicIssue)
+
+        IssueDO story = new IssueDO()
+        story.projectId = 1L
+        story.typeCode = 'story'
+        story.statusId = 1L
+        story.reporterId = 1L
+        story.priorityCode = 'high'
+        story.issueNum = 2
+        story.issueId = 2L
+        story.summary = 'story-test'
+        story.epicId = 1L
+        story.storyPoints = 6
+        issueMapper.insert(story)
+    }
+
+    private void initSprint() {
+        SprintDO sprintDO = new SprintDO()
+        sprintDO.sprintId = 1L
+        sprintDO.projectId = 1L
+        sprintDO.sprintName = 'sprint-test'
+        sprintDO.statusCode = 'sprint_planning'
+        sprintMapper.insert(sprintDO)
+        IssueSprintRelDO issueSprintRelDO = new IssueSprintRelDO()
+        issueSprintRelDO.sprintId = 1L
+        issueSprintRelDO.issueId = 2L
+        issueSprintRelDO.projectId = 1L
+        issueSprintRelMapper.insert(issueSprintRelDO)
+    }
+
+    private void initVersion() {
+        ProductVersionDO productVersionDO = new ProductVersionDO()
+        productVersionDO.projectId = 1L
+        productVersionDO.name = "v1.0.0"
+        productVersionDO.statusCode = 'version_planning'
+        productVersionDO.versionId = 1L
+        productVersionMapper.insert(productVersionDO)
+        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO()
+        versionIssueRelDO.projectId = 1L
+        versionIssueRelDO.issueId = 2L
+        versionIssueRelDO.versionId = 1L
+        versionIssueRelMapper.insert(versionIssueRelDO)
     }
 
 
