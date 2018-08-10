@@ -89,6 +89,36 @@ class IssueControllerSpec extends Specification {
     @Shared
     private List<Long> issueIdList = new ArrayList<>()
 
+    def 'listIssuesByProjectId'() {
+        given:
+        def type = 'sprint'
+        def pageType = 'usermap'
+        Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
+        UserMessageDO userMessageDO = new UserMessageDO("admin", "admin.png", "admin@gmail.com")
+        userMessageDOMap.put(1, userMessageDO)
+        userRepository.queryUsersMap(*_) >> userMessageDOMap
+        when:
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/user_map/issues?type={type}&pageType={pageType}",
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                List.class,
+                projectId,
+                type,
+                pageType)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+        List<UserMapIssueDTO> userMapIssueDTOList = entity.body
+        def count = 0
+        for (UserMapIssueDTO userMapIssueDTO : userMapIssueDTOList) {
+            if (userMapIssueDTO.sprintId != null) {
+                count += 1
+                userMapIssueDTO.issueId == 1L
+            }
+        }
+        count == 1
+    }
+
 //    def "创建项目"() {
 //        given: '给一个项目的DTO用于创建项目'
 //        ProjectEvent projectEvent = new ProjectEvent()
@@ -198,36 +228,6 @@ class IssueControllerSpec extends Specification {
 //        "task"       | "task"
 //        "issue_epic" | "issue_epic"
 //    }
-
-    def 'listIssuesByProjectId'() {
-        given:
-            def type = 'sprint'
-            def pageType = 'usermap'
-            Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
-            UserMessageDO userMessageDO = new UserMessageDO("admin", "admin.png", "admin@gmail.com")
-            userMessageDOMap.put(1, userMessageDO)
-            userRepository.queryUsersMap(*_) >> userMessageDOMap
-        when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/user_map/issues?type={type}&pageType={pageType}",
-                HttpMethod.GET,
-                new HttpEntity<>(),
-                List.class,
-                projectId,
-                type,
-                pageType)
-
-        then:
-        entity.statusCode.is2xxSuccessful()
-        List<UserMapIssueDTO> userMapIssueDTOList = entity.body
-        def count = 0
-        for (UserMapIssueDTO userMapIssueDTO : userMapIssueDTOList) {
-            if (userMapIssueDTO.sprintId != null) {
-                count += 1
-                userMapIssueDTO.issueId == 1L
-            }
-        }
-        count == 1
-    }
 
 //    def "删除issue"() {
 //        given: 'mockSagaClient'
