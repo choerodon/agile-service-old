@@ -4,7 +4,7 @@ package io.choerodon.agile.infra.dataobject;
  * Created by HuangFuqiang@choerodon.io on 2018/8/8.
  * Email: fuqianghuang01@gmail.com
  */
-public class UserMapIssueDO {
+public class StoryMapIssueDO {
 
     private Long sprintId;
 

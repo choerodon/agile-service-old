@@ -1499,25 +1499,25 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public List<UserMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds) {
-        List<UserMapIssueDTO> userMapIssueDTOList = null;
+    public List<StoryMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds) {
+        List<StoryMapIssueDTO> storyMapIssueDTOList = null;
         String filterSql = null;
         if (quickFilterIds != null && !quickFilterIds.isEmpty()) {
             filterSql = getQuickFilter(quickFilterIds);
         }
         switch (type) {
             case USERMAP_TYPE_SPRINT:
-                userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId, pageType, assigneeId, onlyStory, filterSql));
+                storyMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId, pageType, assigneeId, onlyStory, filterSql));
                 break;
             case USERMAP_TYPE_VERSION:
-                userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdVersion(projectId, pageType, assigneeId, onlyStory, filterSql));
+                storyMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdVersion(projectId, pageType, assigneeId, onlyStory, filterSql));
                 break;
             case USERMAP_TYPE_NONE:
-                userMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdNone(projectId, pageType, assigneeId, onlyStory, filterSql));
+                storyMapIssueDTOList = userMapIssueAssembler.userMapIssueDOToDTO(issueMapper.listIssuesByProjectIdNone(projectId, pageType, assigneeId, onlyStory, filterSql));
                 break;
             default:
                 break;
         }
-        return userMapIssueDTOList == null ? new ArrayList<>() : userMapIssueDTOList;
+        return storyMapIssueDTOList == null ? new ArrayList<>() : storyMapIssueDTOList;
     }
 }

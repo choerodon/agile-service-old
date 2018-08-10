@@ -4,7 +4,7 @@ package io.choerodon.agile.api.dto;
  * Created by HuangFuqiang@choerodon.io on 2018/8/8.
  * Email: fuqianghuang01@gmail.com
  */
-public class UserMapIssueDTO {
+public class StoryMapIssueDTO {
 
     private Long sprintId;
 

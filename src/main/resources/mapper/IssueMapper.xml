@@ -1547,7 +1547,7 @@
         WHERE ai.status_id = #{statusId}
     </select>
 
-    <select id="listIssuesByProjectIdSprint" resultType="io.choerodon.agile.infra.dataobject.UserMapIssueDO">
+    <select id="listIssuesByProjectIdSprint" resultType="io.choerodon.agile.infra.dataobject.StoryMapIssueDO">
         SELECT
             aisr.sprint_id,
             asp.sprint_name,
@@ -1649,7 +1649,7 @@
             </if>
     </select>
 
-    <select id="listIssuesByProjectIdVersion" resultType="io.choerodon.agile.infra.dataobject.UserMapIssueDO">
+    <select id="listIssuesByProjectIdVersion" resultType="io.choerodon.agile.infra.dataobject.StoryMapIssueDO">
         SELECT
             avir.version_id,
             apv.`name` AS version_name,
@@ -1751,7 +1751,7 @@
         </if>
     </select>
 
-    <select id="listIssuesByProjectIdNone" resultType="io.choerodon.agile.infra.dataobject.UserMapIssueDO">
+    <select id="listIssuesByProjectIdNone" resultType="io.choerodon.agile.infra.dataobject.StoryMapIssueDO">
         SELECT
             ai.issue_id,
             ai.assignee_id,
