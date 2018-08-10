@@ -302,4 +302,6 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                                    @Param("assigneeId") Long assigneeId,
                                                    @Param("onlyStory") Boolean onlyStory,
                                                    @Param("filterSql") String filterSql);
+
+    List<StoryMapEpicDO> queryStoryMapEpicList(@Param("projectId") Long projectId);
 }

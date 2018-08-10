@@ -191,6 +191,16 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Epic.listEpic"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("故事地图查询epic")
+    @GetMapping(value = "/storymap/epics")
+    public ResponseEntity<List<StoryMapEpicDTO>> listStoryMapEpic(@ApiParam(value = "项目id", required = true)
+                                                                   @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(issueService.listStoryMapEpic(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.Epic.listStoryMapEpic"));
+    }
+
     @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("通过issueId删除")
     @DeleteMapping(value = "/{issueId}")

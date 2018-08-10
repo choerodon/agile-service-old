@@ -34,6 +34,8 @@ public class UserMapIssueDO {
 
     private Long epicId;
 
+    private Long objectVersionNumber;
+
     public Long getSprintId() {
         return sprintId;
     }
@@ -145,5 +147,13 @@ public class UserMapIssueDO {
 
     public Long getEpicId() {
         return epicId;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
     }
 }

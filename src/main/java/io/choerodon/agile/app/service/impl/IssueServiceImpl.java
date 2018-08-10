@@ -336,6 +336,25 @@ public class IssueServiceImpl implements IssueService {
         return epicDataList;
     }
 
+    @Override
+    public List<StoryMapEpicDTO> listStoryMapEpic(Long projectId) {
+        List<StoryMapEpicDTO> storyMapEpicDTOList = ConvertHelper.convertList(issueMapper.queryStoryMapEpicList(projectId), StoryMapEpicDTO.class);
+        if (!storyMapEpicDTOList.isEmpty()) {
+            List<Long> epicIds = storyMapEpicDTOList.stream().map(StoryMapEpicDTO::getIssueId).collect(Collectors.toList());
+            Map<Long, Integer> issueCountMap = issueMapper.queryIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> doneIssueCountMap = issueMapper.queryDoneIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> notEstimateIssueCountMap = issueMapper.queryNotEstimateIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> totalEstimateMap = issueMapper.queryTotalEstimateByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            storyMapEpicDTOList.forEach(epicData -> {
+                epicData.setDoneIssueCount(doneIssueCountMap.get(epicData.getIssueId()));
+                epicData.setIssueCount(issueCountMap.get(epicData.getIssueId()));
+                epicData.setNotEstimate(notEstimateIssueCountMap.get(epicData.getIssueId()));
+                epicData.setTotalEstimate(totalEstimateMap.get(epicData.getIssueId()));
+            });
+        }
+        return storyMapEpicDTOList;
+    }
+
     private void dataLogDeleteByIssueId(Long projectId, Long issueId) {
         DataLogE dataLogE = new DataLogE();
         dataLogE.setProjectId(projectId);

@@ -49,6 +49,8 @@ public interface IssueService {
 
     List<EpicDataDTO> listEpic(Long projectId);
 
+    List<StoryMapEpicDTO> listStoryMapEpic(Long projectId);
+
     /**
      * 更新issue
      *
