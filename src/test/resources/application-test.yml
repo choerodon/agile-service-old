@@ -11,7 +11,10 @@ spring:
     username: sa
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
-hystrix:
+  #开启h2控制台
+  h2:
+    console:
+      enabled: true
   stream:
     queue:
       enabled: false
@@ -19,6 +22,9 @@ mybatis:
   mapperLocations: classpath*:/mapper/*.xml
   configuration:
     mapUnderscoreToCamelCase: true
+logging:
+  level:
+    io.choerodon.agile.infra.mapper: debug
 data:
   dir: src/test/resources/db
 eureka:

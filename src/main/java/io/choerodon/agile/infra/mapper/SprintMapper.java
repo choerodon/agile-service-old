@@ -65,5 +65,5 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     List<Long> queryAssigneeIdsByIssueIds( @Param("issueIds")List<Long> issueIds);
 
-    List<IssueSearchDO> queryBacklogIssues(@Param("projectId")Long projectId);
+    List<IssueSearchDO> queryBacklogIssues(@Param("projectId")Long projectId,@Param("issueIds")List<Long> issueIds);
 }

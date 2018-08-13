@@ -177,16 +177,15 @@ public class SprintServiceImpl implements SprintService {
     }
 
     private void handleSprintIssueData(List<Long> issueIds, List<SprintSearchDTO> sprintSearchs, BackLogIssueDTO backLogIssueDTO, Long projectId) {
-        Long activeSprintId = Long.MIN_VALUE;
         List<Long> assigneeIds = sprintMapper.queryAssigneeIdsByIssueIds(issueIds);
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprint(projectId, issueIds);
-        SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDO, usersMap);
-        if (activeSprint != null) {
+        if (sprintSearchDO != null) {
+            SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDO, usersMap);
             activeSprint.setIssueCount(activeSprint.getIssueSearchDTOList().size());
-            activeSprint.setTodoStoryPoint(sprintMapper.queryStoryPoint(CATEGORY_TODO_CODE, issueIds, projectId, activeSprintId));
-            activeSprint.setDoingStoryPoint(sprintMapper.queryStoryPoint(CATEGORY_DOING_CODE, issueIds, projectId, activeSprintId));
-            activeSprint.setDoneStoryPoint(sprintMapper.queryStoryPoint(CATEGORY_DONE_CODE, issueIds, projectId, activeSprintId));
+            activeSprint.setTodoStoryPoint(sprintMapper.queryStoryPoint(CATEGORY_TODO_CODE, issueIds, projectId, activeSprint.getSprintId()));
+            activeSprint.setDoingStoryPoint(sprintMapper.queryStoryPoint(CATEGORY_DOING_CODE, issueIds, projectId, activeSprint.getSprintId()));
+            activeSprint.setDoneStoryPoint(sprintMapper.queryStoryPoint(CATEGORY_DONE_CODE, issueIds, projectId, activeSprint.getSprintId()));
             sprintSearchs.add(activeSprint);
         }
         List<SprintSearchDO> sprintSearchDTOS = sprintMapper.queryPlanSprint(projectId, issueIds);
@@ -195,7 +194,8 @@ public class SprintServiceImpl implements SprintService {
             planSprints.parallelStream().forEachOrdered(planSprint -> planSprint.setIssueCount(planSprint.getIssueSearchDTOList().size()));
             sprintSearchs.addAll(planSprints);
         }
-        List<IssueSearchDO> backLogIssue = sprintMapper.queryBacklogIssues(projectId);
+
+        List<IssueSearchDO> backLogIssue = sprintMapper.queryBacklogIssues(projectId,issueIds);
         backLogIssueDTO.setBackLogIssue(issueSearchAssembler.doListToDTO(backLogIssue, usersMap));
         backLogIssueDTO.setBacklogIssueCount(backLogIssue.size());
     }
