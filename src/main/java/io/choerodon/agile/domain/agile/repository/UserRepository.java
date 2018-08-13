@@ -1,5 +1,6 @@
 package io.choerodon.agile.domain.agile.repository;
 
+import io.choerodon.agile.api.dto.ProjectDTO;
 import io.choerodon.agile.api.dto.UserDTO;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
@@ -32,4 +33,13 @@ public interface UserRepository {
      * @return UserDTO
      */
     List<UserDTO> queryUsersByNameAndProjectId(Long projectId, String name);
+
+
+    /**
+     * 根据项目id查询项目信息
+     *
+     * @param projectId projectId
+     * @return ProjectDTO
+     */
+    ProjectDTO queryProject(Long projectId);
 }

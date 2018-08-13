@@ -1,11 +1,13 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.api.dto.ProjectDTO;
 import io.choerodon.agile.api.dto.UserDTO;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.core.domain.Page;
+import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
@@ -68,5 +70,10 @@ public class UserRepositoryImpl implements UserRepository {
         } else {
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public ProjectDTO queryProject(Long projectId) {
+        return userFeignClient.queryProject(projectId).getBody();
     }
 }

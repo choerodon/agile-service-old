@@ -1,11 +1,20 @@
 package io.choerodon.agile.api.controller.v1
 
+import io.choerodon.agile.api.dto.CopyConditionDTO
+import io.choerodon.agile.api.dto.EpicSequenceDTO
+import io.choerodon.agile.api.dto.IssueCreationNumDTO
+import io.choerodon.agile.api.dto.IssueEpicDTO
+import io.choerodon.agile.api.dto.IssueInfoDTO
+import io.choerodon.agile.api.dto.IssueTransformSubTask
+import io.choerodon.agile.api.dto.IssueUpdateTypeDTO
+import io.choerodon.agile.api.dto.MoveIssueDTO
+import io.choerodon.agile.api.dto.PieChartDTO
+import io.choerodon.agile.api.dto.ProjectDTO
 import io.choerodon.agile.api.dto.StoryMapIssueDTO
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.ComponentIssueRelDTO
 import io.choerodon.agile.api.dto.EpicDataDTO
-import io.choerodon.agile.api.dto.IssueComponentDTO
 import io.choerodon.agile.api.dto.IssueCreateDTO
 import io.choerodon.agile.api.dto.IssueDTO
 import io.choerodon.agile.api.dto.IssueLinkDTO
@@ -16,14 +25,16 @@ import io.choerodon.agile.api.dto.IssueSubCreateDTO
 import io.choerodon.agile.api.dto.IssueSubDTO
 import io.choerodon.agile.api.dto.LabelIssueRelDTO
 import io.choerodon.agile.api.dto.SearchDTO
-import io.choerodon.agile.api.dto.SprintDetailDTO
 import io.choerodon.agile.api.dto.VersionIssueRelDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.domain.agile.repository.UserRepository
+import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO
 import io.choerodon.agile.infra.dataobject.IssueDO
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
+import io.choerodon.agile.infra.feign.UserFeignClient
+import io.choerodon.agile.infra.mapper.DataLogMapper
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.IssueSprintRelMapper
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper
@@ -31,6 +42,7 @@ import io.choerodon.agile.infra.mapper.SprintMapper
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.domain.Page
 import io.choerodon.event.producer.execute.EventProducerTemplate
+import org.apache.http.HttpHeaders
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -38,6 +50,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.util.MultiValueMap
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
@@ -80,7 +93,10 @@ class IssueControllerSpec extends Specification {
     private IssueSprintRelMapper issueSprintRelMapper
 
     @Autowired
-    ProjectInfoMapper projectInfoMapper
+    private ProjectInfoMapper projectInfoMapper
+
+    @Autowired
+    private DataLogMapper dataLogMapper
 
     @Autowired
     @Qualifier("mockUserRepository")
@@ -93,11 +109,13 @@ class IssueControllerSpec extends Specification {
     @Shared
     def projectId = 1
     @Shared
-    def componentId = null
+    def componentId = 1
     @Shared
     def issueIdList = []
     @Shared
-    def sprintId = null
+    def sprintId = 1
+    @Shared
+    def versionId = 1
     @Shared
     def issueObjectVersionNumberList = []
 
@@ -117,38 +135,7 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def '创建模块api测试'() {
-        given: '给一个创建模块的DTO'
-        IssueComponentDTO issueComponentDTO = new IssueComponentDTO()
-
-        and: '设置模块属性'
-        issueComponentDTO.projectId = projectId
-        issueComponentDTO.name = "测试模块"
-        issueComponentDTO.description = "测试模块描述"
-        issueComponentDTO.managerId = 1
-        issueComponentDTO.defaultAssigneeRole = "模块负责人"
-
-        when: '向开始创建issue的接口发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/component', issueComponentDTO, IssueComponentDTO, projectId)
-
-        then: '返回值'
-        entity.statusCode.is2xxSuccessful()
-        println "创建模块的执行结果：${entity.body?.toString()}"
-
-        and: '设置模块值'
-        if (entity.body.componentId) {
-            componentId = entity.body.componentId
-        }
-
-        expect: '验证结果'
-        entity.body.description == "测试模块描述"
-        entity.body.name == "测试模块"
-        entity.body.managerId == 1
-        entity.body.defaultAssigneeRole == "模块负责人"
-
-    }
-
-    def '创建issueAPI测试'() {
+    def '创建issue'() {
         given: '给一个创建issue的DTO'
         IssueCreateDTO issueCreateDTO = new IssueCreateDTO()
 
@@ -159,6 +146,7 @@ class IssueControllerSpec extends Specification {
         issueCreateDTO.summary = "测试issue概要"
         issueCreateDTO.priorityCode = "hight"
         issueCreateDTO.assigneeId = 1
+        issueCreateDTO.sprintId = sprintId
 
         and: '设置模块'
         List<ComponentIssueRelDTO> componentIssueRelDTOList = new ArrayList<>()
@@ -196,7 +184,7 @@ class IssueControllerSpec extends Specification {
         versionIssueRelDTO.relationType = "fix"
         VersionIssueRelDTO versionIssueRelDTO1 = new VersionIssueRelDTO()
         versionIssueRelDTO1.projectId = projectId
-        versionIssueRelDTO1.name = "测试版本2"
+        versionIssueRelDTO1.versionId = versionId
         versionIssueRelDTO1.relationType = "fix"
         versionIssueRelDTOList.add(versionIssueRelDTO)
         versionIssueRelDTOList.add(versionIssueRelDTO1)
@@ -305,6 +293,7 @@ class IssueControllerSpec extends Specification {
         issueUpdate.put("assigneeId", 2)
         issueUpdate.put("epicId", issueIdList[2])
         issueUpdate.put("storyPoints", 10)
+        issueUpdate.put("sprintId", null)
         issueUpdate.put("estimateTime", 20)
         issueUpdate.put("versionIssueRelDTOList", [])
         issueUpdate.put("labelIssueRelDTOList", [])
@@ -334,6 +323,7 @@ class IssueControllerSpec extends Specification {
         issueDO.assigneeId == 2
         issueDO.epicId == issueIdList[2]
         issueDO.priorityCode == "low"
+        issueDO.rank != ""
     }
 
     def '查询单个issue'() {
@@ -378,7 +368,7 @@ class IssueControllerSpec extends Specification {
         and: '设置值'
         List<IssueListDTO> issueListDTOList = entity.body.content
         expect: '设置期望值'
-        issueListDTOList.size() != 0
+        issueListDTOList.size() > 0
 
     }
 
@@ -394,7 +384,7 @@ class IssueControllerSpec extends Specification {
         and: '设置值'
         List<IssueNumDTO> issueNumDTOList = entity.body.content
         expect: '设置期望值'
-        issueNumDTOList.size() != 0
+        issueNumDTOList.size() > 0
     }
 
     def '分页搜索查询issue列表'() {
@@ -409,11 +399,11 @@ class IssueControllerSpec extends Specification {
         and: '设置值'
         List<IssueNumDTO> issueNumDTOList = entity.body.content
         expect: '设置期望值'
-        issueNumDTOList.size() != 0
+        issueNumDTOList.size() > 0
     }
 
     def '查询epic'() {
-        when: '向开始查询查询epic的接口发请求'
+        when: '向开始查询epic的接口发请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/epics',
                 List, projectId)
 
@@ -423,7 +413,7 @@ class IssueControllerSpec extends Specification {
         and: '设置值'
         List<EpicDataDTO> epicDataDTOList = entity.body
         expect: '设置期望值'
-        epicDataDTOList.size() != 0
+        epicDataDTOList.size() > 0
     }
 
     def 'issue批量加入版本'() {
@@ -437,7 +427,7 @@ class IssueControllerSpec extends Specification {
         and: '设置值'
         List<IssueSearchDTO> issueSearchDTOList = entity.body
         expect: '设置期望值'
-        issueSearchDTOList.size() != 0
+        issueSearchDTOList.size() > 0
     }
 
     def 'issue批量加入epic'() {
@@ -453,28 +443,312 @@ class IssueControllerSpec extends Specification {
         and: '设置值'
         List<IssueSearchDTO> issueSearchDTOList = entity.body
         expect: '设置期望值'
-        issueSearchDTOList.size() != 0
+        issueSearchDTOList.size() > 0
     }
 
-    def '创建冲刺'() {
-        when: '向创建冲刺的接口发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/sprint',
-                null, SprintDetailDTO, projectId)
+    def "issue批量加入冲刺"() {
+        given: '给定一个issue数组列表'
+        List<Long> issueIds = Arrays.asList(issueIdList[0]) as List<Long>
+        and: '移动issue的对象'
+        MoveIssueDTO moveIssueDTO = new MoveIssueDTO()
+        moveIssueDTO.before = true
+        moveIssueDTO.issueIds = issueIds
+        when: '向issue批量加入冲刺接口发请求'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/to_sprint/{sprintId}',
+                moveIssueDTO, List, projectId, sprintId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        SprintDetailDTO issueDetailDTO = entity.body
-        if (issueDetailDTO.sprintId) {
-            sprintId = issueDetailDTO.sprintId
-        }
+        List<IssueSearchDTO> issueSearchDTOList = entity.body
         expect: '设置期望值'
-        issueDetailDTO.projectId == projectId
+        issueSearchDTOList.size() > 0
+
     }
 
+    def "查询当前项目下的epic，提供给列表下拉"() {
+        when: '向开始查询当前项目下的epic，提供给列表下拉接口发请求'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/epics/select_data',
+                List, projectId)
 
-    def 'listIssuesByProjectId'() {
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        List<IssueEpicDTO> issueEpicDTOList = entity.body
+        expect: '设置期望值'
+        issueEpicDTOList.size() > 0
+
+    }
+
+    def "更改issue类型"() {
+        given: '给定一个修改类型DTO'
+        IssueUpdateTypeDTO issueUpdateTypeDTO = new IssueUpdateTypeDTO()
+        issueUpdateTypeDTO.issueId = issueIdList[0]
+        issueUpdateTypeDTO.projectId = projectId
+        issueUpdateTypeDTO.typeCode = typeCode
+        issueUpdateTypeDTO.objectVersionNumber = issueObjectVersionNumberList[0]
+        issueUpdateTypeDTO.epicName = "测试epic"
+
+        when: '向issue批量加入冲刺接口发请求'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/update_type',
+                issueUpdateTypeDTO, IssueDTO, projectId)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+        print(entity.body ? entity.body.toString() : null)
+
+        and: '设置值'
+        if (entity.body.objectVersionNumber) {
+            issueObjectVersionNumberList[0] = entity.body.objectVersionNumber
+        }
+
+        expect: '设置期望值'
+        entity.body.typeCode == expectedTypeCode
+
+        where: '不同issue类型返回值与期望值对比'
+        typeCode     | expectedTypeCode
+        "task"       | "task"
+        "issue_epic" | "issue_epic"
+        "story"      | "story"
+    }
+
+    def "根据issue类型(type_code)查询issue列表(分页)"() {
+        when: '向根据issue类型(type_code)查询issue列表(分页)接口发请求'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/type_code/{typeCode}',
+                null, Page, projectId, "story")
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+        print(entity.body.content ? entity.body.content.toString() : null)
+
+        expect: '设置期望值'
+        entity.body.content.size() > 0
+
+    }
+
+    def "导出issue列表"() {
+        given: '给定查询dto'
+        SearchDTO searchDTO = new SearchDTO()
+        searchDTO.content = '测试'
+
+        and: 'mock userFeignClient'
+        ProjectDTO projectDTO = new ProjectDTO()
+        projectDTO.name = '测试项目'
+        projectDTO.code = '测试项目Code'
+        userRepository.queryProject(_) >> projectDTO
+
+        when: '向根据issue类型(type_code)查询issue列表(分页)接口发请求'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/export',
+                searchDTO, null, projectId)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        expect: '期待值比较'
+        entity.headers.get("Content-Length").size() > 0
+
+    }
+
+    def "导出issue详情"() {
+        given: 'mock userFeignClient'
+        ProjectDTO projectDTO = new ProjectDTO()
+        projectDTO.name = '测试项目'
+        projectDTO.code = '测试项目Code'
+        userRepository.queryProject(_) >> projectDTO
+
+        when: '向根据issue类型(type_code)查询issue列表(分页)接口发请求'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/export/{issueId}',
+                null, null, projectId, issueIdList[0])
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        expect: '期待值比较'
+        entity.headers.get("Content-Length").size() > 0
+
+    }
+
+    def "复制一个issue"() {
+        given: '复制issue条件DTO'
+        CopyConditionDTO conditionDTO = new CopyConditionDTO()
+        conditionDTO.summary = "测试复制issue"
+        conditionDTO.subTask = true
+        conditionDTO.issueLink = true
+        conditionDTO.sprintValues = true
+
+        when: '向复制一个issue的接口发请求'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/{issueId}/clone_issue', conditionDTO, IssueDTO, projectId, issueId)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+        print(entity.body ? entity.body.toString() : null)
+
+        and: '设置值'
+        issueIdList << entity.body.issueId
+        issueObjectVersionNumberList << entity.body.objectVersionNumber
+
+        expect: '设置期望值'
+        entity.body.typeCode == expectedTypeCode
+
+        where: '不同issue类型返回值与期望值对比'
+        issueId        | expectedTypeCode
+        issueIdList[0] | "story"
+        issueIdList[1] | "task"
+        issueIdList[2] | "issue_epic"
+
+    }
+
+    def "任务转换为子任务"() {
+        given: '复制issue条件DTO'
+        IssueTransformSubTask issueTransformSubTask = new IssueTransformSubTask()
+        issueTransformSubTask.issueId = issueIdList[i]
+        issueTransformSubTask.objectVersionNumber = issueObjectVersionNumberList[i]
+        issueTransformSubTask.parentIssueId = issueIdList[0]
+        issueTransformSubTask.statusId = 1L
+
+        when: '向任务转换为子任务的接口发请求'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/transformed_sub_task', issueTransformSubTask, IssueSubDTO, projectId)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        issueIdList << entity.body.issueId
+        issueObjectVersionNumberList << entity.body.objectVersionNumber
+
+        expect: '设置期望值'
+        entity.body.typeCode == expectedTypeCode
+
+        where: '不同issue类型返回值与期望值对比'
+        i | expectedTypeCode
+        5 | "sub_task"
+        6 | "sub_task"
+
+    }
+
+    def "根据issue ids查询issue相关信息"() {
+        given: '给定issueIds'
+        def issueIds = issueIdList
+
+        when: '向根据issue ids查询issue相关信息的接口发请求'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/issue_infos', issueIds, List, projectId)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        List<IssueInfoDTO> issueInfoDTOList = entity.body
+
+        expect: '设置期望值'
+        issueInfoDTOList.size() > 0
+
+    }
+
+    def "分页过滤查询issue列表提供给测试模块用"() {
+        given: '查询参数'
+        SearchDTO searchDTO = new SearchDTO()
+
+        when: '分页过滤查询issue列表提供给测试模块用'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/test_component/no_sub', searchDTO, Page, projectId)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        List<IssueListDTO> issueListDTOList = entity.body.content
+        expect: '设置期望值'
+        issueListDTOList.size() > 0
+
+    }
+
+    //todo sql语句错误
+//    def "根据时间段查询问题类型的数量"() {
+//        given: '查询条件'
+//        def typeCode = "story"
+//        def timeSlot = 1
+//
+//        when: '根据时间段查询问题类型的数量的接口发请求'
+//        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/type/{typeCode}?timeSlot={timeSlot}', List, projectId, typeCode, timeSlot)
+//
+//        then: '返回值'
+//        entity.statusCode.is2xxSuccessful()
+//
+//        and: '设置值'
+//        List<IssueCreationNumDTO> issueCreationNumDTOList = entity.body
+//
+//        expect: '设置期望值'
+//        issueCreationNumDTOList.size() > 0
+//    }
+
+    def "拖动epic位置"() {
+        given: '拖动参数'
+        EpicSequenceDTO epicSequenceDTO = new EpicSequenceDTO()
+        epicSequenceDTO.epicId = issueIdList[2]
+        epicSequenceDTO.objectVersionNumber = issueObjectVersionNumberList[2]
+        epicSequenceDTO.beforeSequence = issueIdList[7]
+
+        when: '分页过滤查询issue列表提供给测试模块用'
+        HttpEntity<EpicSequenceDTO> requestEntity = new HttpEntity<EpicSequenceDTO>(epicSequenceDTO, null)
+        def entity = restTemplate.exchange('/v1/projects/{project_id}/issues/epic_drag', HttpMethod.PUT, requestEntity, EpicDataDTO, projectId)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        EpicDataDTO epicDataDTO = entity.getBody()
+        if (epicDataDTO.objectVersionNumber) {
+            issueObjectVersionNumberList[2] = epicDataDTO.objectVersionNumber
+        }
+
+        expect: '设置期望值'
+        epicDataDTO.issueId == issueIdList[2]
+    }
+
+    def "统计issue相关信息（测试模块用）"() {
+        given: '查询参数'
+        List<String> issueTypes = Arrays.asList("sub_task")
+
+        when: '分页过滤查询issue列表提供给测试模块用'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/test_component/statistic?type={type}', issueTypes, List, projectId, type)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        List<PieChartDTO> pieChartDTOList = entity.body
+
+        expect: '设置期望值'
+        pieChartDTOList.size() == expectedCount
+
+        where: '不同issue类型返回值与期望值对比'
+        type        | expectedCount
+        "version"   | 3
+        "component" | 3
+        "label"     | 3
+
+    }
+
+    def "分页过滤查询issue列表(不包含子任务，包含详情),测试模块用"() {
+        given: '查询参数'
+        SearchDTO searchDTO = new SearchDTO()
+
+        when: '分页过滤查询issue列表提供给测试模块用'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/test_component/no_sub_detail', searchDTO, Page, projectId)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        List<IssueComponentDetailDTO> issueComponentDetailDTOList = entity.body.content
+
+        expect: '设置期望值'
+        issueComponentDetailDTOList.size() > 0
+
+    }
+
+    def '故事地图查询issues,type:sprint, version, none, pageType:storymap,backlog'() {
         given:
         def type = 'sprint'
         def pageType = 'storymap'
@@ -497,45 +771,23 @@ class IssueControllerSpec extends Specification {
                 storyMapIssueDTO.issueId == 1L
             }
         }
-        count == 1
+        count > 0
     }
-
-//    def "issue批量加入冲刺"() {
-//        given: '给定一个issue数组列表'
-//        List<Long> issueIds = issueIdList.subList(0,2)
-//        and: '移动issue的对象'
-//        MoveIssueDTO moveIssueDTO = new MoveIssueDTO()
-//        moveIssueDTO.before = true
-//        moveIssueDTO.issueIds = issueIds
-//        when: '向issue批量加入冲刺接口发请求'
-//        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/to_sprint/{sprintId}',
-//                moveIssueDTO, List, projectId, sprintId)
-//
-//        then: '返回值'
-//        entity.statusCode.is2xxSuccessful()
-//
-//        and: '设置值'
-//        List<IssueSearchDTO> issueSearchDTOList = entity.body
-//        expect: '设置期望值'
-//        issueSearchDTOList.size() == 2
-//
-//    }
 
     def "删除issue"() {
         when: '执行方法'
         restTemplate.delete('/v1/projects/{project_id}/issues/{issueId}', projectId, issueId)
 
         then: '返回值'
-        issueMapper.selectByPrimaryKey(issueId) == result
+        def result = issueMapper.selectByPrimaryKey(issueId)
+
+        expect: '期望值'
+        result == null
 
         where: '判断issue是否删除'
-        issueId        | result
-        issueIdList[0] | null
-        issueIdList[1] | null
-        issueIdList[2] | null
-        issueIdList[3] | null
+        issueId << issueIdList
+
 
     }
-
 
 }

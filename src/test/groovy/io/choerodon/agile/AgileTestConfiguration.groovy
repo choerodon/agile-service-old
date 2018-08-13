@@ -9,12 +9,14 @@ import io.choerodon.agile.app.service.impl.IssueServiceImpl
 import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl
 import io.choerodon.agile.domain.agile.event.ProjectEvent
 import io.choerodon.agile.domain.agile.repository.UserRepository
+import io.choerodon.agile.infra.dataobject.IssueComponentDO
 import io.choerodon.agile.infra.dataobject.IssueDO
 import io.choerodon.agile.infra.dataobject.IssueSprintRelDO
 import io.choerodon.agile.infra.dataobject.ProductVersionDO
 import io.choerodon.agile.infra.dataobject.ProjectInfoDO
 import io.choerodon.agile.infra.dataobject.SprintDO
 import io.choerodon.agile.infra.dataobject.VersionIssueRelDO
+import io.choerodon.agile.infra.mapper.IssueComponentMapper
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.IssueSprintRelMapper
 import io.choerodon.agile.infra.mapper.ProductVersionMapper
@@ -107,6 +109,9 @@ class AgileTestConfiguration {
     private SprintMapper sprintMapper
 
     @Autowired
+    private IssueComponentMapper issueComponentMapper
+
+    @Autowired
     private ProductVersionMapper productVersionMapper
 
     @Bean("mockUserRepository")
@@ -157,6 +162,8 @@ class AgileTestConfiguration {
         Statement stat = conn.createStatement()
         //创建 SQL的IF函数，用JAVA的方法代替函数
         stat.execute("CREATE ALIAS IF NOT EXISTS IF FOR \"io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil.ifFunction\"")
+        stat.execute("CREATE ALIAS IF NOT EXISTS DATE_FORMAT FOR \"io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil.dataFormatFunction\"")
+        stat.execute("CREATE ALIAS IF NOT EXISTS DATE_SUB FOR \"io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil.dataSubFunction\"")
         stat.close()
         conn.close()
     }
@@ -196,6 +203,17 @@ class AgileTestConfiguration {
         initIssues()
         initSprint()
         initVersion()
+        initComponent()
+    }
+
+    private void initComponent() {
+        IssueComponentDO issueComponentDO = new IssueComponentDO()
+        issueComponentDO.projectId = 1L
+        issueComponentDO.name = "测试模块"
+        issueComponentDO.description = "测试模块描述"
+        issueComponentDO.managerId = 1L
+        issueComponentDO.defaultAssigneeRole = "模块负责人"
+        issueComponentMapper.insert(issueComponentDO)
     }
 
     private void initProject() {
@@ -230,6 +248,8 @@ class AgileTestConfiguration {
         story.summary = 'story-test'
         story.epicId = 1L
         story.storyPoints = 6
+        //设置rank值
+        story.rank = '0|c00000:'
         issueMapper.insert(story)
 
         ProjectInfoDO projectInfoDO = projectInfoMapper.selectByPrimaryKey(1L)

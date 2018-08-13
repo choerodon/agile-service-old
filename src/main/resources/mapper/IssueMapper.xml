@@ -925,10 +925,9 @@
     </select>
 
     <delete id="removeIssueFromSprintByIssueIds">
-        DELETE aisr
-        FROM agile_issue_sprint_rel aisr, agile_sprint asp
-        WHERE aisr.project_id = #{projectId} AND aisr.sprint_id = asp.sprint_id
-        AND asp.status_code != 'closed' AND aisr.issue_id IN
+        DELETE FROM agile_issue_sprint_rel WHERE EXISTS (SELECT 0 FROM agile_sprint asp  WHERE asp.sprint_id =
+        agile_issue_sprint_rel.sprint_id AND asp.status_code != 'closed' ) and agile_issue_sprint_rel.project_id = #{projectId}
+        AND agile_issue_sprint_rel.issue_id IN
         <foreach collection="issueIds" item="issueId"
                  open="(" separator="," close=")">
             #{issueId}
