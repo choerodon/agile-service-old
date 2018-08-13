@@ -95,8 +95,8 @@ class IssueStatusControllerSpec extends Specification {
 
         then:
         entity.statusCode.is2xxSuccessful()
-        entity.body.size() == 1
-        StatusAndIssuesDTO result = entity.body.get(0)
+        entity.body.size() == 2
+        StatusAndIssuesDTO result = entity.body.get(1)
         result.name == statusName
     }
 
