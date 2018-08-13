@@ -1569,8 +1569,8 @@
         FROM
             agile_issue_sprint_rel aisr
         LEFT JOIN agile_sprint asp ON aisr.sprint_id = asp.sprint_id
-        LEFT JOIN agile_issue ai ON aisr.issue_id = ai.issue_id
-        AND ai.type_code NOT IN (
+        LEFT JOIN agile_issue ai
+        on ai.type_code NOT IN (
             'issue_test',
             'sub_task',
             'issue_epic'
@@ -1587,7 +1587,7 @@
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
-            aisr.project_id =  #{projectId}
+            aisr.project_id =  #{projectId} and aisr.issue_id = ai.issue_id
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
@@ -1671,8 +1671,8 @@
         FROM
             agile_version_issue_rel avir
         LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
-        LEFT JOIN agile_issue ai ON avir.issue_id = ai.issue_id
-        AND ai.type_code NOT IN (
+        LEFT JOIN agile_issue ai ON
+        ai.type_code NOT IN (
             'issue_test',
             'sub_task',
             'issue_epic'
@@ -1689,7 +1689,7 @@
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
-            avir.project_id = #{projectId}
+            avir.project_id = #{projectId} and avir.issue_id = ai.issue_id
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
