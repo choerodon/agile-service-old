@@ -11,10 +11,18 @@ spring:
     username: sa
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
-  #开启h2控制台
+#开启h2控制台
   h2:
     console:
       enabled: true
+      settings:
+        web-allow-others: true
+  allowed:
+    resources: /h2-console/**
+security:
+  basic:
+    enabled: true
+    authorize-mode: NONE
 hystrix:
   stream:
     queue:

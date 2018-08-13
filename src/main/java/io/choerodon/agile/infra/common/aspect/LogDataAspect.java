@@ -555,21 +555,26 @@ public class LogDataAspect {
         SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
         for (Long issueId : issueIds) {
             SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
-            if (activeSprintName != null && sprintId.equals(activeSprintName.getSprintId())) {
+            if (activeSprintName != null && sprintId != null && sprintId.equals(activeSprintName.getSprintId())) {
                 continue;
             }
             StringBuilder newSprintIdStr = new StringBuilder();
             StringBuilder newSprintNameStr = new StringBuilder();
             List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
-            String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
-            String oldSprintNameStr = sprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
-            handleSprintStringBuilder(sprintNames, activeSprintName, newSprintNameStr, newSprintIdStr, sprintDO);
-            String oldString = "".equals(oldSprintNameStr) ? null : oldSprintNameStr;
-            String newString = newSprintNameStr.length() == 0 ? null : newSprintNameStr.toString();
-            String oldValue = "".equals(oldSprintIdStr) ? null : oldSprintIdStr;
-            String newValue = newSprintIdStr.length() == 0 ? null : newSprintIdStr.toString();
-            createDataLog(projectId, issueId, FIELD_SPRINT, oldString,
-                    newString, oldValue, newValue);
+            if (sprintNames != null && !sprintNames.isEmpty()) {
+                String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
+                String oldSprintNameStr = sprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
+                handleSprintStringBuilder(sprintNames, activeSprintName, newSprintNameStr, newSprintIdStr, sprintDO);
+                String oldString = "".equals(oldSprintNameStr) ? null : oldSprintNameStr;
+                String newString = newSprintNameStr.length() == 0 ? null : newSprintNameStr.toString();
+                String oldValue = "".equals(oldSprintIdStr) ? null : oldSprintIdStr;
+                String newValue = newSprintIdStr.length() == 0 ? null : newSprintIdStr.toString();
+                if (!Objects.equals(oldValue, newValue)) {
+                    createDataLog(projectId, issueId, FIELD_SPRINT, oldString,
+                            newString, oldValue, newValue);
+                }
+            }
+
         }
     }
 
@@ -772,7 +777,7 @@ public class LogDataAspect {
         if (issueSprintRelE != null) {
             SprintDO sprintDO = sprintMapper.selectByPrimaryKey(issueSprintRelE.getSprintId());
             createDataLog(issueSprintRelE.getProjectId(), issueSprintRelE.getIssueId(),
-                    FIELD_SPRINT, null, sprintDO.getSprintName(), null,issueSprintRelE.getSprintId().toString());
+                    FIELD_SPRINT, null, sprintDO.getSprintName(), null, issueSprintRelE.getSprintId().toString());
         }
     }
 
@@ -826,7 +831,7 @@ public class LogDataAspect {
             } else if (activeSprintName != null) {
                 sprintId = activeSprintName.getSprintId();
             }
-            if ((issueE.getOriginSprintId() != null && issueE.getSprintId().equals(issueE.getOriginSprintId()))) {
+            if ((issueE.getOriginSprintId() != null && issueE.getSprintId() != null && issueE.getSprintId().equals(issueE.getOriginSprintId()))) {
                 createRankDataLog(sprintId, activeSprintName, originIssueDO, issueE.getRank());
             }
         }

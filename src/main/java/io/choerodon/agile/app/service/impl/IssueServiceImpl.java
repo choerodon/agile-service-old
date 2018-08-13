@@ -14,7 +14,6 @@ import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.common.utils.RankUtil;
-import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
@@ -129,8 +128,6 @@ public class IssueServiceImpl implements IssueService {
     private IssueLinkMapper issueLinkMapper;
     @Autowired
     private IssueSprintRelRepository issueSprintRelRepository;
-    @Autowired
-    private UserFeignClient userFeignClient;
     @Autowired
     private SprintService sprintService;
     @Autowired
@@ -904,7 +901,7 @@ public class IssueServiceImpl implements IssueService {
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
         projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
-        ProjectDTO project = userFeignClient.queryProject(projectId).getBody();
+        ProjectDTO project = userRepository.queryProject(projectId);
         if (project == null || projectInfoDO == null) {
             throw new CommonException(PROJECT_ERROR);
         }
@@ -941,7 +938,7 @@ public class IssueServiceImpl implements IssueService {
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
         projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
-        ProjectDTO project = userFeignClient.queryProject(projectId).getBody();
+        ProjectDTO project = userRepository.queryProject(projectId);
         if (project == null || projectInfoDO == null) {
             throw new CommonException(PROJECT_ERROR);
         }
