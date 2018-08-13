@@ -1,19 +1,26 @@
 package io.choerodon.agile.api.dto;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/25.
  * Email: fuqianghuang01@gmail.com
  */
 public class ColumnSortDTO {
 
+    @NotNull(message = "项目id不能为空")
     private Long projectId;
 
+    @NotNull(message = "board id不能为空")
     private Long boardId;
 
+    @NotNull(message = "列id不能为空")
     private Long columnId;
 
+    @NotNull(message = "列序号不能为空")
     private Integer sequence;
 
+    @NotNull(message = "数据版本序号不能为空")
     private Long objectVersionNumber;
 
     public void setProjectId(Long projectId) {

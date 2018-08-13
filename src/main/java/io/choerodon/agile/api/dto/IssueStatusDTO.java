@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
  * Email: fuqianghuang01@gmail.com
@@ -8,12 +10,15 @@ public class IssueStatusDTO {
 
     private Long id;
 
+    @NotNull(message = "状态名称不能为空")
     private String name;
 
+    @NotNull(message = "项目id不能为空")
     private Long projectId;
 
     private Boolean enable;
 
+    @NotNull(message = "类别code不能为空")
     private String categoryCode;
 
     private Boolean completed;

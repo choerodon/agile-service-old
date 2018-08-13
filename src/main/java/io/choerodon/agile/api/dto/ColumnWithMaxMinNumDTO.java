@@ -1,15 +1,19 @@
 package io.choerodon.agile.api.dto;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/6/2.
  * Email: fuqianghuang01@gmail.com
  */
 public class ColumnWithMaxMinNumDTO {
 
+    @NotNull(message = "项目id不能为空")
     private Long projectId;
 
     private Long boardId;
 
+    @NotNull(message = "列id不能为空")
     private Long columnId;
 
     private Long maxNum;

@@ -2,6 +2,8 @@ package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
  * Email: fuqianghuang01@gmail.com
@@ -10,6 +12,7 @@ public class IssueComponentDTO {
 
     private Long componentId;
 
+    @NotNull(message = "项目id不能为空")
     private Long projectId;
 
     private String name;

@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
  * Email: fuqianghuang01@gmail.com
@@ -8,6 +10,7 @@ public class BoardColumnDTO {
 
     private Long columnId;
 
+    @NotNull(message = "列名称不能为空")
     private String name;
 
     private Long boardId;
@@ -16,8 +19,10 @@ public class BoardColumnDTO {
 
     private Long maxNum;
 
+    @NotNull(message = "类别code不能为空")
     private String categoryCode;
 
+    @NotNull(message = "项目id不能为空")
     private Long projectId;
 
     private Integer sequence;

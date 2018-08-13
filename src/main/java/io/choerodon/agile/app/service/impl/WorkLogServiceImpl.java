@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.WorkLogDTO;
+import io.choerodon.agile.api.validator.WorkLogValidator;
 import io.choerodon.agile.app.service.WorkLogService;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.WorkLogE;
@@ -81,9 +82,10 @@ public class WorkLogServiceImpl implements WorkLogService {
 
     @Override
     public WorkLogDTO create(Long projectId, WorkLogDTO workLogDTO) {
-        if (!projectId.equals(workLogDTO.getProjectId())) {
-            throw new CommonException("error.projectId.notEqual");
-        }
+//        if (!projectId.equals(workLogDTO.getProjectId())) {
+//            throw new CommonException("error.projectId.notEqual");
+//        }
+        WorkLogValidator.checkCreateWorkLog(projectId, workLogDTO);
         if (workLogDTO.getResidualPrediction() != null) {
             switch (workLogDTO.getResidualPrediction()) {
                 case SELF_ADJUSTMENT:
@@ -108,6 +110,7 @@ public class WorkLogServiceImpl implements WorkLogService {
 
     @Override
     public WorkLogDTO update(Long projectId, Long logId, WorkLogDTO workLogDTO) {
+        WorkLogValidator.checkUpdateWorkLog(workLogDTO);
         workLogDTO.setProjectId(projectId);
         WorkLogE workLogE = ConvertHelper.convert(workLogDTO, WorkLogE.class);
         workLogE = workLogRepository.update(workLogE);
