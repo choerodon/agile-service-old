@@ -87,7 +87,6 @@
         LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
         LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
-        left join agile_issue_sprint_rel aisr on aisr.issue_id = ai.issue_id
         LEFT JOIN (SELECT aisr.issue_id, asp.sprint_id
         FROM agile_issue_sprint_rel aisr, agile_sprint asp
         WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
@@ -96,7 +95,7 @@
         FROM agile_version_issue_rel avir, agile_product_version apv
         WHERE avir.version_id = apv.version_id AND avir.relation_type = 'fix'
         ) apv1 ON apv1.issue_id = ai.issue_id
-        WHERE aisr.sprint_id is null and ais.category_code != 'done'
+        WHERE asp1.sprint_id is null and ais.category_code != 'done'
         and ai.type_code != 'sub_task' and ai.type_code != 'issue_test'
         and ai.type_code != 'issue_epic' and ai.project_id = #{projectId}
     </select>
