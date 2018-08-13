@@ -1649,6 +1649,7 @@
                 AND ai.issue_id IN (${filterSql})
             </if>
     </select>
+    
 
     <select id="listIssuesByProjectIdVersion" resultType="io.choerodon.agile.infra.dataobject.StoryMapIssueDO">
         SELECT
