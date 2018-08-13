@@ -1588,6 +1588,7 @@
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
             aisr.project_id =  #{projectId} and aisr.issue_id = ai.issue_id
+        and aisr.sprint_id in (select sprint_id from agile_sprint where status_code != 'closed')
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
@@ -1621,11 +1622,11 @@
                 ai.project_id =  #{projectId}
             AND issue_id NOT IN (
                 SELECT
-                    issue_id
+                    aisr.issue_id
                 FROM
-                    agile_issue_sprint_rel
+                    agile_issue_sprint_rel aisr, agile_sprint asp
                 WHERE
-                    project_id = #{projectId}
+                    aisr.project_id = #{projectId} and aisr.sprint_id = asp.sprint_id and asp.status_code != 'closed'
             )
             AND ai.type_code NOT IN (
                 'issue_test',
@@ -1648,6 +1649,7 @@
                 AND ai.issue_id IN (${filterSql})
             </if>
     </select>
+    
 
     <select id="listIssuesByProjectIdVersion" resultType="io.choerodon.agile.infra.dataobject.StoryMapIssueDO">
         SELECT
@@ -1690,6 +1692,9 @@
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
             avir.project_id = #{projectId} and avir.issue_id = ai.issue_id
+        and avir.version_id in (
+           select version_id from agile_product_version where project_id = #{projectId} and status_code != 'archived'
+        )
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
@@ -1723,11 +1728,11 @@
                 ai.project_id = #{projectId}
             AND issue_id NOT IN (
                 SELECT
-                    issue_id
+                    avir.issue_id
                 FROM
-                    agile_version_issue_rel avir
+                    agile_version_issue_rel avir, agile_product_version apv
                 WHERE
-                    project_id = #{projectId}
+                    avir.project_id = #{projectId} and avir.version_id = apv.version_id and apv.status_code != 'archived'
             )
             AND ai.type_code NOT IN (
                 'issue_test',
