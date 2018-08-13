@@ -213,7 +213,7 @@
     <select id="queryVersionIdByNameAndProjectId" resultType="java.lang.Long">
         SELECT apv.version_id
         FROM agile_product_version apv
-        WHERE apv.project_id = #{projectId} AND apv.name = #{name}
+        WHERE apv.project_id = #{projectId} AND apv.name = #{name} and apv.status_code != 'archived'
     </select>
 
     <select id="queryIssueCountByVersionId" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">

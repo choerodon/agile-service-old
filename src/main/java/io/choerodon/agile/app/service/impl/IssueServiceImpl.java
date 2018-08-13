@@ -668,7 +668,13 @@ public class IssueServiceImpl implements IssueService {
                 //重名校验
                 ProductVersionE productVersionE = versionIssueRelE.createProductVersionE();
                 if (productVersionMapper.isRepeatName(productVersionE.getProjectId(), productVersionE.getName())) {
-                    versionIssueRelE.setVersionId(productVersionMapper.queryVersionIdByNameAndProjectId(productVersionE.getName(), productVersionE.getProjectId()));
+                    //已归档的版本id是null,不进行任何操作
+                    Long versionId = productVersionMapper.queryVersionIdByNameAndProjectId(productVersionE.getName(), productVersionE.getProjectId());
+                    if (versionId != null) {
+                        versionIssueRelE.setVersionId(versionId);
+                    } else {
+                        return;
+                    }
                 } else {
                     ProductVersionCreateDTO productVersionCreateDTO = issueAssembler.productVersionEntityToProductVersionCreateDto(productVersionE);
                     ProductVersionDetailDTO productVersionDetailDTO = productVersionService.createVersion(projectId, productVersionCreateDTO);

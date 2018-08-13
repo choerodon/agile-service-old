@@ -4,13 +4,14 @@ package io.choerodon.agile.api.dto;
 import io.choerodon.agile.infra.common.annotation.Update;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
 /**
  * @author dinghuang123@gmail.com
  */
-public class IssueUpdateDTO {
+public class IssueUpdateDTO implements Serializable {
 
     private Long issueId;
 

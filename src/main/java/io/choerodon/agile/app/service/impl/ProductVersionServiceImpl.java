@@ -64,8 +64,6 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private ProductVersionMapper productVersionMapper;
     @Autowired
     private ProductVersionConverter productVersionConverter;
-    @Autowired
-    private SagaClient sagaClient;
 
     private static final String SEARCH_ARGS = "searchArgs";
     public static final String ADVANCE_SEARCH_ARGS = "advancedSearchArgs";
@@ -83,6 +81,13 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private static final String SOURCE_VERSION_ERROR = "error.sourceVersionIds.notNull";
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
+
+    private final SagaClient sagaClient;
+
+    @Autowired
+    public ProductVersionServiceImpl(SagaClient sagaClient) {
+        this.sagaClient = sagaClient;
+    }
 
     @Saga(code = "agile-create-version", description = "创建版本", inputSchemaClass = VersionPayload.class)
     @Override

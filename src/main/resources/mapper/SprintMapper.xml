@@ -76,7 +76,12 @@
         alv2.name AS color,
         apv1.version_id AS version_id,
         apv1.name AS version_name
-        FROM agile_issue ai
+        FROM (select ai3.* from agile_issue ai3 where ai3.issue_id in
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+        )ai
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
