@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -12,14 +13,18 @@ public class WorkLogDTO {
 
     private Long logId;
 
+    @NotNull(message = "工作时间不能为空")
     private BigDecimal workTime;
 
+    @NotNull(message = "开始时间不能为空")
     private Date startDate;
 
     private String description;
 
+    @NotNull(message = "issue id不能为空")
     private Long issueId;
 
+    @NotNull(message = "项目id不能为空")
     private Long projectId;
 
     private Long objectVersionNumber;

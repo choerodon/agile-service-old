@@ -3,6 +3,7 @@ package io.choerodon.agile.app.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.BoardSprintDTO;
 import io.choerodon.agile.api.dto.IssueMoveDTO;
+import io.choerodon.agile.api.validator.BoardValidator;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.domain.agile.repository.*;
@@ -83,9 +84,10 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardDTO update(Long projectId, Long boardId, BoardDTO boardDTO) {
-        if (!projectId.equals(boardDTO.getProjectId())) {
-            throw new CommonException("error.projectId.notEqual");
-        }
+//        if (!projectId.equals(boardDTO.getProjectId())) {
+//            throw new CommonException("error.projectId.notEqual");
+//        }
+        BoardValidator.checkUpdateBoard(projectId, boardDTO);
         boardDTO.setBoardId(boardId);
         BoardE boardE = ConvertHelper.convert(boardDTO, BoardE.class);
         return ConvertHelper.convert(boardRepository.update(boardE), BoardDTO.class);

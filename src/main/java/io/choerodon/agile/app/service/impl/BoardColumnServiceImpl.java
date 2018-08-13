@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.ColumnSortDTO;
 import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
+import io.choerodon.agile.api.validator.BoardColumnValidator;
 import io.choerodon.agile.domain.agile.entity.BoardE;
 import io.choerodon.agile.infra.dataobject.BoardColumnDO;
 import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO;
@@ -128,9 +129,10 @@ public class BoardColumnServiceImpl implements BoardColumnService {
 
     @Override
     public BoardColumnDTO create(Long projectId, String categoryCode, BoardColumnDTO boardColumnDTO) {
-        if (!projectId.equals(boardColumnDTO.getProjectId())) {
-            throw new CommonException(ERROR_PROJECTID_NOTEQUAL);
-        }
+//        if (!projectId.equals(boardColumnDTO.getProjectId())) {
+//            throw new CommonException(ERROR_PROJECTID_NOTEQUAL);
+//        }
+        BoardColumnValidator.checkCreateBoardColumnDTO(projectId, boardColumnDTO);
         // 创建列
         createCheck(boardColumnDTO);
         Boolean checkStatus = checkSameStatusName(projectId, boardColumnDTO.getName());
@@ -167,12 +169,13 @@ public class BoardColumnServiceImpl implements BoardColumnService {
 
     @Override
     public BoardColumnDTO update(Long projectId, Long columnId, Long boardId, BoardColumnDTO boardColumnDTO) {
-        if (!projectId.equals(boardColumnDTO.getProjectId())) {
-            throw new CommonException(ERROR_PROJECTID_NOTEQUAL);
-        }
-        if (!boardId.equals(boardColumnDTO.getBoardId())) {
-            throw new CommonException("error.boardId.notEqual");
-        }
+//        if (!projectId.equals(boardColumnDTO.getProjectId())) {
+//            throw new CommonException(ERROR_PROJECTID_NOTEQUAL);
+//        }
+//        if (!boardId.equals(boardColumnDTO.getBoardId())) {
+//            throw new CommonException("error.boardId.notEqual");
+//        }
+        BoardColumnValidator.checkUpdateBoardColumnDTO(projectId, boardId, boardColumnDTO);
         BoardColumnE boardColumnE = ConvertHelper.convert(boardColumnDTO, BoardColumnE.class);
         return ConvertHelper.convert(boardColumnRepository.update(boardColumnE), BoardColumnDTO.class);
     }
@@ -180,6 +183,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     @Override
     public void delete(Long projectId, Long columnId) {
         BoardColumnDO boardColumnDO = boardColumnMapper.selectByPrimaryKey(columnId);
+        BoardColumnValidator.checkDeleteColumn(boardColumnDO);
         // 删除列
         boardColumnRepository.delete(columnId);
         // 取消列下的状态关联，状态归为未对应的状态
@@ -240,9 +244,10 @@ public class BoardColumnServiceImpl implements BoardColumnService {
 
     @Override
     public void columnSort(Long projectId, ColumnSortDTO columnSortDTO) {
-        if (!projectId.equals(columnSortDTO.getProjectId())) {
-            throw new CommonException(ERROR_PROJECTID_NOTEQUAL);
-        }
+//        if (!projectId.equals(columnSortDTO.getProjectId())) {
+//            throw new CommonException(ERROR_PROJECTID_NOTEQUAL);
+//        }
+        BoardColumnValidator.checkColumnSort(projectId, columnSortDTO);
         BoardColumnE boardColumnE = ConvertHelper.convert(columnSortDTO, BoardColumnE.class);
         boardColumnRepository.columnSort(projectId, columnSortDTO.getBoardId(), boardColumnE);
     }
@@ -285,15 +290,16 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     }
     @Override
     public BoardColumnDTO updateColumnContraint(Long projectId, Long columnId, ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO) {
-        if (!projectId.equals(columnWithMaxMinNumDTO.getProjectId())) {
-            throw new CommonException(ERROR_PROJECTID_NOTEQUAL);
-        }
-        if (!columnId.equals(columnWithMaxMinNumDTO.getColumnId())) {
-            throw new CommonException("error.columnId.notEqual");
-        }
-        if (columnWithMaxMinNumDTO.getMaxNum() != null && columnWithMaxMinNumDTO.getMinNum() != null && columnWithMaxMinNumDTO.getMinNum() > columnWithMaxMinNumDTO.getMaxNum()) {
-            throw new CommonException("error.num.minNumCannotUpToMaxNum");
-        }
+//        if (!projectId.equals(columnWithMaxMinNumDTO.getProjectId())) {
+//            throw new CommonException(ERROR_PROJECTID_NOTEQUAL);
+//        }
+//        if (!columnId.equals(columnWithMaxMinNumDTO.getColumnId())) {
+//            throw new CommonException("error.columnId.notEqual");
+//        }
+//        if (columnWithMaxMinNumDTO.getMaxNum() != null && columnWithMaxMinNumDTO.getMinNum() != null && columnWithMaxMinNumDTO.getMinNum() > columnWithMaxMinNumDTO.getMaxNum()) {
+//            throw new CommonException("error.num.minNumCannotUpToMaxNum");
+//        }
+        BoardColumnValidator.checkUpdateColumnContraint(projectId, columnId, columnWithMaxMinNumDTO);
         return ConvertHelper.convert(boardColumnRepository.updateMaxAndMinNum(columnWithMaxMinNumDTO), BoardColumnDTO.class);
     }
 

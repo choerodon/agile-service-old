@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.ComponentForListDTO;
 import io.choerodon.agile.api.dto.IssueDTO;
+import io.choerodon.agile.api.validator.IssueComponentValidator;
 import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
 import io.choerodon.agile.domain.agile.repository.ComponentIssueRelRepository;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
@@ -50,9 +51,10 @@ public class IssueComponentServiceImpl implements IssueComponentService {
 
     @Override
     public IssueComponentDTO create(Long projectId, IssueComponentDTO issueComponentDTO) {
-        if (!projectId.equals(issueComponentDTO.getProjectId())) {
-            throw new CommonException("error.projectId.notEqual");
-        }
+//        if (!projectId.equals(issueComponentDTO.getProjectId())) {
+//            throw new CommonException("error.projectId.notEqual");
+//        }
+        IssueComponentValidator.checkCreateComponent(projectId, issueComponentDTO);
         IssueComponentE issueComponentE = ConvertHelper.convert(issueComponentDTO, IssueComponentE.class);
         return ConvertHelper.convert(issueComponentRepository.create(issueComponentE), IssueComponentDTO.class);
     }
