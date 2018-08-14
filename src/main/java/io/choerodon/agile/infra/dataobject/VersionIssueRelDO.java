@@ -2,6 +2,8 @@ package io.choerodon.agile.infra.dataobject;
 
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.mybatis.annotation.ModifyAudit;
+import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
 
 import javax.persistence.Table;
@@ -12,6 +14,8 @@ import javax.validation.constraints.NotNull;
  * @author dinghuang123@gmail.com
  * @since 2018-05-15 16:21:18
  */
+@ModifyAudit
+@VersionAudit
 @Table(name = "agile_version_issue_rel")
 public class VersionIssueRelDO extends AuditDomain{
 
