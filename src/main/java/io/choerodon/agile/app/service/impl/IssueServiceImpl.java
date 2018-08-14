@@ -12,6 +12,7 @@ import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
+import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.mapper.*;
@@ -1387,7 +1388,9 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<IssueCreationNumDTO> queryIssueNumByTimeSlot(Long projectId, String typeCode, Integer timeSlot) {
-        return ConvertHelper.convertList(issueMapper.queryIssueNumByTimeSlot(projectId, typeCode, timeSlot), IssueCreationNumDTO.class);
+        //h2 不支持dateSub函数，这个函数不能自定义
+        Date date = MybatisFunctionTestUtil.dataSubFunction(new Date(),timeSlot);
+        return ConvertHelper.convertList(issueMapper.queryIssueNumByTimeSlot(projectId, typeCode, date), IssueCreationNumDTO.class);
     }
 
     @Override

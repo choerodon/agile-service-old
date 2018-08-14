@@ -15,14 +15,8 @@ spring:
   h2:
     console:
       enabled: true
-      settings:
-        web-allow-others: true
   allowed:
     resources: /h2-console/**
-security:
-  basic:
-    enabled: true
-    authorize-mode: NONE
 hystrix:
   stream:
     queue:

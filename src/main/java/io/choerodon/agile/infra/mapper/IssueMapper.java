@@ -30,7 +30,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<EpicDataDO> queryEpicList(@Param("projectId") Long projectId);
 
-    List<IssueSearchDO> searchIssue(@Param("issueIds") List<Long> issueIds,@Param("projectId")Long projectId);
+    List<IssueSearchDO> searchIssue(@Param("issueIds") List<Long> issueIds, @Param("projectId") Long projectId);
 
     Integer queryBacklogIssueCount(@Param("projectId") Long projectId);
 
@@ -205,7 +205,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<IssueCreationNumDO> queryIssueNumByTimeSlot(@Param("projectId") Long projectId,
                                                      @Param("typeCode") String typeCode,
-                                                     @Param("timeSlot") Integer timeSlot);
+                                                     @Param("date") Date date);
 
     List<Long> queryInVersionIssueIds(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("issueIds") List<Long> issueIds);
 
@@ -280,10 +280,11 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     /**
      * 根据状态id查询状态下的所有issue
+     *
      * @param statusId statusId
      * @return IssueDO
      */
-    List<IssueDO> queryIssuesByStatusId(@Param("statusId")Long statusId);
+    List<IssueDO> queryIssuesByStatusId(@Param("statusId") Long statusId);
 
     List<StoryMapIssueDO> listIssuesByProjectIdSprint(@Param("projectId") Long projectId,
                                                       @Param("pageType") String pageType,

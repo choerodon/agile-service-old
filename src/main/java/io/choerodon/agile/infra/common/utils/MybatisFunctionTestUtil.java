@@ -25,10 +25,10 @@ public class MybatisFunctionTestUtil {
         return simpleDateFormat.format(date);
     }
 
-    public static Date dataSubFunction(Date date, Object day) {
+    public static Date dataSubFunction(Date date, Integer day) {
         Calendar now = Calendar.getInstance();
         now.setTime(date);
-        now.set(Calendar.DATE, now.get(Calendar.DATE) + 1);
+        now.set(Calendar.DATE, now.get(Calendar.DATE) + day);
         return now.getTime();
     }
 
