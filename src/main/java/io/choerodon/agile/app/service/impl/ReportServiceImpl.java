@@ -1464,6 +1464,9 @@ public class ReportServiceImpl implements ReportService {
                     break;
                 }
             }
+            if (storyPointCountEstimate.isEmpty()) {
+                g1.setUnEstimateIssueCount(g1.getIssueCount());
+            }
         }
         return storyPointCountAll;
     }
@@ -1501,6 +1504,9 @@ public class ReportServiceImpl implements ReportService {
                     g1.setUnEstimateIssueCount(g1.getIssueCount() - g6.getUnEstimateIssueCount());
                     break;
                 }
+            }
+            if (remainTimeCountEstimate.isEmpty()) {
+                g1.setUnEstimateIssueCount(g1.getIssueCount());
             }
         }
         return remainTimeCountAll;
