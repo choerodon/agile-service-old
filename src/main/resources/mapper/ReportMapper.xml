@@ -2080,7 +2080,12 @@
             SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
         </if>
         )
-        AND field IN ('resolution','Story Points')
+        <if test="chartType == 'epic_chart'">
+            AND field IN ('resolution','Story Points', 'Epic Link')
+        </if>
+        <if test="chartType == 'version_chart'">
+            AND field IN ('resolution','Story Points','Fix Version')
+        </if>
         ORDER BY
         group_day
         ) t1,
@@ -2090,12 +2095,15 @@
         adl.last_update_date,
         '%Y-%m-%d'
         )
+        <if test="chartType == 'epic_chart'">
+            AND adl.issue_id IN ( SELECT issue_id FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link')
+        </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
         </if>
         )
         AND adl.field = 'Story Points'
@@ -2138,10 +2146,12 @@
             SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
         </if>
         )
-        AND field IN (
-        'resolution',
-        'Story Points'
-        )
+        <if test="chartType == 'epic_chart'">
+            AND field IN ('resolution','Story Points', 'Epic Link')
+        </if>
+        <if test="chartType == 'version_chart'">
+            AND field IN ('resolution','Story Points','Fix Version')
+        </if>
         ORDER BY
         group_day
         ) t1,
@@ -2151,12 +2161,15 @@
         adl.last_update_date,
         '%Y-%m-%d'
         )
+        <if test="chartType == 'epic_chart'">
+            AND adl.issue_id IN ( SELECT issue_id FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link')
+        </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
         </if>
         )
         AND adl.field = 'resolution'
@@ -2205,10 +2218,12 @@
             SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
         </if>
         )
-        AND field IN (
-        'resolution',
-        'Story Points'
-        )
+        <if test="chartType == 'epic_chart'">
+            AND field IN ('resolution','Story Points', 'Epic Link')
+        </if>
+        <if test="chartType == 'version_chart'">
+            AND field IN ('resolution','Story Points','Fix Version')
+        </if>
         ORDER BY
         group_day
         ) t1,
@@ -2218,12 +2233,15 @@
         adl.last_update_date,
         '%Y-%m-%d'
         )
+        <if test="chartType == 'epic_chart'">
+            AND adl.issue_id IN ( SELECT issue_id FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link')
+        </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
         </if>
         )
         AND adl.field = 'Story Points'
@@ -2269,10 +2287,12 @@
             SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
         </if>
         )
-        AND field IN (
-        'resolution',
-        'Story Points'
-        )
+        <if test="chartType == 'epic_chart'">
+            AND field IN ('resolution','Story Points', 'Epic Link')
+        </if>
+        <if test="chartType == 'version_chart'">
+            AND field IN ('resolution','Story Points','Fix Version')
+        </if>
         ORDER BY
         group_day
         ) t1,
@@ -2284,16 +2304,17 @@
         )
         <if test="chartType == 'epic_chart'">
             AND adl.field = 'Epic Link'
+            AND adl.issue_id IN ( SELECT issue_id FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link')
         </if>
         <if test="chartType == 'version_chart'">
-            AND adl.field = 'Fix Version'
+            AND adl.field = 'Fix Version' and (adl.old_value = #{id} OR adl.new_value = #{id})
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
         </if>
         )
         GROUP BY
@@ -2337,10 +2358,12 @@
             SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
         </if>
         )
-        AND field IN (
-        'resolution',
-        'Story Points'
-        )
+        <if test="chartType == 'epic_chart'">
+            AND field IN ('resolution','Story Points', 'Epic Link')
+        </if>
+        <if test="chartType == 'version_chart'">
+            AND field IN ('resolution','Story Points','Fix Version')
+        </if>
         ORDER BY
         group_day
         ) t1,
@@ -2351,12 +2374,15 @@
         '%Y-%m-%d'
         )
         AND adl.field = 'Story Points'
+        <if test="chartType == 'epic_chart'">
+            AND adl.issue_id IN ( SELECT issue_id FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link')
+        </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
         </if>
         )
         GROUP BY
@@ -2406,7 +2432,12 @@
             SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
         </if>
         )
-        AND field IN ('resolution','timeestimate','timespent')
+        <if test="chartType == 'epic_chart'">
+            AND field IN ('resolution', 'timeestimate', 'timespent', 'Epic Link')
+        </if>
+        <if test="chartType == 'version_chart'">
+            AND field IN ('resolution', 'timeestimate', 'timespent', 'Fix Version')
+        </if>
         ORDER BY
         group_day
         ) t1,
@@ -2416,12 +2447,15 @@
         adl.last_update_date,
         '%Y-%m-%d'
         )
+        <if test="chartType == 'epic_chart'">
+            AND adl.issue_id IN ( SELECT issue_id FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link')
+        </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
         </if>
         )
         AND adl.field = 'timeestimate'
@@ -2464,7 +2498,12 @@
             SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
         </if>
         )
-        AND field IN ('resolution','timeestimate', 'timespent')
+        <if test="chartType == 'epic_chart'">
+            AND field IN ('resolution', 'timeestimate', 'timespent', 'Epic Link')
+        </if>
+        <if test="chartType == 'version_chart'">
+            AND field IN ('resolution', 'timeestimate', 'timespent', 'Fix Version')
+        </if>
         ORDER BY
         group_day
         ) t1,
@@ -2474,12 +2513,15 @@
         adl.last_update_date,
         '%Y-%m-%d'
         )
+        <if test="chartType == 'epic_chart'">
+            AND adl.issue_id IN ( SELECT issue_id FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link')
+        </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
         </if>
         )
         AND adl.field = 'resolution'
@@ -2534,7 +2576,12 @@
             SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
         </if>
         )
-        AND field IN ('resolution', 'timeestimate', 'timespent')
+        <if test="chartType == 'epic_chart'">
+            AND field IN ('resolution', 'timeestimate', 'timespent', 'Epic Link')
+        </if>
+        <if test="chartType == 'version_chart'">
+            AND field IN ('resolution', 'timeestimate', 'timespent', 'Fix Version')
+        </if>
         ORDER BY
         group_day
         ) t1,
@@ -2544,12 +2591,15 @@
         adl.last_update_date,
         '%Y-%m-%d'
         )
+        <if test="chartType == 'epic_chart'">
+            AND adl.issue_id IN ( SELECT issue_id FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link')
+        </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
         </if>
         )
         AND adl.field = 'timespent'
@@ -2592,7 +2642,12 @@
             SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
         </if>
         )
-        AND field IN ('resolution','timeestimate', 'timespent')
+        <if test="chartType == 'epic_chart'">
+            AND field IN ('resolution', 'timeestimate', 'timespent', 'Epic Link')
+        </if>
+        <if test="chartType == 'version_chart'">
+            AND field IN ('resolution', 'timeestimate', 'timespent', 'Fix Version')
+        </if>
         ORDER BY
         group_day
         ) t1,
@@ -2602,12 +2657,15 @@
         adl.last_update_date,
         '%Y-%m-%d'
         )
+        <if test="chartType == 'epic_chart'">
+            AND adl.issue_id IN ( SELECT issue_id FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link')
+        </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
         </if>
         )
         AND adl.field = 'resolution'
@@ -2656,7 +2714,12 @@
             SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
         </if>
         )
-        AND field IN ('resolution', 'timeestimate', 'timespent')
+        <if test="chartType == 'epic_chart'">
+            AND field IN ('resolution', 'timeestimate', 'timespent', 'Epic Link')
+        </if>
+        <if test="chartType == 'version_chart'">
+            AND field IN ('resolution', 'timeestimate', 'timespent', 'Fix Version')
+        </if>
         ORDER BY
         group_day
         ) t1,
@@ -2666,12 +2729,15 @@
         adl.last_update_date,
         '%Y-%m-%d'
         )
+        <if test="chartType == 'epic_chart'">
+            AND adl.issue_id IN ( SELECT issue_id FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link')
+        </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
         </if>
         )
         AND adl.field = 'timeestimate'
@@ -2716,11 +2782,12 @@
             SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
         </if>
         )
-        AND field IN (
-        'resolution',
-        'timeestimate',
-        'timespent'
-        )
+        <if test="chartType == 'epic_chart'">
+            AND field IN ('resolution', 'timeestimate', 'timespent', 'Epic Link')
+        </if>
+        <if test="chartType == 'version_chart'">
+            AND field IN ('resolution', 'timeestimate', 'timespent', 'Fix Version')
+        </if>
         ORDER BY
         group_day
         ) t1,
@@ -2730,12 +2797,15 @@
         adl.last_update_date,
         '%Y-%m-%d'
         )
+        <if test="chartType == 'epic_chart'">
+            AND adl.issue_id IN ( SELECT issue_id FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link')
+        </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
         </if>
         )
         AND adl.field = 'timespent'
@@ -2781,11 +2851,12 @@
             SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
         </if>
         )
-        AND field IN (
-        'resolution',
-        'timeestimate',
-        'timespent'
-        )
+        <if test="chartType == 'epic_chart'">
+            AND field IN ('resolution', 'timeestimate', 'timespent', 'Epic Link')
+        </if>
+        <if test="chartType == 'version_chart'">
+            AND field IN ('resolution', 'timeestimate', 'timespent', 'Fix Version')
+        </if>
         ORDER BY
         group_day
         ) t1,
@@ -2797,16 +2868,17 @@
         )
         <if test="chartType == 'epic_chart'">
             AND adl.field = 'Epic Link'
+            AND adl.issue_id IN ( SELECT issue_id FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link')
         </if>
         <if test="chartType == 'version_chart'">
-            AND adl.field = 'Fix Version'
+            AND adl.field = 'Fix Version' and (adl.old_value = #{id} OR adl.new_value = #{id})
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
         </if>
         )
         GROUP BY
@@ -2851,11 +2923,12 @@
             SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
         </if>
         )
-        AND field IN (
-        'resolution',
-        'timeestimate',
-        'timespent'
-        )
+        <if test="chartType == 'epic_chart'">
+            AND field IN ('resolution', 'timeestimate', 'timespent', 'Epic Link')
+        </if>
+        <if test="chartType == 'version_chart'">
+            AND field IN ('resolution', 'timeestimate', 'timespent', 'Fix Version')
+        </if>
         ORDER BY
         group_day
         ) t1,
@@ -2866,12 +2939,15 @@
         '%Y-%m-%d'
         )
         AND adl.field = 'timeestimate'
+        <if test="chartType == 'epic_chart'">
+            AND adl.issue_id IN ( SELECT issue_id FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link')
+        </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
         </if>
         )
         GROUP BY
@@ -2934,6 +3010,7 @@
         )
         <if test="chartType == 'epic_chart'">
             AND adl.field = 'Epic Link'
+            AND adl.issue_id IN ( SELECT issue_id FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link')
         </if>
         <if test="chartType == 'version_chart'">
             AND adl.field = 'Fix Version' and (adl.old_value = #{id} OR adl.new_value = #{id})
@@ -2943,7 +3020,7 @@
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
         </if>
         )
         GROUP BY
@@ -2997,12 +3074,15 @@
         adl.last_update_date,
         '%Y-%m-%d'
         )
+        <if test="chartType == 'epic_chart'">
+            AND adl.issue_id IN ( SELECT issue_id FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link')
+        </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
         </if>
         )
         AND adl.field = 'resolution'
@@ -3071,6 +3151,7 @@
         )
         <if test="chartType == 'epic_chart'">
             AND adl.field = 'Epic Link'
+            AND adl.issue_id IN ( SELECT issue_id FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link')
         </if>
         <if test="chartType == 'version_chart'">
             AND adl.field = 'Fix Version' and (adl.old_value = #{id} OR adl.new_value = #{id})
@@ -3080,7 +3161,7 @@
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
         </if>
         )
         GROUP BY
