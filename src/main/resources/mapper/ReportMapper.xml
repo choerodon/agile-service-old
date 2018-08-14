@@ -108,7 +108,35 @@
         1 as statistical,
         CONCAT_WS('-', api.project_code, aaa.issue_num) AS issue_num,
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
-        ai2.issue_id as parent_issue_id
+        ai2.issue_id as parent_issue_id,
+        case when
+        (
+            SELECT CASE WHEN adl3.issue_id IS NOT NULL AND adl3.new_value IS NULL
+            THEN 1
+            ELSE 0 END
+            FROM
+            agile_data_log adl3
+            WHERE
+            adl3.issue_id = bbb.issue_id
+            AND adl3.creation_date &lt; bbb.date
+            AND adl3.field = 'resolution'
+            ORDER BY adl3.creation_date DESC
+            LIMIT 1
+        ) is null then 1
+        else
+        (
+            SELECT CASE WHEN adl3.issue_id IS NOT NULL AND adl3.new_value IS NULL
+            THEN 1
+            ELSE 0 END
+            FROM
+            agile_data_log adl3
+            WHERE
+            adl3.issue_id = bbb.issue_id
+            AND adl3.creation_date &lt; bbb.date
+            AND adl3.field = 'resolution'
+            ORDER BY adl3.creation_date DESC
+            LIMIT 1
+        ) end as statistical
         from (
         SELECT
         adl.issue_id,
@@ -170,7 +198,35 @@
         1 as statistical,
         CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
-        ai2.issue_id as parent_issue_id
+        ai2.issue_id as parent_issue_id,
+        case when (
+            SELECT CASE WHEN adl3.issue_id IS NOT NULL AND adl3.new_value IS NULL
+            THEN 1
+            ELSE 0 END
+            FROM
+            agile_data_log adl3
+            WHERE
+            adl3.issue_id = a.issue_id
+            AND adl3.creation_date &lt; a.date
+            AND adl3.field = 'resolution'
+            ORDER BY adl3.creation_date DESC
+            LIMIT 1
+        ) is null then 1
+        else
+            (
+            SELECT CASE WHEN adl3.issue_id IS NOT NULL AND adl3.new_value IS NULL
+            THEN 1
+            ELSE 0 END
+            FROM
+            agile_data_log adl3
+            WHERE
+            adl3.issue_id = a.issue_id
+            AND adl3.creation_date &lt; a.date
+            AND adl3.field = 'resolution'
+            ORDER BY adl3.creation_date DESC
+            LIMIT 1
+            ) end
+        as statistical
         FROM
         (
         SELECT
@@ -201,11 +257,53 @@
     </select>
 
     <select id="queryAddIssueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
-        SELECT ai.issue_id,abd.date,'addDuringSprint' as type,0 as old_value,
+        SELECT
+        ai.issue_id,
+        abd.date,
+        'addDuringSprint' as type,
+        0 as old_value,
         1 as new_value,
-        1 as statistical,CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,CONCAT_WS('-', api2.project_code,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,CONCAT_WS('-', api2.project_code,
         ai2.issue_num) AS parent_issue_num,
-        ai2.issue_id as parent_issue_id
+        ai2.issue_id as parent_issue_id,
+        case when
+            (
+                SELECT
+                CASE
+                WHEN
+                adl2.issue_id IS NOT NULL
+                AND adl2.new_value IS NULL THEN
+                1 ELSE 0
+                END
+                FROM
+                agile_data_log adl2
+                WHERE
+                adl2.issue_id = ai.issue_id
+                AND adl2.creation_date &lt; abd.date
+                 AND adl2.field = 'resolution'
+                 ORDER BY
+                 adl2.creation_date DESC
+                 LIMIT 1
+            ) is null then 1
+        else
+            (
+                SELECT
+                CASE
+                WHEN
+                adl2.issue_id IS NOT NULL
+                AND adl2.new_value IS NULL THEN
+                1 ELSE 0
+                END
+                FROM
+                agile_data_log adl2
+                WHERE
+                adl2.issue_id = ai.issue_id
+                AND adl2.creation_date &lt; abd.date
+                AND adl2.field = 'resolution'
+                ORDER BY
+                adl2.creation_date DESC
+                LIMIT 1
+            )  end AS statistical
         FROM (SELECT
         adl.issue_id,
         adl.creation_date AS date
@@ -237,7 +335,45 @@
         CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_id,
-        1 as statistical
+        case when
+        (
+            SELECT
+            CASE
+            WHEN
+            adl2.issue_id IS NOT NULL
+            AND adl2.new_value IS NULL THEN
+            1 ELSE 0
+            END
+            FROM
+            agile_data_log adl2
+            WHERE
+            adl2.issue_id = adl.issue_id
+            AND adl2.creation_date &lt; adl.creation_date
+            AND adl2.field = 'resolution'
+            ORDER BY
+            adl2.creation_date DESC
+            LIMIT 1
+        ) is null then 1
+        else
+            (
+                SELECT
+                CASE
+                WHEN
+                adl2.issue_id IS NOT NULL
+                AND adl2.new_value IS NULL THEN
+                1 ELSE 0
+                END
+                FROM
+                agile_data_log adl2
+                WHERE
+                adl2.issue_id = adl.issue_id
+                AND adl2.creation_date &lt; adl.creation_date
+                AND adl2.field = 'resolution'
+                ORDER BY
+                adl2.creation_date DESC
+                LIMIT 1
+            ) end
+        AS statistical
         FROM
         agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
         api.project_id = ai.project_id left join agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN
@@ -293,7 +429,8 @@
         a.*,
         0 as new_value,
         'addDoneDuringSprint' as type,
-        1 as statistical,
+        case when FIND_IN_SET(#{sprintDO.sprintId}, (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = a.issue_id and adl3.field = 'Sprint' and
+        adl3.creation_date &lt; a.date order by adl3.log_id desc limit 1)) then 1 else 0 end as statistical,
         CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_Id
@@ -328,7 +465,8 @@
         a.*,
         0 as old_value,
         'removeDoneDuringSprint' as type,
-        1 as statistical,
+        case when FIND_IN_SET(#{sprintDO.sprintId}, (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = a.issue_id and adl3.field = 'Sprint' and
+        adl3.creation_date &lt; a.date order by adl3.log_id desc limit 1)) then 1 else 0 end as statistical,
         CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_id
@@ -391,7 +529,8 @@
         CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_id,
-        1 as statistical
+        case when FIND_IN_SET(#{sprintDO.sprintId}, (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = adl.issue_id and adl3.field = 'Sprint' and
+        adl3.creation_date &lt; adl.creation_date order by adl3.log_id desc limit 1)) then 1 else 0 end as statistical
         FROM
         agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
         api.project_id = ai.project_id left join agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN
@@ -419,7 +558,8 @@
         CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_id,
-        1 as statistical
+        case when FIND_IN_SET(#{sprintDO.sprintId}, (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = adl.issue_id and adl3.field = 'Sprint' and
+        adl3.creation_date &lt; adl.creation_date order by adl3.log_id desc limit 1)) then 1 else 0 end as statistical
         FROM
         agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
         api.project_id = ai.project_id left join agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN

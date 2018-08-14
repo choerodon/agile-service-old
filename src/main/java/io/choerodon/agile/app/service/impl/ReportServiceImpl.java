@@ -647,8 +647,6 @@ public class ReportServiceImpl implements ReportService {
     private void handleRemoveCountDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueIdRemoveList) {
         List<ReportIssueE> issueRemoveList = issueIdRemoveList != null && !issueIdRemoveList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryRemoveIssueDuringSprint(issueIdRemoveList, sprintDO), ReportIssueE.class) : null;
         if (issueRemoveList != null && !issueRemoveList.isEmpty()) {
-            //移除时，状态为done的不计入统计
-            issueRemoveList.parallelStream().forEach(this::handleDoneStatusIssue);
             reportIssueEList.addAll(issueRemoveList);
         }
     }
@@ -656,8 +654,6 @@ public class ReportServiceImpl implements ReportService {
     private void handleAddIssueCountDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueIdAddList) {
         List<ReportIssueE> issueAddList = issueIdAddList != null && !issueIdAddList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueDuringSprint(issueIdAddList, sprintDO), ReportIssueE.class) : null;
         if (issueAddList != null && !issueAddList.isEmpty()) {
-            //添加时，状态为done的不计入统计
-            issueAddList.parallelStream().forEach(this::handleDoneStatusIssue);
             reportIssueEList.addAll(issueAddList);
         }
     }
@@ -738,7 +734,6 @@ public class ReportServiceImpl implements ReportService {
         List<ReportIssueE> issueRemoveList = issueIdRemoveList != null && !issueIdRemoveList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryRemoveIssueValueDurationSprint(issueIdRemoveList, sprintDO, field), ReportIssueE.class) : null;
         if (issueRemoveList != null && !issueRemoveList.isEmpty()) {
             //移除时，状态为done的不计入统计
-            issueRemoveList.parallelStream().forEach(this::handleDoneStatusIssue);
             reportIssueEList.addAll(issueRemoveList);
         }
 
@@ -754,8 +749,6 @@ public class ReportServiceImpl implements ReportService {
     private void handleAddIssueValueDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueIdAddList, String field) {
         List<ReportIssueE> issueAddList = issueIdAddList != null && !issueIdAddList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueValueDuringSprint(issueIdAddList, sprintDO, field), ReportIssueE.class) : null;
         if (issueAddList != null && !issueAddList.isEmpty()) {
-            //添加时，状态为done的不计入统计
-            issueAddList.parallelStream().forEach(this::handleDoneStatusIssue);
             reportIssueEList.addAll(issueAddList);
         }
     }
@@ -1563,7 +1556,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public Map<String, Integer> queryBurnDownCoordinate(Long projectId, Long sprintId, String type) {
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
-        return handleSameDay(reportIssueEList.stream().
+        return handleSameDay(reportIssueEList.stream().filter(reportIssueE -> !"endSprint".equals(reportIssueE.getType())).
                 sorted(Comparator.comparing(ReportIssueE::getDate)).collect(Collectors.toList()));
     }
 
