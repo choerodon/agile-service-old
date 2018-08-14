@@ -1,7 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.QuickFilterDTO;
-import io.choerodon.agile.api.dto.QuickFilterFieldDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.QuickFilterFieldService;
 import io.choerodon.agile.app.service.QuickFilterService;
 import io.choerodon.core.exception.CommonException;
@@ -31,6 +30,8 @@ public class QuickFilterController {
 
     @Autowired
     private QuickFilterFieldService quickFilterFieldService;
+
+    private static final String DRAG_ERROR = "error.filter.dragVersion";
 
     @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("创建quick filter")
@@ -102,6 +103,17 @@ public class QuickFilterController {
                 .orElseThrow(() -> new CommonException("error.quickFilterField.list"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation(value = "拖动过滤位置")
+    @PutMapping(value = "/drag")
+    public ResponseEntity<QuickFilterDTO> dragFilter(@ApiParam(value = "项目id", required = true)
+                                                             @PathVariable(name = "project_id") Long projectId,
+                                                             @ApiParam(value = "排序对象", required = true)
+                                                             @RequestBody QuickFilterSequenceDTO quickFilterSequenceDTO) {
+        return Optional.ofNullable(quickFilterService.dragFilter(projectId, quickFilterSequenceDTO))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException(DRAG_ERROR));
+    }
 
 
 }

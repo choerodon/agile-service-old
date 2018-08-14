@@ -35,6 +35,8 @@ public class QuickFilterDO extends AuditDomain {
 
     private String description;
 
+    private Integer sequence;
+
     public Long getFilterId() {
         return filterId;
     }
@@ -89,5 +91,13 @@ public class QuickFilterDO extends AuditDomain {
 
     public String getDescription() {
         return description;
+    }
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
     }
 }

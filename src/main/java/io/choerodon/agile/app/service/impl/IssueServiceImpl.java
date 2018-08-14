@@ -679,10 +679,14 @@ public class IssueServiceImpl implements IssueService {
                     versionIssueRelE.setVersionId(productVersionDetailDTO.getVersionId());
                 }
             }
-            if (issueRule.existVersionIssueRel(versionIssueRelE)) {
-                versionIssueRelRepository.create(versionIssueRelE);
-            }
+            handleVersionIssueRelCreate(versionIssueRelE);
         });
+    }
+
+    private void handleVersionIssueRelCreate(VersionIssueRelE versionIssueRelE) {
+        if (issueRule.existVersionIssueRel(versionIssueRelE)) {
+            versionIssueRelRepository.create(versionIssueRelE);
+        }
     }
 
     private void handleCreateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId, ProjectInfoE projectInfoE) {

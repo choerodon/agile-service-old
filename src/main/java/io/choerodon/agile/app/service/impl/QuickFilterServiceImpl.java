@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.QuickFilterDTO;
+import io.choerodon.agile.api.dto.QuickFilterSequenceDTO;
 import io.choerodon.agile.api.dto.QuickFilterValueDTO;
 import io.choerodon.agile.app.service.QuickFilterService;
 import io.choerodon.agile.domain.agile.entity.QuickFilterE;
@@ -35,6 +36,8 @@ public class QuickFilterServiceImpl implements QuickFilterService {
 
     @Autowired
     private QuickFilterFieldMapper quickFilterFieldMapper;
+
+    private static final String NOT_FOUND = "error.QuickFilter.notFound";
 
     private void dealCaseComponent(String field, String value, String operation, StringBuilder sqlQuery) {
         if ("null".equals(value)) {
@@ -174,6 +177,9 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         String sqlQuery = getSqlQuery(quickFilterDTO.getQuickFilterValueDTOList(), quickFilterDTO.getRelationOperations(), quickFilterDTO.getChildIncluded());
         QuickFilterE quickFilterE = ConvertHelper.convert(quickFilterDTO, QuickFilterE.class);
         quickFilterE.setSqlQuery(sqlQuery);
+        //设置编号
+        Integer sequence = quickFilterMapper.queryMaxSequenceByProject(projectId);
+        quickFilterE.setSequence(sequence == null ? 0 : sequence + 1);
         return ConvertHelper.convert(quickFilterRepository.create(quickFilterE), QuickFilterDTO.class);
     }
 
@@ -205,8 +211,51 @@ public class QuickFilterServiceImpl implements QuickFilterService {
 
     @Override
     public List<QuickFilterDTO> listByProjectId(Long projectId) {
-        QuickFilterDO quickFilterDO = new QuickFilterDO();
-        quickFilterDO.setProjectId(projectId);
-        return ConvertHelper.convertList(quickFilterMapper.select(quickFilterDO), QuickFilterDTO.class);
+        return ConvertHelper.convertList(quickFilterMapper.queryFiltersByProjectId(projectId), QuickFilterDTO.class);
     }
+
+    @Override
+    public QuickFilterDTO dragFilter(Long projectId, QuickFilterSequenceDTO quickFilterSequenceDTO) {
+        if (quickFilterSequenceDTO.getAfterSequence() == null && quickFilterSequenceDTO.getBeforeSequence() == null) {
+            throw new CommonException("error.dragFilter.noSequence");
+        }
+        QuickFilterE quickFilterE = ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(quickFilterSequenceDTO.getFilterId()),QuickFilterE.class);
+        if (quickFilterE == null) {
+            throw new CommonException(NOT_FOUND);
+        }
+        Integer sequence;
+        if (quickFilterSequenceDTO.getAfterSequence() == null) {
+            Integer maxSequence = quickFilterMapper.queryMaxAfterSequence(quickFilterSequenceDTO.getBeforeSequence(), projectId);
+            sequence = maxSequence != null ? maxSequence + 1 : quickFilterSequenceDTO.getBeforeSequence();
+        } else {
+            sequence = quickFilterSequenceDTO.getAfterSequence() + 1;
+        }
+        handleSequence(quickFilterSequenceDTO, sequence, projectId, quickFilterE);
+        return ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(quickFilterSequenceDTO.getFilterId()),QuickFilterDTO.class);
+
+    }
+
+    private void handleSequence(QuickFilterSequenceDTO quickFilterSequenceDTO, Integer sequence, Long projectId, QuickFilterE quickFilterE) {
+        if (quickFilterSequenceDTO.getBeforeSequence() == null) {
+            Integer minSequence = quickFilterMapper.queryMinBeforeSequence(quickFilterSequenceDTO.getAfterSequence(), projectId);
+            if (minSequence == null) {
+                quickFilterE.setSequence(sequence);
+                quickFilterRepository.update(quickFilterE);
+            } else {
+                quickFilterRepository.batchUpdateSequence(sequence, projectId);
+            }
+        } else {
+            if (sequence >= quickFilterSequenceDTO.getBeforeSequence()) {
+                quickFilterRepository.batchUpdateSequence(sequence, projectId);
+                if (quickFilterSequenceDTO.getAfterSequence() == null) {
+                    quickFilterE.setSequence(sequence);
+                    quickFilterRepository.update(quickFilterE);
+                }
+            } else {
+                quickFilterE.setSequence(sequence);
+                quickFilterRepository.update(quickFilterE);
+            }
+        }
+    }
+
 }

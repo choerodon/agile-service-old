@@ -193,7 +193,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
 
     @Override
     public List<ProductVersionDataDTO> queryVersionByProjectId(Long projectId) {
-        List<ProductVersionDataDTO> productVersions = versionDataAssembler.doListToDTO(productVersionMapper.queryVersionByprojectId(projectId));
+        List<ProductVersionDataDTO> productVersions = versionDataAssembler.doListToDTO(productVersionMapper.queryVersionByProjectId(projectId));
         if (!productVersions.isEmpty()) {
             List<Long> productVersionIds = productVersions.stream().map(ProductVersionDataDTO::getVersionId).collect(toList());
             Map<Long, Integer> issueCountMap = productVersionMapper.queryIssueCount(projectId, productVersionIds, null).stream().collect(toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));

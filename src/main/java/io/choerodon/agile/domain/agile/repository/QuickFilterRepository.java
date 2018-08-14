@@ -14,4 +14,12 @@ public interface QuickFilterRepository {
 
     void deleteById(Long filterId);
 
+    /**
+     * 批量更新排序
+     *
+     * @param sequence  sequence
+     * @param projectId projectId
+     * @return int
+     */
+    int batchUpdateSequence(Integer sequence, Long projectId);
 }
