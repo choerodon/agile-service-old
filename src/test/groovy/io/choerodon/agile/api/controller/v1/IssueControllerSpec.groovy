@@ -33,7 +33,6 @@ import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO
 import io.choerodon.agile.infra.dataobject.IssueDO
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
-import io.choerodon.agile.infra.feign.UserFeignClient
 import io.choerodon.agile.infra.mapper.DataLogMapper
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.IssueSprintRelMapper
@@ -42,7 +41,6 @@ import io.choerodon.agile.infra.mapper.SprintMapper
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.domain.Page
 import io.choerodon.event.producer.execute.EventProducerTemplate
-import org.apache.http.HttpHeaders
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -50,7 +48,6 @@ import org.springframework.context.annotation.Import
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.util.MultiValueMap
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
@@ -171,7 +168,7 @@ class IssueControllerSpec extends Specification {
         labelIssueRelDTO.labelName = "测试标签"
         LabelIssueRelDTO labelIssueRelDTO1 = new LabelIssueRelDTO()
         labelIssueRelDTO1.projectId = projectId
-        labelIssueRelDTO1.labelName = "测试标签1"
+        labelIssueRelDTO1.labelId = 1L
         labelIssueRelDTOList.add(labelIssueRelDTO)
         labelIssueRelDTOList.add(labelIssueRelDTO1)
         issueCreateDTO.labelIssueRelDTOList = labelIssueRelDTOList
@@ -663,24 +660,34 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    //todo sql语句错误
-//    def "根据时间段查询问题类型的数量"() {
-//        given: '查询条件'
-//        def typeCode = "story"
-//        def timeSlot = 1
-//
-//        when: '根据时间段查询问题类型的数量的接口发请求'
-//        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/type/{typeCode}?timeSlot={timeSlot}', List, projectId, typeCode, timeSlot)
-//
-//        then: '返回值'
-//        entity.statusCode.is2xxSuccessful()
-//
-//        and: '设置值'
-//        List<IssueCreationNumDTO> issueCreationNumDTOList = entity.body
-//
-//        expect: '设置期望值'
-//        issueCreationNumDTOList.size() > 0
-//    }
+    def "根据时间段查询问题类型的数量"() {
+        given: '查询条件'
+        def typeCode = "story"
+
+        when: '根据时间段查询问题类型的数量的接口发请求'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/type/{typeCode}?timeSlot={timeSlot}', List, projectId, typeCode, timeSlot)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        List<IssueCreationNumDTO> issueCreationNumDTOList = entity.body
+
+        expect: '设置期望值'
+        issueCreationNumDTOList.size() > 0 == expectCount
+
+        where: '给定参数'
+        timeSlot | expectCount
+        0        | false
+        1        | false
+        3        | false
+        4        | false
+        -1       | true
+        -3       | true
+        -4       | true
+
+
+    }
 
     def "拖动epic位置"() {
         given: '拖动参数'
@@ -726,7 +733,7 @@ class IssueControllerSpec extends Specification {
         type        | expectedCount
         "version"   | 3
         "component" | 3
-        "label"     | 3
+        "label"     | 2
 
     }
 

@@ -1439,7 +1439,7 @@
         WHERE
             project_id = #{projectId}
             AND type_code = #{typeCode}
-            AND DATE_SUB(now(), INTERVAL #{timeSlot} DAY) &lt;= creation_date
+            AND #{date} &lt;= creation_date
         GROUP BY
             DATE_FORMAT(creation_date, '%Y-%m-%d')
         ORDER BY
