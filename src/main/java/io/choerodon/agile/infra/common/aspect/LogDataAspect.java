@@ -562,21 +562,28 @@ public class LogDataAspect {
             StringBuilder newSprintNameStr = new StringBuilder();
             List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
             if (sprintNames != null && !sprintNames.isEmpty()) {
-                String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
-                String oldSprintNameStr = sprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
-                handleSprintStringBuilder(sprintNames, activeSprintName, newSprintNameStr, newSprintIdStr, sprintDO);
-                String oldString = "".equals(oldSprintNameStr) ? null : oldSprintNameStr;
-                String newString = newSprintNameStr.length() == 0 ? null : newSprintNameStr.toString();
-                String oldValue = "".equals(oldSprintIdStr) ? null : oldSprintIdStr;
-                String newValue = newSprintIdStr.length() == 0 ? null : newSprintIdStr.toString();
-                if (!Objects.equals(oldValue, newValue)) {
-                    createDataLog(projectId, issueId, FIELD_SPRINT, oldString,
-                            newString, oldValue, newValue);
-                }
+                handleBatchCreateDataLogForSpring(sprintNames, activeSprintName, newSprintNameStr, newSprintIdStr, sprintDO, projectId, issueId);
             }
 
         }
     }
+
+    private void handleBatchCreateDataLogForSpring(List<SprintNameDTO> sprintNames, SprintNameDTO activeSprintName,
+                                                   StringBuilder newSprintNameStr, StringBuilder newSprintIdStr,
+                                                   SprintDO sprintDO, Long projectId, Long issueId) {
+        String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
+        String oldSprintNameStr = sprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
+        handleSprintStringBuilder(sprintNames, activeSprintName, newSprintNameStr, newSprintIdStr, sprintDO);
+        String oldString = "".equals(oldSprintNameStr) ? null : oldSprintNameStr;
+        String newString = newSprintNameStr.length() == 0 ? null : newSprintNameStr.toString();
+        String oldValue = "".equals(oldSprintIdStr) ? null : oldSprintIdStr;
+        String newValue = newSprintIdStr.length() == 0 ? null : newSprintIdStr.toString();
+        if (!Objects.equals(oldValue, newValue)) {
+            createDataLog(projectId, issueId, FIELD_SPRINT, oldString,
+                    newString, oldValue, newValue);
+        }
+    }
+
 
     private void handleSprintStringBuilder(List<SprintNameDTO> sprintNames, SprintNameDTO activeSprintName,
                                            StringBuilder newSprintNameStr, StringBuilder newSprintIdStr, SprintDO sprintDO) {

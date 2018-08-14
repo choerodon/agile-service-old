@@ -31,4 +31,12 @@ databaseChangeLog(logicalFilePath:'agile_quick_filter.groovy') {
             column(name: "project_id")
         }
     }
+    changeSet(id: '2018-08-14-add-agile-quick-filter-column', author: 'dinghuang123@gmail.com') {
+        addColumn(tableName: 'agile_quick_filter') {
+            column(name: 'sequence', type: 'int', remarks: '排序字段', defaultValue: "0")
+        }
+        sql(stripComments: true, splitStatements: false, endDelimiter: ';') {
+            "update agile_quick_filter set sequence = filter_id;"
+        }
+    }
 }

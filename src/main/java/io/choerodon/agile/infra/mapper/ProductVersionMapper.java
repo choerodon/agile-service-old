@@ -23,7 +23,7 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
 
     Boolean isNotReName(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("name") String name);
 
-    List<ProductVersionDataDO> queryVersionByprojectId(@Param("projectId") Long projectId);
+    List<ProductVersionDataDO> queryVersionByProjectId(@Param("projectId") Long projectId);
 
     ProductVersionStatisticsDO queryVersionStatisticsByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 

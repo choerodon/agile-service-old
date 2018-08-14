@@ -6,17 +6,15 @@ import javax.validation.constraints.NotNull;
 
 /**
  * @author dinghuang123@gmail.com
- * @since 2018/7/26
+ * @since 2018/8/14
  */
-public class VersionSequenceDTO {
+public class QuickFilterSequenceDTO {
 
-
-    private static final String VERSION_ID_NOT_NULL_ERROR = "error.versionId.NotNull";
+    private static final String FILTER_ID_NOT_NULL_ERROR = "error.filterId.NotNull";
     private static final String OBJECT_VERSION_NUMBER_NULL_ERROR = "error.objectVersionNumber.NotNull";
 
-
-    @NotNull(message = VERSION_ID_NOT_NULL_ERROR)
-    private Long versionId;
+    @NotNull(message = FILTER_ID_NOT_NULL_ERROR)
+    private Long filterId;
 
     @NotNull(message = OBJECT_VERSION_NUMBER_NULL_ERROR)
     private Long objectVersionNumber;
@@ -25,12 +23,12 @@ public class VersionSequenceDTO {
 
     private Integer afterSequence;
 
-    public Long getVersionId() {
-        return versionId;
+    public Long getFilterId() {
+        return filterId;
     }
 
-    public void setVersionId(Long versionId) {
-        this.versionId = versionId;
+    public void setFilterId(Long filterId) {
+        this.filterId = filterId;
     }
 
     public Long getObjectVersionNumber() {

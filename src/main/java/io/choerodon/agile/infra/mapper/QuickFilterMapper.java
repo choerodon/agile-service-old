@@ -13,4 +13,46 @@ import java.util.List;
 public interface QuickFilterMapper extends BaseMapper<QuickFilterDO> {
 
     List<String> selectSqlQueryByIds(@Param("quickFilterIds") List<Long> quickFilterIds);
+
+    /**
+     * 批量更新排序
+     *
+     * @param sequence  sequence
+     * @param projectId projectId
+     * @return int
+     */
+    int batchUpdateSequence(@Param("sequence") Integer sequence, @Param("projectId") Long projectId);
+
+    /**
+     * 查询最大的序号
+     *
+     * @param projectId projectId
+     * @return Integer
+     */
+    Integer queryMaxSequenceByProject(@Param("projectId") Long projectId);
+
+    /**
+     * 获取当前排序后的最大一个
+     *
+     * @param sequence  sequence
+     * @param projectId projectId
+     * @return Integer
+     */
+    Integer queryMaxAfterSequence(@Param("sequence") Integer sequence, @Param("projectId") Long projectId);
+
+    /**
+     * 获取当前排序前的最小一个
+     *
+     * @param sequence  sequence
+     * @param projectId projectId
+     * @return Integer
+     */
+    Integer queryMinBeforeSequence(@Param("sequence") Integer sequence, @Param("projectId") Long projectId);
+
+    /**
+     * 根据项目id查询快速筛选，通过sequence排序
+     * @param projectId projectId
+     * @return QuickFilterDO
+     */
+    List<QuickFilterDO> queryFiltersByProjectId(@Param("projectId")Long projectId);
 }

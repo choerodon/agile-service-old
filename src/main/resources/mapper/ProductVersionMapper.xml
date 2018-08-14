@@ -59,7 +59,7 @@
         WHERE project_id = #{projectId} AND version_id = #{versionId}
     </select>
 
-    <select id="queryVersionByprojectId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDataDO">
+    <select id="queryVersionByProjectId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDataDO">
         SELECT
             version_id,
             name,

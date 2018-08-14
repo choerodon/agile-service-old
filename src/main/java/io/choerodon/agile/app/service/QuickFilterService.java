@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.QuickFilterDTO;
+import io.choerodon.agile.api.dto.QuickFilterSequenceDTO;
 
 import java.util.List;
 
@@ -20,4 +21,12 @@ public interface QuickFilterService {
 
     List<QuickFilterDTO> listByProjectId(Long projectId);
 
+    /**
+     * 拖动排序
+     *
+     * @param projectId              projectId
+     * @param quickFilterSequenceDTO quickFilterSequenceDTO
+     * @return QuickFilterDTO
+     */
+    QuickFilterDTO dragFilter(Long projectId, QuickFilterSequenceDTO quickFilterSequenceDTO);
 }

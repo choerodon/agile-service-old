@@ -22,6 +22,8 @@ public class QuickFilterE {
 
     private Long objectVersionNumber;
 
+    private Integer sequence;
+
     public Long getFilterId() {
         return filterId;
     }
@@ -84,5 +86,13 @@ public class QuickFilterE {
 
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
+    }
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
     }
 }
