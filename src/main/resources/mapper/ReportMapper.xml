@@ -2796,7 +2796,7 @@
             AND adl.field = 'Epic Link'
         </if>
         <if test="chartType == 'version_chart'">
-            AND adl.field = 'Fix Version'
+            AND adl.field = 'Fix Version' and (adl.old_value = #{id} OR adl.new_value = #{id})
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
@@ -2933,7 +2933,7 @@
             AND adl.field = 'Epic Link'
         </if>
         <if test="chartType == 'version_chart'">
-            AND adl.field = 'Fix Version'
+            AND adl.field = 'Fix Version' and (adl.old_value = #{id} OR adl.new_value = #{id})
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
