@@ -123,7 +123,8 @@ public class ReportServiceImpl implements ReportService {
         return reportIssueEList;
     }
 
-    private Map<String, Integer> handleSameDay(List<ReportIssueE> reportIssueEList) {
+    private JSONObject handleSameDay(List<ReportIssueE> reportIssueEList) {
+        JSONObject jsonObject = new JSONObject();
         DateFormat bf = new SimpleDateFormat("yyyy-MM-dd");
         TreeMap<String, Integer> report = new TreeMap<>();
         reportIssueEList.forEach(reportIssueE -> {
@@ -137,7 +138,17 @@ public class ReportServiceImpl implements ReportService {
                 }
             }
         });
-        return report;
+        //需要返回给前端期望值（开启冲刺的和）
+        Integer expectCount = 0;
+        List<ReportIssueE> startReportIssue = reportIssueEList.stream().filter(reportIssueE -> "startSprint".equals(reportIssueE.getType())).collect(Collectors.toList());
+        if (startReportIssue != null && !startReportIssue.isEmpty()) {
+            for (ReportIssueE reportIssueE : startReportIssue) {
+                expectCount += reportIssueE.getNewValue() - reportIssueE.getOldValue();
+            }
+        }
+        jsonObject.put("coordinate", report);
+        jsonObject.put("expectCount", expectCount);
+        return jsonObject;
     }
 
     @Override
@@ -1560,7 +1571,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public Map<String, Integer> queryBurnDownCoordinate(Long projectId, Long sprintId, String type) {
+    public JSONObject queryBurnDownCoordinate(Long projectId, Long sprintId, String type) {
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
         return handleSameDay(reportIssueEList.stream().filter(reportIssueE -> !"endSprint".equals(reportIssueE.getType())).
                 sorted(Comparator.comparing(ReportIssueE::getDate)).collect(Collectors.toList()));
