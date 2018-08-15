@@ -561,10 +561,7 @@ public class LogDataAspect {
             StringBuilder newSprintIdStr = new StringBuilder();
             StringBuilder newSprintNameStr = new StringBuilder();
             List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
-            if (sprintNames != null && !sprintNames.isEmpty()) {
-                handleBatchCreateDataLogForSpring(sprintNames, activeSprintName, newSprintNameStr, newSprintIdStr, sprintDO, projectId, issueId);
-            }
-
+            handleBatchCreateDataLogForSpring(sprintNames, activeSprintName, newSprintNameStr, newSprintIdStr, sprintDO, projectId, issueId);
         }
     }
 
