@@ -1329,8 +1329,8 @@
             aisr.sprint_id,
             aisr.issue_id
         FROM
-          agile_issue_sprint_rel aisr
-        WHERE aisr.project_id = #{projectId}
+          agile_issue_sprint_rel aisr, agile_issue ai
+        WHERE aisr.project_id = #{projectId} and aisr.issue_id = ai.issue_id and ai.type_code != 'issue_test'
     </select>
 
     <select id="selectByIssueCountCompleted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDO">
@@ -1367,12 +1367,14 @@
         WHERE
             adl2.project_id = #{projectId}
             AND adl2.log_id = t2.log_id
-        ) t3
+        ) t3,
+        agile_issue ai
         WHERE
             aisr.project_id = #{projectId}
             AND aisr.sprint_id = t3.sprint_id
             AND aisr.issue_id = t3.issue_id
             AND t3.completed = 1
+            and aisr.issue_id = ai.issue_id and ai.type_code != 'issue_test'
     </select>
 
 
@@ -1400,7 +1402,8 @@
         AND adl1.field = 'Story Points'
         AND adl1.last_update_date &lt;= IF (asp.actual_end_date IS NULL, #{now}, asp.actual_end_date)
         GROUP BY aisr.sprint_id, aisr.issue_id
-        ) t1
+        ) t1,
+        agile_issue ai
         WHERE
         adl.project_id = #{projectId}
         AND adl.log_id = t1.log_id
@@ -1409,6 +1412,7 @@
                  open="(" close=")" separator=",">
             #{id}
         </foreach>
+        and t1.issue_id = ai.issue_id and ai.type_code != 'issue_test'
     </select>
 
     <select id="selectByStoryPointAndNumCompleted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDO">
@@ -1464,7 +1468,8 @@
         WHERE
         adl2.project_id = #{projectId}
         AND adl2.log_id = t2.log_id
-        ) t3
+        ) t3,
+        agile_issue ai
         WHERE
         adl.project_id = #{projectId}
         AND adl.log_id = t1.log_id
@@ -1476,6 +1481,7 @@
                  open="(" close=")" separator=",">
             #{id}
         </foreach>
+        and t1.issue_id = ai.issue_id and ai.type_code != 'issue_test'
     </select>
 
 
@@ -1525,7 +1531,8 @@
         AND adl1.last_update_date &lt;= IF (asp.actual_end_date IS NULL, #{now}, asp.actual_end_date)
         GROUP BY aisr.sprint_id, aisr.issue_id) t4 WHERE adlf.project_id = #{projectId} AND adlf.log_id = t4.log_id
         GROUP BY t4.sprint_id,t4.issue_id
-        ) t5 ON t1.sprint_id = t5.sprint_id AND t1.issue_id = t5.issue_id
+        ) t5 ON t1.sprint_id = t5.sprint_id AND t1.issue_id = t5.issue_id,
+        agile_issue ai
         WHERE
         adl.project_id = #{projectId}
         AND adl.log_id = t1.log_id
@@ -1534,6 +1541,7 @@
                  open="(" close=")" separator=",">
             #{id}
         </foreach>
+        and t1.issue_id = ai.issue_id and ai.type_code != 'issue_test'
     </select>
 
     <select id="selectByRemainTimeCompleted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDO">
@@ -1613,7 +1621,8 @@
         WHERE
         adl2.project_id = #{projectId}
         AND adl2.log_id = t2.log_id
-        ) t3
+        ) t3,
+        agile_issue ai
         WHERE
         adl.project_id = #{projectId}
         AND adl.log_id = t1.log_id
@@ -1625,6 +1634,7 @@
                  open="(" close=")" separator=",">
             #{id}
         </foreach>
+        and t1.issue_id = ai.issue_id and ai.type_code != 'issue_test'
     </select>
 
 
