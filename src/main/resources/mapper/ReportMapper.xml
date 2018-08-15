@@ -2506,7 +2506,7 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type != 'issue_test'
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
             SELECT avirp.issue_id FROM agile_version_issue_rel avirp, agile_issue aip WHERE avirp.version_id = #{id}
@@ -2533,7 +2533,7 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type != 'issue_test'
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
             SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
