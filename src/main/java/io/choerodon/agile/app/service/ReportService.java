@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.service;
 
+import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.infra.dataobject.GroupDataChartDO;
 import io.choerodon.agile.infra.dataobject.GroupDataChartListDO;
@@ -65,5 +66,5 @@ public interface ReportService {
      * @param type      type
      * @return Coordinate
      */
-    Map<String, Integer> queryBurnDownCoordinate(Long projectId, Long sprintId, String type);
+    JSONObject queryBurnDownCoordinate(Long projectId, Long sprintId, String type);
 }

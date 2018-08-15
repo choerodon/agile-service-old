@@ -1,5 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
+import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.ReportService;
 import io.choerodon.agile.infra.dataobject.GroupDataChartDO;
@@ -56,11 +57,11 @@ public class ReportController {
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询燃尽图坐标信息")
     @GetMapping(value = "/{sprintId}/burn_down_report/coordinate")
-    public ResponseEntity<Map<String, Integer>> queryBurnDownCoordinate(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<JSONObject> queryBurnDownCoordinate(@ApiParam(value = "项目id", required = true)
                                                                     @PathVariable(name = "project_id") Long projectId,
-                                                                      @ApiParam(value = "sprintId", required = true)
+                                                              @ApiParam(value = "sprintId", required = true)
                                                                     @PathVariable Long sprintId,
-                                                                      @ApiParam(value = "类型(storyPoints、remainingEstimatedTime、issueCount)", required = true)
+                                                              @ApiParam(value = "类型(storyPoints、remainingEstimatedTime、issueCount)", required = true)
                                                                     @RequestParam String type) {
         return Optional.ofNullable(reportService.queryBurnDownCoordinate(projectId, sprintId, type))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

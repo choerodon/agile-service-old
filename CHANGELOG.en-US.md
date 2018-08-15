@@ -1,6 +1,42 @@
 # Changelog
 All notable changes about agile service will be documented in this file.
 
+## [0.9.0] - 2018-08-17
+
+### Added
+
+- Version drag sort functionality.Users can drag the version to sort versions in the version management view and the to-do view.
+- Epic drag sort functionality.Users can drag the epic to sort epics in the to-do view.
+- Quick Search sort functionality.Users can drag the quick search and sort quick searchs in the set-up quick search view.
+- Sprint speed chart functionality.Users can select story points, issues counts,remaining time to see issues's resolve and unresolved proportional histogram of different sprints.
+- Epic report functionality.Users can select different epics through story points, issues counts, remaining time to see the current sprint resolve, unresolved, unresolved and unpredictable issues.And users also can see the corresponding summary data.
+- Issue statistics chart functionality.Users can view the issue statistics chart in the project according to the assignee, component, issue type, fix version, priority, status, sprint, epic and resolve results.
+- Issue's details back to history view functionality.Users can back to the original page after clicking on the issue's details in any views.
+- Added agile-service unit testing based on Spock.
+- Added create branch functionality in the issue's details operation.
+- When users modify the state to completed and the issue resolve log will be generated.
+- Modify sprint name have length limit.
+
+### Changed
+
+- Agile-service message propagation is modified from Kafka to Saga.
+- Optimize the request time of the version report.
+- Optimize the equest time of the burndown report.
+- View style adjustment for to-do view.
+- Optimize the problem of slow loading of epics and versions in the to-do view.
+- Data logs processing logic refactoring.
+- Modify version status style.
+
+### Fixed
+- Memory overflow for to-do view.
+- Burndown chart data are inconsistent.
+- Cumulative flow chart data are inconsistent.
+- Data display is inconsistent after component management creation component.
+
+### Removed
+- Details of the issue are displayed on the left side of the narrow work log and activity log.
+- Cumulative flow graph statistics for epics and their sub tasks.
+
 ## [0.8.0] - 2018-07-20
 
 ### Added

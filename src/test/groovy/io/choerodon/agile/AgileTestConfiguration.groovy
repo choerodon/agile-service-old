@@ -40,12 +40,16 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Primary
+import org.springframework.core.annotation.Order
 import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.jwt.JwtHelper
 import org.springframework.security.jwt.crypto.sign.MacSigner
 import org.springframework.security.jwt.crypto.sign.Signer
@@ -157,6 +161,20 @@ class AgileTestConfiguration {
         initSqlFunction()
         setTestRestTemplateJWT()
         applicationContextHelper.setApplicationContext(applicationContext)
+    }
+
+    /**
+     * 解决开启h2控制台登录后的跨域问题
+     */
+    @TestConfiguration
+    @Order(1)
+    public static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void configure(HttpSecurity httpSecurity) throws Exception {
+            httpSecurity.csrf().ignoringAntMatchers("/h2-console/**")
+                    .and().headers().frameOptions().disable()
+        }
     }
 
     void initSqlFunction() {
