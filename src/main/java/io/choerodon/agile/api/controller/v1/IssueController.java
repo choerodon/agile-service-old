@@ -193,8 +193,16 @@ public class IssueController {
     @ApiOperation("故事地图查询epic")
     @GetMapping(value = "/storymap/epics")
     public ResponseEntity<List<StoryMapEpicDTO>> listStoryMapEpic(@ApiParam(value = "项目id", required = true)
-                                                                   @PathVariable(name = "project_id") Long projectId) {
-        return Optional.ofNullable(issueService.listStoryMapEpic(projectId))
+                                                                  @PathVariable(name = "project_id") Long projectId,
+                                                                  @ApiParam(value = "show done epic", required = false)
+                                                                  @RequestParam(required = false) Boolean showDoneEpic,
+                                                                  @ApiParam(value = "search item，my problem", required = false)
+                                                                  @RequestParam(required = false) Long assigneeId,
+                                                                  @ApiParam(value = "search item，only story", required = false)
+                                                                  @RequestParam(required = false) Boolean onlyStory,
+                                                                  @ApiParam(value = "quick filter", required = false)
+                                                                  @RequestParam(required = false) List<Long> quickFilterIds) {
+        return Optional.ofNullable(issueService.listStoryMapEpic(projectId, showDoneEpic, assigneeId, onlyStory, quickFilterIds))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Epic.listStoryMapEpic"));
     }

@@ -335,8 +335,12 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public List<StoryMapEpicDTO> listStoryMapEpic(Long projectId) {
-        List<StoryMapEpicDTO> storyMapEpicDTOList = ConvertHelper.convertList(issueMapper.queryStoryMapEpicList(projectId), StoryMapEpicDTO.class);
+    public List<StoryMapEpicDTO> listStoryMapEpic(Long projectId,Boolean showDoneEpic, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds) {
+        String filterSql = null;
+        if (quickFilterIds != null && !quickFilterIds.isEmpty()) {
+            filterSql = getQuickFilter(quickFilterIds);
+        }
+        List<StoryMapEpicDTO> storyMapEpicDTOList = ConvertHelper.convertList(issueMapper.queryStoryMapEpicList(projectId, showDoneEpic, assigneeId, onlyStory, filterSql), StoryMapEpicDTO.class);
         if (!storyMapEpicDTOList.isEmpty()) {
             List<Long> epicIds = storyMapEpicDTOList.stream().map(StoryMapEpicDTO::getIssueId).collect(Collectors.toList());
             Map<Long, Integer> issueCountMap = issueMapper.queryIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));

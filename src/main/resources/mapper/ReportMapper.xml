@@ -2075,10 +2075,11 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT aviri.issue_id FROM agile_version_issue_rel aviri, agile_issue aii WHERE aviri.version_id = #{id}
+            and aviri.issue_id = aii.issue_id and aii.type_code != 'issue_test'
         </if>
         )
         <if test="chartType == 'epic_chart'">
@@ -2101,10 +2102,11 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            SELECT avirw.issue_id FROM agile_version_issue_rel avirw, agile_issue aiw WHERE avirw.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirw.last_update_date, '%Y-%m-%d' )
+            and avirw.issue_id = aiw.issue_id and aiw.type_code != 'issue_test'
         </if>
         )
         AND adl.field = 'Story Points'
@@ -2141,10 +2143,11 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT avirp.issue_id FROM agile_version_issue_rel avirp, agile_issue aip WHERE avirp.version_id = #{id}
+            and avirp.issue_id = aip.issue_id and aip.type_code != 'issue_test'
         </if>
         )
         <if test="chartType == 'epic_chart'">
@@ -2167,10 +2170,11 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            and avirh.issue_id = aih.issue_id and aih.type_code != 'issue_test'
         </if>
         )
         AND adl.field = 'resolution'
@@ -2213,10 +2217,11 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT avirm.issue_id FROM agile_version_issue_rel avirm, agile_issue aim WHERE avirm.version_id = #{id}
+            and avirm.issue_id = aim.issue_id and aim.type_code != 'issue_test'
         </if>
         )
         <if test="chartType == 'epic_chart'">
@@ -2239,10 +2244,11 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            and avirh.issue_id = aih.issue_id and aih.type_code != 'issue_test'
         </if>
         )
         AND adl.field = 'Story Points'
@@ -2282,10 +2288,11 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT avirm.issue_id FROM agile_version_issue_rel avirm, agile_issue aim WHERE avirm.version_id = #{id}
+            and avirm.issue_id = aim.issue_id and aim.type_code != 'issue_test'
         </if>
         )
         <if test="chartType == 'epic_chart'">
@@ -2312,10 +2319,11 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            and avirh.issue_id = aih.issue_id and aih.type_code != 'issue_test'
         </if>
         )
         GROUP BY
@@ -2353,10 +2361,11 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT avirm.issue_id FROM agile_version_issue_rel avirm, agile_issue aim WHERE avirm.version_id = #{id}
+            and avirm.issue_id = aim.issue_id and aim.type_code != 'issue_test'
         </if>
         )
         <if test="chartType == 'epic_chart'">
@@ -2380,10 +2389,11 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            and avirh.issue_id = aih.issue_id and aih.type_code != 'issue_test'
         </if>
         )
         GROUP BY
@@ -2427,10 +2437,11 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT aviro.issue_id FROM agile_version_issue_rel aviro, agile_issue aio WHERE aviro.version_id = #{id}
+            and aviro.issue_id = aio.issue_id and aio.type_code != 'issue_test'
         </if>
         )
         <if test="chartType == 'epic_chart'">
@@ -2453,10 +2464,12 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            SELECT avirw.issue_id FROM agile_version_issue_rel avirw, agile_issue aiw WHERE avirw.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirw.last_update_date, '%Y-%m-%d' )
+            and avirw.issue_id = aiw.issue_id and aiw.type_code != 'issue_test'
+
         </if>
         )
         AND adl.field = 'timeestimate'
@@ -2493,10 +2506,11 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT avirp.issue_id FROM agile_version_issue_rel avirp, agile_issue aip WHERE avirp.version_id = #{id}
+            and avirp.issue_id = aip.issue_id and aip.type_code != 'issue_test'
         </if>
         )
         <if test="chartType == 'epic_chart'">
@@ -2519,10 +2533,11 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            and avirh.issue_id = aih.issue_id and aih.type_code != 'issue_test'
         </if>
         )
         AND adl.field = 'resolution'
@@ -2571,10 +2586,11 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT avire.issue_id FROM agile_version_issue_rel avire, agile_issue aie WHERE avire.version_id = #{id}
+            and avire.issue_id = aie.issue_id and aie.type_code != 'issue_test'
         </if>
         )
         <if test="chartType == 'epic_chart'">
@@ -2597,10 +2613,11 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            SELECT avirw.issue_id FROM agile_version_issue_rel avirw, agile_issue aiw WHERE avirw.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirw.last_update_date, '%Y-%m-%d' )
+            and avirw.issue_id = aiw.issue_id and aiw.type_code != 'issue_test'
         </if>
         )
         AND adl.field = 'timespent'
@@ -2637,10 +2654,11 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT avirm.issue_id FROM agile_version_issue_rel avirm,agile_issue aim  WHERE avirm.version_id = #{id}
+            and avirm.issue_id = aim.issue_id and aim.type_code != 'issue_test'
         </if>
         )
         <if test="chartType == 'epic_chart'">
@@ -2663,10 +2681,11 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            and avirh.issue_id = aih.issue_id and aih.type_code != 'issue_test'
         </if>
         )
         AND adl.field = 'resolution'
@@ -2709,10 +2728,11 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT avirm.issue_id FROM agile_version_issue_rel avirm, agile_issue aim WHERE avirm.version_id = #{id}
+            and avirm.issue_id = aim.issue_id and aim.type_code != 'issue_test'
         </if>
         )
         <if test="chartType == 'epic_chart'">
@@ -2735,10 +2755,11 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            and avirh.issue_id = aih.issue_id and aih.type_code != 'issue_test'
         </if>
         )
         AND adl.field = 'timeestimate'
@@ -2777,10 +2798,11 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT avirp.issue_id FROM agile_version_issue_rel avirp, agile_issue aip WHERE avirp.version_id = #{id}
+            and avirp.issue_id = aip.issue_id and aip.type_code != 'issue_test'
         </if>
         )
         <if test="chartType == 'epic_chart'">
@@ -2803,10 +2825,11 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            and avirh.issue_id = aih.issue_id and aih.type_code != 'issue_test'
         </if>
         )
         AND adl.field = 'timespent'
@@ -2846,10 +2869,11 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT avirm.issue_id FROM agile_version_issue_rel avirm, agile_issue aim WHERE avirm.version_id = #{id}
+            and avirm.issue_id = aim.issue_id and aim.type_code != 'issue_test'
         </if>
         )
         <if test="chartType == 'epic_chart'">
@@ -2876,10 +2900,11 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            and avirh.issue_id = aih.issue_id and aih.type_code != 'issue_test'
         </if>
         )
         GROUP BY
@@ -2918,10 +2943,11 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT avirp.issue_id FROM agile_version_issue_rel avirp, agile_issue aip WHERE avirp.version_id = #{id}
+            avirp.issue_id = aip.issue_id and aip.type_code != 'issue_test'
         </if>
         )
         <if test="chartType == 'epic_chart'">
@@ -2945,10 +2971,11 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            and avirh.issue_id = aih.issue_id and aih.type_code != 'issue_test'
         </if>
         )
         GROUP BY
@@ -2987,10 +3014,11 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT aviro.issue_id FROM agile_version_issue_rel aviro, agile_issue aio WHERE aviro.version_id = #{id}
+            and aviro.issue_id = aio.issue_id and aio.type_code != 'issue_test'
         </if>
         )
         AND field IN
@@ -3018,10 +3046,11 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            SELECT avirr.issue_id FROM agile_version_issue_rel avirr, agile_issue air WHERE avirr.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirr.last_update_date, '%Y-%m-%d' )
+            and avirr.issue_id = air.issue_id and air.type_code != 'issue_test'
         </if>
         )
         GROUP BY
@@ -3053,10 +3082,11 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT avirp.issue_id FROM agile_version_issue_rel avirp, agile_issue aip WHERE avirp.version_id = #{id}
+            and avirp.issue_id = aip.issue_id and aip.type_code != 'issue_test'
         </if>
         )
         AND field IN
@@ -3080,10 +3110,11 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            and avirh.issue_id = aih.issue_id and aih.type_code != 'issue_test'
         </if>
         )
         AND adl.field = 'resolution'
@@ -3128,10 +3159,11 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id}
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue ai WHERE avirh.version_id = #{id}
+            and avirh.issue_id = ai.issue_id and ai.type_code != 'issue_test'
         </if>
         )
         AND field IN
@@ -3159,10 +3191,11 @@
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id}
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT issue_id FROM agile_version_issue_rel WHERE version_id = #{id} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            SELECT avirp.issue_id FROM agile_version_issue_rel avirp, agile_issue aip WHERE avirp.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirp.last_update_date, '%Y-%m-%d' )
+            and avirp.issue_id = aip.issue_id and aip.type_code != 'issue_test'
         </if>
         )
         GROUP BY
