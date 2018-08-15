@@ -28,7 +28,7 @@ public class MybatisFunctionTestUtil {
     public static Date dataSubFunction(Date date, Integer day) {
         Calendar now = Calendar.getInstance();
         now.setTime(date);
-        now.set(Calendar.DATE, now.get(Calendar.DATE) + day);
+        now.set(Calendar.DATE, now.get(Calendar.DATE) - day);
         return now.getTime();
     }
 

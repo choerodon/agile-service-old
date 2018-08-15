@@ -934,7 +934,8 @@
     <select id="queryAllIssueIdsByFilter" resultType="java.lang.Long">
         select ai.issue_id from agile_issue ai LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id where
         ai.project_id = #{projectId}
-        AND ai.type_code != 'issue_test' AND (ai2.type_code != "issue_test" or ai2.type_code is null)
+        AND ai.type_code != 'issue_test' AND (ai2.type_code != 'issue_test' or ai2.type_code is null)
+        AND ai.type_code != 'issue_epic' AND (ai2.type_code != 'issue_epic' or ai2.type_code is null)
         <if test='filterSql != null'>
             AND ai.issue_id IN (${filterSql})
         </if>
