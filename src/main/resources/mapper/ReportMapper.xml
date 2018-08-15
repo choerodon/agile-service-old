@@ -2437,7 +2437,7 @@
         WHERE
         issue_id IN (
         <if test="chartType == 'epic_chart'">
-            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} type_code != 'issue_test'
+            SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and type_code != 'issue_test'
         </if>
         <if test="chartType == 'version_chart'">
             SELECT aviro.issue_id FROM agile_version_issue_rel aviro, agile_issue aio WHERE aviro.version_id = #{id}
@@ -2947,7 +2947,7 @@
         </if>
         <if test="chartType == 'version_chart'">
             SELECT avirp.issue_id FROM agile_version_issue_rel avirp, agile_issue aip WHERE avirp.version_id = #{id}
-            avirp.issue_id = aip.issue_id and aip.type_code != 'issue_test'
+            and avirp.issue_id = aip.issue_id and aip.type_code != 'issue_test'
         </if>
         )
         <if test="chartType == 'epic_chart'">
