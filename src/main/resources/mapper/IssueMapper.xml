@@ -464,6 +464,22 @@
         WHERE
             ai.project_id = #{projectId}
         AND ai.type_code = 'issue_epic'
+        <if test="showDoneEpic == null or showDoneEpic == false">
+            and ai.issue_id not in
+            (select adl1.issue_id from agile_data_log adl1,
+            (select max(log_id) as log_id from agile_data_log where field = 'resolution' and project_id = #{projectId} group by issue_id)
+            adlh where adl1.log_id = adlh.log_id and adl1.new_value is not null
+            )
+        </if>
+        <if test='onlyStory != null and onlyStory == true'>
+            AND ai.type_code = 'story'
+        </if>
+        <if test='assigneeId != null'>
+            AND ai.assignee_id = #{assigneeId}
+        </if>
+        <if test='filterSql != null'>
+            AND ai.issue_id IN (${filterSql})
+        </if>
         ORDER BY
             ai.epic_sequence DESC
     </select>
