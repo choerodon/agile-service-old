@@ -143,7 +143,9 @@ public class ReportServiceImpl implements ReportService {
         List<ReportIssueE> startReportIssue = reportIssueEList.stream().filter(reportIssueE -> "startSprint".equals(reportIssueE.getType())).collect(Collectors.toList());
         if (startReportIssue != null && !startReportIssue.isEmpty()) {
             for (ReportIssueE reportIssueE : startReportIssue) {
-                expectCount += reportIssueE.getNewValue() - reportIssueE.getOldValue();
+                if (reportIssueE.getStatistical()) {
+                    expectCount += reportIssueE.getNewValue() - reportIssueE.getOldValue();
+                }
             }
         }
         jsonObject.put("coordinate", report);
