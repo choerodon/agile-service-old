@@ -337,7 +337,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public List<StoryMapEpicDTO> listStoryMapEpic(Long projectId,Boolean showDoneEpic, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds) {
+    public List<StoryMapEpicDTO> listStoryMapEpic(Long projectId, Boolean showDoneEpic, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds) {
         String filterSql = null;
         if (quickFilterIds != null && !quickFilterIds.isEmpty()) {
             filterSql = getQuickFilter(quickFilterIds);
@@ -487,8 +487,9 @@ public class IssueServiceImpl implements IssueService {
     private void dataLogRank(Long projectId, MoveIssueDTO moveIssueDTO, String rankStr, Long sprintId) {
         for (Long issueId : moveIssueDTO.getIssueIds()) {
             SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
-            if ((sprintId == 0 && activeSprintName == null) || (activeSprintName != null
-                    && sprintId.equals(activeSprintName.getSprintId()))) {
+            Boolean condition = (sprintId == 0 && activeSprintName == null) || (activeSprintName != null
+                    && sprintId.equals(activeSprintName.getSprintId()));
+            if (condition) {
                 DataLogE dataLogE = new DataLogE();
                 dataLogE.setProjectId(projectId);
                 dataLogE.setField(FIELD_RANK);
@@ -506,14 +507,14 @@ public class IssueServiceImpl implements IssueService {
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
         if (moveIssueDTO.getBefore()) {
             beforeRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
-            if (moveIssueDTO.getRankIndex() != null && (moveIssueDTO.getRankIndex())) {
-                dataLogRank(projectId, moveIssueDTO, RANK_HIGHER, sprintId);
-            }
         } else {
             afterRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
-            if (moveIssueDTO.getRankIndex() != null && (moveIssueDTO.getRankIndex())) {
-                dataLogRank(projectId, moveIssueDTO, RANK_LOWER, sprintId);
-            }
+        }
+        //处理评级日志
+        if (moveIssueDTO.getRankIndex() != null && !moveIssueDTO.getRankIndex()) {
+            dataLogRank(projectId, moveIssueDTO, RANK_LOWER, sprintId);
+        } else if (moveIssueDTO.getRankIndex() != null && moveIssueDTO.getRankIndex()) {
+            dataLogRank(projectId, moveIssueDTO, RANK_HIGHER, sprintId);
         }
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
         List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
@@ -1114,12 +1115,12 @@ public class IssueServiceImpl implements IssueService {
             throw new CommonException(EXPORT_ERROR);
         }
         response.setCharacterEncoding("utf-8");
-        logger.info("getContentType参数{}",response.getContentType());
-        logger.info("getBufferSize参数{}",response.getBufferSize());
-        logger.info("getCharacterEncoding参数{}",response.getCharacterEncoding());
-        logger.info("getStatus参数{}",response.getStatus());
-        response.getHeaderNames().forEach(s -> logger.info("header参数{}",s));
-        logger.info("Content-Disposition{}",response.getHeader("Content-Disposition"));
+        logger.info("getContentType参数{}", response.getContentType());
+        logger.info("getBufferSize参数{}", response.getBufferSize());
+        logger.info("getCharacterEncoding参数{}", response.getCharacterEncoding());
+        logger.info("getStatus参数{}", response.getStatus());
+        response.getHeaderNames().forEach(s -> logger.info("header参数{}", s));
+        logger.info("Content-Disposition{}", response.getHeader("Content-Disposition"));
         try {
             workbook.write(response.getOutputStream());
         } catch (final IOException e) {
@@ -1406,7 +1407,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public List<IssueCreationNumDTO> queryIssueNumByTimeSlot(Long projectId, String typeCode, Integer timeSlot) {
         //h2 不支持dateSub函数，这个函数不能自定义
-        Date date = MybatisFunctionTestUtil.dataSubFunction(new Date(),timeSlot);
+        Date date = MybatisFunctionTestUtil.dataSubFunction(new Date(), timeSlot);
         return ConvertHelper.convertList(issueMapper.queryIssueNumByTimeSlot(projectId, typeCode, date), IssueCreationNumDTO.class);
     }
 
