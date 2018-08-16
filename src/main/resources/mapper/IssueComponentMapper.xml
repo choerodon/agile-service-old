@@ -29,7 +29,7 @@
         aic.manager_id,
         aic.default_assignee_role,
         aic.object_version_number,
-        case when aa.issue_count is null then 0 else aa.issue_count end
+        case when aa.issue_count is null then 0 else aa.issue_count end as issue_count
         from agile_issue_component aic left join (
         select acir.component_id,count(*) as issue_count from agile_component_issue_rel acir
         LEFT JOIN agile_issue ai ON ai.issue_id = acir.issue_id
