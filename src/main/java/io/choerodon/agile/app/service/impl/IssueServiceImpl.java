@@ -154,7 +154,6 @@ public class IssueServiceImpl implements IssueService {
     private static final String EPIC_SEQUENCE = "epicSequence";
     private static final String EPIC_COLOR_TYPE = "epic_color";
     private static final String STORY_TYPE = "story";
-    private static final String FIELD_STORY_POINTS = "Story Points";
     private static final String ASSIGNEE = "assignee";
     private static final String FIELD_RANK = "Rank";
     private static final String RANK_HIGHER = "评级更高";
@@ -632,7 +631,7 @@ public class IssueServiceImpl implements IssueService {
         } else {
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
         }
-        issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, FIELD_STORY_POINTS, RANK_FIELD, EPIC_SEQUENCE});
+        issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, STORY_POINTS_FIELD, RANK_FIELD, EPIC_SEQUENCE});
         return queryIssue(issueE.getProjectId(), issueE.getIssueId());
     }
 
