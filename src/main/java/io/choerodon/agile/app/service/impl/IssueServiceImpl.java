@@ -3,7 +3,6 @@ package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
-import io.choerodon.agile.api.controller.v1.IssueController;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.*;
@@ -173,8 +172,6 @@ public class IssueServiceImpl implements IssueService {
     private static final String STORYMAP_TYPE_SPRINT = "sprint";
     private static final String STORYMAP_TYPE_VERSION = "version";
     private static final String STORYMAP_TYPE_NONE = "none";
-
-    private static Logger logger = LoggerFactory.getLogger(IssueServiceImpl.class);
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -1103,7 +1100,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void downloadExcel(HSSFWorkbook workbook, String fileName, String charsetName, HttpServletResponse response) {
-        logger.info("开始设置response参数");
+        LOGGER.info("开始设置response参数");
         // 设置response参数，可以打开下载页面
         response.reset();
         response.setContentType("application/ms-excel;charset=utf-8");
@@ -1115,12 +1112,12 @@ public class IssueServiceImpl implements IssueService {
             throw new CommonException(EXPORT_ERROR);
         }
         response.setCharacterEncoding("utf-8");
-        logger.info("getContentType参数{}", response.getContentType());
-        logger.info("getBufferSize参数{}", response.getBufferSize());
-        logger.info("getCharacterEncoding参数{}", response.getCharacterEncoding());
-        logger.info("getStatus参数{}", response.getStatus());
-        response.getHeaderNames().forEach(s -> logger.info("header参数{}", s));
-        logger.info("Content-Disposition{}", response.getHeader("Content-Disposition"));
+        LOGGER.info("getContentType参数{}", response.getContentType());
+        LOGGER.info("getBufferSize参数{}", response.getBufferSize());
+        LOGGER.info("getCharacterEncoding参数{}", response.getCharacterEncoding());
+        LOGGER.info("getStatus参数{}", response.getStatus());
+        response.getHeaderNames().forEach(s -> LOGGER.info("header参数{}", s));
+        LOGGER.info("Content-Disposition{}", response.getHeader("Content-Disposition"));
         try {
             workbook.write(response.getOutputStream());
         } catch (final IOException e) {
