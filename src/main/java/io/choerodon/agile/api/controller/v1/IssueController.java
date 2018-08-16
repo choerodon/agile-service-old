@@ -18,6 +18,8 @@ import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +49,8 @@ public class IssueController {
 
     @Autowired
     private VerifyUpdateUtil verifyUpdateUtil;
+
+    private static Logger logger = LoggerFactory.getLogger(IssueController.class);
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建issue")
@@ -309,6 +313,7 @@ public class IssueController {
                              @RequestBody(required = false) SearchDTO searchDTO,
                              HttpServletRequest request,
                              HttpServletResponse response) {
+        logger.info("进入了导出issue的Controller");
         issueService.exportIssues(projectId, searchDTO, request, response);
     }
 
@@ -322,6 +327,7 @@ public class IssueController {
                             @PathVariable(name = "issueId") Long issueId,
                             HttpServletRequest request,
                             HttpServletResponse response) {
+        logger.info("进入了导出issue的Controller");
         issueService.exportIssue(projectId, issueId, request, response);
     }
 

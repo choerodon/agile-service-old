@@ -1717,9 +1717,6 @@
                 <if test="typeCode">
                     alv.name AS name,
                 </if>
-                <if test="fieldName == 'epic_id'">
-                    ai2.epic_name AS name,
-                </if>
                 <if test="fieldName == 'status_id'">
                     ais.name AS name,
                 </if>
@@ -1752,9 +1749,6 @@
         <if test="fieldName == 'status_id'">
             LEFT JOIN agile_issue_status ais on ais.id = ai.${fieldName}
         </if>
-        <if test="fieldName == 'epic_id'">
-            LEFT JOIN agile_issue ai2 on ai2.issue_id = ai.${fieldName}
-        </if>
         <if test="!own">
             <if test="fieldName == 'resolution'">
                 LEFT JOIN agile_issue_status other on ai.status_id = other.id
@@ -1777,9 +1771,6 @@
         ai.project_id = #{projectId}
         AND ai.type_code != 'issue_test'
         AND (ai3.type_code != 'issue_test' or ai3.type_code is null)
-        <if test="fieldName == 'epic_id'">
-            AND ai.type_code != "issue_epic"
-        </if>
         GROUP BY
         <choose>
             <when test="own">
@@ -1799,10 +1790,48 @@
         )pieData ORDER BY pieData.value DESC
     </select>
 
+    <select id="queryPieChartByEpic" resultType="io.choerodon.agile.infra.dataobject.PieChartDO">
+        select *,(pieData.value/#{total})*100 as percent from (
+           SELECT
+                IFNULL( epica.epic_id, 0 ) AS type_name,
+                count(*) as value,
+                ai2.epic_name AS NAME
+            FROM
+                (
+                SELECT
+                    ai.issue_id,
+                    ai.epic_id
+                FROM
+                    agile_issue ai
+                WHERE
+                    ai.project_id = 346
+                    AND (ai.type_code = 'bug'
+                    OR ai.type_code = 'task'
+                    OR ai.type_code = 'story' )
+                UNION
+                SELECT
+                    ai4.issue_id,
+                    ai5.epic_id
+                FROM
+                    agile_issue ai4
+                    LEFT JOIN agile_issue ai5 ON ai5.issue_id = ai4.parent_issue_id
+                WHERE
+                    ai4.project_id = 346
+                    and ai4.type_code = 'sub_task'
+                    AND ai5.type_code != 'issue_test'
+                ) epica
+                LEFT JOIN agile_issue ai2 ON ai2.issue_id = epica.epic_id
+            WHERE
+                ( epica.epic_id IS NOT NULL AND epica.epic_id != 0 AND ai2.epic_name IS NOT NULL )
+                OR epica.epic_id IS NULL
+                OR epica.epic_id = 0 GROUP BY type_name
+        )pieData ORDER BY pieData.value DESC
+    </select>
+
     <select id="queryIssueCountByFieldName" resultType="java.lang.Integer">
-        SELECT count(*)
+        SELECT count(ai.issue_id)
         FROM
-        agile_issue ai
+        agile_issue ai LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id
         <if test="fieldName == 'component_id'">
             left join agile_component_issue_rel other on ai.issue_id = other.issue_id
         </if>
@@ -1814,9 +1843,10 @@
         </if>
         WHERE
         ai.project_id = #{projectId}
-        AND type_code != "issue_test"
+        AND ai.type_code != 'issue_test'
+        AND (ai2.type_code != 'issue_test' or ai2.type_code is null)
         <if test="fieldName == 'epic_id'">
-            AND type_code != "issue_epic"
+            AND ai.type_code != 'issue_epic'
         </if>
     </select>
 

@@ -943,13 +943,19 @@ public class ReportServiceImpl implements ReportService {
             case SPRINT:
                 return handlePieChartByType(projectId, "sprint_id", false, false);
             case EPIC:
-                return handlePieChartByType(projectId, EPIC_ID, true, false);
+                return handlePieChartByEpic(projectId);
             case RESOLUTION:
                 return handlePieChartByType(projectId, RESOLUTION, false, false);
             default:
                 break;
         }
         return new ArrayList<>();
+    }
+
+    private List<PieChartDTO> handlePieChartByEpic(Long projectId) {
+        Integer total = reportMapper.queryIssueCountByFieldName(projectId, "epic_id");
+        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByEpic(projectId, total);
+        return reportAssembler.pieChartDoToDto(pieChartDOS);
     }
 
     private List<PieChartDTO> handlePieChartByType(Long projectId, String fieldName, Boolean own, Boolean typeCode) {

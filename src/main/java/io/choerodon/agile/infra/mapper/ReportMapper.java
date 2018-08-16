@@ -347,6 +347,15 @@ public interface ReportMapper {
                                           @Param("fieldName") String fieldName, @Param("typeCode") Boolean typeCode,
                                           @Param("total") Integer total);
 
+    /**
+     * 根据Epic查询统计信息
+     *
+     * @param projectId projectId
+     * @param total     total
+     * @return PieChartDO
+     */
+    List<PieChartDO> queryPieChartByEpic(@Param("projectId") Long projectId,@Param("total") Integer total);
+
 
     /**
      * 根据参数查询issue总数
