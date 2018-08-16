@@ -984,7 +984,7 @@
         ai.summary,
         ai.assignee_id,
         ai.reporter_id,
-        alv.name AS type_name,
+        IF(alv.name = 'Epic', '史诗', alv.name) AS type_name,
         ais.name AS status_name,
         ai.description,
         asp1.sprint_name,
