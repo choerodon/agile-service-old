@@ -35,6 +35,8 @@ public class DataLogDTO {
 
     private String categoryCode;
 
+    private String email;
+
     public Long getLogId() {
         return logId;
     }
@@ -137,5 +139,13 @@ public class DataLogDTO {
 
     public String getCategoryCode() {
         return categoryCode;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
     }
 }
