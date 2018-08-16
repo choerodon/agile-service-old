@@ -180,7 +180,7 @@
     <sql id="querySprintIssueByIssueIds">
         SELECT
         ai2.issue_id,
-        CONCAT_WS('-', api.project_code, ai2.issue_num) AS issue_num,
+        IF(ai2.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai2.issue_num)) AS issue_num,
         ai2.type_code, ai2.summary,
         ai2.rank,
         ai2.reporter_id, ai2.description,
