@@ -254,10 +254,12 @@ public class QuickFilterServiceImpl implements QuickFilterService {
                 }
             } else {
                 Integer update = sequence;
-                if (sequence < quickFilterSequenceDTO.getAfterSequence()) {
-                    Integer addUpdate = quickFilterSequenceDTO.getAfterSequence() - sequence + 1;
-                    update = update + addUpdate;
-                    quickFilterRepository.batchUpdateSequence(quickFilterSequenceDTO.getAfterSequence(), projectId, addUpdate + 1);
+                if(quickFilterSequenceDTO.getAfterSequence()!=null){
+                    if (sequence < quickFilterSequenceDTO.getAfterSequence()) {
+                        Integer addUpdate = quickFilterSequenceDTO.getAfterSequence() - sequence + 1;
+                        update = update + addUpdate;
+                        quickFilterRepository.batchUpdateSequence(quickFilterSequenceDTO.getAfterSequence(), projectId, addUpdate + 1);
+                    }
                 }
                 quickFilterE.setSequence(update);
                 quickFilterRepository.update(quickFilterE);

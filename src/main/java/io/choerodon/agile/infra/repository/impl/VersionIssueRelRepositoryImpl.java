@@ -72,6 +72,7 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
     }
 
     @Override
+    @DataLog(type = "batchVersionDeleteByIncompleteIssue",single = false)
     public Boolean deleteIncompleteIssueByVersionId(Long projectId, Long versionId) {
         versionIssueRelMapper.deleteIncompleteIssueByVersionId(projectId, versionId);
         return true;

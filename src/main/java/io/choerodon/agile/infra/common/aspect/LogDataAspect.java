@@ -47,6 +47,7 @@ public class LogDataAspect {
     private static final String LABEL_CREATE = "labelCreate";
     private static final String VERSION_DELETE = "versionDelete";
     private static final String BATCH_DELETE_VERSION = "batchDeleteVersion";
+    private static final String BATCH_VERSION_DELETE_BY_IN_COMPLETE_ISSUE = "batchVersionDeleteByIncompleteIssue";
     private static final String BATCH_DELETE_VERSION_BY_VERSION = "batchDeleteVersionByVersion";
     private static final String BATCH_VERSION_DELETE_BY_VERSION_IDS = "batchVersionDeleteByVersionIds";
     private static final String BATCH_COMPONENT_DELETE = "batchComponentDelete";
@@ -245,6 +246,9 @@ public class LogDataAspect {
                     case BATCH_VERSION_DELETE_BY_VERSION_IDS:
                         batchDeleteVersionByVersionIds(args);
                         break;
+                    case BATCH_VERSION_DELETE_BY_IN_COMPLETE_ISSUE:
+                        batchVersionDeleteByInCompleteIssue(args);
+                        break;
                     default:
                         break;
                 }
@@ -262,6 +266,15 @@ public class LogDataAspect {
             throw new CommonException(ERROR_UPDATE);
         }
         return result;
+    }
+
+    private void batchVersionDeleteByInCompleteIssue(Object[] args) {
+        Long projectId = (Long) args[0];
+        Long versionId = (Long) args[1];
+        if (projectId != null&&versionId!=null) {
+            List<VersionIssueDO> versionIssues = productVersionMapper.queryInCompleteIssueByVersionId(projectId,versionId);
+            handleBatchDeleteVersion(versionIssues, projectId);
+        }
     }
 
     private void batchDeleteVersionByVersion(Object[] args) {

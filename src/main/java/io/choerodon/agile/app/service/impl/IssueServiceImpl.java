@@ -1424,10 +1424,12 @@ public class IssueServiceImpl implements IssueService {
                 }
             } else {
                 Integer update = sequence;
-                if (sequence < epicSequenceDTO.getAfterSequence()) {
-                    Integer addUpdate = epicSequenceDTO.getAfterSequence() - sequence + 1;
-                    update = update + addUpdate;
-                    issueRepository.batchUpdateSequence(epicSequenceDTO.getAfterSequence(), projectId, addUpdate + 1);
+                if (epicSequenceDTO.getAfterSequence() != null) {
+                    if (sequence < epicSequenceDTO.getAfterSequence()) {
+                        Integer addUpdate = epicSequenceDTO.getAfterSequence() - sequence + 1;
+                        update = update + addUpdate;
+                        issueRepository.batchUpdateSequence(epicSequenceDTO.getAfterSequence(), projectId, addUpdate + 1);
+                    }
                 }
                 issueE.setEpicSequence(update);
                 issueRepository.update(issueE, new String[]{EPIC_SEQUENCE});

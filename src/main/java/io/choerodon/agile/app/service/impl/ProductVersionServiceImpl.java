@@ -379,10 +379,12 @@ public class ProductVersionServiceImpl implements ProductVersionService {
                 }
             } else {
                 Integer update = sequence;
-                if (sequence < versionSequenceDTO.getAfterSequence()) {
-                    Integer addUpdate = versionSequenceDTO.getAfterSequence() - sequence + 1;
-                    update = update + addUpdate;
-                    productVersionRepository.batchUpdateSequence(versionSequenceDTO.getAfterSequence(), projectId, addUpdate + 1);
+                if (versionSequenceDTO.getAfterSequence() != null) {
+                    if (sequence < versionSequenceDTO.getAfterSequence()) {
+                        Integer addUpdate = versionSequenceDTO.getAfterSequence() - sequence + 1;
+                        update = update + addUpdate;
+                        productVersionRepository.batchUpdateSequence(versionSequenceDTO.getAfterSequence(), projectId, addUpdate + 1);
+                    }
                 }
                 productVersionE.setSequence(update);
                 productVersionRepository.updateVersion(productVersionE);
