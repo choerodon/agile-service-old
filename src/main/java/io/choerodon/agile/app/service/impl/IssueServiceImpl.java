@@ -12,6 +12,7 @@ import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
+import io.choerodon.agile.infra.common.utils.ExcelUtil;
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.common.utils.RankUtil;
@@ -903,10 +904,10 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response) {
-        String charsetName = "UTF-8";
-        if (request.getHeader("User-Agent").contains("Firefox")) {
-            charsetName = "GB2312";
-        }
+//        String charsetName = "UTF-8";
+//        if (request.getHeader("User-Agent").contains("Firefox")) {
+//            charsetName = "GB2312";
+//        }
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
         projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
@@ -922,20 +923,21 @@ public class IssueServiceImpl implements IssueService {
             Map<Long, List<SprintNameDO>> closeSprintNames = issueMapper.querySprintNameByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(SprintNameDO::getIssueId));
             Map<Long, List<VersionIssueRelDO>> fixVersionNames = issueMapper.queryVersionNameByIssueIds(projectId, issueIds, FIX_RELATION_TYPE).stream().collect(Collectors.groupingBy(VersionIssueRelDO::getIssueId));
             Map<Long, List<VersionIssueRelDO>> influenceVersionNames = issueMapper.queryVersionNameByIssueIds(projectId, issueIds, INFLUENCE_RELATION_TYPE).stream().collect(Collectors.groupingBy(VersionIssueRelDO::getIssueId));
-            exportIssues = exportIssues.stream().map(exportIssue -> {
+            exportIssues.forEach(exportIssue -> {
                 String closeSprintName = closeSprintNames.get(exportIssue.getIssueId()) != null ? closeSprintNames.get(exportIssue.getIssueId()).stream().map(SprintNameDO::getSprintName).collect(Collectors.joining(",")) : "";
                 String fixVersionName = fixVersionNames.get(exportIssue.getIssueId()) != null ? fixVersionNames.get(exportIssue.getIssueId()).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(",")) : "";
                 String influenceVersionName = influenceVersionNames.get(exportIssue.getIssueId()) != null ? influenceVersionNames.get(exportIssue.getIssueId()).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(",")) : "";
                 exportIssue.setCloseSprintName(closeSprintName);
+                exportIssue.setProjectName(project.getName());
+                exportIssue.setSprintName(exportIssuesSprintName(exportIssue));
+                exportIssue.setVersionName(exportIssuesVersionName(exportIssue));
                 exportIssue.setFixVersionName(fixVersionName);
                 exportIssue.setInfluenceVersionName(influenceVersionName);
-                return exportIssue;
-            }).collect(Collectors.toList());
+            });
         }
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        exportIssuesXls(workbook, project, exportIssues);
-        String fileName = project.getName();
-        downloadExcel(workbook, fileName, charsetName, response);
+        String[] fieldsName = {"编码","概述","类型","所属项目","经办人","报告人","状态","冲刺","创建时间","最后更新时间","优先级","是否子任务","剩余预估","版本"};
+        String[] fields = {"issueNum","summary","typeName","projectName","assigneeName","reporterName","statusName","sprintName","creationDate","lastUpdateDate","priorityName","subTask","remainingTime","versionName"};
+        ExcelUtil.export(exportIssues,ExportIssuesDTO.class,fieldsName,fields,project.getName(),response);
     }
 
     @Override
@@ -1277,80 +1279,13 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private HSSFWorkbook exportIssuesXls(HSSFWorkbook workbook, ProjectDTO project, List<ExportIssuesDTO> exportIssues) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        HSSFSheet sheet = workbook.createSheet(project.getName());
-        HSSFRow row = sheet.createRow(0);
-        HSSFCellStyle cellStyle = workbook.createCellStyle();
-        cellStyle.setWrapText(true);
-        cellStyle.setAlignment(CellStyle.ALIGN_LEFT);
-        cellStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
-        for (int i = 0; i < COLUMN_NAMES.length; i++) {
-            sheet.setColumnWidth(i, COLUMN_WIDTH[i]);
-            HSSFCell cell = row.createCell(i);
-            cell.setCellValue(COLUMN_NAMES[i]);
-        }
-        for (int i = 0; i < exportIssues.size(); i++) {
-            row = sheet.createRow(i + 1);
-            for (int j = 0; j < COLUMN_NAMES.length; j++) {
-                HSSFCell cell = row.createCell(j);
-                cell.setCellStyle(cellStyle);
-                switch (COLUMN_NAMES[j]) {
-                    case "编码":
-                        cell.setCellValue(project.getCode() + "-" + exportIssues.get(i).getIssueNum());
-                        break;
-                    case "概述":
-                        cell.setCellValue(exportIssues.get(i).getSummary());
-                        break;
-                    case "类型":
-                        cell.setCellValue(exportIssues.get(i).getTypeName());
-                        break;
-                    case "所属项目":
-                        cell.setCellValue(project.getName());
-                        break;
-                    case "经办人":
-                        cell.setCellValue(exportIssues.get(i).getAssigneeName());
-                        break;
-                    case "报告人":
-                        cell.setCellValue(exportIssues.get(i).getReporterName());
-                        break;
-                    case "状态":
-                        cell.setCellValue(exportIssues.get(i).getStatusName());
-                        break;
-                    case "冲刺":
-                        String sprintName = exportIssuesSprintName(exportIssues.get(i));
-                        cell.setCellValue(sprintName);
-                        break;
-                    case "创建时间":
-                        cell.setCellValue(dateFormat.format(exportIssues.get(i).getCreationDate()));
-                        break;
-                    case "最后更新时间":
-                        cell.setCellValue(dateFormat.format(exportIssues.get(i).getLastUpdateDate()));
-                        break;
-                    case "优先级":
-                        cell.setCellValue(exportIssues.get(i).getPriorityName());
-                        break;
-                    case "是否子任务":
-                        cell.setCellValue(exportIssues.get(i).getSubTask());
-                        break;
-                    case "剩余预估":
-                        cell.setCellValue(exportIssues.get(i).getRemainingTime() != null ? exportIssues.get(i).getRemainingTime().toString() : "");
-                        break;
-                    case "版本":
-                        String versionName = exportIssuesVersionName(exportIssues.get(i));
-                        cell.setCellValue(versionName);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-        return workbook;
-    }
-
     private String exportIssuesVersionName(ExportIssuesDTO exportIssuesDTO) {
-        StringBuilder versionName = new StringBuilder(!Objects.equals(exportIssuesDTO.getFixVersionName(), "") ? "修复的版本:" + exportIssuesDTO.getFixVersionName() + "\r\n" : "");
-        versionName.append(!Objects.equals(exportIssuesDTO.getInfluenceVersionName(), "") ? "影响的版本:" + exportIssuesDTO.getInfluenceVersionName() : "");
+        StringBuilder versionName = new StringBuilder();
+        if(exportIssuesDTO.getFixVersionName()!=null&& !"".equals(exportIssuesDTO.getFixVersionName())){
+            versionName.append("修复的版本:").append(exportIssuesDTO.getFixVersionName()).append("\r\n");
+        }else if (exportIssuesDTO.getInfluenceVersionName()!=null&& !"".equals(exportIssuesDTO.getInfluenceVersionName())){
+            versionName.append("影响的版本:").append(exportIssuesDTO.getInfluenceVersionName());
+        }
         return versionName.toString();
     }
 

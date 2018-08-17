@@ -313,7 +313,6 @@ public class IssueController {
                              @RequestBody(required = false) SearchDTO searchDTO,
                              HttpServletRequest request,
                              HttpServletResponse response) {
-        logger.info("进入了导出issue的Controller");
         issueService.exportIssues(projectId, searchDTO, request, response);
     }
 

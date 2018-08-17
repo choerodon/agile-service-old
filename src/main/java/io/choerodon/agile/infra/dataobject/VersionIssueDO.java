@@ -6,6 +6,15 @@ package io.choerodon.agile.infra.dataobject;
 public class VersionIssueDO {
     private Long issueId;
     private String relationType;
+    private Long versionId;
+
+    public Long getVersionId() {
+        return versionId;
+    }
+
+    public void setVersionId(Long versionId) {
+        this.versionId = versionId;
+    }
 
     public Long getIssueId() {
         return issueId;

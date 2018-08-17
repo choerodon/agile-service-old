@@ -28,6 +28,8 @@ public class ExportIssuesDTO {
     private BigDecimal remainingTime;
     private String fixVersionName;
     private String influenceVersionName;
+    private String projectName;
+    private String versionName;
 
     private String solution;
     private BigDecimal sumEstimateTime;
@@ -36,6 +38,22 @@ public class ExportIssuesDTO {
     private Integer storyPoints;
     private String componentName;
     private String labelName;
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public String getVersionName() {
+        return versionName;
+    }
+
+    public void setVersionName(String versionName) {
+        this.versionName = versionName;
+    }
 
     public Long getIssueId() {
         return issueId;

@@ -315,6 +315,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             throw new CommonException(SOURCE_VERSION_ERROR);
         }
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
+        //todo 版本日志
         List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds(), productVersionMergeDTO.getTargetVersionId());
         versionIssueRelRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         if (!versionIssues.isEmpty()) {
