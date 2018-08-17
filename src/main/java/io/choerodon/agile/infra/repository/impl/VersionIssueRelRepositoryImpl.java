@@ -64,6 +64,7 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
     }
 
     @Override
+    @DataLog(type = "batchDeleteByVersionId", single = false)
     public int deleteByVersionId(Long projectId, Long versionId) {
         VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
         versionIssueRelDO.setProjectId(projectId);

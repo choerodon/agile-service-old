@@ -47,6 +47,7 @@ public class LogDataAspect {
     private static final String LABEL_CREATE = "labelCreate";
     private static final String VERSION_DELETE = "versionDelete";
     private static final String BATCH_DELETE_VERSION = "batchDeleteVersion";
+    private static final String BATCH_DELETE_BY_VERSIONID = "batchDeleteByVersionId";
     private static final String BATCH_VERSION_DELETE_BY_IN_COMPLETE_ISSUE = "batchVersionDeleteByIncompleteIssue";
     private static final String BATCH_DELETE_VERSION_BY_VERSION = "batchDeleteVersionByVersion";
     private static final String BATCH_VERSION_DELETE_BY_VERSION_IDS = "batchVersionDeleteByVersionIds";
@@ -249,6 +250,9 @@ public class LogDataAspect {
                     case BATCH_VERSION_DELETE_BY_IN_COMPLETE_ISSUE:
                         batchVersionDeleteByInCompleteIssue(args);
                         break;
+                    case BATCH_DELETE_BY_VERSIONID:
+                        batchDeleteByVersionId(args);
+                        break;
                     default:
                         break;
                 }
@@ -268,11 +272,20 @@ public class LogDataAspect {
         return result;
     }
 
+    private void batchDeleteByVersionId(Object[] args) {
+        Long projectId = (Long) args[0];
+        Long versionId = (Long) args[1];
+        if (projectId != null && versionId != null) {
+            List<VersionIssueDO> versionIssueRelDOS = productVersionMapper.queryVersionIssueByVersionId(projectId, versionId);
+            handleBatchDeleteVersion(versionIssueRelDOS, projectId);
+        }
+    }
+
     private void batchVersionDeleteByInCompleteIssue(Object[] args) {
         Long projectId = (Long) args[0];
         Long versionId = (Long) args[1];
-        if (projectId != null&&versionId!=null) {
-            List<VersionIssueDO> versionIssues = productVersionMapper.queryInCompleteIssueByVersionId(projectId,versionId);
+        if (projectId != null && versionId != null) {
+            List<VersionIssueDO> versionIssues = productVersionMapper.queryInCompleteIssueByVersionId(projectId, versionId);
             handleBatchDeleteVersion(versionIssues, projectId);
         }
     }
