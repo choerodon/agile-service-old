@@ -266,7 +266,7 @@
         (<include refid="queryPlanSprintSql"/>)spa
         left join(<include refid="querySprintIssueByIssueIds"/>)qsii on qsii.is_sprint_id = spa.sprint_id
         left join (<include refid="queryAssigneeIssueBySprintId"/>)qais
-        on spa.sprint_id = qais.asi_sprint_id order by qsii.rank ASC
+        on spa.sprint_id = qais.asi_sprint_id order by spa.sprint_id desc,qsii.rank ASC
     </select>
 
     <select id="queryAssigneeIssueBySprintId" parameterType="java.util.Map"
