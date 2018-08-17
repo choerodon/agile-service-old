@@ -54,6 +54,7 @@ public class LogDataAspect {
     private static final String BATCH_COMPONENT_DELETE = "batchComponentDelete";
     private static final String BATCH_TO_VERSION = "batchToVersion";
     private static final String BATCH_REMOVE_VERSION = "batchRemoveVersion";
+    private static final String BATCH_REMOVE_SPRINT_TO_TARGET = "batchRemoveSprintToTarget";
     private static final String BATCH_TO_EPIC = "batchToEpic";
     private static final String BATCH_REMOVE_SPRINT = "batchRemoveSprint";
     private static final String BATCH_REMOVE_SPRINT_BY_SPRINT_ID = "batchRemoveSprintBySprintId";
@@ -226,6 +227,9 @@ public class LogDataAspect {
                     case BATCH_REMOVE_SPRINT:
                         batchRemoveSprintDataLog(args);
                         break;
+                    case BATCH_REMOVE_SPRINT_TO_TARGET:
+                        batchRemoveSprintToTarget(args);
+                        break;
                     case BATCH_DELETE_LABEL:
                         batchDeleteLabelDataLog(args);
                         break;
@@ -270,6 +274,26 @@ public class LogDataAspect {
             throw new CommonException(ERROR_UPDATE);
         }
         return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void batchRemoveSprintToTarget(Object[] args) {
+        Long projectId = (Long) args[0];
+        Long sprintId = (Long) args[1];
+        List<Long> issueIds = (List<Long>) args[2];
+        //todo
+        if (projectId != null && sprintId != null && issueIds != null && !issueIds.isEmpty()) {
+            SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
+            SprintNameDTO sprintNameDTO = new SprintNameDTO();
+            sprintNameDTO.setSprintId(sprintId);
+            sprintNameDTO.setSprintName(sprintDO.getSprintName());
+            for (Long issueId : issueIds) {
+                StringBuilder newSprintIdStr = new StringBuilder();
+                StringBuilder newSprintNameStr = new StringBuilder();
+                List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
+                handleBatchCreateDataLogForSpring(sprintNames, sprintNameDTO, newSprintNameStr, newSprintIdStr, sprintDO, projectId, issueId);
+            }
+        }
     }
 
     private void batchDeleteByVersionId(Object[] args) {
