@@ -935,9 +935,9 @@ public class IssueServiceImpl implements IssueService {
                 exportIssue.setInfluenceVersionName(influenceVersionName);
             });
         }
-        String[] fieldsName = {"编码","概述","类型","所属项目","经办人","报告人","状态","冲刺","创建时间","最后更新时间","优先级","是否子任务","剩余预估","版本"};
-        String[] fields = {"issueNum","summary","typeName","projectName","assigneeName","reporterName","statusName","sprintName","creationDate","lastUpdateDate","priorityName","subTask","remainingTime","versionName"};
-        ExcelUtil.export(exportIssues,ExportIssuesDTO.class,fieldsName,fields,project.getName(),response);
+        String[] fieldsName = {"编码", "概述", "类型", "所属项目", "经办人", "报告人", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本"};
+        String[] fields = {"issueNum", "summary", "typeName", "projectName", "assigneeName", "reporterName", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", "remainingTime", "versionName"};
+        ExcelUtil.export(exportIssues, ExportIssuesDTO.class, fieldsName, fields, project.getName(), response);
     }
 
     @Override
@@ -1281,9 +1281,9 @@ public class IssueServiceImpl implements IssueService {
 
     private String exportIssuesVersionName(ExportIssuesDTO exportIssuesDTO) {
         StringBuilder versionName = new StringBuilder();
-        if(exportIssuesDTO.getFixVersionName()!=null&& !"".equals(exportIssuesDTO.getFixVersionName())){
+        if (exportIssuesDTO.getFixVersionName() != null && !"".equals(exportIssuesDTO.getFixVersionName())) {
             versionName.append("修复的版本:").append(exportIssuesDTO.getFixVersionName()).append("\r\n");
-        }else if (exportIssuesDTO.getInfluenceVersionName()!=null&& !"".equals(exportIssuesDTO.getInfluenceVersionName())){
+        } else if (exportIssuesDTO.getInfluenceVersionName() != null && !"".equals(exportIssuesDTO.getInfluenceVersionName())) {
             versionName.append("影响的版本:").append(exportIssuesDTO.getInfluenceVersionName());
         }
         return versionName.toString();
@@ -1415,14 +1415,21 @@ public class IssueServiceImpl implements IssueService {
             issueE.setEpicSequence(sequence);
             issueRepository.update(issueE, new String[]{EPIC_SEQUENCE});
         } else {
-            if (sequence >= epicSequenceDTO.getBeforeSequence()) {
-                issueRepository.batchUpdateSequence(sequence, projectId);
+            if (sequence > epicSequenceDTO.getBeforeSequence()) {
+                Integer add = sequence - epicSequenceDTO.getBeforeSequence() + 1;
+                issueRepository.batchUpdateSequence(sequence, projectId, add);
                 if (epicSequenceDTO.getAfterSequence() == null) {
                     issueE.setEpicSequence(sequence);
                     issueRepository.update(issueE, new String[]{EPIC_SEQUENCE});
                 }
             } else {
-                issueE.setEpicSequence(sequence);
+                Integer update = sequence;
+                if (sequence < epicSequenceDTO.getAfterSequence()) {
+                    Integer addUpdate = epicSequenceDTO.getAfterSequence() - sequence + 1;
+                    update = update + addUpdate;
+                    issueRepository.batchUpdateSequence(epicSequenceDTO.getAfterSequence(), projectId, addUpdate + 1);
+                }
+                issueE.setEpicSequence(update);
                 issueRepository.update(issueE, new String[]{EPIC_SEQUENCE});
             }
         }

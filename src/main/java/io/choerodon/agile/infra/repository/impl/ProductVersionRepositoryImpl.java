@@ -87,8 +87,8 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     }
 
     @Override
-    public int batchUpdateSequence(Integer sequence, Long projectId) {
-        return versionMapper.batchUpdateSequence(sequence,projectId);
+    public int batchUpdateSequence(Integer sequence, Long projectId,Integer add) {
+        return versionMapper.batchUpdateSequence(sequence,projectId,add);
     }
 
 }

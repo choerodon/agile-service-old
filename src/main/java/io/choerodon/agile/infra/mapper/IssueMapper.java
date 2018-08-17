@@ -231,9 +231,10 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      *
      * @param sequence  sequence
      * @param projectId projectId
+     * @param add       add
      * @return int
      */
-    int batchUpdateSequence(@Param("sequence") Integer sequence, @Param("projectId") Long projectId);
+    int batchUpdateSequence(@Param("sequence") Integer sequence, @Param("projectId") Long projectId, @Param("add") Integer add);
 
     /**
      * 查询epic的最大排序
@@ -309,5 +310,5 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                                @Param("assigneeId") Long assigneeId,
                                                @Param("onlyStory") Boolean onlyStory,
                                                @Param("filterSql") String filterSql);
-    
+
 }

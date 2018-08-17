@@ -124,7 +124,7 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public int batchUpdateSequence(Integer sequence, Long projectId) {
-        return issueMapper.batchUpdateSequence(sequence, projectId);
+    public int batchUpdateSequence(Integer sequence, Long projectId, Integer add) {
+        return issueMapper.batchUpdateSequence(sequence, projectId, add);
     }
 }

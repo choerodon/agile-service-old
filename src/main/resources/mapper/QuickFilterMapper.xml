@@ -14,7 +14,7 @@
 
     <update id="batchUpdateSequence">
         UPDATE agile_quick_filter
-        SET sequence = (sequence + 1)
+        SET sequence = (sequence + #{add})
         WHERE sequence &gt;= #{sequence} AND project_id = #{projectId}
     </update>
 

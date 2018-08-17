@@ -1485,7 +1485,7 @@
 
     <update id="batchUpdateSequence">
         UPDATE agile_issue
-        SET epic_sequence = (epic_sequence + 1)
+        SET epic_sequence = (epic_sequence + #{add})
         WHERE epic_sequence &gt;= #{sequence} AND project_id = #{projectId} AND type_code = 'issue_epic'
     </update>
 
