@@ -247,7 +247,7 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         } else {
             if (sequence > quickFilterSequenceDTO.getBeforeSequence()) {
                 Integer add = sequence - quickFilterSequenceDTO.getBeforeSequence() + 1;
-                quickFilterRepository.batchUpdateSequence(sequence, projectId,add);
+                quickFilterRepository.batchUpdateSequence(quickFilterSequenceDTO.getBeforeSequence(), projectId,add);
                 if (quickFilterSequenceDTO.getAfterSequence() == null) {
                     quickFilterE.setSequence(sequence);
                     quickFilterRepository.update(quickFilterE);

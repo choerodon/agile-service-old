@@ -53,4 +53,14 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_version_issue_rel.groovy') {
             column(name: 'relation_type')
         }
     }
+
+    changeSet(id: '2018-08-17-add-fix-version-data', author: 'dinghuang123@gmail.com') {
+        sql(stripComments: true, splitStatements: false, endDelimiter: ';') {
+            "UPDATE agile_version_issue_rel avir SET avir.object_version_number = 1,avir.created_by = 0,\n" +
+                    "avir.creation_date = ( SELECT ai.creation_date from agile_issue ai where ai.issue_id = avir.issue_id ),\n" +
+                    "avir.last_updated_by = 0,\n" +
+                    "avir.last_update_date = (SELECT ai.creation_date from agile_issue ai where ai.issue_id = avir.issue_id)\n" +
+                    "where avir.creation_date IS NULL;"
+        }
+    }
 }

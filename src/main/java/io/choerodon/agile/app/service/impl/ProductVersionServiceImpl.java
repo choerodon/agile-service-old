@@ -372,7 +372,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         } else {
             if (sequence > versionSequenceDTO.getBeforeSequence()) {
                 Integer add = sequence - versionSequenceDTO.getBeforeSequence() + 1;
-                productVersionRepository.batchUpdateSequence(sequence, projectId, add);
+                productVersionRepository.batchUpdateSequence(versionSequenceDTO.getBeforeSequence(), projectId, add);
                 if (versionSequenceDTO.getAfterSequence() == null) {
                     productVersionE.setSequence(sequence);
                     productVersionRepository.updateVersion(productVersionE);

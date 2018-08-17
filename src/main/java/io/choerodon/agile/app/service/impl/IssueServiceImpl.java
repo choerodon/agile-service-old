@@ -1417,7 +1417,7 @@ public class IssueServiceImpl implements IssueService {
         } else {
             if (sequence > epicSequenceDTO.getBeforeSequence()) {
                 Integer add = sequence - epicSequenceDTO.getBeforeSequence() + 1;
-                issueRepository.batchUpdateSequence(sequence, projectId, add);
+                issueRepository.batchUpdateSequence(epicSequenceDTO.getBeforeSequence(), projectId, add);
                 if (epicSequenceDTO.getAfterSequence() == null) {
                     issueE.setEpicSequence(sequence);
                     issueRepository.update(issueE, new String[]{EPIC_SEQUENCE});
