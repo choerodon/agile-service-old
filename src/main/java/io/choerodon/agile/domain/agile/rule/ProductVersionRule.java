@@ -48,9 +48,7 @@ public class ProductVersionRule {
         productVersionDO.setProjectId(projectId);
         productVersionDO.setVersionId(productVersionRelease.getVersionId());
         productVersionDO = productVersionMapper.selectOne(productVersionDO);
-        if (productVersionDO == null || !Objects.equals(productVersionDO.getStatusCode(), VERSION_STATUS_PLAN_CODE)
-                || (productVersionDO.getStartDate() != null && productVersionRelease.getReleaseDate()
-                != null )) {
+        if (productVersionDO == null || !Objects.equals(productVersionDO.getStatusCode(), VERSION_STATUS_PLAN_CODE)) {
             throw new CommonException(RELEASE_ERROR);
         }
     }
