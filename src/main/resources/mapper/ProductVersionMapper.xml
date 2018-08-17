@@ -292,6 +292,32 @@
         )
     </select>
 
+    <select id="queryIssueForLogByVersionIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+        SELECT avir.issue_id, avir.relation_type,apv.name,avir.version_id
+        FROM agile_version_issue_rel avir left join agile_product_version apv on apv.version_id = avir.version_id
+        WHERE avir.project_id = #{projectId}
+        AND avir.version_id IN
+        <foreach collection="versionIds" item="versionId" index="index"
+                 open="(" close=")" separator=",">
+            #{versionId}
+        </foreach>
+    </select>
+
+    <select id="queryInCompleteIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+        SELECT avir.issue_id, avir.relation_type,apv.name,avir.version_id
+        FROM agile_version_issue_rel avir left join agile_product_version apv on apv.version_id = avir.version_id
+        left join agile_issue ai on avir.issue_id = ai.issue_id left join agile_issue_status ais on ai.status_id = ais.id
+        WHERE avir.project_id = #{projectId}
+        AND avir.version_id = #{versionId} and ais.category_code != 'done'
+    </select>
+
+    <select id="queryVersionIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+        SELECT avir.issue_id, avir.relation_type,apv.name
+        FROM agile_version_issue_rel avir left join agile_product_version apv on apv.version_id = avir.version_id
+        WHERE avir.project_id = #{projectId}
+        AND avir.version_id = #{versionId}
+    </select>
+
     <delete id="deleteByVersionIds">
         DELETE
         FROM agile_product_version
@@ -389,8 +415,8 @@
 
     <update id="batchUpdateSequence">
         UPDATE agile_product_version
-        SET sequence = (sequence + 1)
-        WHERE sequence &gt;= #{sequence} AND project_id = #{projectId}
+        SET sequence = (sequence + #{add})
+        WHERE sequence &gt;= #{sequence} AND project_id = #{projectId} and version_id != #{versionId}
     </update>
 
     <select id="queryMaxSequenceByProject" resultType="java.lang.Integer">

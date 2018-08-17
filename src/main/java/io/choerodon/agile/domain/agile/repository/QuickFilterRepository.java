@@ -19,7 +19,9 @@ public interface QuickFilterRepository {
      *
      * @param sequence  sequence
      * @param projectId projectId
+     * @param add       add
+     * @param filterId  filterId
      * @return int
      */
-    int batchUpdateSequence(Integer sequence, Long projectId);
+    int batchUpdateSequence(Integer sequence, Long projectId, Integer add, Long filterId);
 }

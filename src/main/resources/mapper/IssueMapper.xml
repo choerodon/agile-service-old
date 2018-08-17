@@ -984,7 +984,7 @@
         ai.summary,
         ai.assignee_id,
         ai.reporter_id,
-        alv.name AS type_name,
+        IF(alv.name = 'Epic', '史诗', alv.name) AS type_name,
         ais.name AS status_name,
         ai.description,
         asp1.sprint_name,
@@ -1485,8 +1485,8 @@
 
     <update id="batchUpdateSequence">
         UPDATE agile_issue
-        SET epic_sequence = (epic_sequence + 1)
-        WHERE epic_sequence &gt;= #{sequence} AND project_id = #{projectId} AND type_code = 'issue_epic'
+        SET epic_sequence = (epic_sequence + #{add})
+        WHERE epic_sequence &gt;= #{sequence} AND project_id = #{projectId} AND type_code = 'issue_epic' and issue_id != #{issueId}
     </update>
 
     <select id="queryMaxEpicSequenceByProject" resultType="java.lang.Integer">

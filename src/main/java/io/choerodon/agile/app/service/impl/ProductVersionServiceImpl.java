@@ -92,7 +92,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     @Saga(code = "agile-create-version", description = "创建版本", inputSchemaClass = VersionPayload.class)
     @Override
     public synchronized ProductVersionDetailDTO createVersion(Long projectId, ProductVersionCreateDTO versionCreateDTO) {
-        try{
+        try {
             if (!projectId.equals(versionCreateDTO.getProjectId())) {
                 throw new CommonException(NOT_EQUAL_ERROR);
             }
@@ -112,7 +112,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             versionPayload.setProjectId(query.getProjectId());
             sagaClient.startSaga("agile-create-version", new StartInstanceDTO(JSON.toJSONString(versionPayload), "", ""));
             return result;
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new CommonException(e.getMessage());
         }
 
@@ -137,7 +137,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
 
     @Saga(code = "agile-delete-version", description = "删除版本", inputSchemaClass = VersionPayload.class)
     private Boolean simpleDeleteVersion(Long projectId, Long versionId) {
-        try{
+        try {
             ProductVersionDO versionDO = new ProductVersionDO();
             versionDO.setProjectId(projectId);
             versionDO.setVersionId(versionId);
@@ -151,7 +151,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             versionPayload.setProjectId(versionE.getProjectId());
             sagaClient.startSaga("agile-delete-version", new StartInstanceDTO(JSON.toJSONString(versionPayload), "", ""));
             return deleteResult;
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new CommonException(e.getMessage());
         }
     }
@@ -347,39 +347,41 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         if (productVersionE == null) {
             throw new CommonException(NOT_FOUND);
         } else {
-            Integer sequence;
             if (versionSequenceDTO.getAfterSequence() == null) {
                 Integer maxSequence = productVersionMapper.queryMaxAfterSequence(versionSequenceDTO.getBeforeSequence(), projectId);
-                sequence = maxSequence != null ? maxSequence + 1 : versionSequenceDTO.getBeforeSequence();
-            } else {
-                sequence = versionSequenceDTO.getAfterSequence() + 1;
+                versionSequenceDTO.setAfterSequence(maxSequence);
+            } else if (versionSequenceDTO.getBeforeSequence() == null) {
+                Integer minSequence = productVersionMapper.queryMinBeforeSequence(versionSequenceDTO.getAfterSequence(), projectId);
+                versionSequenceDTO.setBeforeSequence(minSequence);
             }
-            handleSequence(versionSequenceDTO, sequence, projectId, productVersionE);
-
+            handleSequence(versionSequenceDTO, projectId, productVersionE);
         }
         return productVersionPageAssembler.doToDto(queryVersionByProjectIdAndVersionId(
                 versionSequenceDTO.getVersionId(), projectId));
     }
 
-    private void handleSequence(VersionSequenceDTO versionSequenceDTO, Integer sequence, Long projectId, ProductVersionE productVersionE) {
+    private void handleSequence(VersionSequenceDTO versionSequenceDTO, Long projectId, ProductVersionE productVersionE) {
         if (versionSequenceDTO.getBeforeSequence() == null) {
-            Integer minSequence = productVersionMapper.queryMinBeforeSequence(versionSequenceDTO.getAfterSequence(), projectId);
-            if (minSequence == null) {
-                productVersionE.setSequence(sequence);
-                productVersionRepository.updateVersion(productVersionE);
-            } else {
-                productVersionRepository.batchUpdateSequence(sequence, projectId);
+            productVersionE.setSequence(versionSequenceDTO.getAfterSequence() + 1);
+            productVersionRepository.updateVersion(productVersionE);
+        } else if (versionSequenceDTO.getAfterSequence() == null) {
+            if (productVersionE.getSequence() > versionSequenceDTO.getBeforeSequence()) {
+                Integer add = productVersionE.getSequence() - versionSequenceDTO.getBeforeSequence();
+                if (add > 0) {
+                    productVersionE.setSequence(versionSequenceDTO.getBeforeSequence() - 1);
+                    productVersionRepository.updateVersion(productVersionE);
+                } else {
+                    productVersionRepository.batchUpdateSequence(versionSequenceDTO.getBeforeSequence(), projectId,
+                            productVersionE.getSequence() - versionSequenceDTO.getBeforeSequence() + 1, productVersionE.getVersionId());
+                }
             }
         } else {
-            if (sequence >= versionSequenceDTO.getBeforeSequence()) {
-                productVersionRepository.batchUpdateSequence(sequence, projectId);
-                if (versionSequenceDTO.getAfterSequence() == null) {
-                    productVersionE.setSequence(sequence);
-                    productVersionRepository.updateVersion(productVersionE);
-                }
-            } else {
-                productVersionE.setSequence(sequence);
-                productVersionRepository.updateVersion(productVersionE);
+            Integer sequence = versionSequenceDTO.getAfterSequence() + 1;
+            productVersionE.setSequence(sequence);
+            productVersionRepository.updateVersion(productVersionE);
+            Integer update = sequence - versionSequenceDTO.getBeforeSequence();
+            if (update >= 0) {
+                productVersionRepository.batchUpdateSequence(versionSequenceDTO.getBeforeSequence(), projectId, update + 1, productVersionE.getVersionId());
             }
         }
     }

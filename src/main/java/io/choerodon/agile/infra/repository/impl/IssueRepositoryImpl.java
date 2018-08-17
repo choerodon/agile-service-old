@@ -103,6 +103,7 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
+    @DataLog(type = "batchRemoveSprintToTarget", single = false)
     public int issueToDestinationByIds(Long projectId, Long sprintId, List<Long> issueIds, Date date, Long userId) {
         return issueMapper.issueToDestinationByIds(projectId, sprintId, issueIds, date, userId);
     }
@@ -124,7 +125,7 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public int batchUpdateSequence(Integer sequence, Long projectId) {
-        return issueMapper.batchUpdateSequence(sequence, projectId);
+    public int batchUpdateSequence(Integer sequence, Long projectId, Integer add, Long issueId) {
+        return issueMapper.batchUpdateSequence(sequence, projectId, add, issueId);
     }
 }

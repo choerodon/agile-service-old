@@ -47,9 +47,14 @@ public class LogDataAspect {
     private static final String LABEL_CREATE = "labelCreate";
     private static final String VERSION_DELETE = "versionDelete";
     private static final String BATCH_DELETE_VERSION = "batchDeleteVersion";
+    private static final String BATCH_DELETE_BY_VERSIONID = "batchDeleteByVersionId";
+    private static final String BATCH_VERSION_DELETE_BY_IN_COMPLETE_ISSUE = "batchVersionDeleteByIncompleteIssue";
+    private static final String BATCH_DELETE_VERSION_BY_VERSION = "batchDeleteVersionByVersion";
+    private static final String BATCH_VERSION_DELETE_BY_VERSION_IDS = "batchVersionDeleteByVersionIds";
     private static final String BATCH_COMPONENT_DELETE = "batchComponentDelete";
     private static final String BATCH_TO_VERSION = "batchToVersion";
     private static final String BATCH_REMOVE_VERSION = "batchRemoveVersion";
+    private static final String BATCH_REMOVE_SPRINT_TO_TARGET = "batchRemoveSprintToTarget";
     private static final String BATCH_TO_EPIC = "batchToEpic";
     private static final String BATCH_REMOVE_SPRINT = "batchRemoveSprint";
     private static final String BATCH_REMOVE_SPRINT_BY_SPRINT_ID = "batchRemoveSprintBySprintId";
@@ -222,11 +227,17 @@ public class LogDataAspect {
                     case BATCH_REMOVE_SPRINT:
                         batchRemoveSprintDataLog(args);
                         break;
+                    case BATCH_REMOVE_SPRINT_TO_TARGET:
+                        batchRemoveSprintToTarget(args);
+                        break;
                     case BATCH_DELETE_LABEL:
                         batchDeleteLabelDataLog(args);
                         break;
                     case BATCH_DELETE_VERSION:
                         batchDeleteVersionDataLog(args);
+                        break;
+                    case BATCH_DELETE_VERSION_BY_VERSION:
+                        batchDeleteVersionByVersion(args);
                         break;
                     case BATCH_MOVE_TO_VERSION:
                         batchMoveVersionDataLog(args);
@@ -236,6 +247,15 @@ public class LogDataAspect {
                         break;
                     case BATCH_UPDATE_ISSUE_STATUS:
                         batchUpdateIssueStatusDataLog(args);
+                        break;
+                    case BATCH_VERSION_DELETE_BY_VERSION_IDS:
+                        batchDeleteVersionByVersionIds(args);
+                        break;
+                    case BATCH_VERSION_DELETE_BY_IN_COMPLETE_ISSUE:
+                        batchVersionDeleteByInCompleteIssue(args);
+                        break;
+                    case BATCH_DELETE_BY_VERSIONID:
+                        batchDeleteByVersionId(args);
                         break;
                     default:
                         break;
@@ -254,6 +274,85 @@ public class LogDataAspect {
             throw new CommonException(ERROR_UPDATE);
         }
         return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void batchRemoveSprintToTarget(Object[] args) {
+        Long projectId = (Long) args[0];
+        Long sprintId = (Long) args[1];
+        List<Long> issueIds = (List<Long>) args[2];
+        //todo
+        if (projectId != null && sprintId != null && issueIds != null && !issueIds.isEmpty()) {
+            SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
+            SprintNameDTO sprintNameDTO = new SprintNameDTO();
+            sprintNameDTO.setSprintId(sprintId);
+            sprintNameDTO.setSprintName(sprintDO.getSprintName());
+            for (Long issueId : issueIds) {
+                StringBuilder newSprintIdStr = new StringBuilder();
+                StringBuilder newSprintNameStr = new StringBuilder();
+                List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
+                handleBatchCreateDataLogForSpring(sprintNames, sprintNameDTO, newSprintNameStr, newSprintIdStr, sprintDO, projectId, issueId);
+            }
+        }
+    }
+
+    private void batchDeleteByVersionId(Object[] args) {
+        Long projectId = (Long) args[0];
+        Long versionId = (Long) args[1];
+        if (projectId != null && versionId != null) {
+            List<VersionIssueDO> versionIssueRelDOS = productVersionMapper.queryVersionIssueByVersionId(projectId, versionId);
+            handleBatchDeleteVersion(versionIssueRelDOS, projectId);
+        }
+    }
+
+    private void batchVersionDeleteByInCompleteIssue(Object[] args) {
+        Long projectId = (Long) args[0];
+        Long versionId = (Long) args[1];
+        if (projectId != null && versionId != null) {
+            List<VersionIssueDO> versionIssues = productVersionMapper.queryInCompleteIssueByVersionId(projectId, versionId);
+            handleBatchDeleteVersion(versionIssues, projectId);
+        }
+    }
+
+    private void batchDeleteVersionByVersion(Object[] args) {
+        ProductVersionE productVersionE = null;
+        for (Object arg : args) {
+            if (arg instanceof ProductVersionE) {
+                productVersionE = (ProductVersionE) arg;
+            }
+        }
+        if (productVersionE != null) {
+            List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueForLogByVersionIds(productVersionE.getProjectId(), Collections.singletonList(productVersionE.getVersionId()));
+            handleBatchDeleteVersion(versionIssues, productVersionE.getProjectId());
+        }
+    }
+
+    private void handleBatchDeleteVersion(List<VersionIssueDO> versionIssues, Long projectId) {
+        if (versionIssues != null && !versionIssues.isEmpty()) {
+            versionIssues.forEach(versionIssueDO -> {
+                String field = FIX_VERSION.equals(versionIssueDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+                createDataLog(projectId, versionIssueDO.getIssueId(), field,
+                        versionIssueDO.getName(), null, versionIssueDO.getVersionId().toString(), null);
+            });
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void batchDeleteVersionByVersionIds(Object[] args) {
+        List<Long> versionIds = new ArrayList<>();
+        Long projectId = null;
+        for (Object arg : args) {
+            if (arg instanceof List) {
+                versionIds = (List) arg;
+            }
+            if (arg instanceof Long) {
+                projectId = (Long) arg;
+            }
+        }
+        if (projectId != null && !versionIds.isEmpty()) {
+            List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueForLogByVersionIds(projectId, versionIds);
+            handleBatchDeleteVersion(versionIssues, projectId);
+        }
     }
 
     private synchronized void batchUpdateIssueStatusDataLog(Object[] args) {

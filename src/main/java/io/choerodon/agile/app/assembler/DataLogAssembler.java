@@ -34,8 +34,10 @@ public class DataLogAssembler {
             UserMessageDO userMessageDO = usersMap.get(dataLogDO.getLastUpdatedBy());
             String name = userMessageDO != null ? userMessageDO.getName() : null;
             String imageUrl = userMessageDO != null ? userMessageDO.getImageUrl() : null;
+            String email = userMessageDO != null ? userMessageDO.getEmail() : null;
             dataLogDTO.setName(name);
             dataLogDTO.setImageUrl(imageUrl);
+            dataLogDTO.setEmail(email);
             dataLogDTOList.add(dataLogDTO);
         }
         return dataLogDTOList;

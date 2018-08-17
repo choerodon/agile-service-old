@@ -89,9 +89,11 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
      *
      * @param sequence  sequence
      * @param projectId projectId
+     * @param add       add
+     * @param versionId versionIdatu
      * @return int
      */
-    int batchUpdateSequence(@Param("sequence") Integer sequence, @Param("projectId") Long projectId);
+    int batchUpdateSequence(@Param("sequence") Integer sequence, @Param("projectId") Long projectId, @Param("add") Integer add, @Param("versionId") Long versionId);
 
     /**
      * 查询最大的序号
@@ -118,4 +120,31 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
      * @return Integer
      */
     Integer queryMinBeforeSequence(@Param("sequence") Integer sequence, @Param("projectId") Long projectId);
+
+    /**
+     * 通过versionIds查询issue关系
+     *
+     * @param projectId  projectId
+     * @param versionIds versionIds
+     * @return VersionIssueDO
+     */
+    List<VersionIssueDO> queryIssueForLogByVersionIds(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds);
+
+    /**
+     * 查询版本关系中未完成的版本
+     *
+     * @param projectId projectId
+     * @param versionId versionId
+     * @return VersionIssueDO
+     */
+    List<VersionIssueDO> queryInCompleteIssueByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+
+    /**
+     * 查询版本中issue关系
+     *
+     * @param projectId projectId
+     * @param versionId versionId
+     * @return VersionIssueDO
+     */
+    List<VersionIssueDO> queryVersionIssueByVersionId(@Param("projectId")Long projectId, @Param("versionId")Long versionId);
 }

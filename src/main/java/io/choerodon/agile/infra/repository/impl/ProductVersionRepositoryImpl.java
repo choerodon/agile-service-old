@@ -40,6 +40,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     }
 
     @Override
+    @DataLog(type = "batchDeleteVersionByVersion",single = false)
     public Boolean deleteVersion(ProductVersionE versionE) {
         ProductVersionDO version = versionConverter.entityToDo(versionE);
         if(versionMapper.delete(version) != 1){
@@ -59,7 +60,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     }
 
     @Override
-    @DataLog(type = "batchMoveVersion")
+    @DataLog(type = "batchMoveVersion",single = false)
     public Boolean batchIssueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDO> versionIssues, Date date, Long userId) {
         versionMapper.issueToDestination(projectId, targetVersionId, versionIssues, date, userId);
         return true;
@@ -86,8 +87,8 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     }
 
     @Override
-    public int batchUpdateSequence(Integer sequence, Long projectId) {
-        return versionMapper.batchUpdateSequence(sequence,projectId);
+    public int batchUpdateSequence(Integer sequence, Long projectId,Integer add,Long versionId) {
+        return versionMapper.batchUpdateSequence(sequence,projectId,add,versionId);
     }
 
 }

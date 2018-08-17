@@ -19,9 +19,11 @@ public interface QuickFilterMapper extends BaseMapper<QuickFilterDO> {
      *
      * @param sequence  sequence
      * @param projectId projectId
+     * @param add       add
+     * @param filterId  filterId
      * @return int
      */
-    int batchUpdateSequence(@Param("sequence") Integer sequence, @Param("projectId") Long projectId);
+    int batchUpdateSequence(@Param("sequence") Integer sequence, @Param("projectId") Long projectId, @Param("add") Integer add, @Param("filterId") Long filterId);
 
     /**
      * 查询最大的序号
@@ -51,8 +53,9 @@ public interface QuickFilterMapper extends BaseMapper<QuickFilterDO> {
 
     /**
      * 根据项目id查询快速筛选，通过sequence排序
+     *
      * @param projectId projectId
      * @return QuickFilterDO
      */
-    List<QuickFilterDO> queryFiltersByProjectId(@Param("projectId")Long projectId);
+    List<QuickFilterDO> queryFiltersByProjectId(@Param("projectId") Long projectId);
 }

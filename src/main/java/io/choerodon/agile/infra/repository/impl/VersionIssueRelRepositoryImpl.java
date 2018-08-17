@@ -64,6 +64,7 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
     }
 
     @Override
+    @DataLog(type = "batchDeleteByVersionId", single = false)
     public int deleteByVersionId(Long projectId, Long versionId) {
         VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
         versionIssueRelDO.setProjectId(projectId);
@@ -72,12 +73,14 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
     }
 
     @Override
+    @DataLog(type = "batchVersionDeleteByIncompleteIssue",single = false)
     public Boolean deleteIncompleteIssueByVersionId(Long projectId, Long versionId) {
         versionIssueRelMapper.deleteIncompleteIssueByVersionId(projectId, versionId);
         return true;
     }
 
     @Override
+    @DataLog(type = "batchVersionDeleteByVersionIds",single = false)
     public int deleteByVersionIds(Long projectId, List<Long> versionIds) {
         return versionIssueRelMapper.deleteByVersionIds(projectId, versionIds);
     }
