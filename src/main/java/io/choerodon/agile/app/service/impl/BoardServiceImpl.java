@@ -140,15 +140,17 @@ public class BoardServiceImpl implements BoardService {
     }
 
 
-    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds) {
-        //子任务经办人为自己，父任务经办人不为自己的情况
+    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds, Boolean condition) {
         List<Long> issueIds = new ArrayList<>();
         for (ColumnAndIssueDO column : columns) {
             List<SubStatus> subStatuses = column.getSubStatuses();
             getDatas(subStatuses, parentIds, assigneeIds, issueIds, epicIds);
             Collections.sort(subStatuses, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
         }
-        handleParentIdsWithSubIssues(parentIds, issueIds, columns, boardId);
+        //选择故事泳道选择仅我的任务后，子任务经办人为自己，父任务经办人不为自己的情况
+        if (condition) {
+            handleParentIdsWithSubIssues(parentIds, issueIds, columns, boardId);
+        }
         Collections.sort(parentIds);
         Collections.sort(assigneeIds);
     }
@@ -234,7 +236,8 @@ public class BoardServiceImpl implements BoardService {
         List<Long> parentIds = new ArrayList<>();
         List<Long> epicIds = new ArrayList<>();
         List<ColumnAndIssueDO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory, filterSql);
-        putDatasAndSort(columns, parentIds, assigneeIds, boardId, epicIds);
+        Boolean condition = assigneeId != null && onlyStory;
+        putDatasAndSort(columns, parentIds, assigneeIds, boardId, epicIds, condition);
         jsonObject.put("parentIds", parentIds);
         jsonObject.put("assigneeIds", assigneeIds);
         jsonObject.put("epicInfo", !epicIds.isEmpty() ? boardColumnMapper.selectEpicBatchByIds(epicIds) : null);

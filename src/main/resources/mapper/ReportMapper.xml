@@ -1804,7 +1804,7 @@
                 FROM
                     agile_issue ai
                 WHERE
-                    ai.project_id = 346
+                    ai.project_id = #{projectId}
                     AND (ai.type_code = 'bug'
                     OR ai.type_code = 'task'
                     OR ai.type_code = 'story' )
@@ -1816,7 +1816,7 @@
                     agile_issue ai4
                     LEFT JOIN agile_issue ai5 ON ai5.issue_id = ai4.parent_issue_id
                 WHERE
-                    ai4.project_id = 346
+                    ai4.project_id = #{projectId}
                     and ai4.type_code = 'sub_task'
                     AND ai5.type_code != 'issue_test'
                 ) epica
@@ -1824,7 +1824,7 @@
             WHERE
                 ( epica.epic_id IS NOT NULL AND epica.epic_id != 0 AND ai2.epic_name IS NOT NULL )
                 OR epica.epic_id IS NULL
-                OR epica.epic_id = 0 GROUP BY type_name
+                OR epica.epic_id = 0 GROUP BY type_name,name
         )pieData ORDER BY pieData.value DESC
     </select>
 

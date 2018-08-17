@@ -1104,9 +1104,7 @@ public class IssueServiceImpl implements IssueService {
         response.setCharacterEncoding("utf-8");
         // 设置response参数，可以打开下载页面
         try {
-            response.setHeader("Content-Disposition", "attachment;filename=" + new String((fileName + ".xls").getBytes(charsetName),
-                    "ISO-8859-1"));
-//            response.addHeader("Content-Disposition", disposition);
+            response.addHeader("Content-Disposition", "attachment;filename=" + new String((fileName + ".xls").getBytes(charsetName)));
         } catch (UnsupportedEncodingException e1) {
             throw new CommonException(EXPORT_ERROR);
         }
