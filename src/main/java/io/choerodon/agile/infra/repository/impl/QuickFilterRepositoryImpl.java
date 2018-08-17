@@ -49,8 +49,8 @@ public class QuickFilterRepositoryImpl implements QuickFilterRepository {
     }
 
     @Override
-    public int batchUpdateSequence(Integer sequence, Long projectId, Integer add) {
-        return quickFilterMapper.batchUpdateSequence(sequence, projectId, add);
+    public int batchUpdateSequence(Integer sequence, Long projectId, Integer add,Long filterId) {
+        return quickFilterMapper.batchUpdateSequence(sequence, projectId, add,filterId);
     }
 
 }

@@ -74,7 +74,8 @@ public interface IssueRepository {
      * @param sequence  sequence
      * @param projectId projectId
      * @param add       add
+     * @param issueId   issueId
      * @return int
      */
-    int batchUpdateSequence(Integer sequence, Long projectId, Integer add);
+    int batchUpdateSequence(Integer sequence, Long projectId, Integer add, Long issueId);
 }

@@ -90,9 +90,10 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
      * @param sequence  sequence
      * @param projectId projectId
      * @param add       add
+     * @param versionId versionIdatu
      * @return int
      */
-    int batchUpdateSequence(@Param("sequence") Integer sequence, @Param("projectId") Long projectId, @Param("add") Integer add);
+    int batchUpdateSequence(@Param("sequence") Integer sequence, @Param("projectId") Long projectId, @Param("add") Integer add, @Param("versionId") Long versionId);
 
     /**
      * 查询最大的序号
@@ -136,5 +137,5 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
      * @param versionId versionId
      * @return VersionIssueDO
      */
-    List<VersionIssueDO> queryInCompleteIssueByVersionId(@Param("projectId")Long projectId, @Param("versionId")Long versionId);
+    List<VersionIssueDO> queryInCompleteIssueByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 }

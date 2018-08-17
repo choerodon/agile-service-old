@@ -15,7 +15,7 @@
     <update id="batchUpdateSequence">
         UPDATE agile_quick_filter
         SET sequence = (sequence + #{add})
-        WHERE sequence &gt;= #{sequence} AND project_id = #{projectId}
+        WHERE sequence &gt;= #{sequence} AND project_id = #{projectId} and filter_id !=#{filterId}
     </update>
 
     <select id="queryMaxSequenceByProject" resultType="java.lang.Integer">

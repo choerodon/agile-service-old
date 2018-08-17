@@ -20,9 +20,10 @@ public interface QuickFilterMapper extends BaseMapper<QuickFilterDO> {
      * @param sequence  sequence
      * @param projectId projectId
      * @param add       add
+     * @param filterId  filterId
      * @return int
      */
-    int batchUpdateSequence(@Param("sequence") Integer sequence, @Param("projectId") Long projectId, @Param("add") Integer add);
+    int batchUpdateSequence(@Param("sequence") Integer sequence, @Param("projectId") Long projectId, @Param("add") Integer add, @Param("filterId") Long filterId);
 
     /**
      * 查询最大的序号

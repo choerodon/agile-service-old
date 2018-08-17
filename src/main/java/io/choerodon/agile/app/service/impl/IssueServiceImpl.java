@@ -1373,13 +1373,14 @@ public class IssueServiceImpl implements IssueService {
         if (issueE == null) {
             throw new CommonException("error.issue.notFound");
         } else {
-            Integer sequence;
             if (epicSequenceDTO.getAfterSequence() == null) {
-                sequence = epicSequenceDTO.getBeforeSequence();
-            } else {
-                sequence = epicSequenceDTO.getAfterSequence() + 1;
+                Integer maxSequence = productVersionMapper.queryMaxAfterSequence(epicSequenceDTO.getBeforeSequence(), projectId);
+                epicSequenceDTO.setAfterSequence(maxSequence);
+            } else if (epicSequenceDTO.getBeforeSequence() == null) {
+                Integer minSequence = productVersionMapper.queryMinBeforeSequence(epicSequenceDTO.getAfterSequence(), projectId);
+                epicSequenceDTO.setBeforeSequence(minSequence);
             }
-            handleSequence(epicSequenceDTO, sequence, projectId, issueE);
+            handleSequence(epicSequenceDTO, projectId, issueE);
         }
         return epicDataAssembler.doToEntity(issueMapper.queryEpicListByEpic(epicSequenceDTO.getEpicId(), projectId));
     }
@@ -1410,29 +1411,28 @@ public class IssueServiceImpl implements IssueService {
         return issueComponentDetailDTOPage;
     }
 
-    private void handleSequence(EpicSequenceDTO epicSequenceDTO, Integer sequence, Long projectId, IssueE issueE) {
+    private void handleSequence(EpicSequenceDTO epicSequenceDTO, Long projectId, IssueE issueE) {
         if (epicSequenceDTO.getBeforeSequence() == null) {
+            issueE.setEpicSequence(epicSequenceDTO.getAfterSequence() + 1);
+            issueRepository.update(issueE, new String[]{EPIC_SEQUENCE});
+        } else if (epicSequenceDTO.getAfterSequence() == null) {
+            if (issueE.getEpicSequence() > epicSequenceDTO.getBeforeSequence()) {
+                Integer add = issueE.getEpicSequence() - epicSequenceDTO.getBeforeSequence();
+                if (add > 0) {
+                    issueE.setEpicSequence(epicSequenceDTO.getBeforeSequence() - 1);
+                    issueRepository.update(issueE, new String[]{EPIC_SEQUENCE});
+                } else {
+                    issueRepository.batchUpdateSequence(epicSequenceDTO.getBeforeSequence(), projectId,
+                            issueE.getEpicSequence() - epicSequenceDTO.getBeforeSequence() + 1, issueE.getIssueId());
+                }
+            }
+        } else {
+            Integer sequence = epicSequenceDTO.getAfterSequence() + 1;
             issueE.setEpicSequence(sequence);
             issueRepository.update(issueE, new String[]{EPIC_SEQUENCE});
-        } else {
-            if (sequence > epicSequenceDTO.getBeforeSequence()) {
-                Integer add = sequence - epicSequenceDTO.getBeforeSequence() + 1;
-                issueRepository.batchUpdateSequence(epicSequenceDTO.getBeforeSequence(), projectId, add);
-                if (epicSequenceDTO.getAfterSequence() == null) {
-                    issueE.setEpicSequence(sequence);
-                    issueRepository.update(issueE, new String[]{EPIC_SEQUENCE});
-                }
-            } else {
-                Integer update = sequence;
-                if (epicSequenceDTO.getAfterSequence() != null) {
-                    if (sequence < epicSequenceDTO.getAfterSequence()) {
-                        Integer addUpdate = epicSequenceDTO.getAfterSequence() - sequence + 1;
-                        update = update + addUpdate;
-                        issueRepository.batchUpdateSequence(epicSequenceDTO.getAfterSequence(), projectId, addUpdate + 1);
-                    }
-                }
-                issueE.setEpicSequence(update);
-                issueRepository.update(issueE, new String[]{EPIC_SEQUENCE});
+            Integer update = sequence - epicSequenceDTO.getBeforeSequence();
+            if (update >= 0) {
+                issueRepository.batchUpdateSequence(epicSequenceDTO.getBeforeSequence(), projectId, update + 1, issueE.getIssueId());
             }
         }
     }

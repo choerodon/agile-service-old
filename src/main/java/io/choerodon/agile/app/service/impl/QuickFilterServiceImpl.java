@@ -222,47 +222,42 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         QuickFilterE quickFilterE = ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(quickFilterSequenceDTO.getFilterId()),QuickFilterE.class);
         if (quickFilterE == null) {
             throw new CommonException(NOT_FOUND);
+        }else{
+            if (quickFilterSequenceDTO.getAfterSequence() == null) {
+                Integer maxSequence = quickFilterMapper.queryMaxAfterSequence(quickFilterSequenceDTO.getBeforeSequence(), projectId);
+                quickFilterSequenceDTO.setAfterSequence(maxSequence);
+            } else if (quickFilterSequenceDTO.getBeforeSequence() == null) {
+                Integer minSequence = quickFilterMapper.queryMinBeforeSequence(quickFilterSequenceDTO.getAfterSequence(), projectId);
+                quickFilterSequenceDTO.setBeforeSequence(minSequence);
+            }
+            handleSequence(quickFilterSequenceDTO, projectId, quickFilterE);
         }
-        Integer sequence;
-        if (quickFilterSequenceDTO.getAfterSequence() == null) {
-            Integer maxSequence = quickFilterMapper.queryMaxAfterSequence(quickFilterSequenceDTO.getBeforeSequence(), projectId);
-            sequence = maxSequence != null ? maxSequence + 1 : quickFilterSequenceDTO.getBeforeSequence();
-        } else {
-            sequence = quickFilterSequenceDTO.getAfterSequence() + 1;
-        }
-        handleSequence(quickFilterSequenceDTO, sequence, projectId, quickFilterE);
         return ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(quickFilterSequenceDTO.getFilterId()),QuickFilterDTO.class);
 
     }
 
-    private void handleSequence(QuickFilterSequenceDTO quickFilterSequenceDTO, Integer sequence, Long projectId, QuickFilterE quickFilterE) {
+    private void handleSequence(QuickFilterSequenceDTO quickFilterSequenceDTO,Long projectId, QuickFilterE quickFilterE) {
         if (quickFilterSequenceDTO.getBeforeSequence() == null) {
-            Integer minSequence = quickFilterMapper.queryMinBeforeSequence(quickFilterSequenceDTO.getAfterSequence(), projectId);
-            if (minSequence == null) {
-                quickFilterE.setSequence(sequence);
-                quickFilterRepository.update(quickFilterE);
-            } else {
-                quickFilterRepository.batchUpdateSequence(sequence, projectId,1);
+            quickFilterE.setSequence(quickFilterSequenceDTO.getAfterSequence() + 1);
+            quickFilterRepository.update(quickFilterE);
+        } else if (quickFilterSequenceDTO.getAfterSequence() == null) {
+            if (quickFilterE.getSequence() > quickFilterSequenceDTO.getBeforeSequence()) {
+                Integer add = quickFilterE.getSequence() - quickFilterSequenceDTO.getBeforeSequence();
+                if (add > 0) {
+                    quickFilterE.setSequence(quickFilterSequenceDTO.getBeforeSequence() - 1);
+                    quickFilterRepository.update(quickFilterE);
+                } else {
+                    quickFilterRepository.batchUpdateSequence(quickFilterSequenceDTO.getBeforeSequence(), projectId,
+                            quickFilterE.getSequence() - quickFilterSequenceDTO.getBeforeSequence() + 1, quickFilterE.getFilterId());
+                }
             }
         } else {
-            if (sequence > quickFilterSequenceDTO.getBeforeSequence()) {
-                Integer add = sequence - quickFilterSequenceDTO.getBeforeSequence() + 1;
-                quickFilterRepository.batchUpdateSequence(quickFilterSequenceDTO.getBeforeSequence(), projectId,add);
-                if (quickFilterSequenceDTO.getAfterSequence() == null) {
-                    quickFilterE.setSequence(sequence);
-                    quickFilterRepository.update(quickFilterE);
-                }
-            } else {
-                Integer update = sequence;
-                if(quickFilterSequenceDTO.getAfterSequence()!=null){
-                    if (sequence < quickFilterSequenceDTO.getAfterSequence()) {
-                        Integer addUpdate = quickFilterSequenceDTO.getAfterSequence() - sequence + 1;
-                        update = update + addUpdate;
-                        quickFilterRepository.batchUpdateSequence(quickFilterSequenceDTO.getAfterSequence(), projectId, addUpdate + 1);
-                    }
-                }
-                quickFilterE.setSequence(update);
-                quickFilterRepository.update(quickFilterE);
+            Integer sequence = quickFilterSequenceDTO.getAfterSequence() + 1;
+            quickFilterE.setSequence(sequence);
+            quickFilterRepository.update(quickFilterE);
+            Integer update = sequence - quickFilterSequenceDTO.getBeforeSequence();
+            if (update >= 0) {
+                quickFilterRepository.batchUpdateSequence(quickFilterSequenceDTO.getBeforeSequence(), projectId, update + 1, quickFilterE.getFilterId());
             }
         }
     }

@@ -409,7 +409,7 @@
     <update id="batchUpdateSequence">
         UPDATE agile_product_version
         SET sequence = (sequence + #{add})
-        WHERE sequence &gt;= #{sequence} AND project_id = #{projectId}
+        WHERE sequence &gt;= #{sequence} AND project_id = #{projectId} and version_id != #{versionId}
     </update>
 
     <select id="queryMaxSequenceByProject" resultType="java.lang.Integer">

@@ -31,7 +31,8 @@ public interface ProductVersionRepository {
      * @param sequence  sequence
      * @param projectId projectId
      * @param add       add
+     * @param versionId versionId
      * @return int
      */
-    int batchUpdateSequence(Integer sequence, Long projectId, Integer add);
+    int batchUpdateSequence(Integer sequence, Long projectId, Integer add, Long versionId);
 }
