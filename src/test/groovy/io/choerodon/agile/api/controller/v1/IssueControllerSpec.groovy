@@ -525,28 +525,28 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def "导出issue列表"() {
-        given: '给定查询dto'
-        SearchDTO searchDTO = new SearchDTO()
-        searchDTO.content = '测试'
-
-        and: 'mock userFeignClient'
-        ProjectDTO projectDTO = new ProjectDTO()
-        projectDTO.name = '测试项目'
-        projectDTO.code = '测试项目Code'
-        userRepository.queryProject(_) >> projectDTO
-
-        when: '向根据issue类型(type_code)查询issue列表(分页)接口发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/export',
-                searchDTO, null, projectId)
-
-        then: '返回值'
-        entity.statusCode.is2xxSuccessful()
-
-        expect: '期待值比较'
-        entity.headers.get("Content-Type") != null
-
-    }
+//    def "导出issue列表"() {
+//        given: '给定查询dto'
+//        SearchDTO searchDTO = new SearchDTO()
+//        searchDTO.content = '测试'
+//
+//        and: 'mock userFeignClient'
+//        ProjectDTO projectDTO = new ProjectDTO()
+//        projectDTO.name = '测试项目'
+//        projectDTO.code = '测试项目Code'
+//        userRepository.queryProject(_) >> projectDTO
+//
+//        when: '向根据issue类型(type_code)查询issue列表(分页)接口发请求'
+//        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/export',
+//                searchDTO, null, projectId)
+//
+//        then: '返回值'
+//        entity.statusCode.is2xxSuccessful()
+//
+//        expect: '期待值比较'
+//        entity.headers.get("Content-Type") != null
+//
+//    }
 
     def "导出issue详情"() {
         given: 'mock userFeignClient'

@@ -47,6 +47,7 @@ public class LogDataAspect {
     private static final String LABEL_CREATE = "labelCreate";
     private static final String VERSION_DELETE = "versionDelete";
     private static final String BATCH_DELETE_VERSION = "batchDeleteVersion";
+    private static final String BATCH_DELETE_VERSION_BY_VERSION = "batchDeleteVersionByVersion";
     private static final String BATCH_VERSION_DELETE_BY_VERSION_IDS = "batchVersionDeleteByVersionIds";
     private static final String BATCH_COMPONENT_DELETE = "batchComponentDelete";
     private static final String BATCH_TO_VERSION = "batchToVersion";
@@ -229,6 +230,9 @@ public class LogDataAspect {
                     case BATCH_DELETE_VERSION:
                         batchDeleteVersionDataLog(args);
                         break;
+                    case BATCH_DELETE_VERSION_BY_VERSION:
+                        batchDeleteVersionByVersion(args);
+                        break;
                     case BATCH_MOVE_TO_VERSION:
                         batchMoveVersionDataLog(args);
                         break;
@@ -260,6 +264,29 @@ public class LogDataAspect {
         return result;
     }
 
+    private void batchDeleteVersionByVersion(Object[] args) {
+        ProductVersionE productVersionE = null;
+        for (Object arg : args) {
+            if (arg instanceof ProductVersionE) {
+                productVersionE = (ProductVersionE) arg;
+            }
+        }
+        if (productVersionE != null) {
+            List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueForLogByVersionIds(productVersionE.getProjectId(), Collections.singletonList(productVersionE.getVersionId()));
+            handleBatchDeleteVersion(versionIssues, productVersionE.getProjectId());
+        }
+    }
+
+    private void handleBatchDeleteVersion(List<VersionIssueDO> versionIssues, Long projectId) {
+        if (versionIssues != null && !versionIssues.isEmpty()) {
+            versionIssues.forEach(versionIssueDO -> {
+                String field = FIX_VERSION.equals(versionIssueDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+                createDataLog(projectId, versionIssueDO.getIssueId(), field,
+                        versionIssueDO.getName(), null, versionIssueDO.getVersionId().toString(), null);
+            });
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private void batchDeleteVersionByVersionIds(Object[] args) {
         List<Long> versionIds = new ArrayList<>();
@@ -274,14 +301,7 @@ public class LogDataAspect {
         }
         if (projectId != null && !versionIds.isEmpty()) {
             List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueForLogByVersionIds(projectId, versionIds);
-            if(versionIssues!=null&&!versionIssues.isEmpty()){
-                Long finalProjectId = projectId;
-                versionIssues.forEach(versionIssueDO -> {
-                    String field = FIX_VERSION.equals(versionIssueDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
-                    createDataLog(finalProjectId, versionIssueDO.getIssueId(), field,
-                            versionIssueDO.getName(), null, versionIssueDO.getVersionId().toString(), null);
-                });
-            }
+            handleBatchDeleteVersion(versionIssues, projectId);
         }
     }
 
