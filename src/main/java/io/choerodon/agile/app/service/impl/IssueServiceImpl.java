@@ -1100,26 +1100,20 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void downloadExcel(HSSFWorkbook workbook, String fileName, String charsetName, HttpServletResponse response) {
-        LOGGER.info("开始设置response参数");
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding("utf-8");
         // 设置response参数，可以打开下载页面
-        response.reset();
-        response.setContentType("application/ms-excel;charset=utf-8");
         try {
-            response.setHeader("Content-Disposition", "attachment;filename="
-                    + new String((fileName + ".xls").getBytes(charsetName),
+            response.setHeader("Content-Disposition", "attachment;filename=" + new String((fileName + ".xls").getBytes(charsetName),
                     "ISO-8859-1"));
+//            response.addHeader("Content-Disposition", disposition);
         } catch (UnsupportedEncodingException e1) {
             throw new CommonException(EXPORT_ERROR);
         }
-        response.setCharacterEncoding("utf-8");
-        LOGGER.info("getContentType参数{}", response.getContentType());
-        LOGGER.info("getBufferSize参数{}", response.getBufferSize());
-        LOGGER.info("getCharacterEncoding参数{}", response.getCharacterEncoding());
-        LOGGER.info("getStatus参数{}", response.getStatus());
         response.getHeaderNames().forEach(s -> LOGGER.info("header参数{}", s));
-        LOGGER.info("Content-Disposition{}", response.getHeader("Content-Disposition"));
         try {
             workbook.write(response.getOutputStream());
+            LOGGER.info("流输出结束");
         } catch (final IOException e) {
             throw new CommonException(EXPORT_ERROR);
         } finally {
