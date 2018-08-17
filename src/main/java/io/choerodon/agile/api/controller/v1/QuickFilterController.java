@@ -105,7 +105,7 @@ public class QuickFilterController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "拖动过滤位置")
-    @PutMapping(value = "/10.211.97.63")
+    @PutMapping(value = "/drag")
     public ResponseEntity<QuickFilterDTO> dragFilter(@ApiParam(value = "项目id", required = true)
                                                              @PathVariable(name = "project_id") Long projectId,
                                                              @ApiParam(value = "排序对象", required = true)
