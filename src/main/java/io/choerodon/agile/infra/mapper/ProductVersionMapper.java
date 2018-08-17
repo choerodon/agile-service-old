@@ -118,4 +118,13 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
      * @return Integer
      */
     Integer queryMinBeforeSequence(@Param("sequence") Integer sequence, @Param("projectId") Long projectId);
+
+    /**
+     * 通过versionIds查询issue关系
+     *
+     * @param projectId  projectId
+     * @param versionIds versionIds
+     * @return VersionIssueDO
+     */
+    List<VersionIssueDO> queryIssueForLogByVersionIds(@Param("projectId")Long projectId, @Param("versionIds")List<Long> versionIds);
 }

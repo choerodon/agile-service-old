@@ -78,7 +78,7 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
     }
 
     @Override
-    @DataLog(type = "batchVersionDelete",single = false)
+    @DataLog(type = "batchVersionDeleteByVersionIds",single = false)
     public int deleteByVersionIds(Long projectId, List<Long> versionIds) {
         return versionIssueRelMapper.deleteByVersionIds(projectId, versionIds);
     }

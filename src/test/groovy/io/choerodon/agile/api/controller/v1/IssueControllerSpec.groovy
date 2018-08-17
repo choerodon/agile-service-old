@@ -544,7 +544,7 @@ class IssueControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         expect: '期待值比较'
-        entity.headers.get("Content-Length").size() > 0
+        entity.headers.get("Content-Type") != null
 
     }
 

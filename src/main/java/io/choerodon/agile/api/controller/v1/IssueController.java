@@ -326,7 +326,6 @@ public class IssueController {
                             @PathVariable(name = "issueId") Long issueId,
                             HttpServletRequest request,
                             HttpServletResponse response) {
-        logger.info("进入了导出issue的Controller");
         issueService.exportIssue(projectId, issueId, request, response);
     }
 

@@ -47,6 +47,7 @@ public class LogDataAspect {
     private static final String LABEL_CREATE = "labelCreate";
     private static final String VERSION_DELETE = "versionDelete";
     private static final String BATCH_DELETE_VERSION = "batchDeleteVersion";
+    private static final String BATCH_VERSION_DELETE_BY_VERSION_IDS = "batchVersionDeleteByVersionIds";
     private static final String BATCH_COMPONENT_DELETE = "batchComponentDelete";
     private static final String BATCH_TO_VERSION = "batchToVersion";
     private static final String BATCH_REMOVE_VERSION = "batchRemoveVersion";
@@ -237,6 +238,9 @@ public class LogDataAspect {
                     case BATCH_UPDATE_ISSUE_STATUS:
                         batchUpdateIssueStatusDataLog(args);
                         break;
+                    case BATCH_VERSION_DELETE_BY_VERSION_IDS:
+                        batchDeleteVersionByVersionIds(args);
+                        break;
                     default:
                         break;
                 }
@@ -254,6 +258,31 @@ public class LogDataAspect {
             throw new CommonException(ERROR_UPDATE);
         }
         return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void batchDeleteVersionByVersionIds(Object[] args) {
+        List<Long> versionIds = new ArrayList<>();
+        Long projectId = null;
+        for (Object arg : args) {
+            if (arg instanceof List) {
+                versionIds = (List) arg;
+            }
+            if (arg instanceof Long) {
+                projectId = (Long) arg;
+            }
+        }
+        if (projectId != null && !versionIds.isEmpty()) {
+            List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueForLogByVersionIds(projectId, versionIds);
+            if(versionIssues!=null&&!versionIssues.isEmpty()){
+                Long finalProjectId = projectId;
+                versionIssues.forEach(versionIssueDO -> {
+                    String field = FIX_VERSION.equals(versionIssueDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+                    createDataLog(finalProjectId, versionIssueDO.getIssueId(), field,
+                            versionIssueDO.getName(), null, versionIssueDO.getVersionId().toString(), null);
+                });
+            }
+        }
     }
 
     private synchronized void batchUpdateIssueStatusDataLog(Object[] args) {

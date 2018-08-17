@@ -7,6 +7,15 @@ public class VersionIssueDO {
     private Long issueId;
     private String relationType;
     private Long versionId;
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Long getVersionId() {
         return versionId;

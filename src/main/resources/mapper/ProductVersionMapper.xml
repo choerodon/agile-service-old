@@ -292,6 +292,17 @@
         )
     </select>
 
+    <select id="queryIssueForLogByVersionIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+        SELECT avir.issue_id, avir.relation_type,apv.name
+        FROM agile_version_issue_rel avir left join agile_product_version apv on apv.version_id = avir.verison_id
+        WHERE avir.project_id = #{projectId}
+        AND avir.version_id IN
+        <foreach collection="versionIds" item="versionId" index="index"
+                 open="(" close=")" separator=",">
+            #{versionId}
+        </foreach>
+    </select>
+
     <delete id="deleteByVersionIds">
         DELETE
         FROM agile_product_version

@@ -315,13 +315,11 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             throw new CommonException(SOURCE_VERSION_ERROR);
         }
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        //todo 版本日志
         List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds(), productVersionMergeDTO.getTargetVersionId());
         versionIssueRelRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         if (!versionIssues.isEmpty()) {
             productVersionRepository.batchIssueToDestination(projectId, productVersionMergeDTO.getTargetVersionId(), versionIssues, new Date(), customUserDetails.getUserId());
         }
-        productVersionRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         return true;
     }
 
