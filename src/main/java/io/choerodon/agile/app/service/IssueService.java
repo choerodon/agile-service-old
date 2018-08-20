@@ -202,4 +202,6 @@ public interface IssueService {
     Page<IssueComponentDetailDTO> listIssueWithoutSubDetail(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
 
     List<StoryMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds);
+
+    IssueDTO storymapMove(Long projectId, StoryMapMoveDTO storyMapMoveDTO);
 }

@@ -128,4 +128,14 @@ public class IssueRepositoryImpl implements IssueRepository {
     public int batchUpdateSequence(Integer sequence, Long projectId, Integer add, Long issueId) {
         return issueMapper.batchUpdateSequence(sequence, projectId, add, issueId);
     }
+
+
+    @Override
+    public IssueE updateSelective(IssueE issueE) {
+        IssueDO issueDO = ConvertHelper.convert(issueE, IssueDO.class);
+        if (issueMapper.updateByPrimaryKeySelective(issueDO) != 1) {
+            throw new CommonException(UPDATE_ERROR);
+        }
+        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDO.getIssueId()), IssueE.class);
+    }
 }

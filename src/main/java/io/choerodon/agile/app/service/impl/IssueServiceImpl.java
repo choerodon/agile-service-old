@@ -4,6 +4,7 @@ package io.choerodon.agile.app.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.domain.agile.entity.*;
@@ -1477,4 +1478,17 @@ public class IssueServiceImpl implements IssueService {
         }
         return storyMapIssueDTOList == null ? new ArrayList<>() : storyMapIssueDTOList;
     }
+
+    @Override
+    public IssueDTO storymapMove(Long projectId, StoryMapMoveDTO storyMapMoveDTO) {
+        Long issueId = storyMapMoveDTO.getIssueId();
+        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
+        IssueValidator.checkStoryMapMove(storyMapMoveDTO, issueDO);
+        IssueE updateIssue = new IssueE();
+        updateIssue.setIssueId(storyMapMoveDTO.getIssueId());
+        updateIssue.setObjectVersionNumber(storyMapMoveDTO.getObjectVersionNumber());
+        updateIssue.setEpicId(storyMapMoveDTO.getEpicId());
+        return ConvertHelper.convert(issueRepository.updateSelective(updateIssue), IssueDTO.class);
+    }
+
 }
