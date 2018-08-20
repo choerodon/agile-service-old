@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -518,9 +519,26 @@ public class IssueServiceImpl implements IssueService {
         List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
         //处理子任务
         moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
-        BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, moveIssueIds);
-        issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
-        if (sprintId != null && !Objects.equals(sprintId, 0L)) {
+        BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, null);
+        //todo 逻辑问题
+        Map<Long, IssueSprintDO> issueSprintDOMap = issueMapper.queryIssueSprintByIssueId(projectId, moveIssueIds).stream().collect(Collectors.toMap(IssueSprintDO::getIssueId,
+                Function.identity()));
+        List<Long> issueIdRemove = new ArrayList<>();
+        List<Long> issueIdAdd = new ArrayList<>();
+        moveIssueIds.forEach(issueId -> {
+            if (issueSprintDOMap.get(issueId) != null && (issueSprintDOMap.get(issueId).getSprintId() == null ||
+                    !issueSprintDOMap.get(issueId).getSprintId().equals(sprintId))) {
+                issueIdRemove.add(issueId);
+            } else {
+                issueIdAdd.add(issueId);
+            }
+        });
+        if (!issueIdRemove.isEmpty()) {
+            batchRemoveSprintE.setIssueIds(issueIdRemove);
+            issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+        }
+        if (sprintId != null && !Objects.equals(sprintId, 0L) && !issueIdAdd.isEmpty()) {
+            batchRemoveSprintE.setIssueIds(issueIdAdd);
             issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
         }
         List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds());
