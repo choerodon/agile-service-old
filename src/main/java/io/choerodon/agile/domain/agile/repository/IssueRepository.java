@@ -78,4 +78,6 @@ public interface IssueRepository {
      * @return int
      */
     int batchUpdateSequence(Integer sequence, Long projectId, Integer add, Long issueId);
+
+    int issueToDestinationByIdsCloseSprint(Long projectId, Long targetSprintId, List<Long> issueIds, Date date, Long userId);
 }

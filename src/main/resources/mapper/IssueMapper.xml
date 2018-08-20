@@ -1829,7 +1829,7 @@
             AND a.project_id = #{projectId} ) ai
             LEFT JOIN agile_issue_sprint_rel aisr ON ai.issue_id = aisr.issue_id
             LEFT JOIN agile_sprint asw ON asw.sprint_id = aisr.sprint_id
-            AND asw.status_code != 'closed'
+            where asw.status_code != 'closed'
     </select>
 
 </mapper>

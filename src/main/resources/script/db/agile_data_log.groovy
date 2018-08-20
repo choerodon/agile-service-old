@@ -52,4 +52,13 @@ databaseChangeLog(logicalFilePath:'agile_data_log.groovy') {
             column(name: "creation_date")
         }
     }
+
+    changeSet(id: '2018-08-20-modify-data', author: 'dinghuang123@gmail.com') {
+        sql(stripComments: true, splitStatements: false, endDelimiter: ';') {
+            "delete FROM agile_data_log WHERE field = 'Sprint' and creation_date > '2018-08-20 00:00:00'" +
+                    " and log_id NOT IN ( SELECT temp.log_id FROM ( SELECT min(log_id) as log_id FROM agile_data_log adl where" +
+                    " field = 'Sprint' and creation_date > '2018-08-20 00:00:00' GROUP BY adl.field,adl.old_value,adl.new_value," +
+                    "adl.old_string,adl.new_string,adl.issue_id) AS temp);"
+        }
+    }
 }
