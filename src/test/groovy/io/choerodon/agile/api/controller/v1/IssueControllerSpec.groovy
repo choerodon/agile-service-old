@@ -786,9 +786,9 @@ class IssueControllerSpec extends Specification {
         given:
         StoryMapMoveDTO storyMapMoveDTO = new StoryMapMoveDTO()
         storyMapMoveDTO.issueId = issueIdList.get(0)
-        storyMapMoveDTO.objectVersionNumber = 5L
-        storyMapMoveDTO.originEpicId = 0L
-        storyMapMoveDTO.epicId = 5L
+        storyMapMoveDTO.objectVersionNumber = objectVersionNumber
+        storyMapMoveDTO.originEpicId = originEpicId
+        storyMapMoveDTO.epicId = epicId
 
         when:
         HttpEntity<StoryMapMoveDTO> storyMapMoveDTOHttpEntity = new HttpEntity<>(storyMapMoveDTO)
@@ -800,7 +800,16 @@ class IssueControllerSpec extends Specification {
 
         then:
         entity.statusCode.is2xxSuccessful()
-        entity.body.epicId == 5L
+
+        expect:
+        entity.body.epicId == result
+
+        where:
+        originEpicId | epicId | objectVersionNumber | result
+        0L | 5L | 5L | 5L
+        5L | 0L | 6L | 0L
+        0L | 5L | 6L | null
+        0L | 0L | 7L | null
     }
 
 
