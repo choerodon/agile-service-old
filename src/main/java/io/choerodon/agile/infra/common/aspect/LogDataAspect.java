@@ -291,7 +291,7 @@ public class LogDataAspect {
                     Function.identity()));
             for (Long issueId : issueIds) {
                 IssueSprintDO issueSprintDO = issueSprintDOMap.get(issueId);
-                if (issueSprintDO.getSprintId() == null || !issueSprintDO.getSprintId().equals(sprintId)) {
+                if (issueSprintDO == null || issueSprintDO.getSprintId() == null || !issueSprintDO.getSprintId().equals(sprintId)) {
                     StringBuilder newSprintIdStr = new StringBuilder();
                     StringBuilder newSprintNameStr = new StringBuilder();
                     List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
