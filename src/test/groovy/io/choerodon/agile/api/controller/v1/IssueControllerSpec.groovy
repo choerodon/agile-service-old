@@ -25,6 +25,7 @@ import io.choerodon.agile.api.dto.IssueSubCreateDTO
 import io.choerodon.agile.api.dto.IssueSubDTO
 import io.choerodon.agile.api.dto.LabelIssueRelDTO
 import io.choerodon.agile.api.dto.SearchDTO
+import io.choerodon.agile.api.dto.StoryMapMoveDTO
 import io.choerodon.agile.api.dto.VersionIssueRelDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
@@ -781,6 +782,28 @@ class IssueControllerSpec extends Specification {
         count > 0
     }
 
+    def 'storymapMove'() {
+        given:
+        StoryMapMoveDTO storyMapMoveDTO = new StoryMapMoveDTO()
+        storyMapMoveDTO.issueId = issueIdList.get(0)
+        storyMapMoveDTO.objectVersionNumber = 5L
+        storyMapMoveDTO.originEpicId = 0L
+        storyMapMoveDTO.epicId = 5L
+
+        when:
+        HttpEntity<StoryMapMoveDTO> storyMapMoveDTOHttpEntity = new HttpEntity<>(storyMapMoveDTO)
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/storymap/move",
+                HttpMethod.POST,
+                storyMapMoveDTOHttpEntity,
+                IssueDTO.class,
+                projectId)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+        entity.body.epicId == 5L
+    }
+
+
     def "删除issue"() {
         when: '执行方法'
         restTemplate.delete('/v1/projects/{project_id}/issues/{issueId}', projectId, issueId)
@@ -796,5 +819,4 @@ class IssueControllerSpec extends Specification {
 
 
     }
-
 }
