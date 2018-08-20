@@ -312,4 +312,12 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                                @Param("onlyStory") Boolean onlyStory,
                                                @Param("filterSql") String filterSql);
 
+    /**
+     * 查询当前issue的冲刺（没有关闭的）
+     *
+     * @param projectId projectId
+     * @param issueIds  issueIds
+     * @return IssueSprintDO
+     */
+    List<IssueSprintDO> queryIssueSprintByIssueId(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 }

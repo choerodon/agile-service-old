@@ -149,7 +149,7 @@
         WHERE
         adl.field = 'Sprint'
         AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
         AND FIND_IN_SET( #{sprintDO.sprintId}, adl.new_value )
         AND adl.issue_id IN
         <foreach collection="issueIdAddList" item="issueId"
@@ -240,7 +240,7 @@
         WHERE
         adl.field = 'Sprint'
         AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
         AND FIND_IN_SET(#{sprintDO.sprintId},adl.old_value)
         AND
         (FIND_IN_SET(#{sprintDO.sprintId}, adl.new_value) IS NULL OR
@@ -398,7 +398,7 @@
         WHERE
         adl.field = 'resolution'
         AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
         AND adl.new_value != ''
         AND
         adl.issue_id in
@@ -415,7 +415,7 @@
         WHERE
         adl.field = 'resolution'
         AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
         AND adl.new_value is NULL
         and adl.issue_id in
         <foreach collection="issueAllList" item="issueId"
@@ -446,7 +446,7 @@
         agile_data_log adl
         WHERE
         adl.field = 'resolution' AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
         AND adl.new_value IS not null
         AND adl.issue_id IN
         <foreach collection="issueIdAddDoneList" item="issueId"
@@ -482,7 +482,7 @@
         agile_data_log adl
         WHERE
         adl.field = 'resolution' AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
         AND adl.new_value IS null
         AND adl.issue_id IN
         <foreach collection="issueIdRemoveDoneList" item="issueId"
