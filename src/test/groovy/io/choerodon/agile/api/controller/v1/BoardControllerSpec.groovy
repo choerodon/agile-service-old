@@ -179,7 +179,7 @@ class BoardControllerSpec extends Specification {
         then:
         entity.statusCode.is2xxSuccessful()
         BoardDO result = boardMapper.selectByPrimaryKey(boardId)
-        result != null
+        result == null
     }
 
 }

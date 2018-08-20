@@ -88,8 +88,7 @@ class DataLogControllerSpec extends Specification {
 
         then:
         entity.statusCode.is2xxSuccessful()
-        List<DataLogDTO> dataLogDTOList = entity.body
-        dataLogDTOList.size() == 1
+        entity.body.isEmpty() == false
     }
 
 }
