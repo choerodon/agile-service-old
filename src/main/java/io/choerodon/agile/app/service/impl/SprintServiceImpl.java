@@ -247,7 +247,7 @@ public class SprintServiceImpl implements SprintService {
         List<Long> moveIssueIds = sprintMapper.queryIssueIds(projectId, sprintCompleteDTO.getSprintId());
         moveIssueIds.addAll(issueMapper.querySubTaskIds(projectId, sprintCompleteDTO.getSprintId()));
         if (targetSprintId != null && !Objects.equals(targetSprintId, 0L)) {
-            issueRepository.issueToDestinationByIds(projectId, targetSprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
+            issueRepository.issueToDestinationByIdsCloseSprint(projectId, targetSprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
         }
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
     }

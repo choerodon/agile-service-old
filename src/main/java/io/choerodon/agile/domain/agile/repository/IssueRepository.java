@@ -81,4 +81,6 @@ public interface IssueRepository {
     int batchUpdateSequence(Integer sequence, Long projectId, Integer add, Long issueId);
 
     IssueE updateSelective(IssueE issueE);
+
+    int issueToDestinationByIdsCloseSprint(Long projectId, Long targetSprintId, List<Long> issueIds, Date date, Long userId);
 }

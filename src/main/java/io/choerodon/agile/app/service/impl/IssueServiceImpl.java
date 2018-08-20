@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -520,7 +521,7 @@ public class IssueServiceImpl implements IssueService {
         //处理子任务
         moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
         BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, moveIssueIds);
-        issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+            issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
         if (sprintId != null && !Objects.equals(sprintId, 0L)) {
             issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
         }

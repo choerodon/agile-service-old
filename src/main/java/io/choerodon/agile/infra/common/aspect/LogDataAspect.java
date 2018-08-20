@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -281,7 +282,6 @@ public class LogDataAspect {
         Long projectId = (Long) args[0];
         Long sprintId = (Long) args[1];
         List<Long> issueIds = (List<Long>) args[2];
-        //todo
         if (projectId != null && sprintId != null && issueIds != null && !issueIds.isEmpty()) {
             SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
             SprintNameDTO sprintNameDTO = new SprintNameDTO();

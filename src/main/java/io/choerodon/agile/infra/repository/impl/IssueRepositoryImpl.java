@@ -103,7 +103,6 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    @DataLog(type = "batchRemoveSprintToTarget", single = false)
     public int issueToDestinationByIds(Long projectId, Long sprintId, List<Long> issueIds, Date date, Long userId) {
         return issueMapper.issueToDestinationByIds(projectId, sprintId, issueIds, date, userId);
     }
@@ -129,7 +128,6 @@ public class IssueRepositoryImpl implements IssueRepository {
         return issueMapper.batchUpdateSequence(sequence, projectId, add, issueId);
     }
 
-
     @Override
     public IssueE updateSelective(IssueE issueE) {
         IssueDO issueDO = ConvertHelper.convert(issueE, IssueDO.class);
@@ -137,5 +135,12 @@ public class IssueRepositoryImpl implements IssueRepository {
             throw new CommonException(UPDATE_ERROR);
         }
         return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDO.getIssueId()), IssueE.class);
+
+    }
+
+    @Override
+    @DataLog(type = "batchRemoveSprintToTarget", single = false)
+    public int issueToDestinationByIdsCloseSprint(Long projectId, Long targetSprintId, List<Long> issueIds, Date date, Long userId) {
+        return issueMapper.issueToDestinationByIds(projectId, targetSprintId, issueIds, date, userId);
     }
 }
