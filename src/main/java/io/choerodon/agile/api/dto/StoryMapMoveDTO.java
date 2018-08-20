@@ -8,16 +8,16 @@ import javax.validation.constraints.NotNull;
  */
 public class StoryMapMoveDTO {
 
-    @NotNull
+    @NotNull(message = "error.issueId.isNull")
     private Long issueId;
 
-    @NotNull
+    @NotNull(message = "error.originEpicId.isNull")
     private Long originEpicId;
 
-    @NotNull
+    @NotNull(message = "error.epicId.isNull")
     private Long epicId;
 
-    @NotNull
+    @NotNull(message = "error.objectVersionNumber.isNull")
     private Long objectVersionNumber;
 
     public void setIssueId(Long issueId) {
