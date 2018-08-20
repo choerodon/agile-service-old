@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -287,16 +286,11 @@ public class LogDataAspect {
             SprintNameDTO sprintNameDTO = new SprintNameDTO();
             sprintNameDTO.setSprintId(sprintId);
             sprintNameDTO.setSprintName(sprintDO.getSprintName());
-            Map<Long, IssueSprintDO> issueSprintDOMap = issueMapper.queryIssueSprintByIssueId(projectId, issueIds).stream().collect(Collectors.toMap(IssueSprintDO::getIssueId,
-                    Function.identity()));
             for (Long issueId : issueIds) {
-                IssueSprintDO issueSprintDO = issueSprintDOMap.get(issueId);
-                if (issueSprintDO == null || issueSprintDO.getSprintId() == null || !issueSprintDO.getSprintId().equals(sprintId)) {
-                    StringBuilder newSprintIdStr = new StringBuilder();
-                    StringBuilder newSprintNameStr = new StringBuilder();
-                    List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
-                    handleBatchCreateDataLogForSpring(sprintNames, sprintNameDTO, newSprintNameStr, newSprintIdStr, sprintDO, projectId, issueId);
-                }
+                StringBuilder newSprintIdStr = new StringBuilder();
+                StringBuilder newSprintNameStr = new StringBuilder();
+                List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
+                handleBatchCreateDataLogForSpring(sprintNames, sprintNameDTO, newSprintNameStr, newSprintIdStr, sprintDO, projectId, issueId);
             }
         }
     }

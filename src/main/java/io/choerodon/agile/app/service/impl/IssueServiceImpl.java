@@ -520,7 +520,6 @@ public class IssueServiceImpl implements IssueService {
         //处理子任务
         moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
         BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, null);
-        //todo 逻辑问题
         Map<Long, IssueSprintDO> issueSprintDOMap = issueMapper.queryIssueSprintByIssueId(projectId, moveIssueIds).stream().collect(Collectors.toMap(IssueSprintDO::getIssueId,
                 Function.identity()));
         List<Long> issueIdRemove = new ArrayList<>();

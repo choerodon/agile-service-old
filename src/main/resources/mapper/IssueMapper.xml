@@ -1824,7 +1824,7 @@
             ( SELECT a.issue_id FROM agile_issue a WHERE a.issue_id IN
             <foreach collection="issueIds" item="issueId" open="(" separator=","
                      close=")">
-               a.issue_id != #{issueId}
+               #{issueId}
             </foreach>
             AND a.project_id = #{projectId} ) ai
             LEFT JOIN agile_issue_sprint_rel aisr ON ai.issue_id = aisr.issue_id
