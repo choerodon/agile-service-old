@@ -461,4 +461,16 @@ public class IssueController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.listIssuesByProjectId"));
     }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("故事地图移动卡片")
+    @PostMapping(value = "/storymap/move")
+    public ResponseEntity<IssueDTO> storymapMove(@ApiParam(value = "项目id", required = true)
+                                                 @PathVariable(name = "project_id") Long projectId,
+                                                 @ApiParam(value = "story map move dto", required = true)
+                                                 @RequestBody StoryMapMoveDTO storyMapMoveDTO) {
+        return Optional.ofNullable(issueService.storymapMove(projectId, storyMapMoveDTO))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.storyMapIssue.move"));
+    }
 }
