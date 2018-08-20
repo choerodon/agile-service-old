@@ -1816,5 +1816,19 @@
         </if>
     </select>
 
+    <select id="queryStoryMapEpicList" resultType="io.choerodon.agile.infra.dataobject.IssueSprintDO">
+        SELECT
+            ai.issue_id,
+            aisr.sprint_id
+        FROM
+            ( SELECT a.issue_id FROM agile_issue a WHERE a.issue_id IN
+            <foreach collection="issueIds" item="issueId">
+               a.issue_id != #{issueId}
+            </foreach>
+            AND a.project_id = #{projectId} ) ai
+            LEFT JOIN agile_issue_sprint_rel aisr ON ai.issue_id = aisr.issue_id
+            LEFT JOIN agile_sprint asw ON asw.sprint_id = aisr.sprint_id
+            AND asw.status_code != 'closed'
+    </select>
 
 </mapper>
