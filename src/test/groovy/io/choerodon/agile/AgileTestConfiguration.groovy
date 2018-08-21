@@ -38,6 +38,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Primary
 import org.springframework.core.annotation.Order
@@ -47,15 +48,26 @@ import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.jwt.JwtHelper
 import org.springframework.security.jwt.crypto.sign.MacSigner
 import org.springframework.security.jwt.crypto.sign.Signer
+import org.springframework.stereotype.Component
 import spock.mock.DetachedMockFactory
 
 import javax.annotation.PostConstruct
+import javax.naming.AuthenticationException
 import java.sql.*
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -104,6 +116,9 @@ class AgileTestConfiguration {
 
     @Autowired
     private IssueMapper issueMapper
+
+    @Autowired
+    private AuthenticationManager authenticationManager
 
     @Autowired
     private IssueSprintRelMapper issueSprintRelMapper
@@ -163,20 +178,6 @@ class AgileTestConfiguration {
         applicationContextHelper.setApplicationContext(applicationContext)
     }
 
-    /**
-     * 解决开启h2控制台登录后的跨域问题
-     */
-    @TestConfiguration
-    @Order(1)
-    public static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-        @Override
-        protected void configure(HttpSecurity httpSecurity) throws Exception {
-            httpSecurity.csrf().ignoringAntMatchers("/h2-console/**")
-                    .and().headers().frameOptions().disable()
-        }
-    }
-
     void initSqlFunction() {
         //连接H2数据库
         Class.forName("org.h2.Driver")
@@ -202,6 +203,14 @@ class AgileTestConfiguration {
             }
         }])
         initProjectData()
+        initUserDetail()
+    }
+
+    void initUserDetail() {
+        //手动设置一个userDetail
+        def authRequest = new UsernamePasswordAuthenticationToken("admin", "admin")
+        def authentication = authenticationManager.authenticate(authRequest)
+        SecurityContextHolder.getContext().setAuthentication(authentication)
     }
 
     static String createJWT(final String key, final ObjectMapper objectMapper) {

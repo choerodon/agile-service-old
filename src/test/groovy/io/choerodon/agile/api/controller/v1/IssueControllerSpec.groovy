@@ -133,7 +133,7 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def '创建issue'() {
+    def 'createIssue'() {
         given: '给一个创建issue的DTO'
         IssueCreateDTO issueCreateDTO = new IssueCreateDTO()
 
@@ -209,7 +209,7 @@ class IssueControllerSpec extends Specification {
         "issue_epic" | "issue_epic"
     }
 
-    def '创建issue子任务'() {
+    def 'createSubIssue'() {
         given: '给一个创建issue的DTO'
         IssueSubCreateDTO issueSubCreateDTO = new IssueSubCreateDTO()
 
@@ -279,7 +279,7 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def '更新issue'() {
+    def 'updateIssue'() {
         given: '更新issue的DTO'
         JSONObject issueUpdate = new JSONObject()
         and: '设置更新issue的信息'
@@ -324,7 +324,7 @@ class IssueControllerSpec extends Specification {
         issueDO.rank != ""
     }
 
-    def '查询单个issue'() {
+    def 'queryIssue'() {
         when: '向开始查询单个issue的接口发请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/{issueId}', IssueDTO, projectId, issueId)
 
@@ -342,7 +342,7 @@ class IssueControllerSpec extends Specification {
         issueIdList[3] | "sub_task"
     }
 
-    def '查询单个子任务'() {
+    def 'queryIssueSub'() {
         when: '向开始查询单个issue子任务的接口发请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/sub_issue/{issueId}', IssueSubDTO, projectId, issueIdList[3])
 
@@ -354,7 +354,7 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def '分页过滤查询issue列表(不包含子任务,不含测试任务)'() {
+    def 'listIssueWithoutSub'() {
         given: '查询参数'
         SearchDTO searchDTO = new SearchDTO()
         when: '向开始查询分页过滤查询issue列表的接口发请求'
@@ -370,7 +370,7 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def '分页搜索查询issue列表(包含子任务)'() {
+    def 'queryIssueByOption'() {
         when: '向分页搜索查询issue列表的接口发请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/summary?onlyActiveSprint={onlyActiveSprint}&self={self}' +
                 '&issueId={issueId}&content={content}&page={page}&size={size}',
@@ -385,7 +385,7 @@ class IssueControllerSpec extends Specification {
         issueNumDTOList.size() > 0
     }
 
-    def '分页搜索查询issue列表'() {
+    def 'queryIssueByOptionForAgile'() {
         when: '向分页搜索查询issue列表的接口发请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/agile/summary?self={self}' +
                 '&issueId={issueId}&content={content}&page={page}&size={size}',
@@ -400,7 +400,7 @@ class IssueControllerSpec extends Specification {
         issueNumDTOList.size() > 0
     }
 
-    def '查询epic'() {
+    def 'listEpic'() {
         when: '向开始查询epic的接口发请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/epics',
                 List, projectId)
@@ -414,7 +414,7 @@ class IssueControllerSpec extends Specification {
         epicDataDTOList.size() > 0
     }
 
-    def 'issue批量加入版本'() {
+    def 'batchIssueToVersion'() {
         when: '向issue批量加入版本接口发请求'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/to_version/{versionId}',
                 issueIdList, List, projectId, 1)
@@ -428,7 +428,7 @@ class IssueControllerSpec extends Specification {
         issueSearchDTOList.size() > 0
     }
 
-    def 'issue批量加入epic'() {
+    def 'batchIssueToEpic'() {
         given: '给定一个issue数组列表'
         List<Long> issueIds = issueIdList.subList(0, 2)
         when: '向issue批量加入epic接口发请求'
@@ -444,7 +444,7 @@ class IssueControllerSpec extends Specification {
         issueSearchDTOList.size() > 0
     }
 
-    def "issue批量加入冲刺"() {
+    def "batchIssueToSprint"() {
         given: '给定一个issue数组列表'
         List<Long> issueIds = Arrays.asList(issueIdList[0]) as List<Long>
         and: '移动issue的对象'
@@ -465,7 +465,7 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def "查询当前项目下的epic，提供给列表下拉"() {
+    def "listEpicSelectData"() {
         when: '向开始查询当前项目下的epic，提供给列表下拉接口发请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/epics/select_data',
                 List, projectId)
@@ -480,7 +480,7 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def "更改issue类型"() {
+    def "updateIssueTypeCode"() {
         given: '给定一个修改类型DTO'
         IssueUpdateTypeDTO issueUpdateTypeDTO = new IssueUpdateTypeDTO()
         issueUpdateTypeDTO.issueId = issueIdList[0]
@@ -512,7 +512,7 @@ class IssueControllerSpec extends Specification {
         "story"      | "story"
     }
 
-    def "根据issue类型(type_code)查询issue列表(分页)"() {
+    def "listByOptions"() {
         when: '向根据issue类型(type_code)查询issue列表(分页)接口发请求'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/type_code/{typeCode}',
                 null, Page, projectId, "story")
@@ -526,7 +526,7 @@ class IssueControllerSpec extends Specification {
 
     }
 
-//    def "导出issue列表"() {
+//    def "exportIssues"() {
 //        given: '给定查询dto'
 //        SearchDTO searchDTO = new SearchDTO()
 //        searchDTO.content = '测试'
@@ -549,7 +549,7 @@ class IssueControllerSpec extends Specification {
 //
 //    }
 
-    def "导出issue详情"() {
+    def "exportIssue"() {
         given: 'mock userFeignClient'
         ProjectDTO projectDTO = new ProjectDTO()
         projectDTO.name = '测试项目'
@@ -568,7 +568,7 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def "复制一个issue"() {
+    def "cloneIssueByIssueId"() {
         given: '复制issue条件DTO'
         CopyConditionDTO conditionDTO = new CopyConditionDTO()
         conditionDTO.summary = "测试复制issue"
@@ -598,7 +598,7 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def "任务转换为子任务"() {
+    def "transformedSubTask"() {
         given: '复制issue条件DTO'
         IssueTransformSubTask issueTransformSubTask = new IssueTransformSubTask()
         issueTransformSubTask.issueId = issueIdList[i]
@@ -626,7 +626,7 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def "根据issue ids查询issue相关信息"() {
+    def "listByIssueIds"() {
         given: '给定issueIds'
         def issueIds = issueIdList
 
@@ -644,7 +644,7 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def "分页过滤查询issue列表提供给测试模块用"() {
+    def "listIssueWithoutSubToTestComponent"() {
         given: '查询参数'
         SearchDTO searchDTO = new SearchDTO()
 
@@ -661,7 +661,7 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def "根据时间段查询问题类型的数量"() {
+    def "queryIssueNumByTimeSlot"() {
         given: '查询条件'
         def typeCode = "story"
 
@@ -690,7 +690,7 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def "拖动epic位置"() {
+    def "dragEpic"() {
         given: '拖动参数'
         EpicSequenceDTO epicSequenceDTO = new EpicSequenceDTO()
         epicSequenceDTO.epicId = issueIdList[2]
@@ -714,7 +714,7 @@ class IssueControllerSpec extends Specification {
         epicDataDTO.issueId == issueIdList[2]
     }
 
-    def "统计issue相关信息（测试模块用）"() {
+    def "issueStatistic"() {
         given: '查询参数'
         List<String> issueTypes = Arrays.asList("sub_task")
 
@@ -738,7 +738,7 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def "分页过滤查询issue列表(不包含子任务，包含详情),测试模块用"() {
+    def "listIssueWithoutSubDetail"() {
         given: '查询参数'
         SearchDTO searchDTO = new SearchDTO()
 
@@ -756,7 +756,7 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def '故事地图查询issues,type:sprint, version, none, pageType:storymap,backlog'() {
+    def 'listIssuesByProjectId'() {
         given:
         def type = 'sprint'
         def pageType = 'storymap'
@@ -813,7 +813,7 @@ class IssueControllerSpec extends Specification {
     }
 
 
-    def "删除issue"() {
+    def "deleteIssue"() {
         when: '执行方法'
         restTemplate.delete('/v1/projects/{project_id}/issues/{issueId}', projectId, issueId)
 
