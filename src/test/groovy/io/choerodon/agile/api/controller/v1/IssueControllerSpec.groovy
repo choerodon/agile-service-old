@@ -118,6 +118,11 @@ class IssueControllerSpec extends Specification {
     @Shared
     def issueObjectVersionNumberList = []
 
+    @Shared
+    def issues = []
+    @Shared
+    def issuesSize = 0
+
     def setup() {
         given: '设置feign调用mockito'
         // *_表示任何长度的参数（这里表示只要执行了queryUsersMap这个方法，就让它返回一个空的Map
@@ -128,6 +133,9 @@ class IssueControllerSpec extends Specification {
         UserDO userDO = new UserDO()
         userDO.setRealName("管理员")
         userRepository.queryUserNameByOption(*_) >> userDO
+
+        issues = issueMapper.selectAll()
+        issuesSize = issues.size()
 
         and: 'mockSagaClient'
         sagaClient.startSaga(_, _) >> null
@@ -813,13 +821,12 @@ class IssueControllerSpec extends Specification {
         0L | 0L | 7L | null
     }
 
-    def "更新 parent issue id"() {
-        given:
+    def "updateIssueParentId"() {
+        when:
         IssueUpdateParentIdDTO issueUpdateParentIdDTO = new IssueUpdateParentIdDTO()
         issueUpdateParentIdDTO.issueId = issueId
         issueUpdateParentIdDTO.objectVersionNumber = objectVersionNumber
         issueUpdateParentIdDTO.parentIssueId = parentIssueId
-        when:
         HttpEntity<IssueUpdateParentIdDTO> issueUpdateParentIdDTOHttpEntity = new HttpEntity<>(issueUpdateParentIdDTO)
         def entity = restTemplate.exchange("/v1/projects/1/issues/update_parent",
                 HttpMethod.POST,
@@ -834,10 +841,8 @@ class IssueControllerSpec extends Specification {
         entity.body.parentIssueId == parentIssueId
 
         where:
-        issueId | objectVersionNumber | parentIssueId
-        8       | 1L                  | 3L
-        9       | 2L                  | 2L
-        10      | 2L                  | 1L
+        issueId                            | objectVersionNumber                            | parentIssueId
+        issues.get(issuesSize - 1).issueId | issues.get(issuesSize - 1).objectVersionNumber | issues.get(0).issueId
 
     }
 
