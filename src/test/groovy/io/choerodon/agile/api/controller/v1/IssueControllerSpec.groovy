@@ -791,6 +791,7 @@ class IssueControllerSpec extends Specification {
         count > 0
     }
 
+    
 //    def 'storymapMove'() {
 //        given:
 //        StoryMapMoveDTO storyMapMoveDTO = new StoryMapMoveDTO()
