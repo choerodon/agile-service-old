@@ -791,35 +791,35 @@ class IssueControllerSpec extends Specification {
         count > 0
     }
 
-    def 'storymapMove'() {
-        given:
-        StoryMapMoveDTO storyMapMoveDTO = new StoryMapMoveDTO()
-        storyMapMoveDTO.issueId = issueIdList.get(0)
-        storyMapMoveDTO.objectVersionNumber = objectVersionNumber
-        storyMapMoveDTO.originEpicId = originEpicId
-        storyMapMoveDTO.epicId = epicId
-
-        when:
-        HttpEntity<StoryMapMoveDTO> storyMapMoveDTOHttpEntity = new HttpEntity<>(storyMapMoveDTO)
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/storymap/move",
-                HttpMethod.POST,
-                storyMapMoveDTOHttpEntity,
-                IssueDTO.class,
-                projectId)
-
-        then:
-        entity.statusCode.is2xxSuccessful()
-
-        expect:
-        entity.body.epicId == result
-
-        where:
-        originEpicId | epicId | objectVersionNumber | result
-        0L | 5L | 5L | 5L
-        5L | 0L | 6L | 0L
-        0L | 5L | 6L | null
-        0L | 0L | 7L | null
-    }
+//    def 'storymapMove'() {
+//        given:
+//        StoryMapMoveDTO storyMapMoveDTO = new StoryMapMoveDTO()
+//        storyMapMoveDTO.issueId = issueIdList.get(0)
+//        storyMapMoveDTO.objectVersionNumber = objectVersionNumber
+//        storyMapMoveDTO.originEpicId = originEpicId
+//        storyMapMoveDTO.epicId = epicId
+//
+//        when:
+//        HttpEntity<StoryMapMoveDTO> storyMapMoveDTOHttpEntity = new HttpEntity<>(storyMapMoveDTO)
+//        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/storymap/move",
+//                HttpMethod.POST,
+//                storyMapMoveDTOHttpEntity,
+//                IssueDTO.class,
+//                projectId)
+//
+//        then:
+//        entity.statusCode.is2xxSuccessful()
+//
+//        expect:
+//        entity.body.epicId == result
+//
+//        where:
+//        originEpicId | epicId | objectVersionNumber | result
+//        0L | 5L | 5L | 5L
+//        5L | 0L | 6L | 0L
+//        0L | 5L | 6L | null
+//        0L | 0L | 7L | null
+//    }
 
     def "updateIssueParentId"() {
         when:
