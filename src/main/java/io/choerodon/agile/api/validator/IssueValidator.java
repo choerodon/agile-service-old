@@ -11,20 +11,15 @@ import io.choerodon.core.exception.CommonException;
  */
 public class IssueValidator {
 
-    private static final String ERROR_EPICID_ISEQUAL = "error.epicId.isEqual";
     private static final String ERROR_ISSUE_GET = "error.issue.get";
     private static final String ERROR_TYPECODE_ISSUBTASK = "error.typeCode.isSubtask";
+    private static final String ERROR_SPRINTIDANDVERSIONID_ALLNOTNULL = "error.sprintIdAndVersionId.allNotNull";
 
-    public static void checkStoryMapMove(StoryMapMoveDTO storyMapMoveDTO, IssueDO issueDO) {
-        if (issueDO == null) {
-            throw new CommonException(ERROR_ISSUE_GET);
-        }
-        Long originEpicId = storyMapMoveDTO.getOriginEpicId();
-        Long epicId = storyMapMoveDTO.getEpicId();
-        if (originEpicId.equals(epicId)) {
-            throw new CommonException(ERROR_EPICID_ISEQUAL);
-        }
 
+    public static void checkStoryMapMove(StoryMapMoveDTO storyMapMoveDTO) {
+        if (storyMapMoveDTO.getSprintId() != null && storyMapMoveDTO.getVersionId() != null) {
+            throw new CommonException(ERROR_SPRINTIDANDVERSIONID_ALLNOTNULL);
+        }
     }
 
     public static void checkParentIdUpdate(IssueDO issueDO) {
