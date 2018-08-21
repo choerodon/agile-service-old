@@ -473,4 +473,17 @@ public class IssueController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.storyMapIssue.move"));
     }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("更改父任务")
+    @PostMapping(value = "/update_parent")
+    public ResponseEntity<IssueDTO> updateIssueParentId(@ApiParam(value = "项目id", required = true)
+                                                        @PathVariable(name = "project_id") Long projectId,
+                                                        @ApiParam(value = "issue parent id update dto", required = true)
+                                                        @RequestBody IssueUpdateParentIdDTO issueUpdateParentIdDTO) {
+        return Optional.ofNullable(issueService.issueParentIdUpdate(projectId, issueUpdateParentIdDTO))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.issueParentId.update"));
+    }
+
 }

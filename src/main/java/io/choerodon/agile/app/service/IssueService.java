@@ -204,4 +204,6 @@ public interface IssueService {
     List<StoryMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds);
 
     IssueDTO storymapMove(Long projectId, StoryMapMoveDTO storyMapMoveDTO);
+
+    IssueDTO issueParentIdUpdate(Long projectId, IssueUpdateParentIdDTO issueUpdateParentIdDTO);
 }

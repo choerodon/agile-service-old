@@ -6,6 +6,7 @@ import io.choerodon.agile.api.dto.IssueCreationNumDTO
 import io.choerodon.agile.api.dto.IssueEpicDTO
 import io.choerodon.agile.api.dto.IssueInfoDTO
 import io.choerodon.agile.api.dto.IssueTransformSubTask
+import io.choerodon.agile.api.dto.IssueUpdateParentIdDTO
 import io.choerodon.agile.api.dto.IssueUpdateTypeDTO
 import io.choerodon.agile.api.dto.MoveIssueDTO
 import io.choerodon.agile.api.dto.PieChartDTO
@@ -812,6 +813,33 @@ class IssueControllerSpec extends Specification {
         0L | 0L | 7L | null
     }
 
+    def "更新 parent issue id"() {
+        given:
+        IssueUpdateParentIdDTO issueUpdateParentIdDTO = new IssueUpdateParentIdDTO()
+        issueUpdateParentIdDTO.issueId = issueId
+        issueUpdateParentIdDTO.objectVersionNumber = objectVersionNumber
+        issueUpdateParentIdDTO.parentIssueId = parentIssueId
+        when:
+        HttpEntity<IssueUpdateParentIdDTO> issueUpdateParentIdDTOHttpEntity = new HttpEntity<>(issueUpdateParentIdDTO)
+        def entity = restTemplate.exchange("/v1/projects/1/issues/update_parent",
+                HttpMethod.POST,
+                issueUpdateParentIdDTOHttpEntity,
+                IssueDTO.class,
+                projectId
+        )
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+        entity.body.issueId == issueId
+        entity.body.parentIssueId == parentIssueId
+
+        where:
+        issueId | objectVersionNumber | parentIssueId
+        8       | 1L                  | 3L
+        9       | 2L                  | 2L
+        10      | 2L                  | 1L
+
+    }
 
     def "deleteIssue"() {
         when: '执行方法'
