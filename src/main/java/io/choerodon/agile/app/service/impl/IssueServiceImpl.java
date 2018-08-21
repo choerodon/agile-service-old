@@ -33,8 +33,10 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +56,7 @@ import java.util.stream.Collectors;
  * @since 2018-05-14 20:30:48
  */
 @Service
-@Transactional(rollbackFor = CommonException.class)
+@Transactional(rollbackFor = Exception.class)
 public class IssueServiceImpl implements IssueService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IssueServiceImpl.class);
@@ -1481,15 +1483,23 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueDTO storymapMove(Long projectId, StoryMapMoveDTO storyMapMoveDTO) {
-        Long issueId = storyMapMoveDTO.getIssueId();
-        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
-        IssueValidator.checkStoryMapMove(storyMapMoveDTO, issueDO);
-        IssueE updateIssue = new IssueE();
-        updateIssue.setIssueId(storyMapMoveDTO.getIssueId());
-        updateIssue.setObjectVersionNumber(storyMapMoveDTO.getObjectVersionNumber());
-        updateIssue.setEpicId(storyMapMoveDTO.getEpicId());
-        return ConvertHelper.convert(issueRepository.updateSelective(updateIssue), IssueDTO.class);
+    public void storymapMove(Long projectId, StoryMapMoveDTO storyMapMoveDTO) {
+        MoveIssueDTO moveIssueDTO = new MoveIssueDTO();
+        List<Long> issueIds = storyMapMoveDTO.getIssueIds();
+        Long sprintId = storyMapMoveDTO.getSprintId();
+        Long versionId = storyMapMoveDTO.getVersionId();
+        Long epicId = storyMapMoveDTO.getEpicId();
+        BeanUtils.copyProperties(storyMapMoveDTO, moveIssueDTO);
+        IssueValidator.checkStoryMapMove(storyMapMoveDTO);
+        if (epicId != null) {
+            batchIssueToEpic(projectId, epicId, issueIds);
+        }
+        if (sprintId != null) {
+            batchIssueToSprint(projectId, sprintId, moveIssueDTO);
+        }
+        if (versionId != null) {
+            batchIssueToVersion(projectId, versionId, issueIds);
+        }
     }
 
     @Override

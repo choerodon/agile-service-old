@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.dto;
 
-import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/8/20.
@@ -8,32 +8,26 @@ import javax.validation.constraints.NotNull;
  */
 public class StoryMapMoveDTO {
 
-    @NotNull(message = "error.issueId.isNull")
-    private Long issueId;
+    private List<Long> issueIds;
 
-    @NotNull(message = "error.originEpicId.isNull")
-    private Long originEpicId;
+    private Boolean isBefore;
 
-    @NotNull(message = "error.epicId.isNull")
+    private Long outsetIssueId;
+
+    private Boolean rankIndex;
+
     private Long epicId;
 
-    @NotNull(message = "error.objectVersionNumber.isNull")
-    private Long objectVersionNumber;
+    private Long sprintId;
 
-    public void setIssueId(Long issueId) {
-        this.issueId = issueId;
+    private Long versionId;
+
+    public void setIssueIds(List<Long> issueIds) {
+        this.issueIds = issueIds;
     }
 
-    public Long getIssueId() {
-        return issueId;
-    }
-
-    public Long getOriginEpicId() {
-        return originEpicId;
-    }
-
-    public void setOriginEpicId(Long originEpicId) {
-        this.originEpicId = originEpicId;
+    public List<Long> getIssueIds() {
+        return issueIds;
     }
 
     public void setEpicId(Long epicId) {
@@ -44,11 +38,43 @@ public class StoryMapMoveDTO {
         return epicId;
     }
 
-    public Long getObjectVersionNumber() {
-        return objectVersionNumber;
+    public void setSprintId(Long sprintId) {
+        this.sprintId = sprintId;
     }
 
-    public void setObjectVersionNumber(Long objectVersionNumber) {
-        this.objectVersionNumber = objectVersionNumber;
+    public Long getSprintId() {
+        return sprintId;
+    }
+
+    public void setVersionId(Long versionId) {
+        this.versionId = versionId;
+    }
+
+    public Long getVersionId() {
+        return versionId;
+    }
+
+    public Boolean getRankIndex() {
+        return rankIndex;
+    }
+
+    public void setRankIndex(Boolean rankIndex) {
+        this.rankIndex = rankIndex;
+    }
+
+    public Boolean getBefore() {
+        return isBefore;
+    }
+
+    public void setBefore(Boolean before) {
+        isBefore = before;
+    }
+
+    public Long getOutsetIssueId() {
+        return outsetIssueId;
+    }
+
+    public void setOutsetIssueId(Long outsetIssueId) {
+        this.outsetIssueId = outsetIssueId;
     }
 }
