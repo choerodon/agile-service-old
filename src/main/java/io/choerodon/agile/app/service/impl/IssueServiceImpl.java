@@ -1492,4 +1492,16 @@ public class IssueServiceImpl implements IssueService {
         return ConvertHelper.convert(issueRepository.updateSelective(updateIssue), IssueDTO.class);
     }
 
+    @Override
+    public IssueDTO issueParentIdUpdate(Long projectId, IssueUpdateParentIdDTO issueUpdateParentIdDTO) {
+        Long issueId = issueUpdateParentIdDTO.getIssueId();
+        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
+        IssueValidator.checkParentIdUpdate(issueDO);
+        IssueE updateIssue = new IssueE();
+        updateIssue.setIssueId(issueId);
+        updateIssue.setObjectVersionNumber(issueUpdateParentIdDTO.getObjectVersionNumber());
+        updateIssue.setParentIssueId(issueUpdateParentIdDTO.getParentIssueId());
+        return ConvertHelper.convert(issueRepository.updateSelective(updateIssue), IssueDTO.class);
+    }
+
 }

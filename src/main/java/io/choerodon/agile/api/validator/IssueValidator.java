@@ -13,7 +13,7 @@ public class IssueValidator {
 
     private static final String ERROR_EPICID_ISEQUAL = "error.epicId.isEqual";
     private static final String ERROR_ISSUE_GET = "error.issue.get";
-
+    private static final String ERROR_TYPECODE_ISSUBTASK = "error.typeCode.isSubtask";
 
     public static void checkStoryMapMove(StoryMapMoveDTO storyMapMoveDTO, IssueDO issueDO) {
         if (issueDO == null) {
@@ -26,5 +26,16 @@ public class IssueValidator {
         }
 
     }
+
+    public static void checkParentIdUpdate(IssueDO issueDO) {
+        if (issueDO == null) {
+            throw new CommonException(ERROR_ISSUE_GET);
+        }
+        String typeCode = issueDO.getTypeCode();
+        if (!"sub_task".equals(typeCode)) {
+            throw new CommonException(ERROR_TYPECODE_ISSUBTASK);
+        }
+    }
+
 
 }
