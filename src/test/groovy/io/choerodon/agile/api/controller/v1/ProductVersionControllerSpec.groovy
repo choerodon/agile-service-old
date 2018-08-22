@@ -52,7 +52,8 @@ class ProductVersionControllerSpec extends Specification {
         productVersionCreateDTO.startDate = startDate
         productVersionCreateDTO.releaseDate = releaseDate
 
-        when:HttpEntity<ProductVersionCreateDTO> productVersionCreateDTOHttpEntity = new HttpEntity<>(productVersionCreateDTO);
+        when:
+        HttpEntity<ProductVersionCreateDTO> productVersionCreateDTOHttpEntity = new HttpEntity<>(productVersionCreateDTO);
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version",
                 HttpMethod.POST,
                 productVersionCreateDTOHttpEntity,
@@ -66,11 +67,11 @@ class ProductVersionControllerSpec extends Specification {
         entity.body.name == result
 
         where:
-        projectId   |   startDate  | releaseDate  |   name        |      result
-        1L    |   null | null     |       versionName |      versionName
-        1L    | null | null  |       null        |      null
-        1L    | StringToDate("2018-08-22 00:00:00") | StringToDate("2018-08-21 00:00:00") | versionName2 | null
-        1L    | null | null | versionName | null
+        projectId | startDate                           | releaseDate                         | name         | result
+        1L        | null                                | null                                | versionName  | versionName
+        1L        | null                                | null                                | null         | null
+        1L        | StringToDate("2018-08-22 00:00:00") | StringToDate("2018-08-21 00:00:00") | versionName2 | null
+        1L        | null                                | null                                | versionName  | null
     }
 
     def 'deleteVersion'() {
@@ -93,8 +94,6 @@ class ProductVersionControllerSpec extends Specification {
         ProductVersionDO deleteDO = productVersionMapper.selectOne(productVersionDO)
         deleteDO == null
     }
-
-
 
 
 }
