@@ -22,6 +22,7 @@ public class ProductVersionRule {
     private static final String VERSION_STATUS_PLAN_CODE = "version_planning";
     private static final String RELEASE_ERROR = "error.productVersion.release";
     private static final String ARCHIVED = "archived";
+    private static final String RELEASED = "released";
     private static final String ERROR_VERSION_ISARCHIVED = "error.version.isArchived";
 
     public void judgeName(Long projectId, Long versionId, String name) {
@@ -53,7 +54,7 @@ public class ProductVersionRule {
             if (result == null) {
                 throw new CommonException(VERSION_NOT_FOUND);
             }
-            if (ARCHIVED.equals(result.getStatusCode())) {
+            if (ARCHIVED.equals(result.getStatusCode()) || RELEASED.equals(result.getStatusCode())) {
                 throw new CommonException(ERROR_VERSION_ISARCHIVED);
             }
         }
