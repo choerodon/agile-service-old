@@ -426,15 +426,21 @@ class IssueControllerSpec extends Specification {
     def 'batchIssueToVersion'() {
         when: '向issue批量加入版本接口发请求'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/to_version/{versionId}',
-                issueIdList, List, projectId, 1)
+                issueIdList, List, projectId, id)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
         List<IssueSearchDTO> issueSearchDTOList = entity.body
+
         expect: '设置期望值'
-        issueSearchDTOList.size() > 0
+        issueSearchDTOList.size() == expectSize
+
+        where: '设置期望值'
+        id | expectSize
+        0  | 4
+        1  | 4
     }
 
     def 'batchIssueToEpic'() {
@@ -791,7 +797,6 @@ class IssueControllerSpec extends Specification {
         count > 0
     }
 
-    
 //    def 'storymapMove'() {
 //        given:
 //        StoryMapMoveDTO storyMapMoveDTO = new StoryMapMoveDTO()

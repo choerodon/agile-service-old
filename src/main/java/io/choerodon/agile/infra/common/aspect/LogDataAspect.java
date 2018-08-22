@@ -1040,7 +1040,7 @@ public class LogDataAspect {
                 oldValue = originIssueDO.getAssigneeId().toString();
                 oldString = userRepository.queryUserNameByOption(originIssueDO.getAssigneeId(), false).getRealName();
             }
-            if (issueE.getAssigneeId() != 0) {
+            if (issueE.getAssigneeId() != null && issueE.getAssigneeId() != 0) {
                 newValue = issueE.getAssigneeId().toString();
                 newString = userRepository.queryUserNameByOption(issueE.getAssigneeId(), false).getRealName();
             }

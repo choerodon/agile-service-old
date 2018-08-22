@@ -50,7 +50,7 @@ public interface IssueRepository {
 
     Boolean batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds);
 
-    int batchRemoveVersion(Long projectId, List<Long> issueIds);
+    Integer batchRemoveVersion(Long projectId, List<Long> issueIds);
 
     /**
      * 将该epic下的issue的epicId设为0
