@@ -353,7 +353,7 @@
     </select>
 
     <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
-        SELECT version_id, name, status_code
+        SELECT version_id, name, status_code,release_date
         FROM agile_product_version
         WHERE project_id = #{projectId}
         <if test="statusCodes != null and statusCodes.size > 0">
