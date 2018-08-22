@@ -480,10 +480,20 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public void batchToVersionInStoryMap(Long projectId, Long versionId, List<Long> issueIds) {
+    public void batchToVersionInStoryMap(Long projectId, Long versionId, List<Long> issueIds, List<IssueIdWithVersionDTO> deleteRels) {
         if (versionId != null && !Objects.equals(versionId, 0L)) {
             productVersionRule.judgeExistStoryMap(projectId, versionId);
-            issueRepository.batchRemoveVersion(projectId, issueIds);
+            for (IssueIdWithVersionDTO issueIdWithVersionDTO : deleteRels) {
+                VersionIssueRelDO deleteRel = new VersionIssueRelDO();
+                deleteRel.setVersionId(issueIdWithVersionDTO.getVersionId());
+                deleteRel.setIssueId(issueIdWithVersionDTO.getIssueId());
+                deleteRel.setProjectId(projectId);
+                if (versionIssueRelMapper.selectOne(deleteRel) != null) {
+                    if (versionIssueRelRepository.delete(deleteRel) != 1) {
+                        throw new CommonException("error.versionIssueRel.delete");
+                    }
+                }
+            }
             VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
             versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
             issueRepository.batchIssueToVersion(versionIssueRelE);
@@ -1493,10 +1503,18 @@ public class IssueServiceImpl implements IssueService {
         return storyMapIssueDTOList == null ? new ArrayList<>() : storyMapIssueDTOList;
     }
 
+    private List<Long> getIssueIds(StoryMapMoveDTO storyMapMoveDTO) {
+        List<Long> issueIds = new ArrayList<>();
+        for (IssueIdWithVersionDTO issueIdWithVersionDTO : storyMapMoveDTO.getDeleteRels()) {
+            issueIds.add(issueIdWithVersionDTO.getIssueId());
+        }
+        return issueIds;
+    }
+
     @Override
     public void storymapMove(Long projectId, StoryMapMoveDTO storyMapMoveDTO) {
         MoveIssueDTO moveIssueDTO = new MoveIssueDTO();
-        List<Long> issueIds = storyMapMoveDTO.getIssueIds();
+        List<Long> issueIds = getIssueIds(storyMapMoveDTO);
         Long sprintId = storyMapMoveDTO.getSprintId();
         Long versionId = storyMapMoveDTO.getVersionId();
         Long epicId = storyMapMoveDTO.getEpicId();
@@ -1509,7 +1527,7 @@ public class IssueServiceImpl implements IssueService {
             batchIssueToSprint(projectId, sprintId, moveIssueDTO);
         }
         if (versionId != null) {
-            batchToVersionInStoryMap(projectId, versionId, issueIds);
+            batchToVersionInStoryMap(projectId, versionId, issueIds, storyMapMoveDTO.getDeleteRels());
         }
     }
 

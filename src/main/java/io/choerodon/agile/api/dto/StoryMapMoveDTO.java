@@ -8,8 +8,6 @@ import java.util.List;
  */
 public class StoryMapMoveDTO {
 
-    private List<Long> issueIds;
-
     private Boolean isBefore;
 
     private Long outsetIssueId;
@@ -22,13 +20,7 @@ public class StoryMapMoveDTO {
 
     private Long versionId;
 
-    public void setIssueIds(List<Long> issueIds) {
-        this.issueIds = issueIds;
-    }
-
-    public List<Long> getIssueIds() {
-        return issueIds;
-    }
+    private List<IssueIdWithVersionDTO> deleteRels;
 
     public void setEpicId(Long epicId) {
         this.epicId = epicId;
@@ -76,5 +68,13 @@ public class StoryMapMoveDTO {
 
     public void setOutsetIssueId(Long outsetIssueId) {
         this.outsetIssueId = outsetIssueId;
+    }
+
+    public void setDeleteRels(List<IssueIdWithVersionDTO> deleteRels) {
+        this.deleteRels = deleteRels;
+    }
+
+    public List<IssueIdWithVersionDTO> getDeleteRels() {
+        return deleteRels;
     }
 }
