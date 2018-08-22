@@ -482,7 +482,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public void batchToVersionInStoryMap(Long projectId, Long versionId, List<Long> issueIds) {
         if (versionId != null && !Objects.equals(versionId, 0L)) {
-            productVersionRule.judgeExist(projectId, versionId);
+            productVersionRule.judgeExistStoryMap(projectId, versionId);
             issueRepository.batchRemoveVersion(projectId, issueIds);
             VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
             versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
