@@ -4,15 +4,18 @@ import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.BackLogIssueDTO
 import io.choerodon.agile.api.dto.IssueCreateDTO
 import io.choerodon.agile.api.dto.IssueDTO
-import io.choerodon.agile.api.dto.IssueUpdateDTO
+import io.choerodon.agile.api.dto.IssueListDTO
+import io.choerodon.agile.api.dto.SprintCompleteDTO
+import io.choerodon.agile.api.dto.SprintCompleteMessageDTO
 import io.choerodon.agile.api.dto.SprintDetailDTO
+import io.choerodon.agile.api.dto.SprintNameDTO
 import io.choerodon.agile.api.dto.SprintSearchDTO
 import io.choerodon.agile.api.dto.SprintUpdateDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
-import io.choerodon.agile.infra.dataobject.IssueDO
+import io.choerodon.agile.infra.dataobject.SprintDO
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.DataLogMapper
@@ -21,8 +24,7 @@ import io.choerodon.agile.infra.mapper.IssueSprintRelMapper
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper
 import io.choerodon.agile.infra.mapper.SprintMapper
 import io.choerodon.asgard.saga.feign.SagaClient
-import io.choerodon.core.oauth.CustomUserDetails
-import io.choerodon.core.oauth.DetailsHelper
+import io.choerodon.core.domain.Page
 import io.choerodon.event.producer.execute.EventProducerTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -89,6 +91,9 @@ class SprintControllerSpec extends Specification {
     @Shared
     def projectId = 1
 
+    @Shared
+    def sprintIds = []
+
     def setup() {
         given: '设置feign调用mockito'
         // *_表示任何长度的参数（这里表示只要执行了queryUsersMap这个方法，就让它返回一个空的Map
@@ -114,6 +119,8 @@ class SprintControllerSpec extends Specification {
 
         and: '设置值'
         SprintDetailDTO sprintDetailDTO = entity.body
+        sprintIds << sprintDetailDTO.sprintId
+
         expect: '设置期望值'
         sprintDetailDTO.sprintId == 2
         sprintDetailDTO.projectId == projectId
@@ -124,7 +131,7 @@ class SprintControllerSpec extends Specification {
         given: 'Issue加入到冲刺中'
         IssueCreateDTO issueCreateDTO = new IssueCreateDTO()
         issueCreateDTO.projectId = projectId
-        issueCreateDTO.sprintId = 2
+        issueCreateDTO.sprintId = sprintIds[0]
         issueCreateDTO.summary = '加入冲刺issue'
         issueCreateDTO.typeCode = 'story'
         issueCreateDTO.priorityCode = 'low'
@@ -136,7 +143,7 @@ class SprintControllerSpec extends Specification {
         then: '判断issue是否成功生成'
         issueDTO.objectVersionNumber == 1
         issueDTO.projectId == 1
-        issueDTO.activeSprint.sprintId == 2
+        issueDTO.activeSprint.sprintId == sprintIds[0]
         issueDTO.summary == '加入冲刺issue'
         issueDTO.typeCode == 'story'
         issueDTO.priorityCode == 'low'
@@ -149,16 +156,16 @@ class SprintControllerSpec extends Specification {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd")
         SprintUpdateDTO sprintUpdateDTO = new SprintUpdateDTO()
         sprintUpdateDTO.projectId = projectId
-        sprintUpdateDTO.sprintId = 2
+        sprintUpdateDTO.sprintId = sprintIds[0]
         sprintUpdateDTO.objectVersionNumber = 1
         sprintUpdateDTO.sprintName = '测试冲刺1'
         sprintUpdateDTO.startDate = new Date()
-        sprintUpdateDTO.endDate = MybatisFunctionTestUtil.dataSubFunction(sprintUpdateDTO.startDate, 10)
+        sprintUpdateDTO.endDate = MybatisFunctionTestUtil.dataSubFunction(sprintUpdateDTO.startDate, -10)
         String startDate = dateFormat.format(sprintUpdateDTO.startDate)
         String endDate = dateFormat.format(sprintUpdateDTO.endDate)
+        HttpEntity<SprintUpdateDTO> requestEntity = new HttpEntity<SprintUpdateDTO>(sprintUpdateDTO, null)
 
         when: '分页过滤查询issue列表提供给测试模块用'
-        HttpEntity<SprintUpdateDTO> requestEntity = new HttpEntity<SprintUpdateDTO>(sprintUpdateDTO, null)
         def entity = restTemplate.exchange('/v1/projects/{project_id}/sprint', HttpMethod.PUT, requestEntity, SprintDetailDTO, projectId)
 
         then: '返回值'
@@ -168,7 +175,7 @@ class SprintControllerSpec extends Specification {
         SprintDetailDTO sprintDetailDTO = entity.getBody()
 
         expect: '设置期望值'
-        sprintDetailDTO.sprintId == 2
+        sprintDetailDTO.sprintId == sprintIds[0]
         sprintDetailDTO.sprintName == '测试冲刺1'
         sprintDetailDTO.projectId == projectId
         dateFormat.format(sprintDetailDTO.startDate) == startDate
@@ -195,7 +202,7 @@ class SprintControllerSpec extends Specification {
         backLogIssueDTO.backlogIssueCount == 0
         backLogIssueDTO.backLogIssue == []
         searchDTOList.size() == 2
-        searchDTOList.get(0).sprintId == 2
+        searchDTOList.get(0).sprintId == sprintIds[0]
         searchDTOList.get(0).sprintName == '测试冲刺1'
         searchDTOList.get(0).statusCode == 'sprint_planning'
         searchDTOList.get(0).issueCount == 1
@@ -203,41 +210,173 @@ class SprintControllerSpec extends Specification {
         searchDTOList.get(0).issueSearchDTOList.get(0).typeCode == 'story'
         searchDTOList.get(0).issueSearchDTOList.get(0).summary == '加入冲刺issue'
         searchDTOList.get(0).assigneeIssues.size() == 1
-        searchDTOList.get(0).assigneeIssues.get(0).sprintId == 2
+        searchDTOList.get(0).assigneeIssues.get(0).sprintId == sprintIds[0]
         searchDTOList.get(0).assigneeIssues.get(0).assigneeId == 0
         searchDTOList.get(0).assigneeIssues.get(0).totalStoryPoints == null
         searchDTOList.get(0).assigneeIssues.get(0).issueCount == 1
     }
-//
-//    def "根据id删除冲刺"() {
-//        given: '冲刺DTO对象'
-//        def startDate = new Date()
-//        def endDate = MybatisFunctionTestUtil.dataSubFunction(startDate, 10)
-//
-//        SprintUpdateDTO sprintUpdateDTO = new SprintUpdateDTO()
-//        sprintUpdateDTO.projectId = projectId
-//        sprintUpdateDTO.sprintId = 2
-//        sprintUpdateDTO.objectVersionNumber = 1
-//        sprintUpdateDTO.endDate = endDate
-//        sprintUpdateDTO.sprintName = '测试冲刺1'
-//        sprintUpdateDTO.startDate = startDate
-//
-//        when: '分页过滤查询issue列表提供给测试模块用'
-//        HttpEntity<SprintUpdateDTO> requestEntity = new HttpEntity<SprintUpdateDTO>(sprintUpdateDTO, null)
-//        def entity = restTemplate.exchange('/v1/projects/{project_id}/sprint', HttpMethod.PUT, requestEntity, SprintDetailDTO, projectId)
+
+    def "queryNameByOptions"() {
+        given: '给定查询参数'
+        def sprintStatusCodes = ["sprint_planning", "started", "closed"]
+
+        when: '发送请求'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/sprint/names', sprintStatusCodes, List, projectId)
+
+        then: '请求结果'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '返回值'
+        List<SprintNameDTO> result = entity.body
+
+        expect: '期望值'
+        result.size() == 2
+        result.get(0).sprintId == sprintIds[0]
+        result.get(0).sprintName == '测试冲刺1'
+    }
+
+    def "queryCompleteMessageBySprintId"() {
+        given: '给定查询参数'
+        def sprintId = sprintIds[0]
+
+        when: '发送请求'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/{sprintId}/names', SprintCompleteMessageDTO.class, projectId, sprintId)
+
+        then: '请求结果'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '返回值'
+        SprintCompleteMessageDTO result = entity.body
+
+        expect: '期望值'
+        result.incompleteIssues == 1
+        result.parentsDoneUnfinishedSubtasks.size() == 0
+        result.sprintNames.size() == 2
+        result.sprintNames.get(1).sprintName == '测试冲刺1'
+        result.sprintNames.get(1).sprintId == sprintId
+        result.partiallyCompleteIssues == 0
+
+    }
+
+    def "querySprintById"() {
+        given: '给定查询参数'
+        def sprintId = sprintIds[0]
+
+        when: '发送请求'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/{sprintId}', SprintDetailDTO.class, projectId, sprintId)
+
+        then: '请求结果'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '返回值'
+        SprintDetailDTO result = entity.body
+
+        expect: '期望值'
+        result.sprintName == '测试冲刺1'
+        result.sprintId == sprintId
+        result.projectId == projectId
+        result.objectVersionNumber == 2
+        result.statusCode == 'sprint_planning'
+        result.issueCount == 1
+
+    }
+
+    def "queryIssueByOptions"() {
+        given: '给定查询参数'
+        def sprintId = sprintIds[0]
+
+        when: '发送请求'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/{sprintId}/issues?status={status}',
+                Page.class, projectId, sprintId, "sprint_planning")
+
+        then: '请求结果'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '返回值'
+        List<IssueListDTO> result = entity.body.content
+
+        expect: '期望值'
+        result.size() == 0
+
+    }
+
+    def "queryCurrentSprintCreateName"() {
+        when: '发送请求'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/current_create_name', String.class, projectId)
+
+        then: '请求结果'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '返回值'
+        String result = entity.body
+
+        expect: '期望值'
+        result == '测试冲刺2'
+    }
+
+    def "createBySprintName"() {
+        when: '发送请求'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/sprint/create?sprintName={sprintName}', null, SprintDetailDTO.class, projectId, '测试冲刺2')
+
+        then: '请求结果'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '返回值'
+        SprintDetailDTO result = entity.body
+        sprintIds << result.sprintId
+
+        expect: '期望值'
+        result.sprintName == '测试冲刺2'
+        result.projectId == projectId
+        result.issueCount == null
+        result.objectVersionNumber == 1
+        result.statusCode == 'sprint_planning'
+    }
+
+    def "startSprint"() {
+        given: '冲刺更新对象'
+        SprintDO sprintDO = sprintMapper.queryByProjectIdAndSprintId(projectId, sprintIds[0])
+        SprintUpdateDTO sprintUpdateDTO = new SprintUpdateDTO()
+        sprintUpdateDTO.sprintId = sprintIds[0]
+        sprintUpdateDTO.projectId = projectId
+        sprintUpdateDTO.objectVersionNumber = sprintDO.objectVersionNumber
+        sprintUpdateDTO.startDate = sprintDO.startDate
+        sprintUpdateDTO.endDate = sprintDO.endDate
+
+        when: '发送请求'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/sprint/start', sprintUpdateDTO, SprintDetailDTO.class, projectId)
+
+        then: '请求结果'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '返回值'
+        SprintDetailDTO result = entity.body
+
+        expect: '期望值'
+        result.sprintName == '测试冲刺1'
+        result.projectId == projectId
+        result.issueCount == null
+        result.objectVersionNumber == 3
+        result.statusCode == 'started'
+    }
+
+//    def "completeSprint"() {
+//        given: '冲刺更新对象'
+//        SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO()
+//        sprintCompleteDTO.projectId = projectId
+//        sprintCompleteDTO.incompleteIssuesDestination = 0
+//        when: '发送请求'
+//        def entity = restTemplate.postForLocation('/v1/projects/{project_id}/sprint/complete', sprintCompleteDTO,projectId)
 //
 //        then: '返回值'
-//        entity.statusCode.is2xxSuccessful()
+//        Boolean result = entity
 //
-//        and: '设置值'
-//        SprintDetailDTO sprintDetailDTO = entity.getBody()
-//
-//        expect: '设置期望值'
-//        sprintDetailDTO.sprintId == 2
-//        sprintDetailDTO.sprintName == '测试冲刺1'
-//        sprintDetailDTO.projectId == projectId
-//        sprintDetailDTO.startDate == startDate
-//        sprintDetailDTO.endDate == endDate
+//        expect: '期望值'
+//        result
 //    }
+
+    def "deleteSprint"() {
+        restTemplate.exchange('/v1/projects/{project_id}/sprint/{sprintId}', HttpMethod.DELETE, new HttpEntity<Object>(), Boolean, projectId, sprintIds[1])
+    }
 
 }

@@ -805,7 +805,7 @@
     </select>
 
     <delete id="batchRemoveFromVersion">
-        DELETE avir
+        DELETE
         FROM
         agile_version_issue_rel avir,
         agile_product_version apv

@@ -1123,14 +1123,12 @@ public class IssueServiceImpl implements IssueService {
         response.setCharacterEncoding("utf-8");
         // 设置response参数，可以打开下载页面
         try {
-            response.addHeader("Content-Disposition", "attachment;filename=" + new String((fileName + ".xls").getBytes(charsetName)));
+            response.addHeader("Content-Disposition", "attachment;filename=" + new String((fileName + ".xlsx").getBytes(charsetName)));
         } catch (UnsupportedEncodingException e1) {
             throw new CommonException(EXPORT_ERROR);
         }
-        response.getHeaderNames().forEach(s -> LOGGER.info("header参数{}", s));
         try {
             workbook.write(response.getOutputStream());
-            LOGGER.info("流输出结束");
         } catch (final IOException e) {
             throw new CommonException(EXPORT_ERROR);
         } finally {
