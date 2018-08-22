@@ -33,6 +33,9 @@ spring:
       enabled: false
     sampler:
       percentage: 1.0
+  redis:
+    host: 127.0.0.1
+    port: 6379
 choerodon:
   event:
     consumer:

@@ -9,6 +9,8 @@ import io.choerodon.agile.domain.agile.converter.SprintConverter;
 import io.choerodon.agile.domain.agile.entity.ReportIssueE;
 import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
+import io.choerodon.agile.infra.common.annotation.RedisCache;
+import io.choerodon.agile.infra.common.enums.RedisOperation;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -1131,6 +1133,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @RedisCache(key = "burnDownCoordinate", operation = RedisOperation.ADD, ttl = 1000000,projectId = "#{projectId}")
     public JSONObject queryBurnDownCoordinate(Long projectId, Long sprintId, String type) {
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
         return handleSameDay(reportIssueEList.stream().filter(reportIssueE -> !"endSprint".equals(reportIssueE.getType())).
