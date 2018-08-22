@@ -334,7 +334,7 @@
     </select>
 
 
-    <select id="queryByProjectIdAndSprintId" resultType="io.choerodon.agile.infra.dataobject.SprintSearchDO">
+    <select id="queryByProjectIdAndSprintId" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
         SELECT *
         FROM agile_sprint
         WHERE sprint_id = #{sprintId} AND project_Id = #{projectId}

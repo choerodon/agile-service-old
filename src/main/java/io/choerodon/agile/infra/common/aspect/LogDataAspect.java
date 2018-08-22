@@ -272,7 +272,6 @@ public class LogDataAspect {
             }
         } catch (Throwable e) {
             logger.info("exception: ", e);
-            throw new CommonException(ERROR_UPDATE);
         }
         return result;
     }
