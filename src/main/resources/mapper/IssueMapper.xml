@@ -811,7 +811,7 @@
         agile_product_version apv
         WHERE
         apv.version_id = avir.version_id
-        AND apv.status_code != 'archived'
+        AND apv.status_code != 'archived' and apv.status_code != 'released'
         AND avir.project_id = #{projectId} AND avir.relation_type = 'fix' AND avir.issue_id IN
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">

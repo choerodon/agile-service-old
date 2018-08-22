@@ -33,6 +33,8 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
 import spock.lang.Specification
@@ -360,23 +362,37 @@ class SprintControllerSpec extends Specification {
         result.statusCode == 'started'
     }
 
-//    def "completeSprint"() {
-//        given: '冲刺更新对象'
-//        SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO()
-//        sprintCompleteDTO.projectId = projectId
-//        sprintCompleteDTO.incompleteIssuesDestination = 0
-//        when: '发送请求'
-//        def entity = restTemplate.postForLocation('/v1/projects/{project_id}/sprint/complete', sprintCompleteDTO,projectId)
-//
-//        then: '返回值'
-//        Boolean result = entity
-//
-//        expect: '期望值'
-//        result
-//    }
+    def "completeSprint"() {
+        given: '冲刺更新对象'
+        SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO()
+        sprintCompleteDTO.projectId = projectId
+        sprintCompleteDTO.sprintId = sprintIds[0]
+        sprintCompleteDTO.incompleteIssuesDestination = 0
+
+        when: '发送请求'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/sprint/complete', sprintCompleteDTO, Boolean.class, projectId)
+
+        then: '请求结果'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        Boolean result = entity
+
+        expect: '期望值'
+        result
+    }
 
     def "deleteSprint"() {
-        restTemplate.exchange('/v1/projects/{project_id}/sprint/{sprintId}', HttpMethod.DELETE, new HttpEntity<Object>(), Boolean, projectId, sprintIds[1])
+        when: '发送请求'
+        def entity = restTemplate.exchange('/v1/projects/{project_id}/sprint/{sprintId}', HttpMethod.DELETE, new HttpEntity<Object>(), ResponseEntity.class, projectId, sprintId)
+
+        then: '请求结果'
+        entity.statusCode == statusCode
+
+        where: '期望值'
+        sprintId     | statusCode
+        sprintIds[1] | HttpStatus.NO_CONTENT
+        sprintIds[0] | HttpStatus.NO_CONTENT
     }
 
 }

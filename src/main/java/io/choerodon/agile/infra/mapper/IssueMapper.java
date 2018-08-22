@@ -48,7 +48,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      */
     List<IssueDO> queryIssueEpicSelectList(@Param("projectId") Long projectId);
 
-    int batchRemoveFromVersion(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+    Integer batchRemoveFromVersion(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     String queryRank(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("outsetIssueId") Long outsetIssueId);
 

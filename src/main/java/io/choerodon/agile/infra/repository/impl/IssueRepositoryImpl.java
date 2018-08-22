@@ -93,7 +93,7 @@ public class IssueRepositoryImpl implements IssueRepository {
 
     @Override
     @DataLog(type = "batchRemoveVersion", single = false)
-    public int batchRemoveVersion(Long projectId, List<Long> issueIds) {
+    public Integer batchRemoveVersion(Long projectId, List<Long> issueIds) {
         return issueMapper.batchRemoveFromVersion(projectId, issueIds);
     }
 
