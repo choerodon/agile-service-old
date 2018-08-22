@@ -480,6 +480,19 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
+    public void batchToVersionInStoryMap(Long projectId, Long versionId, List<Long> issueIds) {
+        if (versionId != null && !Objects.equals(versionId, 0L)) {
+            productVersionRule.judgeExist(projectId, versionId);
+            issueRepository.batchRemoveVersion(projectId, issueIds);
+            VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
+            versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
+            issueRepository.batchIssueToVersion(versionIssueRelE);
+        } else {
+            issueRepository.batchRemoveVersion(projectId, issueIds);
+        }
+    }
+
+    @Override
     public List<IssueSearchDTO> batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds) {
         issueRule.judgeExist(projectId, epicId);
         issueRepository.batchIssueToEpic(projectId, epicId, issueIds);
@@ -1498,7 +1511,7 @@ public class IssueServiceImpl implements IssueService {
             batchIssueToSprint(projectId, sprintId, moveIssueDTO);
         }
         if (versionId != null) {
-            batchIssueToVersion(projectId, versionId, issueIds);
+            batchToVersionInStoryMap(projectId, versionId, issueIds);
         }
     }
 
