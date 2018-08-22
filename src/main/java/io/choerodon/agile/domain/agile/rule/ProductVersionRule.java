@@ -21,6 +21,8 @@ public class ProductVersionRule {
     private static final String VERSION_NOT_FOUND = "error.version.notFound";
     private static final String VERSION_STATUS_PLAN_CODE = "version_planning";
     private static final String RELEASE_ERROR = "error.productVersion.release";
+    private static final String ARCHIVED = "archived";
+    private static final String ERROR_VERSION_ISARCHIVED = "error.version.isArchived";
 
     public void judgeName(Long projectId, Long versionId, String name) {
         if (versionId != null && !Objects.equals(versionId, 0L) && productVersionMapper.isNotReName(projectId, versionId, name)) {
@@ -38,6 +40,21 @@ public class ProductVersionRule {
             productVersionDO.setVersionId(versionId);
             if (productVersionMapper.selectByPrimaryKey(productVersionDO) == null) {
                 throw new CommonException(VERSION_NOT_FOUND);
+            }
+        }
+    }
+
+    public void judgeExistStoryMap(Long projectId, Long versionId) {
+        if (versionId != null && !Objects.equals(versionId, 0L)) {
+            ProductVersionDO productVersionDO = new ProductVersionDO();
+            productVersionDO.setVersionId(versionId);
+            productVersionDO.setProjectId(projectId);
+            ProductVersionDO result = productVersionMapper.selectByPrimaryKey(productVersionDO);
+            if (result == null) {
+                throw new CommonException(VERSION_NOT_FOUND);
+            }
+            if (ARCHIVED.equals(result.getStatusCode())) {
+                throw new CommonException(ERROR_VERSION_ISARCHIVED);
             }
         }
     }
