@@ -20,7 +20,7 @@ public class StoryMapMoveDTO {
 
     private Long versionId;
 
-    private List<IssueIdWithVersionDTO> deleteRels;
+    private List<Long> issueIds;
 
     public void setEpicId(Long epicId) {
         this.epicId = epicId;
@@ -70,11 +70,11 @@ public class StoryMapMoveDTO {
         this.outsetIssueId = outsetIssueId;
     }
 
-    public void setDeleteRels(List<IssueIdWithVersionDTO> deleteRels) {
-        this.deleteRels = deleteRels;
+    public void setIssueIds(List<Long> issueIds) {
+        this.issueIds = issueIds;
     }
 
-    public List<IssueIdWithVersionDTO> getDeleteRels() {
-        return deleteRels;
+    public List<Long> getIssueIds() {
+        return issueIds;
     }
 }
