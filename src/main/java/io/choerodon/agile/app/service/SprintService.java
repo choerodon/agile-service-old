@@ -39,4 +39,6 @@ public interface SprintService {
     String queryCurrentSprintCreateName(Long projectId);
 
     SprintDetailDTO createBySprintName(Long projectId, String sprintName);
+
+    List<SprintUnClosedDTO> queryUnClosedSprint(Long projectId);
 }

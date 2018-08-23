@@ -191,5 +191,14 @@ public class SprintController {
                 .orElseThrow(() -> new CommonException("error.createBySprintName.post"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation(value = "查询未关闭的冲刺")
+    @GetMapping(value = "/unclosed")
+    public ResponseEntity<List<SprintUnClosedDTO>> queryUnClosedSprint(@ApiParam(value = "项目id", required = true)
+                                                                       @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(sprintService.queryUnClosedSprint(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.SprintUnClosedDTOList.get"));
+    }
 
 }

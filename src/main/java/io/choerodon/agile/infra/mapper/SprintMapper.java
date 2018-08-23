@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
+import io.choerodon.agile.api.dto.SprintUnClosedDTO;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -70,4 +71,6 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
     SprintSearchDO queryActiveSprintNoIssueIds(@Param("projectId")Long projectId);
 
     List<SprintSearchDO> queryPlanSprintNoIssueIds(@Param("projectId")Long projectId);
+
+    List<SprintDO> queryUnClosedSprint(Long projectId);
 }
