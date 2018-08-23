@@ -29,28 +29,30 @@ public class SprintSearchAssembler {
         return sprintE;
     }
 
-    public SprintSearchDTO doToDTO(SprintSearchDO sprintSearchDO,Map<Long, UserMessageDO> usersMap) {
+    public SprintSearchDTO doToDTO(SprintSearchDO sprintSearchDO, Map<Long, UserMessageDO> usersMap) {
         if (sprintSearchDO == null) {
             return null;
         }
         SprintSearchDTO sprintSearchDTO = new SprintSearchDTO();
         BeanUtils.copyProperties(sprintSearchDO, sprintSearchDTO);
-        sprintSearchDTO.setAssigneeIssues(issueSearchAssembler.doListToAssigneeIssueDTO(sprintSearchDO.getAssigneeIssueDOList(),usersMap));
-        sprintSearchDTO.setIssueSearchDTOList(issueSearchAssembler.doListToDTO(sprintSearchDO.getIssueSearchDOList(), usersMap));
+        if (usersMap != null) {
+            sprintSearchDTO.setAssigneeIssues(issueSearchAssembler.doListToAssigneeIssueDTO(sprintSearchDO.getAssigneeIssueDOList(), usersMap));
+            sprintSearchDTO.setIssueSearchDTOList(issueSearchAssembler.doListToDTO(sprintSearchDO.getIssueSearchDOList(), usersMap));
+        }
         return sprintSearchDTO;
     }
 
-    public List<SprintSearchDTO> doListToDTO(List<SprintSearchDO> sprintSearchDOS,Map<Long, UserMessageDO> usersMap) {
+    public List<SprintSearchDTO> doListToDTO(List<SprintSearchDO> sprintSearchDOS, Map<Long, UserMessageDO> usersMap) {
         if (sprintSearchDOS == null) {
             return new ArrayList<>();
         }
         List<SprintSearchDTO> sprintSearchList = new ArrayList<>();
-        sprintSearchDOS.forEach(sprintSearchDO -> sprintSearchList.add(doToDTO(sprintSearchDO,usersMap)));
+        sprintSearchDOS.forEach(sprintSearchDO -> sprintSearchList.add(doToDTO(sprintSearchDO, usersMap)));
         return sprintSearchList;
     }
 
     public SprintDetailDTO doToDetailDTO(SprintDO sprintDO) {
-        if(sprintDO == null){
+        if (sprintDO == null) {
             return null;
         }
         SprintDetailDTO sprintDetailDTO = new SprintDetailDTO();

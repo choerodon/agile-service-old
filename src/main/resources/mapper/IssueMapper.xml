@@ -267,6 +267,16 @@
             </if>
         </if>
         <if test='advancedSearchArgs != null'>
+            <if test='advancedSearchArgs.resolution != null'>
+                <choose>
+                    <when test="advancedSearchArgs.resolution">
+                      and ais.is_completed = 1
+                    </when>
+                    <otherwise>
+                      and ais.is_completed = 0
+                    </otherwise>
+                </choose>
+            </if>
             <if test='advancedSearchArgs.typeCode != null and advancedSearchArgs.typeCode.size > 0'>
                 AND ai.type_code IN
                 <foreach collection="advancedSearchArgs.typeCode" item="typeCode" open="(" separator="," close=")">
