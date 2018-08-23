@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.LookupTypeWithValuesDTO
+import io.choerodon.agile.api.dto.LookupTypeDTO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -15,39 +15,32 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 /**
  * Creator: scp
- * Date:  16:30 2018/8/21
+ * Date:  14:35 2018/8/22
  * Description:
  */
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(AgileTestConfiguration)
 @ActiveProfiles("test")
 @Stepwise
-class LookupValueControllerSpec extends Specification {
+class LookupTypeControllerSpec extends Specification {
     @Autowired
-    TestRestTemplate restTemplate
+    TestRestTemplate restTemplate;
 
     @Shared
     def projectId = 1
 
-    def 'queryLookupValueByCode'() {
+    def 'listLookupType'() {
         when: '向查询接口发送请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/lookup_values/{typeCode}', LookupTypeWithValuesDTO,projectId, typeCode)
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/lookup_types", List, projectId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        LookupTypeWithValuesDTO lookupTypeWithValuesDTO = entity.body
+        List<LookupTypeDTO> list = entity.getBody()
 
         expect: '设置期望值'
-        lookupTypeWithValuesDTO.lookupValues.size() == expectConut
-
-        where: '给定参数'
-        typeCode       | expectConut
-        'column_color' | 4
-        'constraint'   | 3
-        'epic_color'   | 8
-        'issue_type'   | 6
+        list.size() == 11
+        list.get(0).typeCode == 'status_category'
     }
-
 }

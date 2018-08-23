@@ -9,22 +9,8 @@ import io.choerodon.agile.app.service.impl.IssueServiceImpl
 import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl
 import io.choerodon.agile.domain.agile.event.ProjectEvent
 import io.choerodon.agile.domain.agile.repository.UserRepository
-import io.choerodon.agile.infra.dataobject.IssueComponentDO
-import io.choerodon.agile.infra.dataobject.IssueDO
-import io.choerodon.agile.infra.dataobject.IssueLabelDO
-import io.choerodon.agile.infra.dataobject.IssueSprintRelDO
-import io.choerodon.agile.infra.dataobject.ProductVersionDO
-import io.choerodon.agile.infra.dataobject.ProjectInfoDO
-import io.choerodon.agile.infra.dataobject.SprintDO
-import io.choerodon.agile.infra.dataobject.VersionIssueRelDO
-import io.choerodon.agile.infra.mapper.IssueComponentMapper
-import io.choerodon.agile.infra.mapper.IssueLabelMapper
-import io.choerodon.agile.infra.mapper.IssueMapper
-import io.choerodon.agile.infra.mapper.IssueSprintRelMapper
-import io.choerodon.agile.infra.mapper.ProductVersionMapper
-import io.choerodon.agile.infra.mapper.ProjectInfoMapper
-import io.choerodon.agile.infra.mapper.SprintMapper
-import io.choerodon.agile.infra.mapper.VersionIssueRelMapper
+import io.choerodon.agile.infra.dataobject.*
+import io.choerodon.agile.infra.mapper.*
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.convertor.ApplicationContextHelper
 import io.choerodon.core.oauth.CustomUserDetails
@@ -38,10 +24,8 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Primary
-import org.springframework.core.annotation.Order
 import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
@@ -50,24 +34,16 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
-import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter
-import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.jwt.JwtHelper
 import org.springframework.security.jwt.crypto.sign.MacSigner
 import org.springframework.security.jwt.crypto.sign.Signer
-import org.springframework.stereotype.Component
 import spock.mock.DetachedMockFactory
 
 import javax.annotation.PostConstruct
-import javax.naming.AuthenticationException
-import java.sql.*
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.Statement
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
@@ -322,6 +298,5 @@ class AgileTestConfiguration {
         versionIssueRelDO.versionId = 1L
         versionIssueRelMapper.insert(versionIssueRelDO)
     }
-
 
 }
