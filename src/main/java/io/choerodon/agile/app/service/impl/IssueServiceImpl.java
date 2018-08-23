@@ -927,13 +927,14 @@ public class IssueServiceImpl implements IssueService {
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
         projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
+        String projectCode = projectInfoDO.getProjectCode();
         ProjectDTO project = userRepository.queryProject(projectId);
-        if (project == null || projectInfoDO == null) {
+        if (project == null) {
             throw new CommonException(PROJECT_ERROR);
         }
         project.setCode(projectInfoDO.getProjectCode());
         List<ExportIssuesDTO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId, searchDTO.getSearchArgs(),
-                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
+                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent(),projectCode));
         List<Long> issueIds = exportIssues.stream().map(ExportIssuesDTO::getIssueId).collect(Collectors.toList());
         if (!issueIds.isEmpty()) {
             Map<Long, List<SprintNameDO>> closeSprintNames = issueMapper.querySprintNameByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(SprintNameDO::getIssueId));
@@ -955,6 +956,7 @@ public class IssueServiceImpl implements IssueService {
         String[] fields = {"issueNum", "summary", "typeName", "projectName", "assigneeName", "reporterName", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", "remainingTime", "versionName"};
         ExcelUtil.export(exportIssues, ExportIssuesDTO.class, fieldsName, fields, project.getName(), response);
     }
+
 
     @Override
     public void exportIssue(Long projectId, Long issueId, HttpServletRequest request, HttpServletResponse response) {
