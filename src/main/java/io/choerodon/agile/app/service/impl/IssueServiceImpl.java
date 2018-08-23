@@ -35,6 +35,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -444,7 +446,13 @@ public class IssueServiceImpl implements IssueService {
         return queryIssueSub(subIssueE.getProjectId(), issueId);
     }
 
-    private void handleCreateSprintRel(Long sprintId, Long projectId, Long issueId) {
+    @Caching(evict = {@CacheEvict(cacheNames = "BurnDownCoordinate", key = "'BurnDownCoordinate' + #projectId + #sprintId + 'remainingEstimatedTime'"),
+            @CacheEvict(cacheNames = "BurnDownCoordinate", key = "'BurnDownCoordinate' + #projectId + #sprintId + 'storyPoints'"),
+            @CacheEvict(cacheNames = "BurnDownCoordinate", key = "'BurnDownCoordinate' + #projectId + #sprintId + 'issueCount'"),
+            @CacheEvict(cacheNames = "BurnDownReport", key = "'BurnDownReport' + #projectId + #sprintId + 'issueCount'"),
+            @CacheEvict(cacheNames = "BurnDownReport", key = "'BurnDownReport' + #projectId + #sprintId + 'storyPoints'"),
+            @CacheEvict(cacheNames = "BurnDownReport", key = "'BurnDownReport' + #projectId + #sprintId + 'remainingEstimatedTime'")})
+    public void handleCreateSprintRel(Long sprintId, Long projectId, Long issueId) {
         if (sprintId != null && !Objects.equals(sprintId, 0L)) {
             IssueSprintRelE issueSprintRelE = new IssueSprintRelE();
             issueSprintRelE.setIssueId(issueId);
@@ -533,7 +541,7 @@ public class IssueServiceImpl implements IssueService {
         //处理子任务
         moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
         BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, moveIssueIds);
-            issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+        issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
         if (sprintId != null && !Objects.equals(sprintId, 0L)) {
             issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
         }

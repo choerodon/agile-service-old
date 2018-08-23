@@ -2,13 +2,11 @@ package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.domain.agile.repository.DataLogRepository;
-import io.choerodon.agile.infra.common.annotation.RedisCache;
 import io.choerodon.agile.infra.dataobject.DataLogDO;
 import io.choerodon.agile.infra.mapper.DataLogMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 /**
@@ -22,8 +20,6 @@ public class DataLogRepositoryImpl implements DataLogRepository {
     private DataLogMapper dataLogMapper;
 
     @Override
-    @CacheEvict(key = "'cumulativeFlow'+'@dataLogE.projectId'")
-    @RedisCache(cacheNames = {"burnDownCoordinate"}, operation = RedisCache.CACHE_OPERATION.REMOVE, ttl = 3600, projectId = "#dataLogE.projectId")
     public DataLogE create(DataLogE dataLogE) {
         DataLogDO dataLogDO = ConvertHelper.convert(dataLogE, DataLogDO.class);
         if (dataLogMapper.insert(dataLogDO) != 1) {

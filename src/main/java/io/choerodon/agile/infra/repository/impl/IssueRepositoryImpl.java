@@ -12,6 +12,7 @@ import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;

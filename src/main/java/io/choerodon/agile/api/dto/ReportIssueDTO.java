@@ -2,13 +2,14 @@ package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/6/20
  */
-public class ReportIssueDTO {
+public class ReportIssueDTO implements Serializable {
 
     private String issueNum;
 
