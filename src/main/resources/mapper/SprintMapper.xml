@@ -551,6 +551,7 @@
         WHERE
             project_id = #{projectId}
             AND status_code != 'closed'
+        order by sprint_id
     </select>
 
 </mapper>
