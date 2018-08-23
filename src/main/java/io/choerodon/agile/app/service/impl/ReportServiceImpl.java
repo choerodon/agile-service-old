@@ -10,6 +10,7 @@ import io.choerodon.agile.domain.agile.entity.ReportIssueE;
 import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.annotation.RedisCache;
+import io.choerodon.agile.infra.common.aspect.RedisCacheAspect;
 import io.choerodon.agile.infra.common.enums.RedisOperation;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.*;
@@ -18,6 +19,8 @@ import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,6 +90,8 @@ public class ReportServiceImpl implements ReportService {
     private static final String TYPE_REMAIN_TIME = "remain_time";
     private static final String VERSION_CHART = "version_chart";
     private static final String EPIC_CHART = "epic_chart";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReportServiceImpl.class);
 
 
     @Override
@@ -1133,8 +1138,9 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @RedisCache(key = "burnDownCoordinate", operation = RedisOperation.ADD, ttl = 1000000,projectId = "#{projectId}")
+    @RedisCache(key = "burnDownCoordinate", operation = RedisOperation.ADD, ttl = 3600,projectId = "#{projectId}")
     public JSONObject queryBurnDownCoordinate(Long projectId, Long sprintId, String type) {
+        LOGGER.info("进入了方法进行执行");
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
         return handleSameDay(reportIssueEList.stream().filter(reportIssueE -> !"endSprint".equals(reportIssueE.getType())).
                 sorted(Comparator.comparing(ReportIssueE::getDate)).collect(Collectors.toList()));

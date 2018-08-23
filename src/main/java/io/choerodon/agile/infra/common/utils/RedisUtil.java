@@ -47,18 +47,28 @@ public class RedisUtil {
     /**
      * 字符串添加信息
      *
-     * @param key key
-     * @param obj 可以是单个的值，也可以是任意类型的对象
+     * @param key     key
+     * @param obj     可以是单个的值，也可以是任意类型的对象
+     * @param timeout 过期时间，单位秒
      */
     public void set(String key, Object obj, Long timeout) {
         redisTemplate.opsForValue().set(key, obj, timeout, TimeUnit.SECONDS);
-//        valueOperations.set(key, obj);
+    }
+
+    /**
+     * 字符串添加信息
+     *
+     * @param key key
+     * @param obj 可以是单个的值，也可以是任意类型的对象
+     */
+    public void set(String key, Object obj) {
+        valueOperations.set(key, obj);
     }
 
     /**
      * 字符串获取值
      *
-     * @param key
+     * @param key key
      */
     public Object get(String key) {
         return valueOperations.get(key);
@@ -68,7 +78,7 @@ public class RedisUtil {
      * 删出key
      * 这里跟下边deleteKey（）最底层实现都是一样的，应该可以通用
      *
-     * @param key
+     * @param key key
      */
     public void delete(String key) {
         valueOperations.getOperations().delete(key);
@@ -111,7 +121,7 @@ public class RedisUtil {
      * 查询该key下所有值
      *
      * @param key 查询的key
-     * @return Map<HK   ,       HV>
+     * @return Object
      */
     public Object hget(String key) {
         return hashOperations.entries(key);

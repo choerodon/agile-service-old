@@ -48,11 +48,7 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
      * @param  factory factory
      */
     private void initDomainRedisTemplate(RedisTemplate<String, Object> redisTemplate, RedisConnectionFactory factory) {
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-//        redisTemplate.setHashValueSerializer(new StringRedisSerializer());
-//        redisTemplate.setHashValueSerializer(new JdkSerializationRedisSerializer());
-//        redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<Object>(Object.class));
         redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
         redisTemplate.setValueSerializer(new JdkSerializationRedisSerializer());
         redisTemplate.setConnectionFactory(factory);
@@ -98,7 +94,7 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
     }
 
     /**
-     * redis的key生成算法
+     * redis的key生成算法重写
      */
     @Bean
     public KeyGenerator customKeyGenerator() {

@@ -2,6 +2,8 @@ package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.domain.agile.repository.DataLogRepository;
+import io.choerodon.agile.infra.common.annotation.RedisCache;
+import io.choerodon.agile.infra.common.enums.RedisOperation;
 import io.choerodon.agile.infra.dataobject.DataLogDO;
 import io.choerodon.agile.infra.mapper.DataLogMapper;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -20,6 +22,7 @@ public class DataLogRepositoryImpl implements DataLogRepository {
     private DataLogMapper dataLogMapper;
 
     @Override
+    @RedisCache(cacheNames = {"burnDownCoordinate"}, operation = RedisOperation.REMOVE, ttl = 3600, projectId = "#{dataLogE.projectId}")
     public DataLogE create(DataLogE dataLogE) {
         DataLogDO dataLogDO = ConvertHelper.convert(dataLogE, DataLogDO.class);
         if (dataLogMapper.insert(dataLogDO) != 1) {

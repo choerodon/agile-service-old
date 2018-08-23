@@ -45,50 +45,51 @@ public class RedisCacheAspect {
         Method method = signature.getMethod();
         RedisCache redisCache = method.getAnnotation(RedisCache.class);
         Object[] args = pjp.getArgs();
-        if (args != null && redisCache != null && !"0".equals(redisCache.projectId())) {
-            StringBuilder sb = new StringBuilder();
-            for (Object obj : args) {
-                sb.append(obj.toString());
-            }
-            sb.append(redisCache.projectId());
-            if (RedisOperation.ADD.equals(redisCache.operation()) && !"".equals(redisCache.key())) {
-                String key = sb.append(redisCache.key()).toString();
-                Object object = redisUtil.get(key);
-                if (object != null) {
-                    LOGGER.info("**********从Redis中查到了数据**********\nRedis的KEY值:{}\nRedis的VALUE值{}", key, object.toString());
-                    return object;
-                } else {
+        try {
+            if (args != null && redisCache != null && !"0".equals(redisCache.projectId())) {
+                StringBuilder sb = new StringBuilder();
+                for (Object obj : args) {
+                    sb.append(obj.toString());
+                }
+                sb.append(redisCache.projectId());
+                if (RedisOperation.ADD.equals(redisCache.operation()) && !"".equals(redisCache.key())) {
+                    String key = sb.append(redisCache.key()).toString();
+                    Object object = redisUtil.get(key);
+                    if (object != null) {
+                        LOGGER.info("**********从Redis中查到了数据**********\nRedis的KEY值:{}\nRedis的VALUE值{}", key, object.toString());
+                        return object;
+                    } else {
+                        result = pjp.proceed();
+                        LOGGER.info("**********没有从Redis中查到数据**********");
+                        redisUtil.set(key, result, redisCache.ttl());
+                        long endTime = System.currentTimeMillis();
+                        LOGGER.info("Redis缓存AOP处理所用时间:{}", endTime - startTime);
+                        return result;
+                    }
+                } else if (RedisOperation.REMOVE.equals(redisCache.operation()) && redisCache.cacheNames().length != 0) {
+                    LOGGER.info("**********删除Redis数据**********");
+                    for (String str : redisCache.cacheNames()) {
+                        String key = sb.toString() + str;
+                        redisUtil.delete(key);
+                    }
                     try {
                         result = pjp.proceed();
                     } catch (Throwable e) {
                         LOGGER.error("方法执行错误", e);
                     }
-                    LOGGER.info("**********没有从Redis中查到数据**********");
-                    redisUtil.set(key, result,redisCache.ttl());
                     long endTime = System.currentTimeMillis();
                     LOGGER.info("Redis缓存AOP处理所用时间:{}", endTime - startTime);
                     return result;
-                }
-            } else if (RedisOperation.REMOVE.equals(redisCache.operation()) && redisCache.cacheNames().length != 0) {
-                LOGGER.info("**********删除Redis数据**********");
-                for (String str : redisCache.cacheNames()) {
-                    String key = sb.toString() + str;
-                    redisUtil.delete(key);
-                }
-                try {
+                } else {
                     result = pjp.proceed();
-                } catch (Throwable e) {
-                    LOGGER.error("方法执行错误", e);
                 }
-                long endTime = System.currentTimeMillis();
-                LOGGER.info("Redis缓存AOP处理所用时间:{}", endTime - startTime);
-                return result;
-            } else {
-                throw new CommonException("执行redis拦截器错误");
+            }else{
+                result = pjp.proceed();
             }
-        } else {
-            throw new CommonException("执行redis拦截器错误");
+        } catch (Throwable e) {
+            LOGGER.error("被拦截方法执行错误", e);
         }
+        return result;
     }
 
 }
