@@ -542,4 +542,15 @@
         WHERE project_id = #{projectId} AND sprint_id = #{sprintId}
     </select>
 
+    <select id="queryUnClosedSprint" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
+        SELECT
+          sprint_id,
+          sprint_name
+        FROM
+            agile_sprint
+        WHERE
+            project_id = #{projectId}
+            AND status_code != 'closed'
+    </select>
+
 </mapper>

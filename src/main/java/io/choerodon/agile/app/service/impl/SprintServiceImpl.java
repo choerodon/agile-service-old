@@ -8,6 +8,7 @@ import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.app.service.SprintService;
@@ -420,5 +421,10 @@ public class SprintServiceImpl implements SprintService {
         sprintE.setSprintName(sprintName);
         sprintE.setStatusCode(STATUS_SPRINT_PLANNING_CODE);
         return sprintCreateAssembler.entityToDto(sprintRepository.createSprint(sprintE));
+    }
+
+    @Override
+    public List<SprintUnClosedDTO> queryUnClosedSprint(Long projectId) {
+        return ConvertHelper.convertList(sprintMapper.queryUnClosedSprint(projectId), SprintUnClosedDTO.class);
     }
 }

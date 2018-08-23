@@ -1,10 +1,13 @@
 package io.choerodon.agile.api.controller.v1
 
+import com.alibaba.fastjson.JSONObject
+import com.google.gson.JsonObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.ProductVersionCreateDTO
 import io.choerodon.agile.api.dto.ProductVersionDetailDTO
 import io.choerodon.agile.infra.dataobject.ProductVersionDO
 import io.choerodon.agile.infra.mapper.ProductVersionMapper
+import io.choerodon.core.exception.CommonException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -72,6 +75,33 @@ class ProductVersionControllerSpec extends Specification {
         1L        | null                                | null                                | null         | null
         1L        | StringToDate("2018-08-22 00:00:00") | StringToDate("2018-08-21 00:00:00") | versionName2 | null
         1L        | null                                | null                                | versionName  | null
+    }
+
+    def 'updateVersion'() {
+        given:
+        ProductVersionDO productVersionDO = new ProductVersionDO()
+        productVersionDO.name = versionName
+        productVersionDO.projectId = projectId
+        ProductVersionDO result = productVersionMapper.selectOne(productVersionDO)
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("versionId", result.getVersionId())
+        jsonObject.put("description", versionName)
+        jsonObject.put("objectVersionNumber", result.getObjectVersionNumber())
+        jsonObject.put("name", result.getName())
+        jsonObject.put("projectId", result.getProjectId())
+
+        when:
+        HttpEntity<JsonObject> jsonObjectHttpEntity = new HttpEntity<>(jsonObject)
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}",
+                HttpMethod.PUT,
+                jsonObjectHttpEntity,
+                ProductVersionDetailDTO.class,
+                projectId,
+                result.getVersionId())
+        then:
+        entity.statusCode.is2xxSuccessful()
+        entity.body.description == versionName
+
     }
 
     def 'deleteVersion'() {
