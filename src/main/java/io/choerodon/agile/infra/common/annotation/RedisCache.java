@@ -1,6 +1,5 @@
 package io.choerodon.agile.infra.common.annotation;
 
-import io.choerodon.agile.infra.common.enums.RedisOperation;
 import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
@@ -14,21 +13,41 @@ import java.lang.annotation.*;
 @Target({ElementType.PARAMETER, ElementType.METHOD})
 public @interface RedisCache {
 
+    enum CACHE_OPERATION {
+        /**
+         * 新增
+         */
+        ADD,
+        /**
+         * 删除
+         */
+        REMOVE
+    }
+
+    /**
+     * 缓存名称数组，用于批量移除操作
+     */
     @AliasFor("value")
     String[] cacheNames() default {};
 
+    /**
+     * 缓存名称 默认加入方法名+参数名+项目id/有设置则为设置名称+项目id
+     */
     String key() default "";
 
+    /**
+     * 项目id 项目id为空的时候不执行缓存
+     */
     String projectId() default "";
 
     /**
      * 操作 add/remove
      */
-    RedisOperation operation() default RedisOperation.ADD;
+    CACHE_OPERATION operation() default CACHE_OPERATION.ADD;
 
     /**
-     * 缓存存活时间，单位秒
+     * 缓存存活时间，单位秒,为0则时效为项目运行期间
      */
-    long ttl() default 100000;
+    long ttl() default 0;
 
 }

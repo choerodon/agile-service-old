@@ -11,7 +11,6 @@ import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.annotation.RedisCache;
 import io.choerodon.agile.infra.common.aspect.RedisCacheAspect;
-import io.choerodon.agile.infra.common.enums.RedisOperation;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -22,6 +21,7 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -160,6 +160,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @Cacheable(key = "'cumulativeFlow'+#projectId")
     public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
         //获取当前符合条件的所有issueIds
         String filterSql = null;
@@ -1138,7 +1139,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @RedisCache(key = "burnDownCoordinate", operation = RedisOperation.ADD, ttl = 3600,projectId = "#{projectId}")
+    @RedisCache(key = "burnDownCoordinate", operation = RedisCache.CACHE_OPERATION.ADD, projectId = "#projectId")
     public JSONObject queryBurnDownCoordinate(Long projectId, Long sprintId, String type) {
         LOGGER.info("进入了方法进行执行");
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);

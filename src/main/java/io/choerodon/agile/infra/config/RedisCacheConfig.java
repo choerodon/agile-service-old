@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCachePrefix;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -48,9 +49,10 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
      * @param  factory factory
      */
     private void initDomainRedisTemplate(RedisTemplate<String, Object> redisTemplate, RedisConnectionFactory factory) {
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new JdkSerializationRedisSerializer());
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
-        redisTemplate.setValueSerializer(new JdkSerializationRedisSerializer());
         redisTemplate.setConnectionFactory(factory);
     }
 
@@ -76,21 +78,15 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
         return redisTemplate.opsForValue();
     }
 
-
     @Bean
     public RedisCacheManager cacheManager(RedisTemplate redisTemplate) {
         //获得redis缓存管理类
-        RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate);
         // 开启使用缓存名称做为key前缀(这样所有同名缓存会整理在一起比较容易查找)
-        redisCacheManager.setUsePrefix(true);
-
+//        redisCacheManager.setCachePrefix(cacheName -> "AGILE".getBytes());
         //这里可以设置一个默认的过期时间 单位是秒
-        redisCacheManager.setDefaultExpiration(600L);
+//        redisCacheManager.setDefaultExpiration(600L);
         // 设置缓存的过期时间 单位是秒
-        Map<String, Long> expires = new HashMap<>();
-        expires.put("pub.imlichao.CacheTest.cacheFunction", 100L);
-        redisCacheManager.setExpires(expires);
-        return redisCacheManager;
+        return new RedisCacheManager(redisTemplate);
     }
 
     /**

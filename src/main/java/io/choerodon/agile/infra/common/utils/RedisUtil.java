@@ -85,6 +85,16 @@ public class RedisUtil {
     }
 
     /**
+     * 删出key
+     * 这里跟下边deleteKey（）最底层实现都是一样的，应该可以通用
+     *
+     * @param keys keys
+     */
+    public void deleteByKey(Set<String> keys) {
+        redisTemplate.delete(keys);
+    }
+
+    /**
      * 添加单个
      *
      * @param key    key
