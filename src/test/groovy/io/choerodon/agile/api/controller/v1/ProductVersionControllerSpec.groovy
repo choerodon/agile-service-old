@@ -1,13 +1,11 @@
 package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
-import com.google.gson.JsonObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.ProductVersionCreateDTO
 import io.choerodon.agile.api.dto.ProductVersionDetailDTO
 import io.choerodon.agile.infra.dataobject.ProductVersionDO
 import io.choerodon.agile.infra.mapper.ProductVersionMapper
-import io.choerodon.core.exception.CommonException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -86,22 +84,98 @@ class ProductVersionControllerSpec extends Specification {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("versionId", result.getVersionId())
         jsonObject.put("description", versionName)
-        jsonObject.put("objectVersionNumber", result.getObjectVersionNumber())
         jsonObject.put("name", result.getName())
         jsonObject.put("projectId", result.getProjectId())
 
         when:
-        HttpEntity<JsonObject> jsonObjectHttpEntity = new HttpEntity<>(jsonObject)
+        jsonObject.put("objectVersionNumber", result.objectVersionNumber)
+        HttpEntity<JSONObject> jsonObjectHttpEntity = new HttpEntity<>(jsonObject)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}",
                 HttpMethod.PUT,
                 jsonObjectHttpEntity,
                 ProductVersionDetailDTO.class,
                 projectId,
                 result.getVersionId())
+
+        jsonObject.put("objectVersionNumber", 0L)
+        HttpEntity<JSONObject> changeObject = new HttpEntity<>(jsonObject)
+        def entityException = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}",
+                HttpMethod.PUT,
+                changeObject,
+                String.class,
+                projectId,
+                result.getVersionId())
+
         then:
         entity.statusCode.is2xxSuccessful()
         entity.body.description == versionName
+        JSONObject exceptionInfo = JSONObject.parse(entityException.body)
+        exceptionInfo.get("failed").toString() == "true"
 
+
+    }
+
+    def 'checkName'() {
+        when:
+        def entityTrue = restTemplate.exchange("/v1/projects/{project_id}/product_version/{name}/check",
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                Boolean.class,
+                projectId,
+                versionName)
+        def entityFalse = restTemplate.exchange("/v1/projects/{project_id}/product_version/{name}/check",
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                Boolean.class,
+                projectId,
+                versionName2)
+
+        then:
+        entityTrue.statusCode.is2xxSuccessful()
+        entityTrue.body == true
+
+        entityFalse.statusCode.is2xxSuccessful()
+        entityFalse.body == false
+
+    }
+
+    def 'queryVersionByProjectId'() {
+        when:
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version",
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                List.class,
+                projectId)
+        then:
+        entity.statusCode.is2xxSuccessful()
+        entity.body.size() > 0
+    }
+
+    def 'queryVersionByVersionId'() {
+        given:
+        ProductVersionDO productVersionDO = new ProductVersionDO()
+        productVersionDO.name = versionName
+        productVersionDO.projectId = projectId
+        ProductVersionDO result = productVersionMapper.selectOne(productVersionDO)
+
+        when:
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/detail",
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                ProductVersionDetailDTO.class,
+                projectId,
+                result.versionId)
+        def entityNull = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/detail",
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                ProductVersionDetailDTO.class,
+                projectId,
+                0L)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+        entity.body.name == versionName
+        entityNull.statusCode.is5xxServerError()
     }
 
     def 'deleteVersion'() {
