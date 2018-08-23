@@ -990,7 +990,12 @@
     <select id="queryExportIssues" resultType="io.choerodon.agile.infra.dataobject.ExportIssuesDO">
         SELECT search.* from (SELECT
         ai.issue_id,
-        ai.issue_num,
+        IF ((ai.parent_issue_id IS NULL OR ai.parent_issue_id = 0),
+        CONCAT(#{projectCode},'-', ai.issue_num),
+        CONCAT(#{projectCode},'-',
+        (SELECT issue_num FROM agile_issue
+        WHERE issue_id = ai.parent_issue_id
+        ),'/',#{projectCode},'-',ai.issue_num)) as issue_num,
         ai.summary,
         ai.assignee_id,
         ai.reporter_id,
@@ -1015,7 +1020,7 @@
         WHERE aisr.project_id = #{projectId} AND aisr.sprint_id = asp.sprint_id
         AND asp.status_code != 'closed'
         ) asp1 ON asp1.issue_id = ai.issue_id
-        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task'
+        WHERE ai.project_id = #{projectId}
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
                 AND position(#{searchArgs.summary} IN ai.summary)
@@ -1085,6 +1090,7 @@
             AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE CONCAT(CONCAT('%',
             #{content}), '%'))
         </if>
+        ORDER BY issue_num
     </select>
 
     <select id="queryExportIssue" resultType="io.choerodon.agile.infra.dataobject.ExportIssuesDO">
