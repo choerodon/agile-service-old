@@ -1,6 +1,5 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.api.dto.SprintUnClosedDTO;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;

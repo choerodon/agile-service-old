@@ -51,9 +51,6 @@ public class IssueComponentServiceImpl implements IssueComponentService {
 
     @Override
     public IssueComponentDTO create(Long projectId, IssueComponentDTO issueComponentDTO) {
-//        if (!projectId.equals(issueComponentDTO.getProjectId())) {
-//            throw new CommonException("error.projectId.notEqual");
-//        }
         IssueComponentValidator.checkCreateComponent(projectId, issueComponentDTO);
         IssueComponentE issueComponentE = ConvertHelper.convert(issueComponentDTO, IssueComponentE.class);
         return ConvertHelper.convert(issueComponentRepository.create(issueComponentE), IssueComponentDTO.class);

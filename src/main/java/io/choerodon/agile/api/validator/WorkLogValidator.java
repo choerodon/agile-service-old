@@ -15,6 +15,8 @@ public class WorkLogValidator {
     private static final String ERROR_LOGID_ISNULL = "error.logId.isNull";
     private static final String ERROR_PROJECTID_NOTNULL = "error.projectId.notEqual";
 
+    private WorkLogValidator() {}
+
     public static void checkCreateWorkLog(Long projectId, WorkLogDTO workLogDTO) {
         if (!projectId.equals(workLogDTO.getProjectId())) {
             throw new CommonException(ERROR_PROJECTID_NOTNULL);

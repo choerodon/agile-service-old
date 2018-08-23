@@ -13,6 +13,8 @@ public class IssueComponentValidator {
     private static final String ERROR_PROJECTID_NOTEQUAL = "error.projectId.notEqual";
     private static final String ERROR_COMPONENTNAME_ISNULL = "error.componentName.isNull";
 
+    private IssueComponentValidator() {}
+
     public static void checkCreateComponent(Long projectId, IssueComponentDTO issueComponentDTO) {
         if (!projectId.equals(issueComponentDTO.getProjectId())) {
             throw new CommonException(ERROR_PROJECTID_NOTEQUAL);

@@ -366,17 +366,7 @@ public interface ReportMapper {
      */
     Integer queryIssueCountByFieldName(@Param("projectId") Long projectId, @Param("fieldName") String fieldName);
 
-    List<DateIssueIdsDO> selectCompletedIssueIds(@Param("projectId") Long projectId);
-
-    List<DateIssueIdsDO> selectStoryPointsAll(@Param("projectId") Long projectId);
-
-    List<DateIssueIdsDO> selectEpicRemainTime(@Param("projectId") Long projectId);
-
-    List<DateIssueIdsDO> selectIssueByEpicId(@Param("projectId") Long projectId, @Param("epicId") Long epicId);
-
     List<GroupDataChartListDO> selectEpicIssueList(@Param("projectId") Long projectId, @Param("epicId") Long epicId);
-
-    List<DateIssueIdsDO> selectIssueByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
     List<GroupDataChartListDO> selectVersionIssueList(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 

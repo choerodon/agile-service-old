@@ -5,7 +5,6 @@ import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

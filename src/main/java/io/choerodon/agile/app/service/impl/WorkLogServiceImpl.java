@@ -13,7 +13,6 @@ import io.choerodon.agile.infra.dataobject.WorkLogDO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.WorkLogMapper;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,9 +81,6 @@ public class WorkLogServiceImpl implements WorkLogService {
 
     @Override
     public WorkLogDTO create(Long projectId, WorkLogDTO workLogDTO) {
-//        if (!projectId.equals(workLogDTO.getProjectId())) {
-//            throw new CommonException("error.projectId.notEqual");
-//        }
         WorkLogValidator.checkCreateWorkLog(projectId, workLogDTO);
         if (workLogDTO.getResidualPrediction() != null) {
             switch (workLogDTO.getResidualPrediction()) {

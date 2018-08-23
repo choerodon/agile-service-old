@@ -83,8 +83,8 @@ public class ReportServiceImpl implements ReportService {
     private static final String TYPE_ISSUE_COUNT = "issue_count";
     private static final String TYPE_STORY_POINT = "story_point";
     private static final String TYPE_REMAIN_TIME = "remain_time";
-    private static final String ALLSUM = "allSum";
-    private static final String ESTIMATECOUNT = "estimateCount";
+    private static final String VERSION_CHART = "version_chart";
+    private static final String EPIC_CHART = "epic_chart";
 
 
     @Override
@@ -991,541 +991,90 @@ public class ReportServiceImpl implements ReportService {
         return pieChartDTOList;
     }
 
-    private List<DateIssueIdsDO> getCompletedIssueIds(Long projectId) {
-        return reportMapper.selectCompletedIssueIds(projectId);
-    }
-
-    private Map getAllMap(List<DateIssueIdsDO> allIssueIds) {
-        Map allMap = new TreeMap();
-        List<Long> allIds = new ArrayList<>();
-        String groupDay3 = null;
-        for (DateIssueIdsDO tmp2 : allIssueIds) {
-            if (!tmp2.getGroupDay().equals(groupDay3) && groupDay3 != null) {
-                List<Long> take = new ArrayList<>();
-                take.addAll(allIds);
-                allMap.put(groupDay3, take);
-            }
-            groupDay3 = tmp2.getGroupDay();
-            if (!allIds.contains(tmp2.getIssueId())) {
-                allIds.add(tmp2.getIssueId());
-            }
-        }
-        if (groupDay3 != null) {
-            allMap.put(groupDay3, allIds);
-        }
-        return allMap;
-    }
-
-    private int manageCompleteMapOperation(List<Long> issueIds, DateIssueIdsDO tmp, int sum) {
-        if (issueIds.contains(tmp.getIssueId())) {
-            if (tmp.getCompleted() == 0) {
-                issueIds.remove(tmp.getIssueId());
-                sum -= (tmp.getStoryPoint() == null ? 0 : tmp.getStoryPoint());
-            }
-        } else {
-            if (tmp.getCompleted() == 1) {
-                issueIds.add(tmp.getIssueId());
-                sum += (tmp.getStoryPoint() == null ? 0 : tmp.getStoryPoint());
-            }
-        }
-        return sum;
-    }
-
-    private Map getCompletedMap(Long projectId, Map allMap, List<DateIssueIdsDO> storyPointsAll, Map pointMap) {
-        Map completedMap = new HashMap();
-        List<DateIssueIdsDO> completedIssueIds = getCompletedIssueIds(projectId);
-        for (DateIssueIdsDO c : completedIssueIds) {
-            for (DateIssueIdsDO d : storyPointsAll) {
-                if (c.getGroupDay().compareTo(d.getGroupDay()) <= 0 && c.getIssueId().equals(d.getIssueId())) {
-                    c.setStoryPoint(d.getStoryPoint());
-                }
-            }
-        }
-        List<Long> issueIds = new ArrayList<>();
-        String groupDay = null;
-        int sum = 0;
-        for (DateIssueIdsDO tmp : completedIssueIds) {
-            List<Long> epicIssueIds = getJudgeAllMap(allMap, tmp.getGroupDay());
-            if (epicIssueIds != null && epicIssueIds.contains(tmp.getIssueId())) {
-                if (!tmp.getGroupDay().equals(groupDay) && groupDay != null) {
-                    List<Long> take = new ArrayList<>();
-                    take.addAll(issueIds);
-                    completedMap.put(groupDay, take);
-                    pointMap.put(groupDay, sum);
-                    sum = 0;
-                }
-                groupDay = tmp.getGroupDay();
-                sum = manageCompleteMapOperation(issueIds, tmp, sum);
-            }
-        }
-        if (groupDay != null) {
-            completedMap.put(groupDay, issueIds);
-        }
-        return completedMap;
-    }
-
-    private List<GroupDataChartDO> dealIssueCountData(Long projectId, List<DateIssueIdsDO> allIssueIds) {
-        List<GroupDataChartDO> result = new ArrayList<>();
-        Map allMap = getAllMap(allIssueIds);
-        Map completedMap = null;
-        Set<Map.Entry<String, List<Long>>> entriest = allMap.entrySet();
-        List<Map.Entry<String, List<Long>>> entries = new LinkedList<>(entriest);
-        Collections.sort(entries, (Map.Entry<String, List<Long>> ele1, Map.Entry<String, List<Long>> ele2) -> ele1.getKey().compareTo(ele2.getKey()));
-        int preCompletedCount = 0;
-        for (Map.Entry<String, List<Long>> entry : entries) {
-            GroupDataChartDO groupDataChartDO = new GroupDataChartDO();
-            String groupDay = entry.getKey();
-            groupDataChartDO.setGroupDay(groupDay);
-            List<Long> ids = entry.getValue();
-            groupDataChartDO.setIssueCount(ids.size());
-            int completedI = completedMap.get(groupDay) == null ? preCompletedCount : ((List<Long>) completedMap.get(groupDay)).size();
-            groupDataChartDO.setIssueCompletedCount(completedI);
-            preCompletedCount = completedI;
-            result.add(groupDataChartDO);
-        }
-        sortEpicDataRes(result);
-        return result;
-    }
-
-    private void setAllIssuesAndSortSp(List<DateIssueIdsDO> allIssueIds, List<DateIssueIdsDO> storyPointsAll) {
-        for (DateIssueIdsDO dateIssueIdsDO : allIssueIds) {
-            int flag = 0;
-            for (DateIssueIdsDO cnt : storyPointsAll) {
-                if (dateIssueIdsDO.getGroupDay().equals(cnt.getGroupDay())) {
-                    flag = 1;
-                    break;
-                }
-            }
-            if (flag == 0) {
-                DateIssueIdsDO dateIssueId = new DateIssueIdsDO();
-                dateIssueId.setGroupDay(dateIssueIdsDO.getGroupDay());
-                dateIssueId.setStoryPoint(null);
-                dateIssueId.setIssueId(dateIssueIdsDO.getIssueId());
-                storyPointsAll.add(dateIssueId);
-            }
-        }
-        sortEpicData(storyPointsAll);
-    }
-
-    private void setResSp(List<GroupDataChartDO> res, Map allMap, GroupDataChartDO tmp) {
-        Iterator<Map.Entry<String, List<Long>>> entries = allMap.entrySet().iterator();
-        GroupDataChartDO groupDataChartDO = new GroupDataChartDO();
-        groupDataChartDO.setGroupDay(tmp.getGroupDay());
-        String temp = null;
-        while (entries.hasNext()) {
-            Map.Entry<String, List<Long>> entry = entries.next();
-            if (entry.getKey().compareTo(tmp.getGroupDay()) > 0) {
-                break;
-            }
-            temp = entry.getKey();
-        }
-        for (GroupDataChartDO r : res) {
-            if (temp != null && r.getGroupDay().equals(temp)) {
-                groupDataChartDO.setIssueCount(r.getIssueCount());
-                groupDataChartDO.setUnEstimateIssueCount(r.getUnEstimateIssueCount());
+    private void setStoryPointProperties(GroupDataChartDO g1,
+                                         List<GroupDataChartDO> storyPointsAll,
+                                         List<GroupDataChartDO> storyPointsCompleted,
+                                         List<GroupDataChartDO> storyPointCountEstimate) {
+        for (GroupDataChartDO g2 : storyPointsAll) {
+            if (g1.getGroupDay().equals(g2.getGroupDay())) {
+                g1.setAllStoryPoints(g2.getAllStoryPoints());
                 break;
             }
         }
-        groupDataChartDO.setAllStoryPoints(tmp.getAllStoryPoints());
-        groupDataChartDO.setCompletedStoryPoints(tmp.getCompletedStoryPoints());
-        res.add(groupDataChartDO);
-    }
-
-    private List<GroupDataChartDO> dealSpResult(Map allMap, List<GroupDataChartDO> result, Map pointMap) {
-        List<GroupDataChartDO> res = new ArrayList<>();
-        Iterator<Map.Entry<String, List<Long>>> entries = allMap.entrySet().iterator();
-        while (entries.hasNext()) {
-            Map.Entry<String, List<Long>> entry = entries.next();
-            GroupDataChartDO e = new GroupDataChartDO();
-            e.setGroupDay(entry.getKey());
-            int issueCount = allMap.get(entry.getKey()) == null ? 0 : ((List<Long>) allMap.get(entry.getKey())).size();
-            int unEstimateIssueCount = issueCount;
-            for (GroupDataChartDO tmp : result) {
-                if (tmp.getGroupDay().equals(entry.getKey())) {
-                    e.setAllStoryPoints(tmp.getAllStoryPoints());
-                    e.setCompletedStoryPoints(tmp.getCompletedStoryPoints());
-                    unEstimateIssueCount = unEstimateIssueCount - tmp.getUnEstimateIssueCount();
-                    break;
-                }
-            }
-            e.setIssueCount(issueCount);
-            e.setUnEstimateIssueCount(unEstimateIssueCount);
-            res.add(e);
-        }
-        for (GroupDataChartDO tmp : result) {
-            if (allMap.get(tmp.getGroupDay()) == null) {
-                setResSp(res, allMap, tmp);
-            }
-        }
-        Iterator<Map.Entry<String, Integer>> entries2 = pointMap.entrySet().iterator();
-        while (entries2.hasNext()) {
-            Map.Entry<String, Integer> entry = entries2.next();
-            if (allMap.get(entry.getKey()) == null) {
-                GroupDataChartDO cut = null;
-                for (GroupDataChartDO tmp2 : result) {
-                    if (tmp2.getGroupDay().compareTo(entry.getKey()) > 0) {
-                        break;
-                    }
-                    cut = tmp2;
-                }
-                if (cut != null) {
-                    cut.setCompletedStoryPoints(entry.getValue());
-                    cut.setGroupDay(entry.getKey());
-                    res.add(cut);
-                }
-            }
-        }
-        sortEpicDataRes(res);
-        return res;
-    }
-
-    private GroupDataChartDO setGroupDataSp(String groupDay, int completedSum, int allSum, int estimateCount) {
-        GroupDataChartDO groupDataChartDO = new GroupDataChartDO();
-        groupDataChartDO.setGroupDay(groupDay);
-        groupDataChartDO.setCompletedStoryPoints(completedSum);
-        groupDataChartDO.setAllStoryPoints(allSum);
-        groupDataChartDO.setUnEstimateIssueCount(estimateCount);
-        return groupDataChartDO;
-    }
-
-    private JSONObject setAllSumAndCountSp(List<Long> spIds2, DateIssueIdsDO cnt, int allSum, int estimateCount, Map<Long, Integer> issueValue2, int point) {
-        if (spIds2.contains(cnt.getIssueId())) {
-            if (cnt.getStoryPoint() == null) {
-                estimateCount -= 1;
-            }
-            allSum = allSum - issueValue2.get(cnt.getIssueId()) + point;
-            issueValue2.put(cnt.getIssueId(), point);
-        } else {
-            if (cnt.getStoryPoint() != null) {
-                estimateCount += 1;
-                allSum = allSum + point;
-                spIds2.add(cnt.getIssueId());
-                issueValue2.put(cnt.getIssueId(), point);
-            }
-        }
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put(ALLSUM, allSum);
-        jsonObject.put(ESTIMATECOUNT, estimateCount);
-        return jsonObject;
-    }
-
-    private int setCompletedSumSp(List<Long> spIds, DateIssueIdsDO cnt, List<Long> completedList, int completedSum, Map<Long, Integer> issueValue, int point) {
-        if (spIds.contains(cnt.getIssueId())) {
-            if (completedList.contains(cnt.getIssueId())) {
-                completedSum = completedSum - issueValue.get(cnt.getIssueId()) + point;
-                issueValue.put(cnt.getIssueId(), point);
-            } else {
-                completedSum = completedSum - issueValue.get(cnt.getIssueId());
-                issueValue.remove(cnt.getIssueId());
-                spIds.remove(cnt.getIssueId());
-            }
-        } else {
-            if (completedList.contains(cnt.getIssueId())) {
-                completedSum = completedSum + point;
-                spIds.add(cnt.getIssueId());
-                issueValue.put(cnt.getIssueId(), point);
-            }
-        }
-        return completedSum;
-    }
-
-    private int manageNullCompletedSp(Map<Long, Integer> issueValue, DateIssueIdsDO cnt, int completedSum, int point) {
-        if (issueValue != null && issueValue.get(cnt.getIssueId()) != null && !cnt.getStoryPoint().equals(issueValue.get(cnt.getIssueId()))) {
-            completedSum = completedSum - issueValue.get(cnt.getIssueId()) + point;
-            issueValue.put(cnt.getIssueId(), point);
-        }
-        return completedSum;
-    }
-
-    private List<Long> getJudgeAllMap(Map allMap, String groupDay) {
-        List<Long> result = new ArrayList<>();
-        Iterator<Map.Entry<String, List<Long>>> entries = allMap.entrySet().iterator();
-        while (entries.hasNext()) {
-            Map.Entry<String, List<Long>> entry = entries.next();
-            if (entry.getKey().compareTo(groupDay) > 0) {
+        for (GroupDataChartDO g3 : storyPointsCompleted) {
+            if (g1.getGroupDay().equals(g3.getGroupDay())) {
+                g1.setCompletedStoryPoints(g3.getCompletedStoryPoints());
                 break;
             }
-            result.clear();
-            result.addAll(entry.getValue());
         }
-        return result;
-    }
-
-
-    private List<GroupDataChartDO> dealStoryPointData(Long projectId, List<DateIssueIdsDO> storyPointsAll, List<DateIssueIdsDO> allIssueIds) {
-        List<GroupDataChartDO> result = new ArrayList<>();
-        Map allMap = getAllMap(allIssueIds);
-        Map pointMap = new HashMap();
-        Map completedMap = getCompletedMap(projectId, allMap, storyPointsAll, pointMap);
-        String groupDay2 = null;
-        int completedSum = 0;
-        int allSum = 0;
-        List<Long> spIds = new ArrayList<>();
-        Map<Long, Integer> issueValue = new HashMap();
-        List<Long> spIds2 = new ArrayList<>();
-        int estimateCount = 0;
-        Map<Long, Integer> issueValue2 = new HashMap<>();
-        setAllIssuesAndSortSp(allIssueIds, storyPointsAll);
-        for (DateIssueIdsDO cnt : storyPointsAll) {
-            List<Long> epicIssueIds = getJudgeAllMap(allMap, cnt.getGroupDay());
-            if (epicIssueIds != null && epicIssueIds.contains(cnt.getIssueId())) {
-                if (!cnt.getGroupDay().equals(groupDay2) && groupDay2 != null) {
-                    result.add(setGroupDataSp(groupDay2, completedSum, allSum, estimateCount));
-                }
-                groupDay2 = cnt.getGroupDay();
-                int point = cnt.getStoryPoint() == null ? 0 : cnt.getStoryPoint();
-                JSONObject jsonObject = setAllSumAndCountSp(spIds2, cnt, allSum, estimateCount, issueValue2, point);
-                allSum = Integer.parseInt(jsonObject.get(ALLSUM).toString());
-                estimateCount = Integer.parseInt(jsonObject.get(ESTIMATECOUNT).toString());
-                List<Long> completedList = (List<Long>) completedMap.get(cnt.getGroupDay());
-                if (completedList == null) {
-                    completedSum = manageNullCompletedSp(issueValue, cnt, completedSum, point);
-                    continue;
-                }
-                completedSum = setCompletedSumSp(spIds, cnt, completedList, completedSum, issueValue, point);
+        for (GroupDataChartDO g4 : storyPointCountEstimate) {
+            if (g1.getGroupDay().equals(g4.getGroupDay())) {
+                g1.setUnEstimateIssueCount(g1.getIssueCount() - g4.getUnEstimateIssueCount());
+                break;
             }
         }
-        if (groupDay2 != null) {
-            result.add(setGroupDataSp(groupDay2, completedSum, allSum, estimateCount));
+        if (storyPointCountEstimate.isEmpty()) {
+            g1.setUnEstimateIssueCount(g1.getIssueCount());
         }
-        return dealSpResult(allMap, result, pointMap);
     }
 
-    private void sortEpicData(List<DateIssueIdsDO> list) {
-        Collections.sort(list, Comparator.comparing(DateIssueIdsDO::getGroupDay));
-    }
-
-    private void sortEpicDataRes(List<GroupDataChartDO> list) {
-        Collections.sort(list, Comparator.comparing(GroupDataChartDO::getGroupDay));
-    }
-
-    private void setAllIssuesAndSortRt(List<DateIssueIdsDO> allIssueIds, List<DateIssueIdsDO> remainTimesAll) {
-        for (DateIssueIdsDO dateIssueIdsDO : allIssueIds) {
-            int flag = 0;
-            for (DateIssueIdsDO cnt : remainTimesAll) {
-                if (dateIssueIdsDO.getGroupDay().equals(cnt.getGroupDay())) {
-                    flag = 1;
-                    break;
-                }
-            }
-            if (flag == 0) {
-                DateIssueIdsDO dateIssueId = new DateIssueIdsDO();
-                dateIssueId.setGroupDay(dateIssueIdsDO.getGroupDay());
-                dateIssueId.setRemainTime(null);
-                dateIssueId.setIssueId(dateIssueIdsDO.getIssueId());
-                remainTimesAll.add(dateIssueId);
-            }
-        }
-        sortEpicData(remainTimesAll);
-    }
-
-    private List<GroupDataChartDO> dealRtResult(Map allMap, List<GroupDataChartDO> result) {
-        List<GroupDataChartDO> res = new ArrayList<>();
-        Iterator<Map.Entry<String, List<Long>>> entries = allMap.entrySet().iterator();
-        while (entries.hasNext()) {
-            Map.Entry<String, List<Long>> entry = entries.next();
-            GroupDataChartDO e = new GroupDataChartDO();
-            e.setGroupDay(entry.getKey());
-            int issueCount = allMap.get(entry.getKey()) == null ? 0 : ((List<Long>) allMap.get(entry.getKey())).size();
-            int unEstimateIssueCount = issueCount;
-            for (GroupDataChartDO tmp : result) {
-                if (tmp.getGroupDay().equals(entry.getKey())) {
-                    e.setAllRemainTimes(tmp.getAllRemainTimes());
-                    e.setCompletedRemainTimes(tmp.getCompletedRemainTimes());
-                    unEstimateIssueCount = unEstimateIssueCount - tmp.getUnEstimateIssueCount();
-                    break;
-                }
-            }
-            e.setIssueCount(issueCount);
-            e.setUnEstimateIssueCount(unEstimateIssueCount);
-            res.add(e);
-        }
-        sortEpicDataRes(res);
-        return res;
-    }
-
-    private GroupDataChartDO setGroupDataRt(String groupDay, int completedSum, int allSum, int estimateCount) {
-        GroupDataChartDO groupDataChartDO = new GroupDataChartDO();
-        groupDataChartDO.setGroupDay(groupDay);
-        groupDataChartDO.setCompletedRemainTimes(completedSum);
-        groupDataChartDO.setAllRemainTimes(allSum);
-        groupDataChartDO.setUnEstimateIssueCount(estimateCount);
-        return groupDataChartDO;
-    }
-
-    private JSONObject setAllSumAndCountRt(List<Long> spIds2, DateIssueIdsDO cnt, int estimateCount, int allSum, Map<Long, Integer> issueValue2, int remainTime) {
-        if (spIds2.contains(cnt.getIssueId())) {
-            if (cnt.getRemainTime() == null) {
-                estimateCount -= 1;
-            }
-            allSum = allSum - issueValue2.get(cnt.getIssueId()) + remainTime;
-            issueValue2.put(cnt.getIssueId(), remainTime);
-        } else {
-            if (cnt.getRemainTime() != null) {
-                estimateCount += 1;
-                allSum = allSum + remainTime;
-                spIds2.add(cnt.getIssueId());
-                issueValue2.put(cnt.getIssueId(), remainTime);
-            }
-        }
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put(ALLSUM, allSum);
-        jsonObject.put(ESTIMATECOUNT, estimateCount);
-        return jsonObject;
-    }
-
-    private int setCompletedSumRt(List<Long> spIds, DateIssueIdsDO cnt, List<Long> completedList, Map<Long, Integer> issueValue, int completedSum, int remainTime) {
-        if (spIds.contains(cnt.getIssueId())) {
-            if (completedList.contains(cnt.getIssueId())) {
-                issueValue.put(cnt.getIssueId(), remainTime);
-                completedSum = completedSum - issueValue.get(cnt.getIssueId()) + remainTime;
-            } else {
-                completedSum = completedSum - issueValue.get(cnt.getIssueId());
-                issueValue.remove(cnt.getIssueId());
-                spIds.remove(cnt.getIssueId());
-            }
-        } else {
-            if (completedList.contains(cnt.getIssueId())) {
-                completedSum = completedSum + remainTime;
-                spIds.add(cnt.getIssueId());
-                issueValue.put(cnt.getIssueId(), remainTime);
-            }
-        }
-        return completedSum;
-    }
-
-    private int manageNullCompletedRt(Map<Long, Integer> issueValue, DateIssueIdsDO cnt, int completedSum, int remainTime) {
-        if (issueValue != null && issueValue.get(cnt.getIssueId()) != null && !cnt.getRemainTime().equals(issueValue.get(cnt.getIssueId()))) {
-            completedSum = completedSum - issueValue.get(cnt.getIssueId()) + remainTime;
-            issueValue.put(cnt.getIssueId(), remainTime);
-        }
-        return completedSum;
-    }
-
-    private List<GroupDataChartDO> dealRemainTimeData(Long projectId, List<DateIssueIdsDO> remainTimesAll, List<DateIssueIdsDO> allIssueIds) {
-        List<GroupDataChartDO> result = new ArrayList<>();
-        Map allMap = getAllMap(allIssueIds);
-        Map completedMap = null;
-        String groupDay2 = null;
-        int completedSum = 0;
-        int allSum = 0;
-        List<Long> spIds = new ArrayList<>();
-        Map<Long, Integer> issueValue = new HashMap();
-        List<Long> spIds2 = new ArrayList<>();
-        int estimateCount = 0;
-        Map<Long, Integer> issueValue2 = new HashMap<>();
-        setAllIssuesAndSortRt(allIssueIds, remainTimesAll);
-        for (DateIssueIdsDO cnt : remainTimesAll) {
-            List<Long> epicIssueIds = (List<Long>) allMap.get(cnt.getGroupDay());
-            if (epicIssueIds != null && epicIssueIds.contains(cnt.getIssueId())) {
-                if (!cnt.getGroupDay().equals(groupDay2) && groupDay2 != null) {
-                    result.add(setGroupDataRt(groupDay2, completedSum, allSum, estimateCount));
-                }
-                groupDay2 = cnt.getGroupDay();
-                int remainTime = cnt.getRemainTime() == null ? 0 : cnt.getRemainTime();
-                JSONObject jsonObject = setAllSumAndCountRt(spIds2, cnt, estimateCount, allSum, issueValue2, remainTime);
-                allSum = Integer.parseInt(jsonObject.get(ALLSUM).toString());
-                estimateCount = Integer.parseInt(jsonObject.get(ESTIMATECOUNT).toString());
-                List<Long> completedList = (List<Long>) completedMap.get(cnt.getGroupDay());
-                if (completedList == null) {
-                    completedSum = manageNullCompletedRt(issueValue, cnt, completedSum, remainTime);
-                    continue;
-                }
-                completedSum = setCompletedSumRt(spIds, cnt, completedList, issueValue, completedSum, remainTime);
-            }
-        }
-        if (groupDay2 != null) {
-            result.add(setGroupDataRt(groupDay2, completedSum, allSum, estimateCount));
-        }
-        return dealRtResult(allMap, result);
-    }
-
-//    @Override
-//    public List<GroupDataChartDO> queryEpicChart(Long projectId, Long epicId, String type) {
-//        List<GroupDataChartDO> result = null;
-//        List<DateIssueIdsDO> allIssueIds = reportMapper.selectIssueByEpicId(projectId, epicId);
-//        switch (type) {
-//            case TYPE_STORY_POINT:
-//                List<DateIssueIdsDO> storyPointsAll = reportMapper.selectStoryPointsAll(projectId);
-//                result = dealStoryPointData(projectId, storyPointsAll, allIssueIds);
-//                break;
-//            case TYPE_ISSUE_COUNT:
-//                result = dealIssueCountData(projectId, allIssueIds);
-//                break;
-//            case TYPE_REMAIN_TIME:
-//                List<DateIssueIdsDO> remainTimesAll = reportMapper.selectEpicRemainTime(projectId);
-//                result = dealRemainTimeData(projectId, remainTimesAll, allIssueIds);
-//                break;
-//            default:
-//                break;
-//        }
-//        return result == null ? new ArrayList<>() : result;
-//    }
 
     private List<GroupDataChartDO> dealStoryPointFinal(List<GroupDataChartDO> storyPointsAll, List<GroupDataChartDO> storyPointsCompleted, List<GroupDataChartDO> storyPointCountAll, List<GroupDataChartDO> storyPointCountEstimate) {
         for (GroupDataChartDO g1 : storyPointCountAll) {
-            for (GroupDataChartDO g2 : storyPointsAll) {
-                if (g1.getGroupDay().equals(g2.getGroupDay())) {
-                    g1.setAllStoryPoints(g2.getAllStoryPoints());
-                    break;
-                }
-            }
-            for (GroupDataChartDO g3 : storyPointsCompleted) {
-                if (g1.getGroupDay().equals(g3.getGroupDay())) {
-                    g1.setCompletedStoryPoints(g3.getCompletedStoryPoints());
-                    break;
-                }
-            }
-            for (GroupDataChartDO g4 : storyPointCountEstimate) {
-                if (g1.getGroupDay().equals(g4.getGroupDay())) {
-                    g1.setUnEstimateIssueCount(g1.getIssueCount() - g4.getUnEstimateIssueCount());
-                    break;
-                }
-            }
-            if (storyPointCountEstimate.isEmpty()) {
-                g1.setUnEstimateIssueCount(g1.getIssueCount());
-            }
+            setStoryPointProperties(g1, storyPointsAll, storyPointsCompleted, storyPointCountEstimate);
         }
         return storyPointCountAll;
+    }
+
+    private void setRemainTimeCompleted(GroupDataChartDO g1, List<GroupDataChartDO> remainTimeRemainCompleted, List<GroupDataChartDO> remainTimeWorkLogCompleted) {
+        for (GroupDataChartDO g2 : remainTimeRemainCompleted) {
+            if (g1.getGroupDay().equals(g2.getGroupDay())) {
+                g1.setCompletedRemainTimes(g2.getCompletedRemainTimes());
+                break;
+            }
+        }
+        for (GroupDataChartDO g3 : remainTimeWorkLogCompleted) {
+            if (g1.getGroupDay().equals(g3.getGroupDay())) {
+                g1.setCompletedRemainTimes(g1.getCompletedRemainTimes() + g3.getCompletedRemainTimes());
+                break;
+            }
+        }
+    }
+
+    private void setRemainTimeAll(GroupDataChartDO g1, List<GroupDataChartDO> remainTimeRemainAll, List<GroupDataChartDO> remainTimeWorkLogAll) {
+        for (GroupDataChartDO g4 : remainTimeRemainAll) {
+            if (g1.getGroupDay().equals(g4.getGroupDay())) {
+                g1.setAllRemainTimes(g4.getAllRemainTimes());
+                break;
+            }
+        }
+        for (GroupDataChartDO g5 : remainTimeWorkLogAll) {
+            if (g1.getGroupDay().equals(g5.getGroupDay())) {
+                g1.setAllRemainTimes(g1.getAllRemainTimes() + g5.getAllRemainTimes());
+                break;
+            }
+        }
+    }
+
+    private void setRemainTimeUnEstimateCount(GroupDataChartDO g1, List<GroupDataChartDO> remainTimeCountEstimate) {
+        for (GroupDataChartDO g6 : remainTimeCountEstimate) {
+            if (g1.getGroupDay().equals(g6.getGroupDay())) {
+                g1.setUnEstimateIssueCount(g1.getIssueCount() - g6.getUnEstimateIssueCount());
+                break;
+            }
+        }
+        if (remainTimeCountEstimate.isEmpty()) {
+            g1.setUnEstimateIssueCount(g1.getIssueCount());
+        }
     }
 
     private List<GroupDataChartDO> dealRemainTimeFinal(List<GroupDataChartDO> remainTimeRemainCompleted, List<GroupDataChartDO> remainTimeWorkLogCompleted,
                                                        List<GroupDataChartDO> remainTimeRemainAll, List<GroupDataChartDO> remainTimeWorkLogAll,
                                                        List<GroupDataChartDO> remainTimeCountAll, List<GroupDataChartDO> remainTimeCountEstimate) {
         for (GroupDataChartDO g1 : remainTimeCountAll) {
-            for (GroupDataChartDO g2 : remainTimeRemainCompleted) {
-                if (g1.getGroupDay().equals(g2.getGroupDay())) {
-                    g1.setCompletedRemainTimes(g2.getCompletedRemainTimes());
-                    break;
-                }
-            }
-            for (GroupDataChartDO g3 : remainTimeWorkLogCompleted) {
-                if (g1.getGroupDay().equals(g3.getGroupDay())) {
-                    g1.setCompletedRemainTimes(g1.getCompletedRemainTimes() + g3.getCompletedRemainTimes());
-                    break;
-                }
-            }
-            for (GroupDataChartDO g4 : remainTimeRemainAll) {
-                if (g1.getGroupDay().equals(g4.getGroupDay())) {
-                    g1.setAllRemainTimes(g4.getAllRemainTimes());
-                    break;
-                }
-            }
-            for (GroupDataChartDO g5 : remainTimeWorkLogAll) {
-                if (g1.getGroupDay().equals(g5.getGroupDay())) {
-                    g1.setAllRemainTimes(g1.getAllRemainTimes() + g5.getAllRemainTimes());
-                    break;
-                }
-            }
-            for (GroupDataChartDO g6 : remainTimeCountEstimate) {
-                if (g1.getGroupDay().equals(g6.getGroupDay())) {
-                    g1.setUnEstimateIssueCount(g1.getIssueCount() - g6.getUnEstimateIssueCount());
-                    break;
-                }
-            }
-            if (remainTimeCountEstimate.isEmpty()) {
-                g1.setUnEstimateIssueCount(g1.getIssueCount());
-            }
+            setRemainTimeCompleted(g1, remainTimeRemainCompleted, remainTimeWorkLogCompleted);
+            setRemainTimeAll(g1, remainTimeRemainAll, remainTimeWorkLogAll);
+            setRemainTimeUnEstimateCount(g1, remainTimeCountEstimate);
         }
         return remainTimeCountAll;
     }
@@ -1546,24 +1095,24 @@ public class ReportServiceImpl implements ReportService {
         List<GroupDataChartDO> result = null;
         switch (type) {
             case TYPE_STORY_POINT:
-                List<GroupDataChartDO> storyPointsAll = reportMapper.selectByStoryPointAllFinal(projectId, epicId, "epic_chart");
-                List<GroupDataChartDO> storyPointsCompleted = reportMapper.selectByStoryPointCompletedFinal(projectId, epicId, "epic_chart");
-                List<GroupDataChartDO> storyPointCountAll = reportMapper.selectByStoryPointCountAll(projectId, epicId, "epic_chart");
-                List<GroupDataChartDO> storyPointCountEstimate = reportMapper.selectByStoryPointCountEstimate(projectId, epicId, "epic_chart");
+                List<GroupDataChartDO> storyPointsAll = reportMapper.selectByStoryPointAllFinal(projectId, epicId, EPIC_CHART);
+                List<GroupDataChartDO> storyPointsCompleted = reportMapper.selectByStoryPointCompletedFinal(projectId, epicId, EPIC_CHART);
+                List<GroupDataChartDO> storyPointCountAll = reportMapper.selectByStoryPointCountAll(projectId, epicId, EPIC_CHART);
+                List<GroupDataChartDO> storyPointCountEstimate = reportMapper.selectByStoryPointCountEstimate(projectId, epicId, EPIC_CHART);
                 result = dealStoryPointFinal(storyPointsAll, storyPointsCompleted, storyPointCountAll, storyPointCountEstimate);
                 break;
             case TYPE_ISSUE_COUNT:
-                List<GroupDataChartDO> issueCountAll = reportMapper.selectByIssueCountAllFinal(projectId, epicId, "epic_chart");
-                List<GroupDataChartDO> issueCountCompleted = reportMapper.selectByIssueCountCompletedFinal(projectId, epicId, "epic_chart");
+                List<GroupDataChartDO> issueCountAll = reportMapper.selectByIssueCountAllFinal(projectId, epicId, EPIC_CHART);
+                List<GroupDataChartDO> issueCountCompleted = reportMapper.selectByIssueCountCompletedFinal(projectId, epicId, EPIC_CHART);
                 result = dealIssueCountFinal(issueCountAll, issueCountCompleted);
                 break;
             case TYPE_REMAIN_TIME:
-                List<GroupDataChartDO> remainTimeRemainCompleted = reportMapper.selectByRemainTimeRemainCompleted(projectId, epicId, "epic_chart");
-                List<GroupDataChartDO> remainTimeWorkLogCompleted = reportMapper.selectByRemainTimeWorkLogCompleted(projectId, epicId, "epic_chart");
-                List<GroupDataChartDO> remainTimeRemainAll = reportMapper.selectByRemainTimeRemainAll(projectId, epicId, "epic_chart");
-                List<GroupDataChartDO> remainTimeWorkLogAll = reportMapper.selectByRemainTimeWorkLogAll(projectId, epicId, "epic_chart");
-                List<GroupDataChartDO> remainTimeCountAll = reportMapper.selectByRemainTimeCountAll(projectId, epicId, "epic_chart");
-                List<GroupDataChartDO> remainTimeCountEstimate = reportMapper.selectByRemainTimeCountEstimate(projectId, epicId, "epic_chart");
+                List<GroupDataChartDO> remainTimeRemainCompleted = reportMapper.selectByRemainTimeRemainCompleted(projectId, epicId, EPIC_CHART);
+                List<GroupDataChartDO> remainTimeWorkLogCompleted = reportMapper.selectByRemainTimeWorkLogCompleted(projectId, epicId, EPIC_CHART);
+                List<GroupDataChartDO> remainTimeRemainAll = reportMapper.selectByRemainTimeRemainAll(projectId, epicId, EPIC_CHART);
+                List<GroupDataChartDO> remainTimeWorkLogAll = reportMapper.selectByRemainTimeWorkLogAll(projectId, epicId, EPIC_CHART);
+                List<GroupDataChartDO> remainTimeCountAll = reportMapper.selectByRemainTimeCountAll(projectId, epicId, EPIC_CHART);
+                List<GroupDataChartDO> remainTimeCountEstimate = reportMapper.selectByRemainTimeCountEstimate(projectId, epicId, EPIC_CHART);
                 result = dealRemainTimeFinal(remainTimeRemainCompleted, remainTimeWorkLogCompleted, remainTimeRemainAll, remainTimeWorkLogAll, remainTimeCountAll, remainTimeCountEstimate);
                 break;
             default:
@@ -1584,51 +1133,30 @@ public class ReportServiceImpl implements ReportService {
                 sorted(Comparator.comparing(ReportIssueE::getDate)).collect(Collectors.toList()));
     }
 
-//    @Override
-//    public List<GroupDataChartDO> queryVersionChart(Long projectId, Long versionId, String type) {
-//        List<GroupDataChartDO> result = null;
-//        List<DateIssueIdsDO> allIssueIds = reportMapper.selectIssueByVersionId(projectId, versionId);
-//        switch (type) {
-//            case TYPE_ISSUE_COUNT:
-//                result = dealIssueCountData(projectId, allIssueIds);
-//                break;
-//            case TYPE_STORY_POINT:
-//                List<DateIssueIdsDO> storyPointsAll = reportMapper.selectStoryPointsAll(projectId);
-//                result = dealStoryPointData(projectId, storyPointsAll, allIssueIds);
-//                break;
-//            case TYPE_REMAIN_TIME:
-//                List<DateIssueIdsDO> remainTimesAll = reportMapper.selectEpicRemainTime(projectId);
-//                result = dealRemainTimeData(projectId, remainTimesAll, allIssueIds);
-//                break;
-//            default:
-//                break;
-//        }
-//        return result == null ? new ArrayList<>() : result;
-//    }
 
     @Override
     public List<GroupDataChartDO> queryVersionChart(Long projectId, Long versionId, String type) {
         List<GroupDataChartDO> result = null;
         switch (type) {
-            case TYPE_STORY_POINT:
-                List<GroupDataChartDO> storyPointsAll = reportMapper.selectByStoryPointAllFinal(projectId, versionId, "version_chart");
-                List<GroupDataChartDO> storyPointsCompleted = reportMapper.selectByStoryPointCompletedFinal(projectId, versionId, "version_chart");
-                List<GroupDataChartDO> storyPointCountAll = reportMapper.selectByStoryPointCountAll(projectId, versionId, "version_chart");
-                List<GroupDataChartDO> storyPointCountEstimate = reportMapper.selectByStoryPointCountEstimate(projectId, versionId, "version_chart");
-                result = dealStoryPointFinal(storyPointsAll, storyPointsCompleted, storyPointCountAll, storyPointCountEstimate);
-                break;
             case TYPE_ISSUE_COUNT:
-                List<GroupDataChartDO> issueCountAll = reportMapper.selectByIssueCountAllFinal(projectId, versionId, "version_chart");
-                List<GroupDataChartDO> issueCountCompleted = reportMapper.selectByIssueCountCompletedFinal(projectId, versionId, "version_chart");
+                List<GroupDataChartDO> issueCountAll = reportMapper.selectByIssueCountAllFinal(projectId, versionId, VERSION_CHART);
+                List<GroupDataChartDO> issueCountCompleted = reportMapper.selectByIssueCountCompletedFinal(projectId, versionId, VERSION_CHART);
                 result = dealIssueCountFinal(issueCountAll, issueCountCompleted);
                 break;
+            case TYPE_STORY_POINT:
+                List<GroupDataChartDO> storyPointsAll = reportMapper.selectByStoryPointAllFinal(projectId, versionId, VERSION_CHART);
+                List<GroupDataChartDO> storyPointsCompleted = reportMapper.selectByStoryPointCompletedFinal(projectId, versionId, VERSION_CHART);
+                List<GroupDataChartDO> storyPointCountAll = reportMapper.selectByStoryPointCountAll(projectId, versionId, VERSION_CHART);
+                List<GroupDataChartDO> storyPointCountEstimate = reportMapper.selectByStoryPointCountEstimate(projectId, versionId, VERSION_CHART);
+                result = dealStoryPointFinal(storyPointsAll, storyPointsCompleted, storyPointCountAll, storyPointCountEstimate);
+                break;
             case TYPE_REMAIN_TIME:
-                List<GroupDataChartDO> remainTimeRemainCompleted = reportMapper.selectByRemainTimeRemainCompleted(projectId, versionId, "version_chart");
-                List<GroupDataChartDO> remainTimeWorkLogCompleted = reportMapper.selectByRemainTimeWorkLogCompleted(projectId, versionId, "version_chart");
-                List<GroupDataChartDO> remainTimeRemainAll = reportMapper.selectByRemainTimeRemainAll(projectId, versionId, "version_chart");
-                List<GroupDataChartDO> remainTimeWorkLogAll = reportMapper.selectByRemainTimeWorkLogAll(projectId, versionId, "version_chart");
-                List<GroupDataChartDO> remainTimeCountAll = reportMapper.selectByRemainTimeCountAll(projectId, versionId, "version_chart");
-                List<GroupDataChartDO> remainTimeCountEstimate = reportMapper.selectByRemainTimeCountEstimate(projectId, versionId, "version_chart");
+                List<GroupDataChartDO> remainTimeRemainCompleted = reportMapper.selectByRemainTimeRemainCompleted(projectId, versionId, VERSION_CHART);
+                List<GroupDataChartDO> remainTimeWorkLogCompleted = reportMapper.selectByRemainTimeWorkLogCompleted(projectId, versionId, VERSION_CHART);
+                List<GroupDataChartDO> remainTimeRemainAll = reportMapper.selectByRemainTimeRemainAll(projectId, versionId, VERSION_CHART);
+                List<GroupDataChartDO> remainTimeWorkLogAll = reportMapper.selectByRemainTimeWorkLogAll(projectId, versionId, VERSION_CHART);
+                List<GroupDataChartDO> remainTimeCountAll = reportMapper.selectByRemainTimeCountAll(projectId, versionId, VERSION_CHART);
+                List<GroupDataChartDO> remainTimeCountEstimate = reportMapper.selectByRemainTimeCountEstimate(projectId, versionId, VERSION_CHART);
                 result = dealRemainTimeFinal(remainTimeRemainCompleted, remainTimeWorkLogCompleted, remainTimeRemainAll, remainTimeWorkLogAll, remainTimeCountAll, remainTimeCountEstimate);
                 break;
             default:

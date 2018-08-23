@@ -12,6 +12,8 @@ public class BoardValidator {
     private static final String ERROR_PROJECTID_NOTEQUAL = "error.projectId.notEqual";
     private static final String ERROR_OBJECTVERSIONNUMBER_ISNULL = "error.objectVersionNumber.isNull";
 
+    private BoardValidator() {}
+
     public static void checkUpdateBoard(Long projectId, BoardDTO boardDTO) {
         if (!projectId.equals(boardDTO.getProjectId())) {
             throw new CommonException(ERROR_PROJECTID_NOTEQUAL);

@@ -18,7 +18,6 @@ import io.choerodon.agile.domain.agile.repository.BoardColumnRepository;
 import io.choerodon.agile.domain.agile.repository.ColumnStatusRelRepository;
 import io.choerodon.agile.domain.agile.repository.IssueStatusRepository;
 import io.choerodon.agile.infra.mapper.BoardColumnMapper;
-import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +42,6 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     private static final Integer SEQUENCE_ONE = 0;
     private static final Integer SEQUENCE_TWO = 1;
     private static final Integer SEQUENCE_THREE = 2;
-    private static final String ERROR_PROJECTID_NOTEQUAL = "error.projectId.notEqual";
     private static final String COLUMN_COLOR_TODO = "column_color_todo";
     private static final String COLUMN_COLOR_DOING = "column_color_doing";
     private static final String COLUMN_COLOR_DONE = "column_color_done";
@@ -73,32 +71,34 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         boardColumnDTO.setSequence(lastSequence);
     }
 
+    private void setColumnProperties(BoardColumnDTO boardColumnDTO,BoardColumnDO boardColumnDO, String categoryDO, String categoryDTO) {
+        boardColumnDO.setCategoryCode(categoryDO);
+        if (!boardColumnMapper.select(boardColumnDO).isEmpty()) {
+            boardColumnDTO.setCategoryCode(categoryDTO);
+            updateSequence(boardColumnDTO);
+        }
+    }
+
     private void createCheck(BoardColumnDTO boardColumnDTO) {
-        if (boardColumnDTO.getCategoryCode().equals(DONE_CODE)) {
-            BoardColumnDO boardColumnDO = new BoardColumnDO();
-            boardColumnDO.setBoardId(boardColumnDTO.getBoardId());
-            boardColumnDO.setCategoryCode(DONE_CODE);
-            if (!boardColumnMapper.select(boardColumnDO).isEmpty()) {
-                boardColumnDTO.setCategoryCode(DOING_CODE);
-                updateSequence(boardColumnDTO);
-            }
-        } else if (boardColumnDTO.getCategoryCode().equals(TODO_CODE)) {
-            BoardColumnDO boardColumnDO = new BoardColumnDO();
-            boardColumnDO.setCategoryCode(TODO_CODE);
-            boardColumnDO.setBoardId(boardColumnDTO.getBoardId());
-            if (!boardColumnMapper.select(boardColumnDO).isEmpty()) {
-                boardColumnDTO.setCategoryCode(DOING_CODE);
-                updateSequence(boardColumnDTO);
-            }
-        } else if (boardColumnDTO.getCategoryCode().equals(DOING_CODE)) {
-            BoardColumnDO boardColumnDO = new BoardColumnDO();
-            boardColumnDO.setCategoryCode(DONE_CODE);
-            boardColumnDO.setBoardId(boardColumnDTO.getBoardId());
-            if (boardColumnMapper.select(boardColumnDO).isEmpty()) {
-                boardColumnDTO.setCategoryCode(DONE_CODE);
-            } else {
-                updateSequence(boardColumnDTO);
-            }
+        BoardColumnDO boardColumnDO = new BoardColumnDO();
+        boardColumnDO.setBoardId(boardColumnDTO.getBoardId());
+        switch (boardColumnDTO.getCategoryCode()) {
+            case DONE_CODE:
+                setColumnProperties(boardColumnDTO, boardColumnDO, DONE_CODE, DOING_CODE);
+                break;
+            case TODO_CODE:
+                setColumnProperties(boardColumnDTO, boardColumnDO, TODO_CODE, DOING_CODE);
+                break;
+            case DOING_CODE:
+                boardColumnDO.setCategoryCode(DONE_CODE);
+                if (boardColumnMapper.select(boardColumnDO).isEmpty()) {
+                    boardColumnDTO.setCategoryCode(DONE_CODE);
+                } else {
+                    updateSequence(boardColumnDTO);
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -129,9 +129,6 @@ public class BoardColumnServiceImpl implements BoardColumnService {
 
     @Override
     public BoardColumnDTO create(Long projectId, String categoryCode, BoardColumnDTO boardColumnDTO) {
-//        if (!projectId.equals(boardColumnDTO.getProjectId())) {
-//            throw new CommonException(ERROR_PROJECTID_NOTEQUAL);
-//        }
         BoardColumnValidator.checkCreateBoardColumnDTO(projectId, boardColumnDTO);
         // 创建列
         createCheck(boardColumnDTO);
@@ -169,12 +166,6 @@ public class BoardColumnServiceImpl implements BoardColumnService {
 
     @Override
     public BoardColumnDTO update(Long projectId, Long columnId, Long boardId, BoardColumnDTO boardColumnDTO) {
-//        if (!projectId.equals(boardColumnDTO.getProjectId())) {
-//            throw new CommonException(ERROR_PROJECTID_NOTEQUAL);
-//        }
-//        if (!boardId.equals(boardColumnDTO.getBoardId())) {
-//            throw new CommonException("error.boardId.notEqual");
-//        }
         BoardColumnValidator.checkUpdateBoardColumnDTO(projectId, boardId, boardColumnDTO);
         BoardColumnE boardColumnE = ConvertHelper.convert(boardColumnDTO, BoardColumnE.class);
         return ConvertHelper.convert(boardColumnRepository.update(boardColumnE), BoardColumnDTO.class);
@@ -244,9 +235,6 @@ public class BoardColumnServiceImpl implements BoardColumnService {
 
     @Override
     public void columnSort(Long projectId, ColumnSortDTO columnSortDTO) {
-//        if (!projectId.equals(columnSortDTO.getProjectId())) {
-//            throw new CommonException(ERROR_PROJECTID_NOTEQUAL);
-//        }
         BoardColumnValidator.checkColumnSort(projectId, columnSortDTO);
         BoardColumnE boardColumnE = ConvertHelper.convert(columnSortDTO, BoardColumnE.class);
         boardColumnRepository.columnSort(projectId, columnSortDTO.getBoardId(), boardColumnE);
@@ -290,15 +278,6 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     }
     @Override
     public BoardColumnDTO updateColumnContraint(Long projectId, Long columnId, ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO) {
-//        if (!projectId.equals(columnWithMaxMinNumDTO.getProjectId())) {
-//            throw new CommonException(ERROR_PROJECTID_NOTEQUAL);
-//        }
-//        if (!columnId.equals(columnWithMaxMinNumDTO.getColumnId())) {
-//            throw new CommonException("error.columnId.notEqual");
-//        }
-//        if (columnWithMaxMinNumDTO.getMaxNum() != null && columnWithMaxMinNumDTO.getMinNum() != null && columnWithMaxMinNumDTO.getMinNum() > columnWithMaxMinNumDTO.getMaxNum()) {
-//            throw new CommonException("error.num.minNumCannotUpToMaxNum");
-//        }
         BoardColumnValidator.checkUpdateColumnContraint(projectId, columnId, columnWithMaxMinNumDTO);
         return ConvertHelper.convert(boardColumnRepository.updateMaxAndMinNum(columnWithMaxMinNumDTO), BoardColumnDTO.class);
     }
