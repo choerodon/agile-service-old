@@ -3,7 +3,6 @@ package io.choerodon.agile.domain.agile.repository;
 import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
-import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.dataobject.MoveIssueDO;
 
 import java.util.Date;

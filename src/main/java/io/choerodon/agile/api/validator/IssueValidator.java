@@ -2,7 +2,6 @@ package io.choerodon.agile.api.validator;
 
 import io.choerodon.agile.api.dto.StoryMapMoveDTO;
 import io.choerodon.agile.infra.dataobject.IssueDO;
-import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.exception.CommonException;
 
 /**
@@ -15,6 +14,8 @@ public class IssueValidator {
     private static final String ERROR_TYPECODE_ISSUBTASK = "error.typeCode.isSubtask";
     private static final String ERROR_SPRINTIDANDVERSIONID_ALLNOTNULL = "error.sprintIdAndVersionId.allNotNull";
 
+
+    private IssueValidator() {}
 
     public static void checkStoryMapMove(StoryMapMoveDTO storyMapMoveDTO) {
         if (storyMapMoveDTO.getSprintId() != null && storyMapMoveDTO.getVersionId() != null) {

@@ -84,9 +84,6 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardDTO update(Long projectId, Long boardId, BoardDTO boardDTO) {
-//        if (!projectId.equals(boardDTO.getProjectId())) {
-//            throw new CommonException("error.projectId.notEqual");
-//        }
         BoardValidator.checkUpdateBoard(projectId, boardDTO);
         boardDTO.setBoardId(boardId);
         BoardE boardE = ConvertHelper.convert(boardDTO, BoardE.class);

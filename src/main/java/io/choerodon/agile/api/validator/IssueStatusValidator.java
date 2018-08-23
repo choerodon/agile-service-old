@@ -5,6 +5,8 @@ import io.choerodon.core.exception.CommonException;
 
 public class IssueStatusValidator {
 
+    private IssueStatusValidator() {}
+
     public static void checkCreateStatus(Long projectId, IssueStatusDTO issueStatusDTO) {
         if (!projectId.equals(issueStatusDTO.getProjectId())) {
             throw new CommonException("error.projectId.notEqual");

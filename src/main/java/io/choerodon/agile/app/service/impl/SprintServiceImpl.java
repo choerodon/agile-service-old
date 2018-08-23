@@ -405,7 +405,6 @@ public class SprintServiceImpl implements SprintService {
             throw new CommonException(PROJECT_NOT_FOUND_ERROR);
         }
         SprintDO sprintDO = sprintMapper.queryLastSprint(projectId);
-        SprintE sprint = new SprintE();
         if (sprintDO == null) {
             return projectInfo.getProjectCode().trim() + " 1";
         } else {

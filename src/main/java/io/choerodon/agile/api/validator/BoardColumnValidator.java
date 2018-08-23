@@ -4,9 +4,7 @@ import io.choerodon.agile.api.dto.BoardColumnDTO;
 import io.choerodon.agile.api.dto.ColumnSortDTO;
 import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
 import io.choerodon.agile.infra.dataobject.BoardColumnDO;
-import io.choerodon.agile.infra.mapper.BoardColumnMapper;
 import io.choerodon.core.exception.CommonException;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/8/9.
@@ -20,6 +18,9 @@ public class BoardColumnValidator {
     private static final String ERROR_COLUMNID_NOTEQUAL = "error.columnId.notEqual";
     private static final String ERROR_NUM_MINNUMCANNOTUPTOMAXNUM = "error.num.minNumCannotUpToMaxNum";
     private static final String ERROR_COLUMN_ISNULL = "error.column.isNull";
+
+
+    private BoardColumnValidator() {}
 
     public static void checkCreateBoardColumnDTO(Long projectId, BoardColumnDTO boardColumnDTO) {
         if (!projectId.equals(boardColumnDTO.getProjectId())) {
