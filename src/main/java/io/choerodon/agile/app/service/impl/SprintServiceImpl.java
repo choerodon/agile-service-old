@@ -170,10 +170,21 @@ public class SprintServiceImpl implements SprintService {
         BackLogIssueDTO backLogIssueDTO = new BackLogIssueDTO();
         if (issueIds != null && !issueIds.isEmpty()) {
             handleSprintIssueData(issueIds, sprintSearchs, backLogIssueDTO, projectId);
+        } else {
+            handleSprintNoIssue(sprintSearchs, projectId);
         }
         backlog.put(SPRINT_DATA, sprintSearchs);
         backlog.put(BACKLOG_DATA, backLogIssueDTO);
         return backlog;
+    }
+
+    private void handleSprintNoIssue(List<SprintSearchDTO> sprintSearchs, Long projectId) {
+        SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
+        SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDO, null);
+        List<SprintSearchDO> sprintSearchDTOS = sprintMapper.queryPlanSprintNoIssueIds(projectId);
+        List<SprintSearchDTO> planSprints = sprintSearchAssembler.doListToDTO(sprintSearchDTOS, null);
+        sprintSearchs.add(activeSprint);
+        sprintSearchs.addAll(planSprints);
     }
 
     private void handleSprintIssueData(List<Long> issueIds, List<SprintSearchDTO> sprintSearchs, BackLogIssueDTO backLogIssueDTO, Long projectId) {
@@ -195,7 +206,7 @@ public class SprintServiceImpl implements SprintService {
             sprintSearchs.addAll(planSprints);
         }
 
-        List<IssueSearchDO> backLogIssue = sprintMapper.queryBacklogIssues(projectId,issueIds);
+        List<IssueSearchDO> backLogIssue = sprintMapper.queryBacklogIssues(projectId, issueIds);
         backLogIssueDTO.setBackLogIssue(issueSearchAssembler.doListToDTO(backLogIssue, usersMap));
         backLogIssueDTO.setBacklogIssueCount(backLogIssue.size());
     }

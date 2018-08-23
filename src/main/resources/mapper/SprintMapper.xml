@@ -155,6 +155,13 @@
         WHERE sp.project_id = #{projectId} AND sp.status_code = 'started'
     </sql>
 
+    <select id="queryActiveSprintNoIssueIds" resultMap="SprintSearchDO">
+        select
+        spa.*
+        from
+        (<include refid="queryActiveSprintSql"/>)spa
+    </select>
+
     <sql id="queryAssigneeIssueBySprintId">
         SELECT a.sprint_id as asi_sprint_id,
         a.assignee_id as asi_assignee_id,
@@ -268,6 +275,13 @@
         left join(<include refid="querySprintIssueByIssueIds"/>)qsii on qsii.is_sprint_id = spa.sprint_id
         left join (<include refid="queryAssigneeIssueBySprintId"/>)qais
         on spa.sprint_id = qais.asi_sprint_id order by spa.sprint_id desc,qsii.rank ASC
+    </select>
+
+    <select id="queryPlanSprintNoIssueIds" resultType="io.choerodon.agile.infra.dataobject.SprintSearchDO">
+        select
+        spa.*
+        from
+        (<include refid="queryPlanSprintSql"/>)spa
     </select>
 
     <select id="queryAssigneeIssueBySprintId" parameterType="java.util.Map"
