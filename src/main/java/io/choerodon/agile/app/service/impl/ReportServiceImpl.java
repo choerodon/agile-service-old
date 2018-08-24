@@ -1007,13 +1007,15 @@ public class ReportServiceImpl implements ReportService {
                 break;
             }
         }
+        int flag = 0;
         for (GroupDataChartDO g4 : storyPointCountEstimate) {
             if (g1.getGroupDay().equals(g4.getGroupDay())) {
+                flag = 1;
                 g1.setUnEstimateIssueCount(g1.getIssueCount() - g4.getUnEstimateIssueCount());
                 break;
             }
         }
-        if (storyPointCountEstimate.isEmpty()) {
+        if (flag == 0) {
             g1.setUnEstimateIssueCount(g1.getIssueCount());
         }
     }
@@ -1057,13 +1059,15 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void setRemainTimeUnEstimateCount(GroupDataChartDO g1, List<GroupDataChartDO> remainTimeCountEstimate) {
+        int flag = 0;
         for (GroupDataChartDO g6 : remainTimeCountEstimate) {
             if (g1.getGroupDay().equals(g6.getGroupDay())) {
+                flag = 1;
                 g1.setUnEstimateIssueCount(g1.getIssueCount() - g6.getUnEstimateIssueCount());
                 break;
             }
         }
-        if (remainTimeCountEstimate.isEmpty()) {
+        if (flag == 0) {
             g1.setUnEstimateIssueCount(g1.getIssueCount());
         }
     }
