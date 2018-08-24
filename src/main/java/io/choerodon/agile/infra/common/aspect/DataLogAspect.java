@@ -19,14 +19,12 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -38,9 +36,9 @@ import java.util.stream.Collectors;
 @Aspect
 @Component
 @Transactional(rollbackFor = Exception.class)
-public class LogDataAspect {
+public class DataLogAspect {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LogDataAspect.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataLogAspect.class);
 
     private static final String ISSUE = "issue";
     private static final String ISSUE_CREATE = "issueCreate";
@@ -147,8 +145,6 @@ public class LogDataAspect {
     private IssueCommentMapper issueCommentMapper;
     @Autowired
     private RedisUtil redisUtil;
-    @Autowired
-    private SprintMapper sprintMapper;
 
     /**
      * 定义拦截规则：拦截Spring管理的后缀为RepositoryImpl的bean中带有@DataLog注解的方法。
@@ -942,7 +938,7 @@ public class LogDataAspect {
             dataLogE.setOldString(originTypeName);
             dataLogE.setNewString(currentTypeName);
             dataLogRepository.create(dataLogE);
-            deleteBurnDownCache(issueE.getSprintId(), issueE.getProjectId(), issueE.getIssueId(), "*");
+            deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
         }
     }
 
@@ -988,7 +984,7 @@ public class LogDataAspect {
                     issueE.getStatusId().toString());
             Boolean condition = (originStatus.getCompleted() != null && originStatus.getCompleted()) || (currentStatus.getCompleted() != null && currentStatus.getCompleted());
             if (condition) {
-                deleteBurnDownCache(issueE.getSprintId(), issueE.getProjectId(), issueE.getIssueId(), "*");
+                deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
                 dataLogResolution(originIssueDO.getProjectId(), originIssueDO.getIssueId(), originStatus, currentStatus);
             }
         }
@@ -1014,7 +1010,7 @@ public class LogDataAspect {
             oldData = originIssueDO.getRemainingTime() == null ? null : originIssueDO.getRemainingTime().toString();
             newData = zero.toString();
         }
-        deleteBurnDownCache(issueE.getSprintId(), issueE.getProjectId(), issueE.getIssueId(), "remainingEstimatedTime");
+        deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "remainingEstimatedTime");
         createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
                 FIELD_TIMEESTIMATE, oldData, newData, oldData, newData);
     }
@@ -1024,8 +1020,8 @@ public class LogDataAspect {
             sprintId = sprintMapper.queryNotCloseSprintIdByIssueId(issueId, projectId);
         }
         if (sprintId != null) {
-            redisUtil.deleteRedisCache(new String[]{"BurnDownCoordinate" + projectId + sprintId + ':' + type,
-                    "BurnDownReport" + projectId + sprintId + ':' + type});
+            redisUtil.deleteRedisCache(new String[]{"BurnDownCoordinate" + projectId + ':' + sprintId + ':' + type,
+                    "BurnDownReport" + projectId + ':' + sprintId + ':' + type});
         }
     }
 
@@ -1040,7 +1036,7 @@ public class LogDataAspect {
             if (issueE.getStoryPoints() != null) {
                 newString = issueE.getStoryPoints().toString();
             }
-            deleteBurnDownCache(issueE.getSprintId(), issueE.getProjectId(), issueE.getIssueId(), "storyPoints");
+            deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), STORY_POINTS_FIELD);
             createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
                     FIELD_STORY_POINTS, oldString, newString, null, null);
         }

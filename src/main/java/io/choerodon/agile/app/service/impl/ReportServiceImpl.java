@@ -9,8 +9,6 @@ import io.choerodon.agile.domain.agile.converter.SprintConverter;
 import io.choerodon.agile.domain.agile.entity.ReportIssueE;
 import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
-import io.choerodon.agile.infra.common.annotation.RedisCache;
-import io.choerodon.agile.infra.common.aspect.RedisCacheAspect;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -79,7 +77,7 @@ public class ReportServiceImpl implements ReportService {
     private static final String ASSIGNEE = "assignee";
     private static final String COMPONENT = "component";
     private static final String ISSUE_TYPE = "typeCode";
-    private static final String FIX_VERSION = "version";
+    private static final String VERSION = "version";
     private static final String PRIORITY = "priorityCode";
     private static final String STATUS = "statusCode";
     private static final String SPRINT = "sprint";
@@ -95,8 +93,9 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-    @Cacheable(cacheNames = "BurnDownReport", key = "'BurnDownReport' + #projectId + #sprintId + ':' + #type")
+    @Cacheable(cacheNames = "BurnDownReport", key = "'BurnDownReport' + #projectId + ':' + #sprintId + ':' + #type")
     public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
+        LOGGER.info("进入了查询燃尽图报告进行执行");
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
         return ConvertHelper.convertList(reportIssueEList.stream().
                 sorted(Comparator.comparing(ReportIssueE::getDate)).collect(Collectors.toList()), ReportIssueDTO.class);
@@ -134,6 +133,7 @@ public class ReportServiceImpl implements ReportService {
         JSONObject jsonObject = new JSONObject();
         DateFormat bf = new SimpleDateFormat("yyyy-MM-dd");
         TreeMap<String, Integer> report = new TreeMap<>();
+        //处理同一天
         reportIssueEList.forEach(reportIssueE -> {
             if (reportIssueE.getStatistical()) {
                 String date = bf.format(reportIssueE.getDate());
@@ -145,7 +145,13 @@ public class ReportServiceImpl implements ReportService {
                 }
             }
         });
+        jsonObject.put("coordinate", report);
         //需要返回给前端期望值（开启冲刺的和）
+        jsonObject.put("expectCount", handleExpectCount(reportIssueEList));
+        return jsonObject;
+    }
+
+    private Integer handleExpectCount(List<ReportIssueE> reportIssueEList) {
         Integer expectCount = 0;
         List<ReportIssueE> startReportIssue = reportIssueEList.stream().filter(reportIssueE -> "startSprint".equals(reportIssueE.getType())).collect(Collectors.toList());
         if (startReportIssue != null && !startReportIssue.isEmpty()) {
@@ -155,10 +161,9 @@ public class ReportServiceImpl implements ReportService {
                 }
             }
         }
-        jsonObject.put("coordinate", report);
-        jsonObject.put("expectCount", expectCount);
-        return jsonObject;
+        return expectCount;
     }
+
 
     @Override
     public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
@@ -304,7 +309,7 @@ public class ReportServiceImpl implements ReportService {
             default:
                 break;
         }
-        versionReportMap.put("version", versionDO);
+        versionReportMap.put(VERSION, versionDO);
         versionReportMap.put("versionReport", versionReport);
         return versionReportMap;
     }
@@ -941,7 +946,7 @@ public class ReportServiceImpl implements ReportService {
                 return handlePieChartByType(projectId, "component_id", false, false);
             case ISSUE_TYPE:
                 return handlePieChartByType(projectId, "type_code", true, true);
-            case FIX_VERSION:
+            case VERSION:
                 return handlePieChartByType(projectId, "version_id", false, false);
             case PRIORITY:
                 return handlePieChartByType(projectId, "priority_code", true, true);
@@ -1139,9 +1144,9 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "BurnDownCoordinate", key = "'BurnDownCoordinate' + #projectId + #sprintId + ':' + #type")
+    @Cacheable(cacheNames = "BurnDownCoordinate", key = "'BurnDownCoordinate' + #projectId + ':' + #sprintId + ':' + #type")
     public JSONObject queryBurnDownCoordinate(Long projectId, Long sprintId, String type) {
-        LOGGER.info("进入了方法进行执行");
+        LOGGER.info("进入了查询燃尽图坐标进行执行");
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
         return handleSameDay(reportIssueEList.stream().filter(reportIssueE -> !"endSprint".equals(reportIssueE.getType())).
                 sorted(Comparator.comparing(ReportIssueE::getDate)).collect(Collectors.toList()));

@@ -292,7 +292,7 @@
             LEFT JOIN agile_sprint asp ON asp.sprint_id = aisr.sprint_id
         WHERE
             aisr.issue_id = #{issueId} and asp.status_code != 'closed'
-            and aisr.project_id = #{sprintId}
+            and aisr.project_id = #{projectId}
     </select>
 
     <select id="queryAssigneeIssueBySprintId" parameterType="java.util.Map"

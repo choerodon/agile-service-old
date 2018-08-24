@@ -1,12 +1,9 @@
 package io.choerodon.agile.infra.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.cache.RedisCachePrefix;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,19 +13,12 @@ import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.cache.interceptor.KeyGenerator;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/8/22
  */
 @Configuration
-@EnableCaching
 public class RedisCacheConfig extends CachingConfigurerSupport {
-
-    @Autowired
-    RedisConnectionFactory redisConnectionFactory;
 
     /**
      * 配置redisTemplate
@@ -36,7 +26,7 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
      * 通过redisConnectionFactory引入redis在配置文件中的连接配置
      * */
     @Bean
-    public RedisTemplate<String,Object> redisTemplate(){
+    public RedisTemplate<String,Object> redisTemplate(RedisConnectionFactory redisConnectionFactory){
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         initDomainRedisTemplate(redisTemplate, redisConnectionFactory);
         return redisTemplate;
@@ -80,12 +70,6 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
 
     @Bean
     public RedisCacheManager cacheManager(RedisTemplate redisTemplate) {
-        //获得redis缓存管理类
-        // 开启使用缓存名称做为key前缀(这样所有同名缓存会整理在一起比较容易查找)
-//        redisCacheManager.setCachePrefix(cacheName -> "AGILE".getBytes());
-        //这里可以设置一个默认的过期时间 单位是秒
-//        redisCacheManager.setDefaultExpiration(600L);
-        // 设置缓存的过期时间 单位是秒
         return new RedisCacheManager(redisTemplate);
     }
 

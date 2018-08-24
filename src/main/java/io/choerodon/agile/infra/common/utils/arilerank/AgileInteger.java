@@ -241,6 +241,7 @@ public class AgileInteger implements Comparable<AgileInteger> {
         return this.mag.length;
     }
 
+    @Override
     public int compareTo(AgileInteger o) {
         if (this.sign == -1) {
             return compare(o);
@@ -374,6 +375,7 @@ public class AgileInteger implements Comparable<AgileInteger> {
         }
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof AgileInteger)) {
             return false;
@@ -383,10 +385,12 @@ public class AgileInteger implements Comparable<AgileInteger> {
         }
     }
 
+    @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this, false);
     }
 
+    @Override
     public String toString() {
         return this.format();
     }

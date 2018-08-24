@@ -10,22 +10,28 @@ public abstract class AgileNumeralSystem {
     private static final String DIGIT_ERROR = "error.rank.notValidDigit";
 
     public static final AgileNumeralSystem BASE_10 = new AgileNumeralSystem() {
+
+        @Override
         public int getBase() {
             return 10;
         }
 
+        @Override
         public char getPositiveChar() {
             return '+';
         }
 
+        @Override
         public char getNegativeChar() {
             return '-';
         }
 
+        @Override
         public char getRadixPointChar() {
             return '.';
         }
 
+        @Override
         public int toDigit(char ch) {
             if (ch >= 48 && ch <= 57) {
                 return ch - 48;
@@ -34,6 +40,7 @@ public abstract class AgileNumeralSystem {
             }
         }
 
+        @Override
         public char toChar(int digit) {
             return (char) (digit + 48);
         }
@@ -41,22 +48,27 @@ public abstract class AgileNumeralSystem {
     public static final AgileNumeralSystem BASE_36 = new AgileNumeralSystem() {
         private final char[] digits = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
 
+        @Override
         public int getBase() {
             return 36;
         }
 
+        @Override
         public char getPositiveChar() {
             return '+';
         }
 
+        @Override
         public char getNegativeChar() {
             return '-';
         }
 
+        @Override
         public char getRadixPointChar() {
             return ':';
         }
 
+        @Override
         public int toDigit(char ch) {
             if (ch >= 48 && ch <= 57) {
                 return ch - 48;
@@ -67,6 +79,7 @@ public abstract class AgileNumeralSystem {
             }
         }
 
+        @Override
         public char toChar(int digit) {
             return this.digits[digit];
         }
@@ -74,22 +87,27 @@ public abstract class AgileNumeralSystem {
     public static final AgileNumeralSystem BASE_64 = new AgileNumeralSystem() {
         private final char[] digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ^_abcdefghijklmnopqrstuvwxyz".toCharArray();
 
+        @Override
         public int getBase() {
             return 64;
         }
 
+        @Override
         public char getPositiveChar() {
             return '+';
         }
 
+        @Override
         public char getNegativeChar() {
             return '-';
         }
 
+        @Override
         public char getRadixPointChar() {
             return ':';
         }
 
+        @Override
         public int toDigit(char ch) {
             if (ch >= 48 && ch <= 57) {
                 return ch - 48;
@@ -106,6 +124,7 @@ public abstract class AgileNumeralSystem {
             }
         }
 
+        @Override
         public char toChar(int digit) {
             return this.digits[digit];
         }

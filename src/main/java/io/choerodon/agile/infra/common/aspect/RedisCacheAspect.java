@@ -11,9 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -35,7 +32,7 @@ import java.util.regex.Pattern;
 public class RedisCacheAspect {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisCacheAspect.class);
-    private static Pattern NUMBER_PATTERN = Pattern.compile("[0-9]+");
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("[0-9]+");
 
     @Autowired
     private RedisUtil redisUtil;
@@ -61,10 +58,10 @@ public class RedisCacheAspect {
             if (redisCache != null) {
                 switch (redisCache.operation()) {
                     case ADD:
-                        result = handleAddCache(redisCache, method, result, pjp);
+                        result = handleAddCache(redisCache, method, pjp);
                         break;
                     case REMOVE:
-                        result = handleRemoveCache(redisCache, method, result, pjp);
+                        result = handleRemoveCache(redisCache, method, pjp);
                         break;
                     default:
                         result = pjp.proceed();
@@ -79,7 +76,7 @@ public class RedisCacheAspect {
         return result;
     }
 
-    private Object handleRemoveCache(RedisCache redisCache, Method method, Object result, ProceedingJoinPoint pjp) throws Throwable {
+    private Object handleRemoveCache(RedisCache redisCache, Method method, ProceedingJoinPoint pjp) throws Throwable {
         if (redisCache.removeKeys().length != 0) {
             Object[] args = pjp.getArgs();
             //需要移除的正则key
@@ -90,17 +87,16 @@ public class RedisCacheAspect {
             for (String str : keys) {
                 str = parseKey(str, args, standardEvaluationContext, parser);
                 Set<String> caches = redisUtil.keys(str);
-                LOGGER.info("**********从Redis中删除数据**********\nRedis的KEY值:{},缓存匹配数量:{}\n", str, caches.size());
+                LOGGER.info("清除redis缓存\nRedis的KEY值:{},缓存匹配数量:{}\n", str, caches.size());
                 if (!caches.isEmpty()) {
                     redisUtil.deleteByKey(caches);
                 }
             }
         }
-        result = pjp.proceed();
-        return result;
+        return pjp.proceed();
     }
 
-    private Object handleAddCache(RedisCache redisCache, Method method, Object result, ProceedingJoinPoint pjp) throws Throwable {
+    private Object handleAddCache(RedisCache redisCache, Method method,ProceedingJoinPoint pjp) throws Throwable {
         Object[] args = pjp.getArgs();
         StringBuilder sb = new StringBuilder();
         String key;
@@ -117,11 +113,9 @@ public class RedisCacheAspect {
         }
         Object object = redisUtil.get(key);
         if (object != null) {
-            LOGGER.info("**********从Redis中查到了数据**********\nRedis的KEY值:{}\nRedis的VALUE值{}", sb.toString(), object.toString());
             return object;
         } else {
-            result = pjp.proceed();
-            LOGGER.info("**********没有从Redis中查到数据**********");
+            Object result = pjp.proceed();
             //处理时效
             if (redisCache.ttl() == 0) {
                 redisUtil.set(sb.toString(), result);

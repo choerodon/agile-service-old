@@ -1,6 +1,5 @@
 package io.choerodon.agile.infra.common.utils;
 
-import io.choerodon.agile.infra.common.aspect.LogDataAspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -117,7 +116,7 @@ public class RedisUtil {
      * @param key key
      * @param hm  要存入的hash表
      */
-    public void hset(String key, HashMap<String, Object> hm) {
+    public void hset(String key, Map<String, Object> hm) {
         hashOperations.putAll(key, hm);
     }
 
@@ -130,13 +129,13 @@ public class RedisUtil {
         try {
             for (String key : keys) {
                 Set<String> caches = keys(key);
-                LOGGER.info("**********从Redis中删除数据**********\nRedis的KEY值:{},缓存匹配数量:{}\n", key, caches.size());
+                LOGGER.info("清除redis缓存,Redis的KEY值:{},缓存匹配数量:{}\n", key, caches.size());
                 if (!caches.isEmpty()) {
                     deleteByKey(caches);
                 }
             }
         } catch (Exception e) {
-            LOGGER.warn("缓存删除失败，失败原因:{}",e);
+            LOGGER.warn("缓存删除失败，失败原因:{}", e);
         }
 
     }

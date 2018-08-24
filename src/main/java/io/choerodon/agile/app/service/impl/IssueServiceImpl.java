@@ -13,9 +13,9 @@ import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
-import io.choerodon.agile.infra.common.annotation.RedisCache;
 import io.choerodon.agile.infra.common.utils.ExcelUtil;
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil;
+import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.mapper.*;
@@ -36,8 +36,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -140,6 +138,8 @@ public class IssueServiceImpl implements IssueService {
     private StoryMapIssueAssembler storyMapIssueAssembler;
     @Autowired
     private QuickFilterMapper quickFilterMapper;
+    @Autowired
+    private RedisUtil redisUtil;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -166,8 +166,8 @@ public class IssueServiceImpl implements IssueService {
     private static final String RANK_FIELD = "rank";
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
-    private static final String[] COLUMN_NAMES = {"编码", "概述", "类型", "所属项目", "经办人", "报告人", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本"};
-    private static final int[] COLUMN_WIDTH = {6 * 2 * 256, 17 * 2 * 256, 6 * 2 * 256, 10 * 2 * 256, 6 * 2 * 256, 6 * 2 * 256, 8 * 2 * 256, 17 * 2 * 256, 10 * 2 * 256, 10 * 2 * 256, 4 * 2 * 256, 7 * 2 * 256, 4 * 2 * 256, 17 * 2 * 256};
+    private static final String[] FIELDS_NAME = {"编码", "概述", "类型", "所属项目", "经办人", "报告人", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本"};
+    private static final String[] FIELDS = {"issueNum", "summary", "typeName", "projectName", "assigneeName", "reporterName", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", REMAIN_TIME_FIELD, "versionName"};
     private static final String[] SUB_COLUMN_NAMES = {"关键字", "概述", "类型", "状态", "经办人"};
     private static final String EXPORT_ERROR = "error.issue.export";
     private static final String PROJECT_ERROR = "error.project.notFound";
@@ -406,6 +406,9 @@ public class IssueServiceImpl implements IssueService {
             //删除日志信息
             dataLogDeleteByIssueId(projectId, issueId);
             issueRepository.delete(projectId, issueE.getIssueId());
+            //delete cache
+            redisUtil.deleteRedisCache(new String[]{"BurnDownCoordinate" + projectId + ':' + "*",
+                    "BurnDownReport" + projectId + ':' + "*"});
             //删除issue发送消息
             IssuePayload issuePayload = new IssuePayload();
             issuePayload.setIssueId(issueId);
@@ -921,10 +924,6 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response) {
-//        String charsetName = "UTF-8";
-//        if (request.getHeader("User-Agent").contains("Firefox")) {
-//            charsetName = "GB2312";
-//        }
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
         projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
@@ -935,7 +934,7 @@ public class IssueServiceImpl implements IssueService {
         }
         project.setCode(projectInfoDO.getProjectCode());
         List<ExportIssuesDTO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId, searchDTO.getSearchArgs(),
-                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent(),projectCode));
+                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent(), projectCode));
         List<Long> issueIds = exportIssues.stream().map(ExportIssuesDTO::getIssueId).collect(Collectors.toList());
         if (!issueIds.isEmpty()) {
             Map<Long, List<SprintNameDO>> closeSprintNames = issueMapper.querySprintNameByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(SprintNameDO::getIssueId));
@@ -953,9 +952,7 @@ public class IssueServiceImpl implements IssueService {
                 exportIssue.setInfluenceVersionName(influenceVersionName);
             });
         }
-        String[] fieldsName = {"编码", "概述", "类型", "所属项目", "经办人", "报告人", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本"};
-        String[] fields = {"issueNum", "summary", "typeName", "projectName", "assigneeName", "reporterName", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", "remainingTime", "versionName"};
-        ExcelUtil.export(exportIssues, ExportIssuesDTO.class, fieldsName, fields, project.getName(), response);
+        ExcelUtil.export(exportIssues, ExportIssuesDTO.class, FIELDS_NAME, FIELDS, project.getName(), response);
     }
 
 
