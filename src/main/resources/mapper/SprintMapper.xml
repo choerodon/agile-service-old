@@ -155,7 +155,7 @@
         WHERE sp.project_id = #{projectId} AND sp.status_code = 'started'
     </sql>
 
-    <select id="queryActiveSprintNoIssueIds" resultMap="SprintSearchDO">
+    <select id="queryActiveSprintNoIssueIds" resultType="io.choerodon.agile.infra.dataobject.SprintSearchDO">
         select
         spa.*
         from
@@ -222,14 +222,14 @@
         ) asp1 ON asp1.issue_id = ai2.issue_id
         LEFT JOIN
         (
-            SELECT
-            avir.version_id,
-            avir.issue_id,
-            apv.NAME
-            FROM
-            agile_version_issue_rel avir
-            LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
-            where	avir.relation_type = 'fix'
+        SELECT
+        avir.version_id,
+        avir.issue_id,
+        apv.NAME
+        FROM
+        agile_version_issue_rel avir
+        LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
+        where avir.relation_type = 'fix'
         ) apv1
         ON apv1.issue_id = ai2.issue_id
 
