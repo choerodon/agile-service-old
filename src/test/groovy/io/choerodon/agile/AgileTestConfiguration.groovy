@@ -296,6 +296,7 @@ class AgileTestConfiguration {
         versionIssueRelDO.projectId = 1L
         versionIssueRelDO.issueId = 2L
         versionIssueRelDO.versionId = 1L
+        versionIssueRelDO.relationType = "fix"
         versionIssueRelMapper.insert(versionIssueRelDO)
     }
 
