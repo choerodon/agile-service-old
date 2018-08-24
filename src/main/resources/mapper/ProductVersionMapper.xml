@@ -312,7 +312,7 @@
     </select>
 
     <select id="queryVersionIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
-        SELECT avir.issue_id, avir.relation_type,apv.name
+        SELECT avir.issue_id, avir.relation_type,apv.name,avir.version_id
         FROM agile_version_issue_rel avir left join agile_product_version apv on apv.version_id = avir.version_id
         WHERE avir.project_id = #{projectId}
         AND avir.version_id = #{versionId}
