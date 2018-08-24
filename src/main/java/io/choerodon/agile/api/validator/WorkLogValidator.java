@@ -29,10 +29,8 @@ public class WorkLogValidator {
         if (!projectId.equals(workLogDTO.getProjectId())) {
             throw new CommonException(ERROR_PROJECTID_NOTNULL);
         }
-        if (workLogDTO.getIssueId() != null && workLogMapper.selectByPrimaryKey(workLogDTO.getIssueId()) == null) {
-            if (issueDO == null) {
-                throw new CommonException(ERROR_ISSUE_GET);
-            }
+        if (issueDO == null) {
+            throw new CommonException(ERROR_ISSUE_GET);
         }
     }
 
