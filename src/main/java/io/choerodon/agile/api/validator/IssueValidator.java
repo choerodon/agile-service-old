@@ -12,8 +12,10 @@ public class IssueValidator {
 
     private static final String ERROR_ISSUE_GET = "error.issue.get";
     private static final String ERROR_TYPECODE_ISSUBTASK = "error.typeCode.isSubtask";
+    private static final String ERROR_PARENT_ISSUE_ISSUBTASK = "error.parentIssue.isSubtask";
+    private static final String ERROR_PARENT_ISSUE_ISTEST = "error.parentIssue.isTest";
     private static final String ERROR_SPRINTIDANDVERSIONID_ALLNOTNULL = "error.sprintIdAndVersionId.allNotNull";
-
+    private static final String ERROR_PARENT_ISSUE_NOT_EXIST = "error.parentIssue.get";
 
     private IssueValidator() {}
 
@@ -23,13 +25,23 @@ public class IssueValidator {
         }
     }
 
-    public static void checkParentIdUpdate(IssueDO issueDO) {
+    public static void checkParentIdUpdate(IssueDO issueDO, IssueDO parentIssueDO) {
         if (issueDO == null) {
             throw new CommonException(ERROR_ISSUE_GET);
+        }
+        if (parentIssueDO == null) {
+            throw new CommonException(ERROR_PARENT_ISSUE_NOT_EXIST);
         }
         String typeCode = issueDO.getTypeCode();
         if (!"sub_task".equals(typeCode)) {
             throw new CommonException(ERROR_TYPECODE_ISSUBTASK);
+        }
+        typeCode = parentIssueDO.getTypeCode();
+        if ("sub_task".equals(typeCode)) {
+            throw new CommonException(ERROR_PARENT_ISSUE_ISSUBTASK);
+        }
+        if ("issue_test".equals(typeCode)) {
+            throw new CommonException(ERROR_PARENT_ISSUE_ISTEST);
         }
     }
 
