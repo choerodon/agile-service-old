@@ -828,27 +828,115 @@ class IssueControllerSpec extends Specification {
 //    }
 
     def "updateIssueParentId"() {
-        when:
+
+        given:
+        IssueDO testIssue = new IssueDO()
+        testIssue.issueNum = issueMapper.selectAll().size() + 1
+        testIssue.projectId = 1L
+        testIssue.priorityCode = 'high'
+        testIssue.reporterId = 1L
+        testIssue.statusId = 1L
+        testIssue.typeCode = 'issue_test'
+        testIssue.summary = 'issue-test'
+        issueMapper.insert(testIssue)
+        issues.add(testIssue)
+
         IssueUpdateParentIdDTO issueUpdateParentIdDTO = new IssueUpdateParentIdDTO()
-        issueUpdateParentIdDTO.issueId = issueId
-        issueUpdateParentIdDTO.objectVersionNumber = objectVersionNumber
-        issueUpdateParentIdDTO.parentIssueId = parentIssueId
-        HttpEntity<IssueUpdateParentIdDTO> issueUpdateParentIdDTOHttpEntity = new HttpEntity<>(issueUpdateParentIdDTO)
-        def entity = restTemplate.exchange("/v1/projects/1/issues/update_parent",
+        def subTaskIssue = issues.find {
+            it.typeCode == "sub_task"
+        }
+        issueUpdateParentIdDTO.issueId = subTaskIssue.issueId
+        issueUpdateParentIdDTO.objectVersionNumber = subTaskIssue.objectVersionNumber
+        issueUpdateParentIdDTO.parentIssueId = Integer.MAX_VALUE
+        def issueUpdateParentIdDTOHttpEntity = new HttpEntity<>(issueUpdateParentIdDTO)
+        def resultFailure = restTemplate.exchange("/v1/projects/1/issues/update_parent",
                 HttpMethod.POST,
                 issueUpdateParentIdDTOHttpEntity,
-                IssueDTO.class,
+                String.class,
+                projectId
+        )
+        assert resultFailure.statusCode.is2xxSuccessful()
+        JSONObject exceptionInfo = JSONObject.parse(resultFailure.body)
+        assert exceptionInfo.get("failed").toString() == "true"
+        assert exceptionInfo.get("code").toString() == "error.parentIssue.get"
+
+        issueUpdateParentIdDTO.parentIssueId = issues.get(0).issueId
+        issueUpdateParentIdDTO.issueId = Integer.MAX_VALUE
+        issueUpdateParentIdDTOHttpEntity = new HttpEntity<>(issueUpdateParentIdDTO)
+        resultFailure = restTemplate.exchange("/v1/projects/1/issues/update_parent",
+                HttpMethod.POST,
+                issueUpdateParentIdDTOHttpEntity,
+                String.class,
+                projectId
+        )
+        assert resultFailure.statusCode.is2xxSuccessful()
+        exceptionInfo = JSONObject.parse(resultFailure.body)
+        assert exceptionInfo.get("failed").toString() == "true"
+        assert exceptionInfo.get("code").toString() == "error.issue.get"
+
+        issueUpdateParentIdDTO.issueId = issues.find {
+            it.typeCode != "sub_task"
+        }.issueId
+        issueUpdateParentIdDTOHttpEntity = new HttpEntity<>(issueUpdateParentIdDTO)
+        resultFailure = restTemplate.exchange("/v1/projects/1/issues/update_parent",
+                HttpMethod.POST,
+                issueUpdateParentIdDTOHttpEntity,
+                String.class,
+                projectId
+        )
+        assert resultFailure.statusCode.is2xxSuccessful()
+        exceptionInfo = JSONObject.parse(resultFailure.body)
+        assert exceptionInfo.get("failed").toString() == "true"
+        assert exceptionInfo.get("code").toString() == "error.typeCode.isSubtask"
+
+        issueUpdateParentIdDTO.issueId = subTaskIssue.issueId
+        issueUpdateParentIdDTO.parentIssueId = issues.find {
+            it.typeCode == "sub_task" && it.issueId != issueUpdateParentIdDTO.issueId
+        }.issueId
+        issueUpdateParentIdDTOHttpEntity = new HttpEntity<>(issueUpdateParentIdDTO)
+        resultFailure = restTemplate.exchange("/v1/projects/1/issues/update_parent",
+                HttpMethod.POST,
+                issueUpdateParentIdDTOHttpEntity,
+                String.class,
+                projectId
+        )
+        assert resultFailure.statusCode.is2xxSuccessful()
+        exceptionInfo = JSONObject.parse(resultFailure.body)
+        assert exceptionInfo.get("failed").toString() == "true"
+        assert exceptionInfo.get("code").toString() == "error.parentIssue.isSubtask"
+
+        issueUpdateParentIdDTO.parentIssueId = issues.find {
+            it.typeCode == "issue_test"
+        }.issueId
+        issueUpdateParentIdDTOHttpEntity = new HttpEntity<>(issueUpdateParentIdDTO)
+        resultFailure = restTemplate.exchange("/v1/projects/1/issues/update_parent",
+                HttpMethod.POST,
+                issueUpdateParentIdDTOHttpEntity,
+                String.class,
+                projectId
+        )
+        assert resultFailure.statusCode.is2xxSuccessful()
+        exceptionInfo = JSONObject.parse(resultFailure.body)
+        assert exceptionInfo.get("failed").toString() == "true"
+        assert exceptionInfo.get("code").toString() == "error.parentIssue.isTest"
+
+        issueUpdateParentIdDTO.parentIssueId = issues.find {
+            it.typeCode != "issue_test" && it.typeCode != "sub_task"
+        }.issueId
+
+        when:
+        issueUpdateParentIdDTOHttpEntity = new HttpEntity<>(issueUpdateParentIdDTO)
+        def resultSuccess = restTemplate.exchange("/v1/projects/1/issues/update_parent",
+                HttpMethod.POST,
+                issueUpdateParentIdDTOHttpEntity,
+                IssueUpdateParentIdDTO.class,
                 projectId
         )
 
         then:
-        entity.statusCode.is2xxSuccessful()
-        entity.body.issueId == issueId
-        entity.body.parentIssueId == parentIssueId
-
-        where:
-        issueId                            | objectVersionNumber                            | parentIssueId
-        issues.get(issuesSize - 1).issueId | issues.get(issuesSize - 1).objectVersionNumber | issues.get(0).issueId
+        resultSuccess.statusCode.is2xxSuccessful()
+        resultSuccess.body.issueId == issueUpdateParentIdDTO.issueId
+        resultSuccess.body.parentIssueId == issueUpdateParentIdDTO.parentIssueId
 
     }
 

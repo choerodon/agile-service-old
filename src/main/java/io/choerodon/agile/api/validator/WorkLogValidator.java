@@ -3,6 +3,7 @@ package io.choerodon.agile.api.validator;
 
 import io.choerodon.agile.api.dto.WorkLogDTO;
 import io.choerodon.agile.infra.mapper.WorkLogMapper;
+import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,13 +22,14 @@ public class WorkLogValidator {
     @Autowired
     private static WorkLogMapper workLogMapper;
 
-    private WorkLogValidator() {}
+    private WorkLogValidator() {
+    }
 
-    public static void checkCreateWorkLog(Long projectId, WorkLogDTO workLogDTO) {
+    public static void checkCreateWorkLog(Long projectId, WorkLogDTO workLogDTO, IssueDO issueDO) {
         if (!projectId.equals(workLogDTO.getProjectId())) {
             throw new CommonException(ERROR_PROJECTID_NOTNULL);
         }
-        if (workLogDTO.getIssueId() != null && workLogMapper.selectByPrimaryKey(workLogDTO.getIssueId()) == null) {
+        if (issueDO == null) {
             throw new CommonException(ERROR_ISSUE_GET);
         }
     }
@@ -40,4 +42,5 @@ public class WorkLogValidator {
             throw new CommonException(ERROR_OBJECTVERSIONNUMBER_ISNULL);
         }
     }
+
 }

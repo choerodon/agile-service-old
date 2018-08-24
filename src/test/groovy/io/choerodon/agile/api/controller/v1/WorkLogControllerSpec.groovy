@@ -1,9 +1,9 @@
 package io.choerodon.agile.api.controller.v1
 
+import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.WorkLogDTO
 import io.choerodon.agile.domain.agile.repository.UserRepository
-import io.choerodon.agile.infra.dataobject.IssueDO
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.IssueMapper
@@ -48,6 +48,7 @@ class WorkLogControllerSpec extends Specification {
     def workLogDTOList = []
 
     def setup() {
+
         given:
         UserDO userDO = new UserDO()
         userDO.setRealName("管理员")
@@ -56,11 +57,13 @@ class WorkLogControllerSpec extends Specification {
     }
 
     def "createWorkLog"() {
+
         given:
         WorkLogDTO workLogDTO = new WorkLogDTO()
         workLogDTO.projectId = projectId
         def workTime = 3
         def issueId = issueMapper.selectAll().get(0).issueId
+
         when:
         def now = System.currentTimeMillis()
         def nowDate = new Date(now - now % 1000)
@@ -68,82 +71,141 @@ class WorkLogControllerSpec extends Specification {
         workLogDTO.startDate = nowDate
         workLogDTO.workTime = workTime
         def workLogDTOEntity = new HttpEntity<>(workLogDTO)
-        def result = restTemplate.exchange("/v1/projects/$projectId/work_log",
+        def resultSuccess = restTemplate.exchange("/v1/projects/$projectId/work_log",
                 HttpMethod.POST,
                 workLogDTOEntity,
                 WorkLogDTO.class
         )
+        workLogDTO.issueId = Integer.MAX_VALUE
+        workLogDTOEntity = new HttpEntity<>(workLogDTO)
+        def resultFailure = restTemplate.exchange("/v1/projects/$projectId/work_log",
+                HttpMethod.POST,
+                workLogDTOEntity,
+                String.class
+        )
+
         then:
-        result.statusCode.is2xxSuccessful()
-        result.body.workTime == workTime
-        result.body.startDate == nowDate
-        result.body.issueId == issueId
+        resultSuccess.statusCode.is2xxSuccessful()
+        resultSuccess.body.workTime == workTime
+        resultSuccess.body.startDate == nowDate
+        resultSuccess.body.issueId == issueId
+
+        resultFailure.statusCode.is2xxSuccessful()
+        JSONObject exceptionInfo = JSONObject.parse(resultFailure.body)
+        exceptionInfo.get("failed").toString() == "true"
+
         and:
-        workLogDTOList << ConvertHelper.convert(workLogMapper.selectByPrimaryKey(result.body.logId), WorkLogDTO)
+        workLogDTOList << ConvertHelper.convert(workLogMapper.selectByPrimaryKey(resultSuccess.body.logId), WorkLogDTO)
     }
 
     def "updateWorkLog"() {
+
         given:
         WorkLogDTO workLogDTO = new WorkLogDTO()
         workLogDTO.projectId = projectId
+        def workLogDTOEntity = new HttpEntity<>(workLogDTO)
+        def resultFailure = restTemplate.exchange("/v1/projects/{projectId}/work_log/{logId}",
+                HttpMethod.PATCH,
+                workLogDTOEntity,
+                String.class,
+                projectId,
+                workLog.logId
+        )
+        assert resultFailure.statusCode.is2xxSuccessful()
+        JSONObject exceptionInfo = JSONObject.parse(resultFailure.body)
+        assert exceptionInfo.get("failed").toString() == "true"
+        assert exceptionInfo.get("code").toString() == "error.logId.isNull"
+
         when:
         workLogDTO.issueId = workLog.issueId
         workLogDTO.startDate = workLog.startDate
         workLogDTO.workTime = workLog.workTime + 1
         workLogDTO.logId = workLog.logId
         workLogDTO.objectVersionNumber = workLog.objectVersionNumber
-        def workLogDTOEntity = new HttpEntity<>(workLogDTO)
-        def result = restTemplate.exchange("/v1/projects/$projectId/work_log/${workLog.logId}",
+        workLogDTOEntity = new HttpEntity<>(workLogDTO)
+        def resultSuccess = restTemplate.exchange("/v1/projects/{projectId}/work_log/{logId}",
                 HttpMethod.PATCH,
                 workLogDTOEntity,
-                WorkLogDTO.class
+                WorkLogDTO.class,
+                projectId,
+                workLog.logId
         )
+
         then:
-        result.statusCode.is2xxSuccessful()
-        result.body.workTime == workLog.workTime + 1
-        result.body.startDate == workLog.startDate
-        result.body.issueId == workLog.issueId
-        result.body.logId == workLog.logId
-        and:
+        resultSuccess.statusCode.is2xxSuccessful()
+        resultSuccess.body.workTime == workLog.workTime + 1
+        resultSuccess.body.startDate == workLog.startDate
+        resultSuccess.body.issueId == workLog.issueId
+        resultSuccess.body.logId == workLog.logId
         workLog.workTime++
+
         where:
         workLog << workLogDTOList
     }
 
     def "queryWorkLogById"() {
+
+        given:
+        def resultFailure = restTemplate.getForEntity("/v1/projects/$projectId/work_log/${Integer.MAX_VALUE}", String)
+        assert resultFailure.statusCode.is5xxServerError()
+        JSONObject exceptionInfo = JSONObject.parse(resultFailure.body)
+        assert exceptionInfo.get("exception").toString() == "java.lang.NullPointerException"
+
         when:
-        def result = restTemplate.getForEntity("/v1/projects/$projectId/work_log/${workLog.logId}", WorkLogDTO)
+        def resultSuccess = restTemplate.getForEntity("/v1/projects/$projectId/work_log/${workLog.logId}", WorkLogDTO)
+
         then:
-        result.statusCode.is2xxSuccessful()
-        result.body.logId == workLog.logId
-        result.body.issueId == workLog.issueId
-        result.body.workTime == workLog.workTime
-        result.body.startDate == workLog.startDate
+        resultSuccess.statusCode.is2xxSuccessful()
+        resultSuccess.body.logId == workLog.logId
+        resultSuccess.body.issueId == workLog.issueId
+        resultSuccess.body.workTime == workLog.workTime
+        resultSuccess.body.startDate == workLog.startDate
+
         where:
         workLog << workLogDTOList
     }
 
     def "queryWorkLogListByIssueId"() {
+
         given:
         def issueId = issueMapper.selectAll().get(0).issueId
+
         when:
-        def result = restTemplate.exchange("/v1/projects/{projectId}/work_log/issue/{issue}",
+        def resultSuccess = restTemplate.exchange("/v1/projects/{projectId}/work_log/issue/{issue}",
                 HttpMethod.GET,
                 null,
-                Object.class,
+                List.class,
                 projectId,
                 issueId
         )
+        def resultFailure = restTemplate.exchange("/v1/projects/{projectId}/work_log/issue/{issue}",
+                HttpMethod.GET,
+                null,
+                List.class,
+                projectId,
+                Integer.MAX_VALUE
+        )
+
         then:
-        result.statusCode.is2xxSuccessful()
-        result.body.content.size() > 0
+        resultSuccess.statusCode.is2xxSuccessful()
+        resultSuccess.body.size() > 0
+
+        resultFailure.statusCode.is2xxSuccessful()
+        resultFailure.body.size() == 0
+
     }
 
     def "deleteWorkLog"() {
+
+        given:
+        restTemplate.delete("/v1/projects/$projectId/work_log/${Integer.MAX_VALUE}")
+
         when:
         restTemplate.delete("/v1/projects/$projectId/work_log/$logId")
+
         then:
         workLogMapper.selectByPrimaryKey(logId) == null
+
         where:
         logId << workLogDTOList.logId
     }

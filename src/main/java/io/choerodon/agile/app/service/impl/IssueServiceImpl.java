@@ -29,7 +29,6 @@ import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +44,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -1519,7 +1517,9 @@ public class IssueServiceImpl implements IssueService {
     public IssueDTO issueParentIdUpdate(Long projectId, IssueUpdateParentIdDTO issueUpdateParentIdDTO) {
         Long issueId = issueUpdateParentIdDTO.getIssueId();
         IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
-        IssueValidator.checkParentIdUpdate(issueDO);
+        Long parentIssueId = issueUpdateParentIdDTO.getParentIssueId();
+        IssueDO parentIssueDO = issueMapper.selectByPrimaryKey(parentIssueId);
+        IssueValidator.checkParentIdUpdate(issueDO, parentIssueDO);
         IssueE updateIssue = new IssueE();
         updateIssue.setIssueId(issueId);
         updateIssue.setObjectVersionNumber(issueUpdateParentIdDTO.getObjectVersionNumber());

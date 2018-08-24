@@ -1,13 +1,18 @@
 package io.choerodon.agile.api.dto;
 
+import javax.validation.constraints.NotNull;
+
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
 public class IssueUpdateParentIdDTO {
 
+    @NotNull(message = "issueId 不能为空")
     private Long issueId;
 
+    @NotNull(message = "parentIssueId 不能为空")
     private Long parentIssueId;
 
+    @NotNull(message = "objectVersionNumber 不能为空")
     private Long objectVersionNumber;
 
     public Long getIssueId() {
