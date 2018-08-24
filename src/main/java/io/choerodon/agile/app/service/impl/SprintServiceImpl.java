@@ -184,8 +184,12 @@ public class SprintServiceImpl implements SprintService {
         SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDO, null);
         List<SprintSearchDO> sprintSearchDTOS = sprintMapper.queryPlanSprintNoIssueIds(projectId);
         List<SprintSearchDTO> planSprints = sprintSearchAssembler.doListToDTO(sprintSearchDTOS, null);
-        sprintSearchs.add(activeSprint);
-        sprintSearchs.addAll(planSprints);
+        if (activeSprint != null) {
+            sprintSearchs.add(activeSprint);
+        }
+        if (planSprints != null && !planSprints.isEmpty()) {
+            sprintSearchs.addAll(planSprints);
+        }
     }
 
     private void handleSprintIssueData(List<Long> issueIds, List<SprintSearchDTO> sprintSearchs, BackLogIssueDTO backLogIssueDTO, Long projectId) {
