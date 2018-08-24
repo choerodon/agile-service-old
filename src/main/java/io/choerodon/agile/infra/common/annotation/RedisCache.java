@@ -1,7 +1,5 @@
 package io.choerodon.agile.infra.common.annotation;
 
-import org.springframework.core.annotation.AliasFor;
-
 import java.lang.annotation.*;
 
 /**
@@ -27,18 +25,12 @@ public @interface RedisCache {
     /**
      * 缓存名称数组，用于批量移除操作
      */
-    @AliasFor("value")
-    String[] cacheNames() default {};
+    String[] removeKeys() default {};
 
     /**
      * 缓存名称 默认加入方法名+参数名+项目id/有设置则为设置名称+项目id
      */
     String key() default "";
-
-    /**
-     * 项目id 项目id为空的时候不执行缓存
-     */
-    String projectId() default "";
 
     /**
      * 操作 add/remove

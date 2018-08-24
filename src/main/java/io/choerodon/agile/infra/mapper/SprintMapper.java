@@ -63,13 +63,22 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     List<Long> queryAllRankIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    List<Long> queryAssigneeIdsByIssueIds( @Param("issueIds")List<Long> issueIds);
+    List<Long> queryAssigneeIdsByIssueIds(@Param("issueIds") List<Long> issueIds);
 
-    List<IssueSearchDO> queryBacklogIssues(@Param("projectId")Long projectId,@Param("issueIds")List<Long> issueIds);
+    List<IssueSearchDO> queryBacklogIssues(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-    SprintSearchDO queryActiveSprintNoIssueIds(@Param("projectId")Long projectId);
+    SprintSearchDO queryActiveSprintNoIssueIds(@Param("projectId") Long projectId);
 
     List<SprintSearchDO> queryPlanSprintNoIssueIds(@Param("projectId")Long projectId);
 
     List<SprintDO> queryUnClosedSprint(Long projectId);
+
+    /**
+     * 查询issueId没有关闭的所属冲刺id
+     *
+     * @param issueId   issueId
+     * @param projectId projectId
+     * @return sprintId
+     */
+    Long queryNotCloseSprintIdByIssueId(@Param("issueId") Long issueId, @Param("projectId") Long projectId);
 }

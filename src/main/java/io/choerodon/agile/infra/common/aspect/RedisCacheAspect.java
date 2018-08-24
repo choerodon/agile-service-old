@@ -20,7 +20,11 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author dinghuang123@gmail.com
@@ -31,19 +35,18 @@ import java.util.Set;
 public class RedisCacheAspect {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisCacheAspect.class);
+    private static Pattern NUMBER_PATTERN = Pattern.compile("[0-9]+");
 
     @Autowired
     private RedisUtil redisUtil;
 
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
 
-    LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
+    private static LocalVariableTableParameterNameDiscoverer u = new LocalVariableTableParameterNameDiscoverer();
 
     /**
      * 定义拦截规则：拦截Spring管理的后缀为RepositoryImpl的bean中带有@DataLog注解的方法。
      */
-    @Pointcut("@annotation(io.choerodon.agile.infra.common.annotation.RedisCache)")
+    @Pointcut("(execution(* *.*(..)) && @annotation(io.choerodon.agile.infra.common.annotation.RedisCache))")
     public void redisCacheMethodPointcut() {
         throw new UnsupportedOperationException();
     }
@@ -56,27 +59,16 @@ public class RedisCacheAspect {
         RedisCache redisCache = method.getAnnotation(RedisCache.class);
         try {
             if (redisCache != null) {
-                EvaluationContext context = new StandardEvaluationContext();
-                String[] params = discoverer.getParameterNames(method);
-                Object[] args = pjp.getArgs();
-                for (int len = 0; len < params.length; len++) {
-                    context.setVariable(params[len], args[len]);
-                }
-                ExpressionParser parser = new SpelExpressionParser();
-                Expression expression = parser.parseExpression(redisCache.projectId());
-                Long projectId = expression.getValue(context, Long.class);
-                if (projectId != 0) {
-                    switch (redisCache.operation()) {
-                        case ADD:
-                            result = handleAddCache(redisCache, method, result, args, projectId, pjp);
-                            break;
-                        case REMOVE:
-                            result = handleRemoveCache(redisCache, result, pjp, projectId);
-                            break;
-                        default:
-                            result = pjp.proceed();
-                            break;
-                    }
+                switch (redisCache.operation()) {
+                    case ADD:
+                        result = handleAddCache(redisCache, method, result, pjp);
+                        break;
+                    case REMOVE:
+                        result = handleRemoveCache(redisCache, method, result, pjp);
+                        break;
+                    default:
+                        result = pjp.proceed();
+                        break;
                 }
             } else {
                 result = pjp.proceed();
@@ -87,12 +79,18 @@ public class RedisCacheAspect {
         return result;
     }
 
-    private Object handleRemoveCache(RedisCache redisCache, Object result, ProceedingJoinPoint pjp, Long projectId) throws Throwable {
-        if (redisCache.cacheNames().length != 0) {
-            for (String str : redisCache.cacheNames()) {
-                LOGGER.info("**********从Redis中删除数据**********\nRedis的KEY值:{}", str + projectId);
-                String pattern = str + "(" + projectId + ")" + "*";
-                Set<String> caches = redisUtil.keys(pattern);
+    private Object handleRemoveCache(RedisCache redisCache, Method method, Object result, ProceedingJoinPoint pjp) throws Throwable {
+        if (redisCache.removeKeys().length != 0) {
+            Object[] args = pjp.getArgs();
+            //需要移除的正则key
+            String[] keys = redisCache.removeKeys();
+            //使用SPEL进行key的解析
+            ExpressionParser parser = new SpelExpressionParser();
+            StandardEvaluationContext standardEvaluationContext = getContext(method, args);
+            for (String str : keys) {
+                str = parseKey(str, args, standardEvaluationContext, parser);
+                Set<String> caches = redisUtil.keys(str);
+                LOGGER.info("**********从Redis中删除数据**********\nRedis的KEY值:{},缓存匹配数量:{}\n", str, caches.size());
                 if (!caches.isEmpty()) {
                     redisUtil.deleteByKey(caches);
                 }
@@ -102,17 +100,21 @@ public class RedisCacheAspect {
         return result;
     }
 
-    private Object handleAddCache(RedisCache redisCache, Method method, Object result, Object[] args, Long projectId, ProceedingJoinPoint pjp) throws Throwable {
+    private Object handleAddCache(RedisCache redisCache, Method method, Object result, ProceedingJoinPoint pjp) throws Throwable {
+        Object[] args = pjp.getArgs();
         StringBuilder sb = new StringBuilder();
+        String key;
         if ("".equals(redisCache.key())) {
             sb.append(method.getName());
+            for (Object obj : args) {
+                sb.append(obj.toString());
+            }
+            key = sb.toString();
         } else {
-            sb.append(redisCache.key()).append("(").append(projectId).append(")");
+            ExpressionParser parser = new SpelExpressionParser();
+            StandardEvaluationContext standardEvaluationContext = getContext(method, args);
+            key = parseKey(redisCache.key(), args, standardEvaluationContext, parser);
         }
-        for (Object obj : args) {
-            sb.append(obj.toString());
-        }
-        String key = sb.toString();
         Object object = redisUtil.get(key);
         if (object != null) {
             LOGGER.info("**********从Redis中查到了数据**********\nRedis的KEY值:{}\nRedis的VALUE值{}", sb.toString(), object.toString());
@@ -128,6 +130,52 @@ public class RedisCacheAspect {
             }
             return result;
         }
+    }
+
+    /**
+     * 获取缓存的key
+     *
+     * @param key    key 定义在注解上，支持SPEL表达式
+     * @param args   args
+     * @param parser parser
+     * @return String
+     */
+    private String parseKey(String key, Object[] args, StandardEvaluationContext context, ExpressionParser parser) {
+        //获取#p0这样的表达式
+        List<String> pList = descFormat(key);
+        //将p0作为参数放入SPEL上下文中
+        for (String p : pList) {
+            context.setVariable(p.substring(1), args[Integer.valueOf(p.substring(2))]);
+        }
+        return parser.parseExpression(key).getValue(context, String.class);
+    }
+
+    private StandardEvaluationContext getContext(Method method, Object[] args) {
+        //获取被拦截方法参数名列表(使用Spring支持类库)
+        String[] paraNameArr = u.getParameterNames(method);
+        //SPEL上下文
+        StandardEvaluationContext context = new StandardEvaluationContext();
+        //把方法参数放入SPEL上下文中
+        for (int i = 0; i < paraNameArr.length; i++) {
+            context.setVariable(paraNameArr[i], args[i]);
+        }
+        return context;
+    }
+
+    /**
+     * 提取出#p[数字]这样的表达式
+     *
+     * @param desc desc
+     * @return List
+     */
+    private static List<String> descFormat(String desc) {
+        List<String> list = new ArrayList<>();
+        Matcher matcher = NUMBER_PATTERN.matcher(desc);
+        while (matcher.find()) {
+            String t = matcher.group(0);
+            list.add(t);
+        }
+        return list;
     }
 
 

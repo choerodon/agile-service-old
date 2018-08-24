@@ -13,6 +13,7 @@ import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
+import io.choerodon.agile.infra.common.annotation.RedisCache;
 import io.choerodon.agile.infra.common.utils.ExcelUtil;
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil;
 import io.choerodon.agile.infra.dataobject.*;
@@ -446,12 +447,6 @@ public class IssueServiceImpl implements IssueService {
         return queryIssueSub(subIssueE.getProjectId(), issueId);
     }
 
-    @Caching(evict = {@CacheEvict(cacheNames = "BurnDownCoordinate", key = "'BurnDownCoordinate' + #projectId + #sprintId + 'remainingEstimatedTime'"),
-            @CacheEvict(cacheNames = "BurnDownCoordinate", key = "'BurnDownCoordinate' + #projectId + #sprintId + 'storyPoints'"),
-            @CacheEvict(cacheNames = "BurnDownCoordinate", key = "'BurnDownCoordinate' + #projectId + #sprintId + 'issueCount'"),
-            @CacheEvict(cacheNames = "BurnDownReport", key = "'BurnDownReport' + #projectId + #sprintId + 'issueCount'"),
-            @CacheEvict(cacheNames = "BurnDownReport", key = "'BurnDownReport' + #projectId + #sprintId + 'storyPoints'"),
-            @CacheEvict(cacheNames = "BurnDownReport", key = "'BurnDownReport' + #projectId + #sprintId + 'remainingEstimatedTime'")})
     public void handleCreateSprintRel(Long sprintId, Long projectId, Long issueId) {
         if (sprintId != null && !Objects.equals(sprintId, 0L)) {
             IssueSprintRelE issueSprintRelE = new IssueSprintRelE();

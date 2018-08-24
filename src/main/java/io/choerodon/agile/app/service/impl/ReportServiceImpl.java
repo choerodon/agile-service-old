@@ -95,7 +95,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-    @Cacheable(cacheNames = "BurnDownReport", key = "'BurnDownReport' + #projectId + #sprintId + #type")
+    @Cacheable(cacheNames = "BurnDownReport", key = "'BurnDownReport' + #projectId + #sprintId + ':' + #type")
     public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
         return ConvertHelper.convertList(reportIssueEList.stream().
@@ -1139,7 +1139,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "BurnDownCoordinate", key = "'BurnDownCoordinate' + #projectId + #sprintId + #type")
+    @Cacheable(cacheNames = "BurnDownCoordinate", key = "'BurnDownCoordinate' + #projectId + #sprintId + ':' + #type")
     public JSONObject queryBurnDownCoordinate(Long projectId, Long sprintId, String type) {
         LOGGER.info("进入了方法进行执行");
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
