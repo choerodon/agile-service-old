@@ -408,7 +408,7 @@ public class IssueServiceImpl implements IssueService {
             issueRepository.delete(projectId, issueE.getIssueId());
             //delete cache
             redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ':' + "*",
-                    "BurnDownReport" + projectId + ':' + "*"});
+                    "Agile:BurnDownReport" + projectId + ':' + "*"});
             //删除issue发送消息
             IssuePayload issuePayload = new IssuePayload();
             issuePayload.setIssueId(issueId);

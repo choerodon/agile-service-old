@@ -1021,7 +1021,7 @@ public class DataLogAspect {
         }
         if (sprintId != null) {
             redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ':' + sprintId + ':' + type,
-                    "BurnDownReport" + projectId + ':' + sprintId + ':' + type});
+                    "Agile:BurnDownReport" + projectId + ':' + sprintId + ':' + type});
         }
     }
 

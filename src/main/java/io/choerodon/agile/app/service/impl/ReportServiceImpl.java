@@ -95,7 +95,6 @@ public class ReportServiceImpl implements ReportService {
     @Override
     @Cacheable(cacheNames = "BurnDownReport", key = "'Agile' + ':' + 'BurnDownReport' + #projectId + ':' + #sprintId + ':' + #type")
     public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
-        LOGGER.info("进入了查询燃尽图报告接口");
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
         return ConvertHelper.convertList(reportIssueEList.stream().
                 sorted(Comparator.comparing(ReportIssueE::getDate)).collect(Collectors.toList()), ReportIssueDTO.class);
