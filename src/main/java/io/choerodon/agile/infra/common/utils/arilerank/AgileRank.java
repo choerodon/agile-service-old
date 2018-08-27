@@ -17,7 +17,7 @@ public class AgileRank implements Comparable<AgileRank> {
     private static final AgileDecimal EIGHT_DECIMAL;
     private static final AgileDecimal MIN_DECIMAL;
     private static final AgileDecimal MAX_DECIMAL;
-    private static final AgileDecimal MID_DECIMAL;
+    public static final AgileDecimal MID_DECIMAL;
     private static final AgileDecimal INITIAL_MIN_DECIMAL;
     private static final AgileDecimal INITIAL_MAX_DECIMAL;
     private final String value;

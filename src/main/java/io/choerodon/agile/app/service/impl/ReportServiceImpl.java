@@ -16,7 +16,10 @@ import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,7 +77,7 @@ public class ReportServiceImpl implements ReportService {
     private static final String ASSIGNEE = "assignee";
     private static final String COMPONENT = "component";
     private static final String ISSUE_TYPE = "typeCode";
-    private static final String FIX_VERSION = "version";
+    private static final String VERSION = "version";
     private static final String PRIORITY = "priorityCode";
     private static final String STATUS = "statusCode";
     private static final String SPRINT = "sprint";
@@ -86,8 +89,11 @@ public class ReportServiceImpl implements ReportService {
     private static final String VERSION_CHART = "version_chart";
     private static final String EPIC_CHART = "epic_chart";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReportServiceImpl.class);
+
 
     @Override
+    @Cacheable(cacheNames = "BurnDownReport", key = "'Agile' + ':' + 'BurnDownReport' + #projectId + ':' + #sprintId + ':' + #type")
     public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
         return ConvertHelper.convertList(reportIssueEList.stream().
@@ -126,6 +132,7 @@ public class ReportServiceImpl implements ReportService {
         JSONObject jsonObject = new JSONObject();
         DateFormat bf = new SimpleDateFormat("yyyy-MM-dd");
         TreeMap<String, Integer> report = new TreeMap<>();
+        //处理同一天
         reportIssueEList.forEach(reportIssueE -> {
             if (reportIssueE.getStatistical()) {
                 String date = bf.format(reportIssueE.getDate());
@@ -137,7 +144,13 @@ public class ReportServiceImpl implements ReportService {
                 }
             }
         });
+        jsonObject.put("coordinate", report);
         //需要返回给前端期望值（开启冲刺的和）
+        jsonObject.put("expectCount", handleExpectCount(reportIssueEList));
+        return jsonObject;
+    }
+
+    private Integer handleExpectCount(List<ReportIssueE> reportIssueEList) {
         Integer expectCount = 0;
         List<ReportIssueE> startReportIssue = reportIssueEList.stream().filter(reportIssueE -> "startSprint".equals(reportIssueE.getType())).collect(Collectors.toList());
         if (startReportIssue != null && !startReportIssue.isEmpty()) {
@@ -147,10 +160,9 @@ public class ReportServiceImpl implements ReportService {
                 }
             }
         }
-        jsonObject.put("coordinate", report);
-        jsonObject.put("expectCount", expectCount);
-        return jsonObject;
+        return expectCount;
     }
+
 
     @Override
     public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
@@ -296,7 +308,7 @@ public class ReportServiceImpl implements ReportService {
             default:
                 break;
         }
-        versionReportMap.put("version", versionDO);
+        versionReportMap.put(VERSION, versionDO);
         versionReportMap.put("versionReport", versionReport);
         return versionReportMap;
     }
@@ -933,7 +945,7 @@ public class ReportServiceImpl implements ReportService {
                 return handlePieChartByType(projectId, "component_id", false, false);
             case ISSUE_TYPE:
                 return handlePieChartByType(projectId, "type_code", true, true);
-            case FIX_VERSION:
+            case VERSION:
                 return handlePieChartByType(projectId, "version_id", false, false);
             case PRIORITY:
                 return handlePieChartByType(projectId, "priority_code", true, true);
@@ -1131,6 +1143,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @Cacheable(cacheNames = "BurnDownCoordinate", key = "'Agile' + ':' + 'BurnDownCoordinate' + #projectId + ':' + #sprintId + ':' + #type")
     public JSONObject queryBurnDownCoordinate(Long projectId, Long sprintId, String type) {
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
         return handleSameDay(reportIssueEList.stream().filter(reportIssueE -> !"endSprint".equals(reportIssueE.getType())).

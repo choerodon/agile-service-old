@@ -33,6 +33,8 @@ spring:
       enabled: false
     sampler:
       percentage: 1.0
+  cache:
+    type: redis
 choerodon:
   event:
     consumer:

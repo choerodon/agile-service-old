@@ -6,6 +6,7 @@ import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.domain.agile.repository.DataLogRepository;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.annotation.DataLog;
+import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -19,11 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -34,9 +35,10 @@ import java.util.stream.Collectors;
  */
 @Aspect
 @Component
-public class LogDataAspect {
+@Transactional(rollbackFor = Exception.class)
+public class DataLogAspect {
 
-    private static final Logger logger = LoggerFactory.getLogger(LogDataAspect.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataLogAspect.class);
 
     private static final String ISSUE = "issue";
     private static final String ISSUE_CREATE = "issueCreate";
@@ -141,6 +143,8 @@ public class LogDataAspect {
     private DataLogMapper dataLogMapper;
     @Autowired
     private IssueCommentMapper issueCommentMapper;
+    @Autowired
+    private RedisUtil redisUtil;
 
     /**
      * 定义拦截规则：拦截Spring管理的后缀为RepositoryImpl的bean中带有@DataLog注解的方法。
@@ -271,7 +275,7 @@ public class LogDataAspect {
                 result = pjp.proceed();
             }
         } catch (Throwable e) {
-            logger.info("exception: ", e);
+            LOGGER.info("exception: ", e);
         }
         return result;
     }
@@ -286,6 +290,7 @@ public class LogDataAspect {
             SprintNameDTO sprintNameDTO = new SprintNameDTO();
             sprintNameDTO.setSprintId(sprintId);
             sprintNameDTO.setSprintName(sprintDO.getSprintName());
+            deleteBurnDownCache(sprintId, projectId, null, "*");
             for (Long issueId : issueIds) {
                 StringBuilder newSprintIdStr = new StringBuilder();
                 StringBuilder newSprintNameStr = new StringBuilder();
@@ -366,11 +371,17 @@ public class LogDataAspect {
             List<IssueDO> issueDOS = issueMapper.queryIssuesByStatusId(issueStatusE.getId());
             if (issueDOS != null && !issueDOS.isEmpty()) {
                 if (issueStatusE.getCompleted()) {
-                    issueDOS.forEach(issueDO -> createDataLog(projectId, issueDO.getIssueId(),
-                            FIELD_RESOLUTION, null, issueDO.getStatusName(), null, issueDO.getStatusId().toString()));
+                    issueDOS.forEach(issueDO -> {
+                        createDataLog(projectId, issueDO.getIssueId(),
+                                FIELD_RESOLUTION, null, issueDO.getStatusName(), null, issueDO.getStatusId().toString());
+                        deleteBurnDownCache(issueDO.getSprintId(), projectId, issueDO.getIssueId(), "*");
+                    });
                 } else {
-                    issueDOS.forEach(issueDO -> createDataLog(projectId, issueDO.getIssueId(),
-                            FIELD_RESOLUTION, issueDO.getStatusName(), null, issueDO.getStatusId().toString(), null));
+                    issueDOS.forEach(issueDO -> {
+                        createDataLog(projectId, issueDO.getIssueId(),
+                                FIELD_RESOLUTION, issueDO.getStatusName(), null, issueDO.getStatusId().toString(), null);
+                        deleteBurnDownCache(issueDO.getSprintId(), projectId, issueDO.getIssueId(), "*");
+                    });
                 }
             }
 
@@ -425,7 +436,7 @@ public class LogDataAspect {
                 createDataLog(workLogE.getProjectId(), workLogE.getIssueId(), FIELD_WORKLOGID,
                         workLogE.getLogId().toString(), null, workLogE.getLogId().toString(), null);
             } catch (Throwable throwable) {
-                logger.info(EXCEPTION, throwable);
+                LOGGER.info(EXCEPTION, throwable);
             }
         }
         return result;
@@ -487,7 +498,7 @@ public class LogDataAspect {
                 createDataLog(issueCommentE.getProjectId(), issueCommentE.getIssueId(), FIELD_COMMENT,
                         null, issueCommentE.getCommentText(), null, issueCommentE.getCommentId().toString());
             } catch (Throwable throwable) {
-                logger.info(EXCEPTION, throwable);
+                LOGGER.info(EXCEPTION, throwable);
             }
         }
         return result;
@@ -522,7 +533,7 @@ public class LogDataAspect {
                 createDataLog(issueAttachmentE.getProjectId(), issueAttachmentE.getIssueId(), FIELD_ATTACHMENT,
                         null, issueAttachmentE.getUrl(), null, issueAttachmentE.getAttachmentId().toString());
             } catch (Throwable throwable) {
-                logger.info(EXCEPTION, throwable);
+                LOGGER.info(EXCEPTION, throwable);
             }
         }
         return result;
@@ -589,7 +600,7 @@ public class LogDataAspect {
             createDataLog(issueLabelDO.getProjectId(), issueId, FIELD_LABELS, getOriginLabelNames(originLabels),
                     getOriginLabelNames(curLabels), null, null);
         } catch (Throwable throwable) {
-            logger.info(EXCEPTION, throwable);
+            LOGGER.info(EXCEPTION, throwable);
         }
         return result;
     }
@@ -653,9 +664,13 @@ public class LogDataAspect {
         SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
         for (Long issueId : issueIds) {
             SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
-            if (activeSprintName != null && sprintId != null && sprintId.equals(activeSprintName.getSprintId())) {
-                continue;
+            if (activeSprintName != null) {
+                deleteBurnDownCache(activeSprintName.getSprintId(), projectId, null, "*");
+                if (sprintId != null && sprintId.equals(activeSprintName.getSprintId())) {
+                    continue;
+                }
             }
+            deleteBurnDownCache(sprintId, projectId, null, "*");
             StringBuilder newSprintIdStr = new StringBuilder();
             StringBuilder newSprintNameStr = new StringBuilder();
             List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
@@ -851,6 +866,7 @@ public class LogDataAspect {
                 //若创建issue的初始状态为已完成，生成日志
                 IssueStatusDO issueStatusDO = issueStatusMapper.selectByPrimaryKey(issueE.getStatusId());
                 if ((issueStatusDO.getCompleted() != null && issueStatusDO.getCompleted())) {
+                    deleteBurnDownCache(issueE.getSprintId(), issueE.getProjectId(), issueE.getIssueId(), "*");
                     createDataLog(issueE.getProjectId(), issueE.getIssueId(), FIELD_RESOLUTION, null,
                             issueStatusDO.getName(), null, issueStatusDO.getId().toString());
                 }
@@ -863,7 +879,7 @@ public class LogDataAspect {
             }
 
         } catch (Throwable throwable) {
-            logger.info(ERROR_UPDATE, throwable);
+            LOGGER.info(ERROR_UPDATE, throwable);
             throw new CommonException(ERROR_UPDATE);
         }
         return result;
@@ -878,6 +894,7 @@ public class LogDataAspect {
         }
         if (issueSprintRelE != null) {
             SprintDO sprintDO = sprintMapper.selectByPrimaryKey(issueSprintRelE.getSprintId());
+            deleteBurnDownCache(sprintDO.getSprintId(), sprintDO.getProjectId(), null, "*");
             createDataLog(issueSprintRelE.getProjectId(), issueSprintRelE.getIssueId(),
                     FIELD_SPRINT, null, sprintDO.getSprintName(), null, issueSprintRelE.getSprintId().toString());
         }
@@ -921,6 +938,7 @@ public class LogDataAspect {
             dataLogE.setOldString(originTypeName);
             dataLogE.setNewString(currentTypeName);
             dataLogRepository.create(dataLogE);
+            deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
         }
     }
 
@@ -966,6 +984,7 @@ public class LogDataAspect {
                     issueE.getStatusId().toString());
             Boolean condition = (originStatus.getCompleted() != null && originStatus.getCompleted()) || (currentStatus.getCompleted() != null && currentStatus.getCompleted());
             if (condition) {
+                deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
                 dataLogResolution(originIssueDO.getProjectId(), originIssueDO.getIssueId(), originStatus, currentStatus);
             }
         }
@@ -991,8 +1010,19 @@ public class LogDataAspect {
             oldData = originIssueDO.getRemainingTime() == null ? null : originIssueDO.getRemainingTime().toString();
             newData = zero.toString();
         }
+        deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "remainingEstimatedTime");
         createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
                 FIELD_TIMEESTIMATE, oldData, newData, oldData, newData);
+    }
+
+    private void deleteBurnDownCache(Long sprintId, Long projectId, Long issueId, String type) {
+        if (sprintId == null && issueId != null) {
+            sprintId = sprintMapper.queryNotCloseSprintIdByIssueId(issueId, projectId);
+        }
+        if (sprintId != null) {
+            redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ':' + sprintId + ':' + type,
+                    "BurnDownReport" + projectId + ':' + sprintId + ':' + type});
+        }
     }
 
     private void handleStoryPoints(List<String> field, IssueDO originIssueDO, IssueE issueE) {
@@ -1006,6 +1036,7 @@ public class LogDataAspect {
             if (issueE.getStoryPoints() != null) {
                 newString = issueE.getStoryPoints().toString();
             }
+            deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), STORY_POINTS_FIELD);
             createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
                     FIELD_STORY_POINTS, oldString, newString, null, null);
         }

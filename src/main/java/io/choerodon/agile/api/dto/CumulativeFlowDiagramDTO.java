@@ -2,13 +2,14 @@ package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/7/2
  */
-public class CumulativeFlowDiagramDTO {
+public class CumulativeFlowDiagramDTO implements Serializable {
 
     private Long columnId;
 

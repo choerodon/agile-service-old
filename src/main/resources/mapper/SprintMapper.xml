@@ -284,6 +284,17 @@
         (<include refid="queryPlanSprintSql"/>)spa
     </select>
 
+    <select id="queryNotCloseSprintIdByIssueId" resultType="java.lang.Long">
+       SELECT
+            aisr.sprint_id
+        FROM
+            agile_issue_sprint_rel aisr
+            LEFT JOIN agile_sprint asp ON asp.sprint_id = aisr.sprint_id
+        WHERE
+            aisr.issue_id = #{issueId} and asp.status_code != 'closed'
+            and aisr.project_id = #{projectId}
+    </select>
+
     <select id="queryAssigneeIssueBySprintId" parameterType="java.util.Map"
             resultType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
         SELECT a.sprint_id, a.assignee_id,

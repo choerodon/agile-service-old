@@ -1,12 +1,10 @@
 package io.choerodon.agile.infra.common.utils;
 
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFCell;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,14 +35,11 @@ public class ExcelUtil {
             SXSSFWorkbook workbook = new SXSSFWorkbook();
             //1.3、列标题样式
             CellStyle style2 = createCellStyle(workbook, (short) 13, CellStyle.ALIGN_LEFT, true);
-
             //1.4、强制换行
             CellStyle cellStyle = workbook.createCellStyle();
             cellStyle.setWrapText(true);
-
             //2、创建工作表
             SXSSFSheet sheet = workbook.createSheet(sheetName);
-
             //设置默认列宽
             sheet.setDefaultColumnWidth(13);
             SXSSFRow row2 = sheet.createRow(0);
@@ -59,24 +54,7 @@ public class ExcelUtil {
                     cell2.setCellStyle(style2);
                     cell2.setCellValue(fieldsName[i]);
                     //4、操作单元格；将数据写入excel
-                    SXSSFCell cell = row.createCell(i);
-                    try {
-                        cell.setCellStyle(cellStyle);
-                        if (list.get(j) != null) {
-                            Object invoke = clazz.getMethod(createGetter(fields[i])).invoke(list.get(j));
-                            if (invoke instanceof Date) {
-                                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                cell.setCellValue(formatter.format(invoke));
-                            } else {
-                                String str = invoke == null ? null : invoke.toString();
-                                cell.setCellValue(str);
-                            }
-                        } else {
-                            cell.setCellValue("");
-                        }
-                    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                        LOGGER.error(e.getMessage());
-                    }
+                    handleWriteCell(row, i, j, list, cellStyle, fields, clazz);
                 }
             }
             //5、输出
@@ -97,6 +75,28 @@ public class ExcelUtil {
             }
         }
     }
+
+    private static <T> void handleWriteCell(SXSSFRow row, int i, int j, List<T> list, CellStyle cellStyle, String[] fields, Class<T> clazz) {
+        SXSSFCell cell = row.createCell(i);
+        try {
+            cell.setCellStyle(cellStyle);
+            if (list.get(j) != null) {
+                Object invoke = clazz.getMethod(createGetter(fields[i])).invoke(list.get(j));
+                if (invoke instanceof Date) {
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    cell.setCellValue(formatter.format(invoke));
+                } else {
+                    String str = invoke == null ? null : invoke.toString();
+                    cell.setCellValue(str);
+                }
+            } else {
+                cell.setCellValue("");
+            }
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            LOGGER.error(e.getMessage());
+        }
+    }
+
 
     /**
      * 创建单元格样式
