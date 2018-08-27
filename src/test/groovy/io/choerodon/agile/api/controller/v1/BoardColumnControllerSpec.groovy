@@ -1,16 +1,16 @@
 package io.choerodon.agile.api.controller.v1
 
+import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.BoardColumnDTO
 import io.choerodon.agile.api.dto.ColumnSortDTO
 import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO
 import io.choerodon.agile.app.service.BoardColumnService
 import io.choerodon.agile.infra.dataobject.BoardColumnDO
-import io.choerodon.agile.infra.dataobject.BoardDO
-import io.choerodon.agile.infra.dataobject.IssueStatusDO
 import io.choerodon.agile.infra.mapper.BoardColumnMapper
 import io.choerodon.agile.infra.mapper.BoardMapper
 import io.choerodon.agile.infra.mapper.IssueStatusMapper
+import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -116,6 +116,30 @@ class BoardColumnControllerSpec extends Specification {
         entity.body.name == boardColumnName2
     }
 
+    def 'updateBoardColumn unSuccess'() {
+        given:
+        BoardColumnDO columnDO = boardColumnMapper.selectByPrimaryKey(columnId2)
+        columnDO.objectVersionNumber = 0L
+        BoardColumnDTO boardColumnDTO = new BoardColumnDTO()
+        BeanUtils.copyProperties(columnDO, boardColumnDTO)
+
+        when:
+        HttpEntity<BoardColumnDTO> boardColumnDTOHttpEntity = new HttpEntity<>(boardColumnDTO)
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/board_column/{columnId}?boardId={boardId}",
+                HttpMethod.PUT,
+                boardColumnDTOHttpEntity,
+                String.class,
+                projectId,
+                columnId2,
+                boardId)
+        then:
+        entity.statusCode.is2xxSuccessful()
+        JSONObject exceptionInfo = JSONObject.parse(entity.body)
+        exceptionInfo.get("failed").toString() == "true"
+        exceptionInfo.get("code").toString() == "error.BoardColumn.update"
+
+    }
+
     def 'columnSort'() {
         given:
         ColumnSortDTO columnSortDTO = new ColumnSortDTO()
@@ -175,6 +199,31 @@ class BoardColumnControllerSpec extends Specification {
         entity.body.maxNum == 3
     }
 
+    def 'updateColumnContraint unSuccess'() {
+        given:
+        ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO = new ColumnWithMaxMinNumDTO()
+        columnWithMaxMinNumDTO.projectId = projectId
+        columnWithMaxMinNumDTO.columnId = columnId2
+        columnWithMaxMinNumDTO.objectVersionNumber = 4L
+        columnWithMaxMinNumDTO.boardId = boardId
+        columnWithMaxMinNumDTO.maxNum = 2
+        columnWithMaxMinNumDTO.minNum = 3
+
+        when:
+        HttpEntity<ColumnWithMaxMinNumDTO> columnWithMaxMinNumDTOHttpEntity = new HttpEntity<>(columnWithMaxMinNumDTO);
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/board_column/{columnId}/column_contraint",
+                HttpMethod.POST,
+                columnWithMaxMinNumDTOHttpEntity,
+                String.class,
+                projectId,
+                columnId2)
+        then:
+        entity.statusCode.is2xxSuccessful()
+        JSONObject exceptionInfo = JSONObject.parse(entity.body)
+        exceptionInfo.get("failed").toString() == "true"
+        exceptionInfo.get("code").toString() == "error.num.minNumCannotUpToMaxNum"
+    }
+
     def 'deleteBoardColumn'() {
         when:
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board_column/{columnId}",
@@ -186,6 +235,20 @@ class BoardColumnControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
         BoardColumnDO result = boardColumnMapper.selectByPrimaryKey(columnId2)
         result == null
+    }
+
+    def 'deleteBoardColumn unSuccess'() {
+        when:
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/board_column/{columnId}",
+                HttpMethod.DELETE, new HttpEntity<>(),
+                String.class,
+                projectId,
+                0L)
+        then:
+        entity.statusCode.is2xxSuccessful()
+        JSONObject exceptionInfo = JSONObject.parse(entity.body)
+        exceptionInfo.get("failed").toString() == "true"
+        exceptionInfo.get("code").toString() == "error.column.isNull"
     }
 
     def 'checkStatusName'() {
