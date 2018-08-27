@@ -1,49 +1,18 @@
 package io.choerodon.agile.api.controller.v1
 
-import io.choerodon.agile.api.dto.CopyConditionDTO
-import io.choerodon.agile.api.dto.EpicSequenceDTO
-import io.choerodon.agile.api.dto.IssueCreationNumDTO
-import io.choerodon.agile.api.dto.IssueEpicDTO
-import io.choerodon.agile.api.dto.IssueInfoDTO
-import io.choerodon.agile.api.dto.IssueTransformSubTask
-import io.choerodon.agile.api.dto.IssueUpdateParentIdDTO
-import io.choerodon.agile.api.dto.IssueUpdateTypeDTO
-import io.choerodon.agile.api.dto.MoveIssueDTO
-import io.choerodon.agile.api.dto.PieChartDTO
-import io.choerodon.agile.api.dto.ProjectDTO
-import io.choerodon.agile.api.dto.StoryMapIssueDTO
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.ComponentIssueRelDTO
-import io.choerodon.agile.api.dto.EpicDataDTO
-import io.choerodon.agile.api.dto.IssueCreateDTO
-import io.choerodon.agile.api.dto.IssueDTO
-import io.choerodon.agile.api.dto.IssueLinkDTO
-import io.choerodon.agile.api.dto.IssueListDTO
-import io.choerodon.agile.api.dto.IssueNumDTO
-import io.choerodon.agile.api.dto.IssueSearchDTO
-import io.choerodon.agile.api.dto.IssueSubCreateDTO
-import io.choerodon.agile.api.dto.IssueSubDTO
-import io.choerodon.agile.api.dto.LabelIssueRelDTO
-import io.choerodon.agile.api.dto.SearchDTO
-import io.choerodon.agile.api.dto.StoryMapMoveDTO
-import io.choerodon.agile.api.dto.VersionIssueRelDTO
+import io.choerodon.agile.api.dto.*
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.domain.agile.repository.UserRepository
-import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO
-import io.choerodon.agile.infra.dataobject.IssueDO
-import io.choerodon.agile.infra.dataobject.UserDO
-import io.choerodon.agile.infra.dataobject.UserMessageDO
-import io.choerodon.agile.infra.mapper.DataLogMapper
-import io.choerodon.agile.infra.mapper.IssueMapper
-import io.choerodon.agile.infra.mapper.IssueSprintRelMapper
-import io.choerodon.agile.infra.mapper.ProjectInfoMapper
-import io.choerodon.agile.infra.mapper.SprintMapper
+import io.choerodon.agile.infra.dataobject.*
+import io.choerodon.agile.infra.mapper.*
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.domain.Page
 import io.choerodon.event.producer.execute.EventProducerTemplate
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
@@ -53,8 +22,6 @@ import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
-
-import org.springframework.beans.factory.annotation.Qualifier
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
@@ -71,6 +38,9 @@ class IssueControllerSpec extends Specification {
 
     @Autowired
     TestRestTemplate restTemplate
+
+    @Autowired
+    private IssueComponentMapper issueComponentMapper
 
     @Autowired
     AgileEventHandler agileEventHandler
@@ -841,6 +811,10 @@ class IssueControllerSpec extends Specification {
         issueMapper.insert(testIssue)
         issues.add(testIssue)
 
+        ProjectInfoDO projectInfoDO = projectInfoMapper.selectByPrimaryKey(1L)
+        projectInfoDO.setIssueMaxNum(projectInfoDO.getIssueMaxNum()+1)
+        projectInfoMapper.updateByPrimaryKeySelective(projectInfoDO)
+
         IssueUpdateParentIdDTO issueUpdateParentIdDTO = new IssueUpdateParentIdDTO()
         def subTaskIssue = issues.find {
             it.typeCode == "sub_task"
@@ -954,5 +928,21 @@ class IssueControllerSpec extends Specification {
         issueId << issueIdList
 
 
+    }
+
+    def "deleteData"() {
+        given: '刪除模块'
+        IssueComponentDO issueComponentDO = new IssueComponentDO()
+        issueComponentDO.name = '测试模块2'
+
+        and: '查询模块DO'
+        IssueComponentDO query = new IssueComponentDO()
+        query.name = '测试模块2'
+
+        when: '执行方法'
+        issueComponentMapper.delete(issueComponentDO)
+
+        then: '验证删除'
+        issueComponentMapper.selectOne(query) == null
     }
 }
