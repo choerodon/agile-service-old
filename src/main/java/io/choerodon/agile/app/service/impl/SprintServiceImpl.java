@@ -4,6 +4,7 @@ import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
+import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.*;
@@ -429,5 +430,18 @@ public class SprintServiceImpl implements SprintService {
     @Override
     public List<SprintUnClosedDTO> queryUnClosedSprint(Long projectId) {
         return ConvertHelper.convertList(sprintMapper.queryUnClosedSprint(projectId), SprintUnClosedDTO.class);
+    }
+
+    @Override
+    public ActiveSprintDTO queryActiveSprint(Long projectId) {
+        ActiveSprintDTO result = new ActiveSprintDTO();
+        SprintDO activeSprint = getActiveSprint(projectId);
+        if (activeSprint != null) {
+            result = ConvertHelper.convert(activeSprint, ActiveSprintDTO.class);
+            if (result.getEndDate() != null) {
+                result.setDayRemain(DateUtil.differentDaysByMillisecond(new Date(), result.getEndDate()));
+            }
+        }
+        return result;
     }
 }
