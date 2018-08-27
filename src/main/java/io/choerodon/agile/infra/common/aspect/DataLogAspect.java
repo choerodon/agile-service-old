@@ -1020,7 +1020,7 @@ public class DataLogAspect {
             sprintId = sprintMapper.queryNotCloseSprintIdByIssueId(issueId, projectId);
         }
         if (sprintId != null) {
-            redisUtil.deleteRedisCache(new String[]{"BurnDownCoordinate" + projectId + ':' + sprintId + ':' + type,
+            redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ':' + sprintId + ':' + type,
                     "BurnDownReport" + projectId + ':' + sprintId + ':' + type});
         }
     }

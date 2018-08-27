@@ -93,7 +93,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-    @Cacheable(cacheNames = "BurnDownReport", key = "'BurnDownReport' + #projectId + ':' + #sprintId + ':' + #type")
+    @Cacheable(cacheNames = "BurnDownReport", key = "'Agile' + ':' + 'BurnDownReport' + #projectId + ':' + #sprintId + ':' + #type")
     public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
         LOGGER.info("进入了查询燃尽图报告进行执行");
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
@@ -1144,7 +1144,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "BurnDownCoordinate", key = "'BurnDownCoordinate' + #projectId + ':' + #sprintId + ':' + #type")
+    @Cacheable(cacheNames = "BurnDownCoordinate", key = "'Agile' + ':' + 'BurnDownCoordinate' + #projectId + ':' + #sprintId + ':' + #type")
     public JSONObject queryBurnDownCoordinate(Long projectId, Long sprintId, String type) {
         LOGGER.info("进入了查询燃尽图坐标进行执行");
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);

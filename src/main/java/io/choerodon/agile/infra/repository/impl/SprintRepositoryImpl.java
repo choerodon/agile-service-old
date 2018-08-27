@@ -39,7 +39,7 @@ public class SprintRepositoryImpl implements SprintRepository {
 
     @Override
     public SprintE updateSprint(SprintE sprintE) {
-        redisUtil.deleteRedisCache(new String[]{"BurnDownCoordinate" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*",
+        redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*",
                 "BurnDownReport" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*"});
         SprintDO sprintDO = sprintConverter.entityToDo(sprintE);
         if (sprintMapper.updateByPrimaryKeySelective(sprintDO) != 1) {
