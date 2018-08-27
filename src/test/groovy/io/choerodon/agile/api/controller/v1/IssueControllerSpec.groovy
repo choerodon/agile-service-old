@@ -33,6 +33,7 @@ import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO
 import io.choerodon.agile.infra.dataobject.IssueDO
+import io.choerodon.agile.infra.dataobject.ProjectInfoDO
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.DataLogMapper
@@ -840,6 +841,10 @@ class IssueControllerSpec extends Specification {
         testIssue.summary = 'issue-test'
         issueMapper.insert(testIssue)
         issues.add(testIssue)
+
+        ProjectInfoDO projectInfoDO = projectInfoMapper.selectByPrimaryKey(1L)
+        projectInfoDO.setIssueMaxNum(projectInfoDO.getIssueMaxNum()+1)
+        projectInfoMapper.updateByPrimaryKeySelective(projectInfoDO)
 
         IssueUpdateParentIdDTO issueUpdateParentIdDTO = new IssueUpdateParentIdDTO()
         def subTaskIssue = issues.find {
