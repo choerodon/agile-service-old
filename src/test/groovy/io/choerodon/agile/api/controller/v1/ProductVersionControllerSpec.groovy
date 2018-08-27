@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.ProductVersionCreateDTO
 import io.choerodon.agile.api.dto.ProductVersionDetailDTO
+import io.choerodon.agile.api.dto.ProductVersionMergeDTO
 import io.choerodon.agile.api.dto.ProductVersionReleaseDTO
 import io.choerodon.agile.infra.dataobject.ProductVersionDO
 import io.choerodon.agile.infra.dataobject.VersionIssueRelDO
@@ -45,10 +46,13 @@ class ProductVersionControllerSpec extends Specification {
     def versionName = "version_test" + System.currentTimeMillis()
 
     @Shared
-    def versionName2 = "version_test2"
+    def versionName2 = "version_test2" + System.currentTimeMillis()
 
     @Shared
     def versionName3 = "version_test3" + System.currentTimeMillis()
+
+    @Shared
+    def versionMergeName = "version_merge" + System.currentTimeMillis()
 
     @Shared
     def projectId = 1L
@@ -58,6 +62,9 @@ class ProductVersionControllerSpec extends Specification {
 
     @Shared
     ProductVersionDO result2
+
+    @Shared
+    ProductVersionDO result3
 
     private Date StringToDate(String str) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -93,6 +100,7 @@ class ProductVersionControllerSpec extends Specification {
         1L        | StringToDate("2018-08-22 00:00:00") | StringToDate("2018-08-21 00:00:00") | versionName2 | null
         1L        | null                                | null                                | versionName  | null
         1L        | null                                | null                                | versionName3 | versionName3
+        1L        | null                                | null                                | versionMergeName | versionMergeName
     }
 
     def 'select product version'() {
@@ -105,6 +113,9 @@ class ProductVersionControllerSpec extends Specification {
         result2 = productVersionMapper.selectOne(productVersionDO)
         result2.statusCode = "released"
         productVersionMapper.updateByPrimaryKey(result2)
+        productVersionDO.name = versionMergeName
+        result3 = productVersionMapper.selectOne(productVersionDO)
+
         // 初始化version、issue关联关系
         VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO()
         versionIssueRelDO.projectId = projectId
@@ -146,7 +157,7 @@ class ProductVersionControllerSpec extends Specification {
         entity.body.description == versionName
         JSONObject exceptionInfo = JSONObject.parse(entityException.body)
         exceptionInfo.get("failed").toString() == "true"
-
+        exceptionInfo.get("code").toString() == "error.version.update"
 
     }
 
@@ -261,10 +272,112 @@ class ProductVersionControllerSpec extends Specification {
         exceptionInfo.get("failed").toString() == "true"
     }
 
+    def 'revokeReleaseVersion'() {
+        when:
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/revoke_release",
+                HttpMethod.POST,
+                new HttpEntity<>(),
+                ProductVersionDetailDTO.class,
+                projectId,
+                result.versionId)
+        then:
+        entity.statusCode.is2xxSuccessful()
+        entity.body.statusCode == "version_planning"
+    }
+
+    def 'revokeReleaseVersion unSuccess'() {
+        when:
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/revoke_release",
+                HttpMethod.POST,
+                new HttpEntity<>(),
+                String.class,
+                projectId,
+                result.versionId)
+        then:
+        entity.statusCode.is2xxSuccessful()
+        JSONObject exceptionInfo = JSONObject.parse(entity.body)
+        exceptionInfo.get("failed").toString() == "true"
+        exceptionInfo.get("code").toString() == "error.productVersion.revokeRelease"
+    }
+
+    def 'archivedVersion'() {
+        when:
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/archived",
+                HttpMethod.POST,
+                new HttpEntity<>(),
+                ProductVersionDetailDTO.class,
+                projectId,
+                result.versionId)
+        then:
+        entity.statusCode.is2xxSuccessful()
+        entity.body.statusCode == "archived"
+    }
+
+    def 'archivedVersion unSuccess'() {
+        when:
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/archived",
+                HttpMethod.POST,
+                new HttpEntity<>(),
+                String.class,
+                projectId,
+                result.versionId)
+        then:
+        entity.statusCode.is2xxSuccessful()
+        JSONObject exceptionInfo = JSONObject.parse(entity.body)
+        exceptionInfo.get("failed").toString() == "true"
+        exceptionInfo.get("code").toString() == "error.productVersion.archived"
+    }
+
+    def 'revokeArchivedVersion'() {
+        when:
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/revoke_archived",
+                HttpMethod.POST,
+                new HttpEntity<>(),
+                ProductVersionDetailDTO.class,
+                projectId,
+                result.versionId)
+        then:
+        entity.statusCode.is2xxSuccessful()
+        entity.body.statusCode == "version_planning"
+    }
+
+    def 'mergeVersion'() {
+        given:
+        ProductVersionMergeDTO productVersionMergeDTO = new ProductVersionMergeDTO()
+        List<Long> sourceVersionIds = new ArrayList<>()
+        sourceVersionIds.add(result2.versionId)
+        productVersionMergeDTO.sourceVersionIds = sourceVersionIds
+        productVersionMergeDTO.targetVersionId = result3.versionId
+
+        when:
+        HttpEntity<ProductVersionMergeDTO> productVersionMergeDTOHttpEntity = new HttpEntity<>(productVersionMergeDTO)
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/merge",
+                HttpMethod.POST,
+                productVersionMergeDTOHttpEntity,
+                Boolean.class,
+                projectId)
+
+        and:
+        // 设置查询versionIssueRel条件
+        VersionIssueRelDO search = new VersionIssueRelDO()
+        search.versionId = result2.versionId
+        List<VersionIssueRelDO> relsOrigin = versionIssueRelMapper.select(search)
+        search.versionId = result3.versionId
+        List<VersionIssueRelDO> relsNew = versionIssueRelMapper.select(search)
+
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+        relsOrigin.size() == 0
+        relsNew.size() == 1
+        relsNew.get(0).issueId == 2L
+        
+    }
+
     def 'deleteVersion'() {
         given:
         ProductVersionDO productVersionDO = new ProductVersionDO()
-        productVersionDO.name = versionName3
+        productVersionDO.name = versionMergeName
         productVersionDO.projectId = projectId
 
         when:
@@ -273,7 +386,7 @@ class ProductVersionControllerSpec extends Specification {
                 new HttpEntity<>(),
                 Boolean.class,
                 projectId,
-                result2.getVersionId())
+                result3.getVersionId())
 
         then:
         entity.statusCode.is2xxSuccessful()
