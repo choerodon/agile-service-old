@@ -7,6 +7,7 @@ import io.choerodon.agile.domain.agile.converter.ProductVersionConverter;
 import io.choerodon.agile.domain.agile.event.VersionPayload;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.infra.dataobject.IssueCountDO;
+import io.choerodon.agile.infra.dataobject.VersionIssueChangeDO;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
@@ -392,5 +393,11 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         productVersionDO.setVersionId(versionId);
         productVersionDO.setProjectId(projectId);
         return productVersionMapper.selectOne(productVersionDO);
+    }
+
+    @Override
+    public VersionIssueCountDTO queryByCategoryCode(Long projectId, Long versionId) {
+        VersionIssueCountDTO result = ConvertHelper.convert(productVersionMapper.queryVersionStatisticsByVersionId(projectId, versionId), VersionIssueCountDTO.class);
+        return result;
     }
 }

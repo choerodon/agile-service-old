@@ -1848,4 +1848,12 @@
             where asw.status_code != 'closed'
     </select>
 
+    <select id="countUnResolveByProjectId" resultType="java.lang.Integer">
+        select count(ai.issue_id)
+        from agile_issue ai, agile_issue_status ais
+        where ai.project_id = #{projectId}
+        and ai.type_code in ('story', 'task', 'bug')
+        and ai.status_id = ais.id and ais.is_completed = 0
+    </select>
+
 </mapper>

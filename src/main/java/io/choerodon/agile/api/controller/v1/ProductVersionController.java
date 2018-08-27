@@ -303,4 +303,16 @@ public class ProductVersionController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException(DRAG_ERROR));
     }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation(value = "dashboard根据版本下类别统计数量数量")
+    @GetMapping(value = "/{versionId}/issue_count")
+    public ResponseEntity<VersionIssueCountDTO> queryByCategoryCode(@ApiParam(value = "项目id", required = true)
+                                                          @PathVariable(name = "project_id") Long projectId,
+                                                          @ApiParam(value = "version id", required = true)
+                                                          @PathVariable Long versionId) {
+        return Optional.ofNullable(productVersionService.queryByCategoryCode(projectId, versionId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.VersionIssueCountDTO.get"));
+    }
 }

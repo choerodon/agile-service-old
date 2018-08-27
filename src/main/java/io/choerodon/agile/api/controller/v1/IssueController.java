@@ -485,4 +485,14 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issueParentId.update"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("统计当前项目下未完成的任务数，包括故事、任务、缺陷")
+    @GetMapping(value = "/count")
+    public ResponseEntity<Integer> countUnResolveByProjectId(@ApiParam(value = "项目id", required = true)
+                                                             @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(issueService.countUnResolveByProjectId(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.countUnResolveIssue.get"));
+    }
+
 }
