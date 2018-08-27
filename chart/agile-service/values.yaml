@@ -46,6 +46,8 @@ env:
     SPRING_CLOUD_CONFIG_URI: http://config-server.io-choerodon:8010/
     SERVICES_ATTACHMENT_URL: example.com
     SPRING_CLOUD_CONFIG_ENABLED: true
+    SPRING_REDIS_HOST: redis.tools
+    SPRING_REDIS_PORT: 6379
 
 metrics:
   path: /prometheus

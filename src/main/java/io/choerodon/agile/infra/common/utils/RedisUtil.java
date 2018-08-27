@@ -129,7 +129,6 @@ public class RedisUtil {
         try {
             for (String key : keys) {
                 Set<String> caches = keys(key);
-                LOGGER.info("清除redis缓存,Redis的KEY值:{},缓存匹配数量:{}\n", key, caches.size());
                 if (!caches.isEmpty()) {
                     deleteByKey(caches);
                 }
