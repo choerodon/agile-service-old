@@ -208,4 +208,6 @@ public interface IssueService {
     IssueDTO issueParentIdUpdate(Long projectId, IssueUpdateParentIdDTO issueUpdateParentIdDTO);
 
     void storymapMove(Long projectId, StoryMapMoveDTO storyMapMoveDTO);
+
+    Integer countUnResolveByProjectId(Long projectId);
 }

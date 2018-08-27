@@ -1527,4 +1527,9 @@ public class IssueServiceImpl implements IssueService {
         return ConvertHelper.convert(issueRepository.updateSelective(updateIssue), IssueDTO.class);
     }
 
+    @Override
+    public Integer countUnResolveByProjectId(Long projectId) {
+        return issueMapper.countUnResolveByProjectId(projectId);
+    }
+
 }

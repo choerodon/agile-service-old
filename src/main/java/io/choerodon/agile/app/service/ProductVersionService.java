@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.infra.dataobject.VersionIssueChangeDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
@@ -64,4 +65,6 @@ public interface ProductVersionService {
      * @return ProductVersionPageDTO
      */
     ProductVersionPageDTO dragVersion(Long projectId, VersionSequenceDTO versionSequenceDTO);
+
+    VersionIssueCountDTO queryByCategoryCode(Long projectId, Long versionId);
 }
