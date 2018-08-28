@@ -1865,6 +1865,56 @@
         and ai.status_id = ais.id and ais.is_completed = 0
     </select>
 
+    <select id="queryIssueIdsByOptions" resultType="java.lang.Long">
+        select ai.issue_id
+        from agile_issue ai
+        <if test='advancedSearchArgs != null and advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
+            , agile_issue_status ais
+        </if>
+        where 1=1
+        <if test='advancedSearchArgs != null'>
+            <if test='advancedSearchArgs.typeCode != null and advancedSearchArgs.typeCode.size > 0'>
+                AND ai.type_code IN
+                <foreach collection="advancedSearchArgs.typeCode" item="typeCode" open="(" separator="," close=")">
+                    #{typeCode}
+                </foreach>
+            </if>
+            <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
+                and ai.status_id = ais.id AND ais.category_code IN
+                <foreach collection="advancedSearchArgs.statusCode" item="statusCode" open="(" separator=","
+                         close=")">
+                    #{statusCode}
+                </foreach>
+            </if>
+        </if>
+        <if test='otherArgs != null'>
+            <if test='otherArgs.version != null and otherArgs.version.size > 0'>
+                AND ai.issue_id in (
+                SELECT avir.issue_id FROM
+                agile_version_issue_rel avir WHERE avir.version_id
+                in
+                <foreach collection="otherArgs.version" item="versionId" open="(" separator=","
+                         close=")">
+                    #{versionId}
+                </foreach>
+                )
+            </if>
+            <if test='otherArgs.issueIds != null and otherArgs.issueIds.size > 0'>
+                AND ai.issue_id in
+                <foreach collection="otherArgs.issueIds" item="issueId" open="(" separator=","
+                         close=")">
+                    #{issueId}
+                </foreach>
+            </if>
+            <if test='otherArgs.issueNum != null and otherArgs.issueNum != ""'>
+                AND position(#{otherArgs.issueNum} IN ai.issue_num)
+            </if>
+            <if test='otherArgs.summary != null and otherArgs.summary != ""'>
+                AND position(#{otherArgs.summary} IN ai.summary)
+            </if>
+        </if>
+    </select>
+
     <select id="queryUnDistributedIssues" resultType="io.choerodon.agile.infra.dataobject.UndistributedIssueDO">
         SELECT
           ai.issue_id,

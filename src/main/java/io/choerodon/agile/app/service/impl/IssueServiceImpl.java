@@ -1537,6 +1537,11 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
+    public List<Long> queryIssueIdsByOptions(Long projectId, SearchDTO searchDTO) {
+        return issueMapper.queryIssueIdsByOptions(projectId, searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs());
+    }
+
+    @Override
     public List<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId) {
         return ConvertHelper.convertList(issueMapper.queryUnDistributedIssues(projectId), UndistributedIssueDTO.class);
     }
