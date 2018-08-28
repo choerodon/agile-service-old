@@ -1532,7 +1532,7 @@ public class IssueServiceImpl implements IssueService {
     public JSONObject countUnResolveByProjectId(Long projectId) {
         JSONObject result = new JSONObject();
         result.put("all", issueMapper.countIssueByProjectId(projectId));
-        result.put("unResolve", issueMapper.countUnResolveByProjectId(projectId));
+        result.put("unresolved", issueMapper.countUnResolveByProjectId(projectId));
         return result;
     }
 
