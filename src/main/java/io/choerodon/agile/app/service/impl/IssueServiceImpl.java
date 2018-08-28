@@ -407,14 +407,17 @@ public class IssueServiceImpl implements IssueService {
             //删除日志信息
             dataLogDeleteByIssueId(projectId, issueId);
             issueRepository.delete(projectId, issueE.getIssueId());
-            //delete cache
-            redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ':' + "*",
-                    "Agile:BurnDownReport" + projectId + ':' + "*"});
             //删除issue发送消息
             IssuePayload issuePayload = new IssuePayload();
             issuePayload.setIssueId(issueId);
             issuePayload.setProjectId(projectId);
             sagaClient.startSaga("agile-delete-issue", new StartInstanceDTO(JSON.toJSONString(issuePayload), "", ""));
+            //delete cache
+            redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ':' + "*",
+                    "Agile:BurnDownReport" + projectId + ':' + "*",
+                    "Agile:SprintIssueStatusReport" + projectId + ':' + "*",
+                    "Agile:CumulativeFlowDiagram" + projectId + ':' + "*",
+            });
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
         }

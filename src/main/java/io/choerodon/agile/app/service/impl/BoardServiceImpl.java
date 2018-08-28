@@ -339,7 +339,19 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public UserSettingDTO queryUserSettingBoard(Long projectId, Long boardId) {
-        return ConvertHelper.convert(queryUserSettingBoardByBoardId(projectId, boardId, DetailsHelper.getUserDetails().getUserId()), UserSettingDTO.class);
+        UserSettingDO userSettingDO = queryUserSettingBoardByBoardId(projectId, boardId, DetailsHelper.getUserDetails().getUserId());
+        if (userSettingDO == null) {
+            UserSettingE userSettingE = new UserSettingE();
+            userSettingE.setProjectId(projectId);
+            userSettingE.setBoardId(boardId);
+            userSettingE.setTypeCode("board");
+            userSettingE.setUserId(DetailsHelper.getUserDetails().getUserId());
+            userSettingE.setSwimlaneBasedCode("swimlane_none");
+            userSettingE.setDefaultBoard(false);
+            return ConvertHelper.convert(userSettingRepository.create(userSettingE), UserSettingDTO.class);
+        } else {
+            return ConvertHelper.convert(userSettingDO, UserSettingDTO.class);
+        }
     }
 
     @Override

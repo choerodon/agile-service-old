@@ -39,12 +39,16 @@ public class SprintRepositoryImpl implements SprintRepository {
 
     @Override
     public SprintE updateSprint(SprintE sprintE) {
-        redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*",
-                "Agile:BurnDownReport" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*"});
         SprintDO sprintDO = sprintConverter.entityToDo(sprintE);
         if (sprintMapper.updateByPrimaryKeySelective(sprintDO) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
+        //清除冲刺报表相关缓存
+        redisUtil.deleteRedisCache(new String[]{
+                "Agile:BurnDownCoordinate" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*",
+                "Agile:BurnDownReport" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*",
+                "Agile:SprintIssueStatusReport" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*"
+        });
         return sprintConverter.doToEntity(sprintMapper.selectByPrimaryKey(sprintDO.getSprintId()));
     }
 

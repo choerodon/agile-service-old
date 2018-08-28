@@ -21,6 +21,7 @@ import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -316,6 +317,7 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
+    @Cacheable(cacheNames = "SprintIssueStatusReport", key = "'Agile' + ':' + 'SprintIssueStatusReport' + #projectId + ':' + #sprintId + ':' + #status + ':' + @pageRequest.page + ':' + @pageRequest.size")
     public Page<IssueListDTO> queryIssueByOptions(Long projectId, Long sprintId, String status, PageRequest pageRequest) {
         SprintDO sprintDO = new SprintDO();
         sprintDO.setProjectId(projectId);

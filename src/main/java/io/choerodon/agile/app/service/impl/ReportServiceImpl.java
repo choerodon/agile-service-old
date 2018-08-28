@@ -165,7 +165,10 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
+    @Cacheable(cacheNames = "CumulativeFlowDiagram", key =
+            "'Agile' + ':' + 'CumulativeFlowDiagram' + #projectId + ':' + @cumulativeFlowFilterDTO.toString()")
     public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
+        LOGGER.info(cumulativeFlowFilterDTO.toString());
         //获取当前符合条件的所有issueIds
         String filterSql = null;
         if (cumulativeFlowFilterDTO.getQuickFilterIds() != null && !cumulativeFlowFilterDTO.getQuickFilterIds().isEmpty()) {
@@ -1152,6 +1155,8 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
+    @Cacheable(cacheNames = "VersionChart", key =
+            "'Agile' + ':' + 'VersionChart' + #projectId + ':' + #versionId + ':' + #type")
     public List<GroupDataChartDO> queryVersionChart(Long projectId, Long versionId, String type) {
         List<GroupDataChartDO> result = null;
         switch (type) {

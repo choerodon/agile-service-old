@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.infra.common.annotation.DataLog;
+import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.converter.ProductVersionConverter;
@@ -25,6 +26,8 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     private ProductVersionMapper versionMapper;
     @Autowired
     private ProductVersionConverter versionConverter;
+    @Autowired
+    private RedisUtil redisUtil;
 
     private static final String INSERT_ERROR = "error.version.insert";
     private static final String DELETE_ERROR = "error.version.delete";
@@ -46,6 +49,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
         if(versionMapper.delete(version) != 1){
             throw new CommonException(DELETE_ERROR);
         }
+        redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionE.getProjectId() + ':' + versionE.getVersionId()+ "*"});
         return true;
     }
 
