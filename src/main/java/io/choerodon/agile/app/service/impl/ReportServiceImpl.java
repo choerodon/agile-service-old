@@ -60,6 +60,10 @@ public class ReportServiceImpl implements ReportService {
     private ProjectInfoMapper projectInfoMapper;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private IssueSprintRelMapper issueSprintRelMapper;
+    @Autowired
+    private DataLogMapper dataLogMapper;
 
     private static final String STORY_POINTS = "storyPoints";
     private static final String REMAINING_ESTIMATED_TIME = "remainingEstimatedTime";
