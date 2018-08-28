@@ -36,20 +36,20 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     @Override
     public ProductVersionE createVersion(ProductVersionE versionE) {
         ProductVersionDO version = versionConverter.entityToDo(versionE);
-        if(versionMapper.insertSelective(version) != 1){
+        if (versionMapper.insertSelective(version) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
         return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(version.getVersionId()));
     }
 
     @Override
-    @DataLog(type = "batchDeleteVersionByVersion",single = false)
+    @DataLog(type = "batchDeleteVersionByVersion", single = false)
     public Boolean deleteVersion(ProductVersionE versionE) {
         ProductVersionDO version = versionConverter.entityToDo(versionE);
-        if(versionMapper.delete(version) != 1){
+        if (versionMapper.delete(version) != 1) {
             throw new CommonException(DELETE_ERROR);
         }
-        redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionE.getProjectId() + ':' + versionE.getVersionId()+ "*"});
+        redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionE.getProjectId() + ':' + versionE.getVersionId() + ":" + "*"});
         return true;
     }
 
@@ -57,14 +57,14 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     public ProductVersionE updateVersion(ProductVersionE versionE, List<String> fieldList) {
         ProductVersionDO version = versionConverter.entityToDo(versionE);
         OptionalHelper.optional(fieldList);
-        if(versionMapper.updateOptional(version) != 1){
+        if (versionMapper.updateOptional(version) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
         return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(version.getVersionId()));
     }
 
     @Override
-    @DataLog(type = "batchMoveVersion",single = false)
+    @DataLog(type = "batchMoveVersion", single = false)
     public Boolean batchIssueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDO> versionIssues, Date date, Long userId) {
         versionMapper.issueToDestination(projectId, targetVersionId, versionIssues, date, userId);
         return true;
@@ -79,7 +79,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     @Override
     public ProductVersionE updateVersion(ProductVersionE versionE) {
         ProductVersionDO version = versionConverter.entityToDo(versionE);
-        if(versionMapper.updateByPrimaryKeySelective(version) != 1){
+        if (versionMapper.updateByPrimaryKeySelective(version) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
         return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(version.getVersionId()));
@@ -91,8 +91,8 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     }
 
     @Override
-    public int batchUpdateSequence(Integer sequence, Long projectId,Integer add,Long versionId) {
-        return versionMapper.batchUpdateSequence(sequence,projectId,add,versionId);
+    public int batchUpdateSequence(Integer sequence, Long projectId, Integer add, Long versionId) {
+        return versionMapper.batchUpdateSequence(sequence, projectId, add, versionId);
     }
 
 }

@@ -1682,7 +1682,7 @@
                 AND ai.issue_id IN (${filterSql})
             </if>
     </select>
-    
+
 
     <select id="listIssuesByProjectIdVersion" resultType="io.choerodon.agile.infra.dataobject.StoryMapIssueDO">
         SELECT
@@ -1972,4 +1972,13 @@
         order by ai.issue_id desc
         limit 6
     </select>
+
+    <select id="queryVersionIdsByIssueId" resultType="java.lang.Long">
+        SELECT distinct
+        avir.version_id
+        FROM
+        agile_version_issue_rel avir
+        where avir.issue_id = #{issueId} and avir.project_id = #{projectId}
+    </select>
+
 </mapper>

@@ -345,7 +345,7 @@ public class DataLogAspect {
         if (versionIssues != null && !versionIssues.isEmpty()) {
             versionIssues.forEach(versionIssueDO -> {
                 String field = FIX_VERSION.equals(versionIssueDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
-                redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + projectId + ':' + versionIssueDO.getVersionId()+ "*"});
+                redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + projectId + ':' + versionIssueDO.getVersionId() + ":" + "*"});
                 createDataLog(projectId, versionIssueDO.getIssueId(), field,
                         versionIssueDO.getName(), null, versionIssueDO.getVersionId().toString(), null);
             });
@@ -386,6 +386,7 @@ public class DataLogAspect {
                         createDataLog(projectId, issueDO.getIssueId(),
                                 FIELD_RESOLUTION, null, issueDO.getStatusName(), null, issueDO.getStatusId().toString());
                         deleteBurnDownCache(issueDO.getSprintId(), projectId, issueDO.getIssueId(), "*");
+                        deleteVersionCache(projectId, issueDO.getIssueId(), "*");
                         deleteSprintReportCache(issueDO.getSprintId(), projectId, null, "*");
                     });
                 } else {
@@ -393,6 +394,7 @@ public class DataLogAspect {
                         createDataLog(projectId, issueDO.getIssueId(),
                                 FIELD_RESOLUTION, issueDO.getStatusName(), null, issueDO.getStatusId().toString(), null);
                         deleteBurnDownCache(issueDO.getSprintId(), projectId, issueDO.getIssueId(), "*");
+                        deleteVersionCache(projectId, issueDO.getIssueId(), "*");
                         deleteSprintReportCache(issueDO.getSprintId(), projectId, null, "*");
                     });
                 }
@@ -475,7 +477,7 @@ public class DataLogAspect {
                 throw new CommonException("error.productVersion.get");
             }
             //批量sql
-            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + projectId + ':' + productVersionDO.getVersionId()+ "*"});
+            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + projectId + ':' + productVersionDO.getVersionId() + ":" + "*"});
             for (VersionIssueDO versionIssueDO : versionIssueDOS) {
                 String field = FIX_VERSION.equals(versionIssueDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
                 createDataLog(projectId, versionIssueDO.getIssueId(), field, null,
@@ -565,7 +567,7 @@ public class DataLogAspect {
                     versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), versionIssueRelE.getRelationType());
             Long issueId = versionIssueRelE.getIssueId();
             String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
-            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionIssueRelE.getProjectId() + ':' + versionIssueRelE.getVersionId()+ "*"});
+            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionIssueRelE.getProjectId() + ':' + versionIssueRelE.getVersionId() + ":" + "*"});
             productVersionDOS.forEach(productVersionDO -> createDataLog(productVersionDO.getProjectId(), issueId, field,
                     productVersionDO.getName(), null, productVersionDO.getVersionId().toString(), null));
         }
@@ -585,7 +587,7 @@ public class DataLogAspect {
             } else {
                 field = FIX_VERSION.equals(versionIssueRelDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
             }
-            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionIssueRelDO.getProjectId() + ':' + versionIssueRelDO.getVersionId()+ "*"});
+            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionIssueRelDO.getProjectId() + ':' + versionIssueRelDO.getVersionId() + ":" + "*"});
             createDataLog(versionIssueRelDO.getProjectId(), versionIssueRelDO.getIssueId(), field,
                     productVersionMapper.selectByPrimaryKey(versionIssueRelDO.getVersionId()).getName(), null,
                     versionIssueRelDO.getVersionId().toString(), null);
@@ -809,7 +811,7 @@ public class DataLogAspect {
             } else {
                 field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
             }
-            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionIssueRelE.getProjectId() + ':' + versionIssueRelE.getVersionId()+ "*"});
+            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionIssueRelE.getProjectId() + ':' + versionIssueRelE.getVersionId() + ":" + "*"});
             createDataLog(versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), field,
                     null, productVersionMapper.selectByPrimaryKey(versionIssueRelE.getVersionId()).getName(),
                     null, versionIssueRelE.getVersionId().toString());
@@ -850,7 +852,7 @@ public class DataLogAspect {
                 } else {
                     field = FIX_VERSION.equals(productVersionDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
                 }
-                redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + productVersionDO.getProjectId() + ':' + productVersionDO.getVersionId()+ "*"});
+                redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + productVersionDO.getProjectId() + ':' + productVersionDO.getVersionId() + ":" + "*"});
                 createDataLog(projectId, issueId, field, productVersionDO.getName(),
                         null, productVersionDO.getVersionId().toString(), null);
             }
@@ -870,7 +872,7 @@ public class DataLogAspect {
             if (productVersionDO == null) {
                 throw new CommonException("error.productVersion.get");
             }
-            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + productVersionDO.getProjectId() + ':' + productVersionDO.getVersionId()+ "*"});
+            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + productVersionDO.getProjectId() + ':' + productVersionDO.getVersionId() + ":" + "*"});
             for (Long issueId : versionIssueRelE.getIssueIds()) {
                 createDataLog(versionIssueRelE.getProjectId(), issueId, FIELD_FIX_VERSION, null,
                         productVersionDO.getName(), null, productVersionDO.getVersionId().toString());
@@ -888,8 +890,9 @@ public class DataLogAspect {
                 IssueStatusDO issueStatusDO = issueStatusMapper.selectByPrimaryKey(issueE.getStatusId());
                 if ((issueStatusDO.getCompleted() != null && issueStatusDO.getCompleted())) {
                     deleteBurnDownCache(issueE.getSprintId(), issueE.getProjectId(), issueE.getIssueId(), "*");
+                    deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), "*");
                     deleteSprintReportCache(issueE.getSprintId(), issueE.getProjectId(), issueE.getIssueId(), "*");
-                    //todo 版本缓存删除
+                    deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), "*");
                     createDataLog(issueE.getProjectId(), issueE.getIssueId(), FIELD_RESOLUTION, null,
                             issueStatusDO.getName(), null, issueStatusDO.getId().toString());
                 }
@@ -906,6 +909,11 @@ public class DataLogAspect {
             throw new CommonException(ERROR_UPDATE);
         }
         return result;
+    }
+
+    private void deleteVersionCache(Long projectId, Long issueId, String type) {
+        List<Long> versionId = issueMapper.queryVersionIdsByIssueId(issueId, projectId);
+        versionId.forEach(id -> redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + projectId + ':' + versionId + ":" + type}));
     }
 
     private void handleSprintDataLog(Object[] args) {
@@ -963,6 +971,7 @@ public class DataLogAspect {
             dataLogE.setNewString(currentTypeName);
             dataLogRepository.create(dataLogE);
             deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
+            deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), "*");
             deleteSprintReportCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
             redisUtil.deleteRedisCache(new String[]{"Agile:CumulativeFlowDiagram" + originIssueDO.getProjectId() + ':' + "*"});
         }
@@ -1011,6 +1020,7 @@ public class DataLogAspect {
             Boolean condition = (originStatus.getCompleted() != null && originStatus.getCompleted()) || (currentStatus.getCompleted() != null && currentStatus.getCompleted());
             if (condition) {
                 deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
+                deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), "*");
                 deleteSprintReportCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
                 redisUtil.deleteRedisCache(new String[]{"Agile:CumulativeFlowDiagram" + originIssueDO.getProjectId() + ':' + "*"});
                 dataLogResolution(originIssueDO.getProjectId(), originIssueDO.getIssueId(), originStatus, currentStatus);
@@ -1039,6 +1049,8 @@ public class DataLogAspect {
             newData = zero.toString();
         }
         deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "remainingEstimatedTime");
+        deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), "remain_time");
+        deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), "*");
         createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
                 FIELD_TIMEESTIMATE, oldData, newData, oldData, newData);
     }
@@ -1065,6 +1077,7 @@ public class DataLogAspect {
                 newString = issueE.getStoryPoints().toString();
             }
             deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), STORY_POINTS_FIELD);
+            deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), "story_point");
             deleteSprintReportCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
             createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
                     FIELD_STORY_POINTS, oldString, newString, null, null);
