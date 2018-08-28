@@ -322,4 +322,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     List<IssueSprintDO> queryIssueSprintByIssueId(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     Integer countUnResolveByProjectId(Long projectId);
+
+    Integer countIssueByProjectId(Long projectId);
+
+    List<UndistributedIssueDO> queryUnDistributedIssues(Long projectId);
 }
