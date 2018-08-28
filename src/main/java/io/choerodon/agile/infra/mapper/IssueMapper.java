@@ -1,12 +1,13 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.mybatis.common.BaseMapper;
-import io.choerodon.agile.infra.dataobject.*;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+
+import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.mybatis.common.BaseMapper;
 
 
 /**
@@ -326,4 +327,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     Integer countIssueByProjectId(Long projectId);
 
     List<UndistributedIssueDO> queryUnDistributedIssues(Long projectId);
+
+    List<UnfinishedIssueDO> queryUnfinishedIssues(@Param("projectId") Long projectId,
+                                                   @Param("assigneeId") Long assigneeId);
 }

@@ -213,4 +213,7 @@ public interface IssueService {
     JSONObject countUnResolveByProjectId(Long projectId);
 
     List<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId);
+
+    List<UnfinishedIssueDTO> queryUnfinishedIssues(Long projectId,Long assigneeId);
+
 }
