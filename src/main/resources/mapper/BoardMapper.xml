@@ -5,11 +5,11 @@
     <select id="queryByProjectIdWithUser" resultType="io.choerodon.agile.infra.dataobject.BoardDO">
         SELECT
             ab.*,
-            IF
-            (aus.default_board_id IS NULL, 0, 1) AS user_default
-        FROM agile_board ab LEFT JOIN agile_user_setting aus ON ab.board_id = aus.default_board_id
+            IF(aus.is_default_board IS NULL, 0, 1) AS user_default
+        FROM agile_board ab LEFT JOIN agile_user_setting aus ON ab.board_id = aus.board_id
                                                                 AND aus.project_id = ab.project_id AND
-                                                                aus.user_id = #{userId}
+                                                                aus.type_code = 'board' and
+                                                                aus.user_id = #{userId} and is_default_board = 1
         WHERE ab.project_id = #{projectId}
     </select>
 

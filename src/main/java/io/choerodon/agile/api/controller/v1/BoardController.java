@@ -2,6 +2,7 @@ package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.IssueMoveDTO;
+import io.choerodon.agile.api.dto.UserSettingDTO;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.dto.BoardDTO;
 import io.choerodon.agile.app.service.BoardService;
@@ -128,6 +129,32 @@ public class BoardController {
         return Optional.ofNullable(boardService.queryByProjectId(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.boardList.get"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("根据projectId查询项目下的用户的board设置")
+    @GetMapping(value = "/user_setting/{boardId}")
+    public ResponseEntity<UserSettingDTO> queryUserSettingBoard(@ApiParam(value = "项目id", required = true)
+                                                                @PathVariable(name = "project_id") Long projectId,
+                                                                @ApiParam(value = "agile board id", required = true)
+                                                                @PathVariable Long boardId) {
+        return Optional.ofNullable(boardService.queryUserSettingBoard(projectId, boardId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.userSettingBoard.get"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("更新用户泳道设置")
+    @PostMapping(value = "/user_setting/{boardId}")
+    public ResponseEntity<UserSettingDTO> updateUserSettingBoard(@ApiParam(value = "项目id", required = true)
+                                                                 @PathVariable(name = "project_id") Long projectId,
+                                                                 @ApiParam(value = "agile board id", required = true)
+                                                                 @PathVariable Long boardId,
+                                                                 @ApiParam(value = "swimlaneBasedCode", required = true)
+                                                                 @RequestParam String swimlaneBasedCode) {
+        return Optional.ofNullable(boardService.updateUserSettingBoard(projectId, boardId,swimlaneBasedCode))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.userSettingBoard.update"));
     }
 
 }

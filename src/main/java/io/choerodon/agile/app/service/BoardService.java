@@ -3,6 +3,7 @@ package io.choerodon.agile.app.service;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.BoardDTO;
 import io.choerodon.agile.api.dto.IssueMoveDTO;
+import io.choerodon.agile.api.dto.UserSettingDTO;
 
 import java.util.List;
 
@@ -28,4 +29,22 @@ public interface BoardService {
 
     List<BoardDTO> queryByProjectId(Long projectId);
 
+    /**
+     * 查询用户看板设置
+     *
+     * @param projectId projectId
+     * @param boardId   boardId
+     * @return UserSettingDTO
+     */
+    UserSettingDTO queryUserSettingBoard(Long projectId, Long boardId);
+
+    /**
+     * 更新用户swimLaneBasedCode设置
+     *
+     * @param projectId         projectId
+     * @param boardId           boardId
+     * @param swimlaneBasedCode swimlaneBasedCode
+     * @return UserSettingDTO
+     */
+    UserSettingDTO updateUserSettingBoard(Long projectId, Long boardId, String swimlaneBasedCode);
 }

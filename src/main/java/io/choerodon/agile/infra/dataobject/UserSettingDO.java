@@ -5,6 +5,7 @@ import io.choerodon.mybatis.annotation.ModifyAudit;
 import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
 
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -26,7 +27,14 @@ public class UserSettingDO extends AuditDomain {
 
     private Long projectId;
 
-    private Long defaultBoardId;
+    private Long boardId;
+
+    @Column(name = "is_default_board")
+    private Boolean defaultBoard;
+
+    private String typeCode;
+
+    private String swimlaneBasedCode;
 
     public Long getSettingId() {
         return settingId;
@@ -52,12 +60,36 @@ public class UserSettingDO extends AuditDomain {
         this.projectId = projectId;
     }
 
-    public Long getDefaultBoardId() {
-        return defaultBoardId;
+    public Long getBoardId() {
+        return boardId;
     }
 
-    public void setDefaultBoardId(Long defaultBoardId) {
-        this.defaultBoardId = defaultBoardId;
+    public void setBoardId(Long boardId) {
+        this.boardId = boardId;
+    }
+
+    public Boolean getDefaultBoard() {
+        return defaultBoard;
+    }
+
+    public void setDefaultBoard(Boolean defaultBoard) {
+        this.defaultBoard = defaultBoard;
+    }
+
+    public String getTypeCode() {
+        return typeCode;
+    }
+
+    public void setTypeCode(String typeCode) {
+        this.typeCode = typeCode;
+    }
+
+    public String getSwimlaneBasedCode() {
+        return swimlaneBasedCode;
+    }
+
+    public void setSwimlaneBasedCode(String swimlaneBasedCode) {
+        this.swimlaneBasedCode = swimlaneBasedCode;
     }
 
     @Override

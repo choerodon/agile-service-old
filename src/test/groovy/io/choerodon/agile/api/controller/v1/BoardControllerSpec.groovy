@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.BoardDTO
 import io.choerodon.agile.api.dto.IssueMoveDTO
+import io.choerodon.agile.api.dto.UserSettingDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.BoardService
 import io.choerodon.agile.infra.dataobject.BoardDO
@@ -129,11 +130,11 @@ class BoardControllerSpec extends Specification {
         when:
         HttpEntity<IssueMoveDTO> issueMoveDTOHttpEntity = new HttpEntity<>(issueMoveDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board/issue/{issueId}/move",
-                                 HttpMethod.POST,
-                                 issueMoveDTOHttpEntity,
-                                 IssueMoveDTO.class,
-                                 projectId,
-                                 1L)
+                HttpMethod.POST,
+                issueMoveDTOHttpEntity,
+                IssueMoveDTO.class,
+                projectId,
+                1L)
         then:
         entity.statusCode.is2xxSuccessful()
         IssueDO issueDO = issueMapper.selectByPrimaryKey(1L)
@@ -166,6 +167,34 @@ class BoardControllerSpec extends Specification {
         JSONObject columnDatas = result.get("columnsData")
         List<ColumnAndIssueDO> columns = columnDatas.get("columns")
         columns.size() == 3
+    }
+
+    def 'updateUserSettingBoard'() {
+        when: '发送更新请求'
+        def entity = restTemplate.postForEntity("/v1/projects/{project_id}/board/user_setting/{boardId}?swimlaneBasedCode={swimlaneBasedCode}",
+                null, UserSettingDTO, projectId, boardId, "assignee")
+        then: '校验请求'
+        entity.statusCode.is2xxSuccessful()
+        and: '设置值'
+        UserSettingDTO userSettingDTO = entity.body
+        expect: '期望值'
+        userSettingDTO.settingId != null
+        userSettingDTO.swimlaneBasedCode == "assignee"
+        userSettingDTO.objectVersionNumber != null
+    }
+
+    def 'queryUserSettingBoard'() {
+        when: '发送查询请求'
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/board/user_setting/{boardId}",
+                UserSettingDTO, projectId, boardId)
+        then: '校验请求'
+        entity.statusCode.is2xxSuccessful()
+        and: '设置值'
+        UserSettingDTO userSettingDTO = entity.body
+        expect: '期望值'
+        userSettingDTO.settingId != null
+        userSettingDTO.swimlaneBasedCode == "assignee"
+        userSettingDTO.objectVersionNumber != null
     }
 
     def 'deleteScrumBoard'() {
