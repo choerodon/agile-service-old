@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service.impl;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
@@ -1528,8 +1529,16 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public Integer countUnResolveByProjectId(Long projectId) {
-        return issueMapper.countUnResolveByProjectId(projectId);
+    public JSONObject countUnResolveByProjectId(Long projectId) {
+        JSONObject result = new JSONObject();
+        result.put("all", issueMapper.countIssueByProjectId(projectId));
+        result.put("unResolve", issueMapper.countUnResolveByProjectId(projectId));
+        return result;
+    }
+
+    @Override
+    public List<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId) {
+        return ConvertHelper.convertList(issueMapper.queryUnDistributedIssues(projectId), UndistributedIssueDTO.class);
     }
 
 }

@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.service;
 
+import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
@@ -209,5 +210,7 @@ public interface IssueService {
 
     void storymapMove(Long projectId, StoryMapMoveDTO storyMapMoveDTO);
 
-    Integer countUnResolveByProjectId(Long projectId);
+    JSONObject countUnResolveByProjectId(Long projectId);
+
+    List<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId);
 }

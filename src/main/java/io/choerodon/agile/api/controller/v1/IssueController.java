@@ -484,11 +484,21 @@ public class IssueController {
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("统计当前项目下未完成的任务数，包括故事、任务、缺陷")
     @GetMapping(value = "/count")
-    public ResponseEntity<Integer> countUnResolveByProjectId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<JSONObject> countUnResolveByProjectId(@ApiParam(value = "项目id", required = true)
                                                              @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(issueService.countUnResolveByProjectId(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.countUnResolveIssue.get"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("查询未分配的问题，类型为story,task,bug")
+    @GetMapping(value = "/undistributed")
+    public ResponseEntity<List<UndistributedIssueDTO>> queryUnDistributedIssues(@ApiParam(value = "项目id", required = true)
+                                                                                @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(issueService.queryUnDistributedIssues(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.UndistributedIssueList.get"));
     }
 
 }
