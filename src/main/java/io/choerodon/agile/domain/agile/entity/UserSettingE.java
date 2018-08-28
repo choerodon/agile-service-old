@@ -14,7 +14,13 @@ public class UserSettingE {
 
     private Long projectId;
 
-    private Long defaultBoardId;
+    private Long boardId;
+
+    private Boolean defaultBoard;
+
+    private String typeCode;
+
+    private String swimlaneBasedCode;
 
     private Long objectVersionNumber;
 
@@ -42,12 +48,28 @@ public class UserSettingE {
         this.projectId = projectId;
     }
 
-    public Long getDefaultBoardId() {
-        return defaultBoardId;
+    public Long getBoardId() {
+        return boardId;
     }
 
-    public void setDefaultBoardId(Long defaultBoardId) {
-        this.defaultBoardId = defaultBoardId;
+    public void setBoardId(Long boardId) {
+        this.boardId = boardId;
+    }
+
+    public Boolean getDefaultBoard() {
+        return defaultBoard;
+    }
+
+    public void setDefaultBoard(Boolean defaultBoard) {
+        this.defaultBoard = defaultBoard;
+    }
+
+    public String getTypeCode() {
+        return typeCode;
+    }
+
+    public void setTypeCode(String typeCode) {
+        this.typeCode = typeCode;
     }
 
     public Long getObjectVersionNumber() {
@@ -56,6 +78,14 @@ public class UserSettingE {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public String getSwimlaneBasedCode() {
+        return swimlaneBasedCode;
+    }
+
+    public void setSwimlaneBasedCode(String swimlaneBasedCode) {
+        this.swimlaneBasedCode = swimlaneBasedCode;
     }
 
     public void initUserSetting(Long projectId) {

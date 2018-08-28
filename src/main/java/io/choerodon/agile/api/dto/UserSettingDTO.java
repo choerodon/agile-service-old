@@ -8,7 +8,7 @@ public class UserSettingDTO {
 
     private Long settingId;
 
-    private Long defaultBoardId;
+    private String swimlaneBasedCode;
 
     private Long objectVersionNumber;
 
@@ -20,12 +20,12 @@ public class UserSettingDTO {
         this.settingId = settingId;
     }
 
-    public Long getDefaultBoardId() {
-        return defaultBoardId;
+    public String getSwimlaneBasedCode() {
+        return swimlaneBasedCode;
     }
 
-    public void setDefaultBoardId(Long defaultBoardId) {
-        this.defaultBoardId = defaultBoardId;
+    public void setSwimlaneBasedCode(String swimlaneBasedCode) {
+        this.swimlaneBasedCode = swimlaneBasedCode;
     }
 
     public Long getObjectVersionNumber() {

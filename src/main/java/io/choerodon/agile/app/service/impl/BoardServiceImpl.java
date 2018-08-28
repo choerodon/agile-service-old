@@ -3,6 +3,7 @@ package io.choerodon.agile.app.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.BoardSprintDTO;
 import io.choerodon.agile.api.dto.IssueMoveDTO;
+import io.choerodon.agile.api.dto.UserSettingDTO;
 import io.choerodon.agile.api.validator.BoardValidator;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.domain.agile.entity.*;
@@ -15,6 +16,7 @@ import io.choerodon.agile.api.dto.BoardDTO;
 import io.choerodon.agile.app.service.BoardColumnService;
 import io.choerodon.agile.app.service.BoardService;
 import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -253,16 +255,21 @@ public class BoardServiceImpl implements BoardService {
     }
 
     private void handleUserSetting(Long boardId, Long projectId) {
+        Long userId = DetailsHelper.getUserDetails().getUserId();
         UserSettingDO userSettingDO = new UserSettingDO();
         userSettingDO.setProjectId(projectId);
+        userSettingDO.setTypeCode("board");
+        userSettingDO.setBoardId(boardId);
         userSettingDO.setUserId(DetailsHelper.getUserDetails().getUserId());
         UserSettingDO query = userSettingMapper.selectOne(userSettingDO);
         if (query == null) {
-            userSettingDO.setDefaultBoardId(boardId);
+            userSettingDO.setDefaultBoard(true);
             userSettingRepository.create(ConvertHelper.convert(userSettingDO, UserSettingE.class));
-        } else if (query.getDefaultBoardId() != null && !query.getDefaultBoardId().equals(boardId)) {
-            query.setDefaultBoardId(boardId);
+            userSettingRepository.updateOtherBoardNoDefault(boardId, projectId, userId);
+        } else if (!query.getDefaultBoard()) {
+            query.setDefaultBoard(true);
             userSettingRepository.update(ConvertHelper.convert(query, UserSettingE.class));
+            userSettingRepository.updateOtherBoardNoDefault(boardId, projectId, userId);
         }
     }
 
@@ -328,5 +335,40 @@ public class BoardServiceImpl implements BoardService {
     public List<BoardDTO> queryByProjectId(Long projectId) {
         Long userId = DetailsHelper.getUserDetails().getUserId();
         return ConvertHelper.convertList(boardMapper.queryByProjectIdWithUser(userId, projectId), BoardDTO.class);
+    }
+
+    @Override
+    public UserSettingDTO queryUserSettingBoard(Long projectId, Long boardId) {
+        return ConvertHelper.convert(queryUserSettingBoardByBoardId(projectId, boardId, DetailsHelper.getUserDetails().getUserId()), UserSettingDTO.class);
+    }
+
+    @Override
+    public UserSettingDTO updateUserSettingBoard(Long projectId, Long boardId, String swimlaneBasedCode) {
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
+        Long userId = customUserDetails.getUserId();
+        UserSettingE userSettingE = ConvertHelper.convert(queryUserSettingBoardByBoardId(projectId, boardId, userId), UserSettingE.class);
+        if (userSettingE == null) {
+            userSettingE = new UserSettingE();
+            userSettingE.setDefaultBoard(false);
+            userSettingE.setTypeCode("board");
+            userSettingE.setProjectId(projectId);
+            userSettingE.setBoardId(boardId);
+            userSettingE.setUserId(userId);
+            userSettingE.setSwimlaneBasedCode(swimlaneBasedCode);
+            userSettingE = userSettingRepository.create(userSettingE);
+        } else {
+            userSettingE.setSwimlaneBasedCode(swimlaneBasedCode);
+            userSettingE = userSettingRepository.update(userSettingE);
+        }
+        return ConvertHelper.convert(userSettingE, UserSettingDTO.class);
+    }
+
+    private UserSettingDO queryUserSettingBoardByBoardId(Long projectId, Long boardId, Long userId) {
+        UserSettingDO userSettingDO = new UserSettingDO();
+        userSettingDO.setProjectId(projectId);
+        userSettingDO.setBoardId(boardId);
+        userSettingDO.setTypeCode("board");
+        userSettingDO.setUserId(userId);
+        return userSettingMapper.selectOne(userSettingDO);
     }
 }

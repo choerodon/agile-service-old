@@ -23,4 +23,14 @@ public interface UserSettingRepository {
      * @return UserSettingE
      */
     UserSettingE update(UserSettingE userSettingE);
+
+    /**
+     * 更新用户其他板默认的为非默认
+     *
+     * @param boardId   boardId
+     * @param projectId projectId
+     * @param userId    userId
+     * @return
+     */
+    Integer updateOtherBoardNoDefault(Long boardId, Long projectId, Long userId);
 }

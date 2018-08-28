@@ -23,4 +23,20 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_user_setting.groovy') {
             column(name: 'default_board_id')
         }
     }
+    changeSet(id: '2018-08-28-agile-user-setting-add-column', author: 'dinghuang123@gmail.com') {
+        addColumn(tableName: 'agile_user_setting') {
+            column(name: 'swimlane_based_code', type: 'VARCHAR(100)', remarks: '泳道类型', defaultValue: 'swimlane_none')
+        }
+        addColumn(tableName: 'agile_user_setting') {
+            column(name: 'is_default_board', type: 'tinyint', remarks: '是否默认泳道', defaultValue: '0')
+        }
+        addColumn(tableName: 'agile_user_setting') {
+            column(name: 'type_code', type: 'VARCHAR(100)', remarks: '用户设置类型')
+        }
+        renameColumn(columnDataType: 'BIGINT UNSIGNED', newColumnName: 'board_id', oldColumnName: 'default_board_id', remarks: '看板id', tableName: 'agile_user_setting')
+        sql(stripComments: true, splitStatements: true, endDelimiter: ';') {
+            "update agile_user_setting set is_default_board = 1;" +
+                    "update agile_user_setting set type_code = 'board';"
+        }
+    }
 }

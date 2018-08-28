@@ -41,4 +41,9 @@ public class UserSettingRepositoryImpl implements UserSettingRepository {
         }
         return ConvertHelper.convert(userSettingMapper.selectByPrimaryKey(userSettingDO.getSettingId()), UserSettingE.class);
     }
+
+    @Override
+    public Integer updateOtherBoardNoDefault(Long boardId, Long projectId, Long userId) {
+        return userSettingMapper.updateOtherBoardNoDefault(boardId,projectId,userId);
+    }
 }
