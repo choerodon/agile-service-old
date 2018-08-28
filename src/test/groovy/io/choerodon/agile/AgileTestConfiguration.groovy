@@ -10,6 +10,7 @@ import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl
 import io.choerodon.agile.domain.agile.event.ProjectEvent
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.*
+import io.choerodon.agile.infra.feign.FileFeignClient
 import io.choerodon.agile.infra.mapper.*
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.convertor.ApplicationContextHelper
@@ -120,6 +121,12 @@ class AgileTestConfiguration {
     UserRepository userRepository() {
         detachedMockFactory.Mock(UserRepository)
     }
+
+//    @Bean("mockFileFeignClient")
+//    @Primary
+//    FileFeignClient FileFeignClient() {
+//        detachedMockFactory.Mock(FileFeignClient)
+//    }
 
     @Bean("issueService")
     @Primary

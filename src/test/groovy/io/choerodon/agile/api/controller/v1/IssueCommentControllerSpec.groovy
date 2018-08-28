@@ -62,32 +62,6 @@ class IssueCommentControllerSpec extends Specification {
 
     }
 
-    /*
-    def 'createIssueComment'() {
-        given: '准备IssueCommentCreateDTO'
-        List<IssueCommentCreateDTO> list = new ArrayList<>()
-        IssueCommentCreateDTO createDTO = new IssueCommentCreateDTO()
-        createDTO.issueId = 1L
-        createDTO.commentText = '这是一条测试评论'
-        list.add(createDTO)
-        IssueCommentCreateDTO createDTO1 = new IssueCommentCreateDTO()
-        createDTO1.issueId = 10L
-        createDTO1.commentText = '这是一条测试评论1'
-        list.add(createDTO1)
-
-        when: '发送创建issue评论请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issue_comment', test, IssueCommentDTO, projectId)
-
-        then: '请求结果'
-        entity.statusCode.toString() == resultCode
-        entity.body.commentText == resultComment
-
-        where: '期望值'
-        test       | resultCode | resultComment
-        createDTO  | 200        | '这是一条测试评论'
-        createDTO1 | 500        | null
-    }*/
-
     def 'createIssueComment'() {
         given: '准备IssueCommentCreateDTO'
         IssueCommentCreateDTO issueCommentCreateDTO = new IssueCommentCreateDTO()
