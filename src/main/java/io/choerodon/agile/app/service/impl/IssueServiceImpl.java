@@ -1541,4 +1541,8 @@ public class IssueServiceImpl implements IssueService {
         return ConvertHelper.convertList(issueMapper.queryUnDistributedIssues(projectId), UndistributedIssueDTO.class);
     }
 
+    @Override
+    public List<UnfinishedIssueDTO> queryUnfinishedIssues(Long projectId, Long assigneeId) {
+        return ConvertHelper.convertList(issueMapper.queryUnfinishedIssues(projectId,assigneeId), UnfinishedIssueDTO.class);
+    }
 }

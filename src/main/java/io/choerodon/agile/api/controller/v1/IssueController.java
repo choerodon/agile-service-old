@@ -501,4 +501,16 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.UndistributedIssueList.get"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("查询经办人未完成的问题，类型为story,task,bug")
+    @GetMapping(value = "/unfinished/{assignee_id}")
+    public ResponseEntity<List<UnfinishedIssueDTO>> queryUnfinishedIssues(@ApiParam(value = "项目id", required = true)
+                                                                          @PathVariable(name = "project_id") Long projectId,
+                                                                          @ApiParam(value = "经办人id", required = true)
+                                                                          @PathVariable(name = "assignee_id") Long assigneeId) {
+        return Optional.ofNullable(issueService.queryUnfinishedIssues(projectId,assigneeId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.UnfinishedIssueList.get"));
+    }
+
 }
