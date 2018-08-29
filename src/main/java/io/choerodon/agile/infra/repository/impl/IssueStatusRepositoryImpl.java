@@ -49,7 +49,6 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
             throw new CommonException("error.status.update");
         }
         redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + issueStatusE.getProjectId() + ':' + "*",
-                "Agile:SprintIssueStatusReport" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:CumulativeFlowDiagram" + issueStatusE.getProjectId() + ':' + "*",
         });
         return ConvertHelper.convert(issueStatusMapper.selectByPrimaryKey(issueStatusDO.getId()), IssueStatusE.class);
@@ -62,7 +61,6 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
             throw new CommonException("error.status.delete");
         }
         redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + issueStatusE.getProjectId() + ':' + "*",
-                "Agile:SprintIssueStatusReport" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:CumulativeFlowDiagram" + issueStatusE.getProjectId() + ':' + "*",
         });
     }

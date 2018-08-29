@@ -262,21 +262,8 @@
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
                 AND position(#{searchArgs.summary} IN ai.summary)
             </if>
-            <if test='searchArgs.assigneeId != null and searchArgs.assigneeId != ""'>
-                AND ai.assignee_id = #{searchArgs.assigneeId}
-            </if>
         </if>
         <if test='advancedSearchArgs != null'>
-            <if test='advancedSearchArgs.resolution != null'>
-                <choose>
-                    <when test="advancedSearchArgs.resolution">
-                      and ais.is_completed = 1
-                    </when>
-                    <otherwise>
-                      and ais.is_completed = 0
-                    </otherwise>
-                </choose>
-            </if>
             <if test='advancedSearchArgs.typeCode != null and advancedSearchArgs.typeCode.size > 0'>
                 AND ai.type_code IN
                 <foreach collection="advancedSearchArgs.typeCode" item="typeCode" open="(" separator="," close=")">
@@ -329,29 +316,124 @@
         <if test='otherArgs != null'>
             <if test='otherArgs.type != null and otherArgs.type != "" and
             otherArgs.id != null and otherArgs.id.size > 0'>
-                AND ai.issue_id in (
-                SELECT oa.issue_id FROM
-                <if test='otherArgs.type == "component" '>
-                    agile_component_issue_rel oa WHERE oa.component_id
+                <if test='otherArgs.type == "assigneeId"'>
+                    <choose>
+                        <when test="otherArgs.id[0]==0">
+                            AND (ai.assignee_id = #{otherArgs.id[0]} or ai.assignee_id is null)
+                        </when>
+                        <otherwise>
+                            AND ai.assignee_id = #{otherArgs.id[0]}
+                        </otherwise>
+                    </choose>
                 </if>
-                <if test='otherArgs.type == "version" '>
-                    agile_version_issue_rel oa WHERE oa.version_id
+                <if test='otherArgs.type == "statusId"'>
+                    AND ai.status_id in
+                    <foreach collection="otherArgs.id" item="id" open="(" separator=","
+                             close=")">
+                        #{id}
+                    </foreach>
                 </if>
-                <if test='otherArgs.type == "epic" '>
-                    agile_issue oa where oa.epic_id
+                <if test='otherArgs.type == "resolution"'>
+                    and ai.issue_id in
+                    (select ai5.issue_id from agile_issue ai5 left join agile_issue_status ais2 on ai5.status_id =
+                    ais2.id
+                    where ais2.is_completed in
+                    <foreach collection="otherArgs.id" item="id" open="(" separator=","
+                             close=")">
+                        #{id}
+                    </foreach>
+                    )
                 </if>
-                <if test='otherArgs.type == "label" '>
-                    agile_label_issue_rel oa where oa.label_id
+                <if test='otherArgs.type == "component"'>
+                    <choose>
+                        <when test="otherArgs.id.size == 1 and otherArgs.id[0] == 0">
+                            and ai.issue_id in (SELECT ai5.issue_id from agile_issue ai5 left join
+                            agile_component_issue_rel oa
+                            on ai5.issue_id = oa.issue_id WHERE
+                            oa.component_id is null )
+                        </when>
+                        <otherwise>
+                            and ai.issue_id in
+                            (SELECT oaa.issue_id FROM agile_component_issue_rel oaa WHERE
+                            oaa.component_id in
+                            <foreach collection="otherArgs.id" item="id" open="(" separator=","
+                                     close=")">
+                                #{id}
+                            </foreach>
+                            )
+                        </otherwise>
+                    </choose>
                 </if>
-                <if test='otherArgs.type =="sprint"'>
-                    agile_issue_sprint_rel oa where oa.sprint_id
+                <if test='otherArgs.type == "fixVersion"'>
+                    <choose>
+                        <when test="otherArgs.id.size == 1 and otherArgs.id[0] == 0">
+                            and ai.issue_id in (SELECT ai5.issue_id from agile_issue ai5 left join
+                            agile_version_issue_rel oa
+                            on ai5.issue_id = oa.issue_id and oa.relation_type = 'fix' WHERE
+                            oa.version_id is null )
+                        </when>
+                        <otherwise>
+                            and ai.issue_id in
+                            (SELECT oa.issue_id FROM agile_version_issue_rel oa WHERE oa.relation_type = 'fix' and
+                            oa.version_id in
+                            <foreach collection="otherArgs.id" item="id" open="(" separator=","
+                                     close=")">
+                                #{id}
+                            </foreach>
+                            )
+                        </otherwise>
+                    </choose>
                 </if>
-                in
-                <foreach collection="otherArgs.id" item="id" open="(" separator=","
-                         close=")">
-                    #{id}
-                </foreach>
-                )
+                <if test='otherArgs.type == "sprint"'>
+                    <choose>
+                        <when test="otherArgs.id.size == 1 and otherArgs.id[0] == 0">
+                            and ai.issue_id in (SELECT ai5.issue_id from agile_issue ai5 left join
+                            agile_issue_sprint_rel oa
+                            on ai5.issue_id = oa.issue_id WHERE
+                            oa.sprint_id is null )
+                        </when>
+                        <otherwise>
+                            and ai.issue_id in
+                            (SELECT oa.issue_id FROM agile_issue_sprint_rel oa WHERE
+                            oa.sprint_id in
+                            <foreach collection="otherArgs.id" item="id" open="(" separator=","
+                                     close=")">
+                                #{id}
+                            </foreach>
+                            )
+                        </otherwise>
+                    </choose>
+                </if>
+                <if test='otherArgs.type == "epic"'>
+                    <choose>
+                        <when test="otherArgs.id.size == 1 and otherArgs.id[0] == 0">
+                            and (ai.epic_id is null or ai.epic_id = 0) and ai.type_code != 'issue_epic'
+                        </when>
+                        <otherwise>
+                            and ai.epic_id in
+                            <foreach collection="otherArgs.id" item="id" open="(" separator=","
+                                     close=")">
+                                #{id}
+                            </foreach>
+                        </otherwise>
+                    </choose>
+                </if>
+                <if test='otherArgs.type == "version"'>
+                    AND ai.issue_id in ( SELECT oa.issue_id FROM
+                    agile_version_issue_rel oa WHERE oa.version_id in
+                    <foreach collection="otherArgs.id" item="id" open="(" separator=","
+                             close=")">
+                        #{id}
+                    </foreach>)
+                </if>
+                <if test='otherArgs.type == "label"'>
+                    AND ai.issue_id in ( SELECT oa.issue_id FROM
+                    agile_label_issue_rel oa WHERE oa.version_id in
+                    <foreach collection="otherArgs.id" item="id" open="(" separator=","
+                             close=")">
+                        #{id}
+                    </foreach>)
+                </if>
             </if>
             <if test='otherArgs.issueIds != null and otherArgs.issueIds.size > 0'>
                 AND ai.issue_id in
@@ -441,43 +523,44 @@
 
     <select id="queryStoryMapEpicList" resultType="io.choerodon.agile.infra.dataobject.StoryMapEpicDO">
         SELECT
-            ai.issue_id,
-            ai.summary,
-            ai.description,
-            ai.project_id,
-            ai.epic_name,
-            alv. NAME AS color,
-            ai.object_version_number,
-            ai.epic_sequence,
-            CONCAT_WS(
-                '-',
-                api.project_code,
-                ai.issue_num
-            ) AS issue_num,
-            alv2. NAME AS status_color,
-            ais. NAME AS status_name
+        ai.issue_id,
+        ai.summary,
+        ai.description,
+        ai.project_id,
+        ai.epic_name,
+        alv. NAME AS color,
+        ai.object_version_number,
+        ai.epic_sequence,
+        CONCAT_WS(
+        '-',
+        api.project_code,
+        ai.issue_num
+        ) AS issue_num,
+        alv2. NAME AS status_color,
+        ais. NAME AS status_name
         FROM
-            agile_issue ai
+        agile_issue ai
         LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
         LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_lookup_value alv2 ON alv2.value_code = CASE ais.category_code
         WHEN 'todo' THEN
-            'issue_status_color_todo'
+        'issue_status_color_todo'
         WHEN 'doing' THEN
-            'issue_status_color_doing'
+        'issue_status_color_doing'
         WHEN 'done' THEN
-            'issue_status_color_done'
+        'issue_status_color_done'
         ELSE
-            'issue_status_color_todo'
+        'issue_status_color_todo'
         END
         WHERE
-            ai.project_id = #{projectId}
+        ai.project_id = #{projectId}
         AND ai.type_code = 'issue_epic'
         <if test="showDoneEpic == null or showDoneEpic == false">
             and ai.issue_id not in
             (select adl1.issue_id from agile_data_log adl1,
-            (select max(log_id) as log_id from agile_data_log where field = 'resolution' and project_id = #{projectId} group by issue_id)
+            (select max(log_id) as log_id from agile_data_log where field = 'resolution' and project_id = #{projectId}
+            group by issue_id)
             adlh where adl1.log_id = adlh.log_id and adl1.new_value is not null
             )
         </if>
@@ -491,7 +574,7 @@
             AND ai.issue_id IN (${filterSql})
         </if>
         ORDER BY
-            ai.epic_sequence DESC
+        ai.epic_sequence DESC
     </select>
 
     <select id="queryEpicListByEpic" resultType="io.choerodon.agile.infra.dataobject.EpicDataDO">
@@ -633,7 +716,8 @@
         SELECT
         ai.issue_id
         FROM agile_issue ai,agile_issue_status ais
-        WHERE ai.status_id = ais.id AND ais.category_code != 'done' and ai.project_id = #{projectId} AND ai.type_code != 'sub_task' AND ai.type_code != 'issue_epic' AND ai.type_code != 'issue_test'
+        WHERE ai.status_id = ais.id AND ais.category_code != 'done' and ai.project_id = #{projectId} AND ai.type_code !=
+        'sub_task' AND ai.type_code != 'issue_epic' AND ai.type_code != 'issue_test'
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.versionId != null'>
                 AND ai.issue_id IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id =
@@ -951,8 +1035,9 @@
     </select>
 
     <delete id="removeIssueFromSprintByIssueIds">
-        DELETE FROM agile_issue_sprint_rel WHERE EXISTS (SELECT 0 FROM agile_sprint asp  WHERE asp.sprint_id =
-        agile_issue_sprint_rel.sprint_id AND asp.status_code != 'closed' ) and agile_issue_sprint_rel.project_id = #{projectId}
+        DELETE FROM agile_issue_sprint_rel WHERE EXISTS (SELECT 0 FROM agile_sprint asp WHERE asp.sprint_id =
+        agile_issue_sprint_rel.sprint_id AND asp.status_code != 'closed' ) and agile_issue_sprint_rel.project_id =
+        #{projectId}
         AND agile_issue_sprint_rel.issue_id IN
         <foreach collection="issueIds" item="issueId"
                  open="(" separator="," close=")">
@@ -1582,31 +1667,31 @@
 
     <select id="listIssuesByProjectIdSprint" resultType="io.choerodon.agile.infra.dataobject.StoryMapIssueDO">
         SELECT
-            aisr.sprint_id,
-            asp.sprint_name,
-            ai.issue_id,
-            ai.assignee_id,
-            ai.priority_code,
-            ai.summary,
-            ai.type_code,
-            ai.story_points,
-            ai.epic_id,
-            ai.object_version_number,
-            CONCAT_WS(
-                '-',
-                api.project_code,
-                ai.issue_num
-            ) AS issue_num,
-            ais.category_code AS  status_code,
-            ais.`name` AS status_name
+        aisr.sprint_id,
+        asp.sprint_name,
+        ai.issue_id,
+        ai.assignee_id,
+        ai.priority_code,
+        ai.summary,
+        ai.type_code,
+        ai.story_points,
+        ai.epic_id,
+        ai.object_version_number,
+        CONCAT_WS(
+        '-',
+        api.project_code,
+        ai.issue_num
+        ) AS issue_num,
+        ais.category_code AS status_code,
+        ais.`name` AS status_name
         FROM
-            agile_issue_sprint_rel aisr
+        agile_issue_sprint_rel aisr
         LEFT JOIN agile_sprint asp ON aisr.sprint_id = asp.sprint_id
         LEFT JOIN agile_issue ai
         on ai.type_code NOT IN (
-            'issue_test',
-            'sub_task',
-            'issue_epic'
+        'issue_test',
+        'sub_task',
+        'issue_epic'
         )
         <if test='onlyStory != null and onlyStory == true'>
             AND ai.type_code = 'story'
@@ -1620,7 +1705,7 @@
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
-            aisr.project_id =  #{projectId} and aisr.issue_id = ai.issue_id
+        aisr.project_id = #{projectId} and aisr.issue_id = ai.issue_id
         and aisr.sprint_id in (select sprint_id from agile_sprint where status_code != 'closed')
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
@@ -1629,88 +1714,88 @@
             AND (ai.epic_id IS NULL OR ai.epic_id = 0)
         </if>
         UNION ALL
-            SELECT
-                NULL,
-                NULL,
-                ai.issue_id,
-                ai.assignee_id,
-                ai.priority_code,
-                ai.summary,
-                ai.type_code,
-                ai.story_points,
-                ai.epic_id,
-                ai.object_version_number,
-                CONCAT_WS(
-                    '-',
-                    api.project_code,
-                    ai.issue_num
-                ) AS issue_num,
-                ais.category_code AS  status_code,
-                ais.`name` AS status_name
-            FROM
-                agile_issue ai
-            LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-            LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
-            WHERE
-                ai.project_id =  #{projectId}
-            AND issue_id NOT IN (
-                SELECT
-                    aisr.issue_id
-                FROM
-                    agile_issue_sprint_rel aisr, agile_sprint asp
-                WHERE
-                    aisr.project_id = #{projectId} and aisr.sprint_id = asp.sprint_id and asp.status_code != 'closed'
-            )
-            AND ai.type_code NOT IN (
-                'issue_test',
-                'sub_task',
-                'issue_epic'
-            )
-            <if test="pageType != null and pageType == 'storymap'">
-                AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
-            </if>
-            <if test="pageType != null and pageType == 'backlog'">
-                AND (ai.epic_id IS NULL OR ai.epic_id = 0)
-            </if>
-            <if test='onlyStory != null and onlyStory == true'>
-                AND ai.type_code = 'story'
-            </if>
-            <if test='assigneeId != null'>
-                AND ai.assignee_id = #{assigneeId}
-            </if>
-            <if test='filterSql != null'>
-                AND ai.issue_id IN (${filterSql})
-            </if>
+        SELECT
+        NULL,
+        NULL,
+        ai.issue_id,
+        ai.assignee_id,
+        ai.priority_code,
+        ai.summary,
+        ai.type_code,
+        ai.story_points,
+        ai.epic_id,
+        ai.object_version_number,
+        CONCAT_WS(
+        '-',
+        api.project_code,
+        ai.issue_num
+        ) AS issue_num,
+        ais.category_code AS status_code,
+        ais.`name` AS status_name
+        FROM
+        agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+        WHERE
+        ai.project_id = #{projectId}
+        AND issue_id NOT IN (
+        SELECT
+        aisr.issue_id
+        FROM
+        agile_issue_sprint_rel aisr, agile_sprint asp
+        WHERE
+        aisr.project_id = #{projectId} and aisr.sprint_id = asp.sprint_id and asp.status_code != 'closed'
+        )
+        AND ai.type_code NOT IN (
+        'issue_test',
+        'sub_task',
+        'issue_epic'
+        )
+        <if test="pageType != null and pageType == 'storymap'">
+            AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
+        </if>
+        <if test="pageType != null and pageType == 'backlog'">
+            AND (ai.epic_id IS NULL OR ai.epic_id = 0)
+        </if>
+        <if test='onlyStory != null and onlyStory == true'>
+            AND ai.type_code = 'story'
+        </if>
+        <if test='assigneeId != null'>
+            AND ai.assignee_id = #{assigneeId}
+        </if>
+        <if test='filterSql != null'>
+            AND ai.issue_id IN (${filterSql})
+        </if>
     </select>
 
 
     <select id="listIssuesByProjectIdVersion" resultType="io.choerodon.agile.infra.dataobject.StoryMapIssueDO">
         SELECT
-            avir.version_id,
-            apv.`name` AS version_name,
-            ai.issue_id,
-            ai.assignee_id,
-            ai.priority_code,
-            ai.summary,
-            ai.type_code,
-            ai.story_points,
-            ai.epic_id,
-            ai.object_version_number,
-            CONCAT_WS(
-                '-',
-                api.project_code,
-                ai.issue_num
-            ) AS issue_num,
-            ais.category_code AS  status_code,
-            ais.`name` AS status_name
+        avir.version_id,
+        apv.`name` AS version_name,
+        ai.issue_id,
+        ai.assignee_id,
+        ai.priority_code,
+        ai.summary,
+        ai.type_code,
+        ai.story_points,
+        ai.epic_id,
+        ai.object_version_number,
+        CONCAT_WS(
+        '-',
+        api.project_code,
+        ai.issue_num
+        ) AS issue_num,
+        ais.category_code AS status_code,
+        ais.`name` AS status_name
         FROM
-            agile_version_issue_rel avir
+        agile_version_issue_rel avir
         LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
         LEFT JOIN agile_issue ai ON
         ai.type_code NOT IN (
-            'issue_test',
-            'sub_task',
-            'issue_epic'
+        'issue_test',
+        'sub_task',
+        'issue_epic'
         )
         <if test='onlyStory != null and onlyStory == true'>
             AND ai.type_code = 'story'
@@ -1724,9 +1809,9 @@
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
-            avir.project_id = #{projectId} and avir.issue_id = ai.issue_id
+        avir.project_id = #{projectId} and avir.issue_id = ai.issue_id
         and avir.version_id in (
-           select version_id from agile_product_version where project_id = #{projectId} and status_code != 'archived'
+        select version_id from agile_product_version where project_id = #{projectId} and status_code != 'archived'
         )
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
@@ -1735,43 +1820,43 @@
             AND (ai.epic_id IS NULL OR ai.epic_id = 0)
         </if>
         UNION ALL
-            SELECT
-                NULL,
-                NULL,
-                ai.issue_id,
-                ai.assignee_id,
-                ai.priority_code,
-                ai.summary,
-                ai.type_code,
-                ai.story_points,
-                ai.epic_id,
-                ai.object_version_number,
-                CONCAT_WS(
-                    '-',
-                    api.project_code,
-                    ai.issue_num
-                ) AS issue_num,
-                ais.category_code AS  status_code,
-                ais.`name` AS status_name
-            FROM
-                agile_issue ai
-            LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-            LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
-            WHERE
-                ai.project_id = #{projectId}
-            AND issue_id NOT IN (
-                SELECT
-                    avir.issue_id
-                FROM
-                    agile_version_issue_rel avir, agile_product_version apv
-                WHERE
-                    avir.project_id = #{projectId} and avir.version_id = apv.version_id and apv.status_code != 'archived'
-            )
-            AND ai.type_code NOT IN (
-                'issue_test',
-                'sub_task',
-                'issue_epic'
-            )
+        SELECT
+        NULL,
+        NULL,
+        ai.issue_id,
+        ai.assignee_id,
+        ai.priority_code,
+        ai.summary,
+        ai.type_code,
+        ai.story_points,
+        ai.epic_id,
+        ai.object_version_number,
+        CONCAT_WS(
+        '-',
+        api.project_code,
+        ai.issue_num
+        ) AS issue_num,
+        ais.category_code AS status_code,
+        ais.`name` AS status_name
+        FROM
+        agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+        WHERE
+        ai.project_id = #{projectId}
+        AND issue_id NOT IN (
+        SELECT
+        avir.issue_id
+        FROM
+        agile_version_issue_rel avir, agile_product_version apv
+        WHERE
+        avir.project_id = #{projectId} and avir.version_id = apv.version_id and apv.status_code != 'archived'
+        )
+        AND ai.type_code NOT IN (
+        'issue_test',
+        'sub_task',
+        'issue_epic'
+        )
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
@@ -1791,31 +1876,31 @@
 
     <select id="listIssuesByProjectIdNone" resultType="io.choerodon.agile.infra.dataobject.StoryMapIssueDO">
         SELECT
-            ai.issue_id,
-            ai.assignee_id,
-            ai.priority_code,
-            ai.summary,
-            ai.type_code,
-            ai.story_points,
-            ai.epic_id,
-            ai.object_version_number,
-            CONCAT_WS(
-                '-',
-                api.project_code,
-                ai.issue_num
-            ) AS issue_num,
-            ais.category_code AS  status_code,
-            ais.`name` AS status_name
+        ai.issue_id,
+        ai.assignee_id,
+        ai.priority_code,
+        ai.summary,
+        ai.type_code,
+        ai.story_points,
+        ai.epic_id,
+        ai.object_version_number,
+        CONCAT_WS(
+        '-',
+        api.project_code,
+        ai.issue_num
+        ) AS issue_num,
+        ais.category_code AS status_code,
+        ais.`name` AS status_name
         FROM
-            agile_issue ai
+        agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
-            ai.project_id = #{projectId}
+        ai.project_id = #{projectId}
         AND ai.type_code NOT IN (
-            'issue_test',
-            'sub_task',
-            'issue_epic'
+        'issue_test',
+        'sub_task',
+        'issue_epic'
         )
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
@@ -1836,18 +1921,18 @@
 
     <select id="queryIssueSprintByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueSprintDO">
         SELECT
-            ai.issue_id,
-            aisr.sprint_id
+        ai.issue_id,
+        aisr.sprint_id
         FROM
-            ( SELECT a.issue_id FROM agile_issue a WHERE a.issue_id IN
-            <foreach collection="issueIds" item="issueId" open="(" separator=","
-                     close=")">
-               #{issueId}
-            </foreach>
-            AND a.project_id = #{projectId} ) ai
-            LEFT JOIN agile_issue_sprint_rel aisr ON ai.issue_id = aisr.issue_id
-            LEFT JOIN agile_sprint asw ON asw.sprint_id = aisr.sprint_id
-            where asw.status_code != 'closed'
+        ( SELECT a.issue_id FROM agile_issue a WHERE a.issue_id IN
+        <foreach collection="issueIds" item="issueId" open="(" separator=","
+                 close=")">
+            #{issueId}
+        </foreach>
+        AND a.project_id = #{projectId} ) ai
+        LEFT JOIN agile_issue_sprint_rel aisr ON ai.issue_id = aisr.issue_id
+        LEFT JOIN agile_sprint asw ON asw.sprint_id = aisr.sprint_id
+        where asw.status_code != 'closed'
     </select>
 
     <select id="countIssueByProjectId" resultType="java.lang.Integer">

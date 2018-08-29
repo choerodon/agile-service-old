@@ -291,22 +291,12 @@ public class DataLogAspect {
             sprintNameDTO.setSprintId(sprintId);
             sprintNameDTO.setSprintName(sprintDO.getSprintName());
             deleteBurnDownCache(sprintId, projectId, null, "*");
-            deleteSprintReportCache(sprintId, projectId, null, "*");
             for (Long issueId : issueIds) {
                 StringBuilder newSprintIdStr = new StringBuilder();
                 StringBuilder newSprintNameStr = new StringBuilder();
                 List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
                 handleBatchCreateDataLogForSpring(sprintNames, sprintNameDTO, newSprintNameStr, newSprintIdStr, sprintDO, projectId, issueId);
             }
-        }
-    }
-
-    private void deleteSprintReportCache(Long sprintId, Long projectId, Long issueId, String type) {
-        if (sprintId == null && issueId != null) {
-            sprintId = sprintMapper.queryNotCloseSprintIdByIssueId(issueId, projectId);
-        }
-        if (sprintId != null) {
-            redisUtil.deleteRedisCache(new String[]{"Agile:SprintIssueStatusReport" + projectId + ':' + sprintId + ':' + type});
         }
     }
 
@@ -387,7 +377,6 @@ public class DataLogAspect {
                                 FIELD_RESOLUTION, null, issueDO.getStatusName(), null, issueDO.getStatusId().toString());
                         deleteBurnDownCache(issueDO.getSprintId(), projectId, issueDO.getIssueId(), "*");
                         deleteVersionCache(projectId, issueDO.getIssueId(), "*");
-                        deleteSprintReportCache(issueDO.getSprintId(), projectId, null, "*");
                     });
                 } else {
                     issueDOS.forEach(issueDO -> {
@@ -395,7 +384,6 @@ public class DataLogAspect {
                                 FIELD_RESOLUTION, issueDO.getStatusName(), null, issueDO.getStatusId().toString(), null);
                         deleteBurnDownCache(issueDO.getSprintId(), projectId, issueDO.getIssueId(), "*");
                         deleteVersionCache(projectId, issueDO.getIssueId(), "*");
-                        deleteSprintReportCache(issueDO.getSprintId(), projectId, null, "*");
                     });
                 }
             }
@@ -684,13 +672,11 @@ public class DataLogAspect {
             SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
             if (activeSprintName != null) {
                 deleteBurnDownCache(activeSprintName.getSprintId(), projectId, null, "*");
-                deleteSprintReportCache(activeSprintName.getSprintId(), projectId, null, "*");
                 if (sprintId != null && sprintId.equals(activeSprintName.getSprintId())) {
                     continue;
                 }
             }
             deleteBurnDownCache(sprintId, projectId, null, "*");
-            deleteSprintReportCache(sprintId, projectId, null, "*");
             StringBuilder newSprintIdStr = new StringBuilder();
             StringBuilder newSprintNameStr = new StringBuilder();
             List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
@@ -891,7 +877,6 @@ public class DataLogAspect {
                 if ((issueStatusDO.getCompleted() != null && issueStatusDO.getCompleted())) {
                     deleteBurnDownCache(issueE.getSprintId(), issueE.getProjectId(), issueE.getIssueId(), "*");
                     deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), "*");
-                    deleteSprintReportCache(issueE.getSprintId(), issueE.getProjectId(), issueE.getIssueId(), "*");
                     deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), "*");
                     createDataLog(issueE.getProjectId(), issueE.getIssueId(), FIELD_RESOLUTION, null,
                             issueStatusDO.getName(), null, issueStatusDO.getId().toString());
@@ -926,7 +911,6 @@ public class DataLogAspect {
         if (issueSprintRelE != null) {
             SprintDO sprintDO = sprintMapper.selectByPrimaryKey(issueSprintRelE.getSprintId());
             deleteBurnDownCache(sprintDO.getSprintId(), sprintDO.getProjectId(), null, "*");
-            deleteSprintReportCache(sprintDO.getSprintId(), sprintDO.getProjectId(), null, "*");
             createDataLog(issueSprintRelE.getProjectId(), issueSprintRelE.getIssueId(),
                     FIELD_SPRINT, null, sprintDO.getSprintName(), null, issueSprintRelE.getSprintId().toString());
         }
@@ -972,7 +956,6 @@ public class DataLogAspect {
             dataLogRepository.create(dataLogE);
             deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
             deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), "*");
-            deleteSprintReportCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
             redisUtil.deleteRedisCache(new String[]{"Agile:CumulativeFlowDiagram" + originIssueDO.getProjectId() + ':' + "*"});
         }
     }
@@ -1017,12 +1000,13 @@ public class DataLogAspect {
                     FIELD_STATUS, originStatus.getName(), currentStatus.getName(),
                     originIssueDO.getStatusId().toString(),
                     issueE.getStatusId().toString());
+            //删除缓存
+            redisUtil.deleteRedisCache(new String[]{"Agile:CumulativeFlowDiagram" + originIssueDO.getProjectId() + ':' + "*"});
             Boolean condition = (originStatus.getCompleted() != null && originStatus.getCompleted()) || (currentStatus.getCompleted() != null && currentStatus.getCompleted());
             if (condition) {
                 deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
                 deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), "*");
-                deleteSprintReportCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
-                redisUtil.deleteRedisCache(new String[]{"Agile:CumulativeFlowDiagram" + originIssueDO.getProjectId() + ':' + "*"});
+                //生成解决问题日志
                 dataLogResolution(originIssueDO.getProjectId(), originIssueDO.getIssueId(), originStatus, currentStatus);
             }
         }
@@ -1077,7 +1061,6 @@ public class DataLogAspect {
             }
             deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), STORY_POINTS_FIELD);
             deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), "story_point");
-            deleteSprintReportCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
             createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
                     FIELD_STORY_POINTS, oldString, newString, null, null);
         }

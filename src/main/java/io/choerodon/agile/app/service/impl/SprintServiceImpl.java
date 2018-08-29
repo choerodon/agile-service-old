@@ -317,7 +317,6 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
-    @Cacheable(cacheNames = "SprintIssueStatusReport", key = "'Agile' + ':' + 'SprintIssueStatusReport' + #projectId + ':' + #sprintId + ':' + #status + ':' + #pageRequest.page + ':' + #pageRequest.size")
     public Page<IssueListDTO> queryIssueByOptions(Long projectId, Long sprintId, String status, PageRequest pageRequest) {
         SprintDO sprintDO = new SprintDO();
         sprintDO.setProjectId(projectId);

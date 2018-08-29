@@ -1,11 +1,13 @@
 package io.choerodon.agile.infra.dataobject;
 
 
+import java.io.Serializable;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/7/28.
  * Email: fuqianghuang01@gmail.com
  */
-public class GroupDataChartDO {
+public class GroupDataChartDO implements Serializable {
 
     private String groupDay;
 

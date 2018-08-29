@@ -167,7 +167,6 @@ public class ReportServiceImpl implements ReportService {
     @Cacheable(cacheNames = "CumulativeFlowDiagram", key =
             "'Agile' + ':' + 'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()")
     public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
-        LOGGER.info(cumulativeFlowFilterDTO.toString());
         //获取当前符合条件的所有issueIds
         String filterSql = null;
         if (cumulativeFlowFilterDTO.getQuickFilterIds() != null && !cumulativeFlowFilterDTO.getQuickFilterIds().isEmpty()) {
