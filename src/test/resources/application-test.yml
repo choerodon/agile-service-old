@@ -27,7 +27,7 @@ mybatis:
     mapUnderscoreToCamelCase: true
 logging:
   level:
-    io.choerodon.agile.infra.mapper: debug
+    io.choerodon.agile.infra.mapper: info
 data:
   dir: src/test/resources/db
 eureka:
