@@ -93,7 +93,6 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-    @Cacheable(cacheNames = "BurnDownReport", key = "'Agile' + ':' + 'BurnDownReport' + #projectId + ':' + #sprintId + ':' + #type")
     public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
         return ConvertHelper.convertList(reportIssueEList.stream().
@@ -166,7 +165,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @Cacheable(cacheNames = "CumulativeFlowDiagram", key =
-            "'Agile' + ':' + 'CumulativeFlowDiagram' + #projectId + ':' + @cumulativeFlowFilterDTO.toString()")
+            "'Agile' + ':' + 'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()")
     public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
         LOGGER.info(cumulativeFlowFilterDTO.toString());
         //获取当前符合条件的所有issueIds

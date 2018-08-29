@@ -414,7 +414,6 @@ public class IssueServiceImpl implements IssueService {
             sagaClient.startSaga("agile-delete-issue", new StartInstanceDTO(JSON.toJSONString(issuePayload), "", ""));
             //delete cache
             redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ':' + "*",
-                    "Agile:BurnDownReport" + projectId + ':' + "*",
                     "Agile:SprintIssueStatusReport" + projectId + ':' + "*",
                     "Agile:CumulativeFlowDiagram" + projectId + ':' + "*",
             });

@@ -2,12 +2,13 @@ package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
  * @author dinghuang123@gmail.com
  */
-public class IssueListDTO {
+public class IssueListDTO implements Serializable {
 
     private Long issueId;
 
