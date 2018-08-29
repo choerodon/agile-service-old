@@ -37,6 +37,7 @@ public class BoardServiceImpl implements BoardService {
     private static final String CONTRAINT_ISSUE_WITHOUT_SUBTASK = "issue_without_sub_task";
     private static final String STORY_POINTS = "story_point";
     private static final String PARENT_CHILD = "parent_child";
+    private static final String BOARD = "board";
 
     @Autowired
     private BoardRepository boardRepository;
@@ -258,7 +259,7 @@ public class BoardServiceImpl implements BoardService {
         Long userId = DetailsHelper.getUserDetails().getUserId();
         UserSettingDO userSettingDO = new UserSettingDO();
         userSettingDO.setProjectId(projectId);
-        userSettingDO.setTypeCode("board");
+        userSettingDO.setTypeCode(BOARD);
         userSettingDO.setBoardId(boardId);
         userSettingDO.setUserId(DetailsHelper.getUserDetails().getUserId());
         UserSettingDO query = userSettingMapper.selectOne(userSettingDO);
@@ -344,7 +345,7 @@ public class BoardServiceImpl implements BoardService {
             UserSettingE userSettingE = new UserSettingE();
             userSettingE.setProjectId(projectId);
             userSettingE.setBoardId(boardId);
-            userSettingE.setTypeCode("board");
+            userSettingE.setTypeCode(BOARD);
             userSettingE.setUserId(DetailsHelper.getUserDetails().getUserId());
             userSettingE.setSwimlaneBasedCode("swimlane_none");
             userSettingE.setDefaultBoard(false);
@@ -362,7 +363,7 @@ public class BoardServiceImpl implements BoardService {
         if (userSettingE == null) {
             userSettingE = new UserSettingE();
             userSettingE.setDefaultBoard(false);
-            userSettingE.setTypeCode("board");
+            userSettingE.setTypeCode(BOARD);
             userSettingE.setProjectId(projectId);
             userSettingE.setBoardId(boardId);
             userSettingE.setUserId(userId);
@@ -379,7 +380,7 @@ public class BoardServiceImpl implements BoardService {
         UserSettingDO userSettingDO = new UserSettingDO();
         userSettingDO.setProjectId(projectId);
         userSettingDO.setBoardId(boardId);
-        userSettingDO.setTypeCode("board");
+        userSettingDO.setTypeCode(BOARD);
         userSettingDO.setUserId(userId);
         return userSettingMapper.selectOne(userSettingDO);
     }

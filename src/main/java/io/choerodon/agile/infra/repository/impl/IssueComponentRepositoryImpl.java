@@ -22,13 +22,16 @@ public class IssueComponentRepositoryImpl implements IssueComponentRepository {
     @Autowired
     private RedisUtil redisUtil;
 
+    private static final String AGILE = "Agile:";
+    private static final String PIECHART = AGILE + "PieChart";
+
     @Override
     public IssueComponentE create(IssueComponentE issueComponentE) {
         IssueComponentDO issueComponentDO = ConvertHelper.convert(issueComponentE, IssueComponentDO.class);
         if (issueComponentMapper.insert(issueComponentDO) != 1) {
             throw new CommonException("error.scrum_issue_component.insert");
         }
-        redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + issueComponentE.getProjectId() + ':' + "component"});
+        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentE.getProjectId() + ':' + "component"});
         return ConvertHelper.convert(issueComponentMapper.selectByPrimaryKey(issueComponentDO.getComponentId()), IssueComponentE.class);
     }
 
@@ -38,7 +41,7 @@ public class IssueComponentRepositoryImpl implements IssueComponentRepository {
         if (issueComponentMapper.updateByPrimaryKeySelective(issueComponentDO) != 1) {
             throw new CommonException("error.scrum_issue_component.update");
         }
-        redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + issueComponentE.getProjectId() + ':' + "component"});
+        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentE.getProjectId() + ':' + "component"});
         return ConvertHelper.convert(issueComponentMapper.selectByPrimaryKey(issueComponentDO.getComponentId()), IssueComponentE.class);
     }
 
@@ -51,6 +54,6 @@ public class IssueComponentRepositoryImpl implements IssueComponentRepository {
         if (issueComponentMapper.delete(issueComponentDO) != 1) {
             throw new CommonException("error.component.delete");
         }
-        redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + issueComponentDO.getProjectId() + ':' + "component"});
+        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentDO.getProjectId() + ':' + "component"});
     }
 }

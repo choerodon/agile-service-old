@@ -8,7 +8,6 @@ import io.choerodon.agile.domain.agile.event.VersionPayload;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.IssueCountDO;
-import io.choerodon.agile.infra.dataobject.VersionIssueChangeDO;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;

@@ -167,10 +167,9 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @Cacheable(cacheNames = AGILE, key =
-            "'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()",cacheManager = "cacheManager")
+            "'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()", cacheManager = "cacheManager")
     public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
         //获取当前符合条件的所有issueIds
-        LOGGER.info("进入了累积流图");
         String filterSql = null;
         if (cumulativeFlowFilterDTO.getQuickFilterIds() != null && !cumulativeFlowFilterDTO.getQuickFilterIds().isEmpty()) {
             filterSql = sprintService.getQuickFilter(cumulativeFlowFilterDTO.getQuickFilterIds());
@@ -195,45 +194,51 @@ public class ReportServiceImpl implements ReportService {
                         || Objects.equals(columnChangeDTO.getColumnTo(), cumulativeFlowDiagramDTO.getColumnId().toString())).collect(Collectors.toList());
         if (columnChange != null && !columnChange.isEmpty()) {
             DateFormat bf = new SimpleDateFormat("yyyy-MM-dd");
-            TreeMap<String, Integer> report = new TreeMap<>();
-            if (columnChange.get(0).getDate().after(startDate)) {
-                report.put(bf.format(startDate), 0);
-            }
-            columnChange.forEach(columnChangeDTO -> {
-                String date = bf.format(columnChangeDTO.getDate());
-                if (report.get(date) == null) {
-                    Integer count = report.lastEntry() == null ? 0 : report.lastEntry().getValue();
-                    if (columnChangeDTO.getColumnFrom().equals(cumulativeFlowDiagramDTO.getColumnId().toString())) {
-                        report.put(date, count - 1);
-                    } else {
-                        report.put(date, count + 1);
-                    }
-                } else {
-                    if (columnChangeDTO.getColumnFrom().equals(cumulativeFlowDiagramDTO.getColumnId().toString())) {
-                        report.put(date, report.get(date) - 1);
-                    } else {
-                        report.put(date, report.get(date) + 1);
-                    }
-
-                }
-            });
-            Date lastDate = columnChange.get(columnChange.size() - 1).getDate();
-            if (lastDate.before(endDate)) {
-                report.put(bf.format(endDate), report.lastEntry().getValue());
-            }
+            TreeMap<String, Integer> report = handleColumnCoordinateReport(columnChange, startDate, endDate, cumulativeFlowDiagramDTO, bf);
             report.forEach((k, v) -> {
                 CoordinateDTO coordinateDTO = new CoordinateDTO();
                 coordinateDTO.setIssueCount(v);
                 try {
                     coordinateDTO.setDate(bf.parse(k));
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    LOGGER.error("Exception", e);
                 }
                 coordinateDTOS.add(coordinateDTO);
             });
             cumulativeFlowDiagramDTO.setCoordinateDTOList(coordinateDTOS);
         }
     }
+
+    private TreeMap<String, Integer> handleColumnCoordinateReport(List<ColumnChangeDTO> columnChange, Date startDate, Date endDate, CumulativeFlowDiagramDTO cumulativeFlowDiagramDTO, DateFormat bf) {
+        TreeMap<String, Integer> report = new TreeMap<>();
+        if (columnChange.get(0).getDate().after(startDate)) {
+            report.put(bf.format(startDate), 0);
+        }
+        columnChange.forEach(columnChangeDTO -> {
+            String date = bf.format(columnChangeDTO.getDate());
+            if (report.get(date) == null) {
+                Integer count = report.lastEntry() == null ? 0 : report.lastEntry().getValue();
+                if (columnChangeDTO.getColumnFrom().equals(cumulativeFlowDiagramDTO.getColumnId().toString())) {
+                    report.put(date, count - 1);
+                } else {
+                    report.put(date, count + 1);
+                }
+            } else {
+                if (columnChangeDTO.getColumnFrom().equals(cumulativeFlowDiagramDTO.getColumnId().toString())) {
+                    report.put(date, report.get(date) - 1);
+                } else {
+                    report.put(date, report.get(date) + 1);
+                }
+
+            }
+        });
+        Date lastDate = columnChange.get(columnChange.size() - 1).getDate();
+        if (lastDate.before(endDate)) {
+            report.put(bf.format(endDate), report.lastEntry().getValue());
+        }
+        return report;
+    }
+
 
     private void handleCumulativeFlowChangeDuringDate(Date startDate, Date endDate, List<Long> columnIds, List<Long> allIssueIds, List<ColumnChangeDTO> result) {
         List<ColumnChangeDTO> changeIssueDuringDate = reportAssembler.columnChangeListDoToDto(reportMapper.queryChangeIssueDuringDate(startDate,
@@ -1139,7 +1144,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-    @Cacheable(cacheNames = AGILE, key ="'VersionChart' + #projectId + ':' + #versionId + ':' + #type")
+    @Cacheable(cacheNames = AGILE, key = "'VersionChart' + #projectId + ':' + #versionId + ':' + #type")
     public List<GroupDataChartDO> queryVersionChart(Long projectId, Long versionId, String type) {
         List<GroupDataChartDO> result = null;
         switch (type) {

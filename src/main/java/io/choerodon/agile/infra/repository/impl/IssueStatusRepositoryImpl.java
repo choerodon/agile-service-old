@@ -25,6 +25,9 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
     @Autowired
     private RedisUtil redisUtil;
 
+    private static final String AGILE = "Agile:";
+    private static final String PIECHART = AGILE + "PieChart";
+
     public static String getUUID() {
         UUID uuid = UUID.randomUUID();
         String str = uuid.toString();
@@ -38,7 +41,7 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
         if (issueStatusMapper.insert(issueStatusDO) != 1) {
             throw new CommonException("error.IssueStatus.insert");
         }
-        redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + issueStatusE.getProjectId() + ':' + "status"});
+        redisUtil.deleteRedisCache(new String[]{PIECHART + issueStatusE.getProjectId() + ':' + "status"});
         return ConvertHelper.convert(issueStatusMapper.selectByPrimaryKey(issueStatusDO.getId()), IssueStatusE.class);
     }
 
@@ -53,8 +56,8 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
                 "Agile:CumulativeFlowDiagram" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:VelocityChart" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:EpicChart" + issueStatusE.getProjectId() + ":" + "*",
-                "Agile:PieChart" + issueStatusE.getProjectId() + ':' + "status",
-                "Agile:PieChart" + issueStatusE.getProjectId() + ':' + "resolution"
+                PIECHART + issueStatusE.getProjectId() + ':' + "status",
+                PIECHART + issueStatusE.getProjectId() + ':' + "resolution"
         });
         return ConvertHelper.convert(issueStatusMapper.selectByPrimaryKey(issueStatusDO.getId()), IssueStatusE.class);
     }
@@ -69,8 +72,8 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
                 "Agile:CumulativeFlowDiagram" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:VelocityChart" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:EpicChart" + issueStatusE.getProjectId() + ":" + "*",
-                "Agile:PieChart" + issueStatusE.getProjectId() + ':' + "status",
-                "Agile:PieChart" + issueStatusE.getProjectId() + ':' + "resolution"
+                PIECHART + issueStatusE.getProjectId() + ':' + "status",
+                PIECHART + issueStatusE.getProjectId() + ':' + "resolution"
         });
     }
 
