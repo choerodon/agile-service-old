@@ -1,7 +1,6 @@
 package io.choerodon.agile.api.dto;
 
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 

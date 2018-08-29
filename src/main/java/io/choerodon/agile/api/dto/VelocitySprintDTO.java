@@ -1,10 +1,12 @@
 package io.choerodon.agile.api.dto;
 
+import java.io.Serializable;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/7/26.
  * Email: fuqianghuang01@gmail.com
  */
-public class VelocitySprintDTO {
+public class VelocitySprintDTO implements Serializable {
 
     private Long sprintId;
 

@@ -4,6 +4,7 @@ import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.domain.service.IIssueService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
+import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.MoveIssueDO;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -36,6 +37,9 @@ public class IssueRepositoryImpl implements IssueRepository {
 
     @Autowired
     private IIssueService iIssueService;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     @DataLog(type = "issue")
@@ -99,6 +103,7 @@ public class IssueRepositoryImpl implements IssueRepository {
 
     @Override
     public int batchUpdateIssueEpicId(Long projectId, Long issueId) {
+        redisUtil.deleteRedisCache(new String[]{"Agile:EpicChart" + projectId + ":" + issueId + ":" + "*"});
         return issueMapper.batchUpdateIssueEpicId(projectId, issueId);
     }
 

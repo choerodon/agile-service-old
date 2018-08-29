@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
@@ -18,6 +19,8 @@ public class ColumnStatusRelRepositoryImpl implements ColumnStatusRelRepository 
 
     @Autowired
     private ColumnStatusRelMapper columnStatusRelMapper;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public void create(ColumnStatusRelE columnStatusRelE) {
@@ -25,6 +28,7 @@ public class ColumnStatusRelRepositoryImpl implements ColumnStatusRelRepository 
         if (columnStatusRelMapper.insert(columnStatusRelDO) != 1) {
             throw new CommonException("error.ColumnStatus.insert");
         }
+        redisUtil.deleteRedisCache(new String[]{"Agile:CumulativeFlowDiagram" + columnStatusRelE.getProjectId() + ':' + "*"});
     }
 
     @Override
@@ -36,6 +40,7 @@ public class ColumnStatusRelRepositoryImpl implements ColumnStatusRelRepository 
         if (columnStatusRelMapper.delete(columnStatusRelDO) == 0) {
             throw new CommonException("error.ColumnStatus.delete");
         }
+        redisUtil.deleteRedisCache(new String[]{"Agile:CumulativeFlowDiagram" + columnStatusRelE.getProjectId() + ':' + "*"});
     }
 
 }

@@ -15,8 +15,6 @@ public class CoordinateDTO implements Serializable {
 
     private Integer issueCount;
 
-    private ColumnChangeDTO columnChangeDTO;
-
     public Date getDate() {
         return date;
     }
@@ -31,14 +29,6 @@ public class CoordinateDTO implements Serializable {
 
     public void setIssueCount(Integer issueCount) {
         this.issueCount = issueCount;
-    }
-
-    public ColumnChangeDTO getColumnChangeDTO() {
-        return columnChangeDTO;
-    }
-
-    public void setColumnChangeDTO(ColumnChangeDTO columnChangeDTO) {
-        this.columnChangeDTO = columnChangeDTO;
     }
 
     @Override

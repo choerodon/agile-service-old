@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
@@ -88,12 +89,12 @@ public class ReportServiceImpl implements ReportService {
     private static final String TYPE_REMAIN_TIME = "remain_time";
     private static final String VERSION_CHART = "version_chart";
     private static final String EPIC_CHART = "epic_chart";
+    private static final String AGILE = "Agile";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportServiceImpl.class);
 
 
     @Override
-    @Cacheable(cacheNames = "BurnDownReport", key = "'Agile' + ':' + 'BurnDownReport' + #projectId + ':' + #sprintId + ':' + #type")
     public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
         return ConvertHelper.convertList(reportIssueEList.stream().
@@ -165,6 +166,8 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
+    @Cacheable(cacheNames = AGILE, key =
+            "'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()", cacheManager = "cacheManager")
     public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
         //获取当前符合条件的所有issueIds
         String filterSql = null;
@@ -181,73 +184,59 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    private void addStartColumnChangeByDate(CumulativeFlowDiagramDTO cumulativeFlowDiagramDTO, Date startDate) {
-        List<CoordinateDTO> startCoordinateList = cumulativeFlowDiagramDTO.getCoordinateDTOList().stream().filter(coordinateDTO ->
-                coordinateDTO.getDate().after(startDate)).collect(Collectors.toList());
-        if (startCoordinateList != null && !startCoordinateList.isEmpty()) {
-            CoordinateDTO start = new CoordinateDTO();
-            start.setIssueCount(startCoordinateList.get(0).getIssueCount());
-            start.setDate(startDate);
-            start.setColumnChangeDTO(null);
-            cumulativeFlowDiagramDTO.getCoordinateDTOList().add(cumulativeFlowDiagramDTO.getCoordinateDTOList().size(), start);
-        } else {
-            CoordinateDTO start = new CoordinateDTO();
-            start.setIssueCount(0);
-            start.setDate(startDate);
-            start.setColumnChangeDTO(null);
-            cumulativeFlowDiagramDTO.getCoordinateDTOList().add(cumulativeFlowDiagramDTO.getCoordinateDTOList().size(), start);
-        }
-    }
-
-
     private void handleColumnCoordinate(List<ColumnChangeDTO> columnChangeDTOList,
                                         CumulativeFlowDiagramDTO cumulativeFlowDiagramDTO,
                                         Date startDate,
                                         Date endDate) {
-        cumulativeFlowDiagramDTO.setCoordinateDTOList(new ArrayList<>());
+        List<CoordinateDTO> coordinateDTOS = new ArrayList<>();
         List<ColumnChangeDTO> columnChange = columnChangeDTOList.stream().filter(columnChangeDTO ->
                 Objects.equals(columnChangeDTO.getColumnFrom(), cumulativeFlowDiagramDTO.getColumnId().toString())
                         || Objects.equals(columnChangeDTO.getColumnTo(), cumulativeFlowDiagramDTO.getColumnId().toString())).collect(Collectors.toList());
         if (columnChange != null && !columnChange.isEmpty()) {
-            int count = 0;
-            addStartColumnChangeByDate(cumulativeFlowDiagramDTO, startDate);
-            for (ColumnChangeDTO columnChangeDTO : columnChange) {
-                if (columnChangeDTO.getColumnFrom().equals(cumulativeFlowDiagramDTO.getColumnId().toString())) {
-                    CoordinateDTO coordinateDTO = new CoordinateDTO();
-                    coordinateDTO.setDate(columnChangeDTO.getDate());
-                    coordinateDTO.setColumnChangeDTO(columnChangeDTO);
-                    count--;
-                    coordinateDTO.setIssueCount(count);
-                    cumulativeFlowDiagramDTO.getCoordinateDTOList().add(coordinateDTO);
-                } else {
-                    CoordinateDTO coordinateDTO = new CoordinateDTO();
-                    coordinateDTO.setDate(columnChangeDTO.getDate());
-                    count++;
-                    coordinateDTO.setIssueCount(count);
-                    coordinateDTO.setColumnChangeDTO(columnChangeDTO);
-                    cumulativeFlowDiagramDTO.getCoordinateDTOList().add(coordinateDTO);
+            DateFormat bf = new SimpleDateFormat("yyyy-MM-dd");
+            TreeMap<String, Integer> report = handleColumnCoordinateReport(columnChange, startDate, endDate, cumulativeFlowDiagramDTO, bf);
+            report.forEach((k, v) -> {
+                CoordinateDTO coordinateDTO = new CoordinateDTO();
+                coordinateDTO.setIssueCount(v);
+                try {
+                    coordinateDTO.setDate(bf.parse(k));
+                } catch (ParseException e) {
+                    LOGGER.error("Exception", e);
                 }
-            }
-            addEndColumnChangeByDate(cumulativeFlowDiagramDTO, endDate);
+                coordinateDTOS.add(coordinateDTO);
+            });
+            cumulativeFlowDiagramDTO.setCoordinateDTOList(coordinateDTOS);
         }
     }
 
-    private void addEndColumnChangeByDate(CumulativeFlowDiagramDTO cumulativeFlowDiagramDTO, Date endDate) {
-        List<CoordinateDTO> endCoordinateList = cumulativeFlowDiagramDTO.getCoordinateDTOList().stream().filter(coordinateDTO ->
-                coordinateDTO.getDate().before(endDate)).collect(Collectors.toList());
-        if (endCoordinateList != null && !endCoordinateList.isEmpty()) {
-            CoordinateDTO end = new CoordinateDTO();
-            end.setDate(endDate);
-            end.setIssueCount(endCoordinateList.get(endCoordinateList.size() - 1).getIssueCount());
-            end.setColumnChangeDTO(null);
-            cumulativeFlowDiagramDTO.getCoordinateDTOList().add(cumulativeFlowDiagramDTO.getCoordinateDTOList().size(), end);
-        } else {
-            CoordinateDTO end = new CoordinateDTO();
-            end.setDate(endDate);
-            end.setIssueCount(0);
-            end.setColumnChangeDTO(null);
-            cumulativeFlowDiagramDTO.getCoordinateDTOList().add(cumulativeFlowDiagramDTO.getCoordinateDTOList().size(), end);
+    private TreeMap<String, Integer> handleColumnCoordinateReport(List<ColumnChangeDTO> columnChange, Date startDate, Date endDate, CumulativeFlowDiagramDTO cumulativeFlowDiagramDTO, DateFormat bf) {
+        TreeMap<String, Integer> report = new TreeMap<>();
+        if (columnChange.get(0).getDate().after(startDate)) {
+            report.put(bf.format(startDate), 0);
         }
+        columnChange.forEach(columnChangeDTO -> {
+            String date = bf.format(columnChangeDTO.getDate());
+            if (report.get(date) == null) {
+                Integer count = report.lastEntry() == null ? 0 : report.lastEntry().getValue();
+                if (columnChangeDTO.getColumnFrom().equals(cumulativeFlowDiagramDTO.getColumnId().toString())) {
+                    report.put(date, count - 1);
+                } else {
+                    report.put(date, count + 1);
+                }
+            } else {
+                if (columnChangeDTO.getColumnFrom().equals(cumulativeFlowDiagramDTO.getColumnId().toString())) {
+                    report.put(date, report.get(date) - 1);
+                } else {
+                    report.put(date, report.get(date) + 1);
+                }
+
+            }
+        });
+        Date lastDate = columnChange.get(columnChange.size() - 1).getDate();
+        if (lastDate.before(endDate)) {
+            report.put(bf.format(endDate), report.lastEntry().getValue());
+        }
+        return report;
     }
 
 
@@ -828,6 +817,7 @@ public class ReportServiceImpl implements ReportService {
         List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(columnIds));
         cumulativeFlowDiagramDTOList.parallelStream().forEachOrdered(cumulativeFlowDiagramDTO -> {
             handleColumnCoordinate(columnChangeDTOList, cumulativeFlowDiagramDTO, cumulativeFlowFilterDTO.getStartDate(), cumulativeFlowFilterDTO.getEndDate());
+            //过滤日期
             cumulativeFlowDiagramDTO.setCoordinateDTOList(getCumulativeFlowDiagramDuringDate(cumulativeFlowDiagramDTO, cumulativeFlowFilterDTO));
         });
         return cumulativeFlowDiagramDTOList.stream().filter(cumulativeFlowDiagramDTO -> cumulativeFlowFilterDTO.getColumnIds().contains(cumulativeFlowDiagramDTO.getColumnId())).collect(Collectors.toList());
@@ -903,6 +893,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @Cacheable(cacheNames = AGILE, key = "'VelocityChart' + #projectId + ':' + #type")
     public List<VelocitySprintDTO> queryVelocityChart(Long projectId, String type) {
         List<VelocitySprintDO> sprintDOList = reportMapper.selectRecentSprint(projectId);
         if (sprintDOList.isEmpty()) {
@@ -937,6 +928,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @Cacheable(cacheNames = AGILE, key = "'PieChart' + #projectId + ':' + #fieldName")
     public List<PieChartDTO> queryPieChart(Long projectId, String fieldName) {
         switch (fieldName) {
             case ASSIGNEE:
@@ -965,8 +957,7 @@ public class ReportServiceImpl implements ReportService {
 
     private List<PieChartDTO> handlePieChartByEpic(Long projectId) {
         Integer total = reportMapper.queryIssueCountByFieldName(projectId, "epic_id");
-        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByEpic(projectId, total);
-        return reportAssembler.pieChartDoToDto(pieChartDOS);
+        return reportAssembler.pieChartDoToDto(reportMapper.queryPieChartByEpic(projectId, total));
     }
 
     private List<PieChartDTO> handlePieChartByType(Long projectId, String fieldName, Boolean own, Boolean typeCode) {
@@ -1107,6 +1098,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @Cacheable(cacheNames = AGILE, key = "'EpicChart' + #projectId + ':' + #epicId + ':' + #type")
     public List<GroupDataChartDO> queryEpicChart(Long projectId, Long epicId, String type) {
         List<GroupDataChartDO> result = null;
         switch (type) {
@@ -1143,7 +1135,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "BurnDownCoordinate", key = "'Agile' + ':' + 'BurnDownCoordinate' + #projectId + ':' + #sprintId + ':' + #type")
+    @Cacheable(cacheNames = AGILE, key = "'BurnDownCoordinate' + #projectId + ':' + #sprintId + ':' + #type")
     public JSONObject queryBurnDownCoordinate(Long projectId, Long sprintId, String type) {
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
         return handleSameDay(reportIssueEList.stream().filter(reportIssueE -> !"endSprint".equals(reportIssueE.getType())).
@@ -1152,6 +1144,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
+    @Cacheable(cacheNames = AGILE, key = "'VersionChart' + #projectId + ':' + #versionId + ':' + #type")
     public List<GroupDataChartDO> queryVersionChart(Long projectId, Long versionId, String type) {
         List<GroupDataChartDO> result = null;
         switch (type) {

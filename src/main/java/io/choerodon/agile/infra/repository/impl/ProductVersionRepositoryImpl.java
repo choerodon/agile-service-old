@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.infra.common.annotation.DataLog;
+import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.converter.ProductVersionConverter;
@@ -25,27 +26,35 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     private ProductVersionMapper versionMapper;
     @Autowired
     private ProductVersionConverter versionConverter;
+    @Autowired
+    private RedisUtil redisUtil;
 
     private static final String INSERT_ERROR = "error.version.insert";
     private static final String DELETE_ERROR = "error.version.delete";
     private static final String UPDATE_ERROR = "error.version.update";
+    private static final String AGILE = "Agile:";
+    private static final String PIECHART = AGILE + "PieChart";
 
     @Override
     public ProductVersionE createVersion(ProductVersionE versionE) {
         ProductVersionDO version = versionConverter.entityToDo(versionE);
-        if(versionMapper.insertSelective(version) != 1){
+        if (versionMapper.insertSelective(version) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
+        redisUtil.deleteRedisCache(new String[]{PIECHART + versionE.getProjectId() + ':' + "fixVersion"});
         return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(version.getVersionId()));
     }
 
     @Override
-    @DataLog(type = "batchDeleteVersionByVersion",single = false)
+    @DataLog(type = "batchDeleteVersionByVersion", single = false)
     public Boolean deleteVersion(ProductVersionE versionE) {
         ProductVersionDO version = versionConverter.entityToDo(versionE);
-        if(versionMapper.delete(version) != 1){
+        if (versionMapper.delete(version) != 1) {
             throw new CommonException(DELETE_ERROR);
         }
+        redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionE.getProjectId() + ':' + versionE.getVersionId() + ":" + "*",
+                PIECHART + versionE.getProjectId() + ':' + "fixVersion"
+        });
         return true;
     }
 
@@ -53,14 +62,15 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     public ProductVersionE updateVersion(ProductVersionE versionE, List<String> fieldList) {
         ProductVersionDO version = versionConverter.entityToDo(versionE);
         OptionalHelper.optional(fieldList);
-        if(versionMapper.updateOptional(version) != 1){
+        if (versionMapper.updateOptional(version) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
+        redisUtil.deleteRedisCache(new String[]{PIECHART + versionE.getProjectId() + ':' + "fixVersion"});
         return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(version.getVersionId()));
     }
 
     @Override
-    @DataLog(type = "batchMoveVersion",single = false)
+    @DataLog(type = "batchMoveVersion", single = false)
     public Boolean batchIssueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDO> versionIssues, Date date, Long userId) {
         versionMapper.issueToDestination(projectId, targetVersionId, versionIssues, date, userId);
         return true;
@@ -75,20 +85,22 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     @Override
     public ProductVersionE updateVersion(ProductVersionE versionE) {
         ProductVersionDO version = versionConverter.entityToDo(versionE);
-        if(versionMapper.updateByPrimaryKeySelective(version) != 1){
+        if (versionMapper.updateByPrimaryKeySelective(version) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
+        redisUtil.deleteRedisCache(new String[]{PIECHART + versionE.getProjectId() + ':' + "fixVersion"});
         return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(version.getVersionId()));
     }
 
     @Override
     public int deleteByVersionIds(Long projectId, List<Long> versionIds) {
+        redisUtil.deleteRedisCache(new String[]{PIECHART + projectId + ':' + "fixVersion"});
         return versionMapper.deleteByVersionIds(projectId, versionIds);
     }
 
     @Override
-    public int batchUpdateSequence(Integer sequence, Long projectId,Integer add,Long versionId) {
-        return versionMapper.batchUpdateSequence(sequence,projectId,add,versionId);
+    public int batchUpdateSequence(Integer sequence, Long projectId, Integer add, Long versionId) {
+        return versionMapper.batchUpdateSequence(sequence, projectId, add, versionId);
     }
 
 }

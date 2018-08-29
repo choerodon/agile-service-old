@@ -159,7 +159,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                            @Param("searchArgs") Map<String, Object> searchArgs,
                                            @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
                                            @Param("otherArgs") Map<String, Object> otherArgs,
-                                           @Param("content") String content,@Param("projectCode") String projectCode);
+                                           @Param("content") String content, @Param("projectCode") String projectCode);
 
     List<SprintNameDO> querySprintNameByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
@@ -334,4 +334,12 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<UnfinishedIssueDO> queryUnfinishedIssues(@Param("projectId") Long projectId,
                                                    @Param("assigneeId") Long assigneeId);
+    /**
+     * 查询当前issue的版本关系的版本id
+     *
+     * @param issueId   issueId
+     * @param projectId projectId
+     * @return versionIds 去重后的
+     */
+    List<Long> queryVersionIdsByIssueId(@Param("issueId")Long issueId, @Param("projectId")Long projectId);
 }

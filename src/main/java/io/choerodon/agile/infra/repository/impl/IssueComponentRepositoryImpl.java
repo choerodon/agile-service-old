@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.IssueComponentE;
@@ -18,6 +19,11 @@ public class IssueComponentRepositoryImpl implements IssueComponentRepository {
 
     @Autowired
     private IssueComponentMapper issueComponentMapper;
+    @Autowired
+    private RedisUtil redisUtil;
+
+    private static final String AGILE = "Agile:";
+    private static final String PIECHART = AGILE + "PieChart";
 
     @Override
     public IssueComponentE create(IssueComponentE issueComponentE) {
@@ -25,6 +31,7 @@ public class IssueComponentRepositoryImpl implements IssueComponentRepository {
         if (issueComponentMapper.insert(issueComponentDO) != 1) {
             throw new CommonException("error.scrum_issue_component.insert");
         }
+        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentE.getProjectId() + ':' + "component"});
         return ConvertHelper.convert(issueComponentMapper.selectByPrimaryKey(issueComponentDO.getComponentId()), IssueComponentE.class);
     }
 
@@ -34,6 +41,7 @@ public class IssueComponentRepositoryImpl implements IssueComponentRepository {
         if (issueComponentMapper.updateByPrimaryKeySelective(issueComponentDO) != 1) {
             throw new CommonException("error.scrum_issue_component.update");
         }
+        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentE.getProjectId() + ':' + "component"});
         return ConvertHelper.convert(issueComponentMapper.selectByPrimaryKey(issueComponentDO.getComponentId()), IssueComponentE.class);
     }
 
@@ -46,5 +54,6 @@ public class IssueComponentRepositoryImpl implements IssueComponentRepository {
         if (issueComponentMapper.delete(issueComponentDO) != 1) {
             throw new CommonException("error.component.delete");
         }
+        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentDO.getProjectId() + ':' + "component"});
     }
 }

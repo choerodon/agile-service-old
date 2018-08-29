@@ -289,7 +289,7 @@ class SprintControllerSpec extends Specification {
 
         when: '发送请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/{sprintId}/issues?status={status}',
-                Page.class, projectId, sprintId, "sprint_planning")
+                Page, projectId, sprintId, "sprint_planning")
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()

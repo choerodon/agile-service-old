@@ -3,11 +3,13 @@ package io.choerodon.agile.api.dto;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import java.io.Serializable;
+
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/7/26
  */
-public class PieChartDTO {
+public class PieChartDTO implements Serializable {
 
     private String name;
 
