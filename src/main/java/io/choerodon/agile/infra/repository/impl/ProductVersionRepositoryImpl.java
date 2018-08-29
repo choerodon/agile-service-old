@@ -39,6 +39,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
         if (versionMapper.insertSelective(version) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
+        redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + versionE.getProjectId() + ':' + "fixVersion"});
         return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(version.getVersionId()));
     }
 
@@ -49,7 +50,9 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
         if (versionMapper.delete(version) != 1) {
             throw new CommonException(DELETE_ERROR);
         }
-        redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionE.getProjectId() + ':' + versionE.getVersionId() + ":" + "*"});
+        redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionE.getProjectId() + ':' + versionE.getVersionId() + ":" + "*",
+                "Agile:PieChart" + versionE.getProjectId() + ':' + "fixVersion"
+        });
         return true;
     }
 
@@ -60,6 +63,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
         if (versionMapper.updateOptional(version) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
+        redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + versionE.getProjectId() + ':' + "fixVersion"});
         return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(version.getVersionId()));
     }
 
@@ -82,11 +86,13 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
         if (versionMapper.updateByPrimaryKeySelective(version) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
+        redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + versionE.getProjectId() + ':' + "fixVersion"});
         return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(version.getVersionId()));
     }
 
     @Override
     public int deleteByVersionIds(Long projectId, List<Long> versionIds) {
+        redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + projectId + ':' + "fixVersion"});
         return versionMapper.deleteByVersionIds(projectId, versionIds);
     }
 

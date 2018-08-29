@@ -34,6 +34,7 @@ public class SprintRepositoryImpl implements SprintRepository {
         if (sprintMapper.insertSelective(sprintDO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
+        redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + sprintE.getProjectId() + ':' + "sprint"});
         return sprintConverter.doToEntity(sprintMapper.selectByPrimaryKey(sprintDO.getSprintId()));
     }
 
@@ -45,7 +46,9 @@ public class SprintRepositoryImpl implements SprintRepository {
         }
         //清除冲刺报表相关缓存
         redisUtil.deleteRedisCache(new String[]{
-                "Agile:BurnDownCoordinate" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*"
+                "Agile:BurnDownCoordinate" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*",
+                "Agile:VelocityChart" + sprintE.getProjectId() + ':' + "*",
+                "Agile:PieChart" + sprintE.getProjectId() + ':' + "sprint"
         });
         return sprintConverter.doToEntity(sprintMapper.selectByPrimaryKey(sprintDO.getSprintId()));
     }
@@ -56,6 +59,11 @@ public class SprintRepositoryImpl implements SprintRepository {
         if (sprintMapper.delete(sprintDO) != 1) {
             throw new CommonException(DELETE_ERROR);
         }
+        redisUtil.deleteRedisCache(new String[]{
+                "Agile:BurnDownCoordinate" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*",
+                "Agile:VelocityChart" + sprintE.getProjectId() + ':' + "*",
+                "Agile:PieChart" + sprintE.getProjectId() + ':' + "sprint"
+        });
         return true;
     }
 }

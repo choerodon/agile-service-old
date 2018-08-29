@@ -44,9 +44,9 @@ public class ReportAssembler {
 
     public List<PieChartDTO> pieChartDoToDto(List<PieChartDO> pieChartDOS) {
         List<PieChartDTO> pieChartDTOS = new ArrayList<>();
-        pieChartDOS.parallelStream().forEach(pieChartDO -> {
+        pieChartDOS.forEach(pieChartDO -> {
             PieChartDTO pieChartDTO = new PieChartDTO();
-            BeanUtils.copyProperties(pieChartDO,pieChartDTO);
+            BeanUtils.copyProperties(pieChartDO, pieChartDTO);
             pieChartDTOS.add(pieChartDTO);
         });
         return pieChartDTOS;

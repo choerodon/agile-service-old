@@ -291,6 +291,9 @@ public class DataLogAspect {
             sprintNameDTO.setSprintId(sprintId);
             sprintNameDTO.setSprintName(sprintDO.getSprintName());
             deleteBurnDownCache(sprintId, projectId, null, "*");
+            redisUtil.deleteRedisCache(new String[]{"Agile:VelocityChart" + projectId + ':' + "*",
+                    "Agile:PieChart" + projectId + ':' + "sprint",
+            });
             for (Long issueId : issueIds) {
                 StringBuilder newSprintIdStr = new StringBuilder();
                 StringBuilder newSprintNameStr = new StringBuilder();
@@ -333,6 +336,7 @@ public class DataLogAspect {
 
     private void handleBatchDeleteVersion(List<VersionIssueDO> versionIssues, Long projectId) {
         if (versionIssues != null && !versionIssues.isEmpty()) {
+            redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + projectId + ':' + "fixVersion"});
             versionIssues.forEach(versionIssueDO -> {
                 String field = FIX_VERSION.equals(versionIssueDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
                 redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + projectId + ':' + versionIssueDO.getVersionId() + ":" + "*"});
@@ -376,16 +380,22 @@ public class DataLogAspect {
                         createDataLog(projectId, issueDO.getIssueId(),
                                 FIELD_RESOLUTION, null, issueDO.getStatusName(), null, issueDO.getStatusId().toString());
                         deleteBurnDownCache(issueDO.getSprintId(), projectId, issueDO.getIssueId(), "*");
+                        deleteEpicChartCache(issueDO.getEpicId(), projectId, issueDO.getIssueId(), "*");
                         deleteVersionCache(projectId, issueDO.getIssueId(), "*");
                     });
                 } else {
                     issueDOS.forEach(issueDO -> {
                         createDataLog(projectId, issueDO.getIssueId(),
                                 FIELD_RESOLUTION, issueDO.getStatusName(), null, issueDO.getStatusId().toString(), null);
+                        deleteEpicChartCache(issueDO.getEpicId(), projectId, issueDO.getIssueId(), "*");
                         deleteBurnDownCache(issueDO.getSprintId(), projectId, issueDO.getIssueId(), "*");
                         deleteVersionCache(projectId, issueDO.getIssueId(), "*");
                     });
                 }
+                redisUtil.deleteRedisCache(new String[]{"Agile:VelocityChart" + projectId + ':' + "*",
+                        "Agile:PieChart" + projectId + ':' + "status",
+                        "Agile:PieChart" + projectId + ':' + "resolution"
+                });
             }
 
         }
@@ -464,8 +474,9 @@ public class DataLogAspect {
             if (productVersionDO == null) {
                 throw new CommonException("error.productVersion.get");
             }
-            //批量sql
-            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + projectId + ':' + productVersionDO.getVersionId() + ":" + "*"});
+            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + projectId + ':' + productVersionDO.getVersionId() + ":" + "*",
+                    "Agile:PieChart" + projectId + ':' + "fixVersion"
+            });
             for (VersionIssueDO versionIssueDO : versionIssueDOS) {
                 String field = FIX_VERSION.equals(versionIssueDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
                 createDataLog(projectId, versionIssueDO.getIssueId(), field, null,
@@ -555,7 +566,9 @@ public class DataLogAspect {
                     versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), versionIssueRelE.getRelationType());
             Long issueId = versionIssueRelE.getIssueId();
             String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
-            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionIssueRelE.getProjectId() + ':' + versionIssueRelE.getVersionId() + ":" + "*"});
+            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionIssueRelE.getProjectId() + ':' + versionIssueRelE.getVersionId() + ":" + "*",
+                    "Agile:PieChart" + versionIssueRelE.getProjectId() + ':' + "fixVersion"
+            });
             productVersionDOS.forEach(productVersionDO -> createDataLog(productVersionDO.getProjectId(), issueId, field,
                     productVersionDO.getName(), null, productVersionDO.getVersionId().toString(), null));
         }
@@ -575,7 +588,9 @@ public class DataLogAspect {
             } else {
                 field = FIX_VERSION.equals(versionIssueRelDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
             }
-            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionIssueRelDO.getProjectId() + ':' + versionIssueRelDO.getVersionId() + ":" + "*"});
+            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionIssueRelDO.getProjectId() + ':' + versionIssueRelDO.getVersionId() + ":" + "*",
+                    "Agile:PieChart" + versionIssueRelDO.getProjectId() + ':' + "fixVersion"
+            });
             createDataLog(versionIssueRelDO.getProjectId(), versionIssueRelDO.getIssueId(), field,
                     productVersionMapper.selectByPrimaryKey(versionIssueRelDO.getVersionId()).getName(), null,
                     versionIssueRelDO.getVersionId().toString(), null);
@@ -671,12 +686,13 @@ public class DataLogAspect {
         for (Long issueId : issueIds) {
             SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
             if (activeSprintName != null) {
-                deleteBurnDownCache(activeSprintName.getSprintId(), projectId, null, "*");
                 if (sprintId != null && sprintId.equals(activeSprintName.getSprintId())) {
                     continue;
                 }
             }
             deleteBurnDownCache(sprintId, projectId, null, "*");
+            redisUtil.deleteRedisCache(new String[]{"Agile:VelocityChart" + projectId + ':' + "*",
+                    "Agile:PieChart" + projectId + ':' + "sprint"});
             StringBuilder newSprintIdStr = new StringBuilder();
             StringBuilder newSprintNameStr = new StringBuilder();
             List<SprintNameDTO> sprintNames = sprintNameAssembler.doListToDTO(issueMapper.querySprintNameByIssueId(issueId));
@@ -735,6 +751,7 @@ public class DataLogAspect {
             createDataLog(componentIssueRelDO.getProjectId(), componentIssueRelDO.getIssueId(),
                     FIELD_COMPONENT, issueComponentMapper.selectByPrimaryKey(componentIssueRelDO.getComponentId()).getName(), null,
                     componentIssueRelDO.getComponentId().toString(), null);
+            redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + componentIssueRelDO.getProjectId() + ':' + "component"});
         }
     }
 
@@ -753,7 +770,7 @@ public class DataLogAspect {
                 componentIssueRelDOList.forEach(componentIssueRel -> createDataLog(componentIssueRel.getProjectId(), componentIssueRel.getIssueId(),
                         FIELD_COMPONENT, issueComponentMapper.selectByPrimaryKey(componentIssueRel.getComponentId()).getName(), null,
                         componentIssueRel.getComponentId().toString(), null));
-
+                redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + componentIssueRelDOList.get(0).getProjectId() + ':' + "component"});
             }
         }
     }
@@ -769,6 +786,7 @@ public class DataLogAspect {
             createDataLog(componentIssueRelE.getProjectId(), componentIssueRelE.getIssueId(), FIELD_COMPONENT,
                     null, issueComponentMapper.selectByPrimaryKey(componentIssueRelE.getComponentId()).getName(),
                     null, componentIssueRelE.getComponentId().toString());
+            redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + componentIssueRelE.getProjectId() + ':' + "component"});
         }
     }
 
@@ -797,7 +815,9 @@ public class DataLogAspect {
             } else {
                 field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
             }
-            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionIssueRelE.getProjectId() + ':' + versionIssueRelE.getVersionId() + ":" + "*"});
+            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionIssueRelE.getProjectId() + ':' + versionIssueRelE.getVersionId() + ":" + "*",
+                    "Agile:PieChart" + versionIssueRelE.getProjectId() + ':' + "fixVersion"
+            });
             createDataLog(versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), field,
                     null, productVersionMapper.selectByPrimaryKey(versionIssueRelE.getVersionId()).getName(),
                     null, versionIssueRelE.getVersionId().toString());
@@ -831,6 +851,7 @@ public class DataLogAspect {
             Map.Entry entry = (Map.Entry<Long, List<ProductVersionDO>>) object;
             Long issueId = Long.parseLong(entry.getKey().toString());
             List<ProductVersionDO> versionIssueRelDOList = (List<ProductVersionDO>) entry.getValue();
+            redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + projectId + ':' + "fixVersion"});
             for (ProductVersionDO productVersionDO : versionIssueRelDOList) {
                 String field;
                 if (productVersionDO.getRelationType() == null) {
@@ -874,9 +895,11 @@ public class DataLogAspect {
             if (issueE != null) {
                 //若创建issue的初始状态为已完成，生成日志
                 IssueStatusDO issueStatusDO = issueStatusMapper.selectByPrimaryKey(issueE.getStatusId());
+                redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + issueE.getProjectId() + ':' + "*"});
                 if ((issueStatusDO.getCompleted() != null && issueStatusDO.getCompleted())) {
                     deleteBurnDownCache(issueE.getSprintId(), issueE.getProjectId(), issueE.getIssueId(), "*");
-                    deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), "*");
+                    deleteEpicChartCache(issueE.getEpicId(), issueE.getProjectId(), issueE.getIssueId(), "*");
+                    redisUtil.deleteRedisCache(new String[]{"Agile:VelocityChart" + issueE.getProjectId() + ':' + "*"});
                     deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), "*");
                     createDataLog(issueE.getProjectId(), issueE.getIssueId(), FIELD_RESOLUTION, null,
                             issueStatusDO.getName(), null, issueStatusDO.getId().toString());
@@ -911,6 +934,8 @@ public class DataLogAspect {
         if (issueSprintRelE != null) {
             SprintDO sprintDO = sprintMapper.selectByPrimaryKey(issueSprintRelE.getSprintId());
             deleteBurnDownCache(sprintDO.getSprintId(), sprintDO.getProjectId(), null, "*");
+            redisUtil.deleteRedisCache(new String[]{"Agile:VelocityChart" + sprintDO.getProjectId() + ':' + "*",
+                    "Agile:PieChart" + sprintDO.getProjectId() + ':' + "sprint"});
             createDataLog(issueSprintRelE.getProjectId(), issueSprintRelE.getIssueId(),
                     FIELD_SPRINT, null, sprintDO.getSprintName(), null, issueSprintRelE.getSprintId().toString());
         }
@@ -955,8 +980,13 @@ public class DataLogAspect {
             dataLogE.setNewString(currentTypeName);
             dataLogRepository.create(dataLogE);
             deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
+            deleteEpicChartCache(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
             deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), "*");
-            redisUtil.deleteRedisCache(new String[]{"Agile:CumulativeFlowDiagram" + originIssueDO.getProjectId() + ':' + "*"});
+            redisUtil.deleteRedisCache(new String[]{"Agile:CumulativeFlowDiagram" + originIssueDO.getProjectId() + ':' + "*",
+                    "Agile:VelocityChart" + originIssueDO.getProjectId() + ':' + "*",
+                    "Agile:PieChart" + issueE.getProjectId() + ':' + "issueType",
+                    "Agile:PieChart" + issueE.getProjectId() + ':' + "epic"
+            });
         }
     }
 
@@ -1004,7 +1034,11 @@ public class DataLogAspect {
             redisUtil.deleteRedisCache(new String[]{"Agile:CumulativeFlowDiagram" + originIssueDO.getProjectId() + ':' + "*"});
             Boolean condition = (originStatus.getCompleted() != null && originStatus.getCompleted()) || (currentStatus.getCompleted() != null && currentStatus.getCompleted());
             if (condition) {
+                deleteEpicChartCache(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
                 deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
+                redisUtil.deleteRedisCache(new String[]{"Agile:VelocityChart" + originIssueDO.getProjectId() + ':' + "*",
+                        "Agile:PieChart" + originIssueDO.getProjectId() + ':' + "status"
+                });
                 deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), "*");
                 //生成解决问题日志
                 dataLogResolution(originIssueDO.getProjectId(), originIssueDO.getIssueId(), originStatus, currentStatus);
@@ -1032,11 +1066,13 @@ public class DataLogAspect {
             oldData = originIssueDO.getRemainingTime() == null ? null : originIssueDO.getRemainingTime().toString();
             newData = zero.toString();
         }
-        deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "remainingEstimatedTime");
-        deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), "remain_time");
-        deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), "*");
         createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
                 FIELD_TIMEESTIMATE, oldData, newData, oldData, newData);
+        deleteEpicChartCache(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId(), "remain_time");
+        deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "remainingEstimatedTime");
+        redisUtil.deleteRedisCache(new String[]{"Agile:VelocityChart" + originIssueDO.getProjectId() + ':' + "remain_time"});
+        deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), "remain_time");
+        deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), "*");
     }
 
     private void deleteBurnDownCache(Long sprintId, Long projectId, Long issueId, String type) {
@@ -1045,6 +1081,16 @@ public class DataLogAspect {
         }
         if (sprintId != null) {
             redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ':' + sprintId + ':' + type});
+        }
+    }
+
+    private void deleteEpicChartCache(Long epicId, Long projectId, Long issueId, String type) {
+        if (epicId == null && issueId != null) {
+            epicId = issueMapper.selectByPrimaryKey(issueId).getEpicId();
+        }
+        if (epicId != null && epicId != 0) {
+            redisUtil.deleteRedisCache(new String[]{"Agile:EpicChart" + projectId + ":" + epicId + ":" + type,
+                    "Agile:PieChart" + projectId + ':' + "epic"});
         }
     }
 
@@ -1059,10 +1105,12 @@ public class DataLogAspect {
             if (issueE.getStoryPoints() != null) {
                 newString = issueE.getStoryPoints().toString();
             }
-            deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), STORY_POINTS_FIELD);
-            deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), "story_point");
             createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
                     FIELD_STORY_POINTS, oldString, newString, null, null);
+            deleteEpicChartCache(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId(), "story_point");
+            deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), STORY_POINTS_FIELD);
+            redisUtil.deleteRedisCache(new String[]{"Agile:VelocityChart" + originIssueDO.getProjectId() + ':' + "story_point"});
+            deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), "story_point");
         }
     }
 
@@ -1101,6 +1149,7 @@ public class DataLogAspect {
             }
             createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
                     FIELD_ASSIGNEE, oldString, newString, oldValue, newValue);
+            redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + originIssueDO.getProjectId() + ':' + "assignee"});
         }
     }
 
@@ -1109,6 +1158,7 @@ public class DataLogAspect {
             createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
                     FIELD_PRIORITY, lookupValueMapper.selectNameByValueCode(originIssueDO.getPriorityCode())
                     , lookupValueMapper.selectNameByValueCode(issueE.getPriorityCode()), null, null);
+            redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + originIssueDO.getProjectId() + ':' + "priority"});
         }
     }
 
@@ -1165,7 +1215,7 @@ public class DataLogAspect {
             String newValue = null;
             String oldString = null;
             String newString = null;
-            if (originStatus.getCompleted()) {
+            if (originStatus.getCompleted() != null && originStatus.getCompleted()) {
                 oldValue = originStatus.getId().toString();
                 oldString = originStatus.getName();
             } else if (currentStatus.getCompleted()) {
@@ -1173,6 +1223,7 @@ public class DataLogAspect {
                 newString = currentStatus.getName();
             }
             createDataLog(projectId, issueId, FIELD_RESOLUTION, oldString, newString, oldValue, newValue);
+            redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + projectId + ':' + "resolution"});
         }
     }
 
@@ -1181,6 +1232,9 @@ public class DataLogAspect {
         if (issueEpic == null) {
             throw new CommonException(ERROR_EPIC_NOT_FOUND);
         } else {
+            redisUtil.deleteRedisCache(new String[]{"Agile:EpicChart" + originIssueDO.getProjectId() + ":" + issueEpic.getIssueId() + ":" + "*",
+                    "Agile:PieChart" + originIssueDO.getProjectId() + ':' + "epic"
+            });
             createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(), FIELD_EPIC_LINK,
                     null, projectInfoDO.getProjectCode() + "-" + issueEpic.getIssueNum(),
                     null, issueEpic.getIssueId().toString());
@@ -1195,6 +1249,9 @@ public class DataLogAspect {
         if (oldIssueEpic == null) {
             throw new CommonException(ERROR_EPIC_NOT_FOUND);
         } else {
+            redisUtil.deleteRedisCache(new String[]{"Agile:EpicChart" + originIssueDO.getProjectId() + ":" + oldIssueEpic.getIssueId() + ":" + "*",
+                    "Agile:PieChart" + originIssueDO.getProjectId() + ':' + "epic"
+            });
             if (epicId == null || epicId == 0) {
                 createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(), FIELD_EPIC_LINK,
                         projectInfoDO.getProjectCode() + "-" + oldIssueEpic.getIssueNum(),
@@ -1211,6 +1268,9 @@ public class DataLogAspect {
                     createDataLog(originIssueDO.getProjectId(), epicId, FIELD_EPIC_CHILD,
                             null, projectInfoDO.getProjectCode() + "-" + originIssueDO.getIssueNum(),
                             null, originIssueDO.getIssueId().toString());
+                    redisUtil.deleteRedisCache(new String[]{"Agile:EpicChart" + originIssueDO.getProjectId() + ":" + newIssueEpic.getIssueId() + ":" + "*",
+                            "Agile:PieChart" + originIssueDO.getProjectId() + ':' + "epic"
+                    });
                 }
             }
             createDataLog(originIssueDO.getProjectId(), originIssueDO.getEpicId(), FIELD_EPIC_CHILD,

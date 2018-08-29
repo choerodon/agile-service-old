@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,8 +70,14 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
     }
 
     @Bean
+    @Qualifier("cacheManager")
     public RedisCacheManager cacheManager(RedisTemplate redisTemplate) {
-        return new RedisCacheManager(redisTemplate);
+        RedisCacheManager redisCacheManager =new RedisCacheManager(redisTemplate);
+        redisCacheManager.setTransactionAware(true);
+        redisCacheManager.setLoadRemoteCachesOnStartup(true);
+        redisCacheManager.setUsePrefix(true);
+        redisCacheManager.setDefaultExpiration(86400);
+        return redisCacheManager;
     }
 
     /**

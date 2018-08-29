@@ -38,6 +38,7 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
         if (issueStatusMapper.insert(issueStatusDO) != 1) {
             throw new CommonException("error.IssueStatus.insert");
         }
+        redisUtil.deleteRedisCache(new String[]{"Agile:PieChart" + issueStatusE.getProjectId() + ':' + "status"});
         return ConvertHelper.convert(issueStatusMapper.selectByPrimaryKey(issueStatusDO.getId()), IssueStatusE.class);
     }
 
@@ -50,6 +51,10 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
         }
         redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:CumulativeFlowDiagram" + issueStatusE.getProjectId() + ':' + "*",
+                "Agile:VelocityChart" + issueStatusE.getProjectId() + ':' + "*",
+                "Agile:EpicChart" + issueStatusE.getProjectId() + ":" + "*",
+                "Agile:PieChart" + issueStatusE.getProjectId() + ':' + "status",
+                "Agile:PieChart" + issueStatusE.getProjectId() + ':' + "resolution"
         });
         return ConvertHelper.convert(issueStatusMapper.selectByPrimaryKey(issueStatusDO.getId()), IssueStatusE.class);
     }
@@ -62,6 +67,10 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
         }
         redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:CumulativeFlowDiagram" + issueStatusE.getProjectId() + ':' + "*",
+                "Agile:VelocityChart" + issueStatusE.getProjectId() + ':' + "*",
+                "Agile:EpicChart" + issueStatusE.getProjectId() + ":" + "*",
+                "Agile:PieChart" + issueStatusE.getProjectId() + ':' + "status",
+                "Agile:PieChart" + issueStatusE.getProjectId() + ':' + "resolution"
         });
     }
 

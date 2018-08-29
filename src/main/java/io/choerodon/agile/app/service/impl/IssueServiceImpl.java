@@ -398,6 +398,8 @@ public class IssueServiceImpl implements IssueService {
                 if ((ISSUE_EPIC).equals(issueE.getTypeCode())) {
                     //如果是epic，会把该epic下的issue的epicId置为0
                     issueRepository.batchUpdateIssueEpicId(projectId, issueE.getIssueId());
+                }else{
+                    redisUtil.deleteRedisCache(new String[]{"Agile:EpicChart" + projectId + ":" + issueE.getEpicId() + ":" + "*"});
                 }
                 List<IssueDO> issueDOList = issueMapper.queryIssueSubList(projectId, issueE.getIssueId());
                 if (issueDOList != null && !issueDOList.isEmpty()) {
@@ -413,8 +415,10 @@ public class IssueServiceImpl implements IssueService {
             issuePayload.setProjectId(projectId);
             sagaClient.startSaga("agile-delete-issue", new StartInstanceDTO(JSON.toJSONString(issuePayload), "", ""));
             //delete cache
-            redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ':' + "*",
-                    "Agile:CumulativeFlowDiagram" + projectId + ':' + "*",
+            redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ":" + "*",
+                    "Agile:CumulativeFlowDiagram" + projectId + ":" + "*",
+                    "Agile:VelocityChart" + projectId + ":" + "*",
+                    "Agile:PieChart" + projectId + ':' + "*"
             });
         } catch (Exception e) {
             throw new CommonException(e.getMessage());

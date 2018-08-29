@@ -6,6 +6,7 @@ import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.domain.agile.converter.ProductVersionConverter;
 import io.choerodon.agile.domain.agile.event.VersionPayload;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
+import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.IssueCountDO;
 import io.choerodon.agile.infra.dataobject.VersionIssueChangeDO;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
@@ -65,6 +66,8 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private ProductVersionMapper productVersionMapper;
     @Autowired
     private ProductVersionConverter productVersionConverter;
+    @Autowired
+    private RedisUtil redisUtil;
 
     private static final String SEARCH_ARGS = "searchArgs";
     public static final String ADVANCE_SEARCH_ARGS = "advancedSearchArgs";
@@ -310,6 +313,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     }
 
     @Override
+    @Saga(code = "agile-delete-version", description = "删除版本", inputSchemaClass = VersionPayload.class)
     public Boolean mergeVersion(Long projectId, ProductVersionMergeDTO productVersionMergeDTO) {
         productVersionMergeDTO.getSourceVersionIds().remove(productVersionMergeDTO.getTargetVersionId());
         if (productVersionMergeDTO.getSourceVersionIds().isEmpty()) {
@@ -322,6 +326,13 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             productVersionRepository.batchIssueToDestination(projectId, productVersionMergeDTO.getTargetVersionId(), versionIssues, new Date(), customUserDetails.getUserId());
         }
         productVersionRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
+        productVersionMergeDTO.getSourceVersionIds().forEach(versionId -> {
+            VersionPayload versionPayload = new VersionPayload();
+            versionPayload.setVersionId(versionId);
+            versionPayload.setProjectId(projectId);
+            sagaClient.startSaga("agile-delete-version", new StartInstanceDTO(JSON.toJSONString(versionPayload), "", ""));
+            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + projectId + ':' + versionId + ":" + "*"});
+        });
         return true;
     }
 
