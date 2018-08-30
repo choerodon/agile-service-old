@@ -7,14 +7,20 @@ import io.choerodon.agile.api.dto.CumulativeFlowFilterDTO
 import io.choerodon.agile.api.dto.IssueCreateDTO
 import io.choerodon.agile.api.dto.IssueDTO
 import io.choerodon.agile.api.dto.IssueListDTO
+import io.choerodon.agile.api.dto.PieChartDTO
 import io.choerodon.agile.api.dto.ReportIssueDTO
 import io.choerodon.agile.api.dto.SprintDetailDTO
 import io.choerodon.agile.api.dto.SprintUpdateDTO
+import io.choerodon.agile.api.dto.VelocitySprintDTO
+import io.choerodon.agile.api.dto.VersionReportDTO
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.SprintService
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
+import io.choerodon.agile.infra.dataobject.GroupDataChartDO
+import io.choerodon.agile.infra.dataobject.GroupDataChartListDO
 import io.choerodon.agile.infra.dataobject.IssueDO
+import io.choerodon.agile.infra.dataobject.ProductVersionDO
 import io.choerodon.agile.infra.dataobject.SprintDO
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
@@ -67,6 +73,9 @@ class ReportControllerSpec extends Specification {
 
     @Shared
     def projectId = 1
+
+    @Shared
+    def epicId = 1
 
     @Shared
     def boardId = 1
@@ -228,20 +237,146 @@ class ReportControllerSpec extends Specification {
 
     }
 
-//    def 'queryVersionLineChart'() {
-//        when: '向版本报告图信息的接口发请求'
-//        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/{versionId}?type={type}', Map, projectId, versionId, 'storyPoints')
-//
-//        then: '接口是否请求成功'
-//        entity.statusCode.is2xxSuccessful()
-//
-//        and: '设置返回值值'
-//        Map<String, Object> result = entity.body
-//
-//        expect: '验证期望值'
-//        print('xx')
-//
-//    }
+    def 'queryVersionLineChart'() {
+        when: '向版本报告图信息的接口发请求'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/{versionId}?type={type}', Map, projectId, versionId, type)
+
+        then: '接口是否请求成功'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置返回值值'
+        Map<String, Object> result = entity.body
+        Object productVersionDO = result.get("version")
+        List<Object> versionReportDTOList = result.get("versionReport") as List<Object>
+
+        expect: '验证期望值'
+        productVersionDO != null
+        versionReportDTOList.size() == expectSize
+
+        where: '设置期望值'
+        type                     || expectSize
+        'storyPoints'            || 1
+        'remainingEstimatedTime' || 1
+        'issueCount'             || 1
+
+    }
+
+    def 'queryVelocityChart'() {
+        when: '向速度图的接口发请求'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/velocity_chart?type={type}', List, projectId, type)
+
+        then: '接口是否请求成功'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置返回值值'
+        List<VelocitySprintDTO> velocitySprintDTOList = entity.body
+
+        expect: '验证期望值'
+        velocitySprintDTOList.size() == expectSize
+
+        where: '设置期望值'
+        type          || expectSize
+        'issue_count' || 2
+        'story_point' || 2
+        'remain_time' || 2
+
+    }
+
+    def 'queryPieChart'() {
+        when: '向查询饼图的接口发请求'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/pie_chart?fieldName={fieldName}', List, projectId, fieldName)
+
+        then: '接口是否请求成功'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置返回值值'
+        List<PieChartDTO> pieChartDTOList = entity.body
+
+        expect: '验证期望值'
+        pieChartDTOList.size() == expectSize
+
+        where: '设置期望值'
+        fieldName      || expectSize
+        'assignee'     || 1
+        'component'    || 1
+        'typeCode'     || 2
+        'version'      || 3
+        'priorityCode' || 2
+        'statusCode'   || 0
+        'sprint'       || 3
+        'epic'         || 1
+        'resolution'   || 1
+
+    }
+
+    def 'queryEpicChart'() {
+        when: '向史诗图的接口发请求'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/epic_chart?epicId={epicId}&type={type}', List, projectId, epicId, type)
+
+        then: '接口是否请求成功'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置返回值值'
+        List<GroupDataChartDO> groupDataChartDOList = entity.body
+
+        expect: '验证期望值'
+        groupDataChartDOList.size() == expectSize
+
+        where: '设置期望值'
+        type          || expectSize
+        'issue_count' || 0
+        'story_point' || 0
+        'remain_time' || 0
+    }
+
+    def 'epic_issue_list'() {
+        when: '向史诗图问题列表的接口发请求'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/epic_issue_list?epicId={epicId}', List, projectId, epicId)
+
+        then: '接口是否请求成功'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置返回值值'
+        List<GroupDataChartListDO> groupDataChartListDOList = entity.body
+
+        expect: '验证期望值'
+        groupDataChartListDOList.size() == 1
+    }
+
+    def 'version_chart'() {
+        when: '向版本图重构api的接口发请求'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/version_chart?versionId={versionId}&type={type}', List, projectId, versionId, type)
+
+        then: '接口是否请求成功'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置返回值值'
+        List<GroupDataChartDO> groupDataChartDOList = entity.body
+
+        expect: '验证期望值'
+        groupDataChartDOList.size() == expectSize
+
+        where: '设置期望值'
+        type          || expectSize
+        'issue_count' || 0
+        'story_point' || 0
+        'remain_time' || 0
+    }
+
+    def 'version_issue_list'() {
+        when: '版本图问题列表重构api'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/version_issue_list?versionId={versionId}', List, projectId, versionId)
+
+        then: '接口是否请求成功'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置返回值值'
+        List<GroupDataChartListDO> groupDataChartListDOList = entity.body
+
+        expect: '验证期望值'
+        groupDataChartListDOList.size() == 1
+
+    }
 
     def 'deleteData'() {
         given: '删除数据DO'
