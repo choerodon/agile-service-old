@@ -40,7 +40,7 @@ class IssueLabelControllerSpec extends Specification {
 
         where: '给定参数'
         projectIds | expectConut
-        1L         | 0
+        1L         | 1
         2L         | 0
 
     }
