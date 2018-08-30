@@ -46,6 +46,9 @@ class IssueControllerSpec extends Specification {
     private ProductVersionMapper productVersionMapper
 
     @Autowired
+    private VersionIssueRelMapper versionIssueRelMapper
+
+    @Autowired
     AgileEventHandler agileEventHandler
 
     @Autowired
@@ -955,24 +958,21 @@ class IssueControllerSpec extends Specification {
         ProductVersionDO productVersionDO = new ProductVersionDO()
         productVersionDO.name = '测试版本'
 
-        and: '查询模块DO'
+        and: '查询模块DO&版本DO'
         IssueComponentDO queryComponent = new IssueComponentDO()
         queryComponent.name = '测试模块2'
         ProductVersionDO queryVersion = new ProductVersionDO()
         queryVersion.name = '测试版本'
-
-        and: 'issue状态返回'
-        IssueDO issueEpic = issueMapper.selectByPrimaryKey(1)
-        issueEpic.setStatusId(1)
+        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDTO()
+        versionIssueRelDO.setProjectId(projectId)
 
         when: '执行方法'
         issueComponentMapper.delete(queryComponent)
         productVersionMapper.delete(queryVersion)
-        issueMapper.updateByPrimaryKey(issueEpic)
+        versionIssueRelMapper.delete(versionIssueRelDO)
 
         then: '验证删除'
         issueComponentMapper.selectOne(queryComponent) == null
         productVersionMapper.selectOne(queryVersion) == null
-        issueMapper.selectByPrimaryKey(1).statusId == 1
     }
 }

@@ -24,9 +24,11 @@ import io.choerodon.agile.infra.dataobject.ProductVersionDO
 import io.choerodon.agile.infra.dataobject.SprintDO
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
+import io.choerodon.agile.infra.dataobject.VersionIssueRelDO
 import io.choerodon.agile.infra.mapper.BoardColumnMapper
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.SprintMapper
+import io.choerodon.agile.infra.mapper.VersionIssueRelMapper
 import io.choerodon.core.domain.Page
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -70,6 +72,9 @@ class ReportControllerSpec extends Specification {
 
     @Autowired
     private IssueMapper issueMapper
+
+    @Autowired
+    private VersionIssueRelMapper versionIssueRelMapper
 
     @Shared
     def projectId = 1
@@ -300,9 +305,9 @@ class ReportControllerSpec extends Specification {
         'assignee'     || 1
         'component'    || 1
         'typeCode'     || 2
-        'version'      || 3
+        'version'      || 2
         'priorityCode' || 2
-        'statusCode'   || 0
+        'statusCode'   || 1
         'sprint'       || 3
         'epic'         || 1
         'resolution'   || 1
