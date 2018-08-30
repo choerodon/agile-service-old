@@ -1950,7 +1950,7 @@
         from agile_issue ai, agile_issue_status ais
         where ai.project_id = #{projectId}
         and ai.type_code in ('story', 'task', 'bug')
-        and ai.status_id = ais.id and ais.is_completed = 0
+        and ai.status_id = ais.id and ais.category_code != 'done'
     </select>
 
     <select id="queryIssueIdsByOptions" resultType="java.lang.Long">
@@ -2043,7 +2043,7 @@
           alv.name as status_color
         from agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        right join agile_issue_status ais on ai.status_id = ais.id and ais.is_completed=0
+        right join agile_issue_status ais on ai.status_id = ais.id and ais.category_code != 'done'
         LEFT JOIN agile_lookup_value alv ON alv.value_code = CASE ais.category_code
                 WHEN 'todo' THEN
                     'issue_status_color_todo'
