@@ -36,6 +36,8 @@ public class UserSettingDO extends AuditDomain {
 
     private String swimlaneBasedCode;
 
+    private String storymapSwimlaneCode;
+
     public Long getSettingId() {
         return settingId;
     }
@@ -90,6 +92,14 @@ public class UserSettingDO extends AuditDomain {
 
     public void setSwimlaneBasedCode(String swimlaneBasedCode) {
         this.swimlaneBasedCode = swimlaneBasedCode;
+    }
+
+    public String getStorymapSwimlaneCode() {
+        return storymapSwimlaneCode;
+    }
+
+    public void setStorymapSwimlaneCode(String storymapSwimlaneCode) {
+        this.storymapSwimlaneCode = storymapSwimlaneCode;
     }
 
     @Override

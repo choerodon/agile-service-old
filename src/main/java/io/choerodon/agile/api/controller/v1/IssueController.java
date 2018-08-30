@@ -525,4 +525,14 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.UnfinishedIssueList.get"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("查询用户故事地图泳道")
+    @GetMapping(value = "/storymap/swim_lane")
+    public ResponseEntity<String> querySwimLaneCode(@ApiParam(value = "项目id", required = true)
+                                                    @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(issueService.querySwimLaneCode(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.querySwimLaneCode.get"));
+    }
+
 }

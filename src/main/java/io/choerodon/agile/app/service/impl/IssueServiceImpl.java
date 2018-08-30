@@ -141,6 +141,10 @@ public class IssueServiceImpl implements IssueService {
     private QuickFilterMapper quickFilterMapper;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private UserSettingRepository userSettingRepository;
+    @Autowired
+    private UserSettingMapper userSettingMapper;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -398,7 +402,7 @@ public class IssueServiceImpl implements IssueService {
                 if ((ISSUE_EPIC).equals(issueE.getTypeCode())) {
                     //如果是epic，会把该epic下的issue的epicId置为0
                     issueRepository.batchUpdateIssueEpicId(projectId, issueE.getIssueId());
-                }else{
+                } else {
                     redisUtil.deleteRedisCache(new String[]{"Agile:EpicChart" + projectId + ":" + issueE.getEpicId() + ":" + "*"});
                 }
                 List<IssueDO> issueDOList = issueMapper.queryIssueSubList(projectId, issueE.getIssueId());
@@ -1482,6 +1486,8 @@ public class IssueServiceImpl implements IssueService {
         if (quickFilterIds != null && !quickFilterIds.isEmpty()) {
             filterSql = getQuickFilter(quickFilterIds);
         }
+        //保存用户选择的泳道
+        handleSaveUserSetting(projectId, type);
         switch (type) {
             case STORYMAP_TYPE_SPRINT:
                 storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId, pageType, assigneeId, onlyStory, filterSql));
@@ -1496,6 +1502,20 @@ public class IssueServiceImpl implements IssueService {
                 break;
         }
         return storyMapIssueDTOList == null ? new ArrayList<>() : storyMapIssueDTOList;
+    }
+
+    private void handleSaveUserSetting(Long projectId, String type) {
+        UserSettingE userSettingE = new UserSettingE();
+        userSettingE.initUserSetting(projectId);
+        userSettingE.setTypeCode("storymap");
+        UserSettingDO query = userSettingMapper.selectOne(ConvertHelper.convert(userSettingE, UserSettingDO.class));
+        if (query == null) {
+            userSettingE.setStorymapSwimlaneCode("none");
+            userSettingRepository.create(userSettingE);
+        } else {
+            query.setStorymapSwimlaneCode(type);
+            userSettingRepository.update(ConvertHelper.convert(query, UserSettingE.class));
+        }
     }
 
 
@@ -1553,6 +1573,22 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<UnfinishedIssueDTO> queryUnfinishedIssues(Long projectId, Long assigneeId) {
-        return ConvertHelper.convertList(issueMapper.queryUnfinishedIssues(projectId,assigneeId), UnfinishedIssueDTO.class);
+        return ConvertHelper.convertList(issueMapper.queryUnfinishedIssues(projectId, assigneeId), UnfinishedIssueDTO.class);
+    }
+
+    @Override
+    public String querySwimLaneCode(Long projectId) {
+        UserSettingE userSettingE = new UserSettingE();
+        userSettingE.initUserSetting(projectId);
+        userSettingE.setTypeCode("storymap");
+        UserSettingDO query = userSettingMapper.selectOne(ConvertHelper.convert(userSettingE, UserSettingDO.class));
+        String result;
+        if (query == null) {
+            userSettingE.setStorymapSwimlaneCode("none");
+            result = userSettingRepository.create(userSettingE).getStorymapSwimlaneCode();
+        } else {
+            result = query.getStorymapSwimlaneCode();
+        }
+        return result;
     }
 }

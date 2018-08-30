@@ -48,7 +48,7 @@ public interface IssueService {
 
     List<EpicDataDTO> listEpic(Long projectId);
 
-    List<StoryMapEpicDTO> listStoryMapEpic(Long projectId,Boolean showDoneEpic, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds);
+    List<StoryMapEpicDTO> listStoryMapEpic(Long projectId, Boolean showDoneEpic, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds);
 
     /**
      * 更新issue
@@ -216,6 +216,13 @@ public interface IssueService {
 
     List<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId);
 
-    List<UnfinishedIssueDTO> queryUnfinishedIssues(Long projectId,Long assigneeId);
+    List<UnfinishedIssueDTO> queryUnfinishedIssues(Long projectId, Long assigneeId);
 
+    /**
+     * 查询用户故事地图泳道
+     *
+     * @param projectId projectId
+     * @return String
+     */
+    String querySwimLaneCode(Long projectId);
 }

@@ -22,6 +22,8 @@ public class UserSettingE {
 
     private String swimlaneBasedCode;
 
+    private String storymapSwimlaneCode;
+
     private Long objectVersionNumber;
 
     public Long getSettingId() {
@@ -86,6 +88,14 @@ public class UserSettingE {
 
     public void setSwimlaneBasedCode(String swimlaneBasedCode) {
         this.swimlaneBasedCode = swimlaneBasedCode;
+    }
+
+    public String getStorymapSwimlaneCode() {
+        return storymapSwimlaneCode;
+    }
+
+    public void setStorymapSwimlaneCode(String storymapSwimlaneCode) {
+        this.storymapSwimlaneCode = storymapSwimlaneCode;
     }
 
     public void initUserSetting(Long projectId) {

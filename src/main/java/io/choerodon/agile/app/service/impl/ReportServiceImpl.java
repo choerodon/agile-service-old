@@ -785,9 +785,14 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private List<CoordinateDTO> getCumulativeFlowDiagramDuringDate(CumulativeFlowDiagramDTO cumulativeFlowDiagramDTO, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
-        return cumulativeFlowDiagramDTO.getCoordinateDTOList().stream().filter(coordinateDTO ->
-                (coordinateDTO.getDate().before(cumulativeFlowFilterDTO.getEndDate()) || coordinateDTO.getDate().equals(cumulativeFlowFilterDTO.getEndDate()))
-                        && (coordinateDTO.getDate().after(cumulativeFlowFilterDTO.getStartDate()) || coordinateDTO.getDate().equals(cumulativeFlowFilterDTO.getStartDate()))).collect(Collectors.toList());
+        if (cumulativeFlowDiagramDTO.getCoordinateDTOList() != null && !cumulativeFlowDiagramDTO.getCoordinateDTOList().isEmpty()) {
+            return cumulativeFlowDiagramDTO.getCoordinateDTOList().stream().filter(coordinateDTO ->
+                    (coordinateDTO.getDate().before(cumulativeFlowFilterDTO.getEndDate()) || coordinateDTO.getDate().equals(cumulativeFlowFilterDTO.getEndDate()))
+                            && (coordinateDTO.getDate().after(cumulativeFlowFilterDTO.getStartDate()) || coordinateDTO.getDate().equals(cumulativeFlowFilterDTO.getStartDate()))).collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
+        }
+
     }
 
     private List<CumulativeFlowDiagramDTO> getCumulativeFlowDiagram(List<Long> allIssueIds, Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
