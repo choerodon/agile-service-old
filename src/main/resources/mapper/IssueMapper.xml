@@ -1751,6 +1751,7 @@
         'sub_task',
         'issue_epic'
         )
+        and ais.category_code != 'done'
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
@@ -1857,6 +1858,7 @@
         'sub_task',
         'issue_epic'
         )
+        and ais.category_code != 'done'
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
@@ -1902,6 +1904,7 @@
         'sub_task',
         'issue_epic'
         )
+        and ais.category_code != 'done'
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
