@@ -963,13 +963,10 @@ class IssueControllerSpec extends Specification {
         queryComponent.name = '测试模块2'
         ProductVersionDO queryVersion = new ProductVersionDO()
         queryVersion.name = '测试版本'
-        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDTO()
-        versionIssueRelDO.setProjectId(projectId)
 
         when: '执行方法'
         issueComponentMapper.delete(queryComponent)
         productVersionMapper.delete(queryVersion)
-        versionIssueRelMapper.delete(versionIssueRelDO)
 
         then: '验证删除'
         issueComponentMapper.selectOne(queryComponent) == null
