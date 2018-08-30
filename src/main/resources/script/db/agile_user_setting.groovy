@@ -43,4 +43,10 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_user_setting.groovy') {
             column(name: 'board_id')
         }
     }
+
+    changeSet(id: '2018-08-30-agile-user-setting-add-column', author: 'dinghuang123@gmail.com') {
+        addColumn(tableName: 'agile_user_setting') {
+            column(name: 'storymap_swimlane_code', type: 'VARCHAR(100)', remarks: '故事地图泳道类型', defaultValue: 'swimlane_none')
+        }
+    }
 }

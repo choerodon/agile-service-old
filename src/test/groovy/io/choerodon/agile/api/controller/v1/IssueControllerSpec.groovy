@@ -914,6 +914,21 @@ class IssueControllerSpec extends Specification {
 
     }
 
+    def 'querySwimLaneCode'() {
+
+        when: '查询用户泳道接口请求'
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/storymap/swim_lane",String,projectId)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+
+        and:
+        String code = entity.body
+
+        expect:
+        code == 'none'
+    }
+
     def "deleteIssue"() {
         when: '执行方法'
         restTemplate.delete('/v1/projects/{project_id}/issues/{issueId}', projectId, issueId)
