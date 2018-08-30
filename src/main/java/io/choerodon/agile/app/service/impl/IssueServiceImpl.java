@@ -1504,15 +1504,16 @@ public class IssueServiceImpl implements IssueService {
         return storyMapIssueDTOList == null ? new ArrayList<>() : storyMapIssueDTOList;
     }
 
-    private void handleSaveUserSetting(Long projectId, String type) {
-        UserSettingE userSettingE = new UserSettingE();
-        userSettingE.initUserSetting(projectId);
-        userSettingE.setTypeCode("storymap");
-        UserSettingDO query = userSettingMapper.selectOne(ConvertHelper.convert(userSettingE, UserSettingDO.class));
+    private synchronized void handleSaveUserSetting(Long projectId, String type) {
+        UserSettingDO userSettingDO = new UserSettingDO();
+        userSettingDO.setProjectId(projectId);
+        userSettingDO.setUserId(DetailsHelper.getUserDetails().getUserId());
+        userSettingDO.setTypeCode("storymap");
+        UserSettingDO query = userSettingMapper.selectOne(userSettingDO);
         if (query == null) {
-            userSettingE.setStorymapSwimlaneCode("none");
-            userSettingRepository.create(userSettingE);
-        } else {
+            userSettingDO.setStorymapSwimlaneCode("none");
+            userSettingRepository.create(ConvertHelper.convert(userSettingDO, UserSettingE.class));
+        } else if (!query.getStorymapSwimlaneCode().equals(type)) {
             query.setStorymapSwimlaneCode(type);
             userSettingRepository.update(ConvertHelper.convert(query, UserSettingE.class));
         }

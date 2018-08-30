@@ -255,7 +255,7 @@ public class BoardServiceImpl implements BoardService {
         return jsonObject;
     }
 
-    private void handleUserSetting(Long boardId, Long projectId) {
+    private synchronized void handleUserSetting(Long boardId, Long projectId) {
         Long userId = DetailsHelper.getUserDetails().getUserId();
         UserSettingDO userSettingDO = new UserSettingDO();
         userSettingDO.setProjectId(projectId);
