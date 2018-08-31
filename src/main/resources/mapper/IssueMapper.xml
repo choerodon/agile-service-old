@@ -1813,7 +1813,7 @@
         avir.project_id = #{projectId} and avir.issue_id = ai.issue_id
         and avir.relation_type = 'fix'
         and avir.version_id in (
-        select version_id from agile_product_version where project_id = #{projectId} and status_code != 'archived'
+        select version_id from agile_product_version where project_id = #{projectId} and status_code = 'version_planning'
         )
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
@@ -1852,7 +1852,8 @@
         FROM
         agile_version_issue_rel avir, agile_product_version apv
         WHERE
-        avir.project_id = #{projectId} and avir.version_id = apv.version_id and apv.status_code != 'archived'
+        avir.project_id = #{projectId} and avir.version_id = apv.version_id and apv.status_code = 'version_planning'
+        and avir.relation_type = 'fix'
         )
         AND ai.type_code NOT IN (
         'issue_test',
