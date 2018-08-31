@@ -3,8 +3,10 @@ package io.choerodon.agile
 import com.alibaba.fastjson.JSON
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
+import io.choerodon.agile.app.service.IssueAttachmentService
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.ProductVersionService
+import io.choerodon.agile.app.service.impl.IssueAttachmentServiceImpl
 import io.choerodon.agile.app.service.impl.IssueServiceImpl
 import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl
 import io.choerodon.agile.domain.agile.event.ProjectEvent
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
@@ -63,10 +66,10 @@ class AgileTestConfiguration {
     private final detachedMockFactory = new DetachedMockFactory()
 
     @Autowired
-    ApplicationContext applicationContext;
+    ApplicationContext applicationContext
 
     @Autowired
-    ApplicationContextHelper applicationContextHelper;
+    ApplicationContextHelper applicationContextHelper
 
     @Value('${choerodon.oauth.jwt.key:choerodon}')
     String key
@@ -122,17 +125,26 @@ class AgileTestConfiguration {
         detachedMockFactory.Mock(UserRepository)
     }
 
-//    @Bean("mockFileFeignClient")
-//    @Primary
-//    FileFeignClient FileFeignClient() {
-//        detachedMockFactory.Mock(FileFeignClient)
-//    }
-
     @Bean("issueService")
     @Primary
     IssueService issueService() {
         new IssueServiceImpl(detachedMockFactory.Mock(SagaClient))
     }
+
+    @MockBean(name = "fileFeignClient")
+    private FileFeignClient fileFeignClient
+
+    @Bean("issueAttachmentService")
+    @Primary
+    IssueAttachmentService issueAttachmentService() {
+        new IssueAttachmentServiceImpl(fileFeignClient)
+    }
+
+//    @Bean("issueAttachmentService")
+//    @Primary
+//    IssueAttachmentService issueAttachmentService() {
+//        new IssueAttachmentServiceImpl(detachedMockFactory.Mock(FileFeignClient))
+//    }
 
     @Bean("productVersionService")
     @Primary

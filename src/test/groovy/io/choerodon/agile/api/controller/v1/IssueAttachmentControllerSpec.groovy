@@ -1,8 +1,11 @@
 package io.choerodon.agile.api.controller.v1
 
+import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.IssueAttachmentDTO
+import io.choerodon.agile.infra.dataobject.IssueAttachmentDO
 import io.choerodon.agile.infra.feign.FileFeignClient
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
@@ -10,9 +13,17 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.MvcResult
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.multipart.MultipartFile
+
+import static org.mockito.Matchers.anyString
+import static org.mockito.Matchers.any
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
@@ -33,12 +44,15 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class IssueAttachmentControllerSpec extends Specification {
     @Autowired
     TestRestTemplate restTemplate
-//
-//    @Autowired
-//    HttpServletRequest request
 
     @Autowired
-    @Qualifier("mockFileFeignClient")
+    HttpServletRequest request
+
+    @Autowired
+    private WebApplicationContext webApplicationContext
+
+    @Autowired
+    @Qualifier("fileFeignClient")
     private FileFeignClient fileFeignClient
 
     @Shared
@@ -47,34 +61,17 @@ class IssueAttachmentControllerSpec extends Specification {
     @Shared
     def issueId = 1L
 
-//    def 'uploadAttachment'() {
-//        given: '上传附件'
-//        ResponseEntity<String> responseEntity = new ResponseEntity<>()
-//        responseEntity.statusCode = HttpStatus.OK
-//        fileFeignClient.uploadFile(*_) >> responseEntity
-//
-//        and: '准备文件'
-//        FileInputStream fis = new FileInputStream("D:\\test.txt")
-//        byte[] data = toByteArray(fis)
-//        in.close()
-//
-////        MockMultipartFile file = new MockMultipartFile("file", "test.txt", "txt", fis)
-////        HttpServletRequest request =ServletActionContext.getRequest()
-////        request.content(data)
-//
-//        when: '发送创建issue评论请求'
-//        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issue_attachment', request, List, projectId, issueId)
-//
-//        then: '请求结果'
-//        entity.statusCode.is2xxSuccessful()
-//
-//        and: '设置值'
-//        List<IssueAttachmentDTO> result = entity.body
-//
-//        expect: '设置期望值'
-//        result.size() == 1
-//        result.get(0).projectId == 1L
-//        result.get(0).issueId == 1L
-//
-//    }
+    def 'uploadAttachment'() {
+        given: '上传附件'
+        MockMultipartFile mockMultipartFile =
+                new MockMultipartFile("file", "FileUploadTest.txt", "text/plain", "This is a Test".getBytes())
+        Mockito.when(fileFeignClient.uploadFile(anyString(), anyString(),any(MultipartFile.class))).thenReturn(new ResponseEntity<>(
+                "https://minio.choerodon.com.cn/agile-service/file_56a005f56a584047b538d5bf84b17d70_blob.png", HttpStatus.OK))
+        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build()
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.fileUpload("/v1/projects/1/issue_attachment?issueId=1")
+                .file(mockMultipartFile)).andReturn()
+        List<IssueAttachmentDTO> issueAttachmentDTOList =  JSONObject.parseArray(result.getResponse().content.toString(),IssueAttachmentDTO)
+        expect: '设置期望值'
+        issueAttachmentDTOList.get(0).projectId == 1
+    }
 }

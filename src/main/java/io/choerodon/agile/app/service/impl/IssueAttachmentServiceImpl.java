@@ -37,8 +37,12 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
 
     private static final String BACKETNAME = "agile-service";
 
+    private final FileFeignClient fileFeignClient;
+
     @Autowired
-    private FileFeignClient fileFeignClient;
+    public IssueAttachmentServiceImpl(FileFeignClient fileFeignClient) {
+        this.fileFeignClient = fileFeignClient;
+    }
 
     @Autowired
     private IssueAttachmentRepository issueAttachmentRepository;
