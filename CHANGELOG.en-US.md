@@ -1,6 +1,36 @@
 # Changelog
 All notable changes about agile service will be documented in this file.
 
+## [0.9.5] - 2018-08-31
+
+### Added
+
+- Dashboard functionality.Users can customize the dashboard in the home page.The dashboard contains: burndown chart, version progress, epic progress, my unfinished issues and more.
+- User story map functionality.User story map is based on epic, planning and managing issues according to version and sprint dimensions.
+- User story map swim lane functionality.Users can select none, version, sprint to divide the swim lane and record the user's choice of swimlane.
+- User story map demand pool functionality.Users can filter all unallocated epic's issues in the demand pool of the user story map.
+- User story map issue drag functionality. Users can drag the issue between different epics, versions, sprints, or drag to the map board in the demand pool.
+- Report chart caching functionality: Cache the charts in the report via Redis.
+- The issues in the chart can transfer to issue management view (without subtasks).
+- Unit tests for to-dos, active sprints, release version and component management.
+- Record the swim lane settings of the user's active sprint corresponding to the board.
+- Issue management view export Excel contains subtasks.
+
+### Changed
+
+- Some view styles are modified.
+- Partial view memory optimization.
+- Cumulative flow chart query optimization.
+
+### Fixed
+
+- Drag issue repeatedly generates a data log in the to-do view.
+- The to-do view has no issue cause sprint data does not receive.
+- Dragging issues to an unsupported version failed in the to-do view.
+- Dragging issues to an unsupported version failed in the to-do view.
+- When there are column constraints of the board configuration in the active sprint view, the constraints can be skipped directly by modifying the state of the to-do view.
+- Failed to delete the version in the version management view.
+
 ## [0.9.0] - 2018-08-17
 
 ### Added
