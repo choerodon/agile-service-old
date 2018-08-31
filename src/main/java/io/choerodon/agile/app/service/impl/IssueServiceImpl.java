@@ -182,6 +182,8 @@ public class IssueServiceImpl implements IssueService {
     private static final String STORYMAP_TYPE_SPRINT = "sprint";
     private static final String STORYMAP_TYPE_VERSION = "version";
     private static final String STORYMAP_TYPE_NONE = "none";
+    private static final String USERMAP = "usermap";
+    private static final String STORYMAP = "storymap";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -1487,7 +1489,7 @@ public class IssueServiceImpl implements IssueService {
             filterSql = getQuickFilter(quickFilterIds);
         }
         //保存用户选择的泳道
-        handleSaveUserSetting(projectId, type);
+        handleSaveUserSetting(projectId, type, pageType);
         switch (type) {
             case STORYMAP_TYPE_SPRINT:
                 storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId, pageType, assigneeId, onlyStory, filterSql));
@@ -1504,18 +1506,20 @@ public class IssueServiceImpl implements IssueService {
         return storyMapIssueDTOList == null ? new ArrayList<>() : storyMapIssueDTOList;
     }
 
-    private synchronized void handleSaveUserSetting(Long projectId, String type) {
-        UserSettingDO userSettingDO = new UserSettingDO();
-        userSettingDO.setProjectId(projectId);
-        userSettingDO.setUserId(DetailsHelper.getUserDetails().getUserId());
-        userSettingDO.setTypeCode("storymap");
-        UserSettingDO query = userSettingMapper.selectOne(userSettingDO);
-        if (query == null) {
-            userSettingDO.setStorymapSwimlaneCode("none");
-            userSettingRepository.create(ConvertHelper.convert(userSettingDO, UserSettingE.class));
-        } else if (!query.getStorymapSwimlaneCode().equals(type)) {
-            query.setStorymapSwimlaneCode(type);
-            userSettingRepository.update(ConvertHelper.convert(query, UserSettingE.class));
+    private void handleSaveUserSetting(Long projectId, String type, String pageType) {
+        if (USERMAP.equals(pageType)) {
+            UserSettingDO userSettingDO = new UserSettingDO();
+            userSettingDO.setProjectId(projectId);
+            userSettingDO.setUserId(DetailsHelper.getUserDetails().getUserId());
+            userSettingDO.setTypeCode(STORYMAP);
+            UserSettingDO query = userSettingMapper.selectOne(userSettingDO);
+            if (query == null) {
+                userSettingDO.setStorymapSwimlaneCode(STORYMAP_TYPE_NONE);
+                userSettingRepository.create(ConvertHelper.convert(userSettingDO, UserSettingE.class));
+            } else if (!query.getStorymapSwimlaneCode().equals(type)) {
+                query.setStorymapSwimlaneCode(type);
+                userSettingRepository.update(ConvertHelper.convert(query, UserSettingE.class));
+            }
         }
     }
 
