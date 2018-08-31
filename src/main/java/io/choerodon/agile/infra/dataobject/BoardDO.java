@@ -37,6 +37,9 @@ public class BoardDO extends AuditDomain {
     @Transient
     private Boolean userDefault;
 
+    @Transient
+    private String userDefaultBoard;
+
     public Long getBoardId() {
         return boardId;
     }
@@ -107,5 +110,13 @@ public class BoardDO extends AuditDomain {
 
     public void setUserDefault(Boolean userDefault) {
         this.userDefault = userDefault;
+    }
+
+    public String getUserDefaultBoard() {
+        return userDefaultBoard;
+    }
+
+    public void setUserDefaultBoard(String userDefaultBoard) {
+        this.userDefaultBoard = userDefaultBoard;
     }
 }

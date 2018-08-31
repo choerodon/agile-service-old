@@ -265,6 +265,7 @@ public class BoardServiceImpl implements BoardService {
         UserSettingDO query = userSettingMapper.selectOne(userSettingDO);
         if (query == null) {
             userSettingDO.setDefaultBoard(true);
+            userSettingDO.setSwimlaneBasedCode("swimlane_none");
             userSettingRepository.create(ConvertHelper.convert(userSettingDO, UserSettingE.class));
             userSettingRepository.updateOtherBoardNoDefault(boardId, projectId, userId);
         } else if (!query.getDefaultBoard()) {
