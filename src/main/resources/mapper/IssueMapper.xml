@@ -1751,6 +1751,7 @@
         'sub_task',
         'issue_epic'
         )
+        and ais.category_code != 'done'
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
@@ -1810,8 +1811,9 @@
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         avir.project_id = #{projectId} and avir.issue_id = ai.issue_id
+        and avir.relation_type = 'fix'
         and avir.version_id in (
-        select version_id from agile_product_version where project_id = #{projectId} and status_code != 'archived'
+        select version_id from agile_product_version where project_id = #{projectId} and status_code = 'version_planning'
         )
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
@@ -1850,13 +1852,15 @@
         FROM
         agile_version_issue_rel avir, agile_product_version apv
         WHERE
-        avir.project_id = #{projectId} and avir.version_id = apv.version_id and apv.status_code != 'archived'
+        avir.project_id = #{projectId} and avir.version_id = apv.version_id and apv.status_code = 'version_planning'
+        and avir.relation_type = 'fix'
         )
         AND ai.type_code NOT IN (
         'issue_test',
         'sub_task',
         'issue_epic'
         )
+        and ais.category_code != 'done'
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
@@ -1902,6 +1906,7 @@
         'sub_task',
         'issue_epic'
         )
+        and ais.category_code != 'done'
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
@@ -1947,7 +1952,7 @@
         from agile_issue ai, agile_issue_status ais
         where ai.project_id = #{projectId}
         and ai.type_code in ('story', 'task', 'bug')
-        and ai.status_id = ais.id and ais.is_completed = 0
+        and ai.status_id = ais.id and ais.category_code != 'done'
     </select>
 
     <select id="queryIssueIdsByOptions" resultType="java.lang.Long">
@@ -2040,7 +2045,7 @@
           alv.name as status_color
         from agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        right join agile_issue_status ais on ai.status_id = ais.id and ais.is_completed=0
+        right join agile_issue_status ais on ai.status_id = ais.id and ais.category_code != 'done'
         LEFT JOIN agile_lookup_value alv ON alv.value_code = CASE ais.category_code
                 WHEN 'todo' THEN
                     'issue_status_color_todo'
