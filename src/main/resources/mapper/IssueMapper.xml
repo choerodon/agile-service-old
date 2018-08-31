@@ -1811,6 +1811,7 @@
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         avir.project_id = #{projectId} and avir.issue_id = ai.issue_id
+        and avir.relation_type = 'fix'
         and avir.version_id in (
         select version_id from agile_product_version where project_id = #{projectId} and status_code != 'archived'
         )
