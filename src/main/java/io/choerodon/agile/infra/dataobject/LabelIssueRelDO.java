@@ -34,11 +34,7 @@ public class LabelIssueRelDO extends AuditDomain {
     @NotNull(message = "error.label_issue.label_idNotNull")
     private Long labelId;
 
-    /**
-     * 标签projrct_id
-     */
-    @NotNull(message = "error.label_issue.project_idNotNull")
-    private Long projrctId;
+    private Long projectId;
 
     @Transient
     private String labelName;
@@ -60,11 +56,11 @@ public class LabelIssueRelDO extends AuditDomain {
     }
 
     public Long getProjrctId() {
-        return projrctId;
+        return projectId;
     }
 
     public void setProjrctId(Long projrctId) {
-        this.projrctId = projrctId;
+        this.projectId = projrctId;
     }
 
     public String getLabelName() {
