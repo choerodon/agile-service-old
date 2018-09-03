@@ -3,7 +3,9 @@ package io.choerodon.agile.api.controller.v1
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.IssueAttachmentDTO
 import io.choerodon.agile.app.service.IssueAttachmentService
+import io.choerodon.agile.infra.dataobject.IssueAttachmentDO
 import io.choerodon.agile.infra.feign.FileFeignClient
+import io.choerodon.agile.infra.mapper.IssueAttachmentMapper
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -15,7 +17,6 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
@@ -25,15 +26,14 @@ import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
 
-import static org.mockito.Matchers.anyString
-import static org.mockito.Matchers.any
-
 import javax.servlet.http.HttpServletRequest
 
+import static org.mockito.Matchers.any
+import static org.mockito.Matchers.anyString
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 /**
- * Creator: scp
+ * Creator: ChangpingShi0213@gmail.com
  * Date:  19:38 2018/8/27
  * Description:
  */
@@ -44,6 +44,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class IssueAttachmentControllerSpec extends Specification {
     @Autowired
     TestRestTemplate restTemplate
+
+    @Autowired
+    IssueAttachmentMapper issueAttachmentMapper
 
     @Autowired
     HttpServletRequest request
@@ -70,14 +73,14 @@ class IssueAttachmentControllerSpec extends Specification {
         Mockito.when(fileFeignClient.uploadFile(anyString(), anyString(), any(MultipartFile.class))).thenReturn(new ResponseEntity<>(
                 "https://minio.choerodon.com.cn/agile-service/file_56a005f56a584047b538d5bf84b17d70_blob.png", HttpStatus.OK))
 
-        FileSystemResource resource = new FileSystemResource(new File( "D:\\test1.txt"))
+        FileSystemResource resource = new FileSystemResource(new File("D:\\test1.txt"))
         MultiValueMap<String, Object> param = new LinkedMultiValueMap<>()
         param.add("file", resource)
         param.add("fileName", "test1.txt")
         HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<MultiValueMap<String, Object>>(param, null)
 
         when: '发送请求'
-        def entity = restTemplate.exchange("/v1/projects/1/issue_attachment?issueId=1", HttpMethod.POST, httpEntity, List)
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_attachment?issueId={issueId}", HttpMethod.POST, httpEntity, List, projectId, issueId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -87,6 +90,62 @@ class IssueAttachmentControllerSpec extends Specification {
 
         expect: '期望值'
         list.size() == 1
+    }
+
+    def 'deleteAttachment'() {
+        given: '删除附件'
+        List<IssueAttachmentDO> list = issueAttachmentMapper.selectAll()
+        Mockito.when(fileFeignClient.deleteFile(anyString(), anyString())).thenReturn(new ResponseEntity<>(HttpStatus.OK))
+
+        when: '发送请求'
+        try {
+            def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_attachment/{issueAttachmentId}",
+                    HttpMethod.DELETE,
+                    null,
+                    ResponseEntity.class,
+                    projectId,
+                    issueAttachmentId)
+        } catch (Exception e) {
+            expectObject = e
+        }
+
+        then: '返回值'
+        if (expectObject != null) {
+            issueAttachmentMapper.selectByPrimaryKey(issueAttachmentId) == expectObject
+        }
+
+        where: '期望值'
+        issueAttachmentId | expectObject
+        1L                | null
+        2L                | Exception
+    }
+
+    def 'uploadForAddress'() {
+        given: '上传附件'
+        Mockito.when(fileFeignClient.uploadFile(anyString(), anyString(), any(MultipartFile.class))).thenReturn(new ResponseEntity<>(
+                "https://minio.choerodon.com.cn/agile-service/file_56a005f56a584047b538d5bf84b17d70_blob.png", HttpStatus.OK))
+
+        FileSystemResource resource = new FileSystemResource(new File("D:\\test2.txt"))
+        MultiValueMap<String, Object> param = new LinkedMultiValueMap<>()
+        param.add("file", resource)
+        param.add("fileName", "test2.txt")
+        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<MultiValueMap<String, Object>>(param, null)
+
+        when: '发送请求'
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_attachment/upload_for_address",
+                HttpMethod.POST,
+                httpEntity,
+                List,
+                projectId)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        List<String> result = entity.body
+
+        expect: '设置值'
+        result.get(0) == "file_56a005f56a584047b538d5bf84b17d70_blob.png"
     }
 }
 
