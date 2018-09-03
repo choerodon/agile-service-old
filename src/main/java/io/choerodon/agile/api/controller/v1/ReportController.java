@@ -131,8 +131,8 @@ public class ReportController {
     @GetMapping(value = "/pie_chart")
     public ResponseEntity<List<PieChartDTO>> queryPieChart(@ApiParam(value = "项目id", required = true)
                                                            @PathVariable(name = "project_id") Long projectId,
-                                                           @ApiParam(value = "字段名称:assignee、component、issueType、" +
-                                                                   "fixVersion、priority、status、sprint、epic、resolution", required = true)
+                                                           @ApiParam(value = "字段名称:assignee、component、typeCode、" +
+                                                                   "version、priorityCode、statusCode、sprint、epic、resolution", required = true)
                                                            @RequestParam String fieldName) {
         return Optional.ofNullable(reportService.queryPieChart(projectId, fieldName))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

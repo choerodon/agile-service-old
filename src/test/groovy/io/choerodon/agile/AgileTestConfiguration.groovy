@@ -264,7 +264,7 @@ class AgileTestConfiguration {
     private void initIssues() {
         IssueDO epicIssue = new IssueDO()
         epicIssue.issueId = 1L
-        epicIssue.issueNum = 1
+        epicIssue.issueNum = '1'
         epicIssue.projectId = 1L
         epicIssue.priorityCode = 'high'
         epicIssue.reporterId = 1L
@@ -279,7 +279,7 @@ class AgileTestConfiguration {
         story.statusId = 1L
         story.reporterId = 1L
         story.priorityCode = 'high'
-        story.issueNum = 2
+        story.issueNum = '2'
         story.issueId = 2L
         story.summary = 'story-test'
         story.epicId = 1L

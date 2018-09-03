@@ -25,7 +25,7 @@
                               FROM agile_data_log adl
                               WHERE adl.field = 'Sprint' AND adl.creation_date &lt;= #{sprintDO.startDate}
                               GROUP BY
-                                  adl.issue_id) AND FIND_IN_SET(#{sprintDO.sprintId}, adl5.new_value)
+                                  adl.issue_id) AND adl5.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
         UNION
         SELECT aisr2.issue_id
         FROM
@@ -91,10 +91,8 @@
         WHERE
             adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
             adl2.creation_date &lt;= #{sprintDO.actualEndDate}
-            AND FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) AND
-            (FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) IS NULL OR
-             FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) = 0)
-            AND adl2.issue_id
+            AND adl2.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+            AND (adl2.old_value is null or not (adl2.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'))
 
     </select>
 
@@ -150,7 +148,7 @@
         adl.field = 'Sprint'
         AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt; #{sprintDO.actualEndDate}
-        AND FIND_IN_SET( #{sprintDO.sprintId}, adl.new_value )
+        AND adl.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
         AND adl.issue_id IN
         <foreach collection="issueIdAddList" item="issueId"
                  open="(" close=")" separator=",">
@@ -171,9 +169,8 @@
               WHERE
                   adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
                   adl2.creation_date &lt;= #{sprintDO.actualEndDate}
-                  AND FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) AND
-                  (FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) IS NULL OR
-                   FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) = 0)
+                  AND adl2.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+                  AND (adl2.new_value is null or not (adl2.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'))
                   AND adl2.issue_id NOT IN (SELECT ais.issue_id
                                             FROM agile_issue_sprint_rel ais
                                             WHERE ais.sprint_id = #{sprintDO.sprintId})) aa LEFT JOIN agile_issue ai
@@ -241,10 +238,8 @@
         adl.field = 'Sprint'
         AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt; #{sprintDO.actualEndDate}
-        AND FIND_IN_SET(#{sprintDO.sprintId},adl.old_value)
-        AND
-        (FIND_IN_SET(#{sprintDO.sprintId}, adl.new_value) IS NULL OR
-        FIND_IN_SET(#{sprintDO.sprintId}, adl.new_value) = 0)
+        AND adl.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        AND (adl.new_value is null or not (adl.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'))
         AND adl.issue_id IN
         <foreach collection="issueIdRemoveList" item="issueId"
                  open="(" close=")" separator=",">
@@ -313,7 +308,7 @@
         adl.field = 'Sprint'
         AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
-        AND FIND_IN_SET(#{sprintDO.sprintId},adl.new_value)
+        AND adl.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
         AND adl.issue_id IN
         <foreach collection="issueIdAddList" item="issueId"
                  open="(" close=")" separator=",">
@@ -383,7 +378,7 @@
         adl.field = 'Sprint'
         AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
-        AND FIND_IN_SET(#{sprintDO.sprintId},adl.old_value)
+        AND adl.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
         AND adl.issue_id IN
         <foreach collection="issueIdRemoveList" item="issueId"
                  open="(" close=")" separator=",">
@@ -429,8 +424,10 @@
         a.*,
         0 as new_value,
         'addDoneDuringSprint' as type,
-        case when FIND_IN_SET(#{sprintDO.sprintId}, (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = a.issue_id and adl3.field = 'Sprint' and
-        adl3.creation_date &lt; a.date order by adl3.log_id desc limit 1)) then 1 else 0 end as statistical,
+        case when
+        (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = a.issue_id and adl3.field = 'Sprint' and
+        adl3.creation_date &lt; a.date order by adl3.log_id desc limit 1) REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        then 1 else 0 end as statistical,
         CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_Id
@@ -465,8 +462,10 @@
         a.*,
         0 as old_value,
         'removeDoneDuringSprint' as type,
-        case when FIND_IN_SET(#{sprintDO.sprintId}, (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = a.issue_id and adl3.field = 'Sprint' and
-        adl3.creation_date &lt; a.date order by adl3.log_id desc limit 1)) then 1 else 0 end as statistical,
+        case when
+        (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = a.issue_id and adl3.field = 'Sprint' and
+        adl3.creation_date &lt; a.date order by adl3.log_id desc limit 1) REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        then 1 else 0 end as statistical,
         CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_id
@@ -529,8 +528,10 @@
         CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_id,
-        case when FIND_IN_SET(#{sprintDO.sprintId}, (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = adl.issue_id and adl3.field = 'Sprint' and
-        adl3.creation_date &lt; adl.creation_date order by adl3.log_id desc limit 1)) then 1 else 0 end as statistical
+        case when
+        (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = adl.issue_id and adl3.field = 'Sprint' and
+        adl3.creation_date &lt; adl.creation_date order by adl3.log_id desc limit 1) REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        then 1 else 0 end as statistical
         FROM
         agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
         api.project_id = ai.project_id left join agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN
@@ -558,8 +559,10 @@
         CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_id,
-        case when FIND_IN_SET(#{sprintDO.sprintId}, (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = adl.issue_id and adl3.field = 'Sprint' and
-        adl3.creation_date &lt; adl.creation_date order by adl3.log_id desc limit 1)) then 1 else 0 end as statistical
+        case when
+        AND (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = adl.issue_id and adl3.field = 'Sprint' and
+        adl3.creation_date &lt; adl.creation_date order by adl3.log_id desc limit 1) REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        then 1 else 0 end as statistical
         FROM
         agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
         api.project_id = ai.project_id left join agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN
@@ -899,7 +902,7 @@
 
     <select id="checkIssueRemove" resultType="java.lang.Boolean">
         SELECT CASE
-               WHEN c.issue_id IS NOT NULL AND FIND_IN_SET(#{sprintId}, c.new_value)
+               WHEN c.issue_id IS NOT NULL AND c.new_value REGEXP '^${sprintId},|,${sprintId},|^${sprintId}$|,${sprintId}$'
                    THEN 1
                ELSE 0 END
         FROM (SELECT
@@ -924,10 +927,8 @@
         WHERE
             adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
             adl2.creation_date &lt;= #{sprintDO.actualEndDate}
-            AND FIND_IN_SET(#{sprintDO.sprintId}, adl2.old_value) AND
-            (FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) IS NULL OR
-             FIND_IN_SET(#{sprintDO.sprintId}, adl2.new_value) = 0)
-
+            AND adl2.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+            AND (adl2.new_value is null or not (adl2.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$' ))
     </select>
 
 
@@ -1130,7 +1131,7 @@
         (
         <foreach collection="versionIssues" item="versionIssue"
                  open="" close="" separator=" UNION ALL  ">
-            SELECT MAX(log_id) AS log_id, #{versionIssue.changeDate} AS change_date
+            SELECT MAX(log_id) AS log_id, '${versionIssue.changeDate}' AS change_date
             FROM agile_data_log
             WHERE project_id = #{projectId} AND field = 'resolution'
             AND creation_date &lt;= #{versionIssue.changeDate}
@@ -1517,7 +1518,7 @@
         aisr.issue_id
         ) t1
         LEFT JOIN (
-        SELECT t4.sprint_id,t4.issue_id,SUM(adlf.new_value) AS work_times FROM agile_data_log adlf,
+        SELECT t4.sprint_id,t4.issue_id,SUM(adlf.new_value + 0) AS work_times FROM agile_data_log adlf,
         (SELECT
         aisr.sprint_id,
         aisr.issue_id,
@@ -1577,7 +1578,7 @@
         aisr.issue_id
         ) t1
         LEFT JOIN (
-        SELECT t4.sprint_id,t4.issue_id,SUM(adlf.new_value) AS work_times FROM agile_data_log adlf,
+        SELECT t4.sprint_id,t4.issue_id,SUM(adlf.new_value + 0) AS work_times FROM agile_data_log adlf,
         (SELECT
         aisr.sprint_id,
         aisr.issue_id,
@@ -1921,7 +1922,7 @@
     <select id="selectByStoryPointCompletedFinal" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
         SELECT
         t11.group_day AS group_day,
-        SUM(t11.story_points) AS completed_story_points
+        SUM(t11.story_points + 0) AS completed_story_points
         FROM
         (
         SELECT
@@ -2073,7 +2074,7 @@
     <select id="selectByStoryPointAllFinal" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
         SELECT
         t2.group_day AS group_day,
-        SUM(adl2.new_string) AS all_story_points
+        SUM(adl2.new_string + 0) AS all_story_points
         FROM
         (
         SELECT
@@ -2293,7 +2294,7 @@
     <select id="selectByRemainTimeRemainCompleted" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
         SELECT
         t11.group_day AS group_day,
-        SUM(t11.remain_time) AS completed_remain_times
+        SUM(t11.remain_time + 0) AS completed_remain_times
         FROM
         (
         SELECT
@@ -2446,7 +2447,7 @@
     <select id="selectByRemainTimeWorkLogCompleted" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
         SELECT
         t11.group_day AS group_day,
-        SUM(t11.work_time) AS completed_remain_times
+        SUM(t11.work_time + 0) AS completed_remain_times
         FROM
         (
         SELECT
@@ -2598,7 +2599,7 @@
     <select id="selectByRemainTimeRemainAll" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
         SELECT
         t2.group_day AS group_day,
-        SUM(adl2.new_string) AS all_remain_times
+        SUM(adl2.new_string + 0) AS all_remain_times
         FROM
         (
         SELECT
@@ -2670,7 +2671,7 @@
     <select id="selectByRemainTimeWorkLogAll" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
         SELECT
         t2.group_day AS group_day,
-        SUM(adl2.new_string) AS all_remain_times
+        SUM(adl2.new_string + 0) AS all_remain_times
         FROM
         (
         SELECT

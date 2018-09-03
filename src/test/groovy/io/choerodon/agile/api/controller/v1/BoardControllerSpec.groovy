@@ -211,4 +211,16 @@ class BoardControllerSpec extends Specification {
         result == null
     }
 
+    def 'returnData'() {
+        given: '回退issue状态'
+        IssueDO issueDO = issueMapper.selectByPrimaryKey(1L)
+        issueDO.setStatusId(1L)
+
+        when: '更新'
+        issueMapper.updateByPrimaryKey(issueDO)
+
+        then: '检查是否更新成功'
+        issueMapper.selectByPrimaryKey(1L).statusId == 1L
+    }
+
 }

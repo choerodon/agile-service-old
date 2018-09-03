@@ -124,7 +124,7 @@ class SprintControllerSpec extends Specification {
         sprintIds << sprintDetailDTO.sprintId
 
         expect: '设置期望值'
-        sprintDetailDTO.sprintId == 2
+        sprintDetailDTO.sprintId != null
         sprintDetailDTO.projectId == projectId
         sprintDetailDTO.statusCode == 'sprint_planning'
     }

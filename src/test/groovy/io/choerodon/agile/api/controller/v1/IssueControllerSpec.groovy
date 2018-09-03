@@ -43,6 +43,12 @@ class IssueControllerSpec extends Specification {
     private IssueComponentMapper issueComponentMapper
 
     @Autowired
+    private ProductVersionMapper productVersionMapper
+
+    @Autowired
+    private VersionIssueRelMapper versionIssueRelMapper
+
+    @Autowired
     AgileEventHandler agileEventHandler
 
     @Autowired
@@ -810,9 +816,9 @@ class IssueControllerSpec extends Specification {
         testIssue.summary = 'issue-test'
         issueMapper.insert(testIssue)
         issues.add(testIssue)
-
+        issueIdList << testIssue.issueId
         ProjectInfoDO projectInfoDO = projectInfoMapper.selectByPrimaryKey(1L)
-        projectInfoDO.setIssueMaxNum(projectInfoDO.getIssueMaxNum()+1)
+        projectInfoDO.setIssueMaxNum(projectInfoDO.getIssueMaxNum() + 1)
         projectInfoMapper.updateByPrimaryKeySelective(projectInfoDO)
 
         IssueUpdateParentIdDTO issueUpdateParentIdDTO = new IssueUpdateParentIdDTO()
@@ -917,7 +923,7 @@ class IssueControllerSpec extends Specification {
     def 'querySwimLaneCode'() {
 
         when: '查询用户泳道接口请求'
-        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/storymap/swim_lane",String,projectId)
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/storymap/swim_lane", String, projectId)
 
         then:
         entity.statusCode.is2xxSuccessful()
@@ -946,18 +952,24 @@ class IssueControllerSpec extends Specification {
     }
 
     def "deleteData"() {
-        given: '刪除模块'
+        given: '刪除模块&版本'
         IssueComponentDO issueComponentDO = new IssueComponentDO()
         issueComponentDO.name = '测试模块2'
+        ProductVersionDO productVersionDO = new ProductVersionDO()
+        productVersionDO.name = '测试版本'
 
-        and: '查询模块DO'
-        IssueComponentDO query = new IssueComponentDO()
-        query.name = '测试模块2'
+        and: '查询模块DO&版本DO'
+        IssueComponentDO queryComponent = new IssueComponentDO()
+        queryComponent.name = '测试模块2'
+        ProductVersionDO queryVersion = new ProductVersionDO()
+        queryVersion.name = '测试版本'
 
         when: '执行方法'
-        issueComponentMapper.delete(issueComponentDO)
+        issueComponentMapper.delete(queryComponent)
+        productVersionMapper.delete(queryVersion)
 
         then: '验证删除'
-        issueComponentMapper.selectOne(query) == null
+        issueComponentMapper.selectOne(queryComponent) == null
+        productVersionMapper.selectOne(queryVersion) == null
     }
 }

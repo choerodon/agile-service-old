@@ -7,6 +7,7 @@ import io.choerodon.agile.api.dto.ProductVersionDetailDTO
 import io.choerodon.agile.api.dto.ProductVersionMergeDTO
 import io.choerodon.agile.api.dto.ProductVersionReleaseDTO
 import io.choerodon.agile.infra.dataobject.ProductVersionDO
+import io.choerodon.agile.infra.dataobject.VersionIssueDO
 import io.choerodon.agile.infra.dataobject.VersionIssueRelDO
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.ProductVersionMapper
@@ -94,12 +95,12 @@ class ProductVersionControllerSpec extends Specification {
         entity.body.name == resultName
 
         where:
-        projectId | startDate                           | releaseDate                         | name         | resultName
-        1L        | null                                | null                                | versionName  | versionName
-        1L        | null                                | null                                | null         | null
-        1L        | StringToDate("2018-08-22 00:00:00") | StringToDate("2018-08-21 00:00:00") | versionName2 | null
-        1L        | null                                | null                                | versionName  | null
-        1L        | null                                | null                                | versionName3 | versionName3
+        projectId | startDate                           | releaseDate                         | name             | resultName
+        1L        | null                                | null                                | versionName      | versionName
+        1L        | null                                | null                                | null             | null
+        1L        | StringToDate("2018-08-22 00:00:00") | StringToDate("2018-08-21 00:00:00") | versionName2     | null
+        1L        | null                                | null                                | versionName      | null
+        1L        | null                                | null                                | versionName3     | versionName3
         1L        | null                                | null                                | versionMergeName | versionMergeName
     }
 
@@ -371,7 +372,7 @@ class ProductVersionControllerSpec extends Specification {
         relsOrigin.size() == 0
         relsNew.size() == 1
         relsNew.get(0).issueId == 2L
-        
+
     }
 
     def 'deleteVersion'() {
@@ -379,6 +380,9 @@ class ProductVersionControllerSpec extends Specification {
         ProductVersionDO productVersionDO = new ProductVersionDO()
         productVersionDO.name = versionMergeName
         productVersionDO.projectId = projectId
+        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO()
+        versionIssueRelDO.projectId = projectId
+        versionIssueRelDO.versionId = result.versionId
 
         when:
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}",
@@ -387,11 +391,13 @@ class ProductVersionControllerSpec extends Specification {
                 Boolean.class,
                 projectId,
                 result3.getVersionId())
+        versionIssueRelMapper.delete(versionIssueRelDO)
 
         then:
         entity.statusCode.is2xxSuccessful()
         ProductVersionDO deleteDO = productVersionMapper.selectOne(productVersionDO)
         deleteDO == null
+        versionIssueRelMapper.selectAll().size() == 1
     }
 
 
