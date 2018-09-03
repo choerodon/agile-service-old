@@ -140,12 +140,6 @@ class AgileTestConfiguration {
         new IssueAttachmentServiceImpl(fileFeignClient)
     }
 
-//    @Bean("issueAttachmentService")
-//    @Primary
-//    IssueAttachmentService issueAttachmentService() {
-//        new IssueAttachmentServiceImpl(detachedMockFactory.Mock(FileFeignClient))
-//    }
-
     @Bean("productVersionService")
     @Primary
     ProductVersionService productVersionService() {
