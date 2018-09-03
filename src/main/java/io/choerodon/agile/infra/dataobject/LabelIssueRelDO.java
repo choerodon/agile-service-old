@@ -1,16 +1,16 @@
 package io.choerodon.agile.infra.dataobject;
 
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
-import io.choerodon.agile.infra.common.utils.StringUtil;
-
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+
+import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.mybatis.annotation.ModifyAudit;
+import io.choerodon.mybatis.annotation.VersionAudit;
+import io.choerodon.mybatis.domain.AuditDomain;
 
 /**
  * 敏捷开发Issue标签关联
@@ -34,6 +34,12 @@ public class LabelIssueRelDO extends AuditDomain {
     @NotNull(message = "error.label_issue.label_idNotNull")
     private Long labelId;
 
+    /**
+     * 标签projrct_id
+     */
+    @NotNull(message = "error.label_issue.project_idNotNull")
+    private Long projrctId;
+
     @Transient
     private String labelName;
 
@@ -51,6 +57,14 @@ public class LabelIssueRelDO extends AuditDomain {
 
     public void setLabelId(Long labelId) {
         this.labelId = labelId;
+    }
+
+    public Long getProjrctId() {
+        return projrctId;
+    }
+
+    public void setProjrctId(Long projrctId) {
+        this.projrctId = projrctId;
     }
 
     public String getLabelName() {
