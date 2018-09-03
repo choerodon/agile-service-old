@@ -17,6 +17,8 @@ spring:
       enabled: true
   allowed:
     resources: /h2-console/**
+  cache:
+    type: guava
 hystrix:
   stream:
     queue:
