@@ -36,44 +36,42 @@ class IssueLabelControllerSpec extends Specification {
     LabelIssueRelMapper labelIssueRelMapper
 
     @Shared
-    def realConut = 0
+    def projectId = 1L
 
-//    def 'listIssueLinkByIssueId'() {
-//        when: '发送请求'
-//        realConut = 0
-//        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issue_labels', List, projectIds)
-//
-//        then: '返回值'
-//        entity.statusCode.is2xxSuccessful()
-//
-//        and: '设置值'
-//        List<IssueLabelDTO> result = entity.body
-//        if (result.size() == 0) {
-////            IssueDO issueDO = new IssueDO()
-////            issueDO.projectId = projectIds
-////            List<IssueDO> listIssueDOResult = issueMapper.select(issueDO)
-////            if (listIssueDOResult.size() != 0) {
-////                for (int i = 0; i < listIssueDOResult.size(); i++) {
-//            LabelIssueRelDO labelIssueRelDO = new LabelIssueRelDO()
-//            LabelIssueRelDO.labelName = '测试标签'
-//            if (labelIssueRelMapper.selectOne(labelIssueRelDO) != null) {
-//                realConut = realConut + 1
-//            }
-////                }
-////            }
-//        } else {
-//            realConut = result.size()
-//        }
-//
-//        and: '设置期望值'
-//        realConut == expectConut
-//
-//        where: '给定参数'
-//        projectIds | expectConut
-//        1L         | 1
-//        2L         | 0
-//        20L        | 0
-//
-//    }
+    @Shared
+    def realCount = 0
+
+    def 'listIssueLinkByIssueId'() {
+        given: '初始化值'
+        realCount = 0
+        when: '发送请求'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issue_labels', List, projectIds)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        List<IssueLabelDTO> result = entity.body
+
+        if (result.size() == 0) {
+            LabelIssueRelDO labelIssueRelDO = new LabelIssueRelDO()
+            labelIssueRelDO.projectId = projectIds
+            if (labelIssueRelMapper.selectOne(labelIssueRelDO) != null) {
+                realCount = 1
+            }
+        } else {
+            realCount = result.size()
+        }
+
+        expect: '设置期望值'
+        result.size() == realCount
+
+        where: '给定参数'
+        projectIds | expectConut
+        1L         | realCount
+        2L         | realCount
+        20L        | realCount
+
+    }
 
 }
