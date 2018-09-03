@@ -18,7 +18,7 @@ spring:
   allowed:
     resources: /h2-console/**
   cache:
-    type: guava
+    type: redis
 hystrix:
   stream:
     queue:

@@ -21,7 +21,6 @@ import io.choerodon.event.producer.execute.EventProducerTemplate
 import io.choerodon.liquibase.LiquibaseConfig
 import io.choerodon.liquibase.LiquibaseExecutor
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -31,7 +30,6 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Primary
-import org.springframework.data.redis.cache.RedisCacheManager
 import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
@@ -157,13 +155,6 @@ class AgileTestConfiguration {
     @Bean
     KafkaTemplate kafkaTemplate() {
         detachedMockFactory.Mock(KafkaTemplate)
-    }
-
-    @Bean
-    @Qualifier("cacheManager")
-    @Primary
-    RedisCacheManager cacheManager() {
-        detachedMockFactory.Mock(RedisCacheManager)
     }
 
     @PostConstruct

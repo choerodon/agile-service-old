@@ -27,11 +27,18 @@ import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.SprintMapper
 import io.choerodon.agile.infra.mapper.VersionIssueRelMapper
 import io.choerodon.core.domain.Page
+import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.MockitoAnnotations
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+
+import static org.mockito.Matchers.anyString
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
+import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.ValueOperations
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
 import spock.lang.Specification
@@ -97,6 +104,11 @@ class ReportControllerSpec extends Specification {
     @Shared
     def endDate = MybatisFunctionTestUtil.dataSubFunction(startDate, -10)
 
+    @Mock
+    private ValueOperations valueOperations
+
+    @Mock RedisTemplate redisTemplate
+
     def setup() {
         given: '设置feign调用mockito'
         // *_表示任何长度的参数（这里表示只要执行了queryUsersMap这个方法，就让它返回一个空的Map
@@ -107,6 +119,10 @@ class ReportControllerSpec extends Specification {
         UserDO userDO = new UserDO()
         userDO.setRealName("管理员")
         userRepository.queryUserNameByOption(*_) >> userDO
+
+        MockitoAnnotations.initMocks(this)
+        Mockito.when(redisTemplate.opsForValue()).thenReturn(valueOperations)
+        Mockito.doNothing().when(valueOperations).set(anyString(), anyString())
     }
 
     def 'createSprintToStart'() {
