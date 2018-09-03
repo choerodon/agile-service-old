@@ -92,8 +92,7 @@
             adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
             adl2.creation_date &lt;= #{sprintDO.actualEndDate}
             AND adl2.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
-            AND not (adl2.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$')
-            AND adl2.issue_id
+            AND (adl2.old_value is null or not (adl2.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'))
 
     </select>
 
@@ -171,7 +170,7 @@
                   adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
                   adl2.creation_date &lt;= #{sprintDO.actualEndDate}
                   AND adl2.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
-                  AND not (adl2.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$')
+                  AND (adl2.new_value is null or not (adl2.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'))
                   AND adl2.issue_id NOT IN (SELECT ais.issue_id
                                             FROM agile_issue_sprint_rel ais
                                             WHERE ais.sprint_id = #{sprintDO.sprintId})) aa LEFT JOIN agile_issue ai
@@ -240,7 +239,7 @@
         AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt; #{sprintDO.actualEndDate}
         AND adl.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
-        AND not (adl.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$')
+        AND (adl.new_value is null or not (adl.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'))
         AND adl.issue_id IN
         <foreach collection="issueIdRemoveList" item="issueId"
                  open="(" close=")" separator=",">
@@ -929,7 +928,7 @@
             adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
             adl2.creation_date &lt;= #{sprintDO.actualEndDate}
             AND adl2.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
-            AND not (adl2.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$' )
+            AND (adl2.new_value is null or not (adl2.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$' ))
     </select>
 
 
