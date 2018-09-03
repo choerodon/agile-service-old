@@ -55,12 +55,12 @@ public class LabelIssueRelDO extends AuditDomain {
         this.labelId = labelId;
     }
 
-    public Long getProjrctId() {
+    public Long getProjectId() {
         return projectId;
     }
 
-    public void setProjrctId(Long projrctId) {
-        this.projectId = projrctId;
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 
     public String getLabelName() {
