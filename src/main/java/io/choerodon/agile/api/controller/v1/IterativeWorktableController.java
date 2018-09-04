@@ -1,7 +1,16 @@
 package io.choerodon.agile.api.controller.v1;
 
+import java.util.List;
+import java.util.Optional;
 
-import io.choerodon.agile.api.dto.BoardColumnDTO;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import io.choerodon.agile.api.dto.AssigneeDistributeDTO;
 import io.choerodon.agile.api.dto.PriorityDistributeDTO;
 import io.choerodon.agile.api.dto.SprintInfoDTO;
 import io.choerodon.agile.api.dto.StatusCategoryDTO;
@@ -10,15 +19,6 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/9/4.
@@ -67,5 +67,15 @@ public class IterativeWorktableController {
                 .orElseThrow(() -> new CommonException("error.SprintInfo.get"));
     }
 
-
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("迭代冲刺台查询经办人分布情况api")
+    @GetMapping(value = "/sprint/assignee_id/{sprintId}")
+    public ResponseEntity<List<AssigneeDistributeDTO>> queryAssigneeDistribute(@ApiParam(value = "项目id", required = true)
+                                                                               @PathVariable(name = "project_id") Long projectId,
+                                                                               @ApiParam(value = "冲刺id", required = true)
+                                                                               @PathVariable Long sprintId) {
+        return Optional.ofNullable(iterativeWorktableService.queryAssigneeDistribute(projectId, sprintId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.queryAssigneeDistribute.get"));
+    }
 }
