@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service;
 
 
 import io.choerodon.agile.api.dto.PriorityDistributeDTO;
+import io.choerodon.agile.api.dto.StatusCategoryDTO;
 
 import java.util.List;
 
@@ -12,5 +13,7 @@ import java.util.List;
 public interface IterativeWorktableService {
 
     List<PriorityDistributeDTO> queryPriorityDistribute(Long projectId, Long sprintId);
+
+    List<StatusCategoryDTO> queryStatusCategoryDistribute(Long projectId, Long sprintId);
 
 }

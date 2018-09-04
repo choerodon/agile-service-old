@@ -1,9 +1,11 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.PriorityDistributeDTO;
+import io.choerodon.agile.api.dto.StatusCategoryDTO;
 import io.choerodon.agile.app.service.IterativeWorktableService;
 import io.choerodon.agile.infra.dataobject.PriorityDistributeDO;
 import io.choerodon.agile.infra.mapper.IterativeWorktableMapper;
+import io.choerodon.core.convertor.ConvertHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,5 +62,10 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
         result.add(new PriorityDistributeDTO(PRIORITY_MEDIUM, mediumCompletedNum, mediumTotalNum));
         result.add(new PriorityDistributeDTO(PRIORITY_LOW, lowCompletedNum, lowTotalNum));
         return result;
+    }
+
+    @Override
+    public List<StatusCategoryDTO> queryStatusCategoryDistribute(Long projectId, Long sprintId) {
+        return ConvertHelper.convertList(iterativeWorktableMapper.queryStatusCategoryDistribute(projectId, sprintId), StatusCategoryDTO.class);
     }
 }
