@@ -806,20 +806,15 @@ class IssueControllerSpec extends Specification {
     def "updateIssueParentId"() {
 
         given:
-        IssueDO testIssue = new IssueDO()
-        testIssue.issueNum = issueMapper.selectAll().size() + 1
-        testIssue.projectId = 1L
-        testIssue.priorityCode = 'high'
-        testIssue.reporterId = 1L
-        testIssue.statusId = 1L
-        testIssue.typeCode = 'issue_test'
-        testIssue.summary = 'issue-test'
-        issueMapper.insert(testIssue)
-        issues.add(testIssue)
-        issueIdList << testIssue.issueId
-        ProjectInfoDO projectInfoDO = projectInfoMapper.selectByPrimaryKey(1L)
-        projectInfoDO.setIssueMaxNum(projectInfoDO.getIssueMaxNum() + 1)
-        projectInfoMapper.updateByPrimaryKeySelective(projectInfoDO)
+        IssueCreateDTO issueCreateDTO = new IssueCreateDTO()
+        issueCreateDTO.projectId = projectId
+        issueCreateDTO.priorityCode = 'high'
+        issueCreateDTO.reporterId = 1L
+        issueCreateDTO.typeCode = 'issue_test'
+        issueCreateDTO.summary = 'issue-test'
+        IssueDTO issueDTO = issueService.createIssue(issueCreateDTO)
+        issues.add(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()))
+        issueIdList << issueDTO.getIssueId()
 
         IssueUpdateParentIdDTO issueUpdateParentIdDTO = new IssueUpdateParentIdDTO()
         def subTaskIssue = issues.find {
