@@ -13,6 +13,7 @@ import io.choerodon.agile.api.dto.AssigneeDistributeDTO;
 import io.choerodon.agile.api.dto.PriorityDistributeDTO;
 import io.choerodon.agile.api.dto.SprintInfoDTO;
 import io.choerodon.agile.api.dto.StatusCategoryDTO;
+import io.choerodon.agile.api.validator.IterativeWorktableValidator;
 import io.choerodon.agile.app.assembler.IterativeWorktableAssembler;
 import io.choerodon.agile.app.service.IterativeWorktableService;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
@@ -52,6 +53,8 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
 
     @Override
     public List<PriorityDistributeDTO> queryPriorityDistribute(Long projectId, Long sprintId) {
+        SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
+        IterativeWorktableValidator.checkSprintExist(sprintDO);
         Integer highCompletedNum = 0, highTotalNum = 0;
         Integer mediumCompletedNum = 0, mediumTotalNum = 0;
         Integer lowCompletedNum = 0, lowTotalNum = 0;
@@ -89,15 +92,15 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
 
     @Override
     public List<StatusCategoryDTO> queryStatusCategoryDistribute(Long projectId, Long sprintId) {
+        SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
+        IterativeWorktableValidator.checkSprintExist(sprintDO);
         return ConvertHelper.convertList(iterativeWorktableMapper.queryStatusCategoryDistribute(projectId, sprintId), StatusCategoryDTO.class);
     }
 
     @Override
     public SprintInfoDTO querySprintInfo(Long projectId, Long sprintId) {
         SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
-        if (sprintDO == null) {
-            throw new CommonException("error.sprint.get");
-        }
+        IterativeWorktableValidator.checkSprintExist(sprintDO);
         SprintInfoDTO result = ConvertHelper.convert(sprintDO, SprintInfoDTO.class);
         List<AssigneeIssueDO> assigneeIssueDOList = iterativeWorktableMapper.queryAssigneeInfoBySprintId(projectId, sprintId);
         result.setAssigneeIssueDTOList(iterativeWorktableAssembler.assigneeIssueDOToDTO(assigneeIssueDOList));
