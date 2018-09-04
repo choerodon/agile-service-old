@@ -10,10 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.choerodon.agile.api.dto.AssigneeDistributeDTO;
-import io.choerodon.agile.api.dto.PriorityDistributeDTO;
-import io.choerodon.agile.api.dto.SprintInfoDTO;
-import io.choerodon.agile.api.dto.StatusCategoryDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.IterativeWorktableService;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
@@ -59,9 +56,9 @@ public class IterativeWorktableController {
     @ApiOperation("迭代冲刺台查询冲刺的基本信息")
     @GetMapping(value = "/sprint")
     public ResponseEntity<SprintInfoDTO> querySprintInfo(@ApiParam(value = "项目id", required = true)
-                                                                                 @PathVariable(name = "project_id") Long projectId,
+                                                         @PathVariable(name = "project_id") Long projectId,
                                                          @ApiParam(value = "冲刺id", required = true)
-                                                                                 @RequestParam Long sprintId) {
+                                                         @RequestParam Long sprintId) {
         return Optional.ofNullable(iterativeWorktableService.querySprintInfo(projectId, sprintId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.SprintInfo.get"));
@@ -69,13 +66,25 @@ public class IterativeWorktableController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("迭代冲刺台查询经办人分布情况api")
-    @GetMapping(value = "/sprint/assignee_id/{sprintId}")
+    @GetMapping(value = "/assignee_id")
     public ResponseEntity<List<AssigneeDistributeDTO>> queryAssigneeDistribute(@ApiParam(value = "项目id", required = true)
                                                                                @PathVariable(name = "project_id") Long projectId,
                                                                                @ApiParam(value = "冲刺id", required = true)
-                                                                               @PathVariable Long sprintId) {
+                                                                               @RequestParam Long sprintId) {
         return Optional.ofNullable(iterativeWorktableService.queryAssigneeDistribute(projectId, sprintId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.queryAssigneeDistribute.get"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("迭代冲刺台查询issue的问题类型分布情况api")
+    @GetMapping(value = "/issue_type")
+    public ResponseEntity<List<IssueTypeDistributeDTO>> queryIssueTypeDistribute(@ApiParam(value = "项目id", required = true)
+                                                                                 @PathVariable(name = "project_id") Long projectId,
+                                                                                 @ApiParam(value = "冲刺id", required = true)
+                                                                                 @RequestParam Long sprintId) {
+        return Optional.ofNullable(iterativeWorktableService.queryIssueTypeDistribute(projectId, sprintId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.queryIssueTypeDistribute.get"));
     }
 }

@@ -2,10 +2,7 @@ package io.choerodon.agile.app.service;
 
 import java.util.List;
 
-import io.choerodon.agile.api.dto.AssigneeDistributeDTO;
-import io.choerodon.agile.api.dto.PriorityDistributeDTO;
-import io.choerodon.agile.api.dto.SprintInfoDTO;
-import io.choerodon.agile.api.dto.StatusCategoryDTO;
+import io.choerodon.agile.api.dto.*;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/9/4.
@@ -20,4 +17,6 @@ public interface IterativeWorktableService {
     SprintInfoDTO querySprintInfo(Long projectId, Long sprintId);
 
     List<AssigneeDistributeDTO> queryAssigneeDistribute(Long projectId, Long sprintId);
+
+    List<IssueTypeDistributeDTO> queryIssueTypeDistribute(Long projectId, Long sprintId);
 }
