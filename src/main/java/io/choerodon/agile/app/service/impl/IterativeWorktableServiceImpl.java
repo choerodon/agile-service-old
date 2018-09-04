@@ -1,24 +1,30 @@
 package io.choerodon.agile.app.service.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import io.choerodon.agile.api.dto.AssigneeDistributeDTO;
 import io.choerodon.agile.api.dto.PriorityDistributeDTO;
 import io.choerodon.agile.api.dto.SprintInfoDTO;
 import io.choerodon.agile.api.dto.StatusCategoryDTO;
 import io.choerodon.agile.app.assembler.IterativeWorktableAssembler;
 import io.choerodon.agile.app.service.IterativeWorktableService;
+import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.dataobject.AssigneeIssueDO;
 import io.choerodon.agile.infra.dataobject.PriorityDistributeDO;
 import io.choerodon.agile.infra.dataobject.SprintDO;
+import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.mapper.IterativeWorktableMapper;
 import io.choerodon.agile.infra.mapper.SprintMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/9/4.
@@ -40,6 +46,9 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
 
     @Autowired
     private IterativeWorktableAssembler iterativeWorktableAssembler;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public List<PriorityDistributeDTO> queryPriorityDistribute(Long projectId, Long sprintId) {
@@ -98,4 +107,22 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
         return result;
     }
 
+    @Override
+    public List<AssigneeDistributeDTO> queryAssigneeDistribute(Long projectId, Long sprintId) {
+        Integer total = iterativeWorktableMapper.queryAssigneeAll(projectId, sprintId);
+        List<AssigneeDistributeDTO> assigneeDistributeDTOList = ConvertHelper.convertList(iterativeWorktableMapper.queryPriorityAssignee(projectId, sprintId, total), AssigneeDistributeDTO.class);
+        if (assigneeDistributeDTOList != null && !assigneeDistributeDTOList.isEmpty()) {
+            List<Long> userIds = assigneeDistributeDTOList.stream().filter(assigneeDistributeDTO ->
+                    assigneeDistributeDTO.getAssigneeId() != null).map(assigneeDistributeDTO -> (assigneeDistributeDTO.getAssigneeId())).collect(Collectors.toList());
+            Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(userIds, true);
+            assigneeDistributeDTOList.parallelStream().forEach(assigneeDistributeDTO -> {
+                if (assigneeDistributeDTO.getAssigneeId() != null && usersMap.get(assigneeDistributeDTO.getAssigneeId()) != null) {
+                    assigneeDistributeDTO.setAssigneeName(usersMap.get(assigneeDistributeDTO.getAssigneeId()).getName());
+                } else {
+                    assigneeDistributeDTO.setAssigneeName("未分配");
+                }
+            });
+        }
+        return assigneeDistributeDTOList;
+    }
 }

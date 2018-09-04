@@ -39,4 +39,26 @@
 
     </select>
 
+    <select id="queryAssigneeAll" resultType="java.lang.Integer">
+       select count(1) from agile_issue ai
+       INNER JOIN
+           (select issue_id from agile_issue_sprint_rel
+            where project_id = #{projectId}
+            and sprint_id = #{sprintId}) issues
+        on ai.issue_id = issues.issue_id
+        and ai.type_code in ('story','task','bug','sub_task')
+    </select>
+
+    <select id="queryPriorityAssignee" resultType="io.choerodon.agile.infra.dataobject.AssigneeDistributeDO">
+        select count(1) as issue_num,(count(1)/#{total})*100 as percent,ai.assignee_id
+        from agile_issue ai
+        INNER JOIN
+            (select issue_id from agile_issue_sprint_rel
+            where project_id = #{projectId}
+            and sprint_id = #{sprintId}) issues
+        on ai.issue_id = issues.issue_id
+        and ai.type_code in ('story','task','bug','sub_task')
+        GROUP BY ai.assignee_id
+    </select>
+
 </mapper>
