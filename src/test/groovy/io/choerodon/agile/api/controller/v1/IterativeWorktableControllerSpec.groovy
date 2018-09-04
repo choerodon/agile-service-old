@@ -2,11 +2,14 @@ package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
+import io.choerodon.agile.api.dto.AssigneeDistributeDTO
+import io.choerodon.agile.api.dto.IssueTypeDistributeDTO
 import io.choerodon.agile.api.dto.PriorityDistributeDTO
 import io.choerodon.agile.api.dto.SprintInfoDTO
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
+import io.choerodon.agile.infra.mapper.IssueMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
@@ -28,6 +31,9 @@ class IterativeWorktableControllerSpec extends Specification {
 
     @Autowired
     TestRestTemplate restTemplate
+
+    @Autowired
+    IssueMapper issueMapper
 
     @Shared
     def projectId = 1L
@@ -144,6 +150,48 @@ class IterativeWorktableControllerSpec extends Specification {
         JSONObject exceptionInfo = JSONObject.parse(entity.body)
         exceptionInfo.get("failed").toString() == "true"
         exceptionInfo.get("code").toString() == "error.sprint.get"
+    }
+
+    def 'queryAssigneeDistribute'() {
+        when: '发请求'
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/assignee_id?sprintId={sprintId}",
+                HttpMethod.GET,
+                null,
+                List.class,
+                projectId,
+                sprintId)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        List<AssigneeDistributeDTO> result = entity.body
+
+        expect: '期望值'
+        result.size() == 1
+        result.get(0).assigneeName == '未分配'
+        result.get(0).percent == 100.0000
+    }
+
+    def 'queryIssueTypeDistribute'() {
+        when: '发请求'
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/issue_type?sprintId={sprintId}",
+                HttpMethod.GET,
+                null,
+                List.class,
+                projectId,
+                sprintId)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        List<IssueTypeDistributeDTO> result = entity.body
+
+        expect: '期望值'
+        result.size() == 1
+        result.get(0).typeCode == 'story'
+        result.get(0).percent == 100.0000
     }
 
 }
