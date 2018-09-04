@@ -1,15 +1,23 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.PriorityDistributeDTO;
+import io.choerodon.agile.api.dto.SprintInfoDTO;
 import io.choerodon.agile.api.dto.StatusCategoryDTO;
+import io.choerodon.agile.app.assembler.IterativeWorktableAssembler;
 import io.choerodon.agile.app.service.IterativeWorktableService;
+import io.choerodon.agile.infra.common.utils.DateUtil;
+import io.choerodon.agile.infra.dataobject.AssigneeIssueDO;
 import io.choerodon.agile.infra.dataobject.PriorityDistributeDO;
+import io.choerodon.agile.infra.dataobject.SprintDO;
 import io.choerodon.agile.infra.mapper.IterativeWorktableMapper;
+import io.choerodon.agile.infra.mapper.SprintMapper;
 import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,6 +34,12 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
 
     @Autowired
     private IterativeWorktableMapper iterativeWorktableMapper;
+
+    @Autowired
+    private SprintMapper sprintMapper;
+
+    @Autowired
+    private IterativeWorktableAssembler iterativeWorktableAssembler;
 
     @Override
     public List<PriorityDistributeDTO> queryPriorityDistribute(Long projectId, Long sprintId) {
@@ -68,4 +82,20 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
     public List<StatusCategoryDTO> queryStatusCategoryDistribute(Long projectId, Long sprintId) {
         return ConvertHelper.convertList(iterativeWorktableMapper.queryStatusCategoryDistribute(projectId, sprintId), StatusCategoryDTO.class);
     }
+
+    @Override
+    public SprintInfoDTO querySprintInfo(Long projectId, Long sprintId) {
+        SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
+        if (sprintDO == null) {
+            throw new CommonException("error.sprint.get");
+        }
+        SprintInfoDTO result = ConvertHelper.convert(sprintDO, SprintInfoDTO.class);
+        List<AssigneeIssueDO> assigneeIssueDOList = iterativeWorktableMapper.queryAssigneeInfoBySprintId(projectId, sprintId);
+        result.setAssigneeIssueDTOList(iterativeWorktableAssembler.assigneeIssueDOToDTO(assigneeIssueDOList));
+        if (result.getEndDate() != null) {
+            result.setDayRemain(DateUtil.differentDaysByMillisecond(new Date(), result.getEndDate()));
+        }
+        return result;
+    }
+
 }

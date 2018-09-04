@@ -3,6 +3,7 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.BoardColumnDTO;
 import io.choerodon.agile.api.dto.PriorityDistributeDTO;
+import io.choerodon.agile.api.dto.SprintInfoDTO;
 import io.choerodon.agile.api.dto.StatusCategoryDTO;
 import io.choerodon.agile.app.service.IterativeWorktableService;
 import io.choerodon.core.exception.CommonException;
@@ -53,5 +54,18 @@ public class IterativeWorktableController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.StatusDistribute.get"));
     }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("迭代冲刺台查询冲刺的基本信息")
+    @GetMapping(value = "/sprint")
+    public ResponseEntity<SprintInfoDTO> querySprintInfo(@ApiParam(value = "项目id", required = true)
+                                                                                 @PathVariable(name = "project_id") Long projectId,
+                                                         @ApiParam(value = "冲刺id", required = true)
+                                                                                 @RequestParam Long sprintId) {
+        return Optional.ofNullable(iterativeWorktableService.querySprintInfo(projectId, sprintId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.SprintInfo.get"));
+    }
+
 
 }

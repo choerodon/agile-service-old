@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
+import io.choerodon.agile.infra.dataobject.AssigneeIssueDO;
 import io.choerodon.agile.infra.dataobject.PriorityDistributeDO;
 import io.choerodon.agile.infra.dataobject.StatusCategoryDO;
 import org.apache.ibatis.annotations.Param;
@@ -15,4 +16,6 @@ public interface IterativeWorktableMapper {
     List<PriorityDistributeDO> queryPriorityDistribute(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
     List<StatusCategoryDO> queryStatusCategoryDistribute(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+
+    List<AssigneeIssueDO> queryAssigneeInfoBySprintId(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 }
