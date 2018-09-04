@@ -23,4 +23,20 @@
             GROUP BY ais.category_code
     </select>
 
+    <select id="queryAssigneeInfoBySprintId" resultType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
+        SELECT case when ai.assignee_id is null then 0 else ai.assignee_id end AS assignee_id,
+                   SUM(ai.story_points) AS total_story_points,
+                   SUM(ai.remaining_time) AS total_remaining_time,
+                   COUNT(ai.issue_id) AS issue_count
+            FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
+            WHERE aisr.project_id = #{projectId}
+                and aisr.sprint_id = #{sprintId}
+                and aisr.issue_id = ai.issue_id
+                AND ai.status_id = ais.id
+                AND ais.category_code != 'done'
+                and ai.type_code in ('story','task','bug')
+                GROUP BY ai.assignee_id
+
+    </select>
+
 </mapper>
