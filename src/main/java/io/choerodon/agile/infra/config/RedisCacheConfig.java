@@ -70,7 +70,6 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
     }
 
     @Bean
-    @Qualifier("cacheManager")
     public RedisCacheManager cacheManager(RedisTemplate redisTemplate) {
         RedisCacheManager redisCacheManager =new RedisCacheManager(redisTemplate);
         redisCacheManager.setTransactionAware(true);
