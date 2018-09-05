@@ -76,7 +76,7 @@ public class IterativeWorktableController {
                 .orElseThrow(() -> new CommonException("error.queryAssigneeDistribute.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("迭代冲刺台查询issue的问题类型分布情况api")
     @GetMapping(value = "/issue_type")
     public ResponseEntity<List<IssueTypeDistributeDTO>> queryIssueTypeDistribute(@ApiParam(value = "项目id", required = true)

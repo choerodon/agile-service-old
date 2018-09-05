@@ -25,6 +25,5 @@ public interface IterativeWorktableMapper {
                                                      @Param("total") Integer total);
 
     List<IssueTypeDistributeDO> queryIssueTypeDistribute(@Param("projectId") Long projectId,
-                                                         @Param("sprintId") Long sprintId,
-                                                         @Param("total") Integer total);
+                                                         @Param("sprintId") Long sprintId);
 }

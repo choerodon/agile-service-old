@@ -2,6 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.choerodon.agile.infra.mapper.IterativeWorktableMapper">
 
+    <resultMap id="IssueTypeDistribute" type="io.choerodon.agile.infra.dataobject.IssueTypeDistributeDO">
+        <id property="typeCode" column="type_code"/>
+        <collection property="issueStatus" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.IssueStatus">
+            <id property="issueNum" column="issue_num"/>
+            <id property="categoryCode" column="category_code"/>
+        </collection>
+    </resultMap>
+
     <select id="queryPriorityDistribute" resultType="io.choerodon.agile.infra.dataobject.PriorityDistributeDO">
         SELECT ai.issue_id, ai.priority_code, ais.category_code
         from agile_issue_sprint_rel aisr, agile_issue ai, agile_issue_status ais
@@ -61,9 +69,8 @@
         GROUP BY ai.assignee_id
     </select>
 
-    <select id="queryIssueTypeDistribute" resultType="io.choerodon.agile.infra.dataobject.IssueTypeDistributeDO">
+    <select id="queryIssueTypeDistribute" resultMap="IssueTypeDistribute">
         SELECT count(1) AS issue_num,
-            (count(1) / #{total}) * 100 AS percent,
             ai.type_code, ais.category_code
         FROM agile_issue ai, agile_issue_status ais,agile_issue_sprint_rel aisr
         WHERE aisr.project_id = #{projectId}

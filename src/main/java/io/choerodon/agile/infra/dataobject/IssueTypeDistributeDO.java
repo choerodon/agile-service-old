@@ -1,5 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
+import java.util.List;
+
 /**
  * Creator: ChangpingShi0213@gmail.com
  * Date:  16:26 2018/9/4
@@ -7,9 +9,8 @@ package io.choerodon.agile.infra.dataobject;
  */
 public class IssueTypeDistributeDO {
     private String typeCode;
-    private Integer issueNum;
-    private Double percent;
-    private String categoryCode;
+
+    private List<IssueStatus> issueStatus;
 
     public String getTypeCode() {
         return typeCode;
@@ -19,27 +20,11 @@ public class IssueTypeDistributeDO {
         this.typeCode = typeCode;
     }
 
-    public Integer getIssueNum() {
-        return issueNum;
+    public List<IssueStatus> getIssueStatus() {
+        return issueStatus;
     }
 
-    public void setIssueNum(Integer issueNum) {
-        this.issueNum = issueNum;
-    }
-
-    public Double getPercent() {
-        return percent;
-    }
-
-    public void setPercent(Double percent) {
-        this.percent = percent;
-    }
-
-    public String getCategoryCode() {
-        return categoryCode;
-    }
-
-    public void setCategoryCode(String categoryCode) {
-        this.categoryCode = categoryCode;
+    public void setIssueStatus(List<IssueStatus> issueStatus) {
+        this.issueStatus = issueStatus;
     }
 }
