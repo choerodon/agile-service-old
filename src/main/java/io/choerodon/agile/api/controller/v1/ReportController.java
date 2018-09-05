@@ -190,8 +190,8 @@ public class ReportController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("Epic和版本燃耗图报告信息")
-    @GetMapping(value = "/{id}/burn_down_coordinate_type")
+    @ApiOperation("Epic和版本燃耗图坐标信息")
+    @GetMapping(value = "/burn_down_coordinate_type/{id}")
     public ResponseEntity<List<BurnDownReportCoordinateDTO>> queryBurnDownCoordinateByType(@ApiParam(value = "项目id", required = true)
                                                                                        @PathVariable(name = "project_id") Long projectId,
                                                                                        @ApiParam(value = "id", required = true)

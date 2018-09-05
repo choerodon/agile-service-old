@@ -2,16 +2,19 @@ package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
+import io.choerodon.agile.api.dto.BurnDownReportCoordinateDTO
 import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO
 import io.choerodon.agile.api.dto.CumulativeFlowFilterDTO
 import io.choerodon.agile.api.dto.IssueCreateDTO
 import io.choerodon.agile.api.dto.IssueDTO
 import io.choerodon.agile.api.dto.IssueListDTO
+import io.choerodon.agile.api.dto.IssueUpdateDTO
 import io.choerodon.agile.api.dto.PieChartDTO
 import io.choerodon.agile.api.dto.ReportIssueDTO
 import io.choerodon.agile.api.dto.SprintDetailDTO
 import io.choerodon.agile.api.dto.SprintUpdateDTO
 import io.choerodon.agile.api.dto.VelocitySprintDTO
+import io.choerodon.agile.api.dto.VersionIssueRelDTO
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.SprintService
 import io.choerodon.agile.domain.agile.repository.UserRepository
@@ -107,7 +110,8 @@ class ReportControllerSpec extends Specification {
     @Mock
     private ValueOperations valueOperations
 
-    @Mock RedisTemplate redisTemplate
+    @Mock
+    RedisTemplate redisTemplate
 
     def setup() {
         given: '设置feign调用mockito'
@@ -393,6 +397,46 @@ class ReportControllerSpec extends Specification {
 
         expect: '验证期望值'
         groupDataChartListDOList.size() == 1
+
+    }
+
+    def 'burn_down_coordinate_type'() {
+        given: 'issue加入到版本和epic中'
+        IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO()
+        issueUpdateDTO.issueId = issueId
+        issueUpdateDTO.setObjectVersionNumber(issueMapper.selectByPrimaryKey(issueId).getObjectVersionNumber())
+        if (type == 'Epic') {
+            issueUpdateDTO.epicId = id
+            issueUpdateDTO.storyPoints = 1
+            issueService.updateIssue(projectId, issueUpdateDTO, ["epicId","storyPoints"])
+        } else {
+            VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO()
+            versionIssueRelDTO.issueId = issueId
+            versionIssueRelDTO.versionId = id
+            versionIssueRelDTO.projectId = projectId
+            List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>()
+            versionIssueRelDTOList.add(versionIssueRelDTO)
+            issueUpdateDTO.versionIssueRelDTOList = versionIssueRelDTOList
+            issueUpdateDTO.versionType = "fix"
+            issueService.updateIssue(projectId, issueUpdateDTO, [])
+        }
+
+        when: 'Epic和版本燃耗图坐标信息'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/burn_down_coordinate_type/{id}?type={type}', List, projectId, id, type)
+
+        then: '接口是否请求成功'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置返回值值'
+        List<BurnDownReportCoordinateDTO> burnDownReportCoordinateDTOList = entity.body
+
+        expect: '验证期望值'
+        burnDownReportCoordinateDTOList.size() == expectSize
+
+        where: '设置期望值'
+        type      | id || expectSize
+        'Epic'    | 1  || 2
+        'Version' | 1  || 2
 
     }
 
