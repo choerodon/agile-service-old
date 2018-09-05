@@ -16,6 +16,7 @@ import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.swagger.models.auth.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,8 @@ public class ReportServiceImpl implements ReportService {
 
     @Autowired
     private SprintMapper sprintMapper;
+    @Autowired
+    private IssueMapper issueMapper;
     @Autowired
     private SprintServiceImpl sprintService;
     @Autowired
@@ -1149,6 +1152,72 @@ public class ReportServiceImpl implements ReportService {
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
         return handleSameDay(reportIssueEList.stream().filter(reportIssueE -> !"endSprint".equals(reportIssueE.getType())).
                 sorted(Comparator.comparing(ReportIssueE::getDate)).collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<BurnDownReportCoordinateDTO> queryBurnDownCoordinateByType(Long projectId, Long id, String type) {
+        List<IssueBurnDownReportDO> issueDOList = "Epic".equals(type) ? issueMapper.queryIssueByEpicId(projectId, id) : issueMapper.queryIssueByVersionId(projectId, id);
+        if (issueDOList != null && !issueDOList.isEmpty()) {
+            if (issueDOList.stream().noneMatch(issueDO -> issueDO.getStoryPoints() != null)) {
+                return new ArrayList<>();
+            } else {
+                List<SprintDO> sprintDOList = sprintMapper.queryNotPlanSprintByProjectId(projectId);
+                Date startDate = "Epic".equals(type) ? issueMapper.selectByPrimaryKey(id).getCreationDate() : versionMapper.selectByPrimaryKey(id).getCreationDate();
+                List<IssueBurnDownReportDO> issueDOS = issueDOList.stream().filter(issueDO -> issueDO.getStoryPoints() != null).collect(Collectors.toList());
+                List<BurnDownReportCoordinateDTO> reportCoordinateDTOS = new ArrayList<>();
+                if (sprintDOList != null && !sprintDOList.isEmpty()) {
+                    handleBurnDownCoordinateByTypeExistSprint(issueDOS, reportCoordinateDTOS, startDate, sprintDOList, type);
+                } else {
+                    Integer count = issueDOS.stream().filter(issueDO -> !issueDO.getCompleted()).mapToInt(IssueBurnDownReportDO::getStoryPoints).sum()
+                            - issueDOS.stream().filter(IssueBurnDownReportDO::getCompleted).mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
+                    reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(count, 0, 0, count,
+                            type + "开始时的预估", startDate, new Date()));
+                }
+                return reportCoordinateDTOS;
+            }
+        } else {
+            return new ArrayList<>();
+        }
+
+    }
+
+    private void handleBurnDownCoordinateByTypeExistSprint(List<IssueBurnDownReportDO> issueDOS, List<BurnDownReportCoordinateDTO> reportCoordinateDTOS,
+                                                           Date startDate, List<SprintDO> sprintDOList, String type) {
+        Integer count = issueDOS.stream().filter(issueDO -> !issueDO.getCompleted() && issueDO.getAddDate().before(sprintDOList.get(0).getStartDate()))
+                .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum()
+                - issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getAddDate().before(sprintDOList.get(0).getStartDate()))
+                .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
+        reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(count, 0, 0, count,
+                type + "开始时的预估", startDate, sprintDOList.get(0).getStartDate()));
+        if (sprintDOList.size() == 1) {
+            Integer start = reportCoordinateDTOS.get(0).getLeft();
+            Integer add = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().after(sprintDOList.get(0).getStartDate()))
+                    .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
+            Integer done = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getAddDate().after(sprintDOList.get(0).getStartDate()))
+                    .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
+            Date endDate = sprintDOList.get(0).getActualEndDate() == null ? sprintDOList.get(0).getEndDate() : sprintDOList.get(0).getActualEndDate();
+            reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(start, add, done, start + add - done,
+                    sprintDOList.get(0).getSprintName(), sprintDOList.get(0).getStartDate(), endDate));
+        } else {
+            for (int i = 0; i < sprintDOList.size() - 1; i++) {
+                Date startDateOne = sprintDOList.get(i).getStartDate();
+                Date startDateTwo = sprintDOList.get(i + 1).getStartDate();
+                Integer start = reportCoordinateDTOS.get(reportCoordinateDTOS.size() - 1).getLeft();
+                Date endDate = sprintDOList.get(i).getActualEndDate() == null ? sprintDOList.get(i).getEndDate() : sprintDOList.get(i).getActualEndDate();
+                Integer add = 0;
+                Integer done = 0;
+                for (IssueBurnDownReportDO issueDO : issueDOS) {
+                    if (issueDO.getAddDate().after(startDateOne) && issueDO.getAddDate().before(startDateTwo)) {
+                        if (issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().after(startDateOne) && issueDO.getDoneDate().before(startDateTwo)) {
+                            done++;
+                        }
+                        add++;
+                    }
+                }
+                reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(start, add, done, start + add - done,
+                        sprintDOList.get(i).getSprintName(), sprintDOList.get(i).getStartDate(), endDate));
+            }
+        }
     }
 
 
