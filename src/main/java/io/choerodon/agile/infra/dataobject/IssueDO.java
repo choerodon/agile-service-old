@@ -6,12 +6,10 @@ import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 敏捷开发Issue
@@ -118,6 +116,15 @@ public class IssueDO extends AuditDomain {
 
     @Transient
     private Boolean addIssue;
+
+    @Transient
+    private Date addDate;
+
+    @Transient
+    private Date doneDate;
+
+    @Transient
+    private Boolean completed;
 
     private BigDecimal estimateTime;
 
@@ -333,6 +340,30 @@ public class IssueDO extends AuditDomain {
 
     public void setEpicSequence(Integer epicSequence) {
         this.epicSequence = epicSequence;
+    }
+
+    public Date getAddDate() {
+        return addDate;
+    }
+
+    public void setAddDate(Date addDate) {
+        this.addDate = addDate;
+    }
+
+    public Boolean getCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
+    }
+
+    public Date getDoneDate() {
+        return doneDate;
+    }
+
+    public void setDoneDate(Date doneDate) {
+        this.doneDate = doneDate;
     }
 
     @Override

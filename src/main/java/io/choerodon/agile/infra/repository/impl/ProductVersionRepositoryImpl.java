@@ -34,6 +34,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     private static final String UPDATE_ERROR = "error.version.update";
     private static final String AGILE = "Agile:";
     private static final String PIECHART = AGILE + "PieChart";
+    private static final String FIX_VERSION = "fixVersion";
 
     @Override
     public ProductVersionE createVersion(ProductVersionE versionE) {
@@ -41,7 +42,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
         if (versionMapper.insertSelective(version) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        redisUtil.deleteRedisCache(new String[]{PIECHART + versionE.getProjectId() + ':' + "fixVersion"});
+        redisUtil.deleteRedisCache(new String[]{PIECHART + versionE.getProjectId() + ':' + FIX_VERSION});
         return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(version.getVersionId()));
     }
 
@@ -53,7 +54,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
             throw new CommonException(DELETE_ERROR);
         }
         redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionE.getProjectId() + ':' + versionE.getVersionId() + ":" + "*",
-                PIECHART + versionE.getProjectId() + ':' + "fixVersion"
+                PIECHART + versionE.getProjectId() + ':' + FIX_VERSION
         });
         return true;
     }
@@ -65,7 +66,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
         if (versionMapper.updateOptional(version) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
-        redisUtil.deleteRedisCache(new String[]{PIECHART + versionE.getProjectId() + ':' + "fixVersion"});
+        redisUtil.deleteRedisCache(new String[]{PIECHART + versionE.getProjectId() + ':' + FIX_VERSION});
         return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(version.getVersionId()));
     }
 
@@ -88,13 +89,13 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
         if (versionMapper.updateByPrimaryKeySelective(version) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
-        redisUtil.deleteRedisCache(new String[]{PIECHART + versionE.getProjectId() + ':' + "fixVersion"});
+        redisUtil.deleteRedisCache(new String[]{PIECHART + versionE.getProjectId() + ':' + FIX_VERSION});
         return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(version.getVersionId()));
     }
 
     @Override
     public int deleteByVersionIds(Long projectId, List<Long> versionIds) {
-        redisUtil.deleteRedisCache(new String[]{PIECHART + projectId + ':' + "fixVersion"});
+        redisUtil.deleteRedisCache(new String[]{PIECHART + projectId + ':' + FIX_VERSION});
         return versionMapper.deleteByVersionIds(projectId, versionIds);
     }
 

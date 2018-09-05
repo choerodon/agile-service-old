@@ -2071,4 +2071,142 @@
         where avir.issue_id = #{issueId} and avir.project_id = #{projectId}
     </select>
 
+    <select id="queryIssueByEpicId" resultType="io.choerodon.agile.infra.dataobject.IssueBurnDownReportDO">
+        SELECT
+            *
+        FROM
+            (
+            SELECT
+                ai.issue_id,
+                CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,
+                ai.type_code,
+                alv1.NAME AS type_name,
+                ai.status_id,
+                ais.NAME AS status_name,
+                ais.category_code AS status_code,
+                ais.is_completed as completed,
+                ai.summary,
+                ai.priority_code,
+                alv.NAME AS priority_name,
+                ai.assignee_id,
+                ai.project_id,
+                ai1.epic_name as name,
+                ai1.epic_name,
+                ai1.issue_id as id,
+                ai.story_points,
+                (
+                SELECT
+                    adl.creation_date
+                FROM
+                    agile_data_log adl
+                WHERE
+                    adl.issue_id = ai.issue_id
+                    AND adl.project_id = #{projectId}
+                    AND adl.field = 'Epic Link'
+                    AND adl.new_value = #{epicId}
+                ORDER BY
+                    adl.log_id DESC
+                    LIMIT 1
+                ) AS add_date,
+                (
+                SELECT
+                    adl.creation_date
+                FROM
+                    agile_data_log adl
+                WHERE
+                    adl.issue_id = ai.issue_id
+                    AND adl.project_id = #{projectId}
+                    AND adl.field = 'resolution'
+                    AND adl.new_value is not null
+                ORDER BY
+                    adl.log_id DESC
+                    LIMIT 1
+                ) as done_date
+            FROM
+                agile_issue ai
+                LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+                LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+                LEFT JOIN agile_lookup_value alv1 ON ai.type_code = alv1.value_code
+                LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
+                LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+            WHERE
+                ai.epic_id = #{epicId}
+                AND ai.project_id = #{projectId}
+                AND ai.type_code != 'issue_epic'
+                AND ai.type_code != 'issue_test'
+                AND ai.type_code != 'sub_task'
+            ) aaa
+        WHERE
+            aaa.add_date IS NOT NULL
+    </select>
+
+    <select id="queryIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.IssueBurnDownReportDO">
+       SELECT
+            *
+        FROM
+            (
+            SELECT
+                ai.issue_id,
+                CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,
+                ai.type_code,
+                alv1.NAME AS type_name,
+                ai.status_id,
+                ais.NAME AS status_name,
+                ais.category_code AS status_code,
+                ais.is_completed AS completed,
+                ai.summary,
+                ai.priority_code,
+                alv.NAME AS priority_name,
+                ai.assignee_id,
+                ai.project_id,
+                ai.story_points,
+                apv.name,
+                apv.version_id as id,
+                (
+                SELECT
+                    adl.creation_date
+                FROM
+                    agile_data_log adl
+                WHERE
+                    adl.issue_id = ai.issue_id
+                    AND adl.project_id = #{projectId}
+                    AND adl.field = 'Fix Version'
+                    AND adl.new_value = #{versionId}
+                ORDER BY
+                    adl.log_id DESC
+                    LIMIT 1
+                ) AS add_date,
+                (
+                SELECT
+                    adl.creation_date
+                FROM
+                    agile_data_log adl
+                WHERE
+                    adl.issue_id = ai.issue_id
+                    AND adl.project_id =  #{projectId}
+                    AND adl.field = 'resolution'
+                    AND adl.new_value IS NOT NULL
+                ORDER BY
+                    adl.log_id DESC
+                    LIMIT 1
+                ) AS done_date
+            FROM
+                agile_issue ai
+                LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+                LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+                LEFT JOIN agile_lookup_value alv1 ON ai.type_code = alv1.value_code
+                LEFT JOIN agile_version_issue_rel avir ON avir.issue_id = ai.issue_id
+                left join agile_product_version apv on apv.version_id = avir.version_id
+                LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+            WHERE
+                avir.version_id = #{versionId}
+                AND ai.project_id =  #{projectId}
+                AND ai.type_code != 'issue_epic'
+                AND ai.type_code != 'issue_test'
+                AND ai.type_code != 'sub_task'
+            ) aaa
+        WHERE
+            aaa.add_date IS NOT NULL
+    </select>
+
 </mapper>

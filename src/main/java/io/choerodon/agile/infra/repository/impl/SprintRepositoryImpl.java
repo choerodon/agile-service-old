@@ -28,6 +28,7 @@ public class SprintRepositoryImpl implements SprintRepository {
     private static final String UPDATE_ERROR = "error.sprint.update";
     private static final String AGILE = "Agile:";
     private static final String PIECHART = AGILE + "PieChart";
+    private static final String SPRINT = "sprint";
 
 
     @Override
@@ -36,7 +37,7 @@ public class SprintRepositoryImpl implements SprintRepository {
         if (sprintMapper.insertSelective(sprintDO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        redisUtil.deleteRedisCache(new String[]{PIECHART + sprintE.getProjectId() + ':' + "sprint"});
+        redisUtil.deleteRedisCache(new String[]{PIECHART + sprintE.getProjectId() + ':' + SPRINT});
         return sprintConverter.doToEntity(sprintMapper.selectByPrimaryKey(sprintDO.getSprintId()));
     }
 
@@ -50,7 +51,7 @@ public class SprintRepositoryImpl implements SprintRepository {
         redisUtil.deleteRedisCache(new String[]{
                 "Agile:BurnDownCoordinate" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*",
                 "Agile:VelocityChart" + sprintE.getProjectId() + ':' + "*",
-                PIECHART + sprintE.getProjectId() + ':' + "sprint"
+                PIECHART + sprintE.getProjectId() + ':' + SPRINT
         });
         return sprintConverter.doToEntity(sprintMapper.selectByPrimaryKey(sprintDO.getSprintId()));
     }
@@ -64,7 +65,7 @@ public class SprintRepositoryImpl implements SprintRepository {
         redisUtil.deleteRedisCache(new String[]{
                 "Agile:BurnDownCoordinate" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*",
                 "Agile:VelocityChart" + sprintE.getProjectId() + ':' + "*",
-                PIECHART + sprintE.getProjectId() + ':' + "sprint"
+                PIECHART + sprintE.getProjectId() + ':' + SPRINT
         });
         return true;
     }

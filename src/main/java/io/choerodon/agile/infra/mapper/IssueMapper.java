@@ -333,7 +333,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     List<UndistributedIssueDO> queryUnDistributedIssues(Long projectId);
 
     List<UnfinishedIssueDO> queryUnfinishedIssues(@Param("projectId") Long projectId,
-                                                   @Param("assigneeId") Long assigneeId);
+                                                  @Param("assigneeId") Long assigneeId);
+
     /**
      * 查询当前issue的版本关系的版本id
      *
@@ -341,5 +342,23 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @param projectId projectId
      * @return versionIds 去重后的
      */
-    List<Long> queryVersionIdsByIssueId(@Param("issueId")Long issueId, @Param("projectId")Long projectId);
+    List<Long> queryVersionIdsByIssueId(@Param("issueId") Long issueId, @Param("projectId") Long projectId);
+
+    /**
+     * 查询epic下的所有issue
+     *
+     * @param projectId projectId
+     * @param epicId    epicId
+     * @return IssueDO
+     */
+    List<IssueBurnDownReportDO> queryIssueByEpicId(@Param("projectId") Long projectId, @Param("epicId") Long epicId);
+
+    /**
+     * 查询版本下的所有issue
+     *
+     * @param projectId projectId
+     * @param versionId versionId
+     * @return IssueDO
+     */
+    List<IssueBurnDownReportDO> queryIssueByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 }
