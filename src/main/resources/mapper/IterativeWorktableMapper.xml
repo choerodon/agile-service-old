@@ -62,15 +62,16 @@
     </select>
 
     <select id="queryIssueTypeDistribute" resultType="io.choerodon.agile.infra.dataobject.IssueTypeDistributeDO">
-        select count(1) as issue_num,(count(1)/#{total})*100 as percent,ai.type_code
-        from agile_issue ai
-        INNER JOIN
-            (select issue_id from agile_issue_sprint_rel
-            where project_id = #{projectId}
-            and sprint_id = #{sprintId}) issues
-        on ai.issue_id = issues.issue_id
-        and ai.type_code in ('story','task','bug','sub_task')
-        GROUP BY ai.type_code
+        SELECT count(1) AS issue_num,
+            (count(1) / #{total}) * 100 AS percent,
+            ai.type_code, ais.category_code
+        FROM agile_issue ai, agile_issue_status ais,agile_issue_sprint_rel aisr
+        WHERE aisr.project_id = #{projectId}
+        AND aisr.sprint_id =  #{sprintId}
+        AND ai.issue_id = aisr.issue_id
+        AND ai.status_id = ais.id
+        AND ai.type_code IN ('story','task','bug','sub_task')
+        GROUP BY ai.type_code, ais.category_code
     </select>
 
 </mapper>

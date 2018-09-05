@@ -9,6 +9,7 @@ public class IssueTypeDistributeDO {
     private String typeCode;
     private Integer issueNum;
     private Double percent;
+    private String categoryCode;
 
     public String getTypeCode() {
         return typeCode;
@@ -32,5 +33,13 @@ public class IssueTypeDistributeDO {
 
     public void setPercent(Double percent) {
         this.percent = percent;
+    }
+
+    public String getCategoryCode() {
+        return categoryCode;
+    }
+
+    public void setCategoryCode(String categoryCode) {
+        this.categoryCode = categoryCode;
     }
 }
