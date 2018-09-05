@@ -400,45 +400,45 @@ class ReportControllerSpec extends Specification {
 
     }
 
-    def 'burn_down_coordinate_type'() {
-        given: 'issue加入到版本和epic中'
-        IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO()
-        issueUpdateDTO.issueId = issueId
-        issueUpdateDTO.setObjectVersionNumber(issueMapper.selectByPrimaryKey(issueId).getObjectVersionNumber())
-        if (type == 'Epic') {
-            issueUpdateDTO.epicId = id
-            issueUpdateDTO.storyPoints = 1
-            issueService.updateIssue(projectId, issueUpdateDTO, ["epicId","storyPoints"])
-        } else {
-            VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO()
-            versionIssueRelDTO.issueId = issueId
-            versionIssueRelDTO.versionId = id
-            versionIssueRelDTO.projectId = projectId
-            List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>()
-            versionIssueRelDTOList.add(versionIssueRelDTO)
-            issueUpdateDTO.versionIssueRelDTOList = versionIssueRelDTOList
-            issueUpdateDTO.versionType = "fix"
-            issueService.updateIssue(projectId, issueUpdateDTO, [])
-        }
-
-        when: 'Epic和版本燃耗图坐标信息'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/burn_down_coordinate_type/{id}?type={type}', List, projectId, id, type)
-
-        then: '接口是否请求成功'
-        entity.statusCode.is2xxSuccessful()
-
-        and: '设置返回值值'
-        List<BurnDownReportCoordinateDTO> burnDownReportCoordinateDTOList = entity.body
-
-        expect: '验证期望值'
-        burnDownReportCoordinateDTOList.size() == expectSize
-
-        where: '设置期望值'
-        type      | id || expectSize
-        'Epic'    | 1  || 2
-        'Version' | 1  || 2
-
-    }
+//    def 'burn_down_coordinate_type'() {
+//        given: 'issue加入到版本和epic中'
+//        IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO()
+//        issueUpdateDTO.issueId = issueId
+//        issueUpdateDTO.setObjectVersionNumber(issueMapper.selectByPrimaryKey(issueId).getObjectVersionNumber())
+//        if (type == 'Epic') {
+//            issueUpdateDTO.epicId = id
+//            issueUpdateDTO.storyPoints = 1
+//            issueService.updateIssue(projectId, issueUpdateDTO, ["epicId","storyPoints"])
+//        } else {
+//            VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO()
+//            versionIssueRelDTO.issueId = issueId
+//            versionIssueRelDTO.versionId = id
+//            versionIssueRelDTO.projectId = projectId
+//            List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>()
+//            versionIssueRelDTOList.add(versionIssueRelDTO)
+//            issueUpdateDTO.versionIssueRelDTOList = versionIssueRelDTOList
+//            issueUpdateDTO.versionType = "fix"
+//            issueService.updateIssue(projectId, issueUpdateDTO, [])
+//        }
+//
+//        when: 'Epic和版本燃耗图坐标信息'
+//        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/burn_down_coordinate_type/{id}?type={type}', List, projectId, id, type)
+//
+//        then: '接口是否请求成功'
+//        entity.statusCode.is2xxSuccessful()
+//
+//        and: '设置返回值值'
+//        List<BurnDownReportCoordinateDTO> burnDownReportCoordinateDTOList = entity.body
+//
+//        expect: '验证期望值'
+//        burnDownReportCoordinateDTOList.size() == expectSize
+//
+//        where: '设置期望值'
+//        type      | id || expectSize
+//        'Epic'    | 1  || 2
+//        'Version' | 1  || 2
+//
+//    }
 
     def 'deleteData'() {
         given: '删除数据DO'
