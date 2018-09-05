@@ -191,7 +191,6 @@ class IterativeWorktableControllerSpec extends Specification {
         expect: '期望值'
         result.size() == 1
         result.get(0).typeCode == 'story'
-        result.get(0).percent == 100.0000
     }
 
 }
