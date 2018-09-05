@@ -127,7 +127,6 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
 
     @Override
     public List<IssueTypeDistributeDTO> queryIssueTypeDistribute(Long projectId, Long sprintId) {
-        Integer total = iterativeWorktableMapper.queryAssigneeAll(projectId, sprintId);
-        return ConvertHelper.convertList(iterativeWorktableMapper.queryIssueTypeDistribute(projectId, sprintId,total), IssueTypeDistributeDTO.class);
+        return ConvertHelper.convertList(iterativeWorktableMapper.queryIssueTypeDistribute(projectId, sprintId), IssueTypeDistributeDTO.class);
     }
 }

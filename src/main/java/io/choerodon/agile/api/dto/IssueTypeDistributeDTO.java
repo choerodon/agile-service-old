@@ -1,5 +1,9 @@
 package io.choerodon.agile.api.dto;
 
+import java.util.List;
+
+import io.choerodon.agile.infra.dataobject.IssueStatus;
+
 /**
  * Creator: ChangpingShi0213@gmail.com
  * Date:  16:12 2018/9/4
@@ -8,9 +12,7 @@ package io.choerodon.agile.api.dto;
 public class IssueTypeDistributeDTO {
     private String typeCode;
 
-    private Integer issueNum;
-
-    private Double percent;
+    private List<IssueStatus> issueStatus;
 
     public String getTypeCode() {
         return typeCode;
@@ -20,19 +22,11 @@ public class IssueTypeDistributeDTO {
         this.typeCode = typeCode;
     }
 
-    public Integer getIssueNum() {
-        return issueNum;
+    public List<IssueStatus> getIssueStatus() {
+        return issueStatus;
     }
 
-    public void setIssueNum(Integer issueNum) {
-        this.issueNum = issueNum;
-    }
-
-    public Double getPercent() {
-        return percent;
-    }
-
-    public void setPercent(Double percent) {
-        this.percent = percent;
+    public void setIssueStatus(List<IssueStatus> issueStatus) {
+        this.issueStatus = issueStatus;
     }
 }
