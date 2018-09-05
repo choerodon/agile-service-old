@@ -1,9 +1,33 @@
 package io.choerodon.agile.app.service.impl;
 
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.assembler.*;
@@ -16,9 +40,9 @@ import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
 import io.choerodon.agile.infra.common.utils.ExcelUtil;
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil;
+import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
@@ -30,23 +54,6 @@ import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 敏捷开发Issue
@@ -171,8 +178,8 @@ public class IssueServiceImpl implements IssueService {
     private static final String RANK_FIELD = "rank";
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
-    private static final String[] FIELDS_NAME = {"编码", "概述", "类型", "所属项目", "经办人", "报告人", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本"};
-    private static final String[] FIELDS = {"issueNum", "summary", "typeName", "projectName", "assigneeName", "reporterName", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", REMAIN_TIME_FIELD, "versionName"};
+    private static final String[] FIELDS_NAME = {"编码", "概述","描述", "类型", "所属项目", "经办人", "报告人", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本"};
+    private static final String[] FIELDS = {"issueNum", "summary","description", "typeName", "projectName", "assigneeName", "reporterName", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", REMAIN_TIME_FIELD, "versionName"};
     private static final String[] SUB_COLUMN_NAMES = {"关键字", "概述", "类型", "状态", "经办人"};
     private static final String EXPORT_ERROR = "error.issue.export";
     private static final String PROJECT_ERROR = "error.project.notFound";
@@ -962,6 +969,7 @@ public class IssueServiceImpl implements IssueService {
                 exportIssue.setVersionName(exportIssuesVersionName(exportIssue));
                 exportIssue.setFixVersionName(fixVersionName);
                 exportIssue.setInfluenceVersionName(influenceVersionName);
+                exportIssue.setDescription(getDes(exportIssue.getDescription()));
             });
         }
         ExcelUtil.export(exportIssues, ExportIssuesDTO.class, FIELDS_NAME, FIELDS, project.getName(), response);
@@ -1593,6 +1601,22 @@ public class IssueServiceImpl implements IssueService {
             result = userSettingRepository.create(userSettingE).getStorymapSwimlaneCode();
         } else {
             result = query.getStorymapSwimlaneCode();
+        }
+        return result;
+    }
+
+    public String getDes(String str) {
+        String result = "";
+        if (!"".equals(str)&&str!=null) {
+            String[] arrayLine = str.split(("\\},\\{"));
+            String regEx = "\"insert\":\"(.*)\"";
+            Pattern pattern = Pattern.compile(regEx);
+            for (String s : arrayLine) {
+                Matcher matcher = pattern.matcher(s);
+                if (matcher.find()) {
+                    result = result + StringEscapeUtils.unescapeJava(matcher.group(1));
+                }
+            }
         }
         return result;
     }
