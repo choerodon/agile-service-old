@@ -2103,7 +2103,7 @@
                     adl.issue_id = ai.issue_id
                     AND adl.project_id = #{projectId}
                     AND adl.field = 'Epic Link'
-                    AND adl.new_value = #{epicId}
+                    AND adl.new_value = '${epicId}'
                 ORDER BY
                     adl.log_id DESC
                     LIMIT 1
@@ -2171,7 +2171,7 @@
                     adl.issue_id = ai.issue_id
                     AND adl.project_id = #{projectId}
                     AND adl.field = 'Fix Version'
-                    AND adl.new_value = #{versionId}
+                    AND adl.new_value = '${versionId}'
                 ORDER BY
                     adl.log_id DESC
                     LIMIT 1
