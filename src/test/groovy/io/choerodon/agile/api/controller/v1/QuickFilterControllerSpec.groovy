@@ -53,22 +53,22 @@ class QuickFilterControllerSpec extends Specification {
         quickFilterDTO.name = '这是一个name'
         quickFilterDTO.childIncluded = true
         quickFilterDTO.expressQuery = '类型 = 故事 AND 模块 in [模块1]'
-        List<QuickFilterValueDTO> list=new ArrayList<>()
-        QuickFilterValueDTO quickFilterValueDTO=new QuickFilterValueDTO()
-        quickFilterValueDTO.fieldCode='priority'
-        quickFilterValueDTO.operation='priority'
-        quickFilterValueDTO.value='priority'
-        QuickFilterValueDTO quickFilterValueDTO1=new QuickFilterValueDTO()
-        quickFilterValueDTO1.fieldCode='assignee'
-        quickFilterValueDTO1.operation='assignee'
-        quickFilterValueDTO1.value='assignee'
+        List<QuickFilterValueDTO> list = new ArrayList<>()
+        QuickFilterValueDTO quickFilterValueDTO = new QuickFilterValueDTO()
+        quickFilterValueDTO.fieldCode = 'priority'
+        quickFilterValueDTO.operation = 'priority'
+        quickFilterValueDTO.value = 'priority'
+        QuickFilterValueDTO quickFilterValueDTO1 = new QuickFilterValueDTO()
+        quickFilterValueDTO1.fieldCode = 'assignee'
+        quickFilterValueDTO1.operation = 'assignee'
+        quickFilterValueDTO1.value = 'assignee'
         list.add(quickFilterValueDTO)
         list.add(quickFilterValueDTO1)
-        quickFilterDTO.quickFilterValueDTOList=list
-        List<String> stringList=new ArrayList<>()
+        quickFilterDTO.quickFilterValueDTOList = list
+        List<String> stringList = new ArrayList<>()
         stringList.add("test")
         stringList.add("test1")
-        quickFilterDTO.relationOperations=stringList
+        quickFilterDTO.relationOperations = stringList
 
         when: '发请求'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/quick_filter', quickFilterDTO, QuickFilterDTO, projectId)
@@ -91,22 +91,22 @@ class QuickFilterControllerSpec extends Specification {
         given: '准备QuickFilterDTO'
         QuickFilterDTO quickFilterDTO = ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(filterId), QuickFilterDTO.class)
         quickFilterDTO.description = "这是一个更新描述"
-        List<QuickFilterValueDTO> list=new ArrayList<>()
-        QuickFilterValueDTO quickFilterValueDTO=new QuickFilterValueDTO()
-        quickFilterValueDTO.fieldCode='priority'
-        quickFilterValueDTO.operation='priority'
-        quickFilterValueDTO.value='priority'
-        QuickFilterValueDTO quickFilterValueDTO1=new QuickFilterValueDTO()
-        quickFilterValueDTO1.fieldCode='assignee'
-        quickFilterValueDTO1.operation='assignee'
-        quickFilterValueDTO1.value='assignee'
+        List<QuickFilterValueDTO> list = new ArrayList<>()
+        QuickFilterValueDTO quickFilterValueDTO = new QuickFilterValueDTO()
+        quickFilterValueDTO.fieldCode = 'priority'
+        quickFilterValueDTO.operation = 'priority'
+        quickFilterValueDTO.value = 'priority'
+        QuickFilterValueDTO quickFilterValueDTO1 = new QuickFilterValueDTO()
+        quickFilterValueDTO1.fieldCode = 'assignee'
+        quickFilterValueDTO1.operation = 'assignee'
+        quickFilterValueDTO1.value = 'assignee'
         list.add(quickFilterValueDTO)
         list.add(quickFilterValueDTO1)
-        quickFilterDTO.quickFilterValueDTOList=list
-        List<String> stringList=new ArrayList<>()
+        quickFilterDTO.quickFilterValueDTOList = list
+        List<String> stringList = new ArrayList<>()
         stringList.add("test")
         stringList.add("test1")
-        quickFilterDTO.relationOperations=stringList
+        quickFilterDTO.relationOperations = stringList
         HttpEntity<QuickFilterDTO> requestEntity = new HttpEntity<QuickFilterDTO>(quickFilterDTO, null)
 
         when: '发请求'
@@ -191,9 +191,9 @@ class QuickFilterControllerSpec extends Specification {
 
         expect: '设置期望值'
         result.size() == 17
-        result.get(0).fieldCode=="assignee"
-        result.get(0).type=="long"
-        result.get(0).name=="经办人"
+        result.get(0).fieldCode == "assignee"
+        result.get(0).type == "long"
+        result.get(0).name == "经办人"
     }
 
     def 'dragFilter'() {
@@ -204,23 +204,30 @@ class QuickFilterControllerSpec extends Specification {
         quickFilterDTO.name = '这是一个新增name'
         quickFilterDTO.childIncluded = true
         quickFilterDTO.expressQuery = '类型 = 故事 AND 模块 in [模块1]新增'
-        List<QuickFilterValueDTO> list=new ArrayList<>()
-        QuickFilterValueDTO quickFilterValueDTO=new QuickFilterValueDTO()
-        quickFilterValueDTO.fieldCode='priority'
-        quickFilterValueDTO.operation='priority'
-        quickFilterValueDTO.value='priority'
-        QuickFilterValueDTO quickFilterValueDTO1=new QuickFilterValueDTO()
-        quickFilterValueDTO1.fieldCode='assignee'
-        quickFilterValueDTO1.operation='assignee'
-        quickFilterValueDTO1.value='assignee'
+        List<QuickFilterValueDTO> list = new ArrayList<>()
+        QuickFilterValueDTO quickFilterValueDTO = new QuickFilterValueDTO()
+        quickFilterValueDTO.fieldCode = 'priority'
+        quickFilterValueDTO.operation = 'priority'
+        quickFilterValueDTO.value = 'priority'
+        QuickFilterValueDTO quickFilterValueDTO1 = new QuickFilterValueDTO()
+        quickFilterValueDTO1.fieldCode = 'assignee'
+        quickFilterValueDTO1.operation = 'assignee'
+        quickFilterValueDTO1.value = 'assignee'
         list.add(quickFilterValueDTO)
         list.add(quickFilterValueDTO1)
-        quickFilterDTO.quickFilterValueDTOList=list
-        List<String> stringList=new ArrayList<>()
+        quickFilterDTO.quickFilterValueDTOList = list
+        List<String> stringList = new ArrayList<>()
         stringList.add("test")
         stringList.add("test1")
-        quickFilterDTO.relationOperations=stringList
+        quickFilterDTO.relationOperations = stringList
         restTemplate.postForEntity('/v1/projects/{project_id}/quick_filter', quickFilterDTO, QuickFilterDTO, projectId)
+        quickFilterMapper.selectAll()
+
+        QuickFilterSequenceDTO quickFilterSequenceDTO = new QuickFilterSequenceDTO()
+        quickFilterSequenceDTO.filterId = 1L
+        quickFilterSequenceDTO.beforeSequence = quickFilterMapper.selectAll().get(0).sequence
+        HttpEntity<QuickFilterSequenceDTO> requestEntity = new HttpEntity<QuickFilterSequenceDTO>(quickFilterSequenceDTO, null)
+
 
         when: '发请求'
         def entity = restTemplate.exchange('/v1/projects/{project_id}/quick_filter/drag',
@@ -261,9 +268,10 @@ class QuickFilterControllerSpec extends Specification {
         }
 
         where: '期望值'
-        issueAttachmentId | expectObject
-        1L                | null
-        2L                | Exception
+        filterId | expectObject
+        1L       | null
+        2L       | null
+        3L       | Exception
     }
 
 }
