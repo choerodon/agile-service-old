@@ -2209,4 +2209,26 @@
             aaa.add_date IS NOT NULL
     </select>
 
+    <select id="queryByIssueIds" resultMap="issueDetail">
+        SELECT
+            ai.issue_id,
+            ai.type_code,
+            ai.status_id,
+            ai.summary,
+            ai.priority_code,
+            ai.reporter_id,
+            ai.description,
+            ai.assignee_id,
+            ai.project_id
+        FROM
+            agile_issue ai
+        WHERE
+            ai.project_id = #{projectId}
+            AND ai.type_code = 'issue_test'
+            AND ai.issue_id IN
+            <foreach collection="issueIds" item="issueId" open="(" separator="," close=")">
+              #{issueId}
+            </foreach>
+    </select>
+
 </mapper>

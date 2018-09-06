@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -178,8 +179,8 @@ public class IssueServiceImpl implements IssueService {
     private static final String RANK_FIELD = "rank";
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
-    private static final String[] FIELDS_NAME = {"编码", "概述","描述", "类型", "所属项目", "经办人", "报告人", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本"};
-    private static final String[] FIELDS = {"issueNum", "summary","description", "typeName", "projectName", "assigneeName", "reporterName", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", REMAIN_TIME_FIELD, "versionName"};
+    private static final String[] FIELDS_NAME = {"编码", "概述", "描述", "类型", "所属项目", "经办人", "报告人", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本"};
+    private static final String[] FIELDS = {"issueNum", "summary", "description", "typeName", "projectName", "assigneeName", "reporterName", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", REMAIN_TIME_FIELD, "versionName"};
     private static final String[] SUB_COLUMN_NAMES = {"关键字", "概述", "类型", "状态", "经办人"};
     private static final String EXPORT_ERROR = "error.issue.export";
     private static final String PROJECT_ERROR = "error.project.notFound";
@@ -385,57 +386,53 @@ public class IssueServiceImpl implements IssueService {
     @Saga(code = "agile-delete-issue", description = "删除issue", inputSchemaClass = IssuePayload.class)
     @Override
     public void deleteIssue(Long projectId, Long issueId) {
-        try {
-            IssueE issueE = queryIssueByProjectIdAndIssueId(projectId, issueId);
-            if (issueE == null) {
-                throw new CommonException(ERROR_ISSUE_NOT_FOUND);
-            }
-            //删除issueLink
-            issueLinkRepository.deleteByIssueId(issueE.getIssueId());
-            //删除标签关联
-            labelIssueRelRepository.deleteByIssueId(issueE.getIssueId());
-            //没有issue使用的标签进行垃圾回收
-            issueLabelRepository.labelGarbageCollection();
-            //删除模块关联
-            componentIssueRelRepository.deleteByIssueId(issueE.getIssueId());
-            //删除版本关联
-            versionIssueRelRepository.deleteByIssueId(issueE.getIssueId());
-            //删除冲刺关联
-            issueRepository.deleteIssueFromSprintByIssueId(projectId, issueId);
-            //删除评论信息
-            issueCommentService.deleteByIssueId(issueE.getIssueId());
-            //删除附件
-            issueAttachmentService.deleteByIssueId(issueE.getIssueId());
-            //不是子任务的issue删除子任务
-            if (!(SUB_TASK).equals(issueE.getTypeCode())) {
-                if ((ISSUE_EPIC).equals(issueE.getTypeCode())) {
-                    //如果是epic，会把该epic下的issue的epicId置为0
-                    issueRepository.batchUpdateIssueEpicId(projectId, issueE.getIssueId());
-                } else {
-                    redisUtil.deleteRedisCache(new String[]{"Agile:EpicChart" + projectId + ":" + issueE.getEpicId() + ":" + "*"});
-                }
-                List<IssueDO> issueDOList = issueMapper.queryIssueSubList(projectId, issueE.getIssueId());
-                if (issueDOList != null && !issueDOList.isEmpty()) {
-                    issueDOList.forEach(subIssue -> deleteIssue(subIssue.getProjectId(), subIssue.getIssueId()));
-                }
-            }
-            //删除日志信息
-            dataLogDeleteByIssueId(projectId, issueId);
-            issueRepository.delete(projectId, issueE.getIssueId());
-            //删除issue发送消息
-            IssuePayload issuePayload = new IssuePayload();
-            issuePayload.setIssueId(issueId);
-            issuePayload.setProjectId(projectId);
-            sagaClient.startSaga("agile-delete-issue", new StartInstanceDTO(JSON.toJSONString(issuePayload), "", ""));
-            //delete cache
-            redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ":" + "*",
-                    "Agile:CumulativeFlowDiagram" + projectId + ":" + "*",
-                    "Agile:VelocityChart" + projectId + ":" + "*",
-                    "Agile:PieChart" + projectId + ':' + "*"
-            });
-        } catch (Exception e) {
-            throw new CommonException(e.getMessage());
+        IssueE issueE = queryIssueByProjectIdAndIssueId(projectId, issueId);
+        if (issueE == null) {
+            throw new CommonException(ERROR_ISSUE_NOT_FOUND);
         }
+        //删除issueLink
+        issueLinkRepository.deleteByIssueId(issueE.getIssueId());
+        //删除标签关联
+        labelIssueRelRepository.deleteByIssueId(issueE.getIssueId());
+        //没有issue使用的标签进行垃圾回收
+        issueLabelRepository.labelGarbageCollection();
+        //删除模块关联
+        componentIssueRelRepository.deleteByIssueId(issueE.getIssueId());
+        //删除版本关联
+        versionIssueRelRepository.deleteByIssueId(issueE.getIssueId());
+        //删除冲刺关联
+        issueRepository.deleteIssueFromSprintByIssueId(projectId, issueId);
+        //删除评论信息
+        issueCommentService.deleteByIssueId(issueE.getIssueId());
+        //删除附件
+        issueAttachmentService.deleteByIssueId(issueE.getIssueId());
+        //不是子任务的issue删除子任务
+        if (!(SUB_TASK).equals(issueE.getTypeCode())) {
+            if ((ISSUE_EPIC).equals(issueE.getTypeCode())) {
+                //如果是epic，会把该epic下的issue的epicId置为0
+                issueRepository.batchUpdateIssueEpicId(projectId, issueE.getIssueId());
+            } else {
+                redisUtil.deleteRedisCache(new String[]{"Agile:EpicChart" + projectId + ":" + issueE.getEpicId() + ":" + "*"});
+            }
+            List<IssueDO> issueDOList = issueMapper.queryIssueSubList(projectId, issueE.getIssueId());
+            if (issueDOList != null && !issueDOList.isEmpty()) {
+                issueDOList.forEach(subIssue -> deleteIssue(subIssue.getProjectId(), subIssue.getIssueId()));
+            }
+        }
+        //删除日志信息
+        dataLogDeleteByIssueId(projectId, issueId);
+        issueRepository.delete(projectId, issueE.getIssueId());
+        //删除issue发送消息
+        IssuePayload issuePayload = new IssuePayload();
+        issuePayload.setIssueId(issueId);
+        issuePayload.setProjectId(projectId);
+        sagaClient.startSaga("agile-delete-issue", new StartInstanceDTO(JSON.toJSONString(issuePayload), "", ""));
+        //delete cache
+        redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ":" + "*",
+                "Agile:CumulativeFlowDiagram" + projectId + ":" + "*",
+                "Agile:VelocityChart" + projectId + ":" + "*",
+                "Agile:PieChart" + projectId + ':' + "*"
+        });
     }
 
     @Override
@@ -1605,9 +1602,27 @@ public class IssueServiceImpl implements IssueService {
         return result;
     }
 
+    @Override
+    public List<Long> cloneIssuesByVersionId(Long projectId, Long versionId, List<Long> issueIds) {
+        List<IssueDetailDO> issueDOList = issueMapper.queryByIssueIds(projectId, issueIds);
+        List<Long> newIssueIds = new ArrayList<>();
+        if (issueDOList.size() == issueIds.size()) {
+            //保证有序性，虽然数据库可以通过函数保证in的有序性，但是测试h2函数不支持，所以代码保证
+            Map<Long, IssueDetailDO> issueDetailDOMap = issueDOList.stream().collect(Collectors.toMap(IssueDetailDO::getIssueId, Function.identity()));
+            List<IssueCreateDTO> issueCreateDTOS = issueAssembler.issueDetailListDoToDto(issueIds, issueDetailDOMap, versionId);
+            issueCreateDTOS.forEach(issueCreateDTO -> {
+                IssueDTO newIssue = createIssue(issueCreateDTO);
+                newIssueIds.add(newIssue.getIssueId());
+            });
+        } else {
+            throw new CommonException("error.issueServiceImpl.issueTypeError");
+        }
+        return newIssueIds;
+    }
+
     public String getDes(String str) {
         String result = "";
-        if (!"".equals(str)&&str!=null) {
+        if (!"".equals(str) && str != null) {
             String[] arrayLine = str.split(("\\},\\{"));
             String regEx = "\"insert\":\"(.*)\"";
             Pattern pattern = Pattern.compile(regEx);
