@@ -23,6 +23,8 @@ import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
 
+import java.util.stream.Collectors
+
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 /**
@@ -86,7 +88,9 @@ class IssueControllerSpec extends Specification {
     @Shared
     def componentId = 1
     @Shared
-    def issueIdList = []
+    List issueIdList = new ArrayList()
+    @Shared
+    def issueTestId = null
     @Shared
     def sprintId = 1
     @Shared
@@ -181,7 +185,7 @@ class IssueControllerSpec extends Specification {
         print(entity.body ? entity.body.toString() : null)
 
         and: '设置值'
-        issueIdList << entity.body.issueId
+        issueIdList.add(entity.body.issueId)
         issueObjectVersionNumberList << entity.body.objectVersionNumber
 
         expect: '设置期望值'
@@ -253,7 +257,7 @@ class IssueControllerSpec extends Specification {
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
-        issueIdList << entity.body.issueId
+        issueIdList.add(entity.body.issueId)
         issueObjectVersionNumberList << entity.body.objectVersionNumber
         expect: '设置期望值'
         entity.body.typeCode == "sub_task"
@@ -575,7 +579,7 @@ class IssueControllerSpec extends Specification {
         print(entity.body ? entity.body.toString() : null)
 
         and: '设置值'
-        issueIdList << entity.body.issueId
+        issueIdList.add(entity.body.issueId)
         issueObjectVersionNumberList << entity.body.objectVersionNumber
 
         expect: '设置期望值'
@@ -604,7 +608,7 @@ class IssueControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        issueIdList << entity.body.issueId
+        issueIdList.add(entity.body.issueId)
         issueObjectVersionNumberList << entity.body.objectVersionNumber
 
         expect: '设置期望值'
@@ -814,8 +818,8 @@ class IssueControllerSpec extends Specification {
         issueCreateDTO.summary = 'issue-test'
         IssueDTO issueDTO = issueService.createIssue(issueCreateDTO)
         issues.add(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()))
-        issueIdList << issueDTO.getIssueId()
-
+        issueIdList.add(issueDTO.getIssueId())
+        issueTestId = issueDTO.getIssueId()
         IssueUpdateParentIdDTO issueUpdateParentIdDTO = new IssueUpdateParentIdDTO()
         def subTaskIssue = issues.find {
             it.typeCode == "sub_task"
@@ -930,12 +934,32 @@ class IssueControllerSpec extends Specification {
         code == 'none'
     }
 
+    def "cloneIssuesByVersionId"() {
+        given: 'issueTestIds'
+        def issueTestIds = [issueTestId]
+        issueIdList = issueIdList.stream().distinct().collect(Collectors.toList())
+
+        when: '测试服务用，批量复制issue并生成版本信息'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/batch_clone_issue/{versionId}', issueTestIds, List, projectId, versionId)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        List<Long> issueIds = entity.body
+        issueIdList.add(issueIds[0])
+
+        expect: '设置期望值'
+        issueIds.size() == 1
+
+    }
+
     def "deleteIssue"() {
         when: '执行方法'
         restTemplate.delete('/v1/projects/{project_id}/issues/{issueId}', projectId, issueId)
 
         then: '返回值'
-        def result = issueMapper.selectByPrimaryKey(issueId)
+        def result = issueMapper.selectByPrimaryKey(issueId as Long)
 
         expect: '期望值'
         result == null

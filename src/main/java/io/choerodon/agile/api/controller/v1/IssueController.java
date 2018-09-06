@@ -2,6 +2,7 @@ package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
 import io.choerodon.core.domain.Page;
@@ -47,6 +48,9 @@ public class IssueController {
 
     @Autowired
     private VerifyUpdateUtil verifyUpdateUtil;
+
+    @Autowired
+    private IssueValidator issueValidator;
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建issue")
@@ -426,13 +430,13 @@ public class IssueController {
     @CustomPageRequest
     @PostMapping(value = "/test_component/no_sub_detail")
     public ResponseEntity<Page<IssueComponentDetailDTO>> listIssueWithoutSubDetail(@ApiIgnore
-                                                                                       @ApiParam(value = "分页信息", required = true)
-                                                                                       @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
-                                                                                               PageRequest pageRequest,
+                                                                                   @ApiParam(value = "分页信息", required = true)
+                                                                                   @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
+                                                                                           PageRequest pageRequest,
                                                                                    @ApiParam(value = "项目id", required = true)
-                                                                                       @PathVariable(name = "project_id") Long projectId,
+                                                                                   @PathVariable(name = "project_id") Long projectId,
                                                                                    @ApiParam(value = "查询参数", required = true)
-                                                                                       @RequestBody(required = false) SearchDTO searchDTO) {
+                                                                                   @RequestBody(required = false) SearchDTO searchDTO) {
         return Optional.ofNullable(issueService.listIssueWithoutSubDetail(projectId, searchDTO, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.listIssueWithoutSubDetail"));
@@ -442,17 +446,17 @@ public class IssueController {
     @ApiOperation("故事地图查询issues,type:'sprint, version, none', pageType:'storymap,backlog'")
     @GetMapping(value = "/storymap/issues")
     public ResponseEntity<List<StoryMapIssueDTO>> listIssuesByProjectId(@ApiParam(value = "项目id", required = true)
-                                                                       @PathVariable(name = "project_id") Long projectId,
+                                                                        @PathVariable(name = "project_id") Long projectId,
                                                                         @ApiParam(value = "type:sprint, version, none", required = true)
-                                                                       @RequestParam String type,
+                                                                        @RequestParam String type,
                                                                         @ApiParam(value = "故事页面or待办页面 pageType:storymap,backlog", required = true)
-                                                                       @RequestParam String pageType,
+                                                                        @RequestParam String pageType,
                                                                         @ApiParam(value = "search item，my problem", required = false)
-                                                                       @RequestParam(required = false) Long assigneeId,
+                                                                        @RequestParam(required = false) Long assigneeId,
                                                                         @ApiParam(value = "search item，only story", required = false)
-                                                                       @RequestParam(required = false) Boolean onlyStory,
+                                                                        @RequestParam(required = false) Boolean onlyStory,
                                                                         @ApiParam(value = "quick filter", required = false)
-                                                                       @RequestParam(required = false) List<Long> quickFilterIds) {
+                                                                        @RequestParam(required = false) List<Long> quickFilterIds) {
         return Optional.ofNullable(issueService.listIssuesByProjectId(projectId, type, pageType, assigneeId, onlyStory, quickFilterIds))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.listIssuesByProjectId"));
@@ -485,7 +489,7 @@ public class IssueController {
     @ApiOperation("统计当前项目下未完成的任务数，包括故事、任务、缺陷")
     @GetMapping(value = "/count")
     public ResponseEntity<JSONObject> countUnResolveByProjectId(@ApiParam(value = "项目id", required = true)
-                                                             @PathVariable(name = "project_id") Long projectId) {
+                                                                @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(issueService.countUnResolveByProjectId(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.countUnResolveIssue.get"));
@@ -520,7 +524,7 @@ public class IssueController {
                                                                           @PathVariable(name = "project_id") Long projectId,
                                                                           @ApiParam(value = "经办人id", required = true)
                                                                           @PathVariable(name = "assignee_id") Long assigneeId) {
-        return Optional.ofNullable(issueService.queryUnfinishedIssues(projectId,assigneeId))
+        return Optional.ofNullable(issueService.queryUnfinishedIssues(projectId, assigneeId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.UnfinishedIssueList.get"));
     }
@@ -533,6 +537,21 @@ public class IssueController {
         return Optional.ofNullable(issueService.querySwimLaneCode(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.querySwimLaneCode.get"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("测试服务用，批量复制issue并生成版本信息")
+    @PostMapping("/batch_clone_issue/{versionId}")
+    public ResponseEntity<List<Long>> cloneIssuesByVersionId(@ApiParam(value = "项目id", required = true)
+                                                             @PathVariable(name = "project_id") Long projectId,
+                                                             @ApiParam(value = "versionId", required = true)
+                                                             @PathVariable Long versionId,
+                                                             @ApiParam(value = "复制的issueIds", required = true)
+                                                             @RequestBody List<Long> issueIds) {
+        issueValidator.checkIssueIdsAndVersionId(projectId, issueIds, versionId);
+        return Optional.ofNullable(issueService.cloneIssuesByVersionId(projectId, versionId, issueIds))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.issue.cloneIssuesByVersionId"));
     }
 
 }

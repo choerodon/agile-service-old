@@ -225,4 +225,13 @@ public interface IssueService {
      * @return String
      */
     String querySwimLaneCode(Long projectId);
+
+    /**
+     * 克隆issue同时生成版本
+     * @param projectId projectId
+     * @param versionId versionId
+     * @param issueIds issueIds
+     * @return new issueIds
+     */
+    List<Long> cloneIssuesByVersionId(Long projectId, Long versionId, List<Long> issueIds);
 }
