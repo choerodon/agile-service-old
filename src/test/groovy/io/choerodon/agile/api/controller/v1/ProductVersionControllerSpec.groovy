@@ -216,7 +216,7 @@ class ProductVersionControllerSpec extends Specification {
         then:
         entity.statusCode.is2xxSuccessful()
         entity.body.name == versionName
-        entityNull.statusCode.is5xxServerError()
+        entityNull.statusCode.is2xxSuccessful()
     }
 
     def 'releaseVersion'() {
