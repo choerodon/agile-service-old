@@ -25,16 +25,18 @@ abstract class AbstractAssembler {
      */
     @SuppressWarnings("unchecked")
     public <T, V> V toTarget(T source, Class<V> tClass) {
-        V target = null;
-        try {
-            target = tClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            LOGGER.info("Exception", e);
+        if (source != null) {
+            try {
+                V target = tClass.newInstance();
+                if (target != null) {
+                    BeanUtils.copyProperties(source, target);
+                }
+                return target;
+            } catch (InstantiationException | IllegalAccessException e) {
+                LOGGER.info("Exception", e);
+            }
         }
-        if (target != null && source != null) {
-            BeanUtils.copyProperties(source, target);
-        }
-        return target;
+        return null;
     }
 
     /**
