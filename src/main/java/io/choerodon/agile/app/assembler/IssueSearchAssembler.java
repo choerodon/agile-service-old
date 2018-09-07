@@ -21,16 +21,10 @@ import java.util.stream.Collectors;
  * Created by jian_zhang02@163.com on 2018/5/16.
  */
 @Component
-public class IssueSearchAssembler {
+public class IssueSearchAssembler extends AbstractAssembler {
     @Autowired
     private LookupValueMapper lookupValueMapper;
     private static final String ISSUE_STATUS_COLOR = "issue_status_color";
-
-    public IssueSearchDTO doToDTO(IssueSearchDO issueSearchDO) {
-        IssueSearchDTO issueSearchDTO = new IssueSearchDTO();
-        BeanUtils.copyProperties(issueSearchDO, issueSearchDTO);
-        return issueSearchDTO;
-    }
 
     public List<IssueSearchDTO> doListToDTO(List<IssueSearchDO> issueSearchDOList, Map<Long, UserMessageDO> usersMap) {
         List<IssueSearchDTO> issueSearchDTOList = new ArrayList<>();
@@ -43,7 +37,7 @@ public class IssueSearchAssembler {
             issueSearch.setAssigneeName(assigneeName);
             issueSearch.setImageUrl(imageUrl);
             issueSearch.setStatusColor(ColorUtil.initializationStatusColor(issueSearch.getCategoryCode(), lookupValueMap));
-            issueSearchDTOList.add(doToDTO(issueSearch));
+            issueSearchDTOList.add(toTarget(issueSearch, IssueSearchDTO.class));
         });
         return issueSearchDTOList;
     }

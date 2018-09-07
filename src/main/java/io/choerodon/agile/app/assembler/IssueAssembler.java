@@ -1,7 +1,5 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.domain.agile.entity.IssueE;
-import io.choerodon.agile.domain.agile.entity.ProductVersionE;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.*;
@@ -19,7 +17,7 @@ import java.util.stream.Collectors;
  * @author dinghuang123@gmail.com
  */
 @Component
-public class IssueAssembler {
+public class IssueAssembler extends AbstractAssembler {
 
     @Autowired
     private UserRepository userRepository;
@@ -43,8 +41,8 @@ public class IssueAssembler {
         IssueDTO issueDTO = new IssueDTO();
         BeanUtils.copyProperties(issueDetailDO, issueDTO);
         issueDTO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
-        issueDTO.setActiveSprint(sprintNameAssembler.doToDTO(issueDetailDO.getActiveSprint()));
-        issueDTO.setCloseSprint(sprintNameAssembler.doListToDTO(issueDetailDO.getCloseSprint()));
+        issueDTO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDO.getActiveSprint(), SprintNameDTO.class));
+        issueDTO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDO.getCloseSprint(), SprintNameDTO.class));
         issueDTO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
         issueDTO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
         issueDTO.setIssueAttachmentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueAttachmentDOList(), IssueAttachmentDTO.class));
@@ -125,58 +123,6 @@ public class IssueAssembler {
     }
 
     /**
-     * IssueUpdateDTO转换到IssueE
-     *
-     * @param issueUpdateDTO issueUpdateDTO
-     * @return IssueE
-     */
-    public IssueE issueUpdateDtoToEntity(IssueUpdateDTO issueUpdateDTO) {
-        IssueE issueE = new IssueE();
-        BeanUtils.copyProperties(issueUpdateDTO, issueE);
-        return issueE;
-    }
-
-    /**
-     * issueCreateDTO转换到IssueE
-     *
-     * @param issueCreateDTO issueCreateDTO
-     * @return IssueE
-     */
-    public IssueE issueCreateDtoToIssueE(IssueCreateDTO issueCreateDTO) {
-        IssueE issueE = new IssueE();
-        BeanUtils.copyProperties(issueCreateDTO, issueE);
-        return issueE;
-    }
-
-    /**
-     * issueSubCreateDTO转换到IssueE
-     *
-     * @param issueSubCreateDTO issueSubCreateDTO
-     * @return IssueE
-     */
-    public IssueE issueSubCreateDtoToEntity(IssueSubCreateDTO issueSubCreateDTO) {
-        IssueE issueE = new IssueE();
-        BeanUtils.copyProperties(issueSubCreateDTO, issueE);
-        return issueE;
-    }
-
-    /**
-     * issueDO转换到IssueEpicDTO
-     *
-     * @param issueDOList issueDOList
-     * @return IssueEpicDTO
-     */
-    public List<IssueEpicDTO> doListToEpicDto(List<IssueDO> issueDOList) {
-        List<IssueEpicDTO> issueEpicDTOList = new ArrayList<>();
-        issueDOList.forEach(issueDO -> {
-            IssueEpicDTO issueEpicDTO = new IssueEpicDTO();
-            BeanUtils.copyProperties(issueDO, issueEpicDTO);
-            issueEpicDTOList.add(issueEpicDTO);
-        });
-        return issueEpicDTOList;
-    }
-
-    /**
      * issueDetailDO转换到IssueSubDTO
      *
      * @param issueDetailDO issueDetailDO
@@ -190,8 +136,8 @@ public class IssueAssembler {
         BeanUtils.copyProperties(issueDetailDO, issueSubDTO);
         issueSubDTO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
         issueSubDTO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
-        issueSubDTO.setActiveSprint(sprintNameAssembler.doToDTO(issueDetailDO.getActiveSprint()));
-        issueSubDTO.setCloseSprint(sprintNameAssembler.doListToDTO(issueDetailDO.getCloseSprint()));
+        issueSubDTO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDO.getActiveSprint(), SprintNameDTO.class));
+        issueSubDTO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDO.getCloseSprint(), SprintNameDTO.class));
         issueSubDTO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
         issueSubDTO.setIssueAttachmentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueAttachmentDOList(), IssueAttachmentDTO.class));
         issueSubDTO.setIssueCommentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueCommentDOList(), IssueCommentDTO.class));
@@ -243,25 +189,6 @@ public class IssueAssembler {
         exportIssuesDTO.setAssigneeName(assigneeName);
         exportIssuesDTO.setReporterName(reportName);
         return exportIssuesDTO;
-    }
-
-    public IssueNumDTO issueNumDOToIssueNumDTO(IssueNumDO issueNumDO) {
-        if (issueNumDO == null) {
-            return null;
-        }
-        IssueNumDTO issueNumDTO = new IssueNumDTO();
-        BeanUtils.copyProperties(issueNumDO, issueNumDTO);
-        return issueNumDTO;
-    }
-
-    public List<IssueNumDTO> issueNumDOListToIssueNumDTO(List<IssueNumDO> issueNumDOList) {
-        List<IssueNumDTO> issueNumDTOList = new ArrayList<>();
-        issueNumDOList.forEach(issueNumDO -> {
-            IssueNumDTO issueNumDTO = new IssueNumDTO();
-            BeanUtils.copyProperties(issueNumDO, issueNumDTO);
-            issueNumDTOList.add(issueNumDTO);
-        });
-        return issueNumDTOList;
     }
 
     public IssueCreateDTO issueDtoToIssueCreateDto(IssueDetailDO issueDetailDO) {
@@ -324,22 +251,6 @@ public class IssueAssembler {
         issueCreateDTO.setVersionIssueRelDTOList(copyVersionIssueRel(subIssueDetailDO.getVersionIssueRelDOList()));
         issueCreateDTO.setLabelIssueRelDTOList(copyLabelIssueRel(subIssueDetailDO.getLabelIssueRelDOList(), subIssueDetailDO.getProjectId()));
         return issueCreateDTO;
-    }
-
-    public List<IssueChangeDTO> issueChangeDOListToIssueChangeDTO(List<IssueChangeDO> issueChangeDOS) {
-        List<IssueChangeDTO> issueChangeDTOS = new ArrayList<>();
-        issueChangeDOS.forEach(issueChangeDO -> {
-            IssueChangeDTO issueChangeDTO = new IssueChangeDTO();
-            BeanUtils.copyProperties(issueChangeDO, issueChangeDTO);
-            issueChangeDTOS.add(issueChangeDTO);
-        });
-        return issueChangeDTOS;
-    }
-
-    public ProductVersionCreateDTO productVersionEntityToProductVersionCreateDto(ProductVersionE productVersionE) {
-        ProductVersionCreateDTO productVersionCreateDTO = new ProductVersionCreateDTO();
-        BeanUtils.copyProperties(productVersionE, productVersionCreateDTO);
-        return productVersionCreateDTO;
     }
 
     public List<IssueComponentDetailDTO> issueComponentDetailDoToDto(List<IssueComponentDetailDO> issueComponentDetailDOS) {

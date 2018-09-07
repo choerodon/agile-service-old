@@ -27,9 +27,6 @@ public class IssueValidator {
     private static final String ERROR_SPRINTIDANDVERSIONID_ALLNOTNULL = "error.sprintIdAndVersionId.allNotNull";
     private static final String ERROR_PARENT_ISSUE_NOT_EXIST = "error.parentIssue.get";
 
-    public IssueValidator() {
-    }
-
     public static void checkStoryMapMove(StoryMapMoveDTO storyMapMoveDTO) {
         if (storyMapMoveDTO.getSprintId() != null && storyMapMoveDTO.getVersionId() != null) {
             throw new CommonException(ERROR_SPRINTIDANDVERSIONID_ALLNOTNULL);

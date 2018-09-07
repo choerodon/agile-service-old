@@ -31,13 +31,13 @@ public class IssueLinkTypeServiceImpl implements IssueLinkTypeService {
     private IssueLinkTypeAssembler issueLinkTypeAssembler;
 
     @Override
-    public List<IssueLinkTypeDTO> listIssueLinkType(Long projectId,Long issueLinkTypeId) {
-        return ConvertHelper.convertList(issueLinkTypeMapper.queryIssueLinkTypeByProjectId(projectId,issueLinkTypeId), IssueLinkTypeDTO.class);
+    public List<IssueLinkTypeDTO> listIssueLinkType(Long projectId, Long issueLinkTypeId) {
+        return ConvertHelper.convertList(issueLinkTypeMapper.queryIssueLinkTypeByProjectId(projectId, issueLinkTypeId), IssueLinkTypeDTO.class);
     }
 
     @Override
     public IssueLinkTypeDTO createIssueLinkType(IssueLinkTypeCreateDTO issueLinkTypeCreateDTO) {
-        IssueLinkTypeE issueLinkTypeE = issueLinkTypeAssembler.createDtoToE(issueLinkTypeCreateDTO);
+        IssueLinkTypeE issueLinkTypeE = issueLinkTypeAssembler.toTarget(issueLinkTypeCreateDTO, IssueLinkTypeE.class);
         return ConvertHelper.convert(issueLinkTypeRepository.create(issueLinkTypeE), IssueLinkTypeDTO.class);
     }
 

@@ -27,6 +27,7 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
 
     private static final String AGILE = "Agile:";
     private static final String PIECHART = AGILE + "PieChart";
+    private static final String STATUS = "status";
 
     public static String getUUID() {
         UUID uuid = UUID.randomUUID();
@@ -41,7 +42,7 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
         if (issueStatusMapper.insert(issueStatusDO) != 1) {
             throw new CommonException("error.IssueStatus.insert");
         }
-        redisUtil.deleteRedisCache(new String[]{PIECHART + issueStatusE.getProjectId() + ':' + "status"});
+        redisUtil.deleteRedisCache(new String[]{PIECHART + issueStatusE.getProjectId() + ':' + STATUS});
         return ConvertHelper.convert(issueStatusMapper.selectByPrimaryKey(issueStatusDO.getId()), IssueStatusE.class);
     }
 
@@ -56,7 +57,7 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
                 "Agile:CumulativeFlowDiagram" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:VelocityChart" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:EpicChart" + issueStatusE.getProjectId() + ":" + "*",
-                PIECHART + issueStatusE.getProjectId() + ':' + "status",
+                PIECHART + issueStatusE.getProjectId() + ':' + STATUS,
                 PIECHART + issueStatusE.getProjectId() + ':' + "resolution"
         });
         return ConvertHelper.convert(issueStatusMapper.selectByPrimaryKey(issueStatusDO.getId()), IssueStatusE.class);
@@ -72,7 +73,7 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
                 "Agile:CumulativeFlowDiagram" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:VelocityChart" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:EpicChart" + issueStatusE.getProjectId() + ":" + "*",
-                PIECHART + issueStatusE.getProjectId() + ':' + "status",
+                PIECHART + issueStatusE.getProjectId() + ':' + STATUS,
                 PIECHART + issueStatusE.getProjectId() + ':' + "resolution"
         });
     }

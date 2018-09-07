@@ -1,12 +1,7 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.api.dto.ColumnChangeDTO;
 import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO;
-import io.choerodon.agile.api.dto.PieChartDTO;
-import io.choerodon.agile.infra.dataobject.ColumnChangeDO;
 import io.choerodon.agile.infra.dataobject.ColumnDO;
-import io.choerodon.agile.infra.dataobject.PieChartDO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,7 +12,7 @@ import java.util.List;
  * @since 2018/7/2
  */
 @Component
-public class ReportAssembler {
+public class ReportAssembler extends AbstractAssembler{
 
     public List<CumulativeFlowDiagramDTO> columnListDoToDto(List<ColumnDO> columnDOList) {
         List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = new ArrayList<>();
@@ -32,23 +27,4 @@ public class ReportAssembler {
         return cumulativeFlowDiagramDTOList;
     }
 
-    public List<ColumnChangeDTO> columnChangeListDoToDto(List<ColumnChangeDO> columnChangeDOList) {
-        List<ColumnChangeDTO> columnChangeDTOList = new ArrayList<>();
-        columnChangeDOList.forEach(columnChangeDO -> {
-            ColumnChangeDTO columnChangeDTO = new ColumnChangeDTO();
-            BeanUtils.copyProperties(columnChangeDO, columnChangeDTO);
-            columnChangeDTOList.add(columnChangeDTO);
-        });
-        return columnChangeDTOList;
-    }
-
-    public List<PieChartDTO> pieChartDoToDto(List<PieChartDO> pieChartDOS) {
-        List<PieChartDTO> pieChartDTOS = new ArrayList<>();
-        pieChartDOS.forEach(pieChartDO -> {
-            PieChartDTO pieChartDTO = new PieChartDTO();
-            BeanUtils.copyProperties(pieChartDO, pieChartDTO);
-            pieChartDTOS.add(pieChartDTO);
-        });
-        return pieChartDTOS;
-    }
 }

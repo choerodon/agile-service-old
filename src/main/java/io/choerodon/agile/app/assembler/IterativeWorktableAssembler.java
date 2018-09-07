@@ -1,11 +1,8 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.dto.AssigneeIssueDTO;
-import io.choerodon.agile.api.dto.IssueCommonDTO;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
-import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.AssigneeIssueDO;
-import io.choerodon.agile.infra.dataobject.IssueCommonDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
