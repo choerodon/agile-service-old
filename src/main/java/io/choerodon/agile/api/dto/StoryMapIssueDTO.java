@@ -42,6 +42,8 @@ public class StoryMapIssueDTO {
 
     private Long objectVersionNumber;
 
+    private String mapRank;
+
     public Long getSprintId() {
         return sprintId;
     }
@@ -184,5 +186,13 @@ public class StoryMapIssueDTO {
 
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
+    }
+
+    public void setMapRank(String mapRank) {
+        this.mapRank = mapRank;
+    }
+
+    public String getMapRank() {
+        return mapRank;
     }
 }

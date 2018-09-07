@@ -134,6 +134,8 @@ public class IssueDO extends AuditDomain {
 
     private Integer epicSequence;
 
+    private String mapRank;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -364,6 +366,14 @@ public class IssueDO extends AuditDomain {
 
     public void setDoneDate(Date doneDate) {
         this.doneDate = doneDate;
+    }
+
+    public void setMapRank(String mapRank) {
+        this.mapRank = mapRank;
+    }
+
+    public String getMapRank() {
+        return mapRank;
     }
 
     @Override

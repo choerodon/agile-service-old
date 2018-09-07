@@ -114,6 +114,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     int batchUpdateIssueRank(@Param("projectId") Long projectId, @Param("moveIssues") List<MoveIssueDO> moveIssues);
 
+    int batchUpdateMapIssueRank(@Param("projectId")Long projectId, @Param("storyMapMoveIssueDOS") List<StoryMapMoveIssueDO> storyMapMoveIssueDOS);
+
     List<Long> querySubIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     int removeIssueFromSprintByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
@@ -370,4 +372,18 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @return IssueDO
      */
     List<IssueDetailDO> queryByIssueIds(@Param("projectId")Long projectId, @Param("issueIds")List<Long> issueIds);
+
+    String selectMinRankByProjectId(@Param("projectId") Long projectId);
+
+    String selectMaxRankByProjectId(@Param("projectId") Long projectId);
+
+    String selectMapRankByIssueId(@Param("projectId") Long projectId, @Param("outsetIssueId") Long outsetIssueId);
+
+    String selectLeftMaxMapRank(@Param("projectId") Long projectId, @Param("currentMapRank") String currentMapRank);
+
+    String selectRightMinMapRank(@Param("projectId") Long projectId, @Param("currentMapRank") String currentMapRank);
+
+    List<Long> selectIssueIdsByProjectId(@Param("projectId") Long projectId);
+
+    void updateMapRank(@Param("projectId") Long projectId, @Param("mapMoveIssueDOS") List<StoryMapMoveIssueDO> mapMoveIssueDOS);
 }

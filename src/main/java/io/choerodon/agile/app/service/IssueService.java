@@ -79,11 +79,15 @@ public interface IssueService {
 
     List<IssueSearchDTO> batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds);
 
-    void batchToVersionInStoryMap(Long projectId, Long versionId, List<Long> issueIds);
+    void batchToVersionInStoryMap(Long projectId, Long versionId, MoveIssueDTO moveIssueDTO);
 
     List<IssueSearchDTO> batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds);
 
+    List<IssueSearchDTO> batchIssueToEpicInStoryMap(Long projectId, Long epicId, MoveIssueDTO moveIssueDTO);
+
     List<IssueSearchDTO> batchIssueToSprint(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO);
+
+    List<IssueSearchDTO> batchIssueToSprintInStoryMap(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO);
 
     /**
      * 根据项目id查询epic
@@ -234,4 +238,6 @@ public interface IssueService {
      * @return new issueIds
      */
     List<Long> cloneIssuesByVersionId(Long projectId, Long versionId, List<Long> issueIds);
+
+    void initMapRank(Long projectId);
 }
