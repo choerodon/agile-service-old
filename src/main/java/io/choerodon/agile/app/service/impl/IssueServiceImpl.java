@@ -205,7 +205,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public synchronized IssueDTO createIssue(IssueCreateDTO issueCreateDTO) {
-        IssueE issueE = issueAssembler.issueCreateDtoToIssueE(issueCreateDTO);
+        IssueE issueE = issueAssembler.toTarget(issueCreateDTO, IssueE.class);
         //设置初始状态,如果有todo，就用todo，否则为doing，最后为done
         List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(issueE.getProjectId());
         IssueStatusCreateDO issueStatusDO = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
@@ -316,7 +316,7 @@ public class IssueServiceImpl implements IssueService {
     private void handleUpdateIssue(IssueUpdateDTO issueUpdateDTO, List<String> fieldList, Long projectId) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         IssueDO originIssue = issueMapper.queryIssueWithNoCloseSprint(issueUpdateDTO.getIssueId());
-        IssueE issueE = issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO);
+        IssueE issueE = issueAssembler.toTarget(issueUpdateDTO, IssueE.class);
         //处理用户，前端可能会传0，处理为null
         issueE.initializationIssueUser();
         if (fieldList.contains(SPRINT_ID_FIELD)) {
@@ -348,7 +348,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<EpicDataDTO> listEpic(Long projectId) {
-        List<EpicDataDTO> epicDataList = epicDataAssembler.doListToDTO(issueMapper.queryEpicList(projectId));
+        List<EpicDataDTO> epicDataList = epicDataAssembler.toTargetList(issueMapper.queryEpicList(projectId), EpicDataDTO.class);
         if (!epicDataList.isEmpty()) {
             List<Long> epicIds = epicDataList.stream().map(EpicDataDTO::getIssueId).collect(Collectors.toList());
             Map<Long, Integer> issueCountMap = issueMapper.queryIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
@@ -449,7 +449,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO) {
-        IssueE subIssueE = issueAssembler.issueSubCreateDtoToEntity(issueSubCreateDTO);
+        IssueE subIssueE = issueAssembler.toTarget(issueSubCreateDTO, IssueE.class);
         List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(subIssueE.getProjectId());
         IssueStatusCreateDO issueStatusDO = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
                 issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
@@ -541,7 +541,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void dataLogRank(Long projectId, MoveIssueDTO moveIssueDTO, String rankStr, Long sprintId) {
         for (Long issueId : moveIssueDTO.getIssueIds()) {
-            SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
+            SprintNameDTO activeSprintName = sprintNameAssembler.toTarget(issueMapper.queryActiveSprintNameByIssueId(issueId),SprintNameDTO.class);
             Boolean condition = (sprintId == 0 && activeSprintName == null) || (activeSprintName != null
                     && sprintId.equals(activeSprintName.getSprintId()));
             if (condition) {
@@ -757,7 +757,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<IssueEpicDTO> listEpicSelectData(Long projectId) {
-        return issueAssembler.doListToEpicDto(issueMapper.queryIssueEpicSelectList(projectId));
+        return issueAssembler.toTargetList(issueMapper.queryIssueEpicSelectList(projectId), IssueEpicDTO.class);
     }
 
     @Override
@@ -847,7 +847,7 @@ public class IssueServiceImpl implements IssueService {
                         return;
                     }
                 } else {
-                    ProductVersionCreateDTO productVersionCreateDTO = issueAssembler.productVersionEntityToProductVersionCreateDto(productVersionE);
+                    ProductVersionCreateDTO productVersionCreateDTO = issueAssembler.toTarget(productVersionE, ProductVersionCreateDTO.class);
                     ProductVersionDetailDTO productVersionDetailDTO = productVersionService.createVersion(projectId, productVersionCreateDTO);
                     versionIssueRelE.setVersionId(productVersionDetailDTO.getVersionId());
                 }
@@ -1066,7 +1066,7 @@ public class IssueServiceImpl implements IssueService {
         issueListDTOPage.setSize(issueDOPage.getSize());
         issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
         issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
-        issueListDTOPage.setContent(issueAssembler.issueNumDOListToIssueNumDTO(issueDOPage.getContent()));
+        issueListDTOPage.setContent(issueAssembler.toTargetList(issueDOPage.getContent(), IssueNumDTO.class));
         return issueListDTOPage;
     }
 
@@ -1520,7 +1520,7 @@ public class IssueServiceImpl implements IssueService {
         issueListDTOPage.setSize(issueDOPage.getSize());
         issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
         issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
-        issueListDTOPage.setContent(issueAssembler.issueNumDOListToIssueNumDTO(issueDOPage.getContent()));
+        issueListDTOPage.setContent(issueAssembler.toTargetList(issueDOPage.getContent(), IssueNumDTO.class));
         return issueListDTOPage;
     }
 
@@ -1545,12 +1545,12 @@ public class IssueServiceImpl implements IssueService {
             }
             handleSequence(epicSequenceDTO, projectId, issueE);
         }
-        return epicDataAssembler.doToEntity(issueMapper.queryEpicListByEpic(epicSequenceDTO.getEpicId(), projectId));
+        return epicDataAssembler.toTarget(issueMapper.queryEpicListByEpic(epicSequenceDTO.getEpicId(), projectId), EpicDataDTO.class);
     }
 
     @Override
     public List<PieChartDTO> issueStatistic(Long projectId, String type, List<String> issueTypes) {
-        return reportAssembler.pieChartDoToDto(issueMapper.issueStatistic(projectId, type, issueTypes));
+        return reportAssembler.toTargetList(issueMapper.issueStatistic(projectId, type, issueTypes),PieChartDTO.class);
     }
 
     @Override
@@ -1722,7 +1722,7 @@ public class IssueServiceImpl implements IssueService {
     public String querySwimLaneCode(Long projectId) {
         UserSettingE userSettingE = new UserSettingE();
         userSettingE.initUserSetting(projectId);
-        userSettingE.setTypeCode("storymap");
+        userSettingE.setTypeCode(STORYMAP);
         UserSettingDO query = userSettingMapper.selectOne(ConvertHelper.convert(userSettingE, UserSettingDO.class));
         String result;
         if (query == null) {
@@ -1753,7 +1753,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     public String getDes(String str) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         if (!"".equals(str) && str != null) {
             String[] arrayLine = str.split(("\\},\\{"));
             String regEx = "\"insert\":\"(.*)\"";
@@ -1761,11 +1761,11 @@ public class IssueServiceImpl implements IssueService {
             for (String s : arrayLine) {
                 Matcher matcher = pattern.matcher(s);
                 if (matcher.find()) {
-                    result = result + StringEscapeUtils.unescapeJava(matcher.group(1));
+                    result.append(StringEscapeUtils.unescapeJava(matcher.group(1)));
                 }
             }
         }
-        return result;
+        return result.toString();
     }
 
     @Override

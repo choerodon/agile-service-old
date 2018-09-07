@@ -1,8 +1,6 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.api.dto.IssueLinkCreateDTO;
 import io.choerodon.agile.api.dto.IssueLinkDTO;
-import io.choerodon.agile.domain.agile.entity.IssueLinkE;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.IssueLinkDO;
 import io.choerodon.agile.infra.dataobject.LookupValueDO;
@@ -21,22 +19,12 @@ import java.util.stream.Collectors;
  * @since 2018/6/14
  */
 @Component
-public class IssueLinkAssembler {
+public class IssueLinkAssembler extends AbstractAssembler{
 
     @Autowired
     private LookupValueMapper lookupValueMapper;
 
     private static final String ISSUE_STATUS_COLOR = "issue_status_color";
-
-    public List<IssueLinkE> issueLinkCreateDtoToE(List<IssueLinkCreateDTO> issueLinkCreateDTOList) {
-        List<IssueLinkE> issueLinkEList = new ArrayList<>();
-        issueLinkCreateDTOList.forEach(issueLinkCreateDTO -> {
-            IssueLinkE issueLinkE = new IssueLinkE();
-            BeanUtils.copyProperties(issueLinkCreateDTO, issueLinkE);
-            issueLinkEList.add(issueLinkE);
-        });
-        return issueLinkEList;
-    }
 
     public List<IssueLinkDTO> issueLinkDoToDto(List<IssueLinkDO> issueLinkDOList) {
         LookupValueDO lookupValueDO = new LookupValueDO();

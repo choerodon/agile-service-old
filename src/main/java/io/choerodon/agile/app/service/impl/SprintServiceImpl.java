@@ -95,10 +95,10 @@ public class SprintServiceImpl implements SprintService {
         if (sprintDO == null) {
             sprint.createSprint(projectInfo);
         } else {
-            SprintE sprintE = sprintCreateAssembler.doToEntity(sprintDO);
+            SprintE sprintE = sprintCreateAssembler.toTarget(sprintDO, SprintE.class);
             sprint.createSprint(sprintE);
         }
-        return sprintCreateAssembler.entityToDto(sprintRepository.createSprint(sprint));
+        return sprintCreateAssembler.toTarget(sprintRepository.createSprint(sprint), SprintDetailDTO.class);
     }
 
     @Override
@@ -107,9 +107,9 @@ public class SprintServiceImpl implements SprintService {
             throw new CommonException(NOT_EQUAL_ERROR);
         }
         sprintRule.checkDate(sprintUpdateDTO);
-        SprintE sprintE = sprintUpdateAssembler.dtoToEntity(sprintUpdateDTO);
+        SprintE sprintE = sprintUpdateAssembler.toTarget(sprintUpdateDTO, SprintE.class);
         sprintE.trimSprintName();
-        return sprintUpdateAssembler.entityToDto(sprintRepository.updateSprint(sprintE));
+        return sprintUpdateAssembler.toTarget(sprintRepository.updateSprint(sprintE), SprintDetailDTO.class);
     }
 
     @Override
@@ -117,7 +117,7 @@ public class SprintServiceImpl implements SprintService {
         SprintDO sprintDO = new SprintDO();
         sprintDO.setProjectId(projectId);
         sprintDO.setSprintId(sprintId);
-        SprintE sprintE = sprintSearchAssembler.doToEntity(sprintMapper.selectOne(sprintDO));
+        SprintE sprintE = sprintSearchAssembler.toTarget(sprintMapper.selectOne(sprintDO), SprintE.class);
         if (sprintE == null) {
             throw new CommonException(NOT_FOUND_ERROR);
         }
@@ -219,7 +219,7 @@ public class SprintServiceImpl implements SprintService {
 
     @Override
     public List<SprintNameDTO> queryNameByOptions(Long projectId, List<String> sprintStatusCodes) {
-        return sprintNameAssembler.doListToDTO(sprintMapper.queryNameByOptions(projectId, sprintStatusCodes));
+        return sprintNameAssembler.toTargetList(sprintMapper.queryNameByOptions(projectId, sprintStatusCodes), SprintNameDTO.class);
     }
 
     @Override
@@ -230,10 +230,10 @@ public class SprintServiceImpl implements SprintService {
         if (sprintMapper.selectCountByStartedSprint(projectId) != 0) {
             throw new CommonException(START_SPRINT_ERROR);
         }
-        SprintE sprintE = sprintUpdateAssembler.dtoToEntity(sprintUpdateDTO);
+        SprintE sprintE = sprintUpdateAssembler.toTarget(sprintUpdateDTO, SprintE.class);
         sprintE.checkDate();
         sprintE.startSprint();
-        return sprintUpdateAssembler.entityToDto(sprintRepository.updateSprint(sprintE));
+        return sprintUpdateAssembler.toTarget(sprintRepository.updateSprint(sprintE), SprintDetailDTO.class);
     }
 
     @Override
@@ -245,7 +245,7 @@ public class SprintServiceImpl implements SprintService {
         SprintDO sprintDO = new SprintDO();
         sprintDO.setProjectId(projectId);
         sprintDO.setSprintId(sprintCompleteDTO.getSprintId());
-        SprintE sprintE = sprintUpdateAssembler.doToEntity(sprintMapper.selectOne(sprintDO));
+        SprintE sprintE = sprintUpdateAssembler.toTarget(sprintMapper.selectOne(sprintDO), SprintE.class);
         sprintE.completeSprint();
         sprintRepository.updateSprint(sprintE);
         moveNotDoneIssueToTargetSprint(projectId, sprintCompleteDTO);
@@ -291,8 +291,8 @@ public class SprintServiceImpl implements SprintService {
     @Override
     public SprintCompleteMessageDTO queryCompleteMessageBySprintId(Long projectId, Long sprintId) {
         SprintCompleteMessageDTO sprintCompleteMessage = new SprintCompleteMessageDTO();
-        sprintCompleteMessage.setSprintNames(sprintNameAssembler.doListToDTO(sprintMapper.queryPlanSprintName(projectId)));
-        sprintCompleteMessage.setParentsDoneUnfinishedSubtasks(issueAssembler.issueNumDOListToIssueNumDTO(sprintMapper.queryParentsDoneUnfinishedSubtasks(projectId, sprintId)));
+        sprintCompleteMessage.setSprintNames(sprintNameAssembler.toTargetList(sprintMapper.queryPlanSprintName(projectId), SprintNameDTO.class));
+        sprintCompleteMessage.setParentsDoneUnfinishedSubtasks(issueAssembler.toTargetList(sprintMapper.queryParentsDoneUnfinishedSubtasks(projectId, sprintId), IssueNumDTO.class));
         sprintCompleteMessage.setIncompleteIssues(sprintMapper.queryNotDoneIssueCount(projectId, sprintId));
         sprintCompleteMessage.setPartiallyCompleteIssues(sprintMapper.queryDoneIssueCount(projectId, sprintId));
         return sprintCompleteMessage;
@@ -308,7 +308,7 @@ public class SprintServiceImpl implements SprintService {
         SprintDO sprintDO = new SprintDO();
         sprintDO.setProjectId(projectId);
         sprintDO.setSprintId(sprintId);
-        SprintDetailDTO sprintDetailDTO = sprintSearchAssembler.doToDetailDTO(sprintMapper.selectOne(sprintDO));
+        SprintDetailDTO sprintDetailDTO = sprintSearchAssembler.toTarget(sprintMapper.selectOne(sprintDO), SprintDetailDTO.class);
         if (sprintDetailDTO != null) {
             sprintDetailDTO.setIssueCount(sprintMapper.queryIssueCount(projectId, sprintId));
         }
@@ -413,7 +413,7 @@ public class SprintServiceImpl implements SprintService {
         if (sprintDO == null) {
             return projectInfo.getProjectCode().trim() + " 1";
         } else {
-            SprintE sprintE = sprintCreateAssembler.doToEntity(sprintDO);
+            SprintE sprintE = sprintCreateAssembler.toTarget(sprintDO, SprintE.class);
             return sprintE.assembleName(sprintE.getSprintName());
         }
     }
@@ -424,7 +424,7 @@ public class SprintServiceImpl implements SprintService {
         sprintE.setProjectId(projectId);
         sprintE.setSprintName(sprintName);
         sprintE.setStatusCode(STATUS_SPRINT_PLANNING_CODE);
-        return sprintCreateAssembler.entityToDto(sprintRepository.createSprint(sprintE));
+        return sprintCreateAssembler.toTarget(sprintRepository.createSprint(sprintE), SprintDetailDTO.class);
     }
 
     @Override

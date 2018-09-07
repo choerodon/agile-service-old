@@ -99,7 +99,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             if (!projectId.equals(versionCreateDTO.getProjectId())) {
                 throw new CommonException(NOT_EQUAL_ERROR);
             }
-            ProductVersionE productVersionE = productVersionCreateAssembler.dtoToEntity(versionCreateDTO);
+            ProductVersionE productVersionE = productVersionCreateAssembler.toTarget(versionCreateDTO, ProductVersionE.class);
             productVersionE.checkDate();
             productVersionRule.judgeName(productVersionE.getProjectId(), productVersionE.getVersionId(), productVersionE.getName());
             //设置状态
@@ -144,7 +144,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             ProductVersionDO versionDO = new ProductVersionDO();
             versionDO.setProjectId(projectId);
             versionDO.setVersionId(versionId);
-            ProductVersionE versionE = productVersionCreateAssembler.doToEntity(productVersionMapper.selectOne(versionDO));
+            ProductVersionE versionE = productVersionCreateAssembler.toTarget(productVersionMapper.selectOne(versionDO), ProductVersionE.class);
             if (versionE == null) {
                 throw new CommonException(NOT_FOUND);
             }
@@ -164,11 +164,11 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         if (!projectId.equals(versionUpdateDTO.getProjectId())) {
             throw new CommonException(NOT_EQUAL_ERROR);
         }
-        ProductVersionE productVersionE = productVersionUpdateAssembler.dtoToEntity(versionUpdateDTO);
+        ProductVersionE productVersionE = productVersionUpdateAssembler.toTarget(versionUpdateDTO, ProductVersionE.class);
         productVersionE.checkDate();
         productVersionRule.judgeName(productVersionE.getProjectId(), productVersionE.getVersionId(), productVersionE.getName());
         productVersionE.setVersionId(versionId);
-        return productVersionUpdateAssembler.entityToDto(productVersionRepository.updateVersion(productVersionE, fieldList));
+        return productVersionUpdateAssembler.toTarget(productVersionRepository.updateVersion(productVersionE, fieldList), ProductVersionDetailDTO.class);
     }
 
     @Override
@@ -184,7 +184,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         versionPage.setTotalElements(versionIds.getTotalElements());
         versionPage.setTotalPages(versionIds.getTotalPages());
         if ((versionIds.getContent() != null) && !versionIds.isEmpty()) {
-            versionPage.setContent(productVersionPageAssembler.doListToDto(productVersionMapper.queryVersionByIds(projectId, versionIds.getContent())));
+            versionPage.setContent(productVersionPageAssembler.toTargetList(productVersionMapper.queryVersionByIds(projectId, versionIds.getContent()), ProductVersionPageDTO.class));
         }
         return versionPage;
     }
@@ -196,7 +196,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
 
     @Override
     public List<ProductVersionDataDTO> queryVersionByProjectId(Long projectId) {
-        List<ProductVersionDataDTO> productVersions = versionDataAssembler.doListToDTO(productVersionMapper.queryVersionByProjectId(projectId));
+        List<ProductVersionDataDTO> productVersions = versionDataAssembler.toTargetList(productVersionMapper.queryVersionByProjectId(projectId), ProductVersionDataDTO.class);
         if (!productVersions.isEmpty()) {
             List<Long> productVersionIds = productVersions.stream().map(ProductVersionDataDTO::getVersionId).collect(toList());
             Map<Long, Integer> issueCountMap = productVersionMapper.queryIssueCount(projectId, productVersionIds, null).stream().collect(toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
@@ -215,10 +215,14 @@ public class ProductVersionServiceImpl implements ProductVersionService {
 
     @Override
     public ProductVersionStatisticsDTO queryVersionStatisticsByVersionId(Long projectId, Long versionId) {
-        ProductVersionStatisticsDTO productVersionStatistics = versionStatisticsAssembler.doToDto(productVersionMapper.queryVersionStatisticsByVersionId(projectId, versionId));
-        productVersionStatistics.setTodoCategoryIssueCount(versionStatisticsAssembler.doListToIssueCountDto(productVersionMapper.queryIssueCountByVersionId(projectId, versionId, CATEGORY_TODO_CODE)));
-        productVersionStatistics.setDoingCategoryIssueCount(versionStatisticsAssembler.doListToIssueCountDto(productVersionMapper.queryIssueCountByVersionId(projectId, versionId, CATEGORY_DOING_CODE)));
-        productVersionStatistics.setDoneCategoryIssueCount(versionStatisticsAssembler.doListToIssueCountDto(productVersionMapper.queryIssueCountByVersionId(projectId, versionId, CATEGORY_DONE_CODE)));
+        ProductVersionStatisticsDTO productVersionStatistics = versionStatisticsAssembler.
+                toTarget(productVersionMapper.queryVersionStatisticsByVersionId(projectId, versionId), ProductVersionStatisticsDTO.class);
+        productVersionStatistics.setTodoCategoryIssueCount(versionStatisticsAssembler.
+                toTargetList(productVersionMapper.queryIssueCountByVersionId(projectId, versionId, CATEGORY_TODO_CODE), IssueCountDTO.class));
+        productVersionStatistics.setDoingCategoryIssueCount(versionStatisticsAssembler.
+                toTargetList(productVersionMapper.queryIssueCountByVersionId(projectId, versionId, CATEGORY_DOING_CODE), IssueCountDTO.class));
+        productVersionStatistics.setDoneCategoryIssueCount(versionStatisticsAssembler.
+                toTargetList(productVersionMapper.queryIssueCountByVersionId(projectId, versionId, CATEGORY_DONE_CODE), IssueCountDTO.class));
         return productVersionStatistics;
     }
 
@@ -231,7 +235,8 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     public VersionMessageDTO queryReleaseMessageByVersionId(Long projectId, Long versionId) {
         VersionMessageDTO versionReleaseMessage = new VersionMessageDTO();
         versionReleaseMessage.setFixIssueCount(productVersionMapper.queryNotDoneIssueCount(projectId, versionId));
-        versionReleaseMessage.setVersionNames(versionStatisticsAssembler.doListToVersionNameDto(productVersionMapper.queryPlanVersionNames(projectId, versionId)));
+        versionReleaseMessage.setVersionNames(versionStatisticsAssembler.
+                toTargetList(productVersionMapper.queryPlanVersionNames(projectId, versionId), ProductVersionNameDTO.class));
         return versionReleaseMessage;
     }
 
@@ -250,7 +255,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             }
         }
         productVersionRepository.releaseVersion(projectId, productVersionRelease.getVersionId(), productVersionRelease.getReleaseDate());
-        return versionDataAssembler.doToVersionDetailDTO(productVersionMapper.selectByPrimaryKey(productVersionRelease.getVersionId()));
+        return versionDataAssembler.toTarget(productVersionMapper.selectByPrimaryKey(productVersionRelease.getVersionId()), ProductVersionDetailDTO.class);
     }
 
     @Override
@@ -258,12 +263,12 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         ProductVersionDO versionDO = new ProductVersionDO();
         versionDO.setProjectId(projectId);
         versionDO.setVersionId(versionId);
-        ProductVersionE versionE = productVersionCreateAssembler.doToEntity(productVersionMapper.selectOne(versionDO));
+        ProductVersionE versionE = productVersionCreateAssembler.toTarget(productVersionMapper.selectOne(versionDO), ProductVersionE.class);
         if (versionE == null || !Objects.equals(versionE.getStatusCode(), VERSION_STATUS_RELEASE_CODE)) {
             throw new CommonException(REVOKE_RELEASE_ERROR);
         }
         versionE.revokeReleaseVersion();
-        return productVersionUpdateAssembler.entityToDto(productVersionRepository.updateVersion(versionE));
+        return productVersionUpdateAssembler.toTarget(productVersionRepository.updateVersion(versionE), ProductVersionDetailDTO.class);
     }
 
     @Override
@@ -271,13 +276,14 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         VersionMessageDTO versionDeleteMessage = new VersionMessageDTO();
         versionDeleteMessage.setFixIssueCount(productVersionMapper.queryIssueCountByRelationType(projectId, versionId, FIX_RELATION_TYPE));
         versionDeleteMessage.setInfluenceIssueCount(productVersionMapper.queryIssueCountByRelationType(projectId, versionId, INFLUENCE_RELATION_TYPE));
-        versionDeleteMessage.setVersionNames(versionStatisticsAssembler.doListToVersionNameDto(productVersionMapper.queryVersionNames(projectId, versionId)));
+        versionDeleteMessage.setVersionNames(versionStatisticsAssembler.
+                toTargetList(productVersionMapper.queryVersionNames(projectId, versionId), ProductVersionNameDTO.class));
         return versionDeleteMessage;
     }
 
     @Override
     public List<ProductVersionNameDTO> queryNameByOptions(Long projectId, List<String> statusCodes) {
-        return versionStatisticsAssembler.doListToVersionNameDto(productVersionMapper.queryNameByOptions(projectId, statusCodes));
+        return versionStatisticsAssembler.toTargetList(productVersionMapper.queryNameByOptions(projectId, statusCodes), ProductVersionNameDTO.class);
     }
 
     @Override
@@ -290,12 +296,12 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         ProductVersionDO versionDO = new ProductVersionDO();
         versionDO.setProjectId(projectId);
         versionDO.setVersionId(versionId);
-        ProductVersionE versionE = productVersionCreateAssembler.doToEntity(productVersionMapper.selectOne(versionDO));
+        ProductVersionE versionE = productVersionCreateAssembler.toTarget(productVersionMapper.selectOne(versionDO), ProductVersionE.class);
         if (versionE == null || Objects.equals(versionE.getStatusCode(), VERSION_ARCHIVED_CODE)) {
             throw new CommonException(ARCHIVED_ERROR);
         }
         versionE.archivedVersion();
-        return productVersionUpdateAssembler.entityToDto(productVersionRepository.updateVersion(versionE));
+        return productVersionUpdateAssembler.toTarget(productVersionRepository.updateVersion(versionE), ProductVersionDetailDTO.class);
     }
 
     @Override
@@ -303,12 +309,12 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         ProductVersionDO versionDO = new ProductVersionDO();
         versionDO.setProjectId(projectId);
         versionDO.setVersionId(versionId);
-        ProductVersionE versionE = productVersionCreateAssembler.doToEntity(productVersionMapper.selectOne(versionDO));
+        ProductVersionE versionE = productVersionCreateAssembler.toTarget(productVersionMapper.selectOne(versionDO), ProductVersionE.class);
         if (versionE == null || !Objects.equals(versionE.getStatusCode(), VERSION_ARCHIVED_CODE)) {
             throw new CommonException(REVOKE_ARCHIVED_ERROR);
         }
         versionE.revokeArchivedVersion();
-        return productVersionUpdateAssembler.entityToDto(productVersionRepository.updateVersion(versionE));
+        return productVersionUpdateAssembler.toTarget(productVersionRepository.updateVersion(versionE), ProductVersionDetailDTO.class);
     }
 
     @Override
@@ -340,7 +346,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         ProductVersionDO productVersionDO = new ProductVersionDO();
         productVersionDO.setProjectId(projectId);
         productVersionDO.setVersionId(versionId);
-        return versionDataAssembler.doToVersionDetailDTO(productVersionMapper.selectOne(productVersionDO));
+        return versionDataAssembler.toTarget(productVersionMapper.selectOne(productVersionDO), ProductVersionDetailDTO.class);
     }
 
     @Override
@@ -367,8 +373,8 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             }
             handleSequence(versionSequenceDTO, projectId, productVersionE);
         }
-        return productVersionPageAssembler.doToDto(queryVersionByProjectIdAndVersionId(
-                versionSequenceDTO.getVersionId(), projectId));
+        return productVersionPageAssembler.toTarget(queryVersionByProjectIdAndVersionId(
+                versionSequenceDTO.getVersionId(), projectId), ProductVersionPageDTO.class);
     }
 
     private void handleSequence(VersionSequenceDTO versionSequenceDTO, Long projectId, ProductVersionE productVersionE) {
@@ -407,7 +413,6 @@ public class ProductVersionServiceImpl implements ProductVersionService {
 
     @Override
     public VersionIssueCountDTO queryByCategoryCode(Long projectId, Long versionId) {
-        VersionIssueCountDTO result = ConvertHelper.convert(productVersionMapper.queryVersionStatisticsByVersionId(projectId, versionId), VersionIssueCountDTO.class);
-        return result;
+        return ConvertHelper.convert(productVersionMapper.queryVersionStatisticsByVersionId(projectId, versionId), VersionIssueCountDTO.class);
     }
 }
