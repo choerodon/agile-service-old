@@ -370,4 +370,30 @@ public class IssueAssembler {
         });
         return issueComponentDetailDTOS;
     }
+
+    public List<IssueCreateDTO> issueDetailListDoToDto(List<Long> issueIds, Map<Long, IssueDetailDO> issueDetailDOMap, Long versionId) {
+        List<IssueCreateDTO> issueCreateDTOS = new ArrayList<>();
+        issueIds.forEach(id -> {
+            IssueDetailDO issueDetailDO = issueDetailDOMap.get(id);
+            IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
+            BeanUtils.copyProperties(issueDetailDO, issueCreateDTO);
+            issueCreateDTO.setSprintId(null);
+            issueCreateDTO.setRemainingTime(null);
+            issueCreateDTO.setComponentIssueRelDTOList(copyComponentIssueRel(issueDetailDO.getComponentIssueRelDOList()));
+            issueCreateDTO.setVersionIssueRelDTOList(createVersionIssueRel(issueDetailDO.getProjectId(), versionId));
+            issueCreateDTO.setLabelIssueRelDTOList(copyLabelIssueRel(issueDetailDO.getLabelIssueRelDOList(), issueDetailDO.getProjectId()));
+            issueCreateDTOS.add(issueCreateDTO);
+        });
+        return issueCreateDTOS;
+    }
+
+    private List<VersionIssueRelDTO> createVersionIssueRel(Long projectId, Long versionId) {
+        List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>();
+        VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
+        versionIssueRelDTO.setIssueId(null);
+        versionIssueRelDTO.setProjectId(projectId);
+        versionIssueRelDTO.setVersionId(versionId);
+        versionIssueRelDTOList.add(versionIssueRelDTO);
+        return versionIssueRelDTOList;
+    }
 }
