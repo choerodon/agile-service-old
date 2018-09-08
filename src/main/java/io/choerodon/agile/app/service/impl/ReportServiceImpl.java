@@ -1163,8 +1163,8 @@ public class ReportServiceImpl implements ReportService {
             if (issueDOList.stream().noneMatch(issueDO -> issueDO.getStoryPoints() != null)) {
                 return new ArrayList<>();
             } else {
-                List<SprintDO> sprintDOList = sprintMapper.queryNotPlanSprintByProjectId(projectId);
                 Date startDate = "Epic".equals(type) ? issueMapper.selectByPrimaryKey(id).getCreationDate() : versionMapper.selectByPrimaryKey(id).getCreationDate();
+                List<SprintDO> sprintDOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate);
                 List<IssueBurnDownReportDO> issueDOS = issueDOList.stream().filter(issueDO -> issueDO.getStoryPoints() != null).collect(Collectors.toList());
                 List<BurnDownReportCoordinateDTO> reportCoordinateDTOS = new ArrayList<>();
                 if (sprintDOList != null && !sprintDOList.isEmpty()) {
@@ -1207,11 +1207,24 @@ public class ReportServiceImpl implements ReportService {
             Integer add = 0;
             Integer done = 0;
             for (IssueBurnDownReportDO issueDO : issueDOS) {
-                if (issueDO.getAddDate().after(startDateOne) && issueDO.getAddDate().before(startDateTwo)) {
-                    if (issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().after(startDateOne) && issueDO.getDoneDate().before(startDateTwo)) {
-                        done++;
+                if (issueDO.getAddDate().after(startDateOne) && issueDO.getAddDate().before(startDateTwo) && !issueDO.getCompleted()) {
+                    add += issueDO.getStoryPoints();
+                }
+                if (issueDO.getAddDate().after(startDateOne) && issueDO.getAddDate().before(startDateTwo) && issueDO.getCompleted() && issueDO.getDoneDate() != null) {
+                    done += issueDO.getStoryPoints();
+                }
+            }
+            if (i == sprintDOList.size() - 1) {
+                List<IssueBurnDownReportDO> issueBurnDownReportDOS = issueDOS.stream().filter(issueDO ->
+                        issueDO.getAddDate().after(sprintDOList.get(sprintDOList.size() - 1).getStartDate())).collect(Collectors.toList());
+                if (issueBurnDownReportDOS != null && !issueBurnDownReportDOS.isEmpty()) {
+                    for (IssueBurnDownReportDO issueDO : issueBurnDownReportDOS) {
+                        if (issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().after(startDateOne) && issueDO.getDoneDate().before(startDateTwo)) {
+                            done += issueDO.getStoryPoints();
+                        } else {
+                            add += issueDO.getStoryPoints();
+                        }
                     }
-                    add++;
                 }
             }
             reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(start, add, done, start + add - done,
