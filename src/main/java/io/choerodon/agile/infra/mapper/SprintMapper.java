@@ -4,6 +4,7 @@ import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -88,5 +89,5 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
      * @param projectId projectId
      * @return SprintDO
      */
-    List<SprintDO> queryNotPlanSprintByProjectId(@Param("projectId")Long projectId);
+    List<SprintDO> queryNotPlanSprintByProjectId(@Param("projectId")Long projectId,@Param("startDate")Date startDate);
 }
