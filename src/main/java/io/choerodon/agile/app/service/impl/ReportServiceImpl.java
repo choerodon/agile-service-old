@@ -220,24 +220,8 @@ public class ReportServiceImpl implements ReportService {
         if (columnChange.get(0).getDate().after(startDate)) {
             report.put(bf.format(startDate), 0);
         }
-        columnChange.forEach(columnChangeDTO -> {
-            String date = bf.format(columnChangeDTO.getDate());
-            if (report.get(date) == null) {
-                Integer count = report.lastEntry() == null ? 0 : report.lastEntry().getValue();
-                if (columnChangeDTO.getColumnFrom().equals(cumulativeFlowDiagramDTO.getColumnId().toString())) {
-                    report.put(date, count - 1);
-                } else {
-                    report.put(date, count + 1);
-                }
-            } else {
-                if (columnChangeDTO.getColumnFrom().equals(cumulativeFlowDiagramDTO.getColumnId().toString())) {
-                    report.put(date, report.get(date) - 1);
-                } else {
-                    report.put(date, report.get(date) + 1);
-                }
-
-            }
-        });
+        String columnId = cumulativeFlowDiagramDTO.getColumnId().toString();
+        columnChange.forEach(columnChangeDTO -> handleColumnCoordinateSameDate(bf, report, columnChangeDTO, columnId));
         Date lastDate = columnChange.get(columnChange.size() - 1).getDate();
         if (lastDate.before(endDate)) {
             report.put(bf.format(endDate), report.lastEntry().getValue());
@@ -245,10 +229,29 @@ public class ReportServiceImpl implements ReportService {
         return report;
     }
 
+    private void handleColumnCoordinateSameDate(DateFormat bf, TreeMap<String, Integer> report, ColumnChangeDTO columnChangeDTO, String columnId) {
+        String date = bf.format(columnChangeDTO.getDate());
+        if (report.get(date) == null) {
+            Integer count = report.lastEntry() == null ? 0 : report.lastEntry().getValue();
+            if (columnChangeDTO.getColumnFrom().equals(columnId)) {
+                report.put(date, count - 1);
+            } else {
+                report.put(date, count + 1);
+            }
+        } else {
+            if (columnChangeDTO.getColumnFrom().equals(columnId)) {
+                report.put(date, report.get(date) - 1);
+            } else {
+                report.put(date, report.get(date) + 1);
+            }
+
+        }
+    }
+
 
     private void handleCumulativeFlowChangeDuringDate(Date startDate, Date endDate, List<Long> columnIds, List<Long> allIssueIds, List<ColumnChangeDTO> result) {
-        List<ColumnChangeDTO> changeIssueDuringDate = reportAssembler.columnChangeListDoToDto(reportMapper.queryChangeIssueDuringDate(startDate,
-                endDate, allIssueIds, columnIds));
+        List<ColumnChangeDTO> changeIssueDuringDate = reportAssembler.toTargetList
+                (reportMapper.queryChangeIssueDuringDate(startDate, endDate, allIssueIds, columnIds), ColumnChangeDTO.class);
         if (changeIssueDuringDate != null && !changeIssueDuringDate.isEmpty()) {
             result.addAll(changeIssueDuringDate);
         }
@@ -484,7 +487,7 @@ public class ReportServiceImpl implements ReportService {
             return versionIssueChangeDO;
         }).collect(Collectors.toList());
         List<IssueChangeDO> versionRemoveChangeIssues = versionRemoveChangeIssue.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, versionRemoveChangeIssue, field);
-        List<IssueChangeDTO> removeIssues = issueAssembler.issueChangeDOListToIssueChangeDTO(versionRemoveChangeIssues);
+        List<IssueChangeDTO> removeIssues = issueAssembler.toTargetList(versionRemoveChangeIssues, IssueChangeDTO.class);
         Map<Date, List<IssueChangeDTO>> removeIssuesMap = removeIssues.stream().collect(Collectors.groupingBy(IssueChangeDTO::getChangeDate));
         dateSet.addAll(removeIssuesMap.keySet());
         return removeIssuesMap;
@@ -497,7 +500,7 @@ public class ReportServiceImpl implements ReportService {
             return versionIssueChangeDO;
         }).collect(Collectors.toList());
         List<IssueChangeDO> versionAddChangeIssues = versionAddChangeIssue.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, versionAddChangeIssue, field);
-        List<IssueChangeDTO> addIssues = issueAssembler.issueChangeDOListToIssueChangeDTO(versionAddChangeIssues);
+        List<IssueChangeDTO> addIssues = issueAssembler.toTargetList(versionAddChangeIssues, IssueChangeDTO.class);
         Map<Date, List<IssueChangeDTO>> addIssuesMap = addIssues.stream().collect(Collectors.groupingBy(IssueChangeDTO::getChangeDate));
         dateSet.addAll(addIssuesMap.keySet());
         return addIssuesMap;
@@ -506,7 +509,7 @@ public class ReportServiceImpl implements ReportService {
     private Map<Date, List<IssueChangeDTO>> statisticalUnCompletedChange(Long projectId, List<VersionIssueChangeDO> versionIssues, Set<Date> dateSet, String field) {
         //issue由完成变为未完成
         List<VersionIssueChangeDO> unCompletedChangeIssues = reportMapper.queryCompletedChangeIssue(projectId, versionIssues, false);
-        List<IssueChangeDTO> unCompletedIssues = issueAssembler.issueChangeDOListToIssueChangeDTO(unCompletedChangeIssues.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, unCompletedChangeIssues, field));
+        List<IssueChangeDTO> unCompletedIssues = issueAssembler.toTargetList(unCompletedChangeIssues.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, unCompletedChangeIssues, field), IssueChangeDTO.class);
         Map<Date, List<IssueChangeDTO>> unCompletedIssuesMap = unCompletedIssues.stream().collect(Collectors.groupingBy(IssueChangeDTO::getChangeDate));
         dateSet.addAll(unCompletedIssuesMap.keySet());
         return unCompletedIssuesMap;
@@ -515,14 +518,14 @@ public class ReportServiceImpl implements ReportService {
     private Map<Date, List<IssueChangeDTO>> statisticalCompletedChange(Long projectId, List<VersionIssueChangeDO> versionIssues, Set<Date> dateSet, String field) {
         //issue由未完成变为完成
         List<VersionIssueChangeDO> completedChangeIssues = reportMapper.queryCompletedChangeIssue(projectId, versionIssues, true);
-        List<IssueChangeDTO> completedIssues = issueAssembler.issueChangeDOListToIssueChangeDTO(completedChangeIssues.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, completedChangeIssues, field));
+        List<IssueChangeDTO> completedIssues = issueAssembler.toTargetList(completedChangeIssues.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, completedChangeIssues, field), IssueChangeDTO.class);
         Map<Date, List<IssueChangeDTO>> completedIssuesMap = completedIssues.stream().collect(Collectors.groupingBy(IssueChangeDTO::getChangeDate));
         dateSet.addAll(completedIssuesMap.keySet());
         return completedIssuesMap;
     }
 
     private Map<Date, List<IssueChangeDTO>> statisticalFieldChange(Long projectId, List<VersionIssueChangeDO> versionIssues, Set<Date> dateSet, String field) {
-        List<IssueChangeDTO> changeIssues = issueAssembler.issueChangeDOListToIssueChangeDTO(reportMapper.queryChangeFieldIssue(projectId, versionIssues, field));
+        List<IssueChangeDTO> changeIssues = issueAssembler.toTargetList(reportMapper.queryChangeFieldIssue(projectId, versionIssues, field), IssueChangeDTO.class);
         Map<Date, List<IssueChangeDTO>> changeIssuesMap = changeIssues.stream().collect(Collectors.groupingBy(IssueChangeDTO::getChangeDate));
         dateSet.addAll(changeIssuesMap.keySet());
         return changeIssuesMap;
@@ -547,8 +550,8 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void handleCumulativeFlowAddDuringDate(List<Long> allIssueIds, List<ColumnChangeDTO> result, Date startDate, Date endDate, List<Long> columnIds) {
-        List<ColumnChangeDTO> addIssueDuringDate = reportAssembler.columnChangeListDoToDto(reportMapper.queryAddIssueDuringDate(startDate,
-                endDate, allIssueIds, columnIds));
+        List<ColumnChangeDTO> addIssueDuringDate = reportAssembler.toTargetList
+                (reportMapper.queryAddIssueDuringDate(startDate, endDate, allIssueIds, columnIds), ColumnChangeDTO.class);
         if (addIssueDuringDate != null && !addIssueDuringDate.isEmpty()) {
             List<Long> statusToNullIssueIds = addIssueDuringDate.stream().filter(columnChangeDTO -> columnChangeDTO.getStatusTo() == null).map(ColumnChangeDTO::getIssueId).collect(Collectors.toList());
             if (statusToNullIssueIds != null && !statusToNullIssueIds.isEmpty()) {
@@ -968,19 +971,19 @@ public class ReportServiceImpl implements ReportService {
 
     private List<PieChartDTO> handlePieChartByEpic(Long projectId) {
         Integer total = reportMapper.queryIssueCountByFieldName(projectId, "epic_id");
-        return reportAssembler.pieChartDoToDto(reportMapper.queryPieChartByEpic(projectId, total));
+        return reportAssembler.toTargetList(reportMapper.queryPieChartByEpic(projectId, total), PieChartDTO.class);
     }
 
     private List<PieChartDTO> handlePieChartByType(Long projectId, String fieldName, Boolean own, Boolean typeCode) {
         Integer total = reportMapper.queryIssueCountByFieldName(projectId, fieldName);
         List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, own, fieldName, typeCode, total);
-        return reportAssembler.pieChartDoToDto(pieChartDOS);
+        return reportAssembler.toTargetList(pieChartDOS, PieChartDTO.class);
     }
 
     private List<PieChartDTO> handlePieChartByAssignee(Long projectId) {
         Integer total = reportMapper.queryIssueCountByFieldName(projectId, "assignee_id");
         List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "assignee_id", false, total);
-        List<PieChartDTO> pieChartDTOList = reportAssembler.pieChartDoToDto(pieChartDOS);
+        List<PieChartDTO> pieChartDTOList = reportAssembler.toTargetList(pieChartDOS, PieChartDTO.class);
         if (pieChartDTOList != null && !pieChartDTOList.isEmpty()) {
             List<Long> userIds = pieChartDTOList.stream().filter(pieChartDTO ->
                     pieChartDTO.getTypeName() != null && !"0".equals(pieChartDTO.getTypeName())).map(pieChartDTO ->
@@ -1160,8 +1163,8 @@ public class ReportServiceImpl implements ReportService {
             if (issueDOList.stream().noneMatch(issueDO -> issueDO.getStoryPoints() != null)) {
                 return new ArrayList<>();
             } else {
-                List<SprintDO> sprintDOList = sprintMapper.queryNotPlanSprintByProjectId(projectId);
                 Date startDate = "Epic".equals(type) ? issueMapper.selectByPrimaryKey(id).getCreationDate() : versionMapper.selectByPrimaryKey(id).getCreationDate();
+                List<SprintDO> sprintDOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate);
                 List<IssueBurnDownReportDO> issueDOS = issueDOList.stream().filter(issueDO -> issueDO.getStoryPoints() != null).collect(Collectors.toList());
                 List<BurnDownReportCoordinateDTO> reportCoordinateDTOS = new ArrayList<>();
                 if (sprintDOList != null && !sprintDOList.isEmpty()) {
@@ -1204,11 +1207,24 @@ public class ReportServiceImpl implements ReportService {
             Integer add = 0;
             Integer done = 0;
             for (IssueBurnDownReportDO issueDO : issueDOS) {
-                if (issueDO.getAddDate().after(startDateOne) && issueDO.getAddDate().before(startDateTwo)) {
-                    if (issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().after(startDateOne) && issueDO.getDoneDate().before(startDateTwo)) {
-                        done++;
+                if (issueDO.getAddDate().after(startDateOne) && issueDO.getAddDate().before(startDateTwo) && !issueDO.getCompleted()) {
+                    add += issueDO.getStoryPoints();
+                }
+                if (issueDO.getAddDate().after(startDateOne) && issueDO.getAddDate().before(startDateTwo) && issueDO.getCompleted() && issueDO.getDoneDate() != null) {
+                    done += issueDO.getStoryPoints();
+                }
+            }
+            if (i == sprintDOList.size() - 1) {
+                List<IssueBurnDownReportDO> issueBurnDownReportDOS = issueDOS.stream().filter(issueDO ->
+                        issueDO.getAddDate().after(sprintDOList.get(sprintDOList.size() - 1).getStartDate())).collect(Collectors.toList());
+                if (issueBurnDownReportDOS != null && !issueBurnDownReportDOS.isEmpty()) {
+                    for (IssueBurnDownReportDO issueDO : issueBurnDownReportDOS) {
+                        if (issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().after(startDateOne) && issueDO.getDoneDate().before(startDateTwo)) {
+                            done += issueDO.getStoryPoints();
+                        } else {
+                            add += issueDO.getStoryPoints();
+                        }
                     }
-                    add++;
                 }
             }
             reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(start, add, done, start + add - done,

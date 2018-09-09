@@ -42,7 +42,7 @@ public class IssueCommentServiceImpl implements IssueCommentService {
 
     @Override
     public IssueCommentDTO createIssueComment(Long projectId, IssueCommentCreateDTO issueCommentCreateDTO) {
-        IssueCommentE issueCommentE = issueCommentAssembler.issueCommentCreateDtoToEntity(issueCommentCreateDTO);
+        IssueCommentE issueCommentE = issueCommentAssembler.toTarget(issueCommentCreateDTO, IssueCommentE.class);
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         issueCommentE.setUserId(customUserDetails.getUserId());
         issueCommentE.setProjectId(projectId);
@@ -52,8 +52,7 @@ public class IssueCommentServiceImpl implements IssueCommentService {
     @Override
     public IssueCommentDTO updateIssueComment(IssueCommentUpdateDTO issueCommentUpdateDTO, List<String> fieldList, Long projectId) {
         if (fieldList != null && !fieldList.isEmpty()) {
-            IssueCommentE issueCommentE = issueCommentAssembler.
-                    issueCommentUpdateDtoToEntity(issueCommentUpdateDTO);
+            IssueCommentE issueCommentE = issueCommentAssembler.toTarget(issueCommentUpdateDTO, IssueCommentE.class);
             issueCommentRepository.update(issueCommentE, fieldList.toArray(new String[fieldList.size()]));
             return queryByProjectIdAndCommentId(projectId, issueCommentE.getCommentId());
         } else {

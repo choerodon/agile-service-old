@@ -33,14 +33,14 @@ public class IssueLinkServiceImpl implements IssueLinkService {
 
     @Override
     public List<IssueLinkDTO> createIssueLinkList(List<IssueLinkCreateDTO> issueLinkCreateDTOList, Long issueId, Long projectId) {
-        List<IssueLinkE> issueLinkEList = issueLinkAssembler.issueLinkCreateDtoToE(issueLinkCreateDTOList);
+        List<IssueLinkE> issueLinkEList = issueLinkAssembler.toTargetList(issueLinkCreateDTOList, IssueLinkE.class);
         issueLinkEList.forEach(issueLinkE -> {
             issueLinkRule.verifyCreateData(issueLinkE);
             if (issueLinkMapper.selectByPrimaryKey(issueLinkE) == null) {
                 issueLinkRepository.create(issueLinkE);
             }
         });
-        return listIssueLinkByIssueId(issueId, projectId,false);
+        return listIssueLinkByIssueId(issueId, projectId, false);
     }
 
 
@@ -50,8 +50,8 @@ public class IssueLinkServiceImpl implements IssueLinkService {
     }
 
     @Override
-    public List<IssueLinkDTO> listIssueLinkByIssueId(Long issueId, Long projectId,Boolean noIssueTest) {
-        return issueLinkAssembler.issueLinkDoToDto(issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId,noIssueTest));
+    public List<IssueLinkDTO> listIssueLinkByIssueId(Long issueId, Long projectId, Boolean noIssueTest) {
+        return issueLinkAssembler.issueLinkDoToDto(issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId, noIssueTest));
     }
 
     @Override

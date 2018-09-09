@@ -205,7 +205,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public synchronized IssueDTO createIssue(IssueCreateDTO issueCreateDTO) {
-        IssueE issueE = issueAssembler.issueCreateDtoToIssueE(issueCreateDTO);
+        IssueE issueE = issueAssembler.toTarget(issueCreateDTO, IssueE.class);
         //设置初始状态,如果有todo，就用todo，否则为doing，最后为done
         List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(issueE.getProjectId());
         IssueStatusCreateDO issueStatusDO = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
@@ -246,6 +246,18 @@ public class IssueServiceImpl implements IssueService {
         //初始化排序
         if (issueE.isIssueRank()) {
             calculationRank(issueE.getProjectId(), issueE);
+        }
+        if (issueE.isIssueMapRank()) {
+            calculationMapRank(issueE);
+        }
+    }
+
+    private void calculationMapRank(IssueE issueE) {
+        String maxRank = issueMapper.selectMaxRankByProjectId(issueE.getProjectId());
+        if (maxRank == null) {
+            issueE.setMapRank(RankUtil.mid());
+        } else {
+            issueE.setMapRank(RankUtil.genNext(maxRank));
         }
     }
 
@@ -304,7 +316,7 @@ public class IssueServiceImpl implements IssueService {
     private void handleUpdateIssue(IssueUpdateDTO issueUpdateDTO, List<String> fieldList, Long projectId) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         IssueDO originIssue = issueMapper.queryIssueWithNoCloseSprint(issueUpdateDTO.getIssueId());
-        IssueE issueE = issueAssembler.issueUpdateDtoToEntity(issueUpdateDTO);
+        IssueE issueE = issueAssembler.toTarget(issueUpdateDTO, IssueE.class);
         //处理用户，前端可能会传0，处理为null
         issueE.initializationIssueUser();
         if (fieldList.contains(SPRINT_ID_FIELD)) {
@@ -336,7 +348,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<EpicDataDTO> listEpic(Long projectId) {
-        List<EpicDataDTO> epicDataList = epicDataAssembler.doListToDTO(issueMapper.queryEpicList(projectId));
+        List<EpicDataDTO> epicDataList = epicDataAssembler.toTargetList(issueMapper.queryEpicList(projectId), EpicDataDTO.class);
         if (!epicDataList.isEmpty()) {
             List<Long> epicIds = epicDataList.stream().map(EpicDataDTO::getIssueId).collect(Collectors.toList());
             Map<Long, Integer> issueCountMap = issueMapper.queryIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
@@ -437,7 +449,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO) {
-        IssueE subIssueE = issueAssembler.issueSubCreateDtoToEntity(issueSubCreateDTO);
+        IssueE subIssueE = issueAssembler.toTarget(issueSubCreateDTO, IssueE.class);
         List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(subIssueE.getProjectId());
         IssueStatusCreateDO issueStatusDO = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
                 issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
@@ -499,7 +511,8 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public void batchToVersionInStoryMap(Long projectId, Long versionId, List<Long> issueIds) {
+    public void batchToVersionInStoryMap(Long projectId, Long versionId, MoveIssueDTO moveIssueDTO) {
+        List<Long> issueIds = moveIssueDTO.getIssueIds();
         if (versionId != null && !Objects.equals(versionId, 0L)) {
             productVersionRule.judgeExistStoryMap(projectId, versionId);
             issueRepository.batchRemoveVersion(projectId, issueIds);
@@ -518,9 +531,17 @@ public class IssueServiceImpl implements IssueService {
         return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>());
     }
 
+    @Override
+    public List<IssueSearchDTO> batchIssueToEpicInStoryMap(Long projectId, Long epicId, MoveIssueDTO moveIssueDTO) {
+        List<Long> issueIds = moveIssueDTO.getIssueIds();
+        issueRule.judgeExist(projectId, epicId);
+        issueRepository.batchIssueToEpic(projectId, epicId, issueIds);
+        return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>());
+    }
+
     private void dataLogRank(Long projectId, MoveIssueDTO moveIssueDTO, String rankStr, Long sprintId) {
         for (Long issueId : moveIssueDTO.getIssueIds()) {
-            SprintNameDTO activeSprintName = sprintNameAssembler.doToDTO(issueMapper.queryActiveSprintNameByIssueId(issueId));
+            SprintNameDTO activeSprintName = sprintNameAssembler.toTarget(issueMapper.queryActiveSprintNameByIssueId(issueId),SprintNameDTO.class);
             Boolean condition = (sprintId == 0 && activeSprintName == null) || (activeSprintName != null
                     && sprintId.equals(activeSprintName.getSprintId()));
             if (condition) {
@@ -551,6 +572,117 @@ public class IssueServiceImpl implements IssueService {
             dataLogRank(projectId, moveIssueDTO, RANK_HIGHER, sprintId);
         }
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
+        List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
+        //处理子任务
+        moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
+        BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, moveIssueIds);
+        issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+        if (sprintId != null && !Objects.equals(sprintId, 0L)) {
+            issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
+        }
+        List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds());
+        List<Long> assigneeIds = issueSearchDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDO::getAssigneeId).distinct().collect(Collectors.toList());
+        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+        return issueSearchAssembler.doListToDTO(issueSearchDOList, usersMap);
+    }
+
+    private void dealBoundBeforeRank(Long projectId, MoveIssueDTO moveIssueDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
+        String minRank = issueMapper.selectMinRankByProjectId(projectId);
+        if (minRank == null) {
+            initMapRank(projectId);
+            minRank = issueMapper.selectMinRankByProjectId(projectId);
+        }
+        Collections.reverse(moveIssueDTO.getIssueIds());
+        for (Long issueId : moveIssueDTO.getIssueIds()) {
+            minRank = RankUtil.genPre(minRank);
+            storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, minRank));
+        }
+    }
+
+    private void dealBoundAfterRank(Long projectId, MoveIssueDTO moveIssueDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
+        String maxRank = issueMapper.selectMaxRankByProjectId(projectId);
+        if (maxRank == null) {
+            initMapRank(projectId);
+            maxRank = issueMapper.selectMaxRankByProjectId(projectId);
+        }
+        for (Long issueId : moveIssueDTO.getIssueIds()) {
+            maxRank = RankUtil.genNext(maxRank);
+            storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, maxRank));
+        }
+    }
+
+    private void dealBoundRank(Long projectId, MoveIssueDTO moveIssueDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
+        if (moveIssueDTO.getBefore()) {
+            dealBoundBeforeRank(projectId, moveIssueDTO, storyMapMoveIssueDOS);
+        } else {
+            dealBoundAfterRank(projectId, moveIssueDTO, storyMapMoveIssueDOS);
+        }
+    }
+
+    private void dealInnerBeforeRank(Long projectId, String currentMapRank, MoveIssueDTO moveIssueDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
+        String leftMaxRank = issueMapper.selectLeftMaxMapRank(projectId, currentMapRank);
+        Collections.reverse(moveIssueDTO.getIssueIds());
+        if (leftMaxRank == null) {
+            for (Long issueId : moveIssueDTO.getIssueIds()) {
+                currentMapRank = RankUtil.genPre(currentMapRank);
+                storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, currentMapRank));
+            }
+        } else {
+            for (Long issueId : moveIssueDTO.getIssueIds()) {
+                leftMaxRank = RankUtil.between(leftMaxRank, currentMapRank);
+                storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, leftMaxRank));
+            }
+        }
+    }
+
+    private void dealInnerAfterRank(Long projectId, String currentMapRank, MoveIssueDTO moveIssueDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
+        String rightMinRank = issueMapper.selectRightMinMapRank(projectId, currentMapRank);
+        if (rightMinRank == null) {
+            for (Long issueId : moveIssueDTO.getIssueIds()) {
+                currentMapRank = RankUtil.genNext(currentMapRank);
+                storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, currentMapRank));
+            }
+        } else {
+            for (Long issueId : moveIssueDTO.getIssueIds()) {
+                currentMapRank = RankUtil.between(currentMapRank, rightMinRank);
+                storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, currentMapRank));
+            }
+        }
+    }
+
+    private void dealInnerRank(Long projectId, MoveIssueDTO moveIssueDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
+        String currentMapRank = issueMapper.selectMapRankByIssueId(projectId, moveIssueDTO.getOutsetIssueId());
+        if (currentMapRank == null) {
+            initMapRank(projectId);
+            currentMapRank = issueMapper.selectMapRankByIssueId(projectId, moveIssueDTO.getOutsetIssueId());
+        }
+        if (moveIssueDTO.getBefore()) {
+            dealInnerBeforeRank(projectId, currentMapRank, moveIssueDTO, storyMapMoveIssueDOS);
+        } else {
+            dealInnerAfterRank(projectId, currentMapRank, moveIssueDTO, storyMapMoveIssueDOS);
+        }
+    }
+
+    private void dealRank(Long projectId, MoveIssueDTO moveIssueDTO) {
+        List<StoryMapMoveIssueDO> storyMapMoveIssueDOS = new ArrayList<>();
+        if (moveIssueDTO.getOutsetIssueId() == null || Objects.equals(moveIssueDTO.getOutsetIssueId(), 0L)) {
+            dealBoundRank(projectId, moveIssueDTO, storyMapMoveIssueDOS);
+        } else {
+            dealInnerRank(projectId, moveIssueDTO, storyMapMoveIssueDOS);
+        }
+        issueRepository.batchUpdateMapIssueRank(projectId, storyMapMoveIssueDOS);
+    }
+
+    @Override
+    public List<IssueSearchDTO> batchIssueToSprintInStoryMap(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO) {
+        sprintRule.judgeExist(projectId, sprintId);
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
+        //处理评级日志
+        if (moveIssueDTO.getRankIndex() != null && !moveIssueDTO.getRankIndex()) {
+            dataLogRank(projectId, moveIssueDTO, RANK_LOWER, sprintId);
+        } else if (moveIssueDTO.getRankIndex() != null && moveIssueDTO.getRankIndex()) {
+            dataLogRank(projectId, moveIssueDTO, RANK_HIGHER, sprintId);
+        }
         List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
         //处理子任务
         moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
@@ -625,7 +757,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<IssueEpicDTO> listEpicSelectData(Long projectId) {
-        return issueAssembler.doListToEpicDto(issueMapper.queryIssueEpicSelectList(projectId));
+        return issueAssembler.toTargetList(issueMapper.queryIssueEpicSelectList(projectId), IssueEpicDTO.class);
     }
 
     @Override
@@ -715,7 +847,7 @@ public class IssueServiceImpl implements IssueService {
                         return;
                     }
                 } else {
-                    ProductVersionCreateDTO productVersionCreateDTO = issueAssembler.productVersionEntityToProductVersionCreateDto(productVersionE);
+                    ProductVersionCreateDTO productVersionCreateDTO = issueAssembler.toTarget(productVersionE, ProductVersionCreateDTO.class);
                     ProductVersionDetailDTO productVersionDetailDTO = productVersionService.createVersion(projectId, productVersionCreateDTO);
                     versionIssueRelE.setVersionId(productVersionDetailDTO.getVersionId());
                 }
@@ -934,7 +1066,7 @@ public class IssueServiceImpl implements IssueService {
         issueListDTOPage.setSize(issueDOPage.getSize());
         issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
         issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
-        issueListDTOPage.setContent(issueAssembler.issueNumDOListToIssueNumDTO(issueDOPage.getContent()));
+        issueListDTOPage.setContent(issueAssembler.toTargetList(issueDOPage.getContent(), IssueNumDTO.class));
         return issueListDTOPage;
     }
 
@@ -1388,7 +1520,7 @@ public class IssueServiceImpl implements IssueService {
         issueListDTOPage.setSize(issueDOPage.getSize());
         issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
         issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
-        issueListDTOPage.setContent(issueAssembler.issueNumDOListToIssueNumDTO(issueDOPage.getContent()));
+        issueListDTOPage.setContent(issueAssembler.toTargetList(issueDOPage.getContent(), IssueNumDTO.class));
         return issueListDTOPage;
     }
 
@@ -1413,12 +1545,12 @@ public class IssueServiceImpl implements IssueService {
             }
             handleSequence(epicSequenceDTO, projectId, issueE);
         }
-        return epicDataAssembler.doToEntity(issueMapper.queryEpicListByEpic(epicSequenceDTO.getEpicId(), projectId));
+        return epicDataAssembler.toTarget(issueMapper.queryEpicListByEpic(epicSequenceDTO.getEpicId(), projectId), EpicDataDTO.class);
     }
 
     @Override
     public List<PieChartDTO> issueStatistic(Long projectId, String type, List<String> issueTypes) {
-        return reportAssembler.pieChartDoToDto(issueMapper.issueStatistic(projectId, type, issueTypes));
+        return reportAssembler.toTargetList(issueMapper.issueStatistic(projectId, type, issueTypes),PieChartDTO.class);
     }
 
     @Override
@@ -1532,20 +1664,20 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public void storymapMove(Long projectId, StoryMapMoveDTO storyMapMoveDTO) {
         MoveIssueDTO moveIssueDTO = new MoveIssueDTO();
-        List<Long> issueIds = storyMapMoveDTO.getIssueIds();
         Long sprintId = storyMapMoveDTO.getSprintId();
         Long versionId = storyMapMoveDTO.getVersionId();
         Long epicId = storyMapMoveDTO.getEpicId();
         BeanUtils.copyProperties(storyMapMoveDTO, moveIssueDTO);
         IssueValidator.checkStoryMapMove(storyMapMoveDTO);
+        dealRank(projectId, moveIssueDTO);
         if (epicId != null) {
-            batchIssueToEpic(projectId, epicId, issueIds);
+            batchIssueToEpicInStoryMap(projectId, epicId, moveIssueDTO);
         }
         if (sprintId != null) {
-            batchIssueToSprint(projectId, sprintId, moveIssueDTO);
+            batchIssueToSprintInStoryMap(projectId, sprintId, moveIssueDTO);
         }
         if (versionId != null) {
-            batchToVersionInStoryMap(projectId, versionId, issueIds);
+            batchToVersionInStoryMap(projectId, versionId, moveIssueDTO);
         }
     }
 
@@ -1590,7 +1722,7 @@ public class IssueServiceImpl implements IssueService {
     public String querySwimLaneCode(Long projectId) {
         UserSettingE userSettingE = new UserSettingE();
         userSettingE.initUserSetting(projectId);
-        userSettingE.setTypeCode("storymap");
+        userSettingE.setTypeCode(STORYMAP);
         UserSettingDO query = userSettingMapper.selectOne(ConvertHelper.convert(userSettingE, UserSettingDO.class));
         String result;
         if (query == null) {
@@ -1621,7 +1753,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     public String getDes(String str) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         if (!"".equals(str) && str != null) {
             String[] arrayLine = str.split(("\\},\\{"));
             String regEx = "\"insert\":\"(.*)\"";
@@ -1629,10 +1761,24 @@ public class IssueServiceImpl implements IssueService {
             for (String s : arrayLine) {
                 Matcher matcher = pattern.matcher(s);
                 if (matcher.find()) {
-                    result = result + StringEscapeUtils.unescapeJava(matcher.group(1));
+                    result.append(StringEscapeUtils.unescapeJava(matcher.group(1)));
                 }
             }
         }
-        return result;
+        return result.toString();
+    }
+
+    @Override
+    public void initMapRank(Long projectId) {
+        List<Long> issueIds = issueMapper.selectIssueIdsByProjectId(projectId);
+        List<StoryMapMoveIssueDO> mapMoveIssueDOS = new ArrayList<>();
+        String mapRank = RankUtil.mid();
+        for (Long issueId : issueIds) {
+            mapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, mapRank));
+            mapRank = RankUtil.genNext(mapRank);
+        }
+        if (!mapMoveIssueDOS.isEmpty()) {
+            issueMapper.updateMapRank(projectId, mapMoveIssueDOS);
+        }
     }
 }

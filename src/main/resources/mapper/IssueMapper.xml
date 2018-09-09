@@ -809,6 +809,22 @@
         </foreach>
     </update>
 
+    <update id="batchUpdateMapIssueRank">
+        UPDATE agile_issue
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="map_rank =case" suffix="end,">
+                <foreach collection="storyMapMoveIssueDOS" item="moveIssue">
+                    when issue_id = #{moveIssue.issueId} then #{moveIssue.mapRank}
+                </foreach>
+            </trim>
+        </trim>
+        WHERE project_id = #{projectId} AND issue_id IN
+        <foreach collection="storyMapMoveIssueDOS" item="moveIssue" open="("
+                 separator="," close=")">
+            #{moveIssue.issueId,jdbcType=BIGINT}
+        </foreach>
+    </update>
+
     <select id="querySubIssueIds" resultType="java.lang.Long">
         SELECT issue_id
         FROM agile_issue
@@ -1677,6 +1693,7 @@
         ai.story_points,
         ai.epic_id,
         ai.object_version_number,
+        ai.map_rank,
         CONCAT_WS(
         '-',
         api.project_code,
@@ -1725,6 +1742,7 @@
         ai.story_points,
         ai.epic_id,
         ai.object_version_number,
+        ai.map_rank,
         CONCAT_WS(
         '-',
         api.project_code,
@@ -1782,6 +1800,7 @@
         ai.story_points,
         ai.epic_id,
         ai.object_version_number,
+        ai.map_rank,
         CONCAT_WS(
         '-',
         api.project_code,
@@ -1833,6 +1852,7 @@
         ai.story_points,
         ai.epic_id,
         ai.object_version_number,
+        ai.map_rank,
         CONCAT_WS(
         '-',
         api.project_code,
@@ -1888,6 +1908,7 @@
         ai.story_points,
         ai.epic_id,
         ai.object_version_number,
+        ai.map_rank,
         CONCAT_WS(
         '-',
         api.project_code,
@@ -2016,7 +2037,7 @@
           alv.name as status_color
         from agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        left join agile_issue_status ais on ai.status_id = ais.id
+        left join agile_issue_status ais on ai.status_id = ais.id and ais.category_code != 'done'
         LEFT JOIN agile_lookup_value alv ON alv.value_code = CASE ais.category_code
                 WHEN 'todo' THEN
                     'issue_status_color_todo'
@@ -2230,5 +2251,72 @@
               #{issueId}
             </foreach>
     </select>
+
+    <select id="selectMinRankByProjectId" resultType="java.lang.String">
+        select ai.map_rank
+        from agile_issue ai
+        where ai.project_id = #{projectId}
+        and ai.type_code in ('story','task','bug')
+        order by ai.map_rank
+        limit 1
+    </select>
+
+    <select id="selectMaxRankByProjectId" resultType="java.lang.String">
+        select ai.map_rank
+        from agile_issue ai
+        where ai.project_id = #{projectId}
+        and ai.type_code in ('story','task','bug')
+        order by ai.map_rank desc
+        limit 1
+    </select>
+
+    <select id="selectMapRankByIssueId" resultType="java.lang.String">
+        select ai.map_rank
+        from agile_issue ai
+        where ai.project_id = #{projectId}
+        and ai.issue_id = #{outsetIssueId}
+        and ai.type_code in ('story','task','bug')
+    </select>
+
+    <select id="selectLeftMaxMapRank" resultType="java.lang.String">
+        select max(ai.map_rank)
+        from agile_issue ai
+        where project_id = #{projectId}
+        and ai.map_rank &lt; #{currentMapRank}
+        and ai.type_code in ('story','task','bug')
+    </select>
+
+    <select id="selectRightMinMapRank" resultType="java.lang.String">
+        select min(ai.map_rank)
+        from agile_issue ai
+        where project_id = #{projectId}
+        and ai.map_rank > #{currentMapRank}
+        and ai.type_code in ('story','task','bug')
+    </select>
+
+    <select id="selectIssueIdsByProjectId" resultType="java.lang.Long">
+        select issue_id
+        from agile_issue
+        where project_id = #{projectId}
+        and type_code in ('story', 'task', 'bug')
+        order by map_rank, issue_id
+    </select>
+
+    <update id="updateMapRank">
+        UPDATE agile_issue
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="map_rank =case" suffix="end,">
+                <foreach collection="mapMoveIssueDOS" item="moveIssue">
+                    when issue_id = #{moveIssue.issueId} then #{moveIssue.mapRank}
+                </foreach>
+            </trim>
+        </trim>
+        WHERE project_id = #{projectId} and type_code in ('story', 'task', 'bug')
+        AND issue_id IN
+        <foreach collection="mapMoveIssueDOS" item="moveIssue" open="("
+                 separator="," close=")">
+            #{moveIssue.issueId,jdbcType=BIGINT}
+        </foreach>
+    </update>
 
 </mapper>

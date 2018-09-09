@@ -20,6 +20,7 @@ public class IssueE {
 
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
+    private static final String ISSUE_TEST = "issue_test";
     private static final String DEFAULT_ASSIGNEE = "default_assignee";
     private static final String CURRENT_USER = "current_user";
 
@@ -66,6 +67,8 @@ public class IssueE {
     private Long originSprintId;
 
     private Integer epicSequence;
+
+    private String mapRank;
 
     public Integer getEpicSequence() {
         return epicSequence;
@@ -243,6 +246,14 @@ public class IssueE {
         this.epicName = epicName;
     }
 
+    public void setMapRank(String mapRank) {
+        this.mapRank = mapRank;
+    }
+
+    public String getMapRank() {
+        return mapRank;
+    }
+
     @Override
     public String toString() {
         return StringUtil.getToString(this);
@@ -311,6 +322,10 @@ public class IssueE {
 
     public Boolean isIssueRank() {
         return this.typeCode != null && !Objects.equals(this.typeCode, SUB_TASK) && !Objects.equals(this.typeCode, ISSUE_EPIC);
+    }
+
+    public Boolean isIssueMapRank() {
+        return this.typeCode != null && !Objects.equals(this.typeCode, ISSUE_TEST) && !Objects.equals(this.typeCode, ISSUE_EPIC) && !Objects.equals(this.typeCode, SUB_TASK);
     }
 
     public void initializationIssueUser() {

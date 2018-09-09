@@ -1,9 +1,6 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.api.dto.SprintDetailDTO;
 import io.choerodon.agile.api.dto.SprintSearchDTO;
-import io.choerodon.agile.domain.agile.entity.SprintE;
-import io.choerodon.agile.infra.dataobject.SprintDO;
 import io.choerodon.agile.infra.dataobject.SprintSearchDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import org.springframework.beans.BeanUtils;
@@ -18,16 +15,10 @@ import java.util.Map;
  * Created by jian_zhang02@163.com on 2018/5/14.
  */
 @Component
-public class SprintSearchAssembler {
+public class SprintSearchAssembler extends AbstractAssembler{
 
     @Autowired
     private IssueSearchAssembler issueSearchAssembler;
-
-    public SprintE doToEntity(SprintDO sprintDO) {
-        SprintE sprintE = new SprintE();
-        BeanUtils.copyProperties(sprintDO, sprintE);
-        return sprintE;
-    }
 
     public SprintSearchDTO doToDTO(SprintSearchDO sprintSearchDO, Map<Long, UserMessageDO> usersMap) {
         if (sprintSearchDO == null) {
@@ -51,12 +42,4 @@ public class SprintSearchAssembler {
         return sprintSearchList;
     }
 
-    public SprintDetailDTO doToDetailDTO(SprintDO sprintDO) {
-        if (sprintDO == null) {
-            return null;
-        }
-        SprintDetailDTO sprintDetailDTO = new SprintDetailDTO();
-        BeanUtils.copyProperties(sprintDO, sprintDetailDTO);
-        return sprintDetailDTO;
-    }
 }
