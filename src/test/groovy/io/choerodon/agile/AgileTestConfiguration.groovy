@@ -116,7 +116,7 @@ class AgileTestConfiguration {
 
     @Autowired
     private ProductVersionMapper productVersionMapper
-
+    
     @Bean("mockUserRepository")
     @Primary
     UserRepository userRepository() {

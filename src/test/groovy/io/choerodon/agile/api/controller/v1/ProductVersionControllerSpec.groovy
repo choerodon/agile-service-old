@@ -70,6 +70,7 @@ class ProductVersionControllerSpec extends Specification {
 
     def 'createVersion'() {
         given:
+        versionIssueRelMapper.selectAll()
         ProductVersionCreateDTO productVersionCreateDTO = new ProductVersionCreateDTO()
         productVersionCreateDTO.projectId = projectId
         productVersionCreateDTO.name = name
@@ -120,6 +121,7 @@ class ProductVersionControllerSpec extends Specification {
         versionIssueRelDO.versionId = result.versionId
         versionIssueRelDO.relationType = "fix"
         versionIssueRelMapper.insert(versionIssueRelDO)
+        versionIssueRelMapper.selectAll()
     }
 
     def 'updateVersion'() {
@@ -371,9 +373,37 @@ class ProductVersionControllerSpec extends Specification {
 
     }
 
+//    def 'listByOptions'() {
+//        given:
+//        ProductVersionMapper productVersionMapper = new DetachedMockFactory().Mock(ProductVersionMapper)
+//        List<ProductVersionDO> listData =new ArrayList<>()
+//        listData.add(result)
+//        productVersionMapper.queryVersionByIds(*_) >> listData
+//        Map<String, Object> searchParamMap = new HashMap<>()
+//        Map<String, Object> map = new HashMap<>()
+//        map.put("name", result.name)
+//        searchParamMap.put("searchArgs", map)
+//        HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(searchParamMap)
+//
+//        when:
+//        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/versions?page=0&size=10",
+//                HttpMethod.POST,
+//                null,
+//                Page,
+//                projectId)
+//
+//        then:
+//        entity.statusCode.is2xxSuccessful()
+//
+//        and:
+//        List<ProductVersionPageDTO> list = entity.body.content
+//
+//        expect: "设置期望值"
+//        list.size() > 0
+//
+//    }
+
     def 'queryVersionStatisticsByVersionId'() {
-        given:
-        productVersionMapper.selectAll()
         when:
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}",
                 HttpMethod.GET,
@@ -393,13 +423,14 @@ class ProductVersionControllerSpec extends Specification {
         productVersionStatisticsDTO.statusCode==statusCode
 
         where: '比较期望值'
-        versionId | statusCode
-        1L        | "version_planning"
-        2L        | "version_planning"
-
+        versionId        | statusCode
+        1L               | "version_planning"
+        result.versionId | "version_planning"
     }
 
     def 'queryReleaseMessageByVersionId'() {
+        given:
+        versionIssueRelMapper.selectAll()
         when:
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/plan_names",
                 HttpMethod.GET,
@@ -412,16 +443,17 @@ class ProductVersionControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and:
-        VersionMessageDTO result = entity.body
+        VersionMessageDTO versionMessageDTO = entity.body
 
         expect: "设置期望值"
-        result.fixIssueCount==fixIssueCount
-        result.versionNames.size()==expectCount
+        versionMessageDTO.fixIssueCount==fixIssueCount
+        versionMessageDTO.versionNames.size()==expectCount
 
         where: '对比结果'
-        versionId || fixIssueCount | expectCount
-        1L        || 1             | 2
-        2L        || 1             | 2
+        versionId         || fixIssueCount | expectCount
+        1L                || 1             | 2
+        result.versionId  || 1             | 2
+        result2.versionId || 0             | 3
     }
 
     def 'queryDeleteMessageByVersionId'() {
@@ -437,16 +469,17 @@ class ProductVersionControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and:
-        VersionMessageDTO result = entity.body
+        VersionMessageDTO VersionMessageDTO = entity.body
 
         expect: "设置期望值"
-        result.fixIssueCount==fixIssueCount
-        result.versionNames.size()==expectCount
+        VersionMessageDTO.fixIssueCount==fixIssueCount
+        VersionMessageDTO.versionNames.size()==expectCount
 
         where: '对比结果'
-        versionId || fixIssueCount | expectCount
-        1L        || 1             | 2
-        2L        || 1             | 2
+        versionId         || fixIssueCount | expectCount
+        1L                || 1             | 2
+        result.versionId  || 1             | 2
+        result2.versionId || 0             | 3
     }
 
     def 'queryNameByOptions'() {
@@ -466,16 +499,16 @@ class ProductVersionControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and:
-        List<ProductVersionNameDTO> result = entity.body
+        List<ProductVersionNameDTO> listresult = entity.body
 
         expect: "设置期望值"
-        result.size()==expectCount
-        result.get(0).statusCode==statusCode
+        listresult.size()==expectCount
+        listresult.get(0).statusCode==statusCode
 
         where: '对比结果'
-        versionId || expectCount | statusCode
-        1L        || 3           | "version_planning"
-        2L        || 3           | "version_planning"
+        versionId         || expectCount | statusCode
+        result.versionId  || 3           | "version_planning"
+        result2.versionId || 3           | "version_planning"
     }
 
     def 'listByProjectId'() {
@@ -533,8 +566,8 @@ class ProductVersionControllerSpec extends Specification {
     def 'dragVersion'() {
         given:
         VersionSequenceDTO versionSequenceDTO=new VersionSequenceDTO()
-        versionSequenceDTO.versionId=2L
-        versionSequenceDTO.beforeSequence=4
+        versionSequenceDTO.versionId=result.versionId
+        versionSequenceDTO.afterSequence=1
         HttpEntity<VersionSequenceDTO> requestEntity = new HttpEntity<>(versionSequenceDTO,null)
 
         when:
@@ -548,11 +581,11 @@ class ProductVersionControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and:
-        ProductVersionPageDTO result = entity.body
+        ProductVersionPageDTO productVersionPageDTO = entity.body
 
         expect: "设置期望值"
-        result.statusCode=="version_planning"
-        result.sequence==2
+        productVersionPageDTO.statusCode == "version_planning"
+        productVersionPageDTO.sequence == 2
     }
 
     def 'queryByCategoryCode'() {
@@ -568,68 +601,44 @@ class ProductVersionControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and:
-        VersionIssueCountDTO result = entity.body
+        VersionIssueCountDTO versionIssueCountDTO = entity.body
 
         expect: "设置期望值"
-        result.metaPropertyValues.size()==expectCount
-        result.doingIssueCount=doingIssueCount
+        versionIssueCountDTO.doingIssueCount == doingIssueCount
+        versionIssueCountDTO.todoIssueCount == todoIssueCount
 
         where:
-        versionIds | expectCount | doingIssueCount
-        1L         | 1L          | 2L
-        2L         | 1L          | 2L
+        versionIds        || doingIssueCount | todoIssueCount
+        1L                || 0               | 1
+        result.versionId  || 0               | 1
     }
-//    def 'queryByVersionIdAndStatusCode'() {
-//        when:
-//        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/issues?statusCode={statusCode}",
-//                HttpMethod.GET,
-//                null,
-//                List,
-//                projectId,
-//                versionId,
-//                statusCode)
-//
-//        and:
-//        entity.statusCode.is2xxSuccessful()
-//
-//        then:
-//        List<IssueListDTO> result = entity.body
-//
-//        expect: "设置期望值"
-//        result.size() == 10
-//        result.get(0).projectId == projectId
-//        result.get(0).issueId == issueId
-//
-//        where: '对比结果'
-//        versionId | statusCode         || issueId
-//        1L        | 'version_planning' || 1L
-//    }
 
-//    def 'queryByVersionIdAndStatusCode'() {
-//        when:
-//        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/issues",
-//                HttpMethod.GET,
-//                null,
-//                List,
-//                projectId,
-//                versionId,
-//                statusCode)
-//
-//        then:
-//        entity.statusCode.is2xxSuccessful()
-//
-//        and:
-//        List<IssueListDTO> result = entity.body
-//
-//        expect: "设置期望值"
-//        result.size() == 10
-//        result.get(0).projectId == projectId
-//        result.get(0).issueId == issueId
-//
-//        where: '对比结果'
-//        versionId | statusCode || issueId
-//        1L        | 'released' || 1L
-//    }
+    def 'queryByVersionIdAndStatusCode'() {
+        given:
+        issueMapper.selectAll()
+        when:
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/issues?statusCode={statusCode}",
+                HttpMethod.GET,
+                null,
+                List,
+                projectId,
+                versionId,
+                statusCode)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+
+        and:
+        List<IssueListDTO> list = entity.body
+
+        expect: "设置期望值"
+        list.size() == expectCount
+
+        where: '对比结果'
+        versionId | statusCode || expectCount
+        1L        | 'released' || 0
+        1L        | null       || 0
+    }
 
     def 'deleteVersion'() {
         given:
