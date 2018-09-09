@@ -976,19 +976,25 @@ class IssueControllerSpec extends Specification {
         issueComponentDO.name = '测试模块2'
         ProductVersionDO productVersionDO = new ProductVersionDO()
         productVersionDO.name = '测试版本'
+        ProductVersionDO productVersionDO1 = new ProductVersionDO()
+        productVersionDO1.name = '测试版本2'
 
         and: '查询模块DO&版本DO'
         IssueComponentDO queryComponent = new IssueComponentDO()
         queryComponent.name = '测试模块2'
         ProductVersionDO queryVersion = new ProductVersionDO()
         queryVersion.name = '测试版本'
+        ProductVersionDO queryVersion1 = new ProductVersionDO()
+        queryVersion1.name = '测试版本'
 
         when: '执行方法'
         issueComponentMapper.delete(issueComponentDO)
         productVersionMapper.delete(productVersionDO)
+        productVersionMapper.delete(productVersionDO1)
 
         then: '验证删除'
         issueComponentMapper.selectOne(queryComponent) == null
         productVersionMapper.selectOne(queryVersion) == null
+        productVersionMapper.selectOne(queryVersion1) == null
     }
 }

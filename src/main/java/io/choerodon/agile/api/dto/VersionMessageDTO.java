@@ -2,6 +2,8 @@ package io.choerodon.agile.api.dto;
 
 import java.util.List;
 
+import io.choerodon.agile.infra.common.utils.StringUtil;
+
 /**
  * Created by jian_zhang02@163.com on 2018/6/4.
  */
@@ -32,5 +34,10 @@ public class VersionMessageDTO {
 
     public void setVersionNames(List<ProductVersionNameDTO> versionNames) {
         this.versionNames = versionNames;
+    }
+
+    @Override
+    public String toString() {
+        return StringUtil.getToString(this);
     }
 }
