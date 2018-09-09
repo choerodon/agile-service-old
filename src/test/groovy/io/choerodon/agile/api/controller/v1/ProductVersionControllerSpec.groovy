@@ -70,7 +70,6 @@ class ProductVersionControllerSpec extends Specification {
 
     def 'createVersion'() {
         given:
-        versionIssueRelMapper.selectAll()
         ProductVersionCreateDTO productVersionCreateDTO = new ProductVersionCreateDTO()
         productVersionCreateDTO.projectId = projectId
         productVersionCreateDTO.name = name
@@ -121,7 +120,6 @@ class ProductVersionControllerSpec extends Specification {
         versionIssueRelDO.versionId = result.versionId
         versionIssueRelDO.relationType = "fix"
         versionIssueRelMapper.insert(versionIssueRelDO)
-        versionIssueRelMapper.selectAll()
     }
 
     def 'updateVersion'() {
@@ -429,8 +427,6 @@ class ProductVersionControllerSpec extends Specification {
     }
 
     def 'queryReleaseMessageByVersionId'() {
-        given:
-        versionIssueRelMapper.selectAll()
         when:
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/plan_names",
                 HttpMethod.GET,
@@ -614,8 +610,6 @@ class ProductVersionControllerSpec extends Specification {
     }
 
     def 'queryByVersionIdAndStatusCode'() {
-        given:
-        issueMapper.selectAll()
         when:
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/issues?statusCode={statusCode}",
                 HttpMethod.GET,
