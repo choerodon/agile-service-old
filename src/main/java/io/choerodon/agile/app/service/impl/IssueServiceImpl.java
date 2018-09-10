@@ -86,8 +86,6 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private IssueSearchAssembler issueSearchAssembler;
     @Autowired
-    private IssueMapper issueMapper;
-    @Autowired
     private ReportAssembler reportAssembler;
     @Autowired
     private ProductVersionRule productVersionRule;
@@ -153,6 +151,8 @@ public class IssueServiceImpl implements IssueService {
     private UserSettingRepository userSettingRepository;
     @Autowired
     private UserSettingMapper userSettingMapper;
+    @Autowired
+    private IssueMapper issueMapper;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -201,6 +201,11 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     public IssueServiceImpl(SagaClient sagaClient) {
         this.sagaClient = sagaClient;
+    }
+
+    @Override
+    public void setIssueMapper( IssueMapper issueMapper){
+        this.issueMapper = issueMapper;
     }
 
     @Override
@@ -522,7 +527,7 @@ public class IssueServiceImpl implements IssueService {
     public void batchIssueToVersionTest(Long projectId, Long versionId, List<Long> issueIds) {
         if (versionId != null && !Objects.equals(versionId, 0L)) {
             productVersionRule.judgeExist(projectId, versionId);
-            if(issueMapper.queryIssueIdsIsTest(projectId, issueIds)!=issueIds.size()){
+            if (issueMapper.queryIssueIdsIsTest(projectId, issueIds) != issueIds.size()) {
                 throw new CommonException("error.Issue.type.isNotIssueTest");
             }
             issueRepository.batchRemoveVersionTest(projectId, issueIds);
@@ -563,7 +568,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void dataLogRank(Long projectId, MoveIssueDTO moveIssueDTO, String rankStr, Long sprintId) {
         for (Long issueId : moveIssueDTO.getIssueIds()) {
-            SprintNameDTO activeSprintName = sprintNameAssembler.toTarget(issueMapper.queryActiveSprintNameByIssueId(issueId),SprintNameDTO.class);
+            SprintNameDTO activeSprintName = sprintNameAssembler.toTarget(issueMapper.queryActiveSprintNameByIssueId(issueId), SprintNameDTO.class);
             Boolean condition = (sprintId == 0 && activeSprintName == null) || (activeSprintName != null
                     && sprintId.equals(activeSprintName.getSprintId()));
             if (condition) {
@@ -1588,7 +1593,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<PieChartDTO> issueStatistic(Long projectId, String type, List<String> issueTypes) {
-        return reportAssembler.toTargetList(issueMapper.issueStatistic(projectId, type, issueTypes),PieChartDTO.class);
+        return reportAssembler.toTargetList(issueMapper.issueStatistic(projectId, type, issueTypes), PieChartDTO.class);
     }
 
     @Override
@@ -1775,9 +1780,7 @@ public class IssueServiceImpl implements IssueService {
         List<IssueDetailDO> issueDOList = issueMapper.queryByIssueIds(projectId, issueIds);
         List<Long> newIssueIds = new ArrayList<>();
         if (issueDOList.size() == issueIds.size()) {
-            //保证有序性，虽然数据库可以通过函数保证in的有序性，但是测试h2函数不支持，所以代码保证
-            Map<Long, IssueDetailDO> issueDetailDOMap = issueDOList.stream().collect(Collectors.toMap(IssueDetailDO::getIssueId, Function.identity()));
-            List<IssueCreateDTO> issueCreateDTOS = issueAssembler.issueDetailListDoToDto(issueIds, issueDetailDOMap, versionId);
+            List<IssueCreateDTO> issueCreateDTOS = issueAssembler.issueDetailListDoToDto(issueDOList, versionId);
             issueCreateDTOS.forEach(issueCreateDTO -> {
                 IssueDTO newIssue = createIssue(issueCreateDTO);
                 newIssueIds.add(newIssue.getIssueId());

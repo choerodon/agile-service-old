@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
+import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
@@ -18,6 +19,8 @@ import java.util.List;
  * @since 2018-05-14 20:30:48
  */
 public interface IssueService {
+
+    void setIssueMapper(IssueMapper issueMapper);
 
     /**
      * 创建issue

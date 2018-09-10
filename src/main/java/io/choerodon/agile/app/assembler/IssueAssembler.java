@@ -282,10 +282,9 @@ public class IssueAssembler extends AbstractAssembler {
         return issueComponentDetailDTOS;
     }
 
-    public List<IssueCreateDTO> issueDetailListDoToDto(List<Long> issueIds, Map<Long, IssueDetailDO> issueDetailDOMap, Long versionId) {
+    public List<IssueCreateDTO> issueDetailListDoToDto(List<IssueDetailDO> issueDOList, Long versionId) {
         List<IssueCreateDTO> issueCreateDTOS = new ArrayList<>();
-        issueIds.forEach(id -> {
-            IssueDetailDO issueDetailDO = issueDetailDOMap.get(id);
+        issueDOList.forEach(issueDetailDO -> {
             IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
             BeanUtils.copyProperties(issueDetailDO, issueCreateDTO);
             issueCreateDTO.setSprintId(null);

@@ -41,7 +41,6 @@ import io.choerodon.swagger.annotation.Permission;
 @RequestMapping(value = "/v1/projects/{project_id}/issues")
 public class IssueController {
 
-    @Autowired
     private IssueService issueService;
 
     @Autowired
@@ -52,6 +51,10 @@ public class IssueController {
 
     @Autowired
     private IssueValidator issueValidator;
+
+    public IssueController(IssueService issueService) {
+        this.issueService = issueService;
+    }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建issue")
