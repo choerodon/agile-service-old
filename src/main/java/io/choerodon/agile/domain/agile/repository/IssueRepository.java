@@ -52,6 +52,8 @@ public interface IssueRepository {
 
     Integer batchRemoveVersion(Long projectId, List<Long> issueIds);
 
+    Integer batchRemoveVersionTest(Long projectId, List<Long> issueIds);
+
     /**
      * 将该epic下的issue的epicId设为0
      *

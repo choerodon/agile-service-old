@@ -79,6 +79,8 @@ public interface IssueService {
 
     List<IssueSearchDTO> batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds);
 
+    List<IssueSearchDTO> batchIssueToVersionTest(Long projectId, Long versionId, List<Long> issueIds);
+
     void batchToVersionInStoryMap(Long projectId, Long versionId, MoveIssueDTO moveIssueDTO);
 
     List<IssueSearchDTO> batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds);

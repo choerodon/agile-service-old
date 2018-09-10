@@ -511,6 +511,21 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
+    public List<IssueSearchDTO> batchIssueToVersionTest(Long projectId, Long versionId, List<Long> issueIds) {
+        if (versionId != null && !Objects.equals(versionId, 0L)) {
+            productVersionRule.judgeExist(projectId, versionId);
+            if(issueMapper.queryIssueIdsIsTest(projectId, issueIds)!=issueIds.size()){
+                throw new CommonException("error.Issue.type.isNotIssueTest");
+            }
+            issueRepository.batchRemoveVersionTest(projectId, issueIds);
+            VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
+            versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
+            issueRepository.batchIssueToVersion(versionIssueRelE);
+        }
+        return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>());
+    }
+
+    @Override
     public void batchToVersionInStoryMap(Long projectId, Long versionId, MoveIssueDTO moveIssueDTO) {
         List<Long> issueIds = moveIssueDTO.getIssueIds();
         if (versionId != null && !Objects.equals(versionId, 0L)) {
