@@ -224,7 +224,7 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("issue批量加入版本,给测试")
+    @ApiOperation("issue批量加入版本")
     @PostMapping(value = "/to_version/{versionId}")
     public ResponseEntity<List<IssueSearchDTO>> batchIssueToVersion(@ApiParam(value = "项目id", required = true)
                                                                     @PathVariable(name = "project_id") Long projectId,
@@ -238,7 +238,7 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("issue批量加入版本")
+    @ApiOperation("issue批量加入版本,给测试")
     @PostMapping(value = "/to_version_test/{versionId}")
     public ResponseEntity<List<IssueSearchDTO>> batchIssueToVersionTest(@ApiParam(value = "项目id", required = true)
                                                                         @PathVariable(name = "project_id") Long projectId,
