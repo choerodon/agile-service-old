@@ -2319,4 +2319,29 @@
         </foreach>
     </update>
 
+    <select id="queryIssueIdsIsTest" resultType="java.lang.Integer">
+        select count(1)
+        from agile_issue ai
+        where ai.type_code='issue_test'
+        AND ai.issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+    </select>
+
+    <delete id="batchRemoveFromVersionTest">
+        DELETE avir
+        FROM
+        agile_version_issue_rel avir,
+        agile_product_version apv
+        WHERE
+        apv.version_id = avir.version_id
+        AND avir.project_id = #{projectId} AND avir.issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+    </delete>
+
 </mapper>

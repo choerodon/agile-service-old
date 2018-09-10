@@ -1,22 +1,11 @@
 package io.choerodon.agile.api.controller.v1;
 
+import java.util.List;
+import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.*;
-import io.choerodon.agile.api.validator.IssueValidator;
-import io.choerodon.agile.domain.agile.entity.IssueE;
-import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
-import io.choerodon.core.domain.Page;
-import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.app.service.IssueService;
-import io.choerodon.agile.domain.agile.rule.IssueRule;
-import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
-import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.choerodon.mybatis.pagehelper.domain.Sort;
-import io.choerodon.swagger.annotation.CustomPageRequest;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +14,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Optional;
+import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.validator.IssueValidator;
+import io.choerodon.agile.app.service.IssueService;
+import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.domain.agile.rule.IssueRule;
+import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
+import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
+import io.choerodon.core.domain.Page;
+import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.InitRoleCode;
+import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.choerodon.mybatis.pagehelper.domain.Sort;
+import io.choerodon.swagger.annotation.CustomPageRequest;
+import io.choerodon.swagger.annotation.Permission;
 
 /**
  * 敏捷开发Issue
@@ -232,6 +233,20 @@ public class IssueController {
                                                                     @ApiParam(value = "issue id", required = true)
                                                                     @RequestBody List<Long> issueIds) {
         return Optional.ofNullable(issueService.batchIssueToVersion(projectId, versionId, issueIds))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.issue.batchToVersion"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("issue批量加入版本,给测试")
+    @PostMapping(value = "/to_version_test/{versionId}")
+    public ResponseEntity<List<IssueSearchDTO>> batchIssueToVersionTest(@ApiParam(value = "项目id", required = true)
+                                                                        @PathVariable(name = "project_id") Long projectId,
+                                                                        @ApiParam(value = "versionId", required = true)
+                                                                        @PathVariable Long versionId,
+                                                                        @ApiParam(value = "issue id", required = true)
+                                                                        @RequestBody List<Long> issueIds) {
+        return Optional.ofNullable(issueService.batchIssueToVersionTest(projectId, versionId, issueIds))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.batchToVersion"));
     }

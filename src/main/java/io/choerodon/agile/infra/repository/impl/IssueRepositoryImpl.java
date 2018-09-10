@@ -103,6 +103,13 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
+    @DataLog(type = "batchRemoveVersion", single = false)
+    public Integer batchRemoveVersionTest(Long projectId, List<Long> issueIds) {
+        return issueMapper.batchRemoveFromVersionTest(projectId, issueIds);
+    }
+
+
+    @Override
     public int batchUpdateIssueEpicId(Long projectId, Long issueId) {
         redisUtil.deleteRedisCache(new String[]{"Agile:EpicChart" + projectId + ":" + issueId + ":" + "*"});
         return issueMapper.batchUpdateIssueEpicId(projectId, issueId);
