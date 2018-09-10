@@ -193,13 +193,27 @@ public class ReportController {
     @ApiOperation("Epic和版本燃耗图坐标信息")
     @GetMapping(value = "/burn_down_coordinate_type/{id}")
     public ResponseEntity<List<BurnDownReportCoordinateDTO>> queryBurnDownCoordinateByType(@ApiParam(value = "项目id", required = true)
+                                                                                           @PathVariable(name = "project_id") Long projectId,
+                                                                                           @ApiParam(value = "id", required = true)
+                                                                                           @PathVariable Long id,
+                                                                                           @ApiParam(value = "类型:Epic/Version", required = true)
+                                                                                           @RequestParam String type) {
+        return Optional.ofNullable(reportService.queryBurnDownCoordinateByType(projectId, id, type))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.report.queryBurnDownCoordinateByType"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("Epic和版本燃耗图报告信息")
+    @GetMapping(value = "/burn_down_report_type/{id}")
+    public ResponseEntity<BurnDownReportDTO> queryBurnDownReportByType(@ApiParam(value = "项目id", required = true)
                                                                                        @PathVariable(name = "project_id") Long projectId,
                                                                                        @ApiParam(value = "id", required = true)
                                                                                        @PathVariable Long id,
                                                                                        @ApiParam(value = "类型:Epic/Version", required = true)
                                                                                        @RequestParam String type) {
-        return Optional.ofNullable(reportService.queryBurnDownCoordinateByType(projectId, id, type))
+        return Optional.ofNullable(reportService.queryBurnDownReportByType(projectId, id, type))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.report.queryBurnDownReport"));
+                .orElseThrow(() -> new CommonException("error.report.queryBurnDownReportByType"));
     }
 }

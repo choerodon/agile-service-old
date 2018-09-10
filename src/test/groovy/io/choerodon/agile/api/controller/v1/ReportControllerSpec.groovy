@@ -3,14 +3,17 @@ package io.choerodon.agile.api.controller.v1
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.BurnDownReportCoordinateDTO
+import io.choerodon.agile.api.dto.BurnDownReportDTO
 import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO
 import io.choerodon.agile.api.dto.CumulativeFlowFilterDTO
+import io.choerodon.agile.api.dto.IssueBurnDownReportDTO
 import io.choerodon.agile.api.dto.IssueCreateDTO
 import io.choerodon.agile.api.dto.IssueDTO
 import io.choerodon.agile.api.dto.IssueListDTO
 import io.choerodon.agile.api.dto.IssueUpdateDTO
 import io.choerodon.agile.api.dto.PieChartDTO
 import io.choerodon.agile.api.dto.ReportIssueDTO
+import io.choerodon.agile.api.dto.SprintBurnDownReportDTO
 import io.choerodon.agile.api.dto.SprintDetailDTO
 import io.choerodon.agile.api.dto.SprintUpdateDTO
 import io.choerodon.agile.api.dto.VelocitySprintDTO
@@ -400,7 +403,7 @@ class ReportControllerSpec extends Specification {
 
     }
 
-    def 'burn_down_coordinate_type'() {
+    def 'queryBurnDownCoordinateByType'() {
         given: 'issue加入到版本和epic中'
         IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO()
         issueUpdateDTO.issueId = issueId
@@ -408,7 +411,7 @@ class ReportControllerSpec extends Specification {
         if (type == 'Epic') {
             issueUpdateDTO.epicId = id
             issueUpdateDTO.storyPoints = 1
-            issueService.updateIssue(projectId, issueUpdateDTO, ["epicId","storyPoints"])
+            issueService.updateIssue(projectId, issueUpdateDTO, ["epicId", "storyPoints"])
         } else {
             VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO()
             versionIssueRelDTO.issueId = issueId
@@ -437,6 +440,27 @@ class ReportControllerSpec extends Specification {
         type      | id || expectSize
         'Epic'    | 1  || 2
         'Version' | 1  || 2
+    }
+
+    def 'queryBurnDownReportByType'() {
+        when: 'Epic和版本燃耗图坐标信息'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/burn_down_report_type/{id}?type={type}', BurnDownReportDTO, projectId, id, type)
+
+        then: '接口是否请求成功'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置返回值值'
+        List<SprintBurnDownReportDTO> sprintBurnDownReportDTOList = entity.body.sprintBurnDownReportDTOS
+        List<IssueBurnDownReportDTO> incompleteIssues = entity.body.incompleteIssues
+
+        expect: '验证期望值'
+        sprintBurnDownReportDTOList.size() == expectSizeOne
+        incompleteIssues.size() == expectSizeTwo
+
+        where: '设置期望值'
+        type      | id || expectSizeOne | expectSizeTwo
+        'Epic'    | 1  || 1             | 1
+        'Version' | 1  || 1             | 1
 
     }
 
