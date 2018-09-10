@@ -307,7 +307,7 @@
         WHERE
             asp.project_id = #{projectId}
             and asp.status_code != 'sprint_planning'
-            and asp.creation_date > #{startDate}
+            and asp.start_date > #{startDate}
             order by asp.start_date asc
     </select>
 

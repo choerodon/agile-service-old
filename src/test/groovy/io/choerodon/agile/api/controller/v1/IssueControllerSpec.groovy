@@ -5,6 +5,7 @@ import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.*
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
+import io.choerodon.agile.app.service.impl.IssueServiceImpl
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.mapper.*
@@ -56,6 +57,9 @@ class IssueControllerSpec extends Specification {
     @Autowired
     @Qualifier("issueService")
     IssueService issueService
+
+    @Autowired
+    IssueController issueController
 
     @Autowired
     IssueMapper issueMapper
@@ -938,6 +942,22 @@ class IssueControllerSpec extends Specification {
         given: 'issueTestIds'
         def issueTestIds = [issueTestId]
         issueIdList = issueIdList.stream().distinct().collect(Collectors.toList())
+        and: 'mockIssueMapper'
+        def issueMapperMock = Mock(IssueMapper)
+        issueService.setIssueMapper(issueMapperMock)
+        List<IssueDetailDO> issueDetailDOList = new ArrayList<>()
+        IssueDetailDO issueDetailDO = new IssueDetailDO()
+        issueDetailDO.issueId = issueTestIds[0]
+        issueDetailDO.summary = "XXX"
+        issueDetailDO.projectId = projectId
+        issueDetailDO.statusId = 1
+        issueDetailDO.statusCode = 'todo'
+        issueDetailDO.priorityCode = 'low'
+        issueDetailDO.componentIssueRelDOList = new ArrayList<>()
+        issueDetailDO.labelIssueRelDOList = new ArrayList<>()
+        issueDetailDOList.add(issueDetailDO)
+        IssueDetailDO issueDetailDO1 = new IssueDetailDO()
+        issueDetailDO1.subIssueDOList = new ArrayList<>()
 
         when: '测试服务用，批量复制issue并生成版本信息'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/batch_clone_issue/{versionId}', issueTestIds, List, projectId, versionId)
@@ -945,9 +965,14 @@ class IssueControllerSpec extends Specification {
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
 
+        and: '判断mock交互并且设置返回值'
+        1 * issueMapperMock.queryByIssueIds(projectId, issueTestIds) >> issueDetailDOList
+        1 * issueMapperMock.queryIssueDetail(projectId, _) >> issueDetailDO1
+
         and: '设置值'
         List<Long> issueIds = entity.body
-        issueIdList.add(issueIds[0])
+        List<IssueDO> issueDOList = issueMapper.selectAll()
+        issueIdList.add(issueDOList.get(issueDOList.size() - 1).getIssueId())
 
         expect: '设置期望值'
         issueIds.size() == 1
@@ -955,6 +980,8 @@ class IssueControllerSpec extends Specification {
     }
 
     def "deleteIssue"() {
+        given: '重新设置issueMapper'
+        issueService.setIssueMapper(issueMapper)
         when: '执行方法'
         restTemplate.delete('/v1/projects/{project_id}/issues/{issueId}', projectId, issueId)
 

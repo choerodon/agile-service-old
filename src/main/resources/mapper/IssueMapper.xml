@@ -2250,6 +2250,12 @@
             <foreach collection="issueIds" item="issueId" open="(" separator="," close=")">
               #{issueId}
             </foreach>
+            ORDER BY
+            field(ai.issue_id,
+            <foreach collection="issueIds" item="issueId" separator="," >
+                #{issueId}
+            </foreach>
+            );
     </select>
 
     <select id="selectMinRankByProjectId" resultType="java.lang.String">
