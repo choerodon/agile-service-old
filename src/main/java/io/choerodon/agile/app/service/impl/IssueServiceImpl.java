@@ -448,6 +448,14 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
+    public void batchDeleteIssues(Long projectId, List<Long> issueIds) {
+        if(issueMapper.queryIssueIdsIsTest(projectId, issueIds)!=issueIds.size()){
+            throw new CommonException("error.Issue.type.isNotIssueTest");
+        }
+        issueIds.forEach( issueId-> deleteIssue(projectId,issueId));
+    }
+
+    @Override
     public IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO) {
         IssueE subIssueE = issueAssembler.toTarget(issueSubCreateDTO, IssueE.class);
         List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(subIssueE.getProjectId());
@@ -511,7 +519,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public List<IssueSearchDTO> batchIssueToVersionTest(Long projectId, Long versionId, List<Long> issueIds) {
+    public void batchIssueToVersionTest(Long projectId, Long versionId, List<Long> issueIds) {
         if (versionId != null && !Objects.equals(versionId, 0L)) {
             productVersionRule.judgeExist(projectId, versionId);
             if(issueMapper.queryIssueIdsIsTest(projectId, issueIds)!=issueIds.size()){
@@ -522,7 +530,6 @@ public class IssueServiceImpl implements IssueService {
             versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
             issueRepository.batchIssueToVersion(versionIssueRelE);
         }
-        return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>());
     }
 
     @Override

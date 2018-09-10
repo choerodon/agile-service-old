@@ -223,6 +223,17 @@ public class IssueController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+    @ApiOperation("批量删除Issue,给测试")
+    @DeleteMapping(value = "/to_version_test")
+    public ResponseEntity batchDeleteIssues(@ApiParam(value = "项目id", required = true)
+                                                  @PathVariable(name = "project_id") Long projectId,
+                                                  @ApiParam(value = "issue id", required = true)
+                                                  @RequestBody List<Long> issueIds) {
+        issueService.batchDeleteIssues(projectId, issueIds);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("issue批量加入版本")
     @PostMapping(value = "/to_version/{versionId}")
@@ -238,17 +249,16 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("issue批量加入版本,给测试")
+    @ApiOperation("批量替换issue版本,给测试")
     @PostMapping(value = "/to_version_test/{versionId}")
-    public ResponseEntity<List<IssueSearchDTO>> batchIssueToVersionTest(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity batchIssueToVersionTest(@ApiParam(value = "项目id", required = true)
                                                                         @PathVariable(name = "project_id") Long projectId,
                                                                         @ApiParam(value = "versionId", required = true)
                                                                         @PathVariable Long versionId,
                                                                         @ApiParam(value = "issue id", required = true)
                                                                         @RequestBody List<Long> issueIds) {
-        return Optional.ofNullable(issueService.batchIssueToVersionTest(projectId, versionId, issueIds))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
-                .orElseThrow(() -> new CommonException("error.issue.batchToVersion"));
+        issueService.batchIssueToVersionTest(projectId, versionId, issueIds);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
