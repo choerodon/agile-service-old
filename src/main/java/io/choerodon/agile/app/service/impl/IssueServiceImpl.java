@@ -458,8 +458,8 @@ public class IssueServiceImpl implements IssueService {
             throw new CommonException("error.Issue.type.isNotIssueTest");
         }
         List<Long> issueIdList = issueMapper.queryIssueSubListByIssueIds(projectId, issueIds);
-        issueIdList.addAll(issueIds);
-        issueMapper.batchDeleteIssues(projectId, issueIdList);
+        issueIds.addAll(issueIdList);
+        issueMapper.batchDeleteIssues(projectId, issueIds);
         issueIds.forEach(issueId->deleteIssueInfo(issueId,projectId));
     }
 
