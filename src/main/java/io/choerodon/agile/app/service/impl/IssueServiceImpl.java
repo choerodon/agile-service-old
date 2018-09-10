@@ -457,7 +457,10 @@ public class IssueServiceImpl implements IssueService {
         if(issueMapper.queryIssueIdsIsTest(projectId, issueIds)!=issueIds.size()){
             throw new CommonException("error.Issue.type.isNotIssueTest");
         }
-        issueIds.forEach( issueId-> deleteIssue(projectId,issueId));
+        List<Long> issueIdList = issueMapper.queryIssueSubListByIssueIds(projectId, issueIds);
+        issueIdList.addAll(issueIds);
+        issueMapper.batchDeleteIssues(projectId, issueIdList);
+        issueIds.forEach(issueId->deleteIssueInfo(issueId,projectId));
     }
 
     @Override
@@ -1819,5 +1822,19 @@ public class IssueServiceImpl implements IssueService {
         if (!mapMoveIssueDOS.isEmpty()) {
             issueMapper.updateMapRank(projectId, mapMoveIssueDOS);
         }
+    }
+
+    public void deleteIssueInfo(Long issueId,Long projectId){
+        //删除issue发送消息
+        IssuePayload issuePayload = new IssuePayload();
+        issuePayload.setIssueId(issueId);
+        issuePayload.setProjectId(projectId);
+        sagaClient.startSaga("agile-delete-issue", new StartInstanceDTO(JSON.toJSONString(issuePayload), "", ""));
+        //delete cache
+        redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ":" + "*",
+                "Agile:CumulativeFlowDiagram" + projectId + ":" + "*",
+                "Agile:VelocityChart" + projectId + ":" + "*",
+                "Agile:PieChart" + projectId + ':' + "*"
+        });
     }
 }

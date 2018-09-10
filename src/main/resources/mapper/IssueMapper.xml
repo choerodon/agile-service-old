@@ -896,6 +896,35 @@
             parent_issue_id = #{issueId} AND project_id = #{projectId}
     </select>
 
+    <select id="queryIssueSubListByIssueIds" resultType="java.lang.Long">
+        SELECT issue_id
+        FROM
+            agile_issue
+        WHERE project_id = #{projectId} AND parent_issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+    </select>
+
+    <delete id="batchDeleteIssues">
+        DELETE ai,ail,ailr,acir,avir,aisr,aic,aia,adl
+        from agile_issue ai
+        left join agile_issue_link ail on ail.issue_id = ai.issue_id OR linked_issue_id = ai.issue_id
+        left join agile_label_issue_rel ailr on ailr.issue_id=ai.issue_id
+        LEFT JOIN agile_component_issue_rel acir on acir.issue_id=ai.issue_id
+        LEFT JOIN agile_version_issue_rel avir on avir.issue_id=ai.issue_id
+        LEFT JOIN agile_issue_sprint_rel aisr on aisr.issue_id=ai.issue_id and aisr.project_id=ai.project_id
+        LEFT JOIN agile_issue_comment aic on aic.issue_id=ai.issue_id
+        LEFT JOIN agile_issue_attachment aia on aia.issue_id=ai.issue_id
+        LEFT JOIN agile_data_log adl on adl.issue_id=ai.issue_id and adl.project_id=ai.project_id
+        WHERE ai.project_id = #{projectId} AND ai.issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+    </delete>
+
     <update id="batchUpdateIssueEpicId">
         UPDATE agile_issue
         SET epic_id = 0

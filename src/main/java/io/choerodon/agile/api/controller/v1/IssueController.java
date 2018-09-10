@@ -230,9 +230,9 @@ public class IssueController {
     @ApiOperation("批量删除Issue,给测试")
     @DeleteMapping(value = "/to_version_test")
     public ResponseEntity batchDeleteIssues(@ApiParam(value = "项目id", required = true)
-                                                  @PathVariable(name = "project_id") Long projectId,
-                                                  @ApiParam(value = "issue id", required = true)
-                                                  @RequestBody List<Long> issueIds) {
+                                            @PathVariable(name = "project_id") Long projectId,
+                                            @ApiParam(value = "issue id", required = true)
+                                            @RequestBody List<Long> issueIds) {
         issueService.batchDeleteIssues(projectId, issueIds);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }

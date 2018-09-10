@@ -72,6 +72,10 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      */
     List<IssueDO> queryIssueSubList(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
+    List<Long> queryIssueSubListByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
+    void batchDeleteIssues(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
     /**
      * 把issueId对应的epic下的issue的epicId置为0
      *
