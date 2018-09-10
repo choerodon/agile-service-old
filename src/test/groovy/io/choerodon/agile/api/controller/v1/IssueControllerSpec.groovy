@@ -971,6 +971,7 @@ class IssueControllerSpec extends Specification {
 
         and: '设置值'
         List<Long> issueIds = entity.body
+        issueService.setIssueMapper(issueMapper)
         List<IssueDO> issueDOList = issueMapper.selectAll()
         issueIdList.add(issueDOList.get(issueDOList.size() - 1).getIssueId())
 
@@ -980,8 +981,7 @@ class IssueControllerSpec extends Specification {
     }
 
     def "deleteIssue"() {
-        given: '重新设置issueMapper'
-        issueService.setIssueMapper(issueMapper)
+
         when: '执行方法'
         restTemplate.delete('/v1/projects/{project_id}/issues/{issueId}', projectId, issueId)
 
