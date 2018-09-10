@@ -22,6 +22,12 @@ public class StoryMapMoveDTO {
 
     private List<Long> issueIds;
 
+    private List<Long> epicIssueIds;
+
+    private List<Long> sprintIssueIds;
+
+    private List<Long> versionIssueIds;
+
     public void setEpicId(Long epicId) {
         this.epicId = epicId;
     }
@@ -76,5 +82,29 @@ public class StoryMapMoveDTO {
 
     public List<Long> getIssueIds() {
         return issueIds;
+    }
+
+    public List<Long> getEpicIssueIds() {
+        return epicIssueIds;
+    }
+
+    public void setEpicIssueIds(List<Long> epicIssueIds) {
+        this.epicIssueIds = epicIssueIds;
+    }
+
+    public List<Long> getSprintIssueIds() {
+        return sprintIssueIds;
+    }
+
+    public void setSprintIssueIds(List<Long> sprintIssueIds) {
+        this.sprintIssueIds = sprintIssueIds;
+    }
+
+    public List<Long> getVersionIssueIds() {
+        return versionIssueIds;
+    }
+
+    public void setVersionIssueIds(List<Long> versionIssueIds) {
+        this.versionIssueIds = versionIssueIds;
     }
 }
