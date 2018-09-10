@@ -69,6 +69,8 @@ public interface IssueService {
      */
     void deleteIssue(Long projectId, Long issueId);
 
+    void batchDeleteIssues(Long projectId, List<Long> issueIds);
+
     /**
      * 创建issue子任务
      *
@@ -79,7 +81,7 @@ public interface IssueService {
 
     List<IssueSearchDTO> batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds);
 
-    List<IssueSearchDTO> batchIssueToVersionTest(Long projectId, Long versionId, List<Long> issueIds);
+    void batchIssueToVersionTest(Long projectId, Long versionId, List<Long> issueIds);
 
     void batchToVersionInStoryMap(Long projectId, Long versionId, MoveIssueDTO moveIssueDTO);
 
