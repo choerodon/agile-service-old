@@ -1233,9 +1233,7 @@ public class DataLogAspect {
 
     private void dataLogCreateEpicId(Long epicId, IssueDO originIssueDO, ProjectInfoDO projectInfoDO) {
         IssueDO issueEpic = queryIssueByIssueIdAndProjectId(originIssueDO.getProjectId(), epicId);
-        if (issueEpic == null) {
-            throw new CommonException(ERROR_EPIC_NOT_FOUND);
-        } else {
+        if (issueEpic != null) {
             redisUtil.deleteRedisCache(new String[]{EPIC_CHART + originIssueDO.getProjectId() + ":" + issueEpic.getIssueId() + ":" + "*",
                     PIECHART + originIssueDO.getProjectId() + ':' + "epic"
             });
