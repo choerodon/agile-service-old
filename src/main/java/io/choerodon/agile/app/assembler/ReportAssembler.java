@@ -1,7 +1,9 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO;
+import io.choerodon.agile.api.dto.SprintBurnDownReportDTO;
 import io.choerodon.agile.infra.dataobject.ColumnDO;
+import io.choerodon.agile.infra.dataobject.SprintDO;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -12,7 +14,7 @@ import java.util.List;
  * @since 2018/7/2
  */
 @Component
-public class ReportAssembler extends AbstractAssembler{
+public class ReportAssembler extends AbstractAssembler {
 
     public List<CumulativeFlowDiagramDTO> columnListDoToDto(List<ColumnDO> columnDOList) {
         List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = new ArrayList<>();
@@ -27,4 +29,12 @@ public class ReportAssembler extends AbstractAssembler{
         return cumulativeFlowDiagramDTOList;
     }
 
+    public SprintBurnDownReportDTO sprintBurnDownReportDoToDto(SprintDO sprintDO) {
+        SprintBurnDownReportDTO sprintBurnDownReportDTO = new SprintBurnDownReportDTO();
+        sprintBurnDownReportDTO.setSprintId(sprintDO.getSprintId());
+        sprintBurnDownReportDTO.setSprintName(sprintDO.getSprintName());
+        sprintBurnDownReportDTO.setStartDate(sprintDO.getStartDate());
+        sprintBurnDownReportDTO.setEndDate(sprintDO.getActualEndDate() == null ? sprintDO.getEndDate() : sprintDO.getActualEndDate());
+        return sprintBurnDownReportDTO;
+    }
 }

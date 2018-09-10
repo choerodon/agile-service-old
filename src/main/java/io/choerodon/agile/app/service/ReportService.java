@@ -77,4 +77,14 @@ public interface ReportService {
      * @return BurnDownReportCoordinateDTO
      */
     List<BurnDownReportCoordinateDTO> queryBurnDownCoordinateByType(Long projectId, Long id, String type);
+
+    /**
+     * 查询epic和版本燃尽图报告信息
+     *
+     * @param projectId projectId
+     * @param id        id
+     * @param type      type
+     * @return BurnDownReportDTO
+     */
+    BurnDownReportDTO queryBurnDownReportByType(Long projectId, Long id, String type);
 }

@@ -2158,7 +2158,7 @@
                 AND ai.type_code != 'sub_task'
             ) aaa
         WHERE
-            aaa.add_date IS NOT NULL
+            aaa.add_date IS NOT NULL order by aaa.add_date asc
     </select>
 
     <select id="queryIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.IssueBurnDownReportDO">
@@ -2227,7 +2227,7 @@
                 AND ai.type_code != 'sub_task'
             ) aaa
         WHERE
-            aaa.add_date IS NOT NULL
+            aaa.add_date IS NOT NULL order by aaa.add_date asc
     </select>
 
     <select id="queryByIssueIds" resultMap="issueDetail">
@@ -2343,5 +2343,21 @@
             #{issueId}
         </foreach>
     </delete>
+
+    <select id="queryEpicDetailByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT
+                ai.issue_id,
+                CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,
+                ai.project_id,
+                ai.epic_name
+            FROM
+                agile_issue ai
+                LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+                LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+            WHERE
+                ai.issue_id = #{issueId}
+                AND ai.project_id = #{projectId}
+                AND ai.type_code = 'issue_epic'
+    </select>
 
 </mapper>

@@ -116,7 +116,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     int batchUpdateIssueRank(@Param("projectId") Long projectId, @Param("moveIssues") List<MoveIssueDO> moveIssues);
 
-    int batchUpdateMapIssueRank(@Param("projectId")Long projectId, @Param("storyMapMoveIssueDOS") List<StoryMapMoveIssueDO> storyMapMoveIssueDOS);
+    int batchUpdateMapIssueRank(@Param("projectId") Long projectId, @Param("storyMapMoveIssueDOS") List<StoryMapMoveIssueDO> storyMapMoveIssueDOS);
 
     List<Long> querySubIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
@@ -373,7 +373,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @param issueIds  issueIds
      * @return IssueDO
      */
-    List<IssueDetailDO> queryByIssueIds(@Param("projectId")Long projectId, @Param("issueIds")List<Long> issueIds);
+    List<IssueDetailDO> queryByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     String selectMinRankByProjectId(@Param("projectId") Long projectId);
 
@@ -390,4 +390,13 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     void updateMapRank(@Param("projectId") Long projectId, @Param("mapMoveIssueDOS") List<StoryMapMoveIssueDO> mapMoveIssueDOS);
 
     Integer queryIssueIdsIsTest(@Param("projectId") Long projectId,@Param("issueIds") List<Long> issueIds);
+
+    /**
+     * 查询epic信息
+     *
+     * @param issueId   issueId
+     * @param projectId projectId
+     * @return IssueDO
+     */
+    IssueDO queryEpicDetailByIssueId(@Param("issueId") Long issueId, @Param("projectId") Long projectId);
 }
