@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.IssueCommentCreateDTO
 import io.choerodon.agile.api.dto.IssueCommentDTO
+import io.choerodon.agile.api.dto.IssueCreateDTO
+import io.choerodon.agile.api.dto.IssueDTO
 import io.choerodon.agile.domain.agile.repository.UserRepository
+import io.choerodon.agile.infra.dataobject.IssueDO
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.IssueCommentMapper
@@ -49,6 +52,9 @@ class IssueCommentControllerSpec extends Specification {
     @Shared
     def projectId = 1
 
+    @Shared
+    def resultTest=0
+
     def setup() {
         given: '设置feign调用mockito'
         // *_表示任何长度的参数（这里表示只要执行了queryUsersMap这个方法，就让它返回一个空的Map
@@ -64,8 +70,9 @@ class IssueCommentControllerSpec extends Specification {
 
     def 'createIssueComment'() {
         given: '准备IssueCommentCreateDTO'
+        resultTest=issueMapper.selectAll().get(0).issueId
         IssueCommentCreateDTO issueCommentCreateDTO = new IssueCommentCreateDTO()
-        issueCommentCreateDTO.issueId = 1L
+        issueCommentCreateDTO.issueId = resultTest
         issueCommentCreateDTO.commentText = '这是一条测试评论'
 
 
@@ -119,10 +126,10 @@ class IssueCommentControllerSpec extends Specification {
         result.size() == expectSize
 
         where: '期望值'
-        issueId | expectSize
-        1L      | 1
-        2L      | 0
-        10L     | 0
+        issueId    | expectSize
+        resultTest | 1
+        2L         | 0
+        10L        | 0
     }
 
     def 'deleteIssueComment'() {
@@ -145,5 +152,4 @@ class IssueCommentControllerSpec extends Specification {
         commentId | expectObject
         1L        | null
     }
-
 }
