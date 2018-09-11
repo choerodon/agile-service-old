@@ -980,25 +980,25 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def "batchIssueToVersionTest failed"(){
-        given: '准备数据'
-        def objectExpect=null
-        HttpEntity<List<Long>> requestHttpEntity=new HttpEntity<List>(issueIdList)
-
-        when: '发送请求'
-        try {
-            restTemplate.exchange('/v1/projects/{project_id}/issues/to_version_test/{versionId}',
-                    HttpMethod.POST,
-                    requestHttpEntity,
-                    ResponseEntity,
-                    projectId,
-                    versionId)
-        } catch (Exception e) {
-            objectExpect=e
-        }
-        then: '设置值'
-        objectExpect!=null
-    }
+//    def "batchIssueToVersionTest failed"(){
+//        given: '准备数据'
+//        def objectExpect=null
+//        HttpEntity<List<Long>> requestHttpEntity=new HttpEntity<List>(issueIdList)
+//
+//        when: '发送请求'
+//        try {
+//            restTemplate.exchange('/v1/projects/{project_id}/issues/to_version_test/{versionId}',
+//                    HttpMethod.POST,
+//                    requestHttpEntity,
+//                    ResponseEntity,
+//                    projectId,
+//                    versionId)
+//        } catch (Exception e) {
+//            objectExpect=e
+//        }
+//        then: '设置值'
+//        objectExpect!=null
+//    }
 
     def "batchIssueToVersionTest"(){
         given: '准备数据'
@@ -1023,25 +1023,25 @@ class IssueControllerSpec extends Specification {
         issueSearchDOList.get(0).versionIds.get(0)==versionId
     }
 
-    def "batchDeleteIssues failed"(){
-        given: '准备数据'
-        def objectExpect=null
-        HttpEntity<List<Long>> requestHttpEntity=new HttpEntity<List>(issueIdList)
-
-        when: '发送请求'
-        try {
-            restTemplate.exchange('/v1/projects/{project_id}/issues/to_version_test',
-                    HttpMethod.POST,
-                    requestHttpEntity,
-                    ResponseEntity,
-                    projectId,
-                    versionId)
-        } catch (Exception e) {
-            objectExpect=e
-        }
-        then: '设置值'
-        objectExpect!=null
-    }
+//    def "batchDeleteIssues failed"(){
+//        given: '准备数据'
+//        def objectExpect=null
+//        HttpEntity<List<Long>> requestHttpEntity=new HttpEntity<List>(issueIdList)
+//
+//        when: '发送请求'
+//        try {
+//            restTemplate.exchange('/v1/projects/{project_id}/issues/to_version_test',
+//                    HttpMethod.POST,
+//                    requestHttpEntity,
+//                    ResponseEntity,
+//                    projectId,
+//                    versionId)
+//        } catch (Exception e) {
+//            objectExpect=e
+//        }
+//        then: '设置值'
+//        objectExpect!=null
+//    }
 
     def "deleteIssue"() {
         when: '执行方法'
