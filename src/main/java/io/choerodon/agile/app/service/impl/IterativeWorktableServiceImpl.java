@@ -103,6 +103,9 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
         if (result.getEndDate() != null) {
             result.setDayRemain(DateUtil.differentDaysByMillisecond(new Date(), result.getEndDate()));
         }
+        if (result.getStartDate() != null && result.getEndDate() != null) {
+            result.setDayTotal(DateUtil.differentDaysByMillisecond(result.getStartDate(), result.getEndDate()));
+        }
         return result;
     }
 

@@ -24,6 +24,8 @@ public class SprintInfoDTO {
 
     private Integer dayRemain;
 
+    private Integer dayTotal;
+
     private List<AssigneeIssueDTO> assigneeIssueDTOList;
 
     public Long getSprintId() {
@@ -88,5 +90,13 @@ public class SprintInfoDTO {
 
     public Integer getDayRemain() {
         return dayRemain;
+    }
+
+    public void setDayTotal(Integer dayTotal) {
+        this.dayTotal = dayTotal;
+    }
+
+    public Integer getDayTotal() {
+        return dayTotal;
     }
 }
