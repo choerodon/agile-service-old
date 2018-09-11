@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.infra.dataobject.GroupDataChartDO;
 import io.choerodon.agile.infra.dataobject.GroupDataChartListDO;
+import io.choerodon.agile.infra.mapper.IssueMapper;
+import io.choerodon.agile.infra.mapper.ReportMapper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
@@ -87,4 +89,6 @@ public interface ReportService {
      * @return BurnDownReportDTO
      */
     BurnDownReportDTO queryBurnDownReportByType(Long projectId, Long id, String type);
+
+    void setReportMapper(ReportMapper reportMapper);
 }

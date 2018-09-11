@@ -95,6 +95,11 @@ public class ReportServiceImpl implements ReportService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportServiceImpl.class);
 
+    @Override
+    public void setReportMapper(ReportMapper reportMapper){
+        this.reportMapper = reportMapper;
+    }
+
 
     @Override
     public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
@@ -325,7 +330,7 @@ public class ReportServiceImpl implements ReportService {
         if (versionIssues.isEmpty()) {
             return;
         }
-        Set<Date> dateSet = new TreeSet<>((first, second) -> second.compareTo(first));
+        Set<Date> dateSet = new TreeSet<>(Comparator.reverseOrder());
         Map<Date, List<IssueChangeDTO>> completedIssuesMap = statisticalCompletedChange(projectId, versionIssues, dateSet, FIELD_STORY_POINTS);
         Map<Date, List<IssueChangeDTO>> unCompletedIssuesMap = statisticalUnCompletedChange(projectId, versionIssues, dateSet, FIELD_STORY_POINTS);
         Map<Date, List<IssueChangeDTO>> addIssuesMap = statisticalAddChangeIssue(projectId, versionChangeIssue, dateSet, FIELD_STORY_POINTS);
@@ -381,7 +386,7 @@ public class ReportServiceImpl implements ReportService {
         if (versionIssues.isEmpty()) {
             return;
         }
-        Set<Date> dateSet = new TreeSet<>((first, second) -> second.compareTo(first));
+        Set<Date> dateSet = new TreeSet<>(Comparator.reverseOrder());
         Map<Date, List<IssueChangeDTO>> fieldChangeIssuesMap = statisticalFieldChange(projectId, versionIssues, dateSet, field);
         Map<Date, List<IssueChangeDTO>> completedIssuesMap = statisticalCompletedChange(projectId, versionIssues, dateSet, field);
         Map<Date, List<IssueChangeDTO>> unCompletedIssuesMap = statisticalUnCompletedChange(projectId, versionIssues, dateSet, field);
