@@ -75,7 +75,7 @@ class IssueCommentControllerSpec extends Specification {
 
         when: '发送创建issue评论请求'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issue_comment', issueCommentCreateDTO, IssueCommentDTO, projectId)
-
+        print(entity.body)
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
 
