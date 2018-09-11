@@ -34,6 +34,8 @@ public class IssueBurnDownReportDO {
 
     private String statusCode;
 
+    private String statusColor;
+
     private String statusName;
 
     private String typeName;
@@ -198,6 +200,14 @@ public class IssueBurnDownReportDO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getStatusColor() {
+        return statusColor;
+    }
+
+    public void setStatusColor(String statusColor) {
+        this.statusColor = statusColor;
     }
 
     @Override

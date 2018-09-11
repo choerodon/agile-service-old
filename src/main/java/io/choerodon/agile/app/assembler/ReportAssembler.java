@@ -33,6 +33,7 @@ public class ReportAssembler extends AbstractAssembler {
         SprintBurnDownReportDTO sprintBurnDownReportDTO = new SprintBurnDownReportDTO();
         sprintBurnDownReportDTO.setSprintId(sprintDO.getSprintId());
         sprintBurnDownReportDTO.setSprintName(sprintDO.getSprintName());
+        sprintBurnDownReportDTO.setStatusCode(sprintDO.getStatusCode());
         sprintBurnDownReportDTO.setStartDate(sprintDO.getStartDate());
         sprintBurnDownReportDTO.setEndDate(sprintDO.getActualEndDate() == null ? sprintDO.getEndDate() : sprintDO.getActualEndDate());
         return sprintBurnDownReportDTO;

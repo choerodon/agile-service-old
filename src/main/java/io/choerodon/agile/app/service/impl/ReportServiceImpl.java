@@ -96,7 +96,7 @@ public class ReportServiceImpl implements ReportService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportServiceImpl.class);
 
     @Override
-    public void setReportMapper(ReportMapper reportMapper){
+    public void setReportMapper(ReportMapper reportMapper) {
         this.reportMapper = reportMapper;
     }
 
@@ -1171,8 +1171,8 @@ public class ReportServiceImpl implements ReportService {
                 if (sprintDOList != null && !sprintDOList.isEmpty()) {
                     handleBurnDownCoordinateByTypeExistSprint(issueDOS, reportCoordinateDTOS, startDate, sprintDOList, type);
                 } else {
-                    Integer count = issueDOS.stream().filter(IssueBurnDownReportDO::getCompleted).mapToInt(IssueBurnDownReportDO::getStoryPoints).sum()
-                            - issueDOS.stream().filter(IssueBurnDownReportDO::getCompleted).mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
+                    Integer count = issueDOS.stream().mapToInt(IssueBurnDownReportDO::getStoryPoints).sum() -
+                            issueDOS.stream().filter(IssueBurnDownReportDO::getCompleted).mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
                     reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(count, 0, 0, count,
                             type + "开始时的预估", startDate, new Date()));
                 }
@@ -1190,7 +1190,7 @@ public class ReportServiceImpl implements ReportService {
         List<IssueBurnDownReportDO> query = typeCondition ? issueMapper.queryIssueByEpicId(projectId, id) : issueMapper.queryIssueByVersionId(projectId, id);
         burnDownReportDTO.setJsonObject(new JSONObject());
         handleBurnDownReportTypeData(burnDownReportDTO, id, projectId, typeCondition);
-        List<IssueBurnDownReportDO> issueDOList = query.stream().filter(issueBurnDownReportDO->issueBurnDownReportDO.getTypeCode().equals(ISSUE_STORY_CODE)).collect(Collectors.toList());
+        List<IssueBurnDownReportDO> issueDOList = query.stream().filter(issueBurnDownReportDO -> issueBurnDownReportDO.getTypeCode().equals(ISSUE_STORY_CODE)).collect(Collectors.toList());
         if (issueDOList != null && !issueDOList.isEmpty()) {
             List<IssueBurnDownReportDO> incompleteIssues = issueDOList.stream().filter(issueDO -> !issueDO.getCompleted()).collect(Collectors.toList());
             burnDownReportDTO.setIncompleteIssues(reportAssembler.toTargetList(incompleteIssues, IssueBurnDownReportDTO.class));
@@ -1217,12 +1217,7 @@ public class ReportServiceImpl implements ReportService {
                 SprintBurnDownReportDTO sprintBurnDownReportDTO = reportAssembler.sprintBurnDownReportDoToDto(sprintDOList.get(i));
                 Date startDateOne = sprintBurnDownReportDTO.getStartDate();
                 Date startDateTwo = sprintDOList.get(i + 1).getStartDate();
-                List<IssueBurnDownReportDO> duringSprintIncompleteIssues = new ArrayList<>();
-                for (IssueBurnDownReportDO issueDO : completeIssues) {
-                    if (issueDO.getDoneDate().after(startDateOne) && issueDO.getDoneDate().before(startDateTwo)) {
-                        duringSprintIncompleteIssues.add(issueDO);
-                    }
-                }
+                List<IssueBurnDownReportDO> duringSprintIncompleteIssues = handleDuringSprintIncompleteIssues(completeIssues, startDateOne, startDateTwo);
                 sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.toTargetList(duringSprintIncompleteIssues, IssueBurnDownReportDTO.class));
                 sprintBurnDownReportDTOS.add(sprintBurnDownReportDTO);
                 if (i == sprintDOList.size() - 2) {
@@ -1236,6 +1231,16 @@ public class ReportServiceImpl implements ReportService {
             }
         }
         burnDownReportDTO.setSprintBurnDownReportDTOS(sprintBurnDownReportDTOS);
+    }
+
+    private List<IssueBurnDownReportDO> handleDuringSprintIncompleteIssues(List<IssueBurnDownReportDO> completeIssues, Date startDateOne, Date startDateTwo) {
+        List<IssueBurnDownReportDO> duringSprintIncompleteIssues = new ArrayList<>();
+        for (IssueBurnDownReportDO issueDO : completeIssues) {
+            if (issueDO.getDoneDate().after(startDateOne) && issueDO.getDoneDate().before(startDateTwo)) {
+                duringSprintIncompleteIssues.add(issueDO);
+            }
+        }
+        return duringSprintIncompleteIssues;
     }
 
 
@@ -1276,20 +1281,8 @@ public class ReportServiceImpl implements ReportService {
         for (int i = 0; i < sprintDOList.size() - 1; i++) {
             Date startDateOne = sprintDOList.get(i).getStartDate();
             Date startDateTwo = sprintDOList.get(i + 1).getStartDate();
-            Integer start = reportCoordinateDTOS.get(reportCoordinateDTOS.size() - 1).getLeft();
             Date endDate = sprintDOList.get(i).getActualEndDate() == null ? sprintDOList.get(i).getEndDate() : sprintDOList.get(i).getActualEndDate();
-            Integer add = 0;
-            Integer done = 0;
-            for (IssueBurnDownReportDO issueDO : issueDOS) {
-                if (issueDO.getAddDate().after(startDateOne) && issueDO.getAddDate().before(startDateTwo)) {
-                    add += issueDO.getStoryPoints();
-                }
-                if (issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().after(startDateOne) && issueDO.getDoneDate().before(startDateTwo)) {
-                    done += issueDO.getStoryPoints();
-                }
-            }
-            reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(start, add, done, start + add - done,
-                    sprintDOList.get(i).getSprintName(), sprintDOList.get(i).getStartDate(), endDate));
+            handleReportCoordinateDuringSprint(issueDOS, startDateOne, startDateTwo, reportCoordinateDTOS, endDate, sprintDOList.get(i).getSprintName());
             if (i == sprintDOList.size() - 2) {
                 Integer startLast = reportCoordinateDTOS.get(reportCoordinateDTOS.size() - 1).getLeft();
                 Integer addLast = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().after(startDateTwo))
@@ -1302,6 +1295,23 @@ public class ReportServiceImpl implements ReportService {
 
         }
     }
+
+    private void handleReportCoordinateDuringSprint(List<IssueBurnDownReportDO> issueDOS, Date startDateOne, Date startDateTwo, List<BurnDownReportCoordinateDTO> reportCoordinateDTOS, Date endDate, String sprintName) {
+        Integer add = 0;
+        Integer done = 0;
+        Integer start = reportCoordinateDTOS.get(reportCoordinateDTOS.size() - 1).getLeft();
+        for (IssueBurnDownReportDO issueDO : issueDOS) {
+            if (issueDO.getAddDate().after(startDateOne) && issueDO.getAddDate().before(startDateTwo)) {
+                add += issueDO.getStoryPoints();
+            }
+            if (issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().after(startDateOne) && issueDO.getDoneDate().before(startDateTwo)) {
+                done += issueDO.getStoryPoints();
+            }
+        }
+        reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(start, add, done, start + add - done,
+                sprintName, startDateOne, endDate));
+    }
+
 
     private void handleSprintSingle(List<BurnDownReportCoordinateDTO> reportCoordinateDTOS, List<IssueBurnDownReportDO> issueDOS, List<SprintDO> sprintDOList) {
         Integer start = reportCoordinateDTOS.get(0).getLeft();

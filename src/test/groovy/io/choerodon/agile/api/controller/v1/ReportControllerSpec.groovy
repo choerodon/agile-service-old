@@ -507,7 +507,7 @@ class ReportControllerSpec extends Specification {
     }
 
     def 'queryBurnDownReportByType'() {
-        when: 'Epic和版本燃耗图坐标信息'
+        when: 'Epic和版本燃耗图报告信息'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/burn_down_report_type/{id}?type={type}', BurnDownReportDTO, projectId, id, type)
 
         then: '接口是否请求成功'

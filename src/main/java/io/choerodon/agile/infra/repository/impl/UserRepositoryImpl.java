@@ -26,8 +26,12 @@ import java.util.Map;
 @Component
 public class UserRepositoryImpl implements UserRepository {
 
+    private final UserFeignClient userFeignClient;
+
     @Autowired
-    private UserFeignClient userFeignClient;
+    public UserRepositoryImpl(UserFeignClient userFeignClient) {
+        this.userFeignClient = userFeignClient;
+    }
 
     @Override
     public UserDO queryUserNameByOption(Long userId, Boolean withId) {

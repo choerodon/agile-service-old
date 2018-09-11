@@ -19,21 +19,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class IssueLabelRepositoryImpl implements IssueLabelRepository {
 
-    private static final String UPDATE_ERROR = "error.IssueLabel.update";
     private static final String INSERT_ERROR = "error.IssueLabel.insert";
-    private static final String DELETE_ERROR = "error.IssueLabel.delete";
 
     @Autowired
     private IssueLabelMapper issueLabelMapper;
-
-    @Override
-    public IssueLabelE update(IssueLabelE issueLabelE) {
-        IssueLabelDO issueLabelDO = ConvertHelper.convert(issueLabelE, IssueLabelDO.class);
-        if (issueLabelMapper.updateByPrimaryKeySelective(issueLabelDO) != 1) {
-            throw new CommonException(UPDATE_ERROR);
-        }
-        return ConvertHelper.convert(issueLabelMapper.selectByPrimaryKey(issueLabelDO.getLabelId()), IssueLabelE.class);
-    }
 
     @Override
     public IssueLabelE create(IssueLabelE issueLabelE) {
@@ -42,16 +31,6 @@ public class IssueLabelRepositoryImpl implements IssueLabelRepository {
             throw new CommonException(INSERT_ERROR);
         }
         return ConvertHelper.convert(issueLabelMapper.selectByPrimaryKey(issueLabelDO.getLabelId()), IssueLabelE.class);
-    }
-
-    @Override
-    public int delete(Long id) {
-        IssueLabelDO issueLabelDO = issueLabelMapper.selectByPrimaryKey(id);
-        int isDelete = issueLabelMapper.delete(issueLabelDO);
-        if (isDelete != 1) {
-            throw new CommonException(DELETE_ERROR);
-        }
-        return isDelete;
     }
 
     @Override

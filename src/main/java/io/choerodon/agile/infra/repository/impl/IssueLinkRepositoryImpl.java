@@ -21,20 +21,10 @@ import java.util.List;
 @Component
 public class IssueLinkRepositoryImpl implements IssueLinkRepository {
 
-    private static final String UPDATE_ERROR = "error.IssueLink.update";
     private static final String INSERT_ERROR = "error.IssueLink.create";
 
     @Autowired
     private IssueLinkMapper issueLinkMapper;
-
-    @Override
-    public IssueLinkE update(IssueLinkE issueLinkE) {
-        IssueLinkDO issueLinkDO = ConvertHelper.convert(issueLinkE, IssueLinkDO.class);
-        if (issueLinkMapper.updateByPrimaryKeySelective(issueLinkDO) != 1) {
-            throw new CommonException(UPDATE_ERROR);
-        }
-        return ConvertHelper.convert(issueLinkMapper.selectByPrimaryKey(issueLinkDO.getIssueId()), IssueLinkE.class);
-    }
 
     @Override
     public List<IssueLinkE> create(IssueLinkE issueLinkE) {

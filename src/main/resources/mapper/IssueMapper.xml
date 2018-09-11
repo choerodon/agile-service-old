@@ -2143,6 +2143,7 @@
                 ai1.epic_name as name,
                 ai1.epic_name,
                 ai1.issue_id as id,
+                alv2.name AS status_color,
                 ai.story_points,
                 (
                 SELECT
@@ -2179,6 +2180,7 @@
                 LEFT JOIN agile_lookup_value alv1 ON ai.type_code = alv1.value_code
                 LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
                 LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+                LEFT JOIN agile_lookup_value alv2 ON alv2.value_code = ais.category_code
             WHERE
                 ai.epic_id = #{epicId}
                 AND ai.project_id = #{projectId}
@@ -2210,6 +2212,7 @@
                 ai.assignee_id,
                 ai.project_id,
                 ai.story_points,
+                alv2.name AS status_color,
                 apv.name,
                 apv.version_id as id,
                 (
@@ -2248,6 +2251,7 @@
                 LEFT JOIN agile_version_issue_rel avir ON avir.issue_id = ai.issue_id
                 left join agile_product_version apv on apv.version_id = avir.version_id
                 LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+                LEFT JOIN agile_lookup_value alv2 ON alv2.value_code = ais.category_code
             WHERE
                 avir.version_id = #{versionId}
                 AND ai.project_id =  #{projectId}

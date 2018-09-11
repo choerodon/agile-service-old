@@ -3,12 +3,10 @@ package io.choerodon.agile.infra.common.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -18,9 +16,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 public class RedisUtil {
-
-    @Autowired
-    private HashOperations<String, String, Object> hashOperations;
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -39,14 +34,6 @@ public class RedisUtil {
     public Set<String> keys(String key) {
         return redisTemplate.keys(key);
     }
-
-    /**
-     * 重命名key
-     */
-    public void renameKey(String key, String newKey) {
-        redisTemplate.rename(key, newKey);
-    }
-
 
     /**
      * 字符串添加信息
@@ -99,28 +86,6 @@ public class RedisUtil {
     }
 
     /**
-     * 添加单个
-     *
-     * @param key    key
-     * @param filed  filed
-     * @param domain 对象
-     */
-    public void hset(String key, String filed, Object domain) {
-        hashOperations.put(key, filed, domain);
-    }
-
-
-    /**
-     * 添加HashMap
-     *
-     * @param key key
-     * @param hm  要存入的hash表
-     */
-    public void hset(String key, Map<String, Object> hm) {
-        hashOperations.putAll(key, hm);
-    }
-
-    /**
      * 删除redis缓存
      *
      * @param keys keys
@@ -139,54 +104,4 @@ public class RedisUtil {
         }
 
     }
-
-    /**
-     * 查询key和field所确定的值
-     *
-     * @param key   查询的key
-     * @param field 查询的field
-     * @return HV
-     */
-    public Object hget(String key, String field) {
-        return hashOperations.get(key, field);
-    }
-
-    /**
-     * 查询该key下所有值
-     *
-     * @param key 查询的key
-     * @return Object
-     */
-    public Object hget(String key) {
-        return hashOperations.entries(key);
-    }
-
-    /**
-     * 删除key下所有值
-     *
-     * @param key 查询的key
-     */
-    public void deleteKey(String key) {
-        hashOperations.getOperations().delete(key);
-    }
-
-    /**
-     * 判断key和field下是否有值
-     *
-     * @param key   判断的key
-     * @param field 判断的field
-     */
-    public Boolean hasKey(String key, String field) {
-        return hashOperations.hasKey(key, field);
-    }
-
-    /**
-     * 判断key下是否有值
-     *
-     * @param key 判断的key
-     */
-    public Boolean hasKey(String key) {
-        return hashOperations.getOperations().hasKey(key);
-    }
-
 }
