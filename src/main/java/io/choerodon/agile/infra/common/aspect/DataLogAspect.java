@@ -346,7 +346,9 @@ public class DataLogAspect {
             redisUtil.deleteRedisCache(new String[]{PIECHART + projectId + ':' + FIX_VERSION_CACHE});
             versionIssues.forEach(versionIssueDO -> {
                 String field = FIX_VERSION.equals(versionIssueDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
-                redisUtil.deleteRedisCache(new String[]{VERSION_CHART + projectId + ':' + versionIssueDO.getVersionId() + ":" + "*"},);
+                redisUtil.deleteRedisCache(new String[]{VERSION_CHART + projectId + ':' + versionIssueDO.getVersionId() + ":" + "*",
+                        BURN_DOWN_COORDINATE_BY_TYPE + projectId  + ":" +versionIssueDO.getVersionId()+":"+"*"
+                });
                 createDataLog(projectId, versionIssueDO.getIssueId(), field,
                         versionIssueDO.getName(), null, versionIssueDO.getVersionId().toString(), null);
             });
@@ -575,7 +577,7 @@ public class DataLogAspect {
             String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
             redisUtil.deleteRedisCache(new String[]{VERSION_CHART + versionIssueRelE.getProjectId() + ':' + versionIssueRelE.getVersionId() + ":" + "*",
                     PIECHART + versionIssueRelE.getProjectId() + ':' + FIX_VERSION_CACHE,
-                    BURN_DOWN_COORDINATE_BY_TYPE + versionIssueRelE.getProjectId()  + ":" +versionIssueRelE.getVersionId()
+                    BURN_DOWN_COORDINATE_BY_TYPE + versionIssueRelE.getProjectId()  + ":" +versionIssueRelE.getVersionId()+":"+"*"
             });
             productVersionDOS.forEach(productVersionDO -> createDataLog(productVersionDO.getProjectId(), issueId, field,
                     productVersionDO.getName(), null, productVersionDO.getVersionId().toString(), null));
