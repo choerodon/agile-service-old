@@ -106,6 +106,8 @@ class IssueControllerSpec extends Specification {
     def issues = []
     @Shared
     def issuesSize = 0
+    @Shared
+    def resultId = 0
 
     def setup() {
         given: '设置feign调用mockito'
@@ -1000,28 +1002,46 @@ class IssueControllerSpec extends Specification {
         objectExpect!=null
     }
 
-//    def "batchIssueToVersionTest"(){
-//        given: '准备数据'
-//        List<Long> longList=new ArrayList<>()
-//        longList.add(11L)
-//        HttpEntity<List<Long>> requestHttpEntity=new HttpEntity<List>(longList)
-//
-//        when: '发送请求'
-//        def entity = restTemplate.exchange('/v1/projects/{project_id}/issues/to_version_test/{versionId}',
-//                HttpMethod.POST,
-//                requestHttpEntity,
-//                ResponseEntity,
-//                projectId,
-//                versionId)
-//        then: '设置值'
-//        entity.statusCode.is2xxSuccessful()
-//
-//        and:
-//        List<IssueSearchDO> issueSearchDOList=issueMapper.queryIssueByIssueIds(projectId, longList)
-//
-//        expect:'设置期望值'
-//        issueSearchDOList.get(0).versionIds.get(0)==versionId
-//    }
+    def "batchIssueToVersionTest"(){
+        given: '准备数据'
+        IssueCreateDTO issueCreateDTO = new IssueCreateDTO()
+        and: '设置issue属性'
+        issueCreateDTO.typeCode = "issue_test"
+        issueCreateDTO.projectId = projectId
+        issueCreateDTO.description = "测试issue描述"
+        issueCreateDTO.summary = "测试issue概要111111"
+        issueCreateDTO.priorityCode = "hight"
+        issueCreateDTO.assigneeId = 1
+        issueCreateDTO.sprintId = sprintId
+        issueCreateDTO.componentIssueRelDTOList = null
+        issueCreateDTO.labelIssueRelDTOList = null
+        issueCreateDTO.versionIssueRelDTOList = null
+        restTemplate.postForEntity('/v1/projects/{project_id}/issues', issueCreateDTO, IssueDTO, projectId)
+        IssueDO issueDO=new IssueDO()
+        issueDO.summary="测试issue概要111111"
+        and: "获取IssueId"
+        resultId=issueMapper.selectOne(issueDO).issueId
+        issueIdList.add(resultId)
+        List<Long> longList=new ArrayList<>()
+        longList.add(resultId)
+        HttpEntity<List<Long>> requestHttpEntity=new HttpEntity<List>(longList)
+
+        when: '发送请求'
+        def entity = restTemplate.exchange('/v1/projects/{project_id}/issues/to_version_test/{versionId}',
+                HttpMethod.POST,
+                requestHttpEntity,
+                ResponseEntity,
+                projectId,
+                versionId)
+        then: '设置值'
+        entity.statusCode.is2xxSuccessful()
+
+        and:
+        List<IssueSearchDO> issueSearchDOList=issueMapper.queryIssueByIssueIds(projectId, longList)
+
+        expect:'设置期望值'
+        issueSearchDOList.get(0).versionIds.get(0)==versionId
+    }
 
     def "batchDeleteIssues failed"(){
         given: '准备数据'
@@ -1031,16 +1051,39 @@ class IssueControllerSpec extends Specification {
         when: '发送请求'
         try {
             restTemplate.exchange('/v1/projects/{project_id}/issues/to_version_test',
-                    HttpMethod.POST,
+                    HttpMethod.DELETE,
                     requestHttpEntity,
                     ResponseEntity,
-                    projectId,
-                    versionId)
+                    projectId)
         } catch (Exception e) {
             objectExpect=e
         }
         then: '设置值'
         objectExpect!=null
+    }
+
+    def "batchDeleteIssues"() {
+        given: '准备数据'
+        List<Long> longList = new ArrayList<>()
+        longList.add(resultId)
+        HttpEntity<List<Long>> requestHttpEntity = new HttpEntity<List>(longList)
+        and: "准备数据"
+        def issueMapperMock = Mock(IssueMapper)
+        issueService.setIssueMapper(issueMapperMock)
+        issueMapperMock.queryIssueIdsIsTest(*_)>>longList.size()
+        issueMapperMock.queryIssueSubListByIssueIds(*_)>>new ArrayList<Long>()
+        issueMapperMock.batchDeleteIssues(*_)>>null
+
+        when: '发送请求'
+        def entity = restTemplate.exchange('/v1/projects/{project_id}/issues/to_version_test',
+                HttpMethod.DELETE,
+                requestHttpEntity,
+                ResponseEntity,
+                projectId)
+        then: '设置值'
+        entity.statusCode.is2xxSuccessful()
+        and:
+        issueService.setIssueMapper(issueMapper)
     }
 
     def "deleteIssue"() {
