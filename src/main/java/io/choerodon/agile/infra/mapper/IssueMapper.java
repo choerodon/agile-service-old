@@ -31,10 +31,6 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<EpicDataDO> queryEpicList(@Param("projectId") Long projectId);
 
-    List<IssueSearchDO> searchIssue(@Param("issueIds") List<Long> issueIds, @Param("projectId") Long projectId);
-
-    Integer queryBacklogIssueCount(@Param("projectId") Long projectId);
-
     int batchIssueToVersion(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date, @Param("userId") Long userId);
 
     int batchIssueToEpic(@Param("projectId") Long projectId, @Param("epicId") Long epicId, @Param("issueIds") List<Long> issueIds);
@@ -126,15 +122,11 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     int removeIssueFromSprintByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-    int issueToSprint(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueId") Long issueId, @Param("date") Date date, @Param("userId") Long userId);
-
     List<Long> querySubIssueIdsByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
     int deleteIssueFromSprintByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
     SprintNameDO queryActiveSprintNameByIssueId(@Param("issueId") Long issueId);
-
-    List<SprintNameDO> queryCloseSprintNameByIssueId(@Param("issueId") Long issueId);
 
     List<SprintNameDO> querySprintNameByIssueId(@Param("issueId") Long issueId);
 
@@ -320,15 +312,6 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                                @Param("assigneeId") Long assigneeId,
                                                @Param("onlyStory") Boolean onlyStory,
                                                @Param("filterSql") String filterSql);
-
-    /**
-     * 查询当前issue的冲刺（没有关闭的）
-     *
-     * @param projectId projectId
-     * @param issueIds  issueIds
-     * @return IssueSprintDO
-     */
-    List<IssueSprintDO> queryIssueSprintByIssueId(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     Integer countUnResolveByProjectId(Long projectId);
 

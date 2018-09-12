@@ -14,14 +14,6 @@ import java.util.List;
 public interface IssueLinkRepository {
 
     /**
-     * 更新敏捷开发Issue链接
-     *
-     * @param issueLinkE issueLinkE
-     * @return IssueLinkE
-     */
-    IssueLinkE update(IssueLinkE issueLinkE);
-
-    /**
      * 添加一个敏捷开发Issue链接
      *
      * @param issueLinkE issueLinkE

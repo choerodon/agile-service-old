@@ -1,13 +1,22 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO;
+import io.choerodon.agile.api.dto.IssueBurnDownReportDTO;
 import io.choerodon.agile.api.dto.SprintBurnDownReportDTO;
+import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.ColumnDO;
+import io.choerodon.agile.infra.dataobject.IssueBurnDownReportDO;
+import io.choerodon.agile.infra.dataobject.LookupValueDO;
 import io.choerodon.agile.infra.dataobject.SprintDO;
+import io.choerodon.agile.infra.mapper.LookupValueMapper;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author dinghuang123@gmail.com
@@ -15,6 +24,11 @@ import java.util.List;
  */
 @Component
 public class ReportAssembler extends AbstractAssembler {
+
+    @Autowired
+    private LookupValueMapper lookupValueMapper;
+
+    private static final String ISSUE_STATUS_COLOR = "issue_status_color";
 
     public List<CumulativeFlowDiagramDTO> columnListDoToDto(List<ColumnDO> columnDOList) {
         List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = new ArrayList<>();
@@ -33,8 +47,25 @@ public class ReportAssembler extends AbstractAssembler {
         SprintBurnDownReportDTO sprintBurnDownReportDTO = new SprintBurnDownReportDTO();
         sprintBurnDownReportDTO.setSprintId(sprintDO.getSprintId());
         sprintBurnDownReportDTO.setSprintName(sprintDO.getSprintName());
+        sprintBurnDownReportDTO.setStatusCode(sprintDO.getStatusCode());
         sprintBurnDownReportDTO.setStartDate(sprintDO.getStartDate());
         sprintBurnDownReportDTO.setEndDate(sprintDO.getActualEndDate() == null ? sprintDO.getEndDate() : sprintDO.getActualEndDate());
         return sprintBurnDownReportDTO;
+    }
+
+    public List<IssueBurnDownReportDTO> issueBurnDownReportDoToDto(List<IssueBurnDownReportDO> issueBurnDownReportDOS) {
+        List<IssueBurnDownReportDTO> issueBurnDownReportDTOS = new ArrayList<>();
+        if(issueBurnDownReportDOS!=null&&!issueBurnDownReportDOS.isEmpty()){
+            LookupValueDO lookupValueDO = new LookupValueDO();
+            lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
+            Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
+            issueBurnDownReportDOS.forEach(issueBurnDownReportDO -> {
+                IssueBurnDownReportDTO issueBurnDownReportDTO = new IssueBurnDownReportDTO();
+                BeanUtils.copyProperties(issueBurnDownReportDO,issueBurnDownReportDTO);
+                issueBurnDownReportDTO.setStatusColor(ColorUtil.initializationStatusColor(issueBurnDownReportDTO.getStatusCode(), lookupValueMap));
+                issueBurnDownReportDTOS.add(issueBurnDownReportDTO);
+            });
+        }
+        return issueBurnDownReportDTOS;
     }
 }

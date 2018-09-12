@@ -19,17 +19,20 @@ import io.choerodon.agile.api.dto.SprintUpdateDTO
 import io.choerodon.agile.api.dto.VelocitySprintDTO
 import io.choerodon.agile.api.dto.VersionIssueRelDTO
 import io.choerodon.agile.app.service.IssueService
+import io.choerodon.agile.app.service.ReportService
 import io.choerodon.agile.app.service.SprintService
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
 import io.choerodon.agile.infra.dataobject.GroupDataChartDO
 import io.choerodon.agile.infra.dataobject.GroupDataChartListDO
-import io.choerodon.agile.infra.dataobject.IssueDO
+import io.choerodon.agile.infra.dataobject.IssueChangeDO
 import io.choerodon.agile.infra.dataobject.SprintDO
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
+import io.choerodon.agile.infra.dataobject.VersionIssueChangeDO
 import io.choerodon.agile.infra.mapper.BoardColumnMapper
 import io.choerodon.agile.infra.mapper.IssueMapper
+import io.choerodon.agile.infra.mapper.ReportMapper
 import io.choerodon.agile.infra.mapper.SprintMapper
 import io.choerodon.agile.infra.mapper.VersionIssueRelMapper
 import io.choerodon.core.domain.Page
@@ -86,6 +89,12 @@ class ReportControllerSpec extends Specification {
     @Autowired
     private VersionIssueRelMapper versionIssueRelMapper
 
+    @Autowired
+    private ReportService reportService
+
+    @Autowired
+    private ReportMapper reportMapper
+
     @Shared
     def projectId = 1
 
@@ -102,7 +111,7 @@ class ReportControllerSpec extends Specification {
     def sprintId = null
 
     @Shared
-    def issueId = null
+    def issueIds = []
 
     @Shared
     def startDate = MybatisFunctionTestUtil.dataSubFunction(new Date(), -1)
@@ -146,7 +155,25 @@ class ReportControllerSpec extends Specification {
         issueCreateDTO.priorityCode = 'low'
         issueCreateDTO.reporterId = 1
         IssueDTO issueDTO = issueService.createIssue(issueCreateDTO)
-        issueId = issueDTO.issueId
+        issueIds.add(issueDTO.issueId)
+
+        and: '将issue设置为done状态'
+        IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO()
+        issueUpdateDTO.statusId = 3
+        issueUpdateDTO.issueId = issueIds[0]
+        issueUpdateDTO.objectVersionNumber = issueDTO.objectVersionNumber
+        issueService.updateIssue(projectId, issueUpdateDTO, ["statusId"])
+
+        and: '创建不为done的issue'
+        IssueCreateDTO noDone = new IssueCreateDTO()
+        noDone.projectId = projectId
+        noDone.sprintId = sprintId
+        noDone.summary = '加入冲刺issue'
+        noDone.typeCode = 'story'
+        noDone.priorityCode = 'low'
+        noDone.reporterId = 1
+        IssueDTO noDoneIssue = issueService.createIssue(issueCreateDTO)
+        issueIds.add(noDoneIssue.issueId)
 
         and: '设置冲刺开启对象'
         SprintUpdateDTO sprintUpdateDTO = new SprintUpdateDTO()
@@ -179,9 +206,10 @@ class ReportControllerSpec extends Specification {
 
         where: '设置期望值'
         type                     | expectSize
-        'storyPoints'            | 1
-        'remainingEstimatedTime' | 1
-        'issueCount'             | 1
+        'storyPoints'            | 2
+        'remainingEstimatedTime' | 2
+        'issueCount'             | 2
+        'xxx'                    | 2
 
     }
 
@@ -262,7 +290,67 @@ class ReportControllerSpec extends Specification {
 
     }
 
+    def 'queryBurnDownCoordinateByType'() {
+        given: 'issue加入到版本和epic中'
+        IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO()
+        issueUpdateDTO.issueId = issueIds[0]
+        issueUpdateDTO.setObjectVersionNumber(issueMapper.selectByPrimaryKey(issueIds[0]).getObjectVersionNumber())
+        if (type == 'Epic') {
+            issueUpdateDTO.epicId = id
+            issueUpdateDTO.storyPoints = 1
+            issueService.updateIssue(projectId, issueUpdateDTO, ["epicId", "storyPoints"])
+        } else {
+            VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO()
+            versionIssueRelDTO.issueId = issueIds[0]
+            versionIssueRelDTO.versionId = id
+            versionIssueRelDTO.projectId = projectId
+            List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>()
+            versionIssueRelDTOList.add(versionIssueRelDTO)
+            issueUpdateDTO.versionIssueRelDTOList = versionIssueRelDTOList
+            issueUpdateDTO.versionType = "fix"
+            issueService.updateIssue(projectId, issueUpdateDTO, [])
+        }
+
+        when: 'Epic和版本燃耗图坐标信息'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/burn_down_coordinate_type/{id}?type={type}', List, projectId, id, type)
+
+        then: '接口是否请求成功'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置返回值值'
+        List<BurnDownReportCoordinateDTO> burnDownReportCoordinateDTOList = entity.body
+
+        expect: '验证期望值'
+        burnDownReportCoordinateDTOList.size() == expectSize
+
+        where: '设置期望值'
+        type      | id || expectSize
+        'Epic'    | 1  || 2
+        'Version' | 1  || 2
+    }
+
     def 'queryVersionLineChart'() {
+        given: 'mock issueMapper'
+        def reportMapperMock = Mock(ReportMapper)
+        reportService.setReportMapper(reportMapperMock)
+        List<VersionIssueChangeDO> versionIssueChangeDOList = new ArrayList<>()
+        VersionIssueChangeDO versionIssueChangeDO = new VersionIssueChangeDO()
+        versionIssueChangeDO.addIssueIds = [1]
+        versionIssueChangeDO.removeIssueIds = [2]
+        versionIssueChangeDOList.add(versionIssueChangeDO)
+        List<IssueChangeDO> issueChangeDOS = new ArrayList<>()
+        IssueChangeDO issueChangeDO = new IssueChangeDO()
+        issueChangeDO.changeDate = new Date()
+        issueChangeDO.issueId = 1
+        issueChangeDO.issueNum = 'AG-1'
+        issueChangeDO.oldValue = '1'
+        issueChangeDO.newValue = '2'
+        issueChangeDO.status = 'todo'
+        issueChangeDO.changeField = '1'
+        issueChangeDO.typeCode = 'story'
+        issueChangeDO.completed = false
+        issueChangeDOS.add(issueChangeDO)
+
         when: '向版本报告图信息的接口发请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/{versionId}?type={type}', Map, projectId, versionId, type)
 
@@ -273,6 +361,21 @@ class ReportControllerSpec extends Specification {
         Map<String, Object> result = entity.body
         Object productVersionDO = result.get("version")
         List<Object> versionReportDTOList = result.get("versionReport") as List<Object>
+        reportService.setReportMapper(reportMapper)
+
+        and: '判断mock交互并且设置返回值'
+        if (type == 'issueCount') {
+            1 * reportMapperMock.queryCompletedIssueCount(_, _) >> 1
+        } else {
+            1 * reportMapperMock.queryTotalField(projectId, _, _) >> 3
+            1 * reportMapperMock.queryCompleteField(projectId, _, _) >> 1
+            1 * reportMapperMock.queryUnEstimateCount(projectId, _, _) >> 2
+            1 * reportMapperMock.queryChangeFieldIssue(projectId, _, _) >> issueChangeDOS
+        }
+        4 * reportMapperMock.queryChangIssue(projectId, _, _) >> issueChangeDOS
+        1 * reportMapperMock.queryIssueIdByVersionId(projectId, _) >> [1]
+        1 * reportMapperMock.queryChangeIssue(projectId, _, _, _) >> versionIssueChangeDOList
+        2 * reportMapperMock.queryCompletedChangeIssue(projectId, _, _) >> versionIssueChangeDOList
 
         expect: '验证期望值'
         productVersionDO != null
@@ -280,9 +383,9 @@ class ReportControllerSpec extends Specification {
 
         where: '设置期望值'
         type                     || expectSize
-        'storyPoints'            || 1
-        'remainingEstimatedTime' || 1
-        'issueCount'             || 1
+        'storyPoints'            || 2
+        'remainingEstimatedTime' || 2
+        'issueCount'             || 2
 
     }
 
@@ -327,10 +430,10 @@ class ReportControllerSpec extends Specification {
         'typeCode'     || 2
         'version'      || 2
         'priorityCode' || 2
-        'statusCode'   || 1
+        'statusCode'   || 2
         'sprint'       || 3
         'epic'         || 1
-        'resolution'   || 1
+        'resolution'   || 2
 
     }
 
@@ -349,9 +452,9 @@ class ReportControllerSpec extends Specification {
 
         where: '设置期望值'
         type          || expectSize
-        'issue_count' || 0
-        'story_point' || 0
-        'remain_time' || 0
+        'issue_count' || 1
+        'story_point' || 1
+        'remain_time' || 1
     }
 
     def 'epic_issue_list'() {
@@ -365,7 +468,7 @@ class ReportControllerSpec extends Specification {
         List<GroupDataChartListDO> groupDataChartListDOList = entity.body
 
         expect: '验证期望值'
-        groupDataChartListDOList.size() == 1
+        groupDataChartListDOList.size() == 2
     }
 
     def 'version_chart'() {
@@ -383,9 +486,9 @@ class ReportControllerSpec extends Specification {
 
         where: '设置期望值'
         type          || expectSize
-        'issue_count' || 0
-        'story_point' || 0
-        'remain_time' || 0
+        'issue_count' || 1
+        'story_point' || 1
+        'remain_time' || 1
     }
 
     def 'version_issue_list'() {
@@ -399,51 +502,12 @@ class ReportControllerSpec extends Specification {
         List<GroupDataChartListDO> groupDataChartListDOList = entity.body
 
         expect: '验证期望值'
-        groupDataChartListDOList.size() == 1
+        groupDataChartListDOList.size() == 2
 
-    }
-
-    def 'queryBurnDownCoordinateByType'() {
-        given: 'issue加入到版本和epic中'
-        IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO()
-        issueUpdateDTO.issueId = issueId
-        issueUpdateDTO.setObjectVersionNumber(issueMapper.selectByPrimaryKey(issueId).getObjectVersionNumber())
-        if (type == 'Epic') {
-            issueUpdateDTO.epicId = id
-            issueUpdateDTO.storyPoints = 1
-            issueService.updateIssue(projectId, issueUpdateDTO, ["epicId", "storyPoints"])
-        } else {
-            VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO()
-            versionIssueRelDTO.issueId = issueId
-            versionIssueRelDTO.versionId = id
-            versionIssueRelDTO.projectId = projectId
-            List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>()
-            versionIssueRelDTOList.add(versionIssueRelDTO)
-            issueUpdateDTO.versionIssueRelDTOList = versionIssueRelDTOList
-            issueUpdateDTO.versionType = "fix"
-            issueService.updateIssue(projectId, issueUpdateDTO, [])
-        }
-
-        when: 'Epic和版本燃耗图坐标信息'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/burn_down_coordinate_type/{id}?type={type}', List, projectId, id, type)
-
-        then: '接口是否请求成功'
-        entity.statusCode.is2xxSuccessful()
-
-        and: '设置返回值值'
-        List<BurnDownReportCoordinateDTO> burnDownReportCoordinateDTOList = entity.body
-
-        expect: '验证期望值'
-        burnDownReportCoordinateDTOList.size() == expectSize
-
-        where: '设置期望值'
-        type      | id || expectSize
-        'Epic'    | 1  || 2
-        'Version' | 1  || 2
     }
 
     def 'queryBurnDownReportByType'() {
-        when: 'Epic和版本燃耗图坐标信息'
+        when: 'Epic和版本燃耗图报告信息'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/burn_down_report_type/{id}?type={type}', BurnDownReportDTO, projectId, id, type)
 
         then: '接口是否请求成功'
@@ -459,8 +523,8 @@ class ReportControllerSpec extends Specification {
 
         where: '设置期望值'
         type      | id || expectSizeOne | expectSizeTwo
-        'Epic'    | 1  || 1             | 1
-        'Version' | 1  || 1             | 1
+        'Epic'    | 1  || 1             | 0
+        'Version' | 1  || 1             | 0
 
     }
 
@@ -469,17 +533,17 @@ class ReportControllerSpec extends Specification {
         SprintDO sprintDO = new SprintDO()
         sprintDO.sprintId = sprintId
         sprintDO.projectId = projectId
-        IssueDO issueDO = new IssueDO()
-        issueDO.issueId = issueId
-        issueDO.projectId = projectId
 
         when: '删除数据'
         sprintMapper.delete(sprintDO)
-        issueService.deleteIssue(projectId, issueId)
+        issueService.deleteIssue(projectId, issueIds[0])
+        issueService.deleteIssue(projectId, issueIds[1])
 
         then: '验证'
         sprintMapper.selectByPrimaryKey(sprintDO) == null
-        issueMapper.selectByPrimaryKey(issueDO) == null
+        issueMapper.selectByPrimaryKey(issueIds[0]) == null
+        issueMapper.selectByPrimaryKey(issueIds[1]) == null
+
 
     }
 

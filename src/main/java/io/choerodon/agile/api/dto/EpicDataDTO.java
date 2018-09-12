@@ -6,6 +6,7 @@ package io.choerodon.agile.api.dto;
 public class EpicDataDTO {
     private Long issueId;
     private String summary;
+    private String issueNum;
     private String description;
     private String epicName;
     private Long projectId;
@@ -111,5 +112,13 @@ public class EpicDataDTO {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public String getIssueNum() {
+        return issueNum;
+    }
+
+    public void setIssueNum(String issueNum) {
+        this.issueNum = issueNum;
     }
 }

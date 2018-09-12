@@ -20,6 +20,8 @@ public class IssueBurnDownReportDTO {
 
     private String priorityCode;
 
+    private String statusColor;
+
     private Long assigneeId;
 
     private Long projectId;
@@ -146,6 +148,14 @@ public class IssueBurnDownReportDTO {
 
     public void setTypeName(String typeName) {
         this.typeName = typeName;
+    }
+
+    public String getStatusColor() {
+        return statusColor;
+    }
+
+    public void setStatusColor(String statusColor) {
+        this.statusColor = statusColor;
     }
 
     @Override

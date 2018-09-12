@@ -10,13 +10,6 @@ import io.choerodon.agile.domain.agile.entity.IssueLabelE;
  */
 public interface IssueLabelRepository {
 
-    /**
-     * 更新敏捷开发Issue标签
-     *
-     * @param issueLabelE issueLabelE
-     * @return IssueLabelE
-     */
-    IssueLabelE update(IssueLabelE issueLabelE);
 
     /**
      * 添加一个敏捷开发Issue标签
@@ -25,14 +18,6 @@ public interface IssueLabelRepository {
      * @return IssueLabelE
      */
     IssueLabelE create(IssueLabelE issueLabelE);
-
-    /**
-     * 根据id删除敏捷开发Issue标签
-     *
-     * @param id id
-     * @return int
-     */
-    int delete(Long id);
 
     /**
      * 不是使用中的issue标签垃圾回收

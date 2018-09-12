@@ -15,6 +15,8 @@ public class SprintBurnDownReportDTO {
 
     private String sprintName;
 
+    private String statusCode;
+
     private Date startDate;
 
     private Date endDate;
@@ -59,6 +61,14 @@ public class SprintBurnDownReportDTO {
 
     public void setCompleteIssues(List<IssueBurnDownReportDTO> completeIssues) {
         this.completeIssues = completeIssues;
+    }
+
+    public String getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
     }
 
     @Override

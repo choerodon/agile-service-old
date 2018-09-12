@@ -101,31 +101,6 @@
         ORDER BY ai.rank asc
     </select>
 
-
-    <select id="queryIssueCountMap" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
-        SELECT
-        asp.sprint_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
-        FROM agile_sprint asp
-        LEFT JOIN (
-        SELECT aisr.sprint_id AS sprint_id, COUNT(1) AS issue_count
-        FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
-        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND ai.type_code NOT IN ('sub_task',
-        'issue_epic')
-        AND ai.status_id = ais.id AND ais.category_code != 'done'
-        AND aisr.sprint_id IN
-        <foreach collection="sprintIds" item="sprintId"
-                 open="(" close=")" separator=",">
-            #{sprintId}
-        </foreach>
-        GROUP BY aisr.sprint_id
-        ) ic ON ic.sprint_id = asp.sprint_id
-        WHERE asp.project_id = #{projectId} AND asp.sprint_id IN
-        <foreach collection="sprintIds" item="sprintId"
-                 open="(" close=")" separator=",">
-            #{sprintId}
-        </foreach>
-    </select>
-
     <select id="queryStoryPoint" resultType="java.lang.Integer">
         SELECT IFNULL(SUM(ai.story_points), 0)
         FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
@@ -478,63 +453,6 @@
             )
     </select>
 
-    <select id="queryAssigneeIssueCount" resultType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
-        SELECT a.sprint_id, a.assignee_id,
-        SUM(a.story_points) AS total_story_points,
-        SUM(a.remaining_time) AS total_remaining_time,
-        COUNT(1) AS issue_count
-        FROM (
-        SELECT
-        aisr.sprint_id, IFNULL(ai.assignee_id, 0) AS assignee_id,
-        ai.story_points, ai.remaining_time
-        FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
-        WHERE aisr.issue_id = ai.issue_id
-        AND ai.status_id = ais.id AND ais.category_code != 'done' AND aisr.sprint_id IN
-        <foreach collection="sprintIds" item="sprintId" open="("
-                 separator="," close=")">
-            #{sprintId}
-        </foreach>
-        and ai.issue_id IN
-        <foreach collection="issueIds" item="issueId" index="index"
-                 open="(" close=")" separator=",">
-            #{issueId}
-        </foreach>
-        <if test="assigned == false">
-            AND (ai.assignee_id IS NULL OR ai.assignee_id = 0)
-        </if>
-        <if test="assigned == true">
-            AND ai.assignee_id IS NOT NULL AND ai.assignee_id != 0
-        </if>
-        ) a
-        GROUP BY a.sprint_id, a.assignee_id
-    </select>
-
-    <select id="queryAssigneeIssueCountById" resultType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
-        SELECT a.sprint_id, a.assignee_id,
-        SUM(a.story_points) AS total_story_points,
-        SUM(a.remaining_time) AS total_remaining_time,
-        COUNT(1) AS issue_count
-        FROM (
-        SELECT
-        aisr.sprint_id, IFNULL(ai.assignee_id, 0) AS assignee_id,
-        ai.story_points, ai.remaining_time
-        FROM agile_issue ai, agile_issue_sprint_rel aisr
-        WHERE aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
-        and ai.issue_id IN
-        <foreach collection="issueIds" item="issueId" index="index"
-                 open="(" close=")" separator=",">
-            #{issueId}
-        </foreach>
-        <if test="assigned == false">
-            AND (ai.assignee_id IS NULL OR ai.assignee_id = 0)
-        </if>
-        <if test="assigned == true">
-            AND ai.assignee_id IS NOT NULL AND ai.assignee_id != 0
-        </if>
-        ) a
-        GROUP BY a.sprint_id, a.assignee_id
-    </select>
-
     <select id="queryIssueIdOrderByRankDesc" resultType="java.lang.Long">
         SELECT ai.issue_id
         FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
@@ -574,12 +492,6 @@
         WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
               AND ai.type_code != 'sub_task' AND ai.status_id = ais.id
               AND ais.category_code != 'done'
-    </select>
-
-    <select id="querySprintNameBySprintId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
-        SELECT sprint_id, sprint_name
-        FROM agile_sprint
-        WHERE project_id = #{projectId} AND sprint_id = #{sprintId}
     </select>
 
     <select id="queryUnClosedSprint" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
