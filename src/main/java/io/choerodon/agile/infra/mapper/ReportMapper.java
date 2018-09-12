@@ -1,6 +1,5 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.infra.dataobject.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -45,23 +44,6 @@ public interface ReportMapper {
     List<ReportIssueDO> queryRemoveIssueValueDurationSprint(@Param("issueIdRemoveList") List<Long> issueIdRemoveList, @Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
 
     /**
-     * 获取冲刺开启前的issue计数
-     *
-     * @param sprintE sprintE
-     * @return issueCounts
-     */
-    Integer queryIssueTotalCountBeforeSprintStart(@Param("sprintE") SprintE sprintE);
-
-    /**
-     * 获取冲刺开启前的剩余预计时间总和
-     *
-     * @param issueIdList issueIdList
-     * @param sprintDO    sprintDO
-     * @return Integer
-     */
-    Integer queryRemainingTimesBeforeSprintStart(@Param("issueIdList") List<Long> issueIdList, @Param("sprintDO") SprintDO sprintDO);
-
-    /**
      * 获取冲刺开启前的issue
      *
      * @param sprintDO sprintDO
@@ -84,14 +66,6 @@ public interface ReportMapper {
      * @return issueIdList
      */
     List<Long> queryRemoveIssueIdsDuringSprintWithOutSubEpicIssue(@Param("sprintDO") SprintDO sprintDO);
-
-    /**
-     * 获取冲刺关系中的的issue
-     *
-     * @param sprintId sprintId
-     * @return issueIdList
-     */
-    List<Long> queryIssueIdsBySprintId(@Param("sprintId") Long sprintId);
 
     /**
      * 查询在冲刺期间添加的issue，包含issue加入的时间
@@ -212,30 +186,11 @@ public interface ReportMapper {
      */
     List<ReportIssueDO> queryIssueValueAfterSprint(@Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
 
-    /**
-     * 查询issue加入冲刺的时间
-     *
-     * @param issueId  issueId
-     * @param sprintId sprintId
-     * @return Date
-     */
-    Date queryAddIssueDuringSprintNoData(@Param("issueId") Long issueId, @Param("sprintId") Long sprintId);
-
     List<Long> queryReportIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("startDate") Date startDate, @Param("actualEndDate") Date actualEndDate, @Param("status") Boolean status);
 
     List<IssueDO> queryIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     List<SprintReportIssueStatusDO> queryIssueStoryPoints(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("actualEndDate") Date actualEndDate);
-
-    /**
-     * 获取快捷创建的issue的字段值
-     *
-     * @param issueId issueId
-     * @param date    date
-     * @param field   field
-     * @return Integer
-     */
-    Integer queryAddIssueValueDuringSprintNoData(@Param("issueId") Long issueId, @Param("date") Date date, @Param("field") String field);
 
     List<SprintReportIssueStatusDO> queryBeforeIssueStatus(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("startDate") Date startDate, @Param("actualEndDate") Date actualEndDate);
 

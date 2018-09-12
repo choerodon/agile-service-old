@@ -158,50 +158,6 @@
         WHERE board_id = #{boardId}
     </update>
 
-    <select id="selectColumnByStatusId" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDO">
-        SELECT
-            abc.min_num,
-            abc.max_num,
-            aif.co AS issue_count
-        FROM
-            agile_board_column abc,
-            agile_board_column_status_rel abcsr,
-            (
-                SELECT COUNT(ai.issue_id) AS co
-                FROM
-                    agile_issue ai, agile_issue_status ais, agile_board_column_status_rel abcsr2
-                WHERE
-                    abcsr2.column_id = #{columnId} AND ais.column_id = abcsr2.column_id AND ai.status_id = ais.id
-            ) aif
-        WHERE
-            abc.column_id = abcsr.column_id
-            AND abcsr.status_id = #{statusId}
-            AND abcsr.column_id = #{columnId}
-    </select>
-
-    <select id="selectColumnByStatusIdWithoutSubIssue"
-            resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDO">
-        SELECT
-            abc.min_num,
-            abc.max_num,
-            aif.co AS issue_count
-        FROM
-            agile_board_column abc,
-            agile_board_column_status_rel abcsr,
-            (
-                SELECT COUNT(ai.issue_id) AS co
-                FROM
-                    agile_issue ai, agile_issue_status ais, agile_board_column_status_rel abcsr2
-                WHERE
-                    abcsr2.column_id = #{columnId} AND ais.column_id = abcsr2.column_id AND ai.status_id = ais.id AND
-                    ai.parent_issue_id = 0
-            ) aif
-        WHERE
-            abc.column_id = abcsr.column_id
-            AND abcsr.status_id = #{statusId}
-            AND abcsr.column_id = #{columnId}
-    </select>
-
     <select id="queryColumnStatusRelByProjectId" resultType="io.choerodon.agile.infra.dataobject.ColumnWithStatusRelDO">
         SELECT
             DISTINCT
@@ -281,15 +237,6 @@
         WHERE
             board_id = #{boardId} AND sequence > #{sequence}
     </update>
-
-    <select id="queryAssigneeIdsBySprintId" resultType="java.lang.Long">
-        SELECT DISTINCT ai.assignee_id
-        FROM
-            agile_issue ai, agile_issue_sprint_rel aisr
-        WHERE
-            ai.project_id = #{projectId} AND ai.issue_id = aisr.issue_id
-            AND aisr.sprint_id = #{activeSprintId}
-    </select>
 
     <select id="queryColumnByColumnIds" resultType="io.choerodon.agile.infra.dataobject.ColumnDO">
         SELECT abc.column_id ,abc.name,alv.name as color,abc.category_code

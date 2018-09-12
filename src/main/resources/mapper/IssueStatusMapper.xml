@@ -41,12 +41,6 @@
                 ) = 0
     </select>
 
-    <select id="queryIdByProjectIdAndCategoryCode" resultType="java.lang.Long">
-        SELECT id
-        FROM agile_issue_status
-        WHERE project_id = #{projectId} AND category_code = #{categoryCode}
-    </select>
-
     <select id="queryIssueStatus" resultType="io.choerodon.agile.infra.dataobject.IssueStatusCreateDO">
         SELECT
             id,

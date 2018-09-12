@@ -34,14 +34,6 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
     void updateColumnColor(@Param("boardId") Long boardId,
                            @Param("columnNum") Integer columnNum);
 
-    BoardColumnCheckDO selectColumnByStatusId(@Param("projectId") Long projectId,
-                                              @Param("statusId") Long statusId,
-                                              @Param("columnId") Long columnId);
-
-    BoardColumnCheckDO selectColumnByStatusIdWithoutSubIssue(@Param("projectId") Long projectId,
-                                                             @Param("statusId") Long statusId,
-                                                             @Param("columnId") Long columnId);
-
     List queryColumnStatusRelByProjectId(@Param("projectId") Long projectId);
 
     BoardColumnCheckDO selectColumnByColumnId(@Param("projectId") Long projectId,
@@ -57,15 +49,6 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
     List<BoardColumnDO> selectByBoardIdOrderBySequence(@Param("boardId") Long boardId);
 
     void updateSequenceWhenDelete(@Param("boardId") Long boardId, @Param("sequence") Integer sequence);
-
-    /**
-     * 根据冲刺id查询当前冲刺所有用户
-     *
-     * @param projectId      projectId
-     * @param activeSprintId activeSprintId
-     * @return Long
-     */
-    List<Long> queryAssigneeIdsBySprintId(@Param("projectId") Long projectId, @Param("activeSprintId") Long activeSprintId);
 
     /**
      * 根据列id获取列对象

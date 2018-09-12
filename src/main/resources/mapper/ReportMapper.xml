@@ -178,14 +178,6 @@
         WHERE ai.type_code != 'sub_task'
     </select>
 
-    <select id="queryIssueIdsBySprintId" resultType="java.lang.Long">
-        SELECT aisr.issue_id
-        FROM
-            agile_issue_sprint_rel aisr
-        WHERE
-            aisr.sprint_id = #{sprintId}
-    </select>
-
     <select id="queryRemoveIssueValueDurationSprint"
             resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
         SELECT
@@ -730,13 +722,6 @@
             LEFT JOIN agile_project_info api2 ON api2.project_id = ai2.project_id
     </select>
 
-    <select id="queryAddIssueDuringSprintNoData"
-            resultType="java.util.Date">
-        SELECT a.creation_date
-        FROM agile_issue_sprint_rel a
-        WHERE a.issue_id = #{issueId} AND a.sprint_id = #{sprintId}
-    </select>
-
     <select id="queryReportIssueIds" resultType="java.lang.Long">
         SELECT
         ai.issue_id
@@ -869,15 +854,6 @@
         GROUP BY issue_id
         ) a
         WHERE adl.log_id = a.log_id AND ais.id = adl.old_value
-    </select>
-
-    <select id="queryAddIssueValueDuringSprintNoData" resultType="java.lang.Integer">
-        SELECT IFNULL(adl2.new_string, 0) AS new_value
-        FROM (SELECT MAX(adl.log_id) AS log_Id
-              FROM agile_data_log adl
-              WHERE adl.issue_id = #{issueId} AND adl.field = #{field}
-                    AND adl.creation_date &lt;= #{date}
-              GROUP BY adl.issue_id) cd LEFT JOIN agile_data_log adl2 ON cd.log_id = adl2.log_id
     </select>
 
     <select id="checkIssueDoneStatus" resultType="java.lang.Boolean">

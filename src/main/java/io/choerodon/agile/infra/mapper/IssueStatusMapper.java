@@ -17,15 +17,6 @@ public interface IssueStatusMapper extends BaseMapper<IssueStatusDO> {
     List queryUnCorrespondStatus(@Param("projectId") Long projectId, @Param("boardId") Long boardId);
 
     /**
-     * 根据项目id和categoryCode查询statusId
-     *
-     * @param projectId    projectId
-     * @param categoryCode categoryCode
-     * @return Long
-     */
-    Long queryIdByProjectIdAndCategoryCode(@Param("projectId") Long projectId, @Param("categoryCode") String categoryCode);
-
-    /**
      * 根据项目id查询第一列的第一个状态
      *
      * @param projectId projectId

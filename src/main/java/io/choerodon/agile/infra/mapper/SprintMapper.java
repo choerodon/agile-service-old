@@ -40,8 +40,6 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     int queryStoryPoint(@Param("categoryCode") String categoryCode, @Param("issueIds") List<Long> issueIds, @Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    List<IssueCountDO> queryIssueCountMap(@Param("projectId") Long projectId, @Param("sprintIds") List<Long> sprintIds);
-
     SprintDO queryLastSprint(@Param("projectId") Long projectId);
 
     List<SprintNameDO> queryPlanSprintName(@Param("projectId") Long projectId);
@@ -50,17 +48,11 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     int queryNotDoneIssueCount(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    List<AssigneeIssueDO> queryAssigneeIssueCount(@Param("sprintIds") List<Long> sprintIds, @Param("issueIds") List<Long> issueIds, @Param("assigned") Boolean assigned);
-
-    List<AssigneeIssueDO> queryAssigneeIssueCountById(@Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds, @Param("assigned") Boolean assigned);
-
     List<Long> queryIssueIdOrderByRankDesc(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
     List<IssueNumDO> queryParentsDoneUnfinishedSubtasks(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
     List<Long> queryIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
-
-    SprintNameDO querySprintNameBySprintId(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
     List<Long> queryAllRankIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 

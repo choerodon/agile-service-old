@@ -1193,7 +1193,7 @@ public class ReportServiceImpl implements ReportService {
         List<IssueBurnDownReportDO> issueDOList = query.stream().filter(issueBurnDownReportDO -> issueBurnDownReportDO.getTypeCode().equals(ISSUE_STORY_CODE)).collect(Collectors.toList());
         if (issueDOList != null && !issueDOList.isEmpty()) {
             List<IssueBurnDownReportDO> incompleteIssues = issueDOList.stream().filter(issueDO -> !issueDO.getCompleted()).collect(Collectors.toList());
-            burnDownReportDTO.setIncompleteIssues(reportAssembler.toTargetList(incompleteIssues, IssueBurnDownReportDTO.class));
+            burnDownReportDTO.setIncompleteIssues(reportAssembler.issueBurnDownReportDoToDto(incompleteIssues));
             Date startDate = typeCondition ? issueMapper.selectByPrimaryKey(id).getCreationDate() : versionMapper.selectByPrimaryKey(id).getCreationDate();
             List<SprintDO> sprintDOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate);
             if (sprintDOList != null && !sprintDOList.isEmpty()) {
@@ -1210,7 +1210,7 @@ public class ReportServiceImpl implements ReportService {
             SprintBurnDownReportDTO sprintBurnDownReportDTO = reportAssembler.sprintBurnDownReportDoToDto(sprintDOList.get(0));
             List<IssueBurnDownReportDO> singleCompleteIssues = completeIssues.stream().filter(issueDO ->
                     issueDO.getDoneDate().after(sprintBurnDownReportDTO.getStartDate())).collect(Collectors.toList());
-            sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.toTargetList(singleCompleteIssues, IssueBurnDownReportDTO.class));
+            sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(singleCompleteIssues));
             sprintBurnDownReportDTOS.add(sprintBurnDownReportDTO);
         } else {
             for (int i = 0; i < sprintDOList.size() - 1; i++) {
@@ -1218,13 +1218,13 @@ public class ReportServiceImpl implements ReportService {
                 Date startDateOne = sprintBurnDownReportDTO.getStartDate();
                 Date startDateTwo = sprintDOList.get(i + 1).getStartDate();
                 List<IssueBurnDownReportDO> duringSprintIncompleteIssues = handleDuringSprintIncompleteIssues(completeIssues, startDateOne, startDateTwo);
-                sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.toTargetList(duringSprintIncompleteIssues, IssueBurnDownReportDTO.class));
+                sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(duringSprintIncompleteIssues));
                 sprintBurnDownReportDTOS.add(sprintBurnDownReportDTO);
                 if (i == sprintDOList.size() - 2) {
                     SprintBurnDownReportDTO lastSprintBurnDownReportDTO = reportAssembler.sprintBurnDownReportDoToDto(sprintDOList.get(i + 1));
                     List<IssueBurnDownReportDO> lastCompleteIssues = completeIssues.stream().filter(issueDO ->
                             issueDO.getDoneDate().after(lastSprintBurnDownReportDTO.getStartDate())).collect(Collectors.toList());
-                    lastSprintBurnDownReportDTO.setCompleteIssues(reportAssembler.toTargetList(lastCompleteIssues, IssueBurnDownReportDTO.class));
+                    lastSprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(lastCompleteIssues));
                     lastSprintBurnDownReportDTO.setEndDate(lastSprintBurnDownReportDTO.getEndDate() == null ? new Date() : lastSprintBurnDownReportDTO.getEndDate());
                     sprintBurnDownReportDTOS.add(lastSprintBurnDownReportDTO);
                 }

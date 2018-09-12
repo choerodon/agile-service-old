@@ -6,6 +6,7 @@ package io.choerodon.agile.infra.dataobject;
 public class EpicDataDO {
     private Long issueId;
     private String summary;
+    private String issueNum;
     private String description;
     private String epicName;
     private Long projectId;
@@ -71,6 +72,14 @@ public class EpicDataDO {
 
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
+    }
+
+    public String getIssueNum() {
+        return issueNum;
+    }
+
+    public void setIssueNum(String issueNum) {
+        this.issueNum = issueNum;
     }
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
