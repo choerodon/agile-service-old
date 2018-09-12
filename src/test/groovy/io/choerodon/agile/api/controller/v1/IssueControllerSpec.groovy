@@ -5,7 +5,6 @@ import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.*
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
-import io.choerodon.agile.app.service.impl.IssueServiceImpl
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.mapper.*
@@ -19,6 +18,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
+import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
 import spock.lang.Specification
@@ -980,8 +980,70 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def "deleteIssue"() {
+    def "batchIssueToVersionTest failed"(){
+        given: '准备数据'
+        def objectExpect=null
+        HttpEntity<List<Long>> requestHttpEntity=new HttpEntity<List>(issueIdList)
 
+        when: '发送请求'
+        try {
+            restTemplate.exchange('/v1/projects/{project_id}/issues/to_version_test/{versionId}',
+                    HttpMethod.POST,
+                    requestHttpEntity,
+                    ResponseEntity,
+                    projectId,
+                    versionId)
+        } catch (Exception e) {
+            objectExpect=e
+        }
+        then: '设置值'
+        objectExpect!=null
+    }
+
+//    def "batchIssueToVersionTest"(){
+//        given: '准备数据'
+//        List<Long> longList=new ArrayList<>()
+//        longList.add(11L)
+//        HttpEntity<List<Long>> requestHttpEntity=new HttpEntity<List>(longList)
+//
+//        when: '发送请求'
+//        def entity = restTemplate.exchange('/v1/projects/{project_id}/issues/to_version_test/{versionId}',
+//                HttpMethod.POST,
+//                requestHttpEntity,
+//                ResponseEntity,
+//                projectId,
+//                versionId)
+//        then: '设置值'
+//        entity.statusCode.is2xxSuccessful()
+//
+//        and:
+//        List<IssueSearchDO> issueSearchDOList=issueMapper.queryIssueByIssueIds(projectId, longList)
+//
+//        expect:'设置期望值'
+//        issueSearchDOList.get(0).versionIds.get(0)==versionId
+//    }
+
+    def "batchDeleteIssues failed"(){
+        given: '准备数据'
+        def objectExpect=null
+        HttpEntity<List<Long>> requestHttpEntity=new HttpEntity<List>(issueIdList)
+
+        when: '发送请求'
+        try {
+            restTemplate.exchange('/v1/projects/{project_id}/issues/to_version_test',
+                    HttpMethod.POST,
+                    requestHttpEntity,
+                    ResponseEntity,
+                    projectId,
+                    versionId)
+        } catch (Exception e) {
+            objectExpect=e
+        }
+        then: '设置值'
+        objectExpect!=null
+    }
+
+    def "deleteIssue"() {
         when: '执行方法'
         restTemplate.delete('/v1/projects/{project_id}/issues/{issueId}', projectId, issueId)
 

@@ -41,10 +41,11 @@
                  open="(" close=")" separator=",">
             #{versionId}
         </foreach>
-        order by field(apv.version_id,
-        <foreach collection="versionIds" item="versionId" index="index" separator=",">
-            #{versionId}
-        </foreach>)
+        order by CASE apv.version_id
+        <foreach collection="versionIds" item="versionId" index="index">
+            when #{versionId} then #{index}
+        </foreach>
+        END
     </select>
 
     <select id="isRepeatName" resultType="java.lang.Boolean">

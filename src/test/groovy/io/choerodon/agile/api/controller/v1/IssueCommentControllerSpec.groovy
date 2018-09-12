@@ -49,6 +49,9 @@ class IssueCommentControllerSpec extends Specification {
     @Shared
     def projectId = 1
 
+    @Shared
+    def resultTest=0
+
     def setup() {
         given: '设置feign调用mockito'
         // *_表示任何长度的参数（这里表示只要执行了queryUsersMap这个方法，就让它返回一个空的Map
@@ -64,14 +67,15 @@ class IssueCommentControllerSpec extends Specification {
 
     def 'createIssueComment'() {
         given: '准备IssueCommentCreateDTO'
+        resultTest=issueMapper.selectAll().get(0).issueId
         IssueCommentCreateDTO issueCommentCreateDTO = new IssueCommentCreateDTO()
-        issueCommentCreateDTO.issueId = 1L
+        issueCommentCreateDTO.issueId = resultTest
         issueCommentCreateDTO.commentText = '这是一条测试评论'
 
 
         when: '发送创建issue评论请求'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issue_comment', issueCommentCreateDTO, IssueCommentDTO, projectId)
-
+        print(entity.body)
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
 
@@ -119,10 +123,10 @@ class IssueCommentControllerSpec extends Specification {
         result.size() == expectSize
 
         where: '期望值'
-        issueId | expectSize
-        1L      | 1
-        2L      | 0
-        10L     | 0
+        issueId    | expectSize
+        resultTest | 1
+        2L         | 0
+        10L        | 0
     }
 
     def 'deleteIssueComment'() {
@@ -145,5 +149,4 @@ class IssueCommentControllerSpec extends Specification {
         commentId | expectObject
         1L        | null
     }
-
 }

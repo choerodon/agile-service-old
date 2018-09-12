@@ -3,12 +3,15 @@ package io.choerodon.agile.api.controller.v1
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.*
+import io.choerodon.agile.app.service.ProductVersionService
 import io.choerodon.agile.infra.dataobject.ProductVersionDO
 import io.choerodon.agile.infra.dataobject.VersionIssueRelDO
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.ProductVersionMapper
 import io.choerodon.agile.infra.mapper.VersionIssueRelMapper
+import io.choerodon.core.domain.Page
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
@@ -35,6 +38,10 @@ class ProductVersionControllerSpec extends Specification {
 
     @Autowired
     VersionIssueRelMapper versionIssueRelMapper
+
+    @Autowired
+    @Qualifier("productVersionService")
+    ProductVersionService productVersionService
 
     @Autowired
     IssueMapper issueMapper
@@ -371,35 +378,30 @@ class ProductVersionControllerSpec extends Specification {
 
     }
 
-//    def 'listByOptions'() {
-//        given:
-//        ProductVersionMapper productVersionMapper = new DetachedMockFactory().Mock(ProductVersionMapper)
-//        List<ProductVersionDO> listData =new ArrayList<>()
-//        listData.add(result)
-//        productVersionMapper.queryVersionByIds(*_) >> listData
-//        Map<String, Object> searchParamMap = new HashMap<>()
-//        Map<String, Object> map = new HashMap<>()
-//        map.put("name", result.name)
-//        searchParamMap.put("searchArgs", map)
-//        HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(searchParamMap)
-//
-//        when:
-//        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/versions?page=0&size=10",
-//                HttpMethod.POST,
-//                null,
-//                Page,
-//                projectId)
-//
-//        then:
-//        entity.statusCode.is2xxSuccessful()
-//
-//        and:
-//        List<ProductVersionPageDTO> list = entity.body.content
-//
-//        expect: "设置期望值"
-//        list.size() > 0
-//
-//    }
+    def 'listByOptions'() {
+        given:
+        Map<String, Object> searchParamMap = new HashMap<>()
+        Map<String, Object> map = new HashMap<>()
+        map.put("name", result.name)
+        searchParamMap.put("searchArgs", map)
+        HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(searchParamMap)
+
+        when:
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/versions?page=0&size=10",
+                HttpMethod.POST,
+                httpEntity,
+                Page,
+                projectId)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+
+        and:
+        List<ProductVersionPageDTO> list = entity.body.content
+
+        expect: "设置期望值"
+        list.size() > 0
+    }
 
     def 'queryVersionStatisticsByVersionId'() {
         when:
@@ -658,6 +660,4 @@ class ProductVersionControllerSpec extends Specification {
         deleteDO == null
         versionIssueRelMapper.selectAll().size() == 1
     }
-
-
 }
