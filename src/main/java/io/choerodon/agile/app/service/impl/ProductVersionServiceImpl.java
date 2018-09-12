@@ -416,8 +416,4 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         return ConvertHelper.convert(productVersionMapper.queryVersionStatisticsByVersionId(projectId, versionId), VersionIssueCountDTO.class);
     }
 
-    @Override
-    public void setProductVersionMapper(ProductVersionMapper productVersionMapper) {
-        this.productVersionMapper=productVersionMapper;
-    }
 }

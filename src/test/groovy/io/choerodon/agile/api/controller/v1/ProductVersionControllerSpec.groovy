@@ -380,23 +380,6 @@ class ProductVersionControllerSpec extends Specification {
 
     def 'listByOptions'() {
         given:
-        def mockProductVersionMapper= Mock(ProductVersionMapper)
-        productVersionService.setProductVersionMapper(mockProductVersionMapper)
-        List<ProductVersionDO> listData =new ArrayList<>()
-        listData.add(result)
-        mockProductVersionMapper.queryVersionByIds(*_) >> listData
-
-        Page<Long> longPage =new Page()
-        longPage.totalPages=1
-        longPage.totalElements=2L
-        longPage.numberOfElements=2
-        longPage.size=2
-        longPage.number=2
-        List<Long> doList=new ArrayList<>()
-        doList.add(1L)
-        longPage.content=doList
-        mockProductVersionMapper.queryVersionIdsByProjectId(projectId,_,_) >> longPage
-
         Map<String, Object> searchParamMap = new HashMap<>()
         Map<String, Object> map = new HashMap<>()
         map.put("name", result.name)
@@ -415,7 +398,6 @@ class ProductVersionControllerSpec extends Specification {
 
         and:
         List<ProductVersionPageDTO> list = entity.body.content
-        productVersionService.setProductVersionMapper(productVersionMapper)
 
         expect: "设置期望值"
         list.size() > 0

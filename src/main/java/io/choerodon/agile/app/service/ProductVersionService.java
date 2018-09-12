@@ -68,5 +68,4 @@ public interface ProductVersionService {
 
     VersionIssueCountDTO queryByCategoryCode(Long projectId, Long versionId);
 
-    void setProductVersionMapper(ProductVersionMapper productVersionMapper);
 }
