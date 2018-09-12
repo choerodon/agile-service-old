@@ -57,6 +57,7 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
                 "Agile:CumulativeFlowDiagram" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:VelocityChart" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:EpicChart" + issueStatusE.getProjectId() + ":" + "*",
+                "Agile:BurnDownCoordinateByType" + issueStatusE.getProjectId() + ":" + "*",
                 PIECHART + issueStatusE.getProjectId() + ':' + STATUS,
                 PIECHART + issueStatusE.getProjectId() + ':' + "resolution"
         });
@@ -73,6 +74,7 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
                 "Agile:CumulativeFlowDiagram" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:VelocityChart" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:EpicChart" + issueStatusE.getProjectId() + ":" + "*",
+                "Agile:BurnDownCoordinateByType" + issueStatusE.getProjectId() + ":" + "*",
                 PIECHART + issueStatusE.getProjectId() + ':' + STATUS,
                 PIECHART + issueStatusE.getProjectId() + ':' + "resolution"
         });

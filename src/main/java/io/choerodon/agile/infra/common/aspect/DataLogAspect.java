@@ -1,14 +1,10 @@
 package io.choerodon.agile.infra.common.aspect;
 
-import io.choerodon.agile.domain.agile.entity.*;
-import io.choerodon.agile.domain.agile.repository.DataLogRepository;
-import io.choerodon.agile.domain.agile.repository.UserRepository;
-import io.choerodon.agile.infra.common.annotation.DataLog;
-import io.choerodon.agile.infra.common.utils.RedisUtil;
-import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.mapper.*;
-import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.core.exception.CommonException;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -20,10 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
+import io.choerodon.agile.domain.agile.entity.*;
+import io.choerodon.agile.domain.agile.repository.DataLogRepository;
+import io.choerodon.agile.domain.agile.repository.UserRepository;
+import io.choerodon.agile.infra.common.annotation.DataLog;
+import io.choerodon.agile.infra.common.utils.RedisUtil;
+import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.core.exception.CommonException;
 
 /**
  * 日志切面
@@ -119,6 +120,7 @@ public class DataLogAspect {
     private static final String REMAIN_TIME = "remain_time";
     private static final String STORY_POINT = "story_point";
     private static final String COMPONENT = "component";
+    private static final String BURN_DOWN_COORDINATE_BY_TYPE = AGILE + "BurnDownCoordinateByType";
 
     @Autowired
     private IssueStatusMapper issueStatusMapper;
@@ -344,7 +346,7 @@ public class DataLogAspect {
             redisUtil.deleteRedisCache(new String[]{PIECHART + projectId + ':' + FIX_VERSION_CACHE});
             versionIssues.forEach(versionIssueDO -> {
                 String field = FIX_VERSION.equals(versionIssueDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
-                redisUtil.deleteRedisCache(new String[]{VERSION_CHART + projectId + ':' + versionIssueDO.getVersionId() + ":" + "*"});
+                redisUtil.deleteRedisCache(new String[]{VERSION_CHART + projectId + ':' + versionIssueDO.getVersionId() + ":" + "*"},);
                 createDataLog(projectId, versionIssueDO.getIssueId(), field,
                         versionIssueDO.getName(), null, versionIssueDO.getVersionId().toString(), null);
             });
@@ -572,7 +574,8 @@ public class DataLogAspect {
             Long issueId = versionIssueRelE.getIssueId();
             String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
             redisUtil.deleteRedisCache(new String[]{VERSION_CHART + versionIssueRelE.getProjectId() + ':' + versionIssueRelE.getVersionId() + ":" + "*",
-                    PIECHART + versionIssueRelE.getProjectId() + ':' + FIX_VERSION_CACHE
+                    PIECHART + versionIssueRelE.getProjectId() + ':' + FIX_VERSION_CACHE,
+                    BURN_DOWN_COORDINATE_BY_TYPE + versionIssueRelE.getProjectId()  + ":" +versionIssueRelE.getVersionId()
             });
             productVersionDOS.forEach(productVersionDO -> createDataLog(productVersionDO.getProjectId(), issueId, field,
                     productVersionDO.getName(), null, productVersionDO.getVersionId().toString(), null));
@@ -1085,7 +1088,8 @@ public class DataLogAspect {
             sprintId = sprintMapper.queryNotCloseSprintIdByIssueId(issueId, projectId);
         }
         if (sprintId != null) {
-            redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ':' + sprintId + ':' + type});
+            redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ':' + sprintId + ':' + type,
+                                       "Agile:BurnDownCoordinateByType" + projectId + ':' + "*"});
         }
     }
 

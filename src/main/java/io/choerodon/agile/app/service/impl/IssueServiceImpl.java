@@ -446,7 +446,8 @@ public class IssueServiceImpl implements IssueService {
         redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ":" + "*",
                 "Agile:CumulativeFlowDiagram" + projectId + ":" + "*",
                 "Agile:VelocityChart" + projectId + ":" + "*",
-                "Agile:PieChart" + projectId + ':' + "*"
+                "Agile:PieChart" + projectId + ':' + "*",
+                "Agile:BurnDownCoordinateByType" + projectId + ':' + "*"
         });
     }
 
@@ -1850,7 +1851,8 @@ public class IssueServiceImpl implements IssueService {
         redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ":" + "*",
                 "Agile:CumulativeFlowDiagram" + projectId + ":" + "*",
                 "Agile:VelocityChart" + projectId + ":" + "*",
-                "Agile:PieChart" + projectId + ':' + "*"
+                "Agile:PieChart" + projectId + ':' + "*",
+                "Agile:BurnDownCoordinateByType" + projectId + ':' + "*"
         });
     }
 }
