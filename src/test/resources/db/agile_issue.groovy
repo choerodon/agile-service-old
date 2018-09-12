@@ -113,7 +113,7 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue.groovy') {
 
     changeSet(id: '2018-09-05-add-column', author: 'fuqianghuang01@gmail.com') {
         addColumn(tableName: 'agile_issue') {
-            column(name: 'map_rank', type: 'VARCHAR(500)', remarks: 'issue map rank')
+            column(name: 'map_rank', type: 'VARCHAR(765)', remarks: 'issue map rank')
         }
     }
 
