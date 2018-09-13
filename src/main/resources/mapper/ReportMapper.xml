@@ -543,32 +543,36 @@
     <select id="queryRemoveIssueDoneDetailDurationSprint"
             resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
         SELECT
-        adl.issue_id,
-        adl.creation_date AS date,
-        'removeDoneDuringSprint' as type,
-        0 as old_value,
-        1 as new_value,
-        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
-        CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
-        ai2.issue_id as parent_issue_id,
-        case when
-        AND (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = adl.issue_id and adl3.field = 'Sprint' and
-        adl3.creation_date &lt; adl.creation_date order by adl3.log_id desc limit 1) REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
-        then 1 else 0 end as statistical
+            adl.issue_id,
+            adl.creation_date AS date,
+            'removeDoneDuringSprint' as type,
+            0 as old_value,
+            1 as new_value,
+            CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+            CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
+            ai2.issue_id as parent_issue_id,
+            case when
+                (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = adl.issue_id and adl3.field = 'Sprint' and
+                adl3.creation_date &lt; adl.creation_date order by adl3.log_id desc limit 1)
+                REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+                then 1 else 0
+            end as statistical
         FROM
-        agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
-        api.project_id = ai.project_id left join agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN
-        agile_project_info api2 ON
-        api2.project_id = ai2.project_id
+            agile_data_log adl
+            LEFT JOIN agile_issue ai on adl.issue_id = ai.issue_id
+            LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
+            LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id
+            LEFT JOIN agile_project_info api2 ON api2.project_id = ai2.project_id
         WHERE
-        adl.field = 'resolution' AND adl.creation_date &gt;= #{sprintDO.startDate}
-        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
-        and adl.new_value is NULL
-        AND adl.issue_id IN
-        <foreach collection="issueIdRemoveDoneList" item="issueId"
-                 open="(" close=")" separator=",">
-            #{issueId}
-        </foreach>
+            adl.field = 'resolution'
+            AND adl.creation_date &gt;= #{sprintDO.startDate}
+            AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+            and adl.new_value is NULL
+            AND adl.issue_id IN
+            <foreach collection="issueIdRemoveDoneList" item="issueId"
+                     open="(" close=")" separator=",">
+                #{issueId}
+            </foreach>
     </select>
 
     <select id="queryIssueChangeValueDurationSprint"
