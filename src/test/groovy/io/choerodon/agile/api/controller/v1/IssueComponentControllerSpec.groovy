@@ -16,7 +16,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
@@ -183,22 +182,30 @@ class IssueComponentControllerSpec extends Specification {
 
 
     def 'deleteComponent'() {
+        given:
+        def expectObject = null
         when: '删除component'
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/component/{id}",
-                HttpMethod.DELETE,
-                null,
-                ResponseEntity.class,
-                projectId,
-                componentId,
-                relateComponentId
-        )
+        try {
+            restTemplate.exchange("/v1/projects/{project_id}/component/{id}?relateComponentId={relateComponentId}",
+                    HttpMethod.DELETE,
+                    null,
+                    ResponseEntity.class,
+                    projectId,
+                    componentId,
+                    relateComponentId
+            )
+        }
+        catch (Exception e) {
+            expectObject = Exception
+        }
 
         then: '返回值'
-        entity.statusCode == expectCode
+        expectObject == relExpectObject
 
         where: '期望值'
-        relateComponentId | expectCode
-        1L                | HttpStatus.NO_CONTENT
+        relateComponentId || relExpectObject
+        1L                || null
+        null              || Exception
     }
 
 }
