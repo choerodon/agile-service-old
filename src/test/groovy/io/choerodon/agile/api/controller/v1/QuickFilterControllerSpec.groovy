@@ -87,6 +87,10 @@ class QuickFilterControllerSpec extends Specification {
         quickFilterValueDTO7.fieldCode = 'last_update_date'
         quickFilterValueDTO7.operation = 'last_update_date'
         quickFilterValueDTO7.value = System.currentTimeMillis()
+        QuickFilterValueDTO quickFilterValueDTO8 = new QuickFilterValueDTO()
+        quickFilterValueDTO8.fieldCode = 'influence_version'
+        quickFilterValueDTO8.operation = 'influence_version'
+        quickFilterValueDTO8.value = 'influence_version'
         list.add(quickFilterValueDTO)
         list.add(quickFilterValueDTO1)
         list.add(quickFilterValueDTO2)
@@ -95,6 +99,7 @@ class QuickFilterControllerSpec extends Specification {
         list.add(quickFilterValueDTO5)
         list.add(quickFilterValueDTO6)
         list.add(quickFilterValueDTO7)
+        list.add(quickFilterValueDTO8)
         quickFilterDTO.quickFilterValueDTOList = list
         List<String> stringList = new ArrayList<>()
         stringList.add("test")
