@@ -1187,10 +1187,9 @@ public class ReportServiceImpl implements ReportService {
     public BurnDownReportDTO queryBurnDownReportByType(Long projectId, Long id, String type) {
         BurnDownReportDTO burnDownReportDTO = new BurnDownReportDTO();
         Boolean typeCondition = "Epic".equals(type);
-        List<IssueBurnDownReportDO> query = typeCondition ? issueMapper.queryIssueByEpicId(projectId, id) : issueMapper.queryIssueByVersionId(projectId, id);
+        List<IssueBurnDownReportDO> issueDOList = typeCondition ? issueMapper.queryIssueByEpicId(projectId, id) : issueMapper.queryIssueByVersionId(projectId, id);
         burnDownReportDTO.setJsonObject(new JSONObject());
         handleBurnDownReportTypeData(burnDownReportDTO, id, projectId, typeCondition);
-        List<IssueBurnDownReportDO> issueDOList = query.stream().filter(issueBurnDownReportDO -> issueBurnDownReportDO.getTypeCode().equals(ISSUE_STORY_CODE)).collect(Collectors.toList());
         if (issueDOList != null && !issueDOList.isEmpty()) {
             List<IssueBurnDownReportDO> incompleteIssues = issueDOList.stream().filter(issueDO -> !issueDO.getCompleted()).collect(Collectors.toList());
             burnDownReportDTO.setIncompleteIssues(reportAssembler.issueBurnDownReportDoToDto(incompleteIssues));
