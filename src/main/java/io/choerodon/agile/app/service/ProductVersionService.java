@@ -68,4 +68,5 @@ public interface ProductVersionService {
 
     VersionIssueCountDTO queryByCategoryCode(Long projectId, Long versionId);
 
+    Long queryProjectIdByVersionId(Long projectId, Long versionId);
 }

@@ -416,4 +416,12 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         return ConvertHelper.convert(productVersionMapper.queryVersionStatisticsByVersionId(projectId, versionId), VersionIssueCountDTO.class);
     }
 
+    @Override
+    public Long queryProjectIdByVersionId(Long projectId, Long versionId) {
+        ProductVersionDO productVersionDO = productVersionMapper.selectByPrimaryKey(versionId);
+        if (productVersionDO == null) {
+            throw new CommonException("error.productVersion.get");
+        }
+        return productVersionDO.getProjectId();
+    }
 }
