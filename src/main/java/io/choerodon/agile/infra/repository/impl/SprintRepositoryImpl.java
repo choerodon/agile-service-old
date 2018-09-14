@@ -50,6 +50,7 @@ public class SprintRepositoryImpl implements SprintRepository {
         //清除冲刺报表相关缓存
         redisUtil.deleteRedisCache(new String[]{
                 "Agile:BurnDownCoordinate" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*",
+                "Agile:BurnDownCoordinateByType" + sprintE.getProjectId()  + ':' + "*",
                 "Agile:VelocityChart" + sprintE.getProjectId() + ':' + "*",
                 PIECHART + sprintE.getProjectId() + ':' + SPRINT
         });
@@ -64,6 +65,7 @@ public class SprintRepositoryImpl implements SprintRepository {
         }
         redisUtil.deleteRedisCache(new String[]{
                 "Agile:BurnDownCoordinate" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*",
+                "Agile:BurnDownCoordinateByType" + sprintE.getProjectId()  + ':' + "*",
                 "Agile:VelocityChart" + sprintE.getProjectId() + ':' + "*",
                 PIECHART + sprintE.getProjectId() + ':' + SPRINT
         });
