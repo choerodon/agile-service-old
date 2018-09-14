@@ -121,8 +121,8 @@ public class DataLogAspect {
     private static final String STORY_POINT = "story_point";
     private static final String COMPONENT = "component";
     private static final String BURN_DOWN_COORDINATE_BY_TYPE = AGILE + "BurnDownCoordinateByType";
-    private static final String VERSION ="Version";
-    private static final String EPIC ="Epic";
+    private static final String VERSION = "Version";
+    private static final String EPIC = "Epic";
 
     @Autowired
     private IssueStatusMapper issueStatusMapper;
@@ -317,7 +317,7 @@ public class DataLogAspect {
         Long versionId = (Long) args[1];
         if (projectId != null && versionId != null) {
             List<VersionIssueDO> versionIssueRelDOS = productVersionMapper.queryVersionIssueByVersionId(projectId, versionId);
-            handleBatchDeleteVersion(versionIssueRelDOS, projectId);
+            handleBatchDeleteVersion(versionIssueRelDOS, projectId, versionId);
         }
     }
 
@@ -326,7 +326,7 @@ public class DataLogAspect {
         Long versionId = (Long) args[1];
         if (projectId != null && versionId != null) {
             List<VersionIssueDO> versionIssues = productVersionMapper.queryInCompleteIssueByVersionId(projectId, versionId);
-            handleBatchDeleteVersion(versionIssues, projectId);
+            handleBatchDeleteVersion(versionIssues, projectId, versionId);
         }
     }
 
@@ -339,21 +339,29 @@ public class DataLogAspect {
         }
         if (productVersionE != null) {
             List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueForLogByVersionIds(productVersionE.getProjectId(), Collections.singletonList(productVersionE.getVersionId()));
-            handleBatchDeleteVersion(versionIssues, productVersionE.getProjectId());
+            handleBatchDeleteVersion(versionIssues, productVersionE.getProjectId(), productVersionE.getVersionId());
         }
     }
 
-    private void handleBatchDeleteVersion(List<VersionIssueDO> versionIssues, Long projectId) {
+    private void handleBatchDeleteVersion(List<VersionIssueDO> versionIssues, Long projectId, Long versionId) {
         if (versionIssues != null && !versionIssues.isEmpty()) {
             redisUtil.deleteRedisCache(new String[]{PIECHART + projectId + ':' + FIX_VERSION_CACHE});
             versionIssues.forEach(versionIssueDO -> {
                 String field = FIX_VERSION.equals(versionIssueDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
-                redisUtil.deleteRedisCache(new String[]{VERSION_CHART + projectId + ':' + versionIssueDO.getVersionId() + ":" + "*",
-                        BURN_DOWN_COORDINATE_BY_TYPE + projectId + ":" + VERSION +":"+ versionIssueDO.getVersionId()
-                });
+                if (versionId == null) {
+                    redisUtil.deleteRedisCache(new String[]{VERSION_CHART + projectId + ':' + versionIssueDO.getVersionId() + ":" + "*",
+                            BURN_DOWN_COORDINATE_BY_TYPE + projectId + ":" + VERSION + ":" + versionIssueDO.getVersionId()
+                    });
+                }
                 createDataLog(projectId, versionIssueDO.getIssueId(), field,
                         versionIssueDO.getName(), null, versionIssueDO.getVersionId().toString(), null);
             });
+            //不用循环删除
+            if (versionId != null) {
+                redisUtil.deleteRedisCache(new String[]{VERSION_CHART + projectId + ':' + versionId + ":" + "*",
+                        BURN_DOWN_COORDINATE_BY_TYPE + projectId + ":" + VERSION + ":" + versionId
+                });
+            }
         }
     }
 
@@ -371,7 +379,7 @@ public class DataLogAspect {
         }
         if (projectId != null && !versionIds.isEmpty()) {
             List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueForLogByVersionIds(projectId, versionIds);
-            handleBatchDeleteVersion(versionIssues, projectId);
+            handleBatchDeleteVersion(versionIssues, projectId, null);
         }
     }
 
@@ -581,7 +589,7 @@ public class DataLogAspect {
             String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
             redisUtil.deleteRedisCache(new String[]{VERSION_CHART + versionIssueRelE.getProjectId() + ':' + versionIssueRelE.getVersionId() + ":" + "*",
                     PIECHART + versionIssueRelE.getProjectId() + ':' + FIX_VERSION_CACHE,
-                    BURN_DOWN_COORDINATE_BY_TYPE + versionIssueRelE.getProjectId()  + ":" +VERSION+":"+versionIssueRelE.getVersionId()
+                    BURN_DOWN_COORDINATE_BY_TYPE + versionIssueRelE.getProjectId() + ":" + VERSION + ":" + versionIssueRelE.getVersionId()
             });
             productVersionDOS.forEach(productVersionDO -> createDataLog(productVersionDO.getProjectId(), issueId, field,
                     productVersionDO.getName(), null, productVersionDO.getVersionId().toString(), null));
@@ -1118,7 +1126,7 @@ public class DataLogAspect {
         }
         if (epicId != null && epicId != 0) {
             redisUtil.deleteRedisCache(new String[]{
-                    BURN_DOWN_COORDINATE_BY_TYPE+projectId+":"+EPIC+":"+epicId
+                    BURN_DOWN_COORDINATE_BY_TYPE + projectId + ":" + EPIC + ":" + epicId
             });
         }
     }

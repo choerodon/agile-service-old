@@ -53,9 +53,6 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
         if (versionMapper.delete(version) != 1) {
             throw new CommonException(DELETE_ERROR);
         }
-        redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + versionE.getProjectId() + ':' + versionE.getVersionId() + ":" + "*",
-                PIECHART + versionE.getProjectId() + ':' + FIX_VERSION
-        });
         return true;
     }
 
