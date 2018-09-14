@@ -90,4 +90,20 @@ public interface ReportService {
     BurnDownReportDTO queryBurnDownReportByType(Long projectId, Long id, String type);
 
     void setReportMapper(ReportMapper reportMapper);
+
+    /**
+     * 查询问题类型分布图
+     *
+     * @param projectId projectId
+     * @return IssueTypeDistributionChartDTO
+     */
+    List<IssueTypeDistributionChartDTO> queryIssueTypeDistributionChart(Long projectId);
+
+    /**
+     * 版本进度图,排序前5个版本
+     *
+     * @param projectId projectId
+     * @return IssueTypeDistributionChartDTO
+     */
+    List<IssueTypeDistributionChartDTO> queryVersionProgressChart(Long projectId);
 }
