@@ -3095,4 +3095,57 @@
         t2.group_day
     </select>
 
+    <select id="queryIssueTypeDistributionChart" resultType="io.choerodon.agile.infra.dataobject.IssueTypeDistributionChartDO">
+       SELECT
+            alv.name,
+            alv2.name as status_name,
+            count( * ) AS count
+        FROM
+            agile_issue ai
+            LEFT JOIN agile_issue ai2 ON ai.parent_issue_id = ai2.issue_id
+            LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+            left join agile_lookup_value alv on alv.value_code = ai.type_code
+            left join agile_lookup_value alv2 on alv2.value_code = ais.category_code
+        WHERE
+            ai.project_id = #{projectId}
+            AND ai.type_code != 'issue_test'
+            AND ( ai2.type_code != 'issue_test' OR ai2.type_code IS NULL )
+        GROUP BY
+            ai.type_code,
+            ais.category_code
+    </select>
+
+    <select id="queryVersionProgressChart" resultType="io.choerodon.agile.infra.dataobject.IssueTypeDistributionChartDO">
+       SELECT
+            apv.name,
+            alv2.name AS status_name,
+            count( * ) AS count
+        FROM
+            agile_version_issue_rel avir
+            LEFT JOIN agile_issue ai ON avir.issue_id = ai.issue_id
+            LEFT JOIN agile_issue ai2 ON ai.parent_issue_id = ai2.issue_id
+            LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+            LEFT JOIN (
+                SELECT
+                    apv1.sequence,
+                    apv1.NAME,
+                    apv1.version_id
+                FROM
+                    agile_product_version apv1
+                WHERE
+                    apv1.project_id = #{projectId}
+                ORDER BY
+                    apv1.sequence LIMIT 5
+                ) apv ON avir.version_id = apv.version_id
+            LEFT JOIN agile_lookup_value alv2 ON alv2.value_code = ais.category_code
+        WHERE
+            avir.project_id = #{projectId}
+            AND ai.type_code != 'issue_test'
+            AND ( ai2.type_code != 'issue_test' OR ai2.type_code IS NULL )
+            AND apv.NAME IS NOT NULL
+        GROUP BY
+            apv.NAME,
+            ais.category_code
+    </select>
+
 </mapper>

@@ -349,4 +349,19 @@ public interface ReportMapper {
 
     List<GroupDataChartDO> selectByIssueCountAllFinal(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
 
+    /**
+     * 问题类型分布图
+     *
+     * @param projectId projectId
+     * @return IssueTypeDistributionChartDO
+     */
+    List<IssueTypeDistributionChartDO> queryIssueTypeDistributionChart(@Param("projectId") Long projectId);
+
+    /**
+     * 问题类型分布图,排序前5个版本
+     *
+     * @param projectId projectId
+     * @return IssueTypeDistributionChartDO
+     */
+    List<IssueTypeDistributionChartDO> queryVersionProgressChart(@Param("projectId") Long projectId);
 }

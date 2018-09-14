@@ -10,6 +10,7 @@ import io.choerodon.agile.api.dto.IssueBurnDownReportDTO
 import io.choerodon.agile.api.dto.IssueCreateDTO
 import io.choerodon.agile.api.dto.IssueDTO
 import io.choerodon.agile.api.dto.IssueListDTO
+import io.choerodon.agile.api.dto.IssueTypeDistributionChartDTO
 import io.choerodon.agile.api.dto.IssueUpdateDTO
 import io.choerodon.agile.api.dto.PieChartDTO
 import io.choerodon.agile.api.dto.ReportIssueDTO
@@ -525,6 +526,36 @@ class ReportControllerSpec extends Specification {
         type      | id || expectSizeOne | expectSizeTwo
         'Epic'    | 1  || 1             | 0
         'Version' | 1  || 1             | 0
+
+    }
+
+    def 'queryIssueTypeDistributionChart'() {
+        when: '问题类型分布图'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/issue_type_distribution_chart', List, projectId)
+
+        then: '接口是否请求成功'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置返回值值'
+        List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOList = entity.body
+
+        expect: '验证期望值'
+        issueTypeDistributionChartDTOList.size() == 3
+
+    }
+
+    def 'queryVersionProgressChart'() {
+        when: '版本进度图，排序前5个版本'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/version_progress_chart', List, projectId)
+
+        then: '接口是否请求成功'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置返回值值'
+        List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOList = entity.body
+
+        expect: '验证期望值'
+        issueTypeDistributionChartDTOList.size() == 2
 
     }
 

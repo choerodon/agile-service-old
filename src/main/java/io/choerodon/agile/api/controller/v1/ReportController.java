@@ -207,13 +207,33 @@ public class ReportController {
     @ApiOperation("Epic和版本燃耗图报告信息")
     @GetMapping(value = "/burn_down_report_type/{id}")
     public ResponseEntity<BurnDownReportDTO> queryBurnDownReportByType(@ApiParam(value = "项目id", required = true)
-                                                                                       @PathVariable(name = "project_id") Long projectId,
-                                                                                       @ApiParam(value = "id", required = true)
-                                                                                       @PathVariable Long id,
-                                                                                       @ApiParam(value = "类型:Epic/Version", required = true)
-                                                                                       @RequestParam String type) {
+                                                                       @PathVariable(name = "project_id") Long projectId,
+                                                                       @ApiParam(value = "id", required = true)
+                                                                       @PathVariable Long id,
+                                                                       @ApiParam(value = "类型:Epic/Version", required = true)
+                                                                       @RequestParam String type) {
         return Optional.ofNullable(reportService.queryBurnDownReportByType(projectId, id, type))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.report.queryBurnDownReportByType"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("问题类型分布图")
+    @GetMapping(value = "/issue_type_distribution_chart")
+    public ResponseEntity<List<IssueTypeDistributionChartDTO>> queryIssueTypeDistributionChart(@ApiParam(value = "项目id", required = true)
+                                                                                               @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(reportService.queryIssueTypeDistributionChart(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.report.queryIssueTypeDistributionChart"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("版本进度图，排序前5个版本")
+    @GetMapping(value = "/version_progress_chart")
+    public ResponseEntity<List<IssueTypeDistributionChartDTO>> queryVersionProgressChart(@ApiParam(value = "项目id", required = true)
+                                                                                         @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(reportService.queryVersionProgressChart(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.report.queryVersionProgressChart"));
     }
 }
