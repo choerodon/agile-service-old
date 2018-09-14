@@ -345,6 +345,7 @@ public class IssueServiceImpl implements IssueService {
                 issueE.setOriginSprintId(originIssue.getSprintId());
             }
         }
+        redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinateByType" + projectId + ':' + "Epic"+":"+"*"});
         issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
     }
 
@@ -1025,6 +1026,7 @@ public class IssueServiceImpl implements IssueService {
                         versionIssueRelDO.setVersionId(id);
                         versionIssueRelDO.setProjectId(projectId);
                         versionIssueRelRepository.delete(versionIssueRelDO);
+                        redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinateByType" + projectId + ':' + "Version"+":"+id});
                     }
                 });
                 handleVersionIssueRel(versionIssueRelES, projectId, issueId);
@@ -1032,6 +1034,7 @@ public class IssueServiceImpl implements IssueService {
                 VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
                 versionIssueRelE.createBatchDeleteVersionIssueRel(projectId, issueId, versionType);
                 versionIssueRelRepository.batchDeleteByIssueIdAndType(versionIssueRelE);
+                redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinateByType" + projectId + ':' + "Version"+":"+"*"});
             }
         }
 
