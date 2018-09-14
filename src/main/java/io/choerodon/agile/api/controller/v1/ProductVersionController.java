@@ -315,4 +315,16 @@ public class ProductVersionController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.VersionIssueCountDTO.get"));
     }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation(value = "根据versionId查询projectId,测试项目修数据用，其它勿调用")
+    @GetMapping(value = "/{versionId}/project_id")
+    public ResponseEntity<Long> queryProjectIdByVersionId(@ApiParam(value = "项目id", required = true)
+                                                          @PathVariable(name = "project_id") Long projectId,
+                                                          @ApiParam(value = "version id", required = true)
+                                                          @PathVariable Long versionId) {
+        return Optional.ofNullable(productVersionService.queryProjectIdByVersionId(projectId, versionId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.queryProjectIdByVersionId.get"));
+    }
 }
