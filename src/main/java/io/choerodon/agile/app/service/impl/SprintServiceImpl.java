@@ -6,6 +6,7 @@ import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.common.utils.RankUtil;
+import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.*;
@@ -64,6 +65,8 @@ public class SprintServiceImpl implements SprintService {
     private SprintRule sprintRule;
     @Autowired
     private QuickFilterMapper quickFilterMapper;
+    @Autowired
+    private RedisUtil redisUtil;
 
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String SPRINT_DATA = "sprintData";
@@ -98,6 +101,7 @@ public class SprintServiceImpl implements SprintService {
             SprintE sprintE = sprintCreateAssembler.toTarget(sprintDO, SprintE.class);
             sprint.createSprint(sprintE);
         }
+        redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinateByType" + projectId + ':' + "*"});
         return sprintCreateAssembler.toTarget(sprintRepository.createSprint(sprint), SprintDetailDTO.class);
     }
 
