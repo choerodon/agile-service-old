@@ -647,17 +647,31 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
+    private void dealMapRankLengthTooLarge(Long projectId, StoryMapMoveDTO storyMapMoveDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
+        String maxRank = issueMapper.selectMaxRankByProjectId(projectId);
+        storyMapMoveIssueDOS.clear();
+        for (Long issueId : storyMapMoveDTO.getIssueIds()) {
+            maxRank = RankUtil.genNext(maxRank);
+            storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, maxRank));
+        }
+    }
+
     private void dealInnerBeforeRank(Long projectId, String currentMapRank, StoryMapMoveDTO storyMapMoveDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
         String leftMaxRank = issueMapper.selectLeftMaxMapRank(projectId, currentMapRank);
-        Collections.reverse(storyMapMoveDTO.getIssueIds());
+        List<Long> issueIds = storyMapMoveDTO.getIssueIds();
+        Collections.reverse(issueIds);
         if (leftMaxRank == null) {
-            for (Long issueId : storyMapMoveDTO.getIssueIds()) {
+            for (Long issueId : issueIds) {
                 currentMapRank = RankUtil.genPre(currentMapRank);
                 storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, currentMapRank));
             }
         } else {
-            for (Long issueId : storyMapMoveDTO.getIssueIds()) {
+            for (Long issueId : issueIds) {
                 leftMaxRank = RankUtil.between(leftMaxRank, currentMapRank);
+                if (leftMaxRank.length() >= 700) {
+                    dealMapRankLengthTooLarge(projectId, storyMapMoveDTO, storyMapMoveIssueDOS);
+                    return;
+                }
                 storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, leftMaxRank));
             }
         }
@@ -673,6 +687,10 @@ public class IssueServiceImpl implements IssueService {
         } else {
             for (Long issueId : storyMapMoveDTO.getIssueIds()) {
                 currentMapRank = RankUtil.between(currentMapRank, rightMinRank);
+                if (currentMapRank.length() >= 700) {
+                    dealMapRankLengthTooLarge(projectId, storyMapMoveDTO, storyMapMoveIssueDOS);
+                    return;
+                }
                 storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, currentMapRank));
             }
         }
