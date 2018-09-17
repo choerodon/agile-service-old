@@ -110,6 +110,11 @@ public class ReportServiceImpl implements ReportService {
         return reportAssembler.toTargetList(reportMapper.queryVersionProgressChart(projectId),IssueTypeDistributionChartDTO.class);
     }
 
+    @Override
+    public List<IssuePriorityDistributionChartDTO> queryIssuePriorityDistributionChart(Long projectId) {
+        return reportAssembler.toTargetList(reportMapper.queryIssuePriorityDistributionChart(projectId),IssuePriorityDistributionChartDTO.class);
+    }
+
 
     @Override
     public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
