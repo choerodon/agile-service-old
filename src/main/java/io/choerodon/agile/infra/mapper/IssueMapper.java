@@ -204,7 +204,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                                      @Param("otherArgs") Map<String, Object> otherArgs,
                                                      @Param("content") String content);
 
-    List<IssueDO> listIssueWithBlockedIssues(@Param("projectId") Long projectId,
+    List<IssueDO> listIssueWithLinkedIssues(@Param("projectId") Long projectId,
                                              @Param("searchArgs") Map<String, Object> searchArgs,
                                              @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
                                              @Param("otherArgs") Map<String, Object> otherArgs,

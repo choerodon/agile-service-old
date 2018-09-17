@@ -1301,7 +1301,7 @@
         ORDER BY ai.issue_id
     </select>
 
-    <select id="listIssueWithBlockedIssues" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+    <select id="listIssueWithLinkedIssues" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
         SELECT search.* from (
         SELECT
         ai.issue_id,

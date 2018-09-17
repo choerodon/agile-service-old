@@ -1547,10 +1547,10 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public Page<IssueListDTO> listIssueWithBlockedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
+    public Page<IssueListDTO> listIssueWithLinkedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
         pageRequest.resetOrder(SEARCH, new HashMap<>());
         Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
-                issueMapper.listIssueWithBlockedIssues(projectId, searchDTO.getSearchArgs(),
+                issueMapper.listIssueWithLinkedIssues(projectId, searchDTO.getSearchArgs(),
                         searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
         return handlePageDoToDto(issueDOPage);
     }

@@ -170,7 +170,7 @@ public interface IssueService {
      */
     Page<IssueListDTO> listIssueWithoutSubToTestComponent(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
 
-    Page<IssueListDTO> listIssueWithBlockedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
+    Page<IssueListDTO> listIssueWithLinkedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
 
     List<IssueCreationNumDTO> queryIssueNumByTimeSlot(Long projectId, String typeCode, Integer timeSlot);
 
