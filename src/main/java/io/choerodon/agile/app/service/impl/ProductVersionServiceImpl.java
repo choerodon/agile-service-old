@@ -330,13 +330,13 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         if (!versionIssues.isEmpty()) {
             productVersionRepository.batchIssueToDestination(projectId, productVersionMergeDTO.getTargetVersionId(), versionIssues, new Date(), customUserDetails.getUserId());
         }
+        //这里不用日志是因为deleteByVersionIds方法已经有删除的日志了
         productVersionRepository.deleteByVersionIds(projectId, productVersionMergeDTO.getSourceVersionIds());
         productVersionMergeDTO.getSourceVersionIds().forEach(versionId -> {
             VersionPayload versionPayload = new VersionPayload();
             versionPayload.setVersionId(versionId);
             versionPayload.setProjectId(projectId);
             sagaClient.startSaga("agile-delete-version", new StartInstanceDTO(JSON.toJSONString(versionPayload), "", ""));
-            redisUtil.deleteRedisCache(new String[]{"Agile:VersionChart" + projectId + ':' + versionId + ":" + "*"});
         });
         return true;
     }
