@@ -1,9 +1,5 @@
 package io.choerodon.agile.app.service.impl;
 
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,8 +14,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1167,42 +1161,6 @@ public class IssueServiceImpl implements IssueService {
         ExcelUtil.export(exportIssues, ExportIssuesDTO.class, FIELDS_NAME, FIELDS, project.getName(), response);
     }
 
-
-    @Override
-    public void exportIssue(Long projectId, Long issueId, HttpServletRequest request, HttpServletResponse response) {
-        String charsetName = "UTF-8";
-        if (request.getHeader("User-Agent").contains("Firefox")) {
-            charsetName = "GB2312";
-        }
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        projectInfoDO.setProjectId(projectId);
-        projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
-        ProjectDTO project = userRepository.queryProject(projectId);
-        if (project == null || projectInfoDO == null) {
-            throw new CommonException(PROJECT_ERROR);
-        }
-        project.setCode(projectInfoDO.getProjectCode());
-        ExportIssuesDTO exportIssue = issueAssembler.exportIssuesDOToExportIssuesDTO(issueMapper.queryExportIssue(projectId, issueId));
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        String fileName = project.getCode();
-        if (exportIssue != null) {
-            String componentName = issueMapper.queryComponentNameByIssueId(projectId, issueId).stream().collect(Collectors.joining(","));
-            String labelName = issueMapper.queryLabelNameByIssueId(projectId, issueId).stream().collect(Collectors.joining(","));
-            List<ExportIssuesDTO> subIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.querySubIssuesByIssueId(projectId, issueId));
-            String closeSprintName = issueMapper.querySprintNameByIssueId(issueId).stream().map(SprintNameDO::getSprintName).collect(Collectors.joining(","));
-            String fixVersionName = issueMapper.queryVersionNameByIssueId(projectId, issueId, FIX_RELATION_TYPE).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(","));
-            String influenceVersionName = issueMapper.queryVersionNameByIssueId(projectId, issueId, INFLUENCE_RELATION_TYPE).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(","));
-            exportIssue.setComponentName(componentName);
-            exportIssue.setComponentName(labelName);
-            exportIssue.setCloseSprintName(closeSprintName);
-            exportIssue.setFixVersionName(fixVersionName);
-            exportIssue.setInfluenceVersionName(influenceVersionName);
-            exportIssueXls(workbook, project, exportIssue, subIssues);
-            fileName = fileName + "-" + exportIssue.getIssueNum();
-        }
-        downloadExcel(workbook, fileName, charsetName, response);
-    }
-
     @Override
     public IssueDTO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO) {
         IssueDetailDO issueDetailDO = issueMapper.queryIssueDetail(projectId, issueId);
@@ -1327,145 +1285,6 @@ public class IssueServiceImpl implements IssueService {
         } else {
             throw new CommonException("error.IssueRule.issueNoFound");
         }
-    }
-
-    private void downloadExcel(HSSFWorkbook workbook, String fileName, String charsetName, HttpServletResponse response) {
-        response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding("utf-8");
-        // 设置response参数，可以打开下载页面
-        try {
-            response.addHeader("Content-Disposition", "attachment;filename=" + new String((fileName + ".xlsx").getBytes(charsetName)));
-        } catch (UnsupportedEncodingException e1) {
-            throw new CommonException(EXPORT_ERROR);
-        }
-        try {
-            workbook.write(response.getOutputStream());
-        } catch (final IOException e) {
-            throw new CommonException(EXPORT_ERROR);
-        } finally {
-            try {
-                workbook.close();
-            } catch (IOException e) {
-                LOGGER.error(e.getMessage());
-            }
-        }
-    }
-
-    private void exportIssueXls(HSSFWorkbook workbook, ProjectDTO project, ExportIssuesDTO exportIssue, List<ExportIssuesDTO> subIssues) {
-        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String issueNum = project.getCode() + "-" + exportIssue.getIssueNum();
-        HSSFSheet sheet = workbook.createSheet(issueNum);
-        int lastRow = 12;
-        if (!subIssues.isEmpty()) {
-            lastRow = subIssues.size() + 13;
-            sheet.addMergedRegion(new CellRangeAddress(13, lastRow, 0, 0));
-        }
-        HSSFRow row = sheet.createRow(0);
-        HSSFCell cell = row.createCell(0);
-        cell.setCellValue(issueNum);
-        cell = row.createCell(1);
-        cell.setCellValue(exportIssue.getSummary());
-        cell = row.createCell(2);
-        cell.setCellValue("创建日期:" + dateFormat.format(exportIssue.getCreationDate()));
-        cell = row.createCell(3);
-        cell.setCellValue("更新日期:" + dateFormat.format(exportIssue.getLastUpdateDate()));
-
-        row = sheet.createRow(1);
-        cell = row.createCell(0);
-        cell.setCellValue("状态:");
-        cell = row.createCell(1);
-        cell.setCellValue(exportIssue.getStatusName());
-
-        row = sheet.createRow(2);
-        cell = row.createCell(0);
-        cell.setCellValue("项目:");
-        cell = row.createCell(1);
-        cell.setCellValue(project.getName());
-
-        row = sheet.createRow(3);
-        cell = row.createCell(0);
-        cell.setCellValue("模块:");
-        cell = row.createCell(1);
-        cell.setCellValue(exportIssue.getComponentName());
-
-        row = sheet.createRow(4);
-        cell = row.createCell(0);
-        cell.setCellValue("影响版本:");
-        cell = row.createCell(1);
-        cell.setCellValue(exportIssue.getInfluenceVersionName());
-
-        row = sheet.createRow(5);
-        cell = row.createCell(0);
-        cell.setCellValue("修复的版本:");
-        cell = row.createCell(1);
-        cell.setCellValue(exportIssue.getFixVersionName());
-
-        sheet.createRow(6);
-
-        row = sheet.createRow(7);
-        cell = row.createCell(0);
-        cell.setCellValue("类型:");
-        cell = row.createCell(1);
-        cell.setCellValue(exportIssue.getTypeName());
-        cell = row.createCell(2);
-        cell.setCellValue("优先级:");
-        cell = row.createCell(3);
-        cell.setCellValue(exportIssue.getPriorityName());
-
-        row = sheet.createRow(8);
-        cell = row.createCell(0);
-        cell.setCellValue("报告人:");
-        cell = row.createCell(1);
-        cell.setCellValue(exportIssue.getReporterName());
-        cell = row.createCell(2);
-        cell.setCellValue("经办人:");
-        cell = row.createCell(3);
-        cell.setCellValue(exportIssue.getAssigneeName());
-
-        row = sheet.createRow(9);
-        cell = row.createCell(0);
-        cell.setCellValue("解决结果:");
-        cell = row.createCell(1);
-        cell.setCellValue(exportIssue.getSolution());
-
-        row = sheet.createRow(10);
-        cell = row.createCell(0);
-        cell.setCellValue("标签:");
-        cell = row.createCell(1);
-        cell.setCellValue(exportIssue.getLabelName());
-
-        row = sheet.createRow(11);
-        cell = row.createCell(0);
-        cell.setCellValue("Σ预估剩余时间:");
-        cell = row.createCell(1);
-        cell.setCellValue(exportIssue.getSumRemainingTime() != null ? exportIssue.getSumRemainingTime().toString() : "");
-        cell = row.createCell(2);
-        cell.setCellValue("剩余的估算:");
-        cell = row.createCell(3);
-        cell.setCellValue(exportIssue.getRemainingTime() != null ? exportIssue.getRemainingTime().toString() : "");
-
-        sheet.createRow(12);
-
-        createSubIssueRow(subIssues, project, sheet);
-
-        row = sheet.createRow(lastRow + 1);
-        cell = row.createCell(0);
-        cell.setCellValue("Epic Link:");
-        cell = row.createCell(1);
-        cell.setCellValue(exportIssue.getEpicName());
-
-        row = sheet.createRow(lastRow + 2);
-        cell = row.createCell(0);
-        cell.setCellValue("Sprint:");
-        cell = row.createCell(1);
-        String sprintName = exportIssue.getSprintName() != null ? "正在使用冲刺:" + exportIssue.getSprintName() + " " : "";
-        sprintName = sprintName + (!Objects.equals(exportIssue.getCloseSprintName(), "") ? "已关闭冲刺:" + exportIssue.getCloseSprintName() : "");
-        cell.setCellValue(sprintName);
-
-        row = sheet.createRow(lastRow + 3);
-        cell = row.createCell(0);
-        cell.setCellValue(customUserDetails.getUsername() + "于" + dateFormat.format(new Date()) + "导出");
     }
 
     private void createSubIssueRow(List<ExportIssuesDTO> subIssues, ProjectDTO project, HSSFSheet sheet) {

@@ -1,7 +1,6 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.*;
-import io.choerodon.agile.infra.mapper.ProductVersionMapper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
