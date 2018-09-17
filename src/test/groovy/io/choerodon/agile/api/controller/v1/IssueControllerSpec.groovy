@@ -543,8 +543,7 @@ class IssueControllerSpec extends Specification {
 
     /**
      * 导出excel的时候，SXSSFSheet的workbook.createSheet方法调用了FontManagerFactory去拿系统的"sun.font.fontmanager"属性
-     * 但是在gitlab中的runner中reflect反射获取类报空指针异常，这个可能是jdk8的版本的bug
-     * @Link https://bugs.openjdk.java.net/browse/JDK-6867603
+     * 但是在gitlab中的runner中reflect反射获取类报空指针异常，这个可能是runner中jdk的版本问题
      * @return Exception
      */
 //    def "exportIssues"() {
@@ -595,7 +594,6 @@ class IssueControllerSpec extends Specification {
 
     }
 
->>>>>>> 5786148008e1965e932f43ecc580368e4d6f5738
     def "cloneIssueByIssueId"() {
         given: '复制issue条件DTO'
         CopyConditionDTO conditionDTO = new CopyConditionDTO()
