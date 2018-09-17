@@ -1301,6 +1301,127 @@
         ORDER BY ai.issue_id
     </select>
 
+    <select id="listIssueWithBlockedIssues" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT search.* from (
+        SELECT
+        ai.issue_id,
+        ai.type_code,
+        ai.summary,
+        ai.status_id,
+        ai.priority_code,
+        ai.assignee_id,
+        ai.project_id,
+        alv.name AS priority_name,
+        ais.category_code AS status_code,
+        ais.name AS status_name,
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
+        FROM agile_issue ai
+        LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        WHERE ai.project_id = #{projectId}
+        and ai.issue_id in
+        (
+           select ail.issue_id
+           from agile_issue_link ail, agile_issue ai2
+           where ai2.project_id = #{projectId} and ail.issue_id = ai2.issue_id and ai2.type_code = 'issue_test'
+        )
+        AND ai.type_code != 'sub_task'
+        <if test='searchArgs != null'>
+            <if test='searchArgs.summary != null and searchArgs.summary != "" '>
+                AND position(#{searchArgs.summary} IN ai.summary)
+            </if>
+            <if test='searchArgs.assigneeId != null and searchArgs.assigneeId != ""'>
+                AND ai.assignee_id = #{searchArgs.assigneeId}
+            </if>
+        </if>
+        <if test='advancedSearchArgs != null'>
+            <if test='advancedSearchArgs.typeCode != null and advancedSearchArgs.typeCode.size > 0'>
+                AND ai.type_code IN
+                <foreach collection="advancedSearchArgs.typeCode" item="typeCode" open="(" separator="," close=")">
+                    #{typeCode}
+                </foreach>
+            </if>
+            <if test='advancedSearchArgs.priorityCode != null and advancedSearchArgs.priorityCode.size > 0'>
+                AND ai.priority_code IN
+                <foreach collection="advancedSearchArgs.priorityCode" item="priorityCode" open="(" separator=","
+                         close=")">
+                    #{priorityCode}
+                </foreach>
+            </if>
+            <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
+                AND ais.category_code IN
+                <foreach collection="advancedSearchArgs.statusCode" item="statusCode" open="(" separator=","
+                         close=")">
+                    #{statusCode}
+                </foreach>
+            </if>
+        </if>
+        <if test='otherArgs != null'>
+            <if test='otherArgs.component != null and otherArgs.component.size > 0'>
+                AND ai.issue_id in (
+                SELECT acir.issue_id FROM
+                agile_component_issue_rel acir WHERE acir.component_id
+                in
+                <foreach collection="otherArgs.component" item="componentId" open="(" separator=","
+                         close=")">
+                    #{componentId}
+                </foreach>
+                )
+            </if>
+            <if test='otherArgs.version != null and otherArgs.version.size > 0'>
+                AND ai.issue_id in (
+                SELECT avir.issue_id FROM
+                agile_version_issue_rel avir WHERE avir.version_id
+                in
+                <foreach collection="otherArgs.version" item="versionId" open="(" separator=","
+                         close=")">
+                    #{versionId}
+                </foreach>
+                )
+            </if>
+            <if test='otherArgs.sprint != null and otherArgs.sprint.size > 0'>
+                AND ai.issue_id in (
+                SELECT aisr.issue_id FROM
+                agile_issue_sprint_rel aisr where aisr.sprint_id
+                in
+                <foreach collection="otherArgs.sprint" item="sprintId" open="(" separator=","
+                         close=")">
+                    #{sprintId}
+                </foreach>
+                )
+            </if>
+            <if test='otherArgs.label != null and otherArgs.label.size > 0'>
+                AND ai.issue_id in (
+                SELECT alir.issue_id FROM
+                agile_label_issue_rel alir where alir.label_id
+                in
+                <foreach collection="otherArgs.label" item="labelId" open="(" separator=","
+                         close=")">
+                    #{labelId}
+                </foreach>
+                )
+            </if>
+            <if test='otherArgs.issueIds != null and otherArgs.issueIds.size > 0'>
+                AND ai.issue_id in
+                <foreach collection="otherArgs.issueIds" item="issueId" open="(" separator=","
+                         close=")">
+                    #{issueId}
+                </foreach>
+            </if>
+        </if>
+        )search where 1=1
+        <if test='searchArgs != null'>
+            <if test='searchArgs.issueNum != null and searchArgs.issueNum != ""'>
+                AND position(#{searchArgs.issueNum} IN search.issue_num)
+            </if>
+        </if>
+        <if test='content != null and content != ""'>
+            AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE CONCAT(CONCAT('%',
+            #{content}), '%'))
+        </if>
+    </select>
+
     <select id="listIssueWithoutSubToTestComponent" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
         SELECT search.* from (
         SELECT

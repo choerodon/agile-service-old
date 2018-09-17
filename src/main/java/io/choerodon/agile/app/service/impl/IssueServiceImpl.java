@@ -1546,6 +1546,15 @@ public class IssueServiceImpl implements IssueService {
         return handlePageDoToDto(issueDOPage);
     }
 
+    @Override
+    public Page<IssueListDTO> listIssueWithBlockedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
+        pageRequest.resetOrder(SEARCH, new HashMap<>());
+        Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
+                issueMapper.listIssueWithBlockedIssues(projectId, searchDTO.getSearchArgs(),
+                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
+        return handlePageDoToDto(issueDOPage);
+    }
+
     private Page<IssueListDTO> handlePageDoToDto(Page<IssueDO> issueDOPage) {
         Page<IssueListDTO> issueListDTOPage = new Page<>();
         issueListDTOPage.setNumber(issueDOPage.getNumber());

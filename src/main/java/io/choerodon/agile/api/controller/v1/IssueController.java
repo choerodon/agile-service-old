@@ -413,6 +413,24 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.listIssueWithoutSubToTestComponent"));
     }
 
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("分页过滤查询issue列表, 测试项目接口，过滤被阻塞issue")
+    @CustomPageRequest
+    @PostMapping(value = "/test_component/filter_blocked")
+    public ResponseEntity<Page<IssueListDTO>> listIssueWithBlockedIssues(@ApiIgnore
+                                                                         @ApiParam(value = "分页信息", required = true)
+                                                                         @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
+                                                                         PageRequest pageRequest,
+                                                                         @ApiParam(value = "项目id", required = true)
+                                                                         @PathVariable(name = "project_id") Long projectId,
+                                                                         @ApiParam(value = "查询参数", required = true)
+                                                                         @RequestBody(required = false) SearchDTO searchDTO) {
+        return Optional.ofNullable(issueService.listIssueWithBlockedIssues(projectId, searchDTO, pageRequest))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.Issue.listIssueWithBlockedIssues"));
+    }
+
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据时间段查询问题类型的数量")
     @GetMapping(value = "/type/{typeCode}")
