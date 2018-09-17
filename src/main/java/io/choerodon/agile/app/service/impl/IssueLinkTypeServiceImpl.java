@@ -1,5 +1,11 @@
 package io.choerodon.agile.app.service.impl;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import io.choerodon.agile.api.dto.IssueLinkTypeCreateDTO;
 import io.choerodon.agile.api.dto.IssueLinkTypeDTO;
 import io.choerodon.agile.app.assembler.IssueLinkTypeAssembler;
@@ -9,11 +15,6 @@ import io.choerodon.agile.domain.agile.repository.IssueLinkTypeRepository;
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper;
 import io.choerodon.core.convertor.ConvertHelper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * @author dinghuang123@gmail.com
@@ -75,5 +76,10 @@ public class IssueLinkTypeServiceImpl implements IssueLinkTypeService {
         issueLinkTypeRepository.create(duplicate);
         issueLinkTypeRepository.create(blocks);
         issueLinkTypeRepository.create(relates);
+    }
+
+    @Override
+    public boolean queryIssueLinkTypeName(Long projectId, String issueLinkTypeName, Long issueLinkTypeId) {
+        return issueLinkTypeMapper.queryIssueLinkTypeName(projectId, issueLinkTypeName, issueLinkTypeId) == 0;
     }
 }

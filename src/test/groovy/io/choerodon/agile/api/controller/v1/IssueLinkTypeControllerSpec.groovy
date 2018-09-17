@@ -158,4 +158,28 @@ class IssueLinkTypeControllerSpec extends Specification {
         4L              | null              | HttpStatus.OK
     }
 
+    def 'checkIssueLinkTypeName'() {
+        when: '发请求'
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_link_types/check_name?issueLinkTypeName={issueLinkTypeName}&&issueLinkTypeId={issueLinkTypeId}",
+                HttpMethod.GET,
+                null,
+                Boolean.class,
+                projectId,
+                issueLinkTypeName,
+                issueLinkTypeId
+        )
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        and:
+        entity.body == result
+
+        where: '给定参数'
+        issueLinkTypeId | issueLinkTypeName | result
+        null            | '复制'              | false
+        1L              | "复制"              | true
+        2L              | "阻塞"              | true
+    }
+
 }

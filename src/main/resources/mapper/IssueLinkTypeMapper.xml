@@ -8,4 +8,13 @@
             and link_type_id != #{issueLinkTypeId}
         </if>
     </select>
+
+    <select id="queryIssueLinkTypeName" resultType="java.lang.Integer">
+        select COUNT(*) from agile_issue_link_type aily
+        where aily.project_id=#{projectId}
+        and aily.link_name=#{issueLinkTypeName}
+        <if test='issueLinkTypeId != null'>
+            and aily.link_type_id != #{issueLinkTypeId}
+        </if>
+    </select>
 </mapper>

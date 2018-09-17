@@ -1,10 +1,11 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
-import io.choerodon.mybatis.common.BaseMapper;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
+import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
+import io.choerodon.mybatis.common.BaseMapper;
 
 /**
  * @author dinghuang123@gmail.com
@@ -20,4 +21,8 @@ public interface IssueLinkTypeMapper extends BaseMapper<IssueLinkTypeDO> {
      * @return IssueLinkTypeDO
      */
     List<IssueLinkTypeDO> queryIssueLinkTypeByProjectId(@Param("projectId") Long projectId, @Param("issueLinkTypeId") Long issueLinkTypeId);
+
+    Integer queryIssueLinkTypeName(@Param("projectId") Long projectId,
+                                   @Param("issueLinkTypeName") String issueLinkTypeName,
+                                   @Param("issueLinkTypeId") Long issueLinkTypeId);
 }
