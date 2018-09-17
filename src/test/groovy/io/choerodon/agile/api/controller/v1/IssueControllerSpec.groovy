@@ -550,7 +550,6 @@ class IssueControllerSpec extends Specification {
         ProjectDTO projectDTO = new ProjectDTO()
         projectDTO.name = '测试项目'
         projectDTO.code = '测试项目Code'
-        userRepository.queryProject(_) >> projectDTO
 
         when: '向根据issue类型(type_code)查询issue列表(分页)接口发请求'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/export',
@@ -558,6 +557,8 @@ class IssueControllerSpec extends Specification {
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
+        1 * userRepository.queryProject(_) >> projectDTO
+
 
         expect: '期待值比较'
         entity.headers.get("Content-Type") != null
