@@ -204,6 +204,12 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                                      @Param("otherArgs") Map<String, Object> otherArgs,
                                                      @Param("content") String content);
 
+    List<IssueDO> listIssueWithBlockedIssues(@Param("projectId") Long projectId,
+                                             @Param("searchArgs") Map<String, Object> searchArgs,
+                                             @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
+                                             @Param("otherArgs") Map<String, Object> otherArgs,
+                                             @Param("content") String content);
+
     List<IssueCreationNumDO> queryIssueNumByTimeSlot(@Param("projectId") Long projectId,
                                                      @Param("typeCode") String typeCode,
                                                      @Param("date") Date date);
