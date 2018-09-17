@@ -106,4 +106,12 @@ public interface ReportService {
      * @return IssueTypeDistributionChartDTO
      */
     List<IssueTypeDistributionChartDTO> queryVersionProgressChart(Long projectId);
+
+    /**
+     * 查询问题优先级分布图
+     *
+     * @param projectId projectId
+     * @return IssuePriorityDistributionChartDTO
+     */
+    List<IssuePriorityDistributionChartDTO> queryIssuePriorityDistributionChart(Long projectId);
 }

@@ -3099,6 +3099,7 @@
        SELECT
             alv.name,
             alv2.name as status_name,
+            ais.category_code as status_code,
             count( * ) AS count
         FROM
             agile_issue ai
@@ -3119,6 +3120,7 @@
        SELECT
             apv.name,
             alv2.name AS status_name,
+            ais.category_code as status_code,
             count( * ) AS count
         FROM
             agile_version_issue_rel avir
@@ -3146,6 +3148,36 @@
         GROUP BY
             apv.NAME,
             ais.category_code
+    </select>
+
+    <select id="queryIssuePriorityDistributionChart" resultType="io.choerodon.agile.infra.dataobject.IssuePriorityDistributionChartDO">
+        SELECT
+            aaa.NAME,
+            aaa.priority_code,
+            SUM( CASE WHEN aaa.is_completed = 1 THEN aaa.count ELSE 0 END ) AS done_count,
+            SUM( aaa.count ) AS total_count
+        FROM
+            (
+        SELECT
+            alv.NAME,
+            ai.priority_code,
+            ais.is_completed,
+            count( * ) AS count
+        FROM
+            agile_issue ai
+            LEFT JOIN agile_issue ai2 ON ai.parent_issue_id = ai2.issue_id
+            LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+            LEFT JOIN agile_lookup_value alv ON alv.value_code = ai.priority_code
+        WHERE
+            ai.project_id = #{projectId}
+            AND ai.type_code != 'issue_test'
+            AND ( ai2.type_code != 'issue_test' OR ai2.type_code IS NULL )
+        GROUP BY
+            ai.priority_code,
+            ais.is_completed
+            ) aaa
+        GROUP BY
+            aaa.priority_code
     </select>
 
 </mapper>

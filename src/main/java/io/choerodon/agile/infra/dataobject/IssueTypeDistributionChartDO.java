@@ -12,6 +12,8 @@ public class IssueTypeDistributionChartDO {
 
     private String statusName;
 
+    private String statusCode;
+
     private Integer count;
 
     public String getName() {
@@ -36,6 +38,14 @@ public class IssueTypeDistributionChartDO {
 
     public void setCount(Integer count) {
         this.count = count;
+    }
+
+    public String getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
     }
 
     @Override

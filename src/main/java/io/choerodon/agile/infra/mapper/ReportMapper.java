@@ -309,7 +309,7 @@ public interface ReportMapper {
      * @param total     total
      * @return PieChartDO
      */
-    List<PieChartDO> queryPieChartByEpic(@Param("projectId") Long projectId,@Param("total") Integer total);
+    List<PieChartDO> queryPieChartByEpic(@Param("projectId") Long projectId, @Param("total") Integer total);
 
 
     /**
@@ -325,29 +325,29 @@ public interface ReportMapper {
 
     List<GroupDataChartListDO> selectVersionIssueList(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
-    List<GroupDataChartDO> selectByStoryPointCompletedFinal(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDO> selectByStoryPointCompletedFinal(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByStoryPointAllFinal(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDO> selectByStoryPointAllFinal(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByStoryPointCountAll(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDO> selectByStoryPointCountAll(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByStoryPointCountEstimate(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDO> selectByStoryPointCountEstimate(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeRemainCompleted(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDO> selectByRemainTimeRemainCompleted(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeWorkLogCompleted(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDO> selectByRemainTimeWorkLogCompleted(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeRemainAll(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDO> selectByRemainTimeRemainAll(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeWorkLogAll(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDO> selectByRemainTimeWorkLogAll(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeCountAll(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDO> selectByRemainTimeCountAll(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeCountEstimate(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDO> selectByRemainTimeCountEstimate(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByIssueCountCompletedFinal(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDO> selectByIssueCountCompletedFinal(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByIssueCountAllFinal(@Param("projectId") Long projectId,@Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDO> selectByIssueCountAllFinal(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
     /**
      * 问题类型分布图
@@ -364,4 +364,12 @@ public interface ReportMapper {
      * @return IssueTypeDistributionChartDO
      */
     List<IssueTypeDistributionChartDO> queryVersionProgressChart(@Param("projectId") Long projectId);
+
+    /**
+     * 问题优先级分布图
+     *
+     * @param projectId projectId
+     * @return IssuePriorityDistributionChartDO
+     */
+    List<IssuePriorityDistributionChartDO> queryIssuePriorityDistributionChart(@Param("projectId") Long projectId);
 }

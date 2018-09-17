@@ -10,6 +10,7 @@ import io.choerodon.agile.api.dto.IssueBurnDownReportDTO
 import io.choerodon.agile.api.dto.IssueCreateDTO
 import io.choerodon.agile.api.dto.IssueDTO
 import io.choerodon.agile.api.dto.IssueListDTO
+import io.choerodon.agile.api.dto.IssuePriorityDistributionChartDTO
 import io.choerodon.agile.api.dto.IssueTypeDistributionChartDTO
 import io.choerodon.agile.api.dto.IssueUpdateDTO
 import io.choerodon.agile.api.dto.PieChartDTO
@@ -556,6 +557,21 @@ class ReportControllerSpec extends Specification {
 
         expect: '验证期望值'
         issueTypeDistributionChartDTOList.size() == 2
+
+    }
+
+    def 'queryIssuePriorityDistributionChart'() {
+        when: '问题优先级分布图'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/issue_priority_distribution_chart', List, projectId)
+
+        then: '接口是否请求成功'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置返回值值'
+        List<IssuePriorityDistributionChartDTO> issuePriorityDistributionChartDTOList = entity.body
+
+        expect: '验证期望值'
+        issuePriorityDistributionChartDTOList.size() == 2
 
     }
 
