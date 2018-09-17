@@ -22,7 +22,7 @@ public interface IssueLinkTypeMapper extends BaseMapper<IssueLinkTypeDO> {
      */
     List<IssueLinkTypeDO> queryIssueLinkTypeByProjectId(@Param("projectId") Long projectId, @Param("issueLinkTypeId") Long issueLinkTypeId);
 
-    Integer queryIssueLinkName(@Param("projectId") Long projectId,
-                               @Param("issueLinkTypeName") String issueLinkTypeName,
-                               @Param("issueLinkTypeId") Long issueLinkTypeId);
+    Integer queryIssueLinkTypeName(@Param("projectId") Long projectId,
+                                   @Param("issueLinkTypeName") String issueLinkTypeName,
+                                   @Param("issueLinkTypeId") Long issueLinkTypeId);
 }

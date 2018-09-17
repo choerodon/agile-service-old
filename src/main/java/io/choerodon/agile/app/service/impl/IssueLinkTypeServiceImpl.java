@@ -79,7 +79,7 @@ public class IssueLinkTypeServiceImpl implements IssueLinkTypeService {
     }
 
     @Override
-    public boolean verifyLinkName(Long projectId, String issueLinkTypeName, Long issueLinkTypeId) {
-        return issueLinkTypeMapper.queryIssueLinkName(projectId, issueLinkTypeName, issueLinkTypeId) == 0;
+    public boolean queryIssueLinkTypeName(Long projectId, String issueLinkTypeName, Long issueLinkTypeId) {
+        return issueLinkTypeMapper.queryIssueLinkTypeName(projectId, issueLinkTypeName, issueLinkTypeId) == 0;
     }
 }

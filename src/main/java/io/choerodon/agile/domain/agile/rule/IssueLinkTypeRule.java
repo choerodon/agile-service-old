@@ -52,8 +52,8 @@ public class IssueLinkTypeRule {
         issueLinkTypeDTO.setProjectId(projectId);
     }
 
-    public void verifyLinkName(Long projectId, String issueLinkTypeName, Long issueLinkTypeId) {
-        if (issueLinkTypeMapper.queryIssueLinkName(projectId, issueLinkTypeName, issueLinkTypeId) > 0) {
+    public void verifyIssueLinkTypeName(Long projectId, String issueLinkTypeName, Long issueLinkTypeId) {
+        if (issueLinkTypeMapper.queryIssueLinkTypeName(projectId, issueLinkTypeName, issueLinkTypeId) > 0) {
             throw new CommonException("error.IssueLinkTypeName.isExisted");
         }
     }

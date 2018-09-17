@@ -56,7 +56,7 @@ public class IssueLinkTypeController {
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.queryIssueLinkType"));
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = InitRoleCode.PROJECT_OWNER)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("创建issueLinkType")
     @PostMapping
     public ResponseEntity<IssueLinkTypeDTO> createIssueLinkType(@ApiParam(value = "项目id", required = true)
@@ -65,13 +65,13 @@ public class IssueLinkTypeController {
                                                                 @RequestBody IssueLinkTypeCreateDTO issueLinkTypeCreateDTO) {
         //todo 重名校验
         issueLinkTypeRule.verifyCreateData(issueLinkTypeCreateDTO, projectId);
-        issueLinkTypeRule.verifyLinkName(projectId,issueLinkTypeCreateDTO.getLinkName(), null);
+        issueLinkTypeRule.verifyIssueLinkTypeName(projectId,issueLinkTypeCreateDTO.getLinkName(), null);
         return Optional.ofNullable(issueLinkTypeService.createIssueLinkType(issueLinkTypeCreateDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.createIssueLinkType"));
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = InitRoleCode.PROJECT_OWNER)
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("修改issueLinkType")
     @PutMapping
     public ResponseEntity<IssueLinkTypeDTO> updateIssueLinkType(@ApiParam(value = "项目id", required = true)
@@ -79,7 +79,7 @@ public class IssueLinkTypeController {
                                                                 @ApiParam(value = "issueLinkType", required = true)
                                                                 @RequestBody IssueLinkTypeDTO issueLinkTypeDTO) {
         issueLinkTypeRule.verifyUpdateData(issueLinkTypeDTO, projectId);
-        issueLinkTypeRule.verifyLinkName(projectId,issueLinkTypeDTO.getLinkName(), issueLinkTypeDTO.getLinkTypeId());
+        issueLinkTypeRule.verifyIssueLinkTypeName(projectId,issueLinkTypeDTO.getLinkName(), issueLinkTypeDTO.getLinkTypeId());
         return Optional.ofNullable(issueLinkTypeService.updateIssueLinkType(issueLinkTypeDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.updateIssueLinkType"));
@@ -99,15 +99,15 @@ public class IssueLinkTypeController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = InitRoleCode.PROJECT_OWNER)
-    @ApiOperation("issueLink重名校验")
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+    @ApiOperation("IssueLinkType重名校验")
     @GetMapping(value = "/check_name")
-    public ResponseEntity checkLinkName(@ApiParam(value = "项目id", required = true)
-                                        @PathVariable(name = "project_id") Long projectId,
-                                        @ApiParam(value = "linkTypeName", required = true)
-                                        @RequestParam(name = "issueLinkTypeName") String issueLinkTypeName,
-                                        @ApiParam(value = "issueLinkType", required = false)
-                                        @RequestParam(name = "issueLinkTypeId", required = false) Long issueLinkTypeId) {
-        return new ResponseEntity<>(issueLinkTypeService.verifyLinkName(projectId, issueLinkTypeName, issueLinkTypeId), HttpStatus.OK);
+    public ResponseEntity checkIssueLinkTypeName(@ApiParam(value = "项目id", required = true)
+                                                 @PathVariable(name = "project_id") Long projectId,
+                                                 @ApiParam(value = "issue_link_type_name", required = true)
+                                                 @RequestParam(name = "issueLinkTypeName") String issueLinkTypeName,
+                                                 @ApiParam(value = "issue_link_type_id", required = false)
+                                                 @RequestParam(name = "issueLinkTypeId", required = false) Long issueLinkTypeId) {
+        return new ResponseEntity<>(issueLinkTypeService.queryIssueLinkTypeName(projectId, issueLinkTypeName, issueLinkTypeId), HttpStatus.OK);
     }
 }

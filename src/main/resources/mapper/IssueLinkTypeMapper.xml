@@ -9,7 +9,7 @@
         </if>
     </select>
 
-    <select id="queryIssueLinkName" resultType="java.lang.Integer">
+    <select id="queryIssueLinkTypeName" resultType="java.lang.Integer">
         select COUNT(*) from agile_issue_link_type aily
         where aily.project_id=#{projectId}
         and aily.link_name=#{issueLinkTypeName}
