@@ -1,12 +1,13 @@
 package io.choerodon.agile.domain.agile.rule;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import io.choerodon.agile.api.dto.IssueLinkTypeCreateDTO;
 import io.choerodon.agile.api.dto.IssueLinkTypeDTO;
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper;
 import io.choerodon.core.exception.CommonException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * @author dinghuang123@gmail.com
@@ -49,5 +50,11 @@ public class IssueLinkTypeRule {
             throw new CommonException("error.IssueLinkType.linkTypeId");
         }
         issueLinkTypeDTO.setProjectId(projectId);
+    }
+
+    public void verifyLinkName(Long projectId, String issueLinkTypeName, Long issueLinkTypeId) {
+        if (issueLinkTypeMapper.queryIssueLinkName(projectId, issueLinkTypeName, issueLinkTypeId) > 0) {
+            throw new CommonException("error.IssueLinkTypeName.isExisted");
+        }
     }
 }

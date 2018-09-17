@@ -61,4 +61,6 @@ public interface IssueLinkTypeService {
      * @param projectId projectId
      */
     void initIssueLinkType(Long projectId);
+
+    boolean verifyLinkName(Long projectId, String issueLinkTypeName, Long issueLinkTypeId);
 }
