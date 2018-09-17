@@ -1322,7 +1322,7 @@
         WHERE ai.project_id = #{projectId}
         and ai.issue_id in
         (
-           select ail.issue_id
+           select ail.linked_issue_id
            from agile_issue_link ail, agile_issue ai2
            where ai2.project_id = #{projectId} and ail.issue_id = ai2.issue_id and ai2.type_code = 'issue_test'
         )
