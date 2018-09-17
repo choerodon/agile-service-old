@@ -137,8 +137,6 @@ public interface IssueService {
 
     void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response);
 
-    void exportIssue(Long projectId, Long issueId, HttpServletRequest request, HttpServletResponse response);
-
     /**
      * 根据issueId复制一个issue
      *

@@ -298,6 +298,13 @@ class IssueControllerSpec extends Specification {
         issueLinkDTO.linkTypeId = 1
         issueLinkDTOList.add(issueLinkDTO)
         issueUpdate.put("issueLinkDTOList", issueLinkDTOList)
+        List<LabelIssueRelDTO> labelIssueRelDTOArrayList = new ArrayList<>()
+        LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO()
+        labelIssueRelDTO.issueId = issueIdList[0]
+        labelIssueRelDTO.labelId = 1
+        labelIssueRelDTO.projectId = projectId
+        labelIssueRelDTOArrayList.add(labelIssueRelDTO)
+        issueUpdate.put("labelIssueRelDTOList", labelIssueRelDTOArrayList)
 
         when: '向开始创建issue的接口发请求'
         restTemplate.put('/v1/projects/{project_id}/issues', issueUpdate, projectId)
@@ -446,12 +453,13 @@ class IssueControllerSpec extends Specification {
     }
 
     def "batchIssueToSprint"() {
-        given: '给定一个issue数组列表'
-        List<Long> issueIds = Arrays.asList(issueIdList[0]) as List<Long>
-        and: '移动issue的对象'
+        given: '移动issue的对象'
         MoveIssueDTO moveIssueDTO = new MoveIssueDTO()
         moveIssueDTO.before = true
         moveIssueDTO.issueIds = issueIds
+        moveIssueDTO.rankIndex = true
+        moveIssueDTO.before = true
+        moveIssueDTO.outsetIssueId = 0
         when: '向issue批量加入冲刺接口发请求'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/to_sprint/{sprintId}',
                 moveIssueDTO, List, projectId, sprintId)
@@ -461,8 +469,14 @@ class IssueControllerSpec extends Specification {
 
         and: '设置值'
         List<IssueSearchDTO> issueSearchDTOList = entity.body
+
         expect: '设置期望值'
-        issueSearchDTOList.size() > 0
+        issueSearchDTOList.size() == expectSize
+
+        where: '对比设置与期望'
+        rankIndex | before | outsetIssueId  | issueIds                                    || expectSize
+        false     | false  | issueIdList[1] | Arrays.asList(issueIdList[1]) as List<Long> || 1
+        true      | true   | 0              | Arrays.asList(issueIdList[1]) as List<Long> || 1
 
     }
 
@@ -527,6 +541,11 @@ class IssueControllerSpec extends Specification {
 
     }
 
+    /**
+     * 导出excel的时候，SXSSFSheet的workbook.createSheet方法调用了FontManagerFactory去拿系统的"sun.font.fontmanager"属性
+     * 但是在gitlab中的runner中reflect反射获取类报空指针异常，这个可能是runner中jdk的版本问题
+     * @return Exception
+     */
 //    def "exportIssues"() {
 //        given: '给定查询dto'
 //        SearchDTO searchDTO = new SearchDTO()
@@ -536,7 +555,6 @@ class IssueControllerSpec extends Specification {
 //        ProjectDTO projectDTO = new ProjectDTO()
 //        projectDTO.name = '测试项目'
 //        projectDTO.code = '测试项目Code'
-//        userRepository.queryProject(_) >> projectDTO
 //
 //        when: '向根据issue类型(type_code)查询issue列表(分页)接口发请求'
 //        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/export',
@@ -544,28 +562,35 @@ class IssueControllerSpec extends Specification {
 //
 //        then: '返回值'
 //        entity.statusCode.is2xxSuccessful()
+//        1 * userRepository.queryProject(_) >> projectDTO
+//
 //
 //        expect: '期待值比较'
 //        entity.headers.get("Content-Type") != null
 //
 //    }
 
-    def "exportIssue"() {
-        given: 'mock userFeignClient'
+    def "exportIssues"() {
+        given: '给定查询dto'
+        SearchDTO searchDTO = new SearchDTO()
+        searchDTO.content = '测试'
+
+        and: 'mock userFeignClient'
         ProjectDTO projectDTO = new ProjectDTO()
         projectDTO.name = '测试项目'
         projectDTO.code = '测试项目Code'
-        userRepository.queryProject(_) >> projectDTO
 
         when: '向根据issue类型(type_code)查询issue列表(分页)接口发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/export/{issueId}',
-                null, null, projectId, issueIdList[0])
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/export',
+                searchDTO, null, projectId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
+        1 * userRepository.queryProject(_) >> projectDTO
+
 
         expect: '期待值比较'
-        entity.headers.get("Content-Length").size() > 0
+        entity.headers.get("Content-Type") != null
 
     }
 
@@ -982,10 +1007,10 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def "batchIssueToVersionTest failed"(){
+    def "batchIssueToVersionTest failed"() {
         given: '准备数据'
-        def objectExpect=null
-        HttpEntity<List<Long>> requestHttpEntity=new HttpEntity<List>(issueIdList)
+        def objectExpect = null
+        HttpEntity<List<Long>> requestHttpEntity = new HttpEntity<List>(issueIdList)
 
         when: '发送请求'
         try {
@@ -996,13 +1021,13 @@ class IssueControllerSpec extends Specification {
                     projectId,
                     versionId)
         } catch (Exception e) {
-            objectExpect=e
+            objectExpect = e
         }
         then: '设置值'
-        objectExpect!=null
+        objectExpect != null
     }
 
-    def "batchIssueToVersionTest"(){
+    def "batchIssueToVersionTest"() {
         given: '准备数据'
         IssueCreateDTO issueCreateDTO = new IssueCreateDTO()
         and: '设置issue属性'
@@ -1017,14 +1042,14 @@ class IssueControllerSpec extends Specification {
         issueCreateDTO.labelIssueRelDTOList = null
         issueCreateDTO.versionIssueRelDTOList = null
         restTemplate.postForEntity('/v1/projects/{project_id}/issues', issueCreateDTO, IssueDTO, projectId)
-        IssueDO issueDO=new IssueDO()
-        issueDO.summary="测试issue概要111111"
+        IssueDO issueDO = new IssueDO()
+        issueDO.summary = "测试issue概要111111"
         and: "获取IssueId"
-        resultId=issueMapper.selectOne(issueDO).issueId
+        resultId = issueMapper.selectOne(issueDO).issueId
         issueIdList.add(resultId)
-        List<Long> longList=new ArrayList<>()
+        List<Long> longList = new ArrayList<>()
         longList.add(resultId)
-        HttpEntity<List<Long>> requestHttpEntity=new HttpEntity<List>(longList)
+        HttpEntity<List<Long>> requestHttpEntity = new HttpEntity<List>(longList)
 
         when: '发送请求'
         def entity = restTemplate.exchange('/v1/projects/{project_id}/issues/to_version_test/{versionId}',
@@ -1037,16 +1062,16 @@ class IssueControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and:
-        List<IssueSearchDO> issueSearchDOList=issueMapper.queryIssueByIssueIds(projectId, longList)
+        List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, longList)
 
-        expect:'设置期望值'
-        issueSearchDOList.get(0).versionIds.get(0)==versionId
+        expect: '设置期望值'
+        issueSearchDOList.get(0).versionIds.get(0) == versionId
     }
 
-    def "batchDeleteIssues failed"(){
+    def "batchDeleteIssues failed"() {
         given: '准备数据'
-        def objectExpect=null
-        HttpEntity<List<Long>> requestHttpEntity=new HttpEntity<List>(issueIdList)
+        def objectExpect = null
+        HttpEntity<List<Long>> requestHttpEntity = new HttpEntity<List>(issueIdList)
 
         when: '发送请求'
         try {
@@ -1056,10 +1081,10 @@ class IssueControllerSpec extends Specification {
                     ResponseEntity,
                     projectId)
         } catch (Exception e) {
-            objectExpect=e
+            objectExpect = e
         }
         then: '设置值'
-        objectExpect!=null
+        objectExpect != null
     }
 
     def "batchDeleteIssues"() {
@@ -1070,9 +1095,9 @@ class IssueControllerSpec extends Specification {
         and: "准备数据"
         def issueMapperMock = Mock(IssueMapper)
         issueService.setIssueMapper(issueMapperMock)
-        issueMapperMock.queryIssueIdsIsTest(*_)>>longList.size()
-        issueMapperMock.queryIssueSubListByIssueIds(*_)>>new ArrayList<Long>()
-        issueMapperMock.batchDeleteIssues(*_)>>null
+        issueMapperMock.queryIssueIdsIsTest(*_) >> longList.size()
+        issueMapperMock.queryIssueSubListByIssueIds(*_) >> new ArrayList<Long>()
+        issueMapperMock.batchDeleteIssues(*_) >> null
 
         when: '发送请求'
         def entity = restTemplate.exchange('/v1/projects/{project_id}/issues/to_version_test',
