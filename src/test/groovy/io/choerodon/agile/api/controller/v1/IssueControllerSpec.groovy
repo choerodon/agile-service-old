@@ -571,6 +571,31 @@ class IssueControllerSpec extends Specification {
 //
 //    }
 
+    def "exportIssues"() {
+        given: '给定查询dto'
+        SearchDTO searchDTO = new SearchDTO()
+        searchDTO.content = '测试'
+
+        and: 'mock userFeignClient'
+        ProjectDTO projectDTO = new ProjectDTO()
+        projectDTO.name = '测试项目'
+        projectDTO.code = '测试项目Code'
+
+        when: '向根据issue类型(type_code)查询issue列表(分页)接口发请求'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/export',
+                searchDTO, null, projectId)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+        1 * userRepository.queryProject(_) >> projectDTO
+
+
+        expect: '期待值比较'
+        entity.headers.get("Content-Type") != null
+
+    }
+
+>>>>>>> 5786148008e1965e932f43ecc580368e4d6f5738
     def "cloneIssueByIssueId"() {
         given: '复制issue条件DTO'
         CopyConditionDTO conditionDTO = new CopyConditionDTO()
