@@ -102,17 +102,17 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<IssueTypeDistributionChartDTO> queryIssueTypeDistributionChart(Long projectId) {
-        return reportAssembler.toTargetList(reportMapper.queryIssueTypeDistributionChart(projectId),IssueTypeDistributionChartDTO.class);
+        return reportAssembler.toTargetList(reportMapper.queryIssueTypeDistributionChart(projectId), IssueTypeDistributionChartDTO.class);
     }
 
     @Override
     public List<IssueTypeDistributionChartDTO> queryVersionProgressChart(Long projectId) {
-        return reportAssembler.toTargetList(reportMapper.queryVersionProgressChart(projectId),IssueTypeDistributionChartDTO.class);
+        return reportAssembler.toTargetList(reportMapper.queryVersionProgressChart(projectId), IssueTypeDistributionChartDTO.class);
     }
 
     @Override
     public List<IssuePriorityDistributionChartDTO> queryIssuePriorityDistributionChart(Long projectId) {
-        return reportAssembler.toTargetList(reportMapper.queryIssuePriorityDistributionChart(projectId),IssuePriorityDistributionChartDTO.class);
+        return reportAssembler.toTargetList(reportMapper.queryIssuePriorityDistributionChart(projectId), IssuePriorityDistributionChartDTO.class);
     }
 
 
@@ -1187,9 +1187,9 @@ public class ReportServiceImpl implements ReportService {
                 if (sprintDOList != null && !sprintDOList.isEmpty()) {
                     handleBurnDownCoordinateByTypeExistSprint(issueDOS, reportCoordinateDTOS, startDate, sprintDOList, type);
                 } else {
-                    Integer count = issueDOS.stream().mapToInt(IssueBurnDownReportDO::getStoryPoints).sum() -
-                            issueDOS.stream().filter(IssueBurnDownReportDO::getCompleted).mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
-                    reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(count, 0, 0, count,
+                    Integer add = issueDOS.stream().mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
+                    Integer done = issueDOS.stream().filter(IssueBurnDownReportDO::getCompleted).mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
+                    reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(0, add, done, add - done,
                             type + "开始时的预估", startDate, new Date()));
                 }
                 return reportCoordinateDTOS;
@@ -1279,11 +1279,11 @@ public class ReportServiceImpl implements ReportService {
 
     private void handleBurnDownCoordinateByTypeExistSprint(List<IssueBurnDownReportDO> issueDOS, List<BurnDownReportCoordinateDTO> reportCoordinateDTOS,
                                                            Date startDate, List<SprintDO> sprintDOList, String type) {
-        Integer count = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().before(sprintDOList.get(0).getStartDate()))
-                .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum()
-                - issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate().before(sprintDOList.get(0).getStartDate()))
+        Integer add = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().before(sprintDOList.get(0).getStartDate()))
                 .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
-        reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(count, 0, 0, count,
+        Integer done = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate().before(sprintDOList.get(0).getStartDate()))
+                .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
+        reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(0, add, done, add - done,
                 type + "开始时的预估", startDate, sprintDOList.get(0).getStartDate()));
         if (sprintDOList.size() == 1) {
             handleSprintSingle(reportCoordinateDTOS, issueDOS, sprintDOList);
