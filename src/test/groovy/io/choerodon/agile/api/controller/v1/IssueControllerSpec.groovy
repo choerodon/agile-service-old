@@ -11,6 +11,7 @@ import io.choerodon.agile.infra.mapper.*
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.domain.Page
 import io.choerodon.event.producer.execute.EventProducerTemplate
+import io.choerodon.mybatis.pagehelper.domain.PageRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
@@ -108,6 +109,10 @@ class IssueControllerSpec extends Specification {
     def issuesSize = 0
     @Shared
     def resultId = 0
+    @Shared
+    def productVersionId=0
+    @Shared
+    def epicIssueId=0
 
     def setup() {
         given: '设置feign调用mockito'
@@ -941,6 +946,28 @@ class IssueControllerSpec extends Specification {
         code == 'none'
     }
 
+    def 'listIssueWithLinkedIssues'() {
+        given:
+        PageRequest pageRequest =new PageRequest()
+        pageRequest.size=10
+        pageRequest.page=0
+        SearchDTO searchDTO=new SearchDTO()
+        Map<String,Object> searchArgsMap =new HashMap<>()
+        searchDTO.searchArgs=searchArgsMap
+        Map<String,Object> advancedSearchArgsMap =new HashMap<>()
+        List<String> typeCode=new ArrayList<>()
+        typeCode.add("issue_test")
+        advancedSearchArgsMap.put("typeCode",typeCode)
+        searchDTO.advancedSearchArgs=advancedSearchArgsMap
+
+        when:
+        def entity = restTemplate.postForEntity("/v1/projects/{project_id}/issues/test_component/filter_linked?pageRequest={pageRequest}",
+                searchDTO,Page.class,projectId,pageRequest)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+    }
+
     def "cloneIssuesByVersionId"() {
         given: 'issueTestIds'
         def issueTestIds = [issueTestId]
@@ -1062,6 +1089,44 @@ class IssueControllerSpec extends Specification {
         then: '设置值'
         objectExpect != null
     }
+
+//    def 'storymapMove'() {
+//        given:
+//        ProductVersionDO productVersionDO = new ProductVersionDO()
+//        productVersionDO.name = '测试版本2'
+//        productVersionId=productVersionMapper.selectOne(productVersionDO).versionId
+//
+//        StoryMapMoveDTO storyMapMoveDTO=new StoryMapMoveDTO()
+//        storyMapMoveDTO.versionId=versionIds
+//        storyMapMoveDTO.sprintId=null
+//        storyMapMoveDTO.epicId=epicIssueId
+//        List<Long> epicIssueIds=new ArrayList<>()
+//        epicIssueIds.add(resultId)
+//        storyMapMoveDTO.epicIssueIds=epicIssueIds
+//        storyMapMoveDTO.rankIndex=true
+//        List<Long> sprintIssueIds=new ArrayList<>()
+//        sprintIssueIds.add(resultId)
+//        storyMapMoveDTO.sprintIssueIds=sprintIssueIds
+//        List<Long> versionIssueIds=new ArrayList<>()
+//        versionIssueIds.add(resultId)
+//        storyMapMoveDTO.versionIssueIds=versionIssueIds
+//        storyMapMoveDTO.before=true
+//        List<Long> issueIds=new ArrayList<Long>()
+//        issueIds.add(resultId)
+//        storyMapMoveDTO.issueIds=issueIds
+//
+//        when:
+//        def entity = restTemplate.postForEntity("/v1/projects/{project_id}/issues/storymap/move",
+//                storyMapMoveDTO,null,projectId)
+//        then:
+//        entity.statusCode.is2xxSuccessful()
+//        expect:
+//        entity.body==expectObject
+//        where:
+//        versionIds       | sprintIds    | expectObject
+//        productVersionId | null         | null
+//
+//    }
 
     def "batchDeleteIssues"() {
         given: '准备数据'
