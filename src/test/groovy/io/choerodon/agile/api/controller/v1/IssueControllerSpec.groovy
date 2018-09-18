@@ -112,7 +112,7 @@ class IssueControllerSpec extends Specification {
     @Shared
     def productVersionId=0
     @Shared
-    def epicIssueId=0
+    def testSprintId=0
 
     def setup() {
         given: '设置feign调用mockito'
@@ -1032,6 +1032,22 @@ class IssueControllerSpec extends Specification {
 
     def "batchIssueToVersionTest"() {
         given: '准备数据'
+        ProductVersionDO productVersionDO = new ProductVersionDO()
+        productVersionDO.name = '测试版本2'
+        productVersionId = productVersionMapper.selectOne(productVersionDO).versionId
+
+        SprintDO sprintDO = new SprintDO()
+        sprintDO.projectId = 1L
+        sprintDO.sprintName = 'sprint-test1111'
+        sprintDO.statusCode = 'sprint_planning'
+        sprintMapper.insert(sprintDO)
+        testSprintId = sprintMapper.selectOne(sprintDO).sprintId
+        IssueSprintRelDO issueSprintRelDO = new IssueSprintRelDO()
+        issueSprintRelDO.sprintId = testSprintId
+        issueSprintRelDO.issueId = resultId
+        issueSprintRelDO.projectId = 1L
+        issueSprintRelMapper.insert(issueSprintRelDO)
+
         IssueCreateDTO issueCreateDTO = new IssueCreateDTO()
         and: '设置issue属性'
         issueCreateDTO.typeCode = "issue_test"
@@ -1040,7 +1056,7 @@ class IssueControllerSpec extends Specification {
         issueCreateDTO.summary = "测试issue概要111111"
         issueCreateDTO.priorityCode = "hight"
         issueCreateDTO.assigneeId = 1
-        issueCreateDTO.sprintId = sprintId
+        issueCreateDTO.sprintId = testSprintId
         issueCreateDTO.componentIssueRelDTOList = null
         issueCreateDTO.labelIssueRelDTOList = null
         issueCreateDTO.versionIssueRelDTOList = null
@@ -1090,43 +1106,41 @@ class IssueControllerSpec extends Specification {
         objectExpect != null
     }
 
-//    def 'storymapMove'() {
-//        given:
-//        ProductVersionDO productVersionDO = new ProductVersionDO()
-//        productVersionDO.name = '测试版本2'
-//        productVersionId=productVersionMapper.selectOne(productVersionDO).versionId
-//
-//        StoryMapMoveDTO storyMapMoveDTO=new StoryMapMoveDTO()
-//        storyMapMoveDTO.versionId=versionIds
-//        storyMapMoveDTO.sprintId=null
-//        storyMapMoveDTO.epicId=epicIssueId
-//        List<Long> epicIssueIds=new ArrayList<>()
-//        epicIssueIds.add(resultId)
-//        storyMapMoveDTO.epicIssueIds=epicIssueIds
-//        storyMapMoveDTO.rankIndex=true
-//        List<Long> sprintIssueIds=new ArrayList<>()
-//        sprintIssueIds.add(resultId)
-//        storyMapMoveDTO.sprintIssueIds=sprintIssueIds
-//        List<Long> versionIssueIds=new ArrayList<>()
-//        versionIssueIds.add(resultId)
-//        storyMapMoveDTO.versionIssueIds=versionIssueIds
-//        storyMapMoveDTO.before=true
-//        List<Long> issueIds=new ArrayList<Long>()
-//        issueIds.add(resultId)
-//        storyMapMoveDTO.issueIds=issueIds
-//
-//        when:
-//        def entity = restTemplate.postForEntity("/v1/projects/{project_id}/issues/storymap/move",
-//                storyMapMoveDTO,null,projectId)
-//        then:
-//        entity.statusCode.is2xxSuccessful()
-//        expect:
-//        entity.body==expectObject
-//        where:
-//        versionIds       | sprintIds    | expectObject
-//        productVersionId | null         | null
-//
-//    }
+
+    def 'storymapMove'() {
+        given:
+        StoryMapMoveDTO storyMapMoveDTO=new StoryMapMoveDTO()
+        storyMapMoveDTO.versionId=versionIds
+        storyMapMoveDTO.sprintId=sprintIds
+        storyMapMoveDTO.epicId=issueIdList[2]
+        List<Long> epicIssueIds=new ArrayList<>()
+        epicIssueIds.add(resultId)
+        storyMapMoveDTO.epicIssueIds=epicIssueIds
+        storyMapMoveDTO.rankIndex=true
+        List<Long> sprintIssueIds=new ArrayList<>()
+        sprintIssueIds.add(resultId)
+        storyMapMoveDTO.sprintIssueIds=sprintIssueIds
+        List<Long> versionIssueIds=new ArrayList<>()
+        versionIssueIds.add(resultId)
+        storyMapMoveDTO.versionIssueIds=versionIssueIds
+        storyMapMoveDTO.before=true
+        List<Long> issueIds=new ArrayList<Long>()
+        issueIds.add(resultId)
+        storyMapMoveDTO.issueIds=issueIds
+
+        when:
+        def entity = restTemplate.postForEntity("/v1/projects/{project_id}/issues/storymap/move",
+                storyMapMoveDTO,null,projectId)
+        then:
+        entity.statusCode.is2xxSuccessful()
+        expect:
+        entity.body==expectObject
+        where:
+        versionIds       | sprintIds    | expectObject
+        null             | testSprintId | null
+        productVersionId | null         | null
+
+    }
 
     def "batchDeleteIssues"() {
         given: '准备数据'
@@ -1189,10 +1203,12 @@ class IssueControllerSpec extends Specification {
         issueComponentMapper.delete(issueComponentDO)
         productVersionMapper.delete(productVersionDO)
         productVersionMapper.delete(productVersionDO1)
+        sprintMapper.deleteByPrimaryKey(testSprintId)
 
         then: '验证删除'
         issueComponentMapper.selectOne(queryComponent) == null
         productVersionMapper.selectOne(queryVersion) == null
         productVersionMapper.selectOne(queryVersion1) == null
+        sprintMapper.selectByPrimaryKey(testSprintId) == null
     }
 }
