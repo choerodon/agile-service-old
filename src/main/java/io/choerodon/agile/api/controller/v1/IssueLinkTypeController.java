@@ -63,7 +63,6 @@ public class IssueLinkTypeController {
                                                                 @PathVariable(name = "project_id") Long projectId,
                                                                 @ApiParam(value = "创建issueLinkType对象", required = true)
                                                                 @RequestBody IssueLinkTypeCreateDTO issueLinkTypeCreateDTO) {
-        //todo 重名校验
         issueLinkTypeRule.verifyCreateData(issueLinkTypeCreateDTO, projectId);
         issueLinkTypeRule.verifyIssueLinkTypeName(projectId,issueLinkTypeCreateDTO.getLinkName(), null);
         return Optional.ofNullable(issueLinkTypeService.createIssueLinkType(issueLinkTypeCreateDTO))
