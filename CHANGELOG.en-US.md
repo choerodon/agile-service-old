@@ -1,6 +1,43 @@
 # Changelog
 All notable changes about agile service will be documented in this file.
 
+## [0.10.0] - 2018-09-24
+
+### Added
+
+- Epic burndown charts functionality.Users can select epic burndown charts in the report view. Charts and reports show the progress made by teams in different epics and predict the trend of future sprint completion.
+- Version burndown charts functionality.Users can select version burndown charts in the report view. Charts and reports show the progress made by teams in different epics and predict the trend of future sprint completion.
+- Sprint workbench functionality.Users can check the status, priority, assignee, and type distribution of the issues in the sprint workbench.
+- Report workbench functionality.Users can view real-time data of the cumulative flow chart, assignee distribution chart and other charts in the report workbench.
+- Story map export functionality.
+- Full screen operation of story map functionality.
+
+### Changed
+
+- The sliding functionality of the story map can be more fluid.
+- The story map can record its location when moving the issue.
+- The story map can record its location when the requirements pool is dragging a issue.
+- Partial view memory optimization.
+- The burndown chart and sprint report in the report can build a cache to retain the last selected sprint and its units.
+- Modify the style of adding state in the board configuration.
+- Cumulative flow graph to obtain time function optimization.
+- The version progress in the dashboard filters out the archived version.
+- Creating issue links in the Settings adds duplicate validation.
+- Story maps support drag up and down sorting in different swimlane.
+
+### Fixed
+
+- The page stack phenomenon occurs when user drag an issue to a column with multiple states in active sprint view.
+- When user drag issue to sorting in active sprint view, data of this page will occurs delay problem.
+- Creation issues take too long to execute in backlog view.
+- Issue's descriptions is a string with formatting in Excel when user export Excel in issues manager view.
+- The sprint burndown chart failed under some conditions which according to the number of issues.
+
+### Removed
+
+- The paging functionality does not show the paging toolbar if it is less than 10.
+
+
 ## [0.9.5] - 2018-08-31
 
 ### Added
@@ -12,7 +49,7 @@ All notable changes about agile service will be documented in this file.
 - User story map issue drag functionality. Users can drag the issue between different epics, versions, sprints, or drag to the map board in the demand pool.
 - Report chart caching functionality: Cache the charts in the report via Redis.
 - The issues in the chart can transfer to issue management view (without subtasks).
-- Unit tests for to-dos, active sprints, release version and component management.
+- Unit tests for backlog, active sprints, release version and component management.
 - Record the swim lane settings of the user's active sprint corresponding to the board.
 - Issue management view export Excel contains subtasks.
 
@@ -24,19 +61,19 @@ All notable changes about agile service will be documented in this file.
 
 ### Fixed
 
-- Drag issue repeatedly generates a data log in the to-do view.
-- The to-do view has no issue cause sprint data does not receive.
-- Dragging issues to an unsupported version failed in the to-do view.
-- Dragging issues to an unsupported version failed in the to-do view.
-- When there are column constraints of the board configuration in the active sprint view, the constraints can be skipped directly by modifying the state of the to-do view.
+- Drag issue repeatedly generates a data log in the backlog view.
+- The backlog view has no issue cause sprint data does not receive.
+- Dragging issues to an unsupported version failed in the backlog view.
+- Dragging issues to an unsupported version failed in the backlog view.
+- When there are column constraints of the board configuration in the active sprint view, the constraints can be skipped directly by modifying the state of the backlog view.
 - Failed to delete the version in the version management view.
 
 ## [0.9.0] - 2018-08-17
 
 ### Added
 
-- Version drag sort functionality.Users can drag the version to sort versions in the version management view and the to-do view.
-- Epic drag sort functionality.Users can drag the epic to sort epics in the to-do view.
+- Version drag sort functionality.Users can drag the version to sort versions in the version management view and the backlog view.
+- Epic drag sort functionality.Users can drag the epic to sort epics in the backlog view.
 - Quick Search sort functionality.Users can drag the quick search and sort quick searchs in the set-up quick search view.
 - Sprint speed chart functionality.Users can select story points, issues counts,remaining time to see issues's resolve and unresolved proportional histogram of different sprints.
 - Epic report functionality.Users can select different epics through story points, issues counts, remaining time to see the current sprint resolve, unresolved, unresolved and unpredictable issues.And users also can see the corresponding summary data.
@@ -52,13 +89,13 @@ All notable changes about agile service will be documented in this file.
 - Agile-service message propagation is modified from Kafka to Saga.
 - Optimize the request time of the version report.
 - Optimize the equest time of the burndown report.
-- View style adjustment for to-do view.
-- Optimize the problem of slow loading of epics and versions in the to-do view.
+- View style adjustment for backlog view.
+- Optimize the problem of slow loading of epics and versions in the backlog view.
 - Data logs processing logic refactoring.
 - Modify version status style.
 
 ### Fixed
-- Memory overflow for to-do view.
+- Memory overflow for backlog view.
 - Burndown chart data are inconsistent.
 - Cumulative flow chart data are inconsistent.
 - Data display is inconsistent after component management creation component.
@@ -95,10 +132,10 @@ All notable changes about agile service will be documented in this file.
 - Modify the active sprint first in the menu order.
 - Modify the location of the epic name in the issue details.
 - Issue details style optimization.
-- To-do list view style optimization.
+- Backlog list view style optimization.
 - Remove the project code duplicate name check in the project settings.
 - Issues is arranged to refresh each time in a certain order on the board.
-- When you select issues in the to-do list, if you click on the details of one of the issue, you can select multiple issues based on the issue.
+- When you select issues in the backlog list, if you click on the details of one of the issue, you can select multiple issues based on the issue.
 - The project creates an initial test type issue.
 - Add the action of converted to subtask, copy operation in the issue details.
 - Release issues can be linked to issues management by clicking on the link.
@@ -119,9 +156,9 @@ All notable changes about agile service will be documented in this file.
 - The issue details select the manager and reporter component issue.
 - You can only select up to 400 issues when selecting a link issue.
 - Creationing issue link by search result failed.
-- The to-do list issues is dragged into the version but the list of issues in the corresponding version is not refreshed in real time.
+- The backlog list issues is dragged into the version but the list of issues in the corresponding version is not refreshed in real time.
 - The list shows the data operation load delay.
-- The to-do list issues is dragged to the sprint but the sprint's users information is not updated.
+- The backlog list issues is dragged to the sprint but the sprint's users information is not updated.
 - When the issue summary is switched during editing, the contents of the edit box will be cleared.
 - The problem is dragged into the version but not create logs.
 - New project creation issue but issue number starting from 2.
