@@ -189,7 +189,7 @@ public class ReportController {
                 .orElseThrow(() -> new CommonException("error.versionChartList.get"));
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("Epic和版本燃耗图坐标信息")
     @GetMapping(value = "/burn_down_coordinate_type/{id}")
     public ResponseEntity<List<BurnDownReportCoordinateDTO>> queryBurnDownCoordinateByType(@ApiParam(value = "项目id", required = true)
