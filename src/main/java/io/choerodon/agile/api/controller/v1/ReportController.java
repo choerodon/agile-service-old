@@ -139,6 +139,7 @@ public class ReportController {
                 .orElseThrow(() -> new CommonException("error.report.queryPieChart"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "史诗图")
     @GetMapping(value = "/epic_chart")
     public ResponseEntity<List<GroupDataChartDO>> queryEpicChart(@ApiParam(value = "项目id", required = true)
@@ -164,6 +165,7 @@ public class ReportController {
                 .orElseThrow(() -> new CommonException("error.epicChartList.get"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "版本图重构api")
     @GetMapping(value = "/version_chart")
     public ResponseEntity<List<GroupDataChartDO>> queryVersionChart(@ApiParam(value = "项目id", required = true)
