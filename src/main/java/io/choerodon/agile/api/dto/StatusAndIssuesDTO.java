@@ -20,6 +20,8 @@ public class StatusAndIssuesDTO {
 
     private String categoryCode;
 
+    private Boolean completed;
+
     private Long objectVersionNumber;
 
     private List<IssueForBoardDO> issues;
@@ -78,5 +80,13 @@ public class StatusAndIssuesDTO {
 
     public List<IssueForBoardDO> getIssues() {
         return issues;
+    }
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
+    }
+
+    public Boolean getCompleted() {
+        return completed;
     }
 }

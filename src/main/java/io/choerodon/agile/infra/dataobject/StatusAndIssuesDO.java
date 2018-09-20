@@ -18,6 +18,8 @@ public class StatusAndIssuesDO {
 
     private String categoryCode;
 
+    private Boolean completed;
+
     private Long objectVersionNumber;
 
     private List<IssueForBoardDO> issues;
@@ -76,5 +78,13 @@ public class StatusAndIssuesDO {
 
     public List<IssueForBoardDO> getIssues() {
         return issues;
+    }
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
+    }
+
+    public Boolean getCompleted() {
+        return completed;
     }
 }
