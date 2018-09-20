@@ -106,6 +106,7 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
         if (result.getStartDate() != null && result.getEndDate() != null) {
             result.setDayTotal(DateUtil.differentDaysByMillisecond(result.getStartDate(), result.getEndDate()));
         }
+        result.setIssueCount(sprintMapper.queryIssueCountInActiveBoard(projectId, sprintId));
         return result;
     }
 

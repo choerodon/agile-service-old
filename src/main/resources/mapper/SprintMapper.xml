@@ -506,4 +506,11 @@
         order by sprint_id
     </select>
 
+    <select id="queryIssueCountInActiveBoard" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM agile_issue ai, agile_issue_sprint_rel aisr
+        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
+        AND type_code NOT IN ('sub_task', 'issue_epic', 'issue_test')
+    </select>
+
 </mapper>
