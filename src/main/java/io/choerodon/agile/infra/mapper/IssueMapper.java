@@ -155,25 +155,11 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                                 @Param("self") Boolean self,
                                                 @Param("content") String content);
 
-    List<ExportIssuesDO> queryExportIssues(@Param("projectId") Long projectId,
-                                           @Param("searchArgs") Map<String, Object> searchArgs,
-                                           @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
-                                           @Param("otherArgs") Map<String, Object> otherArgs,
-                                           @Param("content") String content, @Param("projectCode") String projectCode);
+    List<ExportIssuesDO> queryExportIssues(@Param("projectId") Long projectId,@Param("issueIds") List<Long> issueIds,@Param("projectCode") String projectCode);
 
     List<SprintNameDO> querySprintNameByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     List<VersionIssueRelDO> queryVersionNameByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("relationType") String relationType);
-
-    ExportIssuesDO queryExportIssue(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
-
-    List<VersionIssueRelDO> queryVersionNameByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("relationType") String fixRelationType);
-
-    List<String> queryComponentNameByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
-
-    List<String> queryLabelNameByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
-
-    List<ExportIssuesDO> querySubIssuesByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
     /**
      * 根据issueIds查询issueEpic信息
