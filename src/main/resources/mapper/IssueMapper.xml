@@ -1093,7 +1093,7 @@
         AND asp.status_code != 'closed'
         ) asp1 ON asp1.issue_id = ai.issue_id
         WHERE ai.project_id = #{projectId}
-        and ai.issue_id in IN
+        and ai.issue_id IN
         <foreach collection="issueIds" item="issueId" open="(" separator=","
                  close=")">
             #{issueId}
