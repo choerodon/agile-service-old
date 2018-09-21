@@ -279,6 +279,16 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public Page<IssueListDTO> listIssueWithoutSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
         //处理用户搜索
+        handleSearchUser(searchDTO, projectId);
+        //连表查询需要设置主表别名
+        pageRequest.resetOrder(SEARCH, new HashMap<>());
+        Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
+                issueMapper.queryIssueListWithoutSub(projectId, searchDTO.getSearchArgs(),
+                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
+        return handlePageDoToDto(issueDOPage);
+    }
+
+    private void handleSearchUser(SearchDTO searchDTO, Long projectId) {
         if (searchDTO.getSearchArgs() != null && searchDTO.getSearchArgs().get(ASSIGNEE) != null) {
             String userName = (String) searchDTO.getSearchArgs().get(ASSIGNEE);
             if (userName != null && !"".equals(userName)) {
@@ -288,12 +298,6 @@ public class IssueServiceImpl implements IssueService {
                 }
             }
         }
-        //连表查询需要设置主表别名
-        pageRequest.resetOrder(SEARCH, new HashMap<>());
-        Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
-                issueMapper.queryIssueListWithoutSub(projectId, searchDTO.getSearchArgs(),
-                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
-        return handlePageDoToDto(issueDOPage);
     }
 
 
@@ -1138,15 +1142,7 @@ public class IssueServiceImpl implements IssueService {
             throw new CommonException(PROJECT_ERROR);
         }
         project.setCode(projectInfoDO.getProjectCode());
-        if (searchDTO.getSearchArgs() != null && searchDTO.getSearchArgs().get(ASSIGNEE) != null) {
-            String userName = (String) searchDTO.getSearchArgs().get(ASSIGNEE);
-            if (userName != null && !"".equals(userName)) {
-                List<UserDTO> userDTOS = userRepository.queryUsersByNameAndProjectId(projectId, userName);
-                if (userDTOS != null && !userDTOS.isEmpty()) {
-                    searchDTO.getAdvancedSearchArgs().put("assigneeIds", userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));
-                }
-            }
-        }
+        handleSearchUser(searchDTO, projectId);
         List<IssueDO> issueDOList = issueMapper.queryIssueListWithoutSub(projectId, searchDTO.getSearchArgs(),
                 searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent());
         List<Long> issueIds = issueDOList.stream().map(IssueDO::getIssueId).collect(Collectors.toList());

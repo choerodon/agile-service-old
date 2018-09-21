@@ -212,7 +212,7 @@
     <select id="queryIssueCommentByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueCommentDO">
         SELECT *
         FROM agile_issue_comment
-        WHERE issue_id = #{issueId}
+        WHERE issue_id = #{issueId} order by creation_date desc
     </select>
 
     <select id="queryIssueAttachmentByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueAttachmentDO">
