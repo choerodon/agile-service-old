@@ -148,9 +148,8 @@
         aisr.sprint_id,
         case when ai.assignee_id is null then 0 else ai.assignee_id end AS assignee_id,
         ai.story_points, ai.remaining_time
-        FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
+        FROM agile_issue ai,  agile_issue_sprint_rel aisr
         WHERE aisr.issue_id = ai.issue_id
-        AND ai.status_id = ais.id AND ais.category_code != 'done'
         and ai.issue_id in
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
@@ -283,31 +282,11 @@
         WHERE
             asp.project_id = #{projectId}
             and asp.status_code != 'sprint_planning'
-            and asp.start_date > #{startDate}
+            and asp.start_date &gt;= #{startDate}
+            <if test="endDate != null">
+                and asp.start_date &lt;= #{endDate}
+            </if>
             order by asp.start_date desc
-    </select>
-
-    <select id="queryAssigneeIssueBySprintId" parameterType="java.util.Map"
-            resultType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
-        SELECT a.sprint_id, a.assignee_id,
-        SUM(a.story_points) AS total_story_points,
-        SUM(a.remaining_time) AS total_remaining_time,
-        COUNT(1) AS issue_count
-        FROM (
-        SELECT
-        aisr.sprint_id,
-        ai.assignee_id,
-        ai.story_points, ai.remaining_time
-        FROM agile_issue ai, agile_issue_sprint_rel aisr
-        WHERE aisr.issue_id = ai.issue_id
-        AND aisr.sprint_id = #{sprintId}
-        and ai.issue_id in
-        <foreach collection="issueIds" item="issueId" index="index"
-                 open="'" close="'" separator=",">
-            #{issueId}
-        </foreach>
-        ) a
-        GROUP BY a.sprint_id, a.assignee_id
     </select>
 
     <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">

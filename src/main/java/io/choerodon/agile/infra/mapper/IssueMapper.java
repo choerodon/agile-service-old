@@ -155,7 +155,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                                 @Param("self") Boolean self,
                                                 @Param("content") String content);
 
-    List<ExportIssuesDO> queryExportIssues(@Param("projectId") Long projectId,@Param("issueIds") List<Long> issueIds,@Param("projectCode") String projectCode);
+    List<ExportIssuesDO> queryExportIssues(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("projectCode") String projectCode);
 
     List<SprintNameDO> querySprintNameByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
@@ -191,10 +191,10 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                                      @Param("content") String content);
 
     List<IssueDO> listIssueWithLinkedIssues(@Param("projectId") Long projectId,
-                                             @Param("searchArgs") Map<String, Object> searchArgs,
-                                             @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
-                                             @Param("otherArgs") Map<String, Object> otherArgs,
-                                             @Param("content") String content);
+                                            @Param("searchArgs") Map<String, Object> searchArgs,
+                                            @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
+                                            @Param("otherArgs") Map<String, Object> otherArgs,
+                                            @Param("content") String content);
 
     List<IssueCreationNumDO> queryIssueNumByTimeSlot(@Param("projectId") Long projectId,
                                                      @Param("typeCode") String typeCode,
@@ -368,7 +368,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     void updateMapRank(@Param("projectId") Long projectId, @Param("mapMoveIssueDOS") List<StoryMapMoveIssueDO> mapMoveIssueDOS);
 
-    Integer queryIssueIdsIsTest(@Param("projectId") Long projectId,@Param("issueIds") List<Long> issueIds);
+    Integer queryIssueIdsIsTest(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     /**
      * 查询epic信息
@@ -378,4 +378,13 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @return IssueDO
      */
     IssueDO queryEpicDetailByIssueId(@Param("issueId") Long issueId, @Param("projectId") Long projectId);
+
+    /**
+     * 查询epic相关信息
+     *
+     * @param issueId   issueId
+     * @param projectId projectId
+     * @return IssueDO
+     */
+    IssueDO queryEpicWithStatusByIssueId(@Param("issueId") Long issueId, @Param("projectId") Long projectId);
 }

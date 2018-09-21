@@ -677,8 +677,8 @@
     <select id="querySprintIssueIdsByCondition" resultType="java.lang.Long">
         SELECT
         ai.issue_id
-        FROM agile_issue ai
-        WHERE ai.project_id = #{projectId} AND ai.type_code !=
+        FROM agile_issue ai left join agile_issue_sprint_rel aisr on ai.issue_id = aisr.issue_id left join agile_sprint asp on aisr.sprint_id = asp.sprint_id
+        WHERE (aisr.sprint_id is null or ( aisr.sprint_id is not null and asp.status_code != 'closed' )) and ai.project_id = #{projectId} AND ai.type_code !=
         'sub_task' AND ai.type_code != 'issue_epic' AND ai.type_code != 'issue_test'
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.versionId != null'>
@@ -2321,6 +2321,32 @@
                 ai.issue_id = #{issueId}
                 AND ai.project_id = #{projectId}
                 AND ai.type_code = 'issue_epic'
+    </select>
+
+    <select id="queryEpicWithStatusByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT
+            ai.issue_id,
+            ais.is_completed as completed,
+            (
+            SELECT
+                adl.creation_date
+            FROM
+                agile_data_log adl
+            WHERE
+                adl.issue_id = ai.issue_id
+                AND adl.project_id = #{projectId}
+                AND adl.field = 'resolution'
+                AND adl.new_value is not null
+            ORDER BY
+                adl.log_id DESC
+                LIMIT 1
+            ) as done_date
+        FROM
+            agile_issue ai
+            LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+        WHERE
+            ai.issue_id = #{issueId}
+            AND ai.project_id = #{projectId}
     </select>
 
 </mapper>
