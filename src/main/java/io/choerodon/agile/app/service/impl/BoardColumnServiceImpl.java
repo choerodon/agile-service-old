@@ -180,6 +180,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         // 取消列下的状态关联，状态归为未对应的状态
         ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
         columnStatusRelE.setColumnId(columnId);
+        columnStatusRelE.setProjectId(projectId);
         columnStatusRelRepository.delete(columnStatusRelE);
         // 调整列sequence
         boardColumnRepository.updateSequenceWhenDelete(projectId, boardColumnDO);

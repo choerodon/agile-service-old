@@ -188,8 +188,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-    @Cacheable(cacheNames = AGILE, key =
-            "'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()")
+    @Cacheable(cacheNames = AGILE, key = "'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()")
     public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
         //获取当前符合条件的所有issueIds
         String filterSql = null;
