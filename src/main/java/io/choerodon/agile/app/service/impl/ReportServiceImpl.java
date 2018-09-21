@@ -94,6 +94,7 @@ public class ReportServiceImpl implements ReportService {
     private static final String AGILE = "Agile";
     private static final String EPIC_OR_VERSION_NOT_FOUND_ERROR = "error.EpicOrVersion.notFound";
     private static final String ARCHIVED = "archived";
+    private static final String RELEASED = "released";
     private static final String E_PIC = "Epic";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportServiceImpl.class);
@@ -1225,11 +1226,7 @@ public class ReportServiceImpl implements ReportService {
             ProductVersionDO productVersionDO = versionMapper.selectOne(query);
             if (productVersionDO != null) {
                 startDate = productVersionDO.getCreationDate();
-                if (ARCHIVED.equals(productVersionDO.getStatusCode())) {
-                    sprintDOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate, productVersionDO.getReleaseDate());
-                } else {
-                    sprintDOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate, null);
-                }
+                sprintDOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate, productVersionDO.getReleaseDate());
             } else {
                 throw new CommonException(EPIC_OR_VERSION_NOT_FOUND_ERROR);
             }
@@ -1347,12 +1344,8 @@ public class ReportServiceImpl implements ReportService {
                 Integer doneLast = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().after(startDateTwo))
                         .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
                 Integer left = startLast + addLast - doneLast;
-                if (startLast == 0 && addLast == 0 && doneLast == 0 && left == 0) {
-                    return;
-                } else {
-                    reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(startLast, addLast, doneLast, left,
-                            sprintDOList.get(sprintDOList.size() - 1).getSprintName(), sprintDOList.get(sprintDOList.size() - 1).getStartDate(), endDate));
-                }
+                reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(startLast, addLast, doneLast, left,
+                        sprintDOList.get(sprintDOList.size() - 1).getSprintName(), sprintDOList.get(sprintDOList.size() - 1).getStartDate(), endDate));
             }
 
         }
@@ -1370,8 +1363,11 @@ public class ReportServiceImpl implements ReportService {
                 done += issueDO.getStoryPoints();
             }
         }
-        reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(start, add, done, start + add - done,
-                sprintName, startDateOne, endDate));
+        Integer left = start + add - done;
+        if (!(start == 0 && add == 0 && done == 0 && left == 0)) {
+            reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(start, add, done, left,
+                    sprintName, startDateOne, endDate));
+        }
     }
 
 

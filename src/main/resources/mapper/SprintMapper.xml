@@ -286,7 +286,7 @@
             <if test="endDate != null">
                 and asp.start_date &lt;= #{endDate}
             </if>
-            order by asp.start_date desc
+            order by asp.start_date asc
     </select>
 
     <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">

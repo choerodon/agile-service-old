@@ -2327,6 +2327,7 @@
         SELECT
             ai.issue_id,
             ais.is_completed as completed,
+            ai.creation_date,
             (
             SELECT
                 adl.creation_date
