@@ -207,7 +207,7 @@
         where avir.relation_type = 'fix'
         ) apv1
         ON apv1.issue_id = ai2.issue_id
-
+        where ais.is_completed != 1
     </sql>
 
     <select id="queryActiveSprint" resultMap="SprintSearchDO">
@@ -275,6 +275,7 @@
             asp.sprint_name,
             asp.sprint_id,
             asp.start_date,
+            asp.end_date,
             asp.status_code,
             asp.actual_end_date
         FROM
@@ -283,7 +284,7 @@
             asp.project_id = #{projectId}
             and asp.status_code != 'sprint_planning'
             and asp.start_date > #{startDate}
-            order by asp.start_date asc
+            order by asp.start_date desc
     </select>
 
     <select id="queryAssigneeIssueBySprintId" parameterType="java.util.Map"
@@ -297,9 +298,9 @@
         aisr.sprint_id,
         ai.assignee_id,
         ai.story_points, ai.remaining_time
-        FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
+        FROM agile_issue ai, agile_issue_sprint_rel aisr
         WHERE aisr.issue_id = ai.issue_id
-        AND ai.status_id = ais.id AND ais.category_code != 'done' AND aisr.sprint_id = #{sprintId}
+        AND aisr.sprint_id = #{sprintId}
         and ai.issue_id in
         <foreach collection="issueIds" item="issueId" index="index"
                  open="'" close="'" separator=",">

@@ -1280,7 +1280,7 @@ public class ReportServiceImpl implements ReportService {
                                                            Date startDate, List<SprintDO> sprintDOList, String type) {
         Integer add = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().before(sprintDOList.get(0).getStartDate()))
                 .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
-        Integer done = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate().before(sprintDOList.get(0).getStartDate()))
+        Integer done = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().before(sprintDOList.get(0).getStartDate()))
                 .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
         reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(0, add, done, add - done,
                 type + "开始时的预估", startDate, sprintDOList.get(0).getStartDate()));
@@ -1301,7 +1301,7 @@ public class ReportServiceImpl implements ReportService {
                 Integer startLast = reportCoordinateDTOS.get(reportCoordinateDTOS.size() - 1).getLeft();
                 Integer addLast = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().after(startDateTwo))
                         .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
-                Integer doneLast = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate().after(startDateTwo))
+                Integer doneLast = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().after(startDateTwo))
                         .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
                 reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(startLast, addLast, doneLast, startLast + addLast - doneLast,
                         sprintDOList.get(sprintDOList.size() - 1).getSprintName(), sprintDOList.get(sprintDOList.size() - 1).getStartDate(), endDate));

@@ -677,8 +677,8 @@
     <select id="querySprintIssueIdsByCondition" resultType="java.lang.Long">
         SELECT
         ai.issue_id
-        FROM agile_issue ai,agile_issue_status ais
-        WHERE ai.status_id = ais.id AND ais.category_code != 'done' and ai.project_id = #{projectId} AND ai.type_code !=
+        FROM agile_issue ai
+        WHERE ai.project_id = #{projectId} AND ai.type_code !=
         'sub_task' AND ai.type_code != 'issue_epic' AND ai.type_code != 'issue_test'
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.versionId != null'>
