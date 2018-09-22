@@ -8,6 +8,7 @@
         <id property="name" column="ais_name"/>
         <id property="enable" column="ais_enable"/>
         <id property="categoryCode" column="ais_category_code"/>
+        <id property="completed" column="ais_completed"/>
         <id property="objectVersionNumber" column="ais_object_version_number"/>
         <collection property="issues" autoMapping="true" columnPrefix="ai_"
                     ofType="io.choerodon.agile.infra.dataobject.IssueForBoardDO"/>
@@ -20,6 +21,7 @@
             ais.name                  AS ais_name,
             ais.is_enable             AS ais_enable,
             ais.category_code            ais_category_code,
+            ais.is_completed          AS ais_completed,
             ais.object_version_number AS ais_object_version_number,
             ai.issue_id               AS ai_issue_id,
             ai.summary                AS ai_summary,

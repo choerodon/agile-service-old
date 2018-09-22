@@ -38,8 +38,6 @@ public class IssueBurnDownReportDO {
 
     private String typeName;
 
-    private Boolean addIssue;
-
     private Date addDate;
 
     private Date doneDate;
@@ -158,14 +156,6 @@ public class IssueBurnDownReportDO {
 
     public void setTypeName(String typeName) {
         this.typeName = typeName;
-    }
-
-    public Boolean getAddIssue() {
-        return addIssue;
-    }
-
-    public void setAddIssue(Boolean addIssue) {
-        this.addIssue = addIssue;
     }
 
     public Date getAddDate() {

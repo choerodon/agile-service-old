@@ -101,6 +101,7 @@ public class BoardServiceImpl implements BoardService {
         for (BoardColumnDO column : boardColumnDOList) {
             ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
             columnStatusRelE.setColumnId(column.getColumnId());
+            columnStatusRelE.setProjectId(projectId);
             columnStatusRelRepository.delete(columnStatusRelE);
             boardColumnRepository.delete(column.getColumnId());
         }

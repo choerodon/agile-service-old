@@ -196,7 +196,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public void setIssueMapper( IssueMapper issueMapper){
+    public void setIssueMapper(IssueMapper issueMapper) {
         this.issueMapper = issueMapper;
     }
 
@@ -279,6 +279,16 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public Page<IssueListDTO> listIssueWithoutSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
         //处理用户搜索
+        handleSearchUser(searchDTO, projectId);
+        //连表查询需要设置主表别名
+        pageRequest.resetOrder(SEARCH, new HashMap<>());
+        Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
+                issueMapper.queryIssueListWithoutSub(projectId, searchDTO.getSearchArgs(),
+                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
+        return handlePageDoToDto(issueDOPage);
+    }
+
+    private void handleSearchUser(SearchDTO searchDTO, Long projectId) {
         if (searchDTO.getSearchArgs() != null && searchDTO.getSearchArgs().get(ASSIGNEE) != null) {
             String userName = (String) searchDTO.getSearchArgs().get(ASSIGNEE);
             if (userName != null && !"".equals(userName)) {
@@ -288,12 +298,6 @@ public class IssueServiceImpl implements IssueService {
                 }
             }
         }
-        //连表查询需要设置主表别名
-        pageRequest.resetOrder(SEARCH, new HashMap<>());
-        Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
-                issueMapper.queryIssueListWithoutSub(projectId, searchDTO.getSearchArgs(),
-                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
-        return handlePageDoToDto(issueDOPage);
     }
 
 
@@ -447,13 +451,13 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public void batchDeleteIssues(Long projectId, List<Long> issueIds) {
-        if(issueMapper.queryIssueIdsIsTest(projectId, issueIds)!=issueIds.size()){
+        if (issueMapper.queryIssueIdsIsTest(projectId, issueIds) != issueIds.size()) {
             throw new CommonException("error.Issue.type.isNotIssueTest");
         }
         List<Long> issueIdList = issueMapper.queryIssueSubListByIssueIds(projectId, issueIds);
         issueIds.addAll(issueIdList);
         issueMapper.batchDeleteIssues(projectId, issueIds);
-        issueIds.forEach(issueId->deleteIssueInfo(issueId,projectId));
+        issueIds.forEach(issueId -> deleteIssueInfo(issueId, projectId));
     }
 
     @Override
@@ -740,7 +744,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void dataLogRankInStoryMap(Long projectId, StoryMapMoveDTO storyMapMoveDTO, String rankStr, Long sprintId) {
         for (Long issueId : storyMapMoveDTO.getIssueIds()) {
-            SprintNameDTO activeSprintName = sprintNameAssembler.toTarget(issueMapper.queryActiveSprintNameByIssueId(issueId),SprintNameDTO.class);
+            SprintNameDTO activeSprintName = sprintNameAssembler.toTarget(issueMapper.queryActiveSprintNameByIssueId(issueId), SprintNameDTO.class);
             Boolean condition = (sprintId == 0 && activeSprintName == null) || (activeSprintName != null
                     && sprintId.equals(activeSprintName.getSprintId()));
             if (condition) {
@@ -1138,9 +1142,11 @@ public class IssueServiceImpl implements IssueService {
             throw new CommonException(PROJECT_ERROR);
         }
         project.setCode(projectInfoDO.getProjectCode());
-        List<ExportIssuesDTO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId, searchDTO.getSearchArgs(),
-                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent(), projectCode));
-        List<Long> issueIds = exportIssues.stream().map(ExportIssuesDTO::getIssueId).collect(Collectors.toList());
+        handleSearchUser(searchDTO, projectId);
+        List<IssueDO> issueDOList = issueMapper.queryIssueListWithoutSub(projectId, searchDTO.getSearchArgs(),
+                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent());
+        List<Long> issueIds = issueDOList.stream().map(IssueDO::getIssueId).collect(Collectors.toList());
+        List<ExportIssuesDTO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId, issueIds, projectCode));
         if (!issueIds.isEmpty()) {
             Map<Long, List<SprintNameDO>> closeSprintNames = issueMapper.querySprintNameByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(SprintNameDO::getIssueId));
             Map<Long, List<VersionIssueRelDO>> fixVersionNames = issueMapper.queryVersionNameByIssueIds(projectId, issueIds, FIX_RELATION_TYPE).stream().collect(Collectors.groupingBy(VersionIssueRelDO::getIssueId));
@@ -1669,7 +1675,7 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    public void deleteIssueInfo(Long issueId,Long projectId){
+    public void deleteIssueInfo(Long issueId, Long projectId) {
         //删除issue发送消息
         IssuePayload issuePayload = new IssuePayload();
         issuePayload.setIssueId(issueId);

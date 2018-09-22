@@ -81,5 +81,7 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
      * @param projectId projectId
      * @return SprintDO
      */
-    List<SprintDO> queryNotPlanSprintByProjectId(@Param("projectId")Long projectId,@Param("startDate")Date startDate);
+    List<SprintDO> queryNotPlanSprintByProjectId(@Param("projectId") Long projectId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+    Integer queryIssueCountInActiveBoard(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 }

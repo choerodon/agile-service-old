@@ -116,6 +116,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
         columnStatusRelE.setStatusId(id);
         columnStatusRelE.setColumnId(statusMoveDTO.getColumnId());
+        columnStatusRelE.setProjectId(projectId);
         columnStatusRelRepository.delete(columnStatusRelE);
         return ConvertHelper.convert(issueStatusMapper.selectByPrimaryKey(id), IssueStatusDTO.class);
     }

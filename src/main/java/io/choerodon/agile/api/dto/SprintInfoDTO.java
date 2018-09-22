@@ -26,6 +26,8 @@ public class SprintInfoDTO {
 
     private Integer dayTotal;
 
+    private Integer issueCount;
+
     private List<AssigneeIssueDTO> assigneeIssueDTOList;
 
     public Long getSprintId() {
@@ -98,5 +100,13 @@ public class SprintInfoDTO {
 
     public Integer getDayTotal() {
         return dayTotal;
+    }
+
+    public void setIssueCount(Integer issueCount) {
+        this.issueCount = issueCount;
+    }
+
+    public Integer getIssueCount() {
+        return issueCount;
     }
 }
