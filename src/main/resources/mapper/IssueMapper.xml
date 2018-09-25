@@ -1902,6 +1902,13 @@
         </if>
         where 1=1
         <if test='advancedSearchArgs != null'>
+            <if test='advancedSearchArgs.priorityCode != null and advancedSearchArgs.priorityCode.size > 0'>
+                AND ai.priority_code IN
+                <foreach collection="advancedSearchArgs.priorityCode" item="priorityCode" open="(" separator=","
+                         close=")">
+                    #{priorityCode}
+                </foreach>
+            </if>
             <if test='advancedSearchArgs.typeCode != null and advancedSearchArgs.typeCode.size > 0'>
                 AND ai.type_code IN
                 <foreach collection="advancedSearchArgs.typeCode" item="typeCode" open="(" separator="," close=")">

@@ -16,6 +16,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -239,7 +240,7 @@ public class IssueServiceImpl implements IssueService {
         }
         //初始化创建issue设置issue编号、项目默认设置
         issueE.initializationIssue(statusId, projectInfoE);
-        projectInfoRepository.updateIssueMaxNum(issueE.getProjectId());
+        projectInfoRepository.updateIssueMaxNum(issueE.getProjectId(), 1);
         //初始化排序
         if (issueE.isIssueRank()) {
             calculationRank(issueE.getProjectId(), issueE);
@@ -505,7 +506,7 @@ public class IssueServiceImpl implements IssueService {
         IssueE parentIssueE = ConvertHelper.convert(issueMapper.queryIssueSprintNotClosed(subIssueE.getProjectId(), subIssueE.getParentIssueId()), IssueE.class);
         //设置初始状态,跟随父类状态
         subIssueE = parentIssueE.initializationSubIssue(subIssueE, projectInfoE);
-        projectInfoRepository.updateIssueMaxNum(subIssueE.getProjectId());
+        projectInfoRepository.updateIssueMaxNum(subIssueE.getProjectId(), 1);
     }
 
     @Override
@@ -1630,19 +1631,65 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public List<Long> cloneIssuesByVersionId(Long projectId, Long versionId, List<Long> issueIds) {
+    public synchronized List<Long> cloneIssuesByVersionId(Long projectId, Long versionId, List<Long> issueIds) {
         List<IssueDetailDO> issueDOList = issueMapper.queryByIssueIds(projectId, issueIds);
-        List<Long> newIssueIds = new ArrayList<>();
         if (issueDOList.size() == issueIds.size()) {
-            List<IssueCreateDTO> issueCreateDTOS = issueAssembler.issueDetailListDoToDto(issueDOList, versionId);
-            issueCreateDTOS.forEach(issueCreateDTO -> {
-                IssueDTO newIssue = createIssue(issueCreateDTO);
-                newIssueIds.add(newIssue.getIssueId());
-            });
+            return batchCreateIssue(issueDOList, projectId, versionId);
         } else {
             throw new CommonException("error.issueServiceImpl.issueTypeError");
         }
-        return newIssueIds;
+    }
+
+    private List<Long> batchCreateIssue(List<IssueDetailDO> issueDOList, Long projectId, Long versionId) {
+        List<Long> issueIds = new ArrayList<>(issueDOList.size());
+        //设置初始状态,如果有todo，就用todo，否则为doing，最后为done
+        List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(projectId);
+        IssueStatusCreateDO issueStatusDO = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
+                issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
+                        issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(null)));
+        if (issueStatusDO == null) {
+            throw new CommonException("error.createIssue.issueStatusNotFound");
+        }
+        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+        projectInfoDO.setProjectId(projectId);
+        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
+        if (projectInfoE == null) {
+            throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
+        }
+        issueDOList.forEach(issueDetailDO -> {
+            IssueE issueE = issueAssembler.toTarget(issueDetailDO, IssueE.class);
+            //初始化创建issue设置issue编号、项目默认设置
+            issueE.initializationIssueByCopy(issueStatusDO.getId(), projectInfoE);
+            Long issueId = issueRepository.create(issueE).getIssueId();
+            handleCreateCopyLabelIssueRel(issueDetailDO.getLabelIssueRelDOList(), issueId);
+            handleCreateCopyComponentIssueRel(issueDetailDO.getComponentIssueRelDOList(), issueId);
+            issueIds.add(issueId);
+        });
+        VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
+        versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
+        issueRepository.batchIssueToVersion(versionIssueRelE);
+        projectInfoRepository.updateIssueMaxNum(projectId, issueDOList.size());
+        return issueIds;
+    }
+
+    private void handleCreateCopyComponentIssueRel(List<ComponentIssueRelDO> componentIssueRelDOList, Long issueId) {
+        componentIssueRelDOList.forEach(componentIssueRelDO -> {
+            ComponentIssueRelE componentIssueRelE = new ComponentIssueRelE();
+            BeanUtils.copyProperties(componentIssueRelDO, componentIssueRelE);
+            componentIssueRelE.setIssueId(issueId);
+            componentIssueRelE.setObjectVersionNumber(null);
+            componentIssueRelRepository.create(componentIssueRelE);
+        });
+    }
+
+    private void handleCreateCopyLabelIssueRel(List<LabelIssueRelDO> labelIssueRelDOList, Long issueId) {
+        labelIssueRelDOList.forEach(labelIssueRelDO -> {
+            LabelIssueRelE labelIssueRelE = new LabelIssueRelE();
+            BeanUtils.copyProperties(labelIssueRelDO, labelIssueRelE);
+            labelIssueRelE.setIssueId(issueId);
+            labelIssueRelE.setObjectVersionNumber(null);
+            labelIssueRelRepository.create(labelIssueRelE);
+        });
     }
 
     public String getDes(String str) {
