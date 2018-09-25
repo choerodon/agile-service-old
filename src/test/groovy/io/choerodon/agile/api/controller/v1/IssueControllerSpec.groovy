@@ -986,8 +986,6 @@ class IssueControllerSpec extends Specification {
         issueDetailDO.componentIssueRelDOList = new ArrayList<>()
         issueDetailDO.labelIssueRelDOList = new ArrayList<>()
         issueDetailDOList.add(issueDetailDO)
-        IssueDetailDO issueDetailDO1 = new IssueDetailDO()
-        issueDetailDO1.subIssueDOList = new ArrayList<>()
 
         when: '测试服务用，批量复制issue并生成版本信息'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/batch_clone_issue/{versionId}', issueTestIds, List, projectId, versionId)
@@ -997,7 +995,6 @@ class IssueControllerSpec extends Specification {
 
         and: '判断mock交互并且设置返回值'
         1 * issueMapperMock.queryByIssueIds(projectId, issueTestIds) >> issueDetailDOList
-        1 * issueMapperMock.queryIssueDetail(projectId, _) >> issueDetailDO1
 
         and: '设置值'
         List<Long> issueIds = entity.body

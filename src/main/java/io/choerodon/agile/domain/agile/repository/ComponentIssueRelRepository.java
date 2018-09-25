@@ -3,8 +3,6 @@ package io.choerodon.agile.domain.agile.repository;
 import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
 import io.choerodon.agile.infra.dataobject.ComponentIssueRelDO;
 
-import java.util.List;
-
 
 /**
  * @author dinghuang123@gmail.com
@@ -18,7 +16,7 @@ public interface ComponentIssueRelRepository {
      * @param componentIssueRelE componentIssueRelE
      * @return ComponentIssueRelE
      */
-    List<ComponentIssueRelE> create(ComponentIssueRelE componentIssueRelE);
+    ComponentIssueRelE create(ComponentIssueRelE componentIssueRelE);
 
     /**
      * 根据issueId删除

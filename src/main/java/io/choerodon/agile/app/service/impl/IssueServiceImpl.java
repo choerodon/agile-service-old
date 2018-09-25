@@ -11,9 +11,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -1291,43 +1288,6 @@ public class IssueServiceImpl implements IssueService {
             }
         } else {
             throw new CommonException("error.IssueRule.issueNoFound");
-        }
-    }
-
-    private void createSubIssueRow(List<ExportIssuesDTO> subIssues, ProjectDTO project, HSSFSheet sheet) {
-        if (!subIssues.isEmpty()) {
-            HSSFRow row = sheet.createRow(13);
-            HSSFCell cell = row.createCell(0);
-            cell.setCellValue("子任务:");
-            for (int i = 0; i < SUB_COLUMN_NAMES.length; i++) {
-                cell = row.createCell(i + 1);
-                cell.setCellValue(SUB_COLUMN_NAMES[i]);
-            }
-            for (int i = 0; i < subIssues.size(); i++) {
-                row = sheet.createRow(i + 14);
-                for (int j = 0; j < SUB_COLUMN_NAMES.length; j++) {
-                    cell = row.createCell(j + 1);
-                    switch (SUB_COLUMN_NAMES[j]) {
-                        case "关键字":
-                            cell.setCellValue(project.getCode() + "-" + subIssues.get(i).getIssueNum());
-                            break;
-                        case "概述":
-                            cell.setCellValue(subIssues.get(i).getSummary());
-                            break;
-                        case "类型":
-                            cell.setCellValue(subIssues.get(i).getTypeName());
-                            break;
-                        case "状态":
-                            cell.setCellValue(subIssues.get(i).getStatusName());
-                            break;
-                        case "经办人":
-                            cell.setCellValue(subIssues.get(i).getAssigneeName());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
         }
     }
 

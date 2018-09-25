@@ -13,20 +13,12 @@ import java.util.List;
 public interface VersionIssueRelRepository {
 
     /**
-     * 更新
-     *
-     * @param versionIssueRelE versionIssueRelE
-     * @return VersionIssueRelE
-     */
-    List<VersionIssueRelE> update(VersionIssueRelE versionIssueRelE);
-
-    /**
      * 添加一个
      *
      * @param versionIssueRelE versionIssueRelE
      * @return VersionIssueRelE
      */
-    List<VersionIssueRelE> create(VersionIssueRelE versionIssueRelE);
+    VersionIssueRelE create(VersionIssueRelE versionIssueRelE);
 
     /**
      * 根据issueId删除版本
