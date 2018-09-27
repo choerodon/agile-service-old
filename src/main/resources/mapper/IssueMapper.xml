@@ -677,9 +677,9 @@
     <select id="querySprintIssueIdsByCondition" resultType="java.lang.Long">
         SELECT
         ai.issue_id
-        FROM agile_issue ai left join agile_issue_sprint_rel aisr on ai.issue_id = aisr.issue_id left join agile_sprint asp on aisr.sprint_id = asp.sprint_id
-        WHERE (aisr.sprint_id is null or ( aisr.sprint_id is not null and asp.status_code != 'closed' )) and ai.project_id = #{projectId} AND ai.type_code !=
-        'sub_task' AND ai.type_code != 'issue_epic' AND ai.type_code != 'issue_test'
+        FROM agile_issue ai
+        WHERE
+        ai.project_id = #{projectId} AND ai.type_code !='sub_task' AND ai.type_code != 'issue_epic' AND ai.type_code != 'issue_test'
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.versionId != null'>
                 AND ai.issue_id IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id =
