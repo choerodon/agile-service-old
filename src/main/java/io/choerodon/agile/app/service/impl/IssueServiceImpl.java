@@ -1682,6 +1682,11 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
+    @Override
+    public List<IssueProjectDTO> queryIssueTestGroupByProject() {
+        return issueAssembler.toTargetList(issueMapper.queryIssueTestGroupByProject(), IssueProjectDTO.class);
+    }
+
     public void deleteIssueInfo(Long issueId, Long projectId) {
         //删除issue发送消息
         IssuePayload issuePayload = new IssuePayload();

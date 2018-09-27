@@ -239,12 +239,20 @@ public interface IssueService {
 
     /**
      * 克隆issue同时生成版本
+     *
      * @param projectId projectId
      * @param versionId versionId
-     * @param issueIds issueIds
+     * @param issueIds  issueIds
      * @return new issueIds
      */
     List<Long> cloneIssuesByVersionId(Long projectId, Long versionId, List<Long> issueIds);
 
     void initMapRank(Long projectId);
+
+    /**
+     * 根据项目分组测试类型issue
+     *
+     * @return IssueProjectDTO
+     */
+    List<IssueProjectDTO> queryIssueTestGroupByProject();
 }

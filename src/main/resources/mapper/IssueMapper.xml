@@ -2357,4 +2357,22 @@
             AND ai.project_id = #{projectId}
     </select>
 
+    <select id="queryIssueTestGroupByProject" resultMap="issueProject">
+        SELECT
+            api.project_id,
+            ai.issue_id
+        FROM
+            agile_project_info api
+            LEFT JOIN agile_issue ai ON ai.project_id = api.project_id
+        WHERE
+            ai.type_code = 'issue_test'
+    </select>
+
+    <resultMap id="issueProject" type="io.choerodon.agile.infra.dataobject.IssueProjectDO">
+        <id property="projectId" column="project_id"/>
+        <collection property="issueIdList" autoMapping="true" ofType="java.lang.Long">
+            <id property="issueId" column="issue_id"/>
+        </collection>
+    </resultMap>
+
 </mapper>
