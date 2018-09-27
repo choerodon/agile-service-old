@@ -12,7 +12,7 @@ deployment:
   managementPort: 8379
 
 service:
-  enabled: false
+  enable: false
   type: ClusterIP
   port: 8378
 
