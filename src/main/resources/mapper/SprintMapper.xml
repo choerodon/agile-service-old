@@ -206,7 +206,6 @@
         where avir.relation_type = 'fix'
         ) apv1
         ON apv1.issue_id = ai2.issue_id
-        where ais.is_completed != 1
     </sql>
 
     <select id="queryActiveSprint" resultMap="SprintSearchDO">

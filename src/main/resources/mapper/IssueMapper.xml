@@ -678,8 +678,10 @@
         SELECT
         ai.issue_id
         FROM agile_issue ai
+        left join agile_issue_status ais on ai.status_id = ais.id
         WHERE
-        ai.project_id = #{projectId} AND ai.type_code !='sub_task' AND ai.type_code != 'issue_epic' AND ai.type_code != 'issue_test'
+        ais.is_completed != 1
+        and ai.project_id = #{projectId} AND ai.type_code !='sub_task' AND ai.type_code != 'issue_epic' AND ai.type_code != 'issue_test'
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.versionId != null'>
                 AND ai.issue_id IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id =
