@@ -132,10 +132,7 @@ public class WorkLogServiceImpl implements WorkLogService {
 
     @Override
     public List<WorkLogDTO> queryWorkLogListByIssueId(Long projectId, Long issueId) {
-        WorkLogDO workLogDO = new WorkLogDO();
-        workLogDO.setProjectId(projectId);
-        workLogDO.setIssueId(issueId);
-        List<WorkLogDTO> workLogDTOList = ConvertHelper.convertList(workLogMapper.select(workLogDO), WorkLogDTO.class);
+        List<WorkLogDTO> workLogDTOList = ConvertHelper.convertList(workLogMapper.queryByIssueId(issueId,projectId), WorkLogDTO.class);
         List<Long> assigneeIds = workLogDTOList.stream().filter(workLogDTO -> workLogDTO.getUserId() != null && !Objects.equals(workLogDTO.getUserId(), 0L)).map(WorkLogDTO::getUserId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         workLogDTOList.forEach(workLogDTO -> {
