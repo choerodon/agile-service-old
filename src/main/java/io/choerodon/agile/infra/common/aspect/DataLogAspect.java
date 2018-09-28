@@ -654,6 +654,9 @@ public class DataLogAspect {
         Object result;
         try {
             result = pjp.proceed();
+            if (issueLabelDO == null) {
+                issueLabelDO = (IssueLabelDO) result;
+            }
             List<IssueLabelDO> curLabels = issueMapper.selectLabelNameByIssueId(issueId);
             createDataLog(projectId, issueId, FIELD_LABELS, getOriginLabelNames(originLabels),
                     getOriginLabelNames(curLabels), null, null);
