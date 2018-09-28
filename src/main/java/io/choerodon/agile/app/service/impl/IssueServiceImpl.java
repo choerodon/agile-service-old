@@ -1019,6 +1019,7 @@ public class IssueServiceImpl implements IssueService {
                         VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
                         versionIssueRelDO.setIssueId(issueId);
                         versionIssueRelDO.setVersionId(id);
+                        versionIssueRelDO.setRelationType(versionType);
                         versionIssueRelDO.setProjectId(projectId);
                         versionIssueRelRepository.delete(versionIssueRelDO);
                     }
