@@ -35,7 +35,7 @@ public class IssueCommonAssembler {
     public List<IssueCommonDTO> issueCommonToIssueCommonDto(List<IssueCommonDO> issueCommonDOList) {
         LookupValueDO lookupValueDO = new LookupValueDO();
         lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
-        List<IssueCommonDTO> issueCommonDTOList = new ArrayList<>();
+        List<IssueCommonDTO> issueCommonDTOList = new ArrayList<>(issueCommonDOList.size());
         Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
         List<Long> assigneeIds = issueCommonDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueCommonDO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);

@@ -83,7 +83,7 @@ public class IssueAssembler extends AbstractAssembler {
         LookupValueDO lookupValueDO = new LookupValueDO();
         lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
         Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
-        List<IssueListDTO> issueListDTOList = new ArrayList<>();
+        List<IssueListDTO> issueListDTOList = new ArrayList<>(issueDOList.size());
         List<Long> assigneeIds = issueDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         issueDOList.forEach(issueDO -> {
@@ -105,8 +105,8 @@ public class IssueAssembler extends AbstractAssembler {
      * @param issueDOList issueDOList
      * @return SubIssueDTO
      */
-    public List<IssueSubListDTO> issueDoToSubIssueDto(List<IssueDO> issueDOList, Map<String, String> lookupValueMap) {
-        List<IssueSubListDTO> subIssueDTOList = new ArrayList<>();
+    private List<IssueSubListDTO> issueDoToSubIssueDto(List<IssueDO> issueDOList, Map<String, String> lookupValueMap) {
+        List<IssueSubListDTO> subIssueDTOList = new ArrayList<>(issueDOList.size());
         List<Long> assigneeIds = issueDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         issueDOList.forEach(issueDO -> {
@@ -155,7 +155,7 @@ public class IssueAssembler extends AbstractAssembler {
     }
 
     public List<ExportIssuesDTO> exportIssuesDOListToExportIssuesDTO(List<ExportIssuesDO> exportIssues) {
-        List<ExportIssuesDTO> exportIssuesDTOS = new ArrayList<>();
+        List<ExportIssuesDTO> exportIssuesDTOS = new ArrayList<>(exportIssues.size());
         List<Long> userIds = exportIssues.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(ExportIssuesDO::getAssigneeId).distinct().collect(Collectors.toList());
         userIds.addAll(exportIssues.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(ExportIssuesDO::getReporterId).distinct().collect(Collectors.toList()));
         userIds = userIds.stream().distinct().collect(Collectors.toList());
@@ -184,7 +184,7 @@ public class IssueAssembler extends AbstractAssembler {
     }
 
     private List<ComponentIssueRelDTO> copyComponentIssueRel(List<ComponentIssueRelDO> componentIssueRelDOList) {
-        List<ComponentIssueRelDTO> componentIssueRelDTOList = new ArrayList<>();
+        List<ComponentIssueRelDTO> componentIssueRelDTOList = new ArrayList<>(componentIssueRelDOList.size());
         componentIssueRelDOList.forEach(componentIssueRelDO -> {
             ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
             BeanUtils.copyProperties(componentIssueRelDO, componentIssueRelDTO);
@@ -196,7 +196,7 @@ public class IssueAssembler extends AbstractAssembler {
     }
 
     private List<LabelIssueRelDTO> copyLabelIssueRel(List<LabelIssueRelDO> labelIssueRelDOList, Long projectId) {
-        List<LabelIssueRelDTO> labelIssueRelDTOList = new ArrayList<>();
+        List<LabelIssueRelDTO> labelIssueRelDTOList = new ArrayList<>(labelIssueRelDOList.size());
         labelIssueRelDOList.forEach(labelIssueRelDO -> {
             LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO();
             BeanUtils.copyProperties(labelIssueRelDO, labelIssueRelDTO);
@@ -210,7 +210,7 @@ public class IssueAssembler extends AbstractAssembler {
     }
 
     private List<VersionIssueRelDTO> copyVersionIssueRel(List<VersionIssueRelDO> versionIssueRelDOList) {
-        List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>();
+        List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>(versionIssueRelDOList.size());
         versionIssueRelDOList.forEach(versionIssueRelDO -> {
             VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
             BeanUtils.copyProperties(versionIssueRelDO, versionIssueRelDTO);
@@ -238,7 +238,7 @@ public class IssueAssembler extends AbstractAssembler {
         LookupValueDO lookupValueDO = new LookupValueDO();
         lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
         Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
-        List<IssueComponentDetailDTO> issueComponentDetailDTOS = new ArrayList<>();
+        List<IssueComponentDetailDTO> issueComponentDetailDTOS = new ArrayList<>(issueComponentDetailDOS.size());
         List<Long> userIds = issueComponentDetailDOS.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueComponentDetailDO::getAssigneeId).collect(Collectors.toList());
         userIds.addAll(issueComponentDetailDOS.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).
                 map(IssueComponentDetailDO::getReporterId).collect(Collectors.toList()));

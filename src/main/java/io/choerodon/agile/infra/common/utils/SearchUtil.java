@@ -9,8 +9,8 @@ import java.util.HashMap;
  */
 public class SearchUtil {
 
-    public static final String ADVANCE_SEARCH_ARGS = "advancedSearchArgs";
-    public static final String SEARCH_ARGS = "searchArgs";
+    private static final String ADVANCE_SEARCH_ARGS = "advancedSearchArgs";
+    private static final String SEARCH_ARGS = "searchArgs";
 
     private SearchUtil() {
     }

@@ -25,7 +25,7 @@ public class IterativeWorktableAssembler {
     private UserRepository userRepository;
 
     public List<AssigneeIssueDTO> assigneeIssueDOToDTO(List<AssigneeIssueDO> assigneeIssueDOList) {
-        List<AssigneeIssueDTO> assigneeIssueDTOList = new ArrayList<>();
+        List<AssigneeIssueDTO> assigneeIssueDTOList = new ArrayList<>(assigneeIssueDOList.size());
         List<Long> assigneeIds = assigneeIssueDOList.stream().
                 filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).
                 map(AssigneeIssueDO::getAssigneeId).distinct().collect(Collectors.toList());

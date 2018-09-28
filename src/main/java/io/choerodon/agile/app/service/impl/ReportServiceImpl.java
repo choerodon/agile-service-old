@@ -226,7 +226,7 @@ public class ReportServiceImpl implements ReportService {
                 try {
                     coordinateDTO.setDate(bf.parse(k));
                 } catch (ParseException e) {
-                    LOGGER.error("Exception", e);
+                    LOGGER.error("Exception:{}",e);
                 }
                 coordinateDTOS.add(coordinateDTO);
             });

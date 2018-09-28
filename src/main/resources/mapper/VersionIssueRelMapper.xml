@@ -3,11 +3,15 @@
 <mapper namespace="io.choerodon.agile.infra.mapper.VersionIssueRelMapper">
 
     <delete id="deleteIncompleteIssueByVersionId">
-        DELETE avir
-        FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
-        WHERE avir.version_id = #{versionId} AND ai.project_id = #{projectId}
-              AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix' AND ai.status_id = ais.id
-              AND ais.category_code != 'done'
+        DELETE FROM agile_version_issue_rel
+        WHERE EXISTS
+        (
+        SELECT 0 FROM agile_issue ai left join agile_issue_status ais on ai.status_id = ais.id
+        WHERE agile_version_issue_rel.issue_id = ai.issue_id
+        AND ais.category_code != 'done'
+        )
+        AND agile_version_issue_rel.relation_type = 'fix' and
+        agile_version_issue_rel.version_id = #{versionId} AND agile_version_issue_rel.project_id = #{projectId}
     </delete>
 
     <delete id="deleteByVersionIds">

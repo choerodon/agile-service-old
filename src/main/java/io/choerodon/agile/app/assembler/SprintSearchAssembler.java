@@ -37,7 +37,7 @@ public class SprintSearchAssembler extends AbstractAssembler{
         if (sprintSearchDOS == null) {
             return new ArrayList<>();
         }
-        List<SprintSearchDTO> sprintSearchList = new ArrayList<>();
+        List<SprintSearchDTO> sprintSearchList = new ArrayList<>(sprintSearchDOS.size());
         sprintSearchDOS.forEach(sprintSearchDO -> sprintSearchList.add(doToDTO(sprintSearchDO, usersMap)));
         return sprintSearchList;
     }

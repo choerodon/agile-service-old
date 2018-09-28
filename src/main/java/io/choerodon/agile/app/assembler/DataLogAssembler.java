@@ -25,7 +25,7 @@ public class DataLogAssembler {
     private UserRepository userRepository;
 
     public List<DataLogDTO> dataLogDOToDTO(List<DataLogDO> dataLogDOList) {
-        List<DataLogDTO> dataLogDTOList = new ArrayList<>();
+        List<DataLogDTO> dataLogDTOList = new ArrayList<>(dataLogDOList.size());
         List<Long> lastUpdatedByIds = dataLogDOList.stream().filter(dataLogDO -> dataLogDO.getLastUpdatedBy() != null && !Objects.equals(dataLogDO.getLastUpdatedBy(), 0L)).map(DataLogDO::getLastUpdatedBy).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(lastUpdatedByIds, true);
         for (DataLogDO dataLogDO : dataLogDOList) {

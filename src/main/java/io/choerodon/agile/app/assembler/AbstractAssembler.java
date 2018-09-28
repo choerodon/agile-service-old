@@ -1,7 +1,6 @@
 package io.choerodon.agile.app.assembler;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.BeanUtils;
 
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ import java.util.List;
  */
 abstract class AbstractAssembler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAssembler.class);
+    private static final String ERROR_CONVERT = "error.abstractAssembler.convert";
 
     /**
      * 转换到目标类
@@ -33,7 +32,7 @@ abstract class AbstractAssembler {
                 }
                 return target;
             } catch (InstantiationException | IllegalAccessException e) {
-                LOGGER.info("Exception", e);
+                throw new CommonException(ERROR_CONVERT, e);
             }
         }
         return null;
@@ -47,8 +46,8 @@ abstract class AbstractAssembler {
      */
     @SuppressWarnings("unchecked")
     public <T extends List, V> List<V> toTargetList(T source, Class<V> tClass) {
-        List<V> targetList = new ArrayList<>();
-        if (source != null && !source.isEmpty()) {
+        List<V> targetList = new ArrayList<>(source.size());
+        if (!source.isEmpty()) {
             source.forEach(s -> {
                 V target = toTarget(s, tClass);
                 targetList.add(target);

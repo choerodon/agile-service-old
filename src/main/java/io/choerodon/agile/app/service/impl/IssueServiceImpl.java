@@ -508,8 +508,6 @@ public class IssueServiceImpl implements IssueService {
     public List<IssueSearchDTO> batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds) {
         if (versionId != null && !Objects.equals(versionId, 0L)) {
             productVersionRule.judgeExist(projectId, versionId);
-            List<Long> logAddIssueIds = new ArrayList<>(issueIds);
-            logAddIssueIds.removeAll(issueMapper.queryInVersionIssueIds(projectId, versionId, issueIds));
             VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
             versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
             issueRepository.batchIssueToVersion(versionIssueRelE);

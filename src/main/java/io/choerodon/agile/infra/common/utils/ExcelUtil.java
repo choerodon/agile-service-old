@@ -65,12 +65,12 @@ public class ExcelUtil {
                 response.addHeader("Content-Disposition", disposition);
                 workbook.write(response.getOutputStream());
             } catch (Exception e) {
-                LOGGER.error(e.getMessage());
+                LOGGER.error("Exception:{}", e);
             } finally {
                 try {
                     workbook.close();
                 } catch (IOException e) {
-                    LOGGER.error(e.getMessage());
+                    LOGGER.error("Exception:{}", e);
                 }
             }
         }
@@ -93,7 +93,7 @@ public class ExcelUtil {
                 cell.setCellValue("");
             }
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("Exception:{}", e);
         }
     }
 

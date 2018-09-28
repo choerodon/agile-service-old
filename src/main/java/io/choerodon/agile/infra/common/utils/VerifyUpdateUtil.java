@@ -48,7 +48,7 @@ public class VerifyUpdateUtil {
                     fieldList.add(update.name());
                 }
             } catch (Exception e) {
-                throw new CommonException("error.verifyUpdateData.noField");
+                throw new CommonException("error.verifyUpdateData.noField", e);
             }
         });
         return fieldList;

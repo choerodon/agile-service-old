@@ -10,8 +10,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +34,6 @@ import io.choerodon.core.exception.CommonException;
 @Component
 @Transactional(rollbackFor = Exception.class)
 public class DataLogAspect {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataLogAspect.class);
 
     private static final String ISSUE = "issue";
     private static final String ISSUE_CREATE = "issueCreate";
@@ -87,6 +83,7 @@ public class DataLogAspect {
     private static final String FIELD_STORY_POINTS = "Story Points";
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
     private static final String ERROR_EPIC_NOT_FOUND = "error.dataLogEpic.epicNotFound";
+    private static final String ERROR_METHOD_EXECUTE = "error.dataLogEpic.methodExecute";
     private static final String FIELD_EPIC_LINK = "Epic Link";
     private static final String FIELD_EPIC_CHILD = "Epic Child";
     private static final String REMAIN_TIME_FIELD = "remainingTime";
@@ -288,7 +285,7 @@ public class DataLogAspect {
                 result = pjp.proceed();
             }
         } catch (Throwable e) {
-            LOGGER.info("exception: ", e);
+            throw new CommonException(ERROR_METHOD_EXECUTE, e);
         }
         return result;
     }
@@ -484,8 +481,8 @@ public class DataLogAspect {
                         oldString, newString, oldValue, newValue);
                 createDataLog(workLogE.getProjectId(), workLogE.getIssueId(), FIELD_WORKLOGID,
                         workLogE.getLogId().toString(), null, workLogE.getLogId().toString(), null);
-            } catch (Throwable throwable) {
-                LOGGER.info(EXCEPTION, throwable);
+            } catch (Throwable e) {
+                throw new CommonException(ERROR_METHOD_EXECUTE, e);
             }
         }
         return result;
@@ -549,8 +546,8 @@ public class DataLogAspect {
                 issueCommentE = (IssueCommentE) result;
                 createDataLog(issueCommentE.getProjectId(), issueCommentE.getIssueId(), FIELD_COMMENT,
                         null, issueCommentE.getCommentText(), null, issueCommentE.getCommentId().toString());
-            } catch (Throwable throwable) {
-                LOGGER.info(EXCEPTION, throwable);
+            } catch (Throwable e) {
+                throw new CommonException(ERROR_METHOD_EXECUTE, e);
             }
         }
         return result;
@@ -585,7 +582,7 @@ public class DataLogAspect {
                 createDataLog(issueAttachmentE.getProjectId(), issueAttachmentE.getIssueId(), FIELD_ATTACHMENT,
                         null, issueAttachmentE.getUrl(), null, issueAttachmentE.getAttachmentId().toString());
             } catch (Throwable throwable) {
-                LOGGER.info(EXCEPTION, throwable);
+                throw new CommonException(ERROR_METHOD_EXECUTE, throwable);
             }
         }
         return result;
@@ -654,14 +651,14 @@ public class DataLogAspect {
 
     private Object createLabelDataLog(Long issueId, Long projectId, ProceedingJoinPoint pjp) {
         List<IssueLabelDO> originLabels = issueMapper.selectLabelNameByIssueId(issueId);
-        Object result = null;
+        Object result;
         try {
             result = pjp.proceed();
             List<IssueLabelDO> curLabels = issueMapper.selectLabelNameByIssueId(issueId);
             createDataLog(projectId, issueId, FIELD_LABELS, getOriginLabelNames(originLabels),
                     getOriginLabelNames(curLabels), null, null);
-        } catch (Throwable throwable) {
-            LOGGER.info(EXCEPTION, throwable);
+        } catch (Throwable e) {
+            throw new CommonException(ERROR_METHOD_EXECUTE, e);
         }
         return result;
     }
@@ -961,9 +958,8 @@ public class DataLogAspect {
                 }
             }
 
-        } catch (Throwable throwable) {
-            LOGGER.info(ERROR_UPDATE, throwable);
-            throw new CommonException(ERROR_UPDATE);
+        } catch (Throwable e) {
+            throw new CommonException(ERROR_METHOD_EXECUTE, e);
         }
         return result;
     }

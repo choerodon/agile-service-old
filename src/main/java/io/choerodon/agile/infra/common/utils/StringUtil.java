@@ -31,7 +31,7 @@ public class StringUtil {
                 field.setAccessible(true);
                 sb.append(field.getName()).append("=").append(field.get(object)).append(",");
             } catch (Exception e) {
-                throw new CommonException(ERROR_GET_TO_STRING);
+                throw new CommonException(ERROR_GET_TO_STRING, e);
             }
         }
         if (sb.length() > 1) {
