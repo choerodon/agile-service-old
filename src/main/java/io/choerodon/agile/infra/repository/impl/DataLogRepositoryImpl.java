@@ -8,12 +8,14 @@ import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/6/14.
  * Email: fuqianghuang01@gmail.com
  */
 @Component
+@Transactional(rollbackFor = Exception.class)
 public class DataLogRepositoryImpl implements DataLogRepository {
 
     @Autowired

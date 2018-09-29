@@ -171,8 +171,6 @@ public class IssueServiceImpl implements IssueService {
     private static final String INFLUENCE_RELATION_TYPE = "influence";
     private static final String[] FIELDS_NAME = {"编码", "概述", "描述", "类型", "所属项目", "经办人", "报告人", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本"};
     private static final String[] FIELDS = {"issueNum", "summary", "description", "typeName", "projectName", "assigneeName", "reporterName", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", REMAIN_TIME_FIELD, "versionName"};
-    private static final String[] SUB_COLUMN_NAMES = {"关键字", "概述", "类型", "状态", "经办人"};
-    private static final String EXPORT_ERROR = "error.issue.export";
     private static final String PROJECT_ERROR = "error.project.notFound";
     private static final String ERROR_ISSUE_NOT_FOUND = "error.Issue.queryIssue";
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
@@ -306,7 +304,7 @@ public class IssueServiceImpl implements IssueService {
             handleUpdateIssue(issueUpdateDTO, fieldList, projectId);
         }
         Long issueId = issueUpdateDTO.getIssueId();
-        handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId);
+        handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId, projectId);
         handleUpdateComponentIssueRel(issueUpdateDTO.getComponentIssueRelDTOList(), projectId, issueId);
         handleUpdateVersionIssueRel(issueUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId, issueUpdateDTO.getVersionType());
         return queryIssue(projectId, issueId);
@@ -835,7 +833,7 @@ public class IssueServiceImpl implements IssueService {
             issueE.setParentIssueId(null);
         }
         if (STORY_TYPE.equals(issueE.getTypeCode()) && issueE.getStoryPoints() != null) {
-            issueE.setStoryPoints(0);
+            issueE.setStoryPoints(null);
         }
         if (issueUpdateTypeDTO.getTypeCode().equals(ISSUE_EPIC)) {
             issueE.setRank(null);
@@ -860,7 +858,7 @@ public class IssueServiceImpl implements IssueService {
         } else {
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
         }
-        issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, STORY_POINTS_FIELD, RANK_FIELD, EPIC_SEQUENCE});
+        issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, REMAIN_TIME_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, STORY_POINTS_FIELD, RANK_FIELD, EPIC_SEQUENCE});
         return queryIssue(issueE.getProjectId(), issueE.getIssueId());
     }
 
@@ -971,7 +969,7 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void handleUpdateLabelIssue(List<LabelIssueRelDTO> labelIssueRelDTOList, Long issueId) {
+    private void handleUpdateLabelIssue(List<LabelIssueRelDTO> labelIssueRelDTOList, Long issueId, Long projectId) {
         if (labelIssueRelDTOList != null) {
             if (!labelIssueRelDTOList.isEmpty()) {
                 LabelIssueRelDO labelIssueRelDO = new LabelIssueRelDO();
@@ -989,6 +987,7 @@ public class IssueServiceImpl implements IssueService {
                         LabelIssueRelDO delete = new LabelIssueRelDO();
                         delete.setIssueId(issueId);
                         delete.setLabelId(id);
+                        delete.setProjectId(projectId);
                         labelIssueRelRepository.delete(delete);
                     }
                 });
@@ -1278,11 +1277,12 @@ public class IssueServiceImpl implements IssueService {
                 issueE.setTypeCode(SUB_TASK);
                 issueE.setRank(null);
                 issueE.setEpicSequence(null);
+                issueE.setStoryPoints(null);
                 issueE.setParentIssueId(issueTransformSubTask.getParentIssueId());
                 issueRule.verifySubTask(issueTransformSubTask.getParentIssueId());
                 //删除链接
                 issueLinkRepository.deleteByIssueId(issueE.getIssueId());
-                issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, RANK_FIELD, STATUS_ID, PARENT_ISSUE_ID, EPIC_SEQUENCE});
+                issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, RANK_FIELD, STATUS_ID, PARENT_ISSUE_ID, EPIC_SEQUENCE, STORY_POINTS_FIELD});
                 return queryIssueSub(projectId, issueE.getIssueId());
             } else {
                 throw new CommonException("error.IssueRule.subTaskError");

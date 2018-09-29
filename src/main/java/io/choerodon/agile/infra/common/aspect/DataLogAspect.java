@@ -50,6 +50,7 @@ public class DataLogAspect {
     private static final String VERSION_DELETE = "versionDelete";
     private static final String BATCH_DELETE_VERSION = "batchDeleteVersion";
     private static final String BATCH_DELETE_BY_VERSIONID = "batchDeleteByVersionId";
+    private static final String BATCH_UPDATE_ISSUE_EPIC_ID = "batchUpdateIssueEpicId";
     private static final String BATCH_VERSION_DELETE_BY_IN_COMPLETE_ISSUE = "batchVersionDeleteByIncompleteIssue";
     private static final String BATCH_DELETE_VERSION_BY_VERSION = "batchDeleteVersionByVersion";
     private static final String BATCH_VERSION_DELETE_BY_VERSION_IDS = "batchVersionDeleteByVersionIds";
@@ -129,7 +130,7 @@ public class DataLogAspect {
     @Autowired
     private IssueMapper issueMapper;
     @Autowired
-    private IssueLabelMapper issueLabelMapper;
+    private IssueLabelMapper labelMapper;
     @Autowired
     private DataLogRepository dataLogRepository;
     @Autowired
@@ -271,6 +272,9 @@ public class DataLogAspect {
                     case BATCH_DELETE_BY_VERSIONID:
                         batchDeleteByVersionId(args);
                         break;
+                    case BATCH_UPDATE_ISSUE_EPIC_ID:
+                        batchUpdateIssueEpicId(args);
+                        break;
                     default:
                         break;
                 }
@@ -287,6 +291,18 @@ public class DataLogAspect {
             LOGGER.info("exception: ", e);
         }
         return result;
+    }
+
+    private void batchUpdateIssueEpicId(Object[] args) {
+        Long projectId = (Long) args[0];
+        Long issueId = (Long) args[1];
+        if (projectId != null && issueId != null) {
+            IssueDO query = new IssueDO();
+            query.setProjectId(projectId);
+            query.setEpicId(issueId);
+            List<IssueDO> issueDOList = issueMapper.select(query);
+            issueDOList.forEach(issueDO -> createIssueEpicLog(0L, issueDO));
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -631,19 +647,18 @@ public class DataLogAspect {
             }
         }
         if (labelIssueRelE != null) {
-            result = createLabelDataLog(labelIssueRelE.getLabelId(), labelIssueRelE.getIssueId(), pjp);
+            result = createLabelDataLog(labelIssueRelE.getIssueId(), labelIssueRelE.getProjectId(), pjp);
         }
         return result;
     }
 
-    private Object createLabelDataLog(Long labelId, Long issueId, ProceedingJoinPoint pjp) {
-        IssueLabelDO issueLabelDO = issueLabelMapper.selectByPrimaryKey(labelId);
+    private Object createLabelDataLog(Long issueId, Long projectId, ProceedingJoinPoint pjp) {
         List<IssueLabelDO> originLabels = issueMapper.selectLabelNameByIssueId(issueId);
         Object result = null;
         try {
             result = pjp.proceed();
             List<IssueLabelDO> curLabels = issueMapper.selectLabelNameByIssueId(issueId);
-            createDataLog(issueLabelDO.getProjectId(), issueId, FIELD_LABELS, getOriginLabelNames(originLabels),
+            createDataLog(projectId, issueId, FIELD_LABELS, getOriginLabelNames(originLabels),
                     getOriginLabelNames(curLabels), null, null);
         } catch (Throwable throwable) {
             LOGGER.info(EXCEPTION, throwable);
@@ -661,7 +676,7 @@ public class DataLogAspect {
             }
         }
         if (labelIssueRelDO != null) {
-            result = createLabelDataLog(labelIssueRelDO.getLabelId(), labelIssueRelDO.getIssueId(), pjp);
+            result = createLabelDataLog(labelIssueRelDO.getIssueId(), labelIssueRelDO.getProjectId(), pjp);
         }
         return result;
     }
