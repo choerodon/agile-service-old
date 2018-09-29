@@ -4,7 +4,7 @@
 
     <update id="updateIssueMaxNum">
         UPDATE agile_project_info api
-        SET api.issue_max_num = api.issue_max_num + '1'
+        SET api.issue_max_num = api.issue_max_num + #{increase}
         WHERE
             api.project_id = #{projectId}
     </update>

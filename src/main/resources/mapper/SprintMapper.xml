@@ -206,7 +206,6 @@
         where avir.relation_type = 'fix'
         ) apv1
         ON apv1.issue_id = ai2.issue_id
-        where ais.is_completed != 1
     </sql>
 
     <select id="queryActiveSprint" resultMap="SprintSearchDO">
@@ -353,7 +352,7 @@
         SELECT CASE COUNT(1) WHEN 0 THEN FALSE ELSE TRUE END
         FROM agile_issue ai
         LEFT JOIN agile_issue_sprint_rel aisr ON aisr.issue_id = ai.issue_id
-        WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_epic')
+        WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_test', 'issue_epic')
         <choose>
             <when test="sprintId != null and sprintId != 0">
                 AND aisr.sprint_id = #{sprintId}
@@ -366,7 +365,7 @@
 
     <select id="queryMaxRank" resultType="java.lang.String">
         select MAX(ai.rank)	from agile_issue ai
-        where ai.project_id = #{projectId} AND ai.type_code NOT IN ( 'sub_task', 'issue_epic' )
+        where ai.project_id = #{projectId} AND ai.type_code NOT IN ( 'sub_task', 'issue_test', 'issue_epic' )
         and ai.issue_id
         <choose>
             <when test="sprintId != null and sprintId != 0">

@@ -11,11 +11,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -173,8 +171,6 @@ public class IssueServiceImpl implements IssueService {
     private static final String INFLUENCE_RELATION_TYPE = "influence";
     private static final String[] FIELDS_NAME = {"编码", "概述", "描述", "类型", "所属项目", "经办人", "报告人", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本"};
     private static final String[] FIELDS = {"issueNum", "summary", "description", "typeName", "projectName", "assigneeName", "reporterName", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", REMAIN_TIME_FIELD, "versionName"};
-    private static final String[] SUB_COLUMN_NAMES = {"关键字", "概述", "类型", "状态", "经办人"};
-    private static final String EXPORT_ERROR = "error.issue.export";
     private static final String PROJECT_ERROR = "error.project.notFound";
     private static final String ERROR_ISSUE_NOT_FOUND = "error.Issue.queryIssue";
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
@@ -239,7 +235,7 @@ public class IssueServiceImpl implements IssueService {
         }
         //初始化创建issue设置issue编号、项目默认设置
         issueE.initializationIssue(statusId, projectInfoE);
-        projectInfoRepository.updateIssueMaxNum(issueE.getProjectId());
+        projectInfoRepository.updateIssueMaxNum(issueE.getProjectId(), 1);
         //初始化排序
         if (issueE.isIssueRank()) {
             calculationRank(issueE.getProjectId(), issueE);
@@ -308,7 +304,7 @@ public class IssueServiceImpl implements IssueService {
             handleUpdateIssue(issueUpdateDTO, fieldList, projectId);
         }
         Long issueId = issueUpdateDTO.getIssueId();
-        handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId);
+        handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId, projectId);
         handleUpdateComponentIssueRel(issueUpdateDTO.getComponentIssueRelDTOList(), projectId, issueId);
         handleUpdateVersionIssueRel(issueUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId, issueUpdateDTO.getVersionType());
         return queryIssue(projectId, issueId);
@@ -505,7 +501,7 @@ public class IssueServiceImpl implements IssueService {
         IssueE parentIssueE = ConvertHelper.convert(issueMapper.queryIssueSprintNotClosed(subIssueE.getProjectId(), subIssueE.getParentIssueId()), IssueE.class);
         //设置初始状态,跟随父类状态
         subIssueE = parentIssueE.initializationSubIssue(subIssueE, projectInfoE);
-        projectInfoRepository.updateIssueMaxNum(subIssueE.getProjectId());
+        projectInfoRepository.updateIssueMaxNum(subIssueE.getProjectId(), 1);
     }
 
     @Override
@@ -837,7 +833,7 @@ public class IssueServiceImpl implements IssueService {
             issueE.setParentIssueId(null);
         }
         if (STORY_TYPE.equals(issueE.getTypeCode()) && issueE.getStoryPoints() != null) {
-            issueE.setStoryPoints(0);
+            issueE.setStoryPoints(null);
         }
         if (issueUpdateTypeDTO.getTypeCode().equals(ISSUE_EPIC)) {
             issueE.setRank(null);
@@ -862,7 +858,7 @@ public class IssueServiceImpl implements IssueService {
         } else {
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
         }
-        issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, STORY_POINTS_FIELD, RANK_FIELD, EPIC_SEQUENCE});
+        issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, REMAIN_TIME_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, STORY_POINTS_FIELD, RANK_FIELD, EPIC_SEQUENCE});
         return queryIssue(issueE.getProjectId(), issueE.getIssueId());
     }
 
@@ -973,7 +969,7 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void handleUpdateLabelIssue(List<LabelIssueRelDTO> labelIssueRelDTOList, Long issueId) {
+    private void handleUpdateLabelIssue(List<LabelIssueRelDTO> labelIssueRelDTOList, Long issueId, Long projectId) {
         if (labelIssueRelDTOList != null) {
             if (!labelIssueRelDTOList.isEmpty()) {
                 LabelIssueRelDO labelIssueRelDO = new LabelIssueRelDO();
@@ -991,6 +987,7 @@ public class IssueServiceImpl implements IssueService {
                         LabelIssueRelDO delete = new LabelIssueRelDO();
                         delete.setIssueId(issueId);
                         delete.setLabelId(id);
+                        delete.setProjectId(projectId);
                         labelIssueRelRepository.delete(delete);
                     }
                 });
@@ -1021,6 +1018,7 @@ public class IssueServiceImpl implements IssueService {
                         VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
                         versionIssueRelDO.setIssueId(issueId);
                         versionIssueRelDO.setVersionId(id);
+                        versionIssueRelDO.setRelationType(versionType);
                         versionIssueRelDO.setProjectId(projectId);
                         versionIssueRelRepository.delete(versionIssueRelDO);
                     }
@@ -1279,54 +1277,18 @@ public class IssueServiceImpl implements IssueService {
                 issueE.setTypeCode(SUB_TASK);
                 issueE.setRank(null);
                 issueE.setEpicSequence(null);
+                issueE.setStoryPoints(null);
                 issueE.setParentIssueId(issueTransformSubTask.getParentIssueId());
                 issueRule.verifySubTask(issueTransformSubTask.getParentIssueId());
                 //删除链接
                 issueLinkRepository.deleteByIssueId(issueE.getIssueId());
-                issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, RANK_FIELD, STATUS_ID, PARENT_ISSUE_ID, EPIC_SEQUENCE});
+                issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, RANK_FIELD, STATUS_ID, PARENT_ISSUE_ID, EPIC_SEQUENCE, STORY_POINTS_FIELD});
                 return queryIssueSub(projectId, issueE.getIssueId());
             } else {
                 throw new CommonException("error.IssueRule.subTaskError");
             }
         } else {
             throw new CommonException("error.IssueRule.issueNoFound");
-        }
-    }
-
-    private void createSubIssueRow(List<ExportIssuesDTO> subIssues, ProjectDTO project, HSSFSheet sheet) {
-        if (!subIssues.isEmpty()) {
-            HSSFRow row = sheet.createRow(13);
-            HSSFCell cell = row.createCell(0);
-            cell.setCellValue("子任务:");
-            for (int i = 0; i < SUB_COLUMN_NAMES.length; i++) {
-                cell = row.createCell(i + 1);
-                cell.setCellValue(SUB_COLUMN_NAMES[i]);
-            }
-            for (int i = 0; i < subIssues.size(); i++) {
-                row = sheet.createRow(i + 14);
-                for (int j = 0; j < SUB_COLUMN_NAMES.length; j++) {
-                    cell = row.createCell(j + 1);
-                    switch (SUB_COLUMN_NAMES[j]) {
-                        case "关键字":
-                            cell.setCellValue(project.getCode() + "-" + subIssues.get(i).getIssueNum());
-                            break;
-                        case "概述":
-                            cell.setCellValue(subIssues.get(i).getSummary());
-                            break;
-                        case "类型":
-                            cell.setCellValue(subIssues.get(i).getTypeName());
-                            break;
-                        case "状态":
-                            cell.setCellValue(subIssues.get(i).getStatusName());
-                            break;
-                        case "经办人":
-                            cell.setCellValue(subIssues.get(i).getAssigneeName());
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
         }
     }
 
@@ -1630,19 +1592,65 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public List<Long> cloneIssuesByVersionId(Long projectId, Long versionId, List<Long> issueIds) {
+    public synchronized List<Long> cloneIssuesByVersionId(Long projectId, Long versionId, List<Long> issueIds) {
         List<IssueDetailDO> issueDOList = issueMapper.queryByIssueIds(projectId, issueIds);
-        List<Long> newIssueIds = new ArrayList<>();
         if (issueDOList.size() == issueIds.size()) {
-            List<IssueCreateDTO> issueCreateDTOS = issueAssembler.issueDetailListDoToDto(issueDOList, versionId);
-            issueCreateDTOS.forEach(issueCreateDTO -> {
-                IssueDTO newIssue = createIssue(issueCreateDTO);
-                newIssueIds.add(newIssue.getIssueId());
-            });
+            return batchCreateIssue(issueDOList, projectId, versionId);
         } else {
             throw new CommonException("error.issueServiceImpl.issueTypeError");
         }
-        return newIssueIds;
+    }
+
+    private List<Long> batchCreateIssue(List<IssueDetailDO> issueDOList, Long projectId, Long versionId) {
+        List<Long> issueIds = new ArrayList<>(issueDOList.size());
+        //设置初始状态,如果有todo，就用todo，否则为doing，最后为done
+        List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(projectId);
+        IssueStatusCreateDO issueStatusDO = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
+                issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
+                        issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(null)));
+        if (issueStatusDO == null) {
+            throw new CommonException("error.createIssue.issueStatusNotFound");
+        }
+        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+        projectInfoDO.setProjectId(projectId);
+        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
+        if (projectInfoE == null) {
+            throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
+        }
+        issueDOList.forEach(issueDetailDO -> {
+            IssueE issueE = issueAssembler.toTarget(issueDetailDO, IssueE.class);
+            //初始化创建issue设置issue编号、项目默认设置
+            issueE.initializationIssueByCopy(issueStatusDO.getId(), projectInfoE);
+            Long issueId = issueRepository.create(issueE).getIssueId();
+            handleCreateCopyLabelIssueRel(issueDetailDO.getLabelIssueRelDOList(), issueId);
+            handleCreateCopyComponentIssueRel(issueDetailDO.getComponentIssueRelDOList(), issueId);
+            issueIds.add(issueId);
+        });
+        VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
+        versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
+        issueRepository.batchIssueToVersion(versionIssueRelE);
+        projectInfoRepository.updateIssueMaxNum(projectId, issueDOList.size());
+        return issueIds;
+    }
+
+    private void handleCreateCopyComponentIssueRel(List<ComponentIssueRelDO> componentIssueRelDOList, Long issueId) {
+        componentIssueRelDOList.forEach(componentIssueRelDO -> {
+            ComponentIssueRelE componentIssueRelE = new ComponentIssueRelE();
+            BeanUtils.copyProperties(componentIssueRelDO, componentIssueRelE);
+            componentIssueRelE.setIssueId(issueId);
+            componentIssueRelE.setObjectVersionNumber(null);
+            componentIssueRelRepository.create(componentIssueRelE);
+        });
+    }
+
+    private void handleCreateCopyLabelIssueRel(List<LabelIssueRelDO> labelIssueRelDOList, Long issueId) {
+        labelIssueRelDOList.forEach(labelIssueRelDO -> {
+            LabelIssueRelE labelIssueRelE = new LabelIssueRelE();
+            BeanUtils.copyProperties(labelIssueRelDO, labelIssueRelE);
+            labelIssueRelE.setIssueId(issueId);
+            labelIssueRelE.setObjectVersionNumber(null);
+            labelIssueRelRepository.create(labelIssueRelE);
+        });
     }
 
     public String getDes(String str) {
@@ -1673,6 +1681,11 @@ public class IssueServiceImpl implements IssueService {
         if (!mapMoveIssueDOS.isEmpty()) {
             issueMapper.updateMapRank(projectId, mapMoveIssueDOS);
         }
+    }
+
+    @Override
+    public List<IssueProjectDTO> queryIssueTestGroupByProject() {
+        return issueAssembler.toTargetList(issueMapper.queryIssueTestGroupByProject(), IssueProjectDTO.class);
     }
 
     public void deleteIssueInfo(Long issueId, Long projectId) {

@@ -14,7 +14,7 @@
             adl.project_id = #{projectId}
         AND adl.issue_id = #{issueId}
         ORDER BY
-            adl.last_update_date DESC,
+            adl.log_id DESC,
             adl.created_by
     </select>
 

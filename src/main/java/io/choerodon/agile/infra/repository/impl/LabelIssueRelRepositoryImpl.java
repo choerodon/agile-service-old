@@ -29,14 +29,15 @@ public class LabelIssueRelRepositoryImpl implements LabelIssueRelRepository {
 
     @Override
     @DataLog(type = "labelCreate")
-    public List<LabelIssueRelE> create(LabelIssueRelE labelIssueRelE) {
+    public LabelIssueRelE create(LabelIssueRelE labelIssueRelE) {
         LabelIssueRelDO labelIssueRelDO = ConvertHelper.convert(labelIssueRelE, LabelIssueRelDO.class);
         if (labelIssueRelMapper.insert(labelIssueRelDO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        LabelIssueRelDO labelIssueDO1 = new LabelIssueRelDO();
-        labelIssueDO1.setIssueId(labelIssueRelDO.getIssueId());
-        return ConvertHelper.convertList(labelIssueRelMapper.select(labelIssueDO1), LabelIssueRelE.class);
+        LabelIssueRelDO query = new LabelIssueRelDO();
+        query.setIssueId(labelIssueRelDO.getIssueId());
+        query.setLabelId(labelIssueRelDO.getLabelId());
+        return ConvertHelper.convert(labelIssueRelMapper.selectOne(query), LabelIssueRelE.class);
     }
 
     @Override

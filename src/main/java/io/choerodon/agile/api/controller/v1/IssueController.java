@@ -255,11 +255,11 @@ public class IssueController {
     @ApiOperation("批量替换issue版本,给测试")
     @PostMapping(value = "/to_version_test/{versionId}")
     public ResponseEntity batchIssueToVersionTest(@ApiParam(value = "项目id", required = true)
-                                                                        @PathVariable(name = "project_id") Long projectId,
-                                                                        @ApiParam(value = "versionId", required = true)
-                                                                        @PathVariable Long versionId,
-                                                                        @ApiParam(value = "issue id", required = true)
-                                                                        @RequestBody List<Long> issueIds) {
+                                                  @PathVariable(name = "project_id") Long projectId,
+                                                  @ApiParam(value = "versionId", required = true)
+                                                  @PathVariable Long versionId,
+                                                  @ApiParam(value = "issue id", required = true)
+                                                  @RequestBody List<Long> issueIds) {
         issueService.batchIssueToVersionTest(projectId, versionId, issueIds);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
@@ -408,7 +408,7 @@ public class IssueController {
     public ResponseEntity<Page<IssueListDTO>> listIssueWithLinkedIssues(@ApiIgnore
                                                                         @ApiParam(value = "分页信息", required = true)
                                                                         @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
-                                                                        PageRequest pageRequest,
+                                                                                PageRequest pageRequest,
                                                                         @ApiParam(value = "项目id", required = true)
                                                                         @PathVariable(name = "project_id") Long projectId,
                                                                         @ApiParam(value = "查询参数", required = true)
@@ -585,6 +585,16 @@ public class IssueController {
         return Optional.ofNullable(issueService.cloneIssuesByVersionId(projectId, versionId, issueIds))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.cloneIssuesByVersionId"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("测试服务用，issue按照项目分组接口")
+    @GetMapping("/list_issues_by_project")
+    public ResponseEntity<List<IssueProjectDTO>> queryIssueTestGroupByProject(@ApiParam(value = "项目id", required = true)
+                                                                              @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(issueService.queryIssueTestGroupByProject())
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.issue.queryIssueTestGroupByProject"));
     }
 
 }

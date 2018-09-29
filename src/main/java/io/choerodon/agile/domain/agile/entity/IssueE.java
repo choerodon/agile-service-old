@@ -321,11 +321,11 @@ public class IssueE {
     }
 
     public Boolean isIssueRank() {
-        return this.typeCode != null && !Objects.equals(this.typeCode, SUB_TASK) && !Objects.equals(this.typeCode, ISSUE_EPIC);
+        return !Objects.equals(this.typeCode, ISSUE_TEST) && !Objects.equals(this.typeCode, SUB_TASK) && !Objects.equals(this.typeCode, ISSUE_EPIC);
     }
 
     public Boolean isIssueMapRank() {
-        return this.typeCode != null && !Objects.equals(this.typeCode, ISSUE_TEST) && !Objects.equals(this.typeCode, ISSUE_EPIC) && !Objects.equals(this.typeCode, SUB_TASK);
+        return !Objects.equals(this.typeCode, ISSUE_TEST) && !Objects.equals(this.typeCode, ISSUE_EPIC) && !Objects.equals(this.typeCode, SUB_TASK);
     }
 
     public void initializationIssueUser() {
@@ -343,5 +343,17 @@ public class IssueE {
     private void initializationIssueNum(ProjectInfoE projectInfoE) {
         Integer max = projectInfoE.getIssueMaxNum().intValue() + 1;
         this.issueNum = max.toString();
+    }
+
+    public void initializationIssueByCopy(Long statusId, ProjectInfoE projectInfoE) {
+        this.statusId = statusId;
+        this.parentIssueId = 0L;
+        this.issueId = null;
+        this.sprintId = 0L;
+        this.remainingTime = BigDecimal.valueOf(0D);
+        Long issueNum = projectInfoE.getIssueMaxNum();
+        Integer max = issueNum.intValue() + 1;
+        this.issueNum = max.toString();
+        projectInfoE.setIssueMaxNum(issueNum + 1);
     }
 }

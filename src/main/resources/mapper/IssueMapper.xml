@@ -677,9 +677,11 @@
     <select id="querySprintIssueIdsByCondition" resultType="java.lang.Long">
         SELECT
         ai.issue_id
-        FROM agile_issue ai left join agile_issue_sprint_rel aisr on ai.issue_id = aisr.issue_id left join agile_sprint asp on aisr.sprint_id = asp.sprint_id
-        WHERE (aisr.sprint_id is null or ( aisr.sprint_id is not null and asp.status_code != 'closed' )) and ai.project_id = #{projectId} AND ai.type_code !=
-        'sub_task' AND ai.type_code != 'issue_epic' AND ai.type_code != 'issue_test'
+        FROM agile_issue ai
+        left join agile_issue_status ais on ai.status_id = ais.id
+        WHERE
+        ais.is_completed != 1
+        and ai.project_id = #{projectId} AND ai.type_code !='sub_task' AND ai.type_code != 'issue_epic' AND ai.type_code != 'issue_test'
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.versionId != null'>
                 AND ai.issue_id IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id =
@@ -1902,6 +1904,13 @@
         </if>
         where 1=1
         <if test='advancedSearchArgs != null'>
+            <if test='advancedSearchArgs.priorityCode != null and advancedSearchArgs.priorityCode.size > 0'>
+                AND ai.priority_code IN
+                <foreach collection="advancedSearchArgs.priorityCode" item="priorityCode" open="(" separator=","
+                         close=")">
+                    #{priorityCode}
+                </foreach>
+            </if>
             <if test='advancedSearchArgs.typeCode != null and advancedSearchArgs.typeCode.size > 0'>
                 AND ai.type_code IN
                 <foreach collection="advancedSearchArgs.typeCode" item="typeCode" open="(" separator="," close=")">
@@ -2349,5 +2358,23 @@
             ai.issue_id = #{issueId}
             AND ai.project_id = #{projectId}
     </select>
+
+    <select id="queryIssueTestGroupByProject" resultMap="issueProject">
+        SELECT
+            api.project_id,
+            ai.issue_id
+        FROM
+            agile_project_info api
+            LEFT JOIN agile_issue ai ON ai.project_id = api.project_id
+        WHERE
+            ai.type_code = 'issue_test'
+    </select>
+
+    <resultMap id="issueProject" type="io.choerodon.agile.infra.dataobject.IssueProjectDO">
+        <id property="projectId" column="project_id"/>
+        <collection property="issueIdList" autoMapping="true" ofType="java.lang.Long">
+            <id property="issueId" column="issue_id"/>
+        </collection>
+    </resultMap>
 
 </mapper>

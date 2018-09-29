@@ -387,4 +387,11 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @return IssueDO
      */
     IssueDO queryEpicWithStatusByIssueId(@Param("issueId") Long issueId, @Param("projectId") Long projectId);
+
+    /**
+     * 根据项目分组测试类型issue
+     *
+     * @return IssueProjectDO
+     */
+    List<IssueProjectDO> queryIssueTestGroupByProject();
 }

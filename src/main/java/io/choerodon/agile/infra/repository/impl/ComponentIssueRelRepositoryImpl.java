@@ -10,8 +10,6 @@ import io.choerodon.agile.infra.mapper.ComponentIssueRelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 
 /**
  * @author dinghuang123@gmail.com
@@ -27,18 +25,20 @@ public class ComponentIssueRelRepositoryImpl implements ComponentIssueRelReposit
 
     @Override
     @DataLog(type = "componentCreate")
-    public List<ComponentIssueRelE> create(ComponentIssueRelE componentIssueRelE) {
+    public ComponentIssueRelE create(ComponentIssueRelE componentIssueRelE) {
         ComponentIssueRelDO componentIssueRelDO = ConvertHelper.convert(componentIssueRelE, ComponentIssueRelDO.class);
         if (componentIssueRelMapper.insert(componentIssueRelDO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        ComponentIssueRelDO componentIssueRelDO1 = new ComponentIssueRelDO();
-        componentIssueRelDO1.setComponentId(componentIssueRelDO.getComponentId());
-        return ConvertHelper.convertList(componentIssueRelMapper.select(componentIssueRelDO1), ComponentIssueRelE.class);
+        ComponentIssueRelDO query = new ComponentIssueRelDO();
+        query.setComponentId(componentIssueRelDO.getComponentId());
+        query.setIssueId(componentIssueRelDO.getIssueId());
+        query.setProjectId(componentIssueRelDO.getProjectId());
+        return ConvertHelper.convert(componentIssueRelMapper.selectOne(query), ComponentIssueRelE.class);
     }
 
     @Override
-    @DataLog(type = "batchComponentDelete",single = false)
+    @DataLog(type = "batchComponentDelete", single = false)
     public int batchComponentDelete(Long issueId) {
         return deleteComponentIssueRel(issueId);
     }
@@ -66,7 +66,7 @@ public class ComponentIssueRelRepositoryImpl implements ComponentIssueRelReposit
         return deleteComponentIssueRel(issueId);
     }
 
-    private int deleteComponentIssueRel(Long issueId){
+    private int deleteComponentIssueRel(Long issueId) {
         ComponentIssueRelDO componentIssueRelDO = new ComponentIssueRelDO();
         componentIssueRelDO.setIssueId(issueId);
         return componentIssueRelMapper.delete(componentIssueRelDO);

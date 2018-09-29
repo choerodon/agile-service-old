@@ -110,6 +110,7 @@ public class IssueRepositoryImpl implements IssueRepository {
 
 
     @Override
+    @DataLog(type = "batchUpdateIssueEpicId", single = false)
     public int batchUpdateIssueEpicId(Long projectId, Long issueId) {
         redisUtil.deleteRedisCache(new String[]{"Agile:EpicChart" + projectId + ":" + issueId + ":" + "*"});
         return issueMapper.batchUpdateIssueEpicId(projectId, issueId);

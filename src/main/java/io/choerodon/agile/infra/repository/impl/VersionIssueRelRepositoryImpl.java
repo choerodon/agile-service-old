@@ -20,33 +20,23 @@ import java.util.List;
 @Component
 public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository {
 
-    private static final String UPDATE_ERROR = "error.VersionIssueRel.update";
     private static final String INSERT_ERROR = "error.VersionIssueRel.create";
 
     @Autowired
     private VersionIssueRelMapper versionIssueRelMapper;
 
     @Override
-    public List<VersionIssueRelE> update(VersionIssueRelE versionIssueRelE) {
-        VersionIssueRelDO versionIssueRelDO = ConvertHelper.convert(versionIssueRelE, VersionIssueRelDO.class);
-        if (versionIssueRelMapper.updateByPrimaryKeySelective(versionIssueRelDO) != 1) {
-            throw new CommonException(UPDATE_ERROR);
-        }
-        VersionIssueRelDO versionIssueRelDO1 = new VersionIssueRelDO();
-        versionIssueRelDO.setVersionId(versionIssueRelDO.getVersionId());
-        return ConvertHelper.convertList(versionIssueRelMapper.select(versionIssueRelDO1), VersionIssueRelE.class);
-    }
-
-    @Override
     @DataLog(type = "versionCreate")
-    public List<VersionIssueRelE> create(VersionIssueRelE versionIssueRelE) {
+    public VersionIssueRelE create(VersionIssueRelE versionIssueRelE) {
         VersionIssueRelDO versionIssueRelDO = ConvertHelper.convert(versionIssueRelE, VersionIssueRelDO.class);
         if (versionIssueRelMapper.insert(versionIssueRelDO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        VersionIssueRelDO versionIssueRelDO1 = new VersionIssueRelDO();
-        versionIssueRelDO.setVersionId(versionIssueRelDO.getVersionId());
-        return ConvertHelper.convertList(versionIssueRelMapper.select(versionIssueRelDO1), VersionIssueRelE.class);
+        VersionIssueRelDO query = new VersionIssueRelDO();
+        query.setVersionId(versionIssueRelDO.getVersionId());
+        query.setIssueId(versionIssueRelDO.getIssueId());
+        query.setProjectId(versionIssueRelDO.getProjectId());
+        return ConvertHelper.convert(versionIssueRelMapper.selectOne(query), VersionIssueRelE.class);
     }
 
     @Override
@@ -73,14 +63,14 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
     }
 
     @Override
-    @DataLog(type = "batchVersionDeleteByIncompleteIssue",single = false)
+    @DataLog(type = "batchVersionDeleteByIncompleteIssue", single = false)
     public Boolean deleteIncompleteIssueByVersionId(Long projectId, Long versionId) {
         versionIssueRelMapper.deleteIncompleteIssueByVersionId(projectId, versionId);
         return true;
     }
 
     @Override
-    @DataLog(type = "batchVersionDeleteByVersionIds",single = false)
+    @DataLog(type = "batchVersionDeleteByVersionIds", single = false)
     public int deleteByVersionIds(Long projectId, List<Long> versionIds) {
         return versionIssueRelMapper.deleteByVersionIds(projectId, versionIds);
     }

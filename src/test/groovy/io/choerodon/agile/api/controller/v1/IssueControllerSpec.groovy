@@ -110,9 +110,9 @@ class IssueControllerSpec extends Specification {
     @Shared
     def resultId = 0
     @Shared
-    def productVersionId=0
+    def productVersionId = 0
     @Shared
-    def testSprintId=0
+    def testSprintId = 0
 
     def setup() {
         given: '设置feign调用mockito'
@@ -948,21 +948,21 @@ class IssueControllerSpec extends Specification {
 
     def 'listIssueWithLinkedIssues'() {
         given:
-        PageRequest pageRequest =new PageRequest()
-        pageRequest.size=10
-        pageRequest.page=0
-        SearchDTO searchDTO=new SearchDTO()
-        Map<String,Object> searchArgsMap =new HashMap<>()
-        searchDTO.searchArgs=searchArgsMap
-        Map<String,Object> advancedSearchArgsMap =new HashMap<>()
-        List<String> typeCode=new ArrayList<>()
+        PageRequest pageRequest = new PageRequest()
+        pageRequest.size = 10
+        pageRequest.page = 0
+        SearchDTO searchDTO = new SearchDTO()
+        Map<String, Object> searchArgsMap = new HashMap<>()
+        searchDTO.searchArgs = searchArgsMap
+        Map<String, Object> advancedSearchArgsMap = new HashMap<>()
+        List<String> typeCode = new ArrayList<>()
         typeCode.add("issue_test")
-        advancedSearchArgsMap.put("typeCode",typeCode)
-        searchDTO.advancedSearchArgs=advancedSearchArgsMap
+        advancedSearchArgsMap.put("typeCode", typeCode)
+        searchDTO.advancedSearchArgs = advancedSearchArgsMap
 
         when:
         def entity = restTemplate.postForEntity("/v1/projects/{project_id}/issues/test_component/filter_linked?pageRequest={pageRequest}",
-                searchDTO,Page.class,projectId,pageRequest)
+                searchDTO, Page.class, projectId, pageRequest)
 
         then:
         entity.statusCode.is2xxSuccessful()
@@ -986,8 +986,6 @@ class IssueControllerSpec extends Specification {
         issueDetailDO.componentIssueRelDOList = new ArrayList<>()
         issueDetailDO.labelIssueRelDOList = new ArrayList<>()
         issueDetailDOList.add(issueDetailDO)
-        IssueDetailDO issueDetailDO1 = new IssueDetailDO()
-        issueDetailDO1.subIssueDOList = new ArrayList<>()
 
         when: '测试服务用，批量复制issue并生成版本信息'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/batch_clone_issue/{versionId}', issueTestIds, List, projectId, versionId)
@@ -997,7 +995,6 @@ class IssueControllerSpec extends Specification {
 
         and: '判断mock交互并且设置返回值'
         1 * issueMapperMock.queryByIssueIds(projectId, issueTestIds) >> issueDetailDOList
-        1 * issueMapperMock.queryIssueDetail(projectId, _) >> issueDetailDO1
 
         and: '设置值'
         List<Long> issueIds = entity.body
@@ -1109,32 +1106,32 @@ class IssueControllerSpec extends Specification {
 
     def 'storymapMove'() {
         given:
-        StoryMapMoveDTO storyMapMoveDTO=new StoryMapMoveDTO()
-        storyMapMoveDTO.versionId=versionIds
-        storyMapMoveDTO.sprintId=sprintIds
-        storyMapMoveDTO.epicId=issueIdList[2]
-        List<Long> epicIssueIds=new ArrayList<>()
+        StoryMapMoveDTO storyMapMoveDTO = new StoryMapMoveDTO()
+        storyMapMoveDTO.versionId = versionIds
+        storyMapMoveDTO.sprintId = sprintIds
+        storyMapMoveDTO.epicId = issueIdList[2]
+        List<Long> epicIssueIds = new ArrayList<>()
         epicIssueIds.add(resultId)
-        storyMapMoveDTO.epicIssueIds=epicIssueIds
-        storyMapMoveDTO.rankIndex=true
-        List<Long> sprintIssueIds=new ArrayList<>()
+        storyMapMoveDTO.epicIssueIds = epicIssueIds
+        storyMapMoveDTO.rankIndex = true
+        List<Long> sprintIssueIds = new ArrayList<>()
         sprintIssueIds.add(resultId)
-        storyMapMoveDTO.sprintIssueIds=sprintIssueIds
-        List<Long> versionIssueIds=new ArrayList<>()
+        storyMapMoveDTO.sprintIssueIds = sprintIssueIds
+        List<Long> versionIssueIds = new ArrayList<>()
         versionIssueIds.add(resultId)
-        storyMapMoveDTO.versionIssueIds=versionIssueIds
-        storyMapMoveDTO.before=true
-        List<Long> issueIds=new ArrayList<Long>()
+        storyMapMoveDTO.versionIssueIds = versionIssueIds
+        storyMapMoveDTO.before = true
+        List<Long> issueIds = new ArrayList<Long>()
         issueIds.add(resultId)
-        storyMapMoveDTO.issueIds=issueIds
+        storyMapMoveDTO.issueIds = issueIds
 
         when:
         def entity = restTemplate.postForEntity("/v1/projects/{project_id}/issues/storymap/move",
-                storyMapMoveDTO,null,projectId)
+                storyMapMoveDTO, null, projectId)
         then:
         entity.statusCode.is2xxSuccessful()
         expect:
-        entity.body==expectObject
+        entity.body == expectObject
         where:
         versionIds       | sprintIds    | expectObject
         null             | testSprintId | null
@@ -1164,6 +1161,20 @@ class IssueControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
         and:
         issueService.setIssueMapper(issueMapper)
+    }
+
+    def 'queryIssueTestGroupByProject'() {
+        when: '测试服务用，issue按照项目分组借口'
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/list_issues_by_project", List.class, projectId)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+
+        and:
+        List<IssueProjectDTO> result = entity.body
+
+        expect:
+        result.size() == 1
     }
 
     def "deleteIssue"() {

@@ -172,25 +172,6 @@ public class IssueAssembler extends AbstractAssembler {
         return exportIssuesDTOS;
     }
 
-    public ExportIssuesDTO exportIssuesDOToExportIssuesDTO(ExportIssuesDO exportIssue) {
-        if (exportIssue == null) {
-            return null;
-        }
-        ExportIssuesDTO exportIssuesDTO = new ExportIssuesDTO();
-        List<Long> userIds = new ArrayList<>();
-        userIds.add(exportIssue.getAssigneeId());
-        if (!Objects.equals(exportIssue.getAssigneeId(), exportIssue.getReporterId())) {
-            userIds.add(exportIssue.getReporterId());
-        }
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(userIds, true);
-        String assigneeName = usersMap.get(exportIssue.getAssigneeId()) != null ? usersMap.get(exportIssue.getAssigneeId()).getName() : null;
-        String reportName = usersMap.get(exportIssue.getReporterId()) != null ? usersMap.get(exportIssue.getReporterId()).getName() : null;
-        BeanUtils.copyProperties(exportIssue, exportIssuesDTO);
-        exportIssuesDTO.setAssigneeName(assigneeName);
-        exportIssuesDTO.setReporterName(reportName);
-        return exportIssuesDTO;
-    }
-
     public IssueCreateDTO issueDtoToIssueCreateDto(IssueDetailDO issueDetailDO) {
         IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
         BeanUtils.copyProperties(issueDetailDO, issueCreateDTO);
@@ -280,30 +261,5 @@ public class IssueAssembler extends AbstractAssembler {
             issueComponentDetailDTOS.add(issueComponentDetailDTO);
         });
         return issueComponentDetailDTOS;
-    }
-
-    public List<IssueCreateDTO> issueDetailListDoToDto(List<IssueDetailDO> issueDOList, Long versionId) {
-        List<IssueCreateDTO> issueCreateDTOS = new ArrayList<>();
-        issueDOList.forEach(issueDetailDO -> {
-            IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
-            BeanUtils.copyProperties(issueDetailDO, issueCreateDTO);
-            issueCreateDTO.setSprintId(null);
-            issueCreateDTO.setRemainingTime(null);
-            issueCreateDTO.setComponentIssueRelDTOList(copyComponentIssueRel(issueDetailDO.getComponentIssueRelDOList()));
-            issueCreateDTO.setVersionIssueRelDTOList(createVersionIssueRel(issueDetailDO.getProjectId(), versionId));
-            issueCreateDTO.setLabelIssueRelDTOList(copyLabelIssueRel(issueDetailDO.getLabelIssueRelDOList(), issueDetailDO.getProjectId()));
-            issueCreateDTOS.add(issueCreateDTO);
-        });
-        return issueCreateDTOS;
-    }
-
-    private List<VersionIssueRelDTO> createVersionIssueRel(Long projectId, Long versionId) {
-        List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>();
-        VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
-        versionIssueRelDTO.setIssueId(null);
-        versionIssueRelDTO.setProjectId(projectId);
-        versionIssueRelDTO.setVersionId(versionId);
-        versionIssueRelDTOList.add(versionIssueRelDTO);
-        return versionIssueRelDTOList;
     }
 }

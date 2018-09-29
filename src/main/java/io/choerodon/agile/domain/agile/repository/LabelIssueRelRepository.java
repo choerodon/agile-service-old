@@ -20,7 +20,7 @@ public interface LabelIssueRelRepository {
      * @param labelIssueRelE labelIssueRelE
      * @return LabelIssueRelE
      */
-    List<LabelIssueRelE> create(LabelIssueRelE labelIssueRelE);
+    LabelIssueRelE create(LabelIssueRelE labelIssueRelE);
 
     /**
      * 根据issueId删除labelIssue

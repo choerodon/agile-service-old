@@ -13,10 +13,11 @@ import org.springframework.stereotype.Component;
 public interface ProjectInfoMapper extends BaseMapper<ProjectInfoDO> {
 
     /**
-     * 更新MaxNum+1
+     * 更新MaxNum+increase
      *
      * @param projectId projectId
+     * @param increase  increase
      * @return int
      */
-    int updateIssueMaxNum(@Param("projectId") Long projectId);
+    int updateIssueMaxNum(@Param("projectId") Long projectId, @Param("increase") Integer increase);
 }
