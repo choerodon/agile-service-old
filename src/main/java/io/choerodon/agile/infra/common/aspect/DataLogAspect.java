@@ -10,7 +10,8 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,8 @@ import io.choerodon.core.exception.CommonException;
 @Component
 @Transactional(rollbackFor = Exception.class)
 public class DataLogAspect {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataLogAspect.class);
 
     private static final String ISSUE = "issue";
     private static final String ISSUE_CREATE = "issueCreate";
@@ -127,8 +130,6 @@ public class DataLogAspect {
     private IssueStatusMapper issueStatusMapper;
     @Autowired
     private IssueMapper issueMapper;
-    @Autowired
-    private IssueLabelMapper labelMapper;
     @Autowired
     private DataLogRepository dataLogRepository;
     @Autowired
@@ -652,18 +653,14 @@ public class DataLogAspect {
 
     private Object createLabelDataLog(Long issueId, Long projectId, ProceedingJoinPoint pjp) {
         List<IssueLabelDO> originLabels = issueMapper.selectLabelNameByIssueId(issueId);
-        Object result;
+        Object result = null;
         try {
             result = pjp.proceed();
-            if (issueLabelDO == null) {
-                issueLabelDO = new IssueLabelDO();
-                BeanUtils.copyProperties(result, issueLabelDO);
-            }
             List<IssueLabelDO> curLabels = issueMapper.selectLabelNameByIssueId(issueId);
             createDataLog(projectId, issueId, FIELD_LABELS, getOriginLabelNames(originLabels),
                     getOriginLabelNames(curLabels), null, null);
-        } catch (Throwable e) {
-            throw new CommonException(ERROR_METHOD_EXECUTE, e);
+        } catch (Throwable throwable) {
+            LOGGER.info(EXCEPTION, throwable);
         }
         return result;
     }
