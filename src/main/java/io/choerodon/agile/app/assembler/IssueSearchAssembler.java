@@ -22,12 +22,14 @@ import java.util.stream.Collectors;
  */
 @Component
 public class IssueSearchAssembler extends AbstractAssembler {
+
     @Autowired
     private LookupValueMapper lookupValueMapper;
+
     private static final String ISSUE_STATUS_COLOR = "issue_status_color";
 
     public List<IssueSearchDTO> doListToDTO(List<IssueSearchDO> issueSearchDOList, Map<Long, UserMessageDO> usersMap) {
-        List<IssueSearchDTO> issueSearchDTOList = new ArrayList<>();
+        List<IssueSearchDTO> issueSearchDTOList = new ArrayList<>(issueSearchDOList.size());
         LookupValueDO lookupValueDO = new LookupValueDO();
         lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
         Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
@@ -43,7 +45,7 @@ public class IssueSearchAssembler extends AbstractAssembler {
     }
 
     public List<AssigneeIssueDTO> doListToAssigneeIssueDTO(List<AssigneeIssueDO> assigneeIssueDOList, Map<Long, UserMessageDO> usersMap) {
-        List<AssigneeIssueDTO> assigneeIssues = new ArrayList<>();
+        List<AssigneeIssueDTO> assigneeIssues = new ArrayList<>(assigneeIssueDOList.size());
         assigneeIssueDOList.forEach(assigneeIssueDO -> {
             String assigneeName = usersMap.get(assigneeIssueDO.getAssigneeId()) != null ? usersMap.get(assigneeIssueDO.getAssigneeId()).getName() : null;
             String imageUrl = assigneeName != null ? usersMap.get(assigneeIssueDO.getAssigneeId()).getImageUrl() : null;

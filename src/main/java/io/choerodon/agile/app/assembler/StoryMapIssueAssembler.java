@@ -35,7 +35,7 @@ public class StoryMapIssueAssembler {
     public List<StoryMapIssueDTO> storyMapIssueDOToDTO(List<StoryMapIssueDO> storyMapIssueDOList) {
         LookupValueDO lookupValueDO = new LookupValueDO();
         lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
-        List<StoryMapIssueDTO> storyMapIssueDTOList = new ArrayList<>();
+        List<StoryMapIssueDTO> storyMapIssueDTOList = new ArrayList<>(storyMapIssueDOList.size());
         Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
         List<Long> assigneeIds = storyMapIssueDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(StoryMapIssueDO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);

@@ -3,7 +3,6 @@ package io.choerodon.agile.domain.agile.repository;
 import io.choerodon.agile.domain.agile.entity.LabelIssueRelE;
 import io.choerodon.agile.infra.dataobject.LabelIssueRelDO;
 
-import java.util.List;
 
 
 /**

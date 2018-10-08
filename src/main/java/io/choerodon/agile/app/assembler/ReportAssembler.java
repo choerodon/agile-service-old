@@ -31,7 +31,7 @@ public class ReportAssembler extends AbstractAssembler {
     private static final String ISSUE_STATUS_COLOR = "issue_status_color";
 
     public List<CumulativeFlowDiagramDTO> columnListDoToDto(List<ColumnDO> columnDOList) {
-        List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = new ArrayList<>();
+        List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = new ArrayList<>(columnDOList.size());
         columnDOList.forEach(columnDO -> {
             CumulativeFlowDiagramDTO cumulativeFlowDiagramDTO = new CumulativeFlowDiagramDTO();
             cumulativeFlowDiagramDTO.setColumnId(columnDO.getColumnId());
@@ -54,8 +54,8 @@ public class ReportAssembler extends AbstractAssembler {
     }
 
     public List<IssueBurnDownReportDTO> issueBurnDownReportDoToDto(List<IssueBurnDownReportDO> issueBurnDownReportDOS) {
-        List<IssueBurnDownReportDTO> issueBurnDownReportDTOS = new ArrayList<>();
-        if(issueBurnDownReportDOS!=null&&!issueBurnDownReportDOS.isEmpty()){
+        List<IssueBurnDownReportDTO> issueBurnDownReportDTOS = new ArrayList<>(issueBurnDownReportDOS.size());
+        if(!issueBurnDownReportDOS.isEmpty()){
             LookupValueDO lookupValueDO = new LookupValueDO();
             lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
             Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));

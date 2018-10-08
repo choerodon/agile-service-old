@@ -30,7 +30,7 @@ public class IssueLinkAssembler extends AbstractAssembler{
         LookupValueDO lookupValueDO = new LookupValueDO();
         lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
         Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
-        List<IssueLinkDTO> issueLinkDTOList = new ArrayList<>();
+        List<IssueLinkDTO> issueLinkDTOList = new ArrayList<>(issueLinkDOList.size());
         issueLinkDOList.forEach(issueLinkDO -> {
             IssueLinkDTO issueLinkDTO = new IssueLinkDTO();
             BeanUtils.copyProperties(issueLinkDO, issueLinkDTO);

@@ -351,9 +351,9 @@ public class IssueE {
         this.issueId = null;
         this.sprintId = 0L;
         this.remainingTime = BigDecimal.valueOf(0D);
-        Long issueNum = projectInfoE.getIssueMaxNum();
-        Integer max = issueNum.intValue() + 1;
+        Long issueMaxNum = projectInfoE.getIssueMaxNum();
+        Integer max = issueMaxNum.intValue() + 1;
         this.issueNum = max.toString();
-        projectInfoE.setIssueMaxNum(issueNum + 1);
+        projectInfoE.setIssueMaxNum(issueMaxNum + 1);
     }
 }
