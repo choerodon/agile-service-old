@@ -93,8 +93,8 @@ public class ReportServiceImpl implements ReportService {
     private static final String EPIC_CHART = "epic_chart";
     private static final String AGILE = "Agile";
     private static final String EPIC_OR_VERSION_NOT_FOUND_ERROR = "error.EpicOrVersion.notFound";
-    private static final String ARCHIVED = "archived";
-    private static final String RELEASED = "released";
+    private static final String SPRINT_DO_LIST = "sprintDOList";
+    private static final String START_DATE = "startDate";
     private static final String E_PIC = "Epic";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportServiceImpl.class);
@@ -1185,8 +1185,8 @@ public class ReportServiceImpl implements ReportService {
                 return new ArrayList<>();
             } else {
                 JSONObject jsonObject = handleSprintListAndStartDate(id, projectId, type);
-                List<SprintDO> sprintDOList = (List<SprintDO>) jsonObject.get("sprintDOList");
-                Date startDate = (Date) jsonObject.get("startDate");
+                List<SprintDO> sprintDOList = (List<SprintDO>) jsonObject.get(SPRINT_DO_LIST);
+                Date startDate = (Date) jsonObject.get(START_DATE);
                 List<IssueBurnDownReportDO> issueDOS = issueDOList.stream().filter(issueDO -> issueDO.getStoryPoints() != null).collect(Collectors.toList());
                 List<BurnDownReportCoordinateDTO> reportCoordinateDTOS = new ArrayList<>();
                 if (sprintDOList != null && !sprintDOList.isEmpty()) {
@@ -1232,8 +1232,8 @@ public class ReportServiceImpl implements ReportService {
             }
         }
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("sprintDOList", sprintDOList);
-        jsonObject.put("startDate", startDate);
+        jsonObject.put(SPRINT_DO_LIST, sprintDOList);
+        jsonObject.put(START_DATE, startDate);
         return jsonObject;
     }
 
@@ -1249,7 +1249,7 @@ public class ReportServiceImpl implements ReportService {
             List<IssueBurnDownReportDO> incompleteIssues = issueDOList.stream().filter(issueDO -> !issueDO.getCompleted()).collect(Collectors.toList());
             burnDownReportDTO.setIncompleteIssues(reportAssembler.issueBurnDownReportDoToDto(incompleteIssues));
             JSONObject jsonObject = handleSprintListAndStartDate(id, projectId, type);
-            List<SprintDO> sprintDOList = (List<SprintDO>) jsonObject.get("sprintDOList");
+            List<SprintDO> sprintDOList = (List<SprintDO>) jsonObject.get(SPRINT_DO_LIST);
             if (sprintDOList != null && !sprintDOList.isEmpty()) {
                 List<IssueBurnDownReportDO> completeIssues = issueDOList.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null).collect(Collectors.toList());
                 handleBurnDownReportSprintData(sprintDOList, completeIssues, burnDownReportDTO);
@@ -1311,7 +1311,7 @@ public class ReportServiceImpl implements ReportService {
             ProductVersionDO productVersionDO = versionMapper.selectByPrimaryKey(query);
             burnDownReportDTO.getJsonObject().put("name", productVersionDO.getName());
             burnDownReportDTO.getJsonObject().put("versionId", productVersionDO.getVersionId());
-            burnDownReportDTO.getJsonObject().put("startDate", productVersionDO.getStartDate());
+            burnDownReportDTO.getJsonObject().put(START_DATE, productVersionDO.getStartDate());
             burnDownReportDTO.getJsonObject().put("releaseDate", productVersionDO.getReleaseDate());
         }
     }

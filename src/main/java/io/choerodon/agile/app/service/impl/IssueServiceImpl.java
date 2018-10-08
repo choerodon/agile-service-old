@@ -11,8 +11,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,7 +54,6 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 @Transactional(rollbackFor = Exception.class)
 public class IssueServiceImpl implements IssueService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IssueServiceImpl.class);
     @Autowired
     private IssueRepository issueRepository;
     @Autowired
@@ -174,6 +171,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String PROJECT_ERROR = "error.project.notFound";
     private static final String ERROR_ISSUE_NOT_FOUND = "error.Issue.queryIssue";
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
+    private static final String ERROR_ISSUE_STATUS_NOT_FOUND = "error.createIssue.issueStatusNotFound";
     private static final String SEARCH = "search";
     private static final String STORYMAP_TYPE_SPRINT = "sprint";
     private static final String STORYMAP_TYPE_VERSION = "version";
@@ -205,7 +203,7 @@ public class IssueServiceImpl implements IssueService {
                 issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
                         issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(null)));
         if (issueStatusDO == null) {
-            throw new CommonException("error.createIssue.issueStatusNotFound");
+            throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
         }
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(issueE.getProjectId());
@@ -464,7 +462,7 @@ public class IssueServiceImpl implements IssueService {
                 issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
                         issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(null)));
         if (issueStatusDO == null) {
-            throw new CommonException("error.createIssue.issueStatusNotFound");
+            throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
         }
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(subIssueE.getProjectId());
@@ -1607,7 +1605,7 @@ public class IssueServiceImpl implements IssueService {
                 issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
                         issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(null)));
         if (issueStatusDO == null) {
-            throw new CommonException("error.createIssue.issueStatusNotFound");
+            throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
         }
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);

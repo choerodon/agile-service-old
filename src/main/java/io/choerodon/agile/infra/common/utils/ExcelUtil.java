@@ -25,6 +25,7 @@ public class ExcelUtil {
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExcelUtil.class);
+    private static final String EXCEPTION = "Exception:{}";
 
     /**
      * 通过类导出
@@ -65,12 +66,12 @@ public class ExcelUtil {
                 response.addHeader("Content-Disposition", disposition);
                 workbook.write(response.getOutputStream());
             } catch (Exception e) {
-                LOGGER.error("Exception:{}", e);
+                LOGGER.error(EXCEPTION, e);
             } finally {
                 try {
                     workbook.close();
                 } catch (IOException e) {
-                    LOGGER.error("Exception:{}", e);
+                    LOGGER.error(EXCEPTION, e);
                 }
             }
         }
@@ -93,7 +94,7 @@ public class ExcelUtil {
                 cell.setCellValue("");
             }
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            LOGGER.error("Exception:{}", e);
+            LOGGER.error(EXCEPTION, e);
         }
     }
 
