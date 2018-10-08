@@ -2,11 +2,16 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.ComponentForListDTO;
 import io.choerodon.agile.api.dto.IssueDTO;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.dto.IssueComponentDTO;
 import io.choerodon.agile.app.service.IssueComponentService;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.choerodon.mybatis.pagehelper.domain.Sort;
+import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -14,8 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -82,15 +89,20 @@ public class IssueComponentController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据project id查询component")
-    @GetMapping
-    public ResponseEntity<List<ComponentForListDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
+    @CustomPageRequest
+    @PostMapping(value = "/query_all")
+    public ResponseEntity<Page<ComponentForListDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
                                                                      @PathVariable(name = "project_id") Long projectId,
                                                                      @ApiParam(value = "当前模块id", required = false)
                                                                      @RequestParam(required = false) Long componentId,
                                                                      @ApiParam(value = "是否包含测试")
-                                                                     @RequestParam(required = false, name = "no_issue_test", defaultValue = "false")
-                                                                             Boolean noIssueTest) {
-        return Optional.ofNullable(issueComponentService.queryComponentByProjectId(projectId, componentId, noIssueTest))
+                                                                     @RequestParam(required = false, name = "no_issue_test", defaultValue = "false") Boolean noIssueTest,
+                                                                     @ApiParam(value = "查询参数", required = false)
+                                                                     @RequestBody(required = false) Map<String, Object> searchParamMap,
+                                                                     @ApiParam(value = "分页信息", required = true)
+                                                                     @SortDefault(value = "component_id", direction = Sort.Direction.DESC)
+                                                                     @ApiIgnore PageRequest pageRequest) {
+        return Optional.ofNullable(issueComponentService.queryComponentByProjectId(projectId, componentId, noIssueTest,searchParamMap,pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.componentList.get"));
     }
