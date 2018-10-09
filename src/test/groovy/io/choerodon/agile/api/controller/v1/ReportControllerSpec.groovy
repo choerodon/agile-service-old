@@ -21,10 +21,12 @@ import io.choerodon.agile.api.dto.SprintUpdateDTO
 import io.choerodon.agile.api.dto.VelocitySprintDTO
 import io.choerodon.agile.api.dto.VersionIssueRelDTO
 import io.choerodon.agile.app.service.IssueService
+import io.choerodon.agile.app.service.NoticeService
 import io.choerodon.agile.app.service.ReportService
 import io.choerodon.agile.app.service.SprintService
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
+import io.choerodon.agile.infra.common.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.GroupDataChartDO
 import io.choerodon.agile.infra.dataobject.GroupDataChartListDO
 import io.choerodon.agile.infra.dataobject.IssueChangeDO
@@ -97,6 +99,14 @@ class ReportControllerSpec extends Specification {
     @Autowired
     private ReportMapper reportMapper
 
+    @Autowired
+    @Qualifier("mockNoticeService")
+    private NoticeService noticeService
+
+    @Autowired
+    @Qualifier("mockSiteMsgUtil")
+    private SiteMsgUtil siteMsgUtil
+
     @Shared
     def projectId = 1
 
@@ -141,6 +151,16 @@ class ReportControllerSpec extends Specification {
         MockitoAnnotations.initMocks(this)
         Mockito.when(redisTemplate.opsForValue()).thenReturn(valueOperations)
         Mockito.doNothing().when(valueOperations).set(anyString(), anyString())
+
+        and:
+        List<Long> users = new ArrayList<>();
+        users.add(1L)
+        noticeService.queryUserIdsByProjectId(*_) >> users
+
+        and:
+        siteMsgUtil.issueCreate(*_) >> null
+        siteMsgUtil.issueAssignee(*_) >> null
+        siteMsgUtil.issueSolve(*_) >> null
     }
 
     def 'createSprintToStart'() {
