@@ -1,9 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.BoardSprintDTO;
-import io.choerodon.agile.api.dto.IssueMoveDTO;
-import io.choerodon.agile.api.dto.UserSettingDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.BoardValidator;
 import io.choerodon.agile.app.service.NoticeService;
 import io.choerodon.agile.app.service.SprintService;
@@ -11,10 +9,10 @@ import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil;
+import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.api.dto.BoardDTO;
 import io.choerodon.agile.app.service.BoardColumnService;
 import io.choerodon.agile.app.service.BoardService;
 import io.choerodon.agile.infra.dataobject.*;
@@ -88,6 +86,12 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private SiteMsgUtil siteMsgUtil;
+
+    @Autowired
+    private ProjectInfoMapper projectInfoMapper;
+
+    @Autowired
+    private UserFeignClient userFeignClient;
 
 
     @Override
@@ -343,9 +347,17 @@ public class BoardServiceImpl implements BoardService {
         checkColumnContraint(projectId, issueMoveDTO, boardDO.getColumnConstraint(), issueDO.getStatusId());
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
         // 发送消息
-        if (issueStatusMapper.selectByPrimaryKey(issueE.getStatusId()).getCompleted()) {
-            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", issueE);
-            userIds.stream().forEach(id -> { siteMsgUtil.issueSolve(id, issueDO.getSummary()); });
+        if (issueStatusMapper.selectByPrimaryKey(issueE.getStatusId()).getCompleted() && issueDO.getAssigneeId() != null) {
+            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDO, IssueDTO.class));
+            ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+            projectInfoDO.setProjectId(projectId);
+            ProjectInfoDO pi = projectInfoMapper.selectOne(projectInfoDO);
+            String summary = pi.getProjectCode() + "-" + issueDO.getIssueNum() + "-" + issueDO.getSummary();
+            Long[] ids = new Long[1];
+            ids[0] = issueDO.getAssigneeId();
+            List<UserDO> userDOList = userFeignClient.listUsersByIds(ids).getBody();
+            String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName()+userDOList.get(0).getRealName() : "";
+            userIds.stream().forEach(id -> { siteMsgUtil.issueSolve(id, userName, summary); });
         }
         return ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);
     }

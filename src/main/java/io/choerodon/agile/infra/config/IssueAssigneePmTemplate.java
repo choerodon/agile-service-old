@@ -30,6 +30,6 @@ public class IssueAssigneePmTemplate implements PmTemplate {
 
     @Override
     public String content() {
-        return "<p>您被分配了问题：${summary}</p>";
+        return "<p>${userName} 被分配了问题：${summary}</p>";
     }
 }

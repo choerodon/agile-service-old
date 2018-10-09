@@ -31,6 +31,6 @@ public class IssueCreatePmTemplate implements PmTemplate {
 
     @Override
     public String content() {
-        return "<p>问题创建：${summary}</p>";
+        return "<p>${userName} 创建了问题：${summary}</p>";
     }
 }

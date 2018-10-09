@@ -31,6 +31,6 @@ public class IssueSolvePmTemplate implements PmTemplate {
 
     @Override
     public String content() {
-        return "<p>问题解决：${summary}</p>";
+        return "<p>${userName} 解决了问题：${summary}</p>";
     }
 }
