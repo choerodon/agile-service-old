@@ -4,15 +4,16 @@
 
 	<select id="selectChangeMessageByProjectId" resultType="io.choerodon.agile.infra.dataobject.MessageDO">
 		select
-		  id,
-		  project_id,
-		  event,
-		  notice_type,
-		  notice_name,
-		  is_enable as enable,
-	 	  object_version_number
-		from agile_message_detail
-		where project_id = #{projectId}
+		  amd.id,
+		  amd.project_id,
+		  amd.event,
+		  amd.notice_type,
+		  amd.notice_name,
+		  amd.is_enable as enable,
+		  amd.user,
+	 	  amd.object_version_number
+		from agile_message_detail amd
+		where amd.project_id = #{projectId}
 	</select>
 
 	<select id="selectChangeMessageByDetail" resultType="io.choerodon.agile.infra.dataobject.MessageDO">
@@ -34,15 +35,16 @@
 
 	<select id="selectByProjectIdAndEvent" resultType="io.choerodon.agile.infra.dataobject.MessageDO">
 		select
-		  id,
-		  project_id,
-		  event,
-		  notice_type,
-		  notice_name,
-		  is_enable as enable,
-	 	  object_version_number from agile_message_detail
-		where project_id = #{projectId}
-		and event = #{event}
+		  amd.id,
+		  amd.project_id,
+		  amd.event,
+		  amd.notice_type,
+		  amd.notice_name,
+		  amd.is_enable as enable,
+		  amd.user,
+	 	  amd.object_version_number from agile_message_detail amd
+		where amd.project_id = #{projectId}
+		and amd.event = #{event}
 	</select>
 
 </mapper>
