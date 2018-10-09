@@ -5,10 +5,12 @@ import io.choerodon.agile.api.dto.BoardSprintDTO;
 import io.choerodon.agile.api.dto.IssueMoveDTO;
 import io.choerodon.agile.api.dto.UserSettingDTO;
 import io.choerodon.agile.api.validator.BoardValidator;
+import io.choerodon.agile.app.service.NoticeService;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.infra.common.utils.DateUtil;
+import io.choerodon.agile.infra.common.utils.SiteMsgUtil;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -77,6 +79,15 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private UserSettingRepository userSettingRepository;
+
+    @Autowired
+    private IssueStatusMapper issueStatusMapper;
+
+    @Autowired
+    private NoticeService noticeService;
+
+    @Autowired
+    private SiteMsgUtil siteMsgUtil;
 
 
     @Override
@@ -331,6 +342,11 @@ public class BoardServiceImpl implements BoardService {
         BoardDO boardDO = boardMapper.selectByPrimaryKey(boardId);
         checkColumnContraint(projectId, issueMoveDTO, boardDO.getColumnConstraint(), issueDO.getStatusId());
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
+        // 发送消息
+        if (issueStatusMapper.selectByPrimaryKey(issueE.getStatusId()).getCompleted()) {
+            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", issueE);
+            userIds.stream().forEach(id -> { siteMsgUtil.issueSolve(id, issueDO.getSummary()); });
+        }
         return ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);
     }
 

@@ -13,8 +13,10 @@ import io.choerodon.agile.api.dto.SprintSearchDTO
 import io.choerodon.agile.api.dto.SprintUpdateDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
+import io.choerodon.agile.app.service.NoticeService
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
+import io.choerodon.agile.infra.common.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.SprintDO
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
@@ -90,6 +92,14 @@ class SprintControllerSpec extends Specification {
     @Qualifier("mockEventProducerTemplate")
     private EventProducerTemplate eventProducerTemplate
 
+    @Autowired
+    @Qualifier("mockNoticeService")
+    private NoticeService noticeService
+
+    @Autowired
+    @Qualifier("mockSiteMsgUtil")
+    private SiteMsgUtil siteMsgUtil
+
     @Shared
     def projectId = 1
 
@@ -109,6 +119,16 @@ class SprintControllerSpec extends Specification {
 
         and: 'mockSagaClient'
         sagaClient.startSaga(_, _) >> null
+
+        and:
+        List<Long> users = new ArrayList<>();
+        users.add(1L)
+        noticeService.queryUserIdsByProjectId(*_) >> users
+
+        and:
+        siteMsgUtil.issueCreate(*_) >> null
+        siteMsgUtil.issueAssignee(*_) >> null
+        siteMsgUtil.issueSolve(*_) >> null
 
     }
 

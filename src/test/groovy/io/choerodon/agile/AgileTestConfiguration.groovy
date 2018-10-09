@@ -5,12 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueAttachmentService
 import io.choerodon.agile.app.service.IssueService
+import io.choerodon.agile.app.service.NoticeService
 import io.choerodon.agile.app.service.ProductVersionService
 import io.choerodon.agile.app.service.impl.IssueAttachmentServiceImpl
 import io.choerodon.agile.app.service.impl.IssueServiceImpl
 import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl
 import io.choerodon.agile.domain.agile.event.ProjectEvent
 import io.choerodon.agile.domain.agile.repository.UserRepository
+import io.choerodon.agile.infra.common.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.feign.FileFeignClient
 import io.choerodon.agile.infra.mapper.*
@@ -121,6 +123,18 @@ class AgileTestConfiguration {
     @Primary
     UserRepository userRepository() {
         detachedMockFactory.Mock(UserRepository)
+    }
+
+    @Bean("mockNoticeService")
+    @Primary
+    NoticeService noticeService() {
+        detachedMockFactory.Mock(NoticeService)
+    }
+
+    @Bean("mockSiteMsgUtil")
+    @Primary
+    SiteMsgUtil siteMsgUtil() {
+        detachedMockFactory.Mock(SiteMsgUtil)
     }
 
     @Bean("issueService")
