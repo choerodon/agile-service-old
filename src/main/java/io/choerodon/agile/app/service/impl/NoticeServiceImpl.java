@@ -1,12 +1,10 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.MessageDTO;
-import io.choerodon.agile.api.dto.RoleAssignmentSearchDTO;
-import io.choerodon.agile.api.dto.RoleDTO;
-import io.choerodon.agile.api.dto.UserDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.NoticeService;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.infra.dataobject.IssueDO;
+import io.choerodon.agile.infra.dataobject.IssueDetailDO;
 import io.choerodon.agile.infra.dataobject.MessageDO;
 import io.choerodon.agile.infra.dataobject.MessageDetailDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
@@ -84,7 +82,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public List<Long> queryUserIdsByProjectId(Long projectId, String event, IssueE issueE) {
+    public List<Long> queryUserIdsByProjectId(Long projectId, String event, IssueDTO issueDTO) {
         List<MessageDO> originMessageList = noticeMapper.selectByEvent(event);
         List<MessageDO> changeMessageList = noticeMapper.selectByProjectIdAndEvent(projectId, event);
         List<String> res = new ArrayList<>();
@@ -106,12 +104,12 @@ public class NoticeServiceImpl implements NoticeService {
             }
         }
         List<Long> result = new ArrayList<>();
-        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueE.getIssueId());
-        if (res.contains("reporter") && !result.contains(issueDO.getReporterId())) {
-            result.add(issueDO.getReporterId());
+//        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueDetailDO.getIssueId());
+        if (res.contains("reporter") && !result.contains(issueDTO.getReporterId())) {
+            result.add(issueDTO.getReporterId());
         }
-        if (res.contains("assigneer") && issueE.getAssigneeId() != null && !result.contains(issueDO.getAssigneeId())) {
-            result.add(issueDO.getAssigneeId());
+        if (res.contains("assigneer") && issueDTO.getAssigneeId() != null && !result.contains(issueDTO.getAssigneeId())) {
+            result.add(issueDTO.getAssigneeId());
         }
         if (res.contains("project_owner")) {
             RoleAssignmentSearchDTO roleAssignmentSearchDTO = new RoleAssignmentSearchDTO();
