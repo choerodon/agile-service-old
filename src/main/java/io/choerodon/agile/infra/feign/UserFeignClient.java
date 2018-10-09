@@ -1,16 +1,22 @@
 package io.choerodon.agile.infra.feign;
 
 import io.choerodon.agile.api.dto.ProjectDTO;
+import io.choerodon.agile.api.dto.RoleAssignmentSearchDTO;
+import io.choerodon.agile.api.dto.RoleDTO;
 import io.choerodon.agile.api.dto.UserDTO;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback;
 import io.choerodon.core.domain.Page;
+import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.choerodon.mybatis.pagehelper.domain.Sort;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -55,5 +61,19 @@ public interface UserFeignClient {
     @GetMapping(value = "/v1/projects/{id}/users")
     ResponseEntity<Page<UserDTO>> list(@PathVariable("id") Long id, @RequestParam("pageRequest") PageRequest pageRequest,
                                        @RequestParam("param") String param);
+
+    @PostMapping(value = "/v1/projects/{project_id}/role_members/users/count")
+    ResponseEntity<List<RoleDTO>> listRolesWithUserCountOnProjectLevel(
+            @PathVariable(name = "project_id") Long sourceId,
+            @RequestBody(required = false) @Valid RoleAssignmentSearchDTO roleAssignmentSearchDTO);
+
+    @PostMapping(value = "/v1/projects/{project_id}/role_members/users")
+    ResponseEntity<Page<UserDTO>> pagingQueryUsersByRoleIdOnProjectLevel(
+            @RequestParam(name = "page") int page,
+            @RequestParam(name = "size") int size,
+            @RequestParam(name = "role_id") Long roleId,
+            @PathVariable(name = "project_id") Long sourceId,
+            @RequestBody(required = false) @Valid RoleAssignmentSearchDTO roleAssignmentSearchDTO);
+
 }
 

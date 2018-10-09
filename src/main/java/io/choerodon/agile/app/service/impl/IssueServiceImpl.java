@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import io.choerodon.agile.infra.common.utils.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,6 @@ import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
-import io.choerodon.agile.infra.common.utils.ExcelUtil;
-import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil;
-import io.choerodon.agile.infra.common.utils.RankUtil;
-import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.asgard.saga.annotation.Saga;
@@ -141,6 +138,12 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private IssueMapper issueMapper;
 
+    @Autowired
+    private SiteMsgUtil siteMsgUtil;
+
+    @Autowired
+    private NoticeService noticeService;
+
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
     private static final String STATUS_CODE_DONE = "done";
@@ -214,6 +217,10 @@ public class IssueServiceImpl implements IssueService {
         handleInitIssue(issueE, issueStatusDO.getId(), projectInfoE);
         //创建issue
         Long issueId = issueRepository.create(issueE).getIssueId();
+        // 发送消息
+        issueE.setIssueId(issueId);
+        List<Long> userIds = noticeService.queryUserIdsByProjectId(issueE.getProjectId(), "issue_created", issueE);
+        userIds.stream().forEach(id -> { siteMsgUtil.issueCreate(id, issueE.getSummary()); });
         //处理冲刺
         handleCreateSprintRel(issueE.getSprintId(), issueE.getProjectId(), issueId);
         handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
@@ -338,6 +345,11 @@ public class IssueServiceImpl implements IssueService {
             }
         }
         issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
+        if (fieldList.contains("assigneeId")) {
+            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_assigneed", issueE);
+            String summary = issueMapper.selectByPrimaryKey(issueE.getIssueId()).getSummary();
+            userIds.stream().forEach(id -> { siteMsgUtil.issueAssignee(id, summary); });
+        }
     }
 
 

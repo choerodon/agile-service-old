@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.NoticeMapper">
+
+	<select id="selectChangeMessageByProjectId" resultType="io.choerodon.agile.infra.dataobject.MessageDO">
+		select
+		  id,
+		  project_id,
+		  event,
+		  notice_type,
+		  notice_name,
+		  is_enable as enable,
+	 	  object_version_number
+		from agile_message_detail
+		where project_id = #{projectId}
+	</select>
+
+	<select id="selectChangeMessageByDetail" resultType="io.choerodon.agile.infra.dataobject.MessageDO">
+		select * from agile_message_detail
+		where project_id = #{projectId}
+		and event = #{event}
+		and notice_type = #{noticeType}
+	</select>
+
+	<select id="selectByEvent" resultType="io.choerodon.agile.infra.dataobject.MessageDO">
+		select
+		  event,
+		  notice_type,
+		  notice_name,
+		  is_enable as enable
+		from agile_message
+		where event = #{event}
+	</select>
+
+	<select id="selectByProjectIdAndEvent" resultType="io.choerodon.agile.infra.dataobject.MessageDO">
+		select
+		  id,
+		  project_id,
+		  event,
+		  notice_type,
+		  notice_name,
+		  is_enable as enable,
+	 	  object_version_number from agile_message_detail
+		where project_id = #{projectId}
+		and event = #{event}
+	</select>
+
+</mapper>

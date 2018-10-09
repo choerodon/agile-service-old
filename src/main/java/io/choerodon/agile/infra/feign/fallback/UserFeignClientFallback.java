@@ -1,6 +1,8 @@
 package io.choerodon.agile.infra.feign.fallback;
 
 import io.choerodon.agile.api.dto.ProjectDTO;
+import io.choerodon.agile.api.dto.RoleAssignmentSearchDTO;
+import io.choerodon.agile.api.dto.RoleDTO;
 import io.choerodon.agile.api.dto.UserDTO;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
@@ -42,4 +44,13 @@ public class UserFeignClientFallback implements UserFeignClient {
         throw new CommonException(QUERY_ERROR);
     }
 
+    @Override
+    public ResponseEntity<List<RoleDTO>> listRolesWithUserCountOnProjectLevel(Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO) {
+        throw new CommonException(QUERY_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<Page<UserDTO>> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO) {
+        return null;
+    }
 }
