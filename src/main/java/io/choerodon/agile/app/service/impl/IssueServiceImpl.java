@@ -221,16 +221,12 @@ public class IssueServiceImpl implements IssueService {
         handleInitIssue(issueE, issueStatusDO.getId(), projectInfoE);
         //创建issue
         Long issueId = issueRepository.create(issueE).getIssueId();
-//        // 发送消息
-//        issueE.setIssueId(issueId);
-//        List<Long> userIds = noticeService.queryUserIdsByProjectId(issueE.getProjectId(), "issue_created", issueE);
-//        userIds.stream().forEach(id -> { siteMsgUtil.issueCreate(id, issueE.getSummary()); });
         //处理冲刺
         handleCreateSprintRel(issueE.getSprintId(), issueE.getProjectId(), issueId);
         handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
         handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId, projectInfoE);
         handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
-        return queryIssue(issueCreateDTO.getProjectId(), issueId);
+        return queryIssueCreate(issueCreateDTO.getProjectId(), issueId);
     }
 
     private void handleInitIssue(IssueE issueE, Long statusId, ProjectInfoE projectInfoE) {
@@ -272,8 +268,7 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    @Override
-    public IssueDTO queryIssue(Long projectId, Long issueId) {
+    public IssueDTO queryIssueCreate(Long projectId, Long issueId) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
@@ -285,6 +280,15 @@ public class IssueServiceImpl implements IssueService {
         String userName = result.getReporterName();
         userIds.stream().forEach(id -> { siteMsgUtil.issueCreate(id, userName, summary); });
         return result;
+    }
+
+    @Override
+    public IssueDTO queryIssue(Long projectId, Long issueId) {
+        IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
+        if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
+            issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
+        }
+        return issueAssembler.issueDetailDoToDto(issue);
     }
 
     public IssueDTO queryIssueByUpdate(Long projectId, Long issueId, List<String> fieldList) {
