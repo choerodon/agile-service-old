@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional(rollbackFor = Exception.class)
-@ConditionalOnProperty(prefix = "workCalendarHoliday", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "workh", name = "enabled", havingValue = "true")
 public class WorkCalendarHolidayRefJobs {
 
     private WorkCalendarHolidayProperties workCalendarHolidayProperties;
@@ -29,7 +29,7 @@ public class WorkCalendarHolidayRefJobs {
         this.workCalendarHolidayProperties = workCalendarHolidayProperties;
     }
 
-    @Scheduled(cron = "${workCalendarHoliday.cron}")
+    @Scheduled(cron = "${workh.cron}")
     public void updateWorkCalendarHolidayRef() {
         WorkCalendarService workCalendarService = workCalendarFactory.getWorkCalendarHoliday(workCalendarHolidayProperties.getType());
         if (workCalendarService != null) {

@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author dinghuang123@gmail.com
  * @since 2018/10/9
  */
-@ConfigurationProperties("workCalendarHoliday")
+@ConfigurationProperties("workh")
 public class WorkCalendarHolidayProperties {
 
     private Boolean enabled = false;
@@ -15,7 +15,7 @@ public class WorkCalendarHolidayProperties {
 
     private String apiKey = "";
 
-    private String corn = "";
+    private String cron = "";
 
     public String getType() {
         return type;
@@ -41,11 +41,11 @@ public class WorkCalendarHolidayProperties {
         this.enabled = enabled;
     }
 
-    public String getCorn() {
-        return corn;
+    public String getCron() {
+        return cron;
     }
 
-    public void setCorn(String corn) {
-        this.corn = corn;
+    public void setCron(String cron) {
+        this.cron = cron;
     }
 }
