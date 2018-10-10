@@ -1,10 +1,12 @@
 package io.choerodon.agile.infra.mapper;
 
+import io.choerodon.agile.infra.dataobject.ComponentForListDO;
 import io.choerodon.mybatis.common.BaseMapper;
 import io.choerodon.agile.infra.dataobject.IssueComponentDO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
@@ -30,8 +32,19 @@ public interface IssueComponentMapper extends BaseMapper<IssueComponentDO> {
      */
     Long queryComponentIdByNameAndProjectId(@Param("name") String name, @Param("projectId") Long projectId);
 
-    List selectComponentWithIssueNum(@Param("projectId") Long projectId, @Param("componentId") Long componentId,
-                                     @Param("noIssueTest") Boolean noIssueTest);
 
     List queryIssuesByComponentId(@Param("projectId") Long projectId, @Param("componentId") Long componentId);
+
+    /**
+     * 根据参数查询模块id列表
+     *
+     * @param projectId          projectId
+     * @param noIssueTest        noIssueTest
+     * @param componentId        componentId
+     * @param searchArgs         searchArgs
+     * @param advancedSearchArgs advancedSearchArgs
+     * @return Long
+     */
+    List<ComponentForListDO> queryComponentByOption(@Param("projectId") Long projectId, @Param("noIssueTest") Boolean noIssueTest,
+                                                    @Param("componentId") Long componentId, @Param("searchArgs") Map<String, Object> searchArgs, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
 }

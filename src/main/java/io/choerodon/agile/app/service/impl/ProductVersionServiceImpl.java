@@ -6,7 +6,6 @@ import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.domain.agile.converter.ProductVersionConverter;
 import io.choerodon.agile.domain.agile.event.VersionPayload;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
-import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.IssueCountDO;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
 import io.choerodon.asgard.saga.annotation.Saga;
@@ -23,8 +22,6 @@ import io.choerodon.agile.app.service.ProductVersionService;
 import io.choerodon.agile.domain.agile.entity.ProductVersionE;
 import io.choerodon.agile.domain.agile.repository.ProductVersionRepository;
 import io.choerodon.agile.domain.agile.repository.VersionIssueRelRepository;
-import io.choerodon.agile.infra.common.utils.SearchUtil;
-import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;
 import org.springframework.beans.BeanUtils;
@@ -65,11 +62,9 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private ProductVersionMapper productVersionMapper;
     @Autowired
     private ProductVersionConverter productVersionConverter;
-    @Autowired
-    private RedisUtil redisUtil;
 
     private static final String SEARCH_ARGS = "searchArgs";
-    public static final String ADVANCE_SEARCH_ARGS = "advancedSearchArgs";
+    private static final String ADVANCE_SEARCH_ARGS = "advancedSearchArgs";
     private static final String VERSION_PLANNING = "version_planning";
     private static final String NOT_EQUAL_ERROR = "error.projectId.notEqual";
     private static final String NOT_FOUND = "error.version.notFound";
@@ -172,18 +167,18 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Page<ProductVersionPageDTO> queryByProjectId(Long projectId, PageRequest pageRequest, Map<String, Object> searchParamMap) {
         //过滤查询和排序
-        Map<String, Object> result = SearchUtil.setParam(searchParamMap);
         Page<Long> versionIds = PageHelper.doPageAndSort(pageRequest, () ->
-                productVersionMapper.queryVersionIdsByProjectId(projectId, StringUtil.cast(result.get(SEARCH_ARGS)), StringUtil.cast(result.get(ADVANCE_SEARCH_ARGS))));
+                productVersionMapper.queryVersionIdsByProjectId(projectId, (Map<String, Object>) searchParamMap.get(SEARCH_ARGS), (Map<String, Object>) searchParamMap.get(ADVANCE_SEARCH_ARGS)));
         Page<ProductVersionPageDTO> versionPage = new Page<>();
         versionPage.setNumber(versionIds.getNumber());
         versionPage.setNumberOfElements(versionIds.getNumberOfElements());
         versionPage.setSize(versionIds.getSize());
         versionPage.setTotalElements(versionIds.getTotalElements());
         versionPage.setTotalPages(versionIds.getTotalPages());
-        if ((versionIds.getContent() != null) && !versionIds.isEmpty()) {
+        if ((versionIds.getContent() != null) && !versionIds.getContent().isEmpty()) {
             versionPage.setContent(productVersionPageAssembler.toTargetList(productVersionMapper.queryVersionByIds(projectId, versionIds.getContent()), ProductVersionPageDTO.class));
         }
         return versionPage;

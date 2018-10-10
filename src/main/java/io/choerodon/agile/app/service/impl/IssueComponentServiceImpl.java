@@ -10,6 +10,8 @@ import io.choerodon.agile.infra.dataobject.ComponentIssueRelDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.mapper.ComponentIssueRelMapper;
 import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.core.convertor.ConvertPageHelper;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.dto.IssueComponentDTO;
 import io.choerodon.agile.app.service.IssueComponentService;
@@ -17,6 +19,8 @@ import io.choerodon.agile.domain.agile.entity.IssueComponentE;
 import io.choerodon.agile.domain.agile.repository.IssueComponentRepository;
 import io.choerodon.agile.infra.dataobject.IssueComponentDO;
 import io.choerodon.agile.infra.mapper.IssueComponentMapper;
+import io.choerodon.mybatis.pagehelper.PageHelper;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +52,9 @@ public class IssueComponentServiceImpl implements IssueComponentService {
 
     @Autowired
     private UserRepository userRepository;
+
+    private static final String SEARCH_ARGS = "searchArgs";
+    private static final String ADVANCE_SEARCH_ARGS = "advancedSearchArgs";
 
     @Override
     public IssueComponentDTO create(Long projectId, IssueComponentDTO issueComponentDTO) {
@@ -102,19 +109,23 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     }
 
     @Override
-    public List<ComponentForListDTO> queryComponentByProjectId(Long projectId, Long componentId, Boolean noIssueTest) {
-        List<ComponentForListDTO> componentForListDTOList = ConvertHelper.convertList(
-                issueComponentMapper.selectComponentWithIssueNum(projectId, componentId, noIssueTest), ComponentForListDTO.class);
-        List<Long> assigneeIds = componentForListDTOList.stream().filter(componentForListDTO -> componentForListDTO.getManagerId() != null
-                && !Objects.equals(componentForListDTO.getManagerId(), 0L)).map(ComponentForListDTO::getManagerId).distinct().collect(Collectors.toList());
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
-        componentForListDTOList.forEach(componentForListDTO -> {
-            String assigneeName = usersMap.get(componentForListDTO.getManagerId()) != null ? usersMap.get(componentForListDTO.getManagerId()).getName() : null;
-            String imageUrl = assigneeName != null ? usersMap.get(componentForListDTO.getManagerId()).getImageUrl() : null;
-            componentForListDTO.setManagerName(assigneeName);
-            componentForListDTO.setImageUrl(imageUrl);
-        });
-        return componentForListDTOList;
+    @SuppressWarnings("unchecked")
+    public Page<ComponentForListDTO> queryComponentByProjectId(Long projectId, Long componentId, Boolean noIssueTest, Map<String, Object> searchParamMap, PageRequest pageRequest) {
+        Page<ComponentForListDTO> componentForListDTOPage = ConvertPageHelper.convertPage(PageHelper.doPageAndSort(pageRequest, () ->
+                issueComponentMapper.queryComponentByOption(projectId, noIssueTest, componentId, (Map<String, Object>) searchParamMap.get(SEARCH_ARGS),
+                        (Map<String, Object>) searchParamMap.get(ADVANCE_SEARCH_ARGS))), ComponentForListDTO.class);
+        if ((componentForListDTOPage.getContent() != null) && !componentForListDTOPage.getContent().isEmpty()) {
+            List<Long> assigneeIds = componentForListDTOPage.getContent().stream().filter(componentForListDTO -> componentForListDTO.getManagerId() != null
+                    && !Objects.equals(componentForListDTO.getManagerId(), 0L)).map(ComponentForListDTO::getManagerId).distinct().collect(Collectors.toList());
+            Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+            componentForListDTOPage.getContent().forEach(componentForListDTO -> {
+                String assigneeName = usersMap.get(componentForListDTO.getManagerId()) != null ? usersMap.get(componentForListDTO.getManagerId()).getName() : null;
+                String imageUrl = assigneeName != null ? usersMap.get(componentForListDTO.getManagerId()).getImageUrl() : null;
+                componentForListDTO.setManagerName(assigneeName);
+                componentForListDTO.setImageUrl(imageUrl);
+            });
+        }
+        return componentForListDTOPage;
     }
 
     @Override

@@ -20,7 +20,7 @@
             AND aic.name = #{name}
     </select>
 
-    <select id="selectComponentWithIssueNum" resultType="io.choerodon.agile.infra.dataobject.ComponentForListDO">
+    <select id="queryComponentByOption" resultType="io.choerodon.agile.infra.dataobject.ComponentForListDO">
         select
         aic.component_id,
         aic.project_id,
@@ -40,11 +40,10 @@
         GROUP BY
         acir.component_id
         )aa on aic.component_id = aa.component_id
-        where project_id = #{projectId}
+        where aic.project_id = #{projectId}
         <if test="componentId != null">
-            AND  aic.component_id != #{componentId}
+            AND aic.component_id != #{componentId}
         </if>
-        order by aic.component_id desc
     </select>
 
     <select id="queryIssuesByComponentId" resultType="io.choerodon.agile.infra.dataobject.IssueDO">

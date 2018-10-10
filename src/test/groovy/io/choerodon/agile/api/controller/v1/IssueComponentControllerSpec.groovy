@@ -9,6 +9,7 @@ import io.choerodon.agile.infra.dataobject.IssueComponentDO
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.IssueComponentMapper
+import io.choerodon.core.domain.Page
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
@@ -145,8 +146,13 @@ class IssueComponentControllerSpec extends Specification {
 
 
     def 'listByProjectId'() {
+        given:
+        Map<String, Object> searchParamMap = new HashMap<>()
+        searchParamMap.put("searchArgs", new HashMap<>())
+        searchParamMap.put("advancedSearchArgs", new HashMap<>())
+
         when: '根据project id查询component'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/component', List, projectIds, componentId, noIssueTest)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/component/query_all', searchParamMap, Page, projectIds)
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()

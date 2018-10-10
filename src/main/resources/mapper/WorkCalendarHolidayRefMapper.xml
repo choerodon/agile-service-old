@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.choerodon.agile.infra.mapper.WorkCalendarHolidayRefMapper">
+
+    <select id="queryLastYear" resultType="java.lang.Integer">
+        select year from agile_work_calendar_holiday_ref order by year desc limit 1
+    </select>
+
+    <select id="queryWorkCalendarHolidayRelByYear"
+            resultType="io.choerodon.agile.infra.dataobject.WorkCalendarHolidayRefDO">
+        select * from agile_work_calendar_holiday_ref where year = #{year} order by calendar_id asc
+    </select>
+
+</mapper>
