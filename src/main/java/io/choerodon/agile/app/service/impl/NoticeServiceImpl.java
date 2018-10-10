@@ -2,19 +2,14 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.NoticeService;
-import io.choerodon.agile.domain.agile.entity.IssueE;
-import io.choerodon.agile.infra.dataobject.IssueDO;
-import io.choerodon.agile.infra.dataobject.IssueDetailDO;
 import io.choerodon.agile.infra.dataobject.MessageDO;
 import io.choerodon.agile.infra.dataobject.MessageDetailDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
-import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.NoticeDetailMapper;
 import io.choerodon.agile.infra.mapper.NoticeMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,9 +24,6 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Autowired
     private NoticeDetailMapper noticeDetailMapper;
-
-    @Autowired
-    private IssueMapper issueMapper;
 
     @Autowired
     private UserFeignClient userFeignClient;
@@ -94,7 +86,7 @@ public class NoticeServiceImpl implements NoticeService {
                     flag = 1;
                     if (changeMessageDO.getEnable()) {
                         res.add(changeMessageDO.getNoticeType());
-                        users = changeMessageDO.getNoticeType().equals("users") ? changeMessageDO.getUser().split(",") : null;
+                        users = "users".equals(changeMessageDO.getNoticeType()) && changeMessageDO.getUser() != null && !"null".equals(changeMessageDO.getUser()) ? changeMessageDO.getUser().split(",") : null;
                     }
                     break;
                 }
@@ -104,7 +96,6 @@ public class NoticeServiceImpl implements NoticeService {
             }
         }
         List<Long> result = new ArrayList<>();
-//        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueDetailDO.getIssueId());
         if (res.contains("reporter") && !result.contains(issueDTO.getReporterId())) {
             result.add(issueDTO.getReporterId());
         }
@@ -116,7 +107,7 @@ public class NoticeServiceImpl implements NoticeService {
             Long roleId = null;
             List<RoleDTO> roleDTOS = userFeignClient.listRolesWithUserCountOnProjectLevel(projectId, roleAssignmentSearchDTO).getBody();
             for (RoleDTO roleDTO : roleDTOS) {
-                if (roleDTO.getCode().equals("role/project/default/project-owner")) {
+                if ("role/project/default/project-owner".equals(roleDTO.getCode())) {
                     roleId = roleDTO.getId();
                     break;
                 }

@@ -13,8 +13,6 @@ public class MessageDTO {
 
     private Boolean enable;
 
-    private String projectRole;
-
     private String user;
 
     private Long objectVersionNumber;
@@ -75,11 +73,4 @@ public class MessageDTO {
         return user;
     }
 
-    public void setProjectRole(String projectRole) {
-        this.projectRole = projectRole;
-    }
-
-    public String getProjectRole() {
-        return projectRole;
-    }
 }
