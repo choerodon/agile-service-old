@@ -445,7 +445,7 @@ public class DataLogAspect {
         }
         if (issueCommentE != null) {
             IssueCommentDO issueCommentDO = issueCommentMapper.selectByPrimaryKey(issueCommentE.getCommentId());
-            createDataLog(issueCommentDO.getProjectId(), issueCommentE.getIssueId(), FIELD_COMMENT,
+            createDataLog(issueCommentDO.getProjectId(), issueCommentDO.getIssueId(), FIELD_COMMENT,
                     issueCommentDO.getCommentText(), issueCommentE.getCommentText(), issueCommentE.getCommentId().toString(),
                     issueCommentE.getCommentId().toString());
 
