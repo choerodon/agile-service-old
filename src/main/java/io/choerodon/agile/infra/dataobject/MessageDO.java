@@ -8,6 +8,10 @@ import javax.persistence.Column;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+/**
+ * Created by HuangFuqiang@choerodon.io on 2018/10/9.
+ * Email: fuqianghuang01@gmail.com
+ */
 @ModifyAudit
 @VersionAudit
 @Table(name = "agile_message")

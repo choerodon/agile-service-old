@@ -2,11 +2,13 @@ package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.IssueDTO;
 import io.choerodon.agile.api.dto.MessageDTO;
-import io.choerodon.agile.domain.agile.entity.IssueE;
-import io.choerodon.agile.infra.dataobject.IssueDetailDO;
 
 import java.util.List;
 
+/**
+ * Created by HuangFuqiang@choerodon.io on 2018/10/9.
+ * Email: fuqianghuang01@gmail.com
+ */
 public interface NoticeService {
 
     List<MessageDTO> queryByProjectId(Long projectId);

@@ -1,7 +1,10 @@
 package io.choerodon.agile.api.dto;
 
 
-
+/**
+ * Created by HuangFuqiang@choerodon.io on 2018/10/9.
+ * Email: fuqianghuang01@gmail.com
+ */
 public class RoleDTO {
 
     private Long id;

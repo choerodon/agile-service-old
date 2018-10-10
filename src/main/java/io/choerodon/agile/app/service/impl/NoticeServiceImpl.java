@@ -16,6 +16,10 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Created by HuangFuqiang@choerodon.io on 2018/10/9.
+ * Email: fuqianghuang01@gmail.com
+ */
 @Service
 public class NoticeServiceImpl implements NoticeService {
 

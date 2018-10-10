@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class IssueSolvePmTemplate implements PmTemplate {
+
     @Override
     public String businessTypeCode() {
         return "issueSolve";
