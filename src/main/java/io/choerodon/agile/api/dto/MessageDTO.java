@@ -1,5 +1,8 @@
 package io.choerodon.agile.api.dto;
 
+import javax.persistence.Transient;
+import java.util.List;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/10/9.
  * Email: fuqianghuang01@gmail.com
@@ -19,6 +22,9 @@ public class MessageDTO {
     private String user;
 
     private Long objectVersionNumber;
+
+    @Transient
+    private List<IdWithNameDTO> idWithNameDTOList;
 
     public String getEvent() {
         return event;
@@ -76,4 +82,11 @@ public class MessageDTO {
         return user;
     }
 
+    public void setIdWithNameDTOList(List<IdWithNameDTO> idWithNameDTOList) {
+        this.idWithNameDTOList = idWithNameDTOList;
+    }
+
+    public List<IdWithNameDTO> getIdWithNameDTOList() {
+        return idWithNameDTOList;
+    }
 }
