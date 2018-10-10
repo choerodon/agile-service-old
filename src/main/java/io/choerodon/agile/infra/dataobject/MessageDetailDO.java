@@ -6,6 +6,10 @@ import io.choerodon.mybatis.domain.AuditDomain;
 
 import javax.persistence.*;
 
+/**
+ * Created by HuangFuqiang@choerodon.io on 2018/10/9.
+ * Email: fuqianghuang01@gmail.com
+ */
 @ModifyAudit
 @VersionAudit
 @Table(name = "agile_message_detail")

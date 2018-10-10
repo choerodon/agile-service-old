@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class IssueAssigneePmTemplate implements PmTemplate {
+
     @Override
     public String businessTypeCode() {
         return "issueAssignee";
@@ -20,12 +21,12 @@ public class IssueAssigneePmTemplate implements PmTemplate {
 
     @Override
     public String name() {
-        return "问题被分配";
+        return "问题分配";
     }
 
     @Override
     public String title() {
-        return "问题被分配";
+        return "问题分配";
     }
 
     @Override
