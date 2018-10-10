@@ -73,35 +73,19 @@ public class NoticeServiceImpl implements NoticeService {
         }
     }
 
-    @Override
-    public List<Long> queryUserIdsByProjectId(Long projectId, String event, IssueDTO issueDTO) {
-        List<MessageDO> originMessageList = noticeMapper.selectByEvent(event);
-        List<MessageDO> changeMessageList = noticeMapper.selectByProjectIdAndEvent(projectId, event);
-        List<String> res = new ArrayList<>();
-        String[] users = null;
-        for (MessageDO messageDO : originMessageList) {
-            int flag = 0;
-            for (MessageDO changeMessageDO : changeMessageList) {
-                if (messageDO.getEvent().equals(changeMessageDO.getEvent()) && messageDO.getNoticeType().equals(changeMessageDO.getNoticeType())) {
-                    flag = 1;
-                    if (changeMessageDO.getEnable()) {
-                        res.add(changeMessageDO.getNoticeType());
-                        users = "users".equals(changeMessageDO.getNoticeType()) && changeMessageDO.getUser() != null && !"null".equals(changeMessageDO.getUser()) ? changeMessageDO.getUser().split(",") : null;
-                    }
-                    break;
-                }
-            }
-            if (flag == 0 && messageDO.getEnable()) {
-                res.add(messageDO.getNoticeType());
-            }
-        }
-        List<Long> result = new ArrayList<>();
+    private void addUsersByReporter(List<String> res, List<Long> result, IssueDTO issueDTO) {
         if (res.contains("reporter") && !result.contains(issueDTO.getReporterId())) {
             result.add(issueDTO.getReporterId());
         }
+    }
+
+    private void addUsersByAssigneer(List<String> res, List<Long> result, IssueDTO issueDTO) {
         if (res.contains("assigneer") && issueDTO.getAssigneeId() != null && !result.contains(issueDTO.getAssigneeId())) {
             result.add(issueDTO.getAssigneeId());
         }
+    }
+
+    private void addUsersByProjectOwner(Long projectId, List<String> res, List<Long> result) {
         if (res.contains("project_owner")) {
             RoleAssignmentSearchDTO roleAssignmentSearchDTO = new RoleAssignmentSearchDTO();
             Long roleId = null;
@@ -121,13 +105,51 @@ public class NoticeServiceImpl implements NoticeService {
                 }
             }
         }
-        if (res.contains("users")) {
+    }
+
+    private void addUsersByUsers (List<String> res, List<Long> result, String[] users) {
+        if (res.contains("users") && users != null && users.length != 0) {
             for (String str : users) {
                 if (!result.contains(Long.parseLong(str))) {
                     result.add(Long.parseLong(str));
                 }
             }
         }
+    }
+
+    private String[] judgeUserType(MessageDO changeMessageDO, List<String> res) {
+        String[] users = null;
+        if (changeMessageDO.getEnable()) {
+            res.add(changeMessageDO.getNoticeType());
+            users = "users".equals(changeMessageDO.getNoticeType()) && changeMessageDO.getUser() != null && !"null".equals(changeMessageDO.getUser()) ? changeMessageDO.getUser().split(",") : null;
+        }
+        return users;
+    }
+
+    @Override
+    public List<Long> queryUserIdsByProjectId(Long projectId, String event, IssueDTO issueDTO) {
+        List<MessageDO> originMessageList = noticeMapper.selectByEvent(event);
+        List<MessageDO> changeMessageList = noticeMapper.selectByProjectIdAndEvent(projectId, event);
+        List<String> res = new ArrayList<>();
+        String[] users = null;
+        for (MessageDO messageDO : originMessageList) {
+            int flag = 0;
+            for (MessageDO changeMessageDO : changeMessageList) {
+                if (messageDO.getEvent().equals(changeMessageDO.getEvent()) && messageDO.getNoticeType().equals(changeMessageDO.getNoticeType())) {
+                    flag = 1;
+                    users = judgeUserType(changeMessageDO, res);
+                    break;
+                }
+            }
+            if (flag == 0 && messageDO.getEnable()) {
+                res.add(messageDO.getNoticeType());
+            }
+        }
+        List<Long> result = new ArrayList<>();
+        addUsersByReporter(res, result, issueDTO);
+        addUsersByAssigneer(res, result, issueDTO);
+        addUsersByProjectOwner(projectId, res, result);
+        addUsersByUsers(res, result, users);
         return result;
     }
 }
