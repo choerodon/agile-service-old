@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.app.assembler.NoticeMessageAssembler;
 import io.choerodon.agile.app.service.NoticeService;
 import io.choerodon.agile.infra.dataobject.MessageDO;
 import io.choerodon.agile.infra.dataobject.MessageDetailDO;
@@ -32,6 +33,23 @@ public class NoticeServiceImpl implements NoticeService {
     @Autowired
     private UserFeignClient userFeignClient;
 
+    @Autowired
+    private NoticeMessageAssembler noticeMessageAssembler;
+
+    private void getIds(List<MessageDO> result, List<Long> ids) {
+        for (MessageDO messageDO : result) {
+            if ("users".equals(messageDO.getNoticeType()) && messageDO.getEnable() && messageDO.getUser() != null && messageDO.getUser().length() != 0) {
+                String[] strs = messageDO.getUser().split(",");
+                for (String str : strs) {
+                    Long id = Long.parseLong(str);
+                    if (!ids.contains(id)) {
+                        ids.add(id);
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public List<MessageDTO> queryByProjectId(Long projectId) {
         List<MessageDO> result = new ArrayList<>();
@@ -50,7 +68,9 @@ public class NoticeServiceImpl implements NoticeService {
                 result.add(messageDO);
             }
         }
-        return ConvertHelper.convertList(result, MessageDTO.class);
+        List<Long> ids = new ArrayList<>();
+        getIds(result, ids);
+        return noticeMessageAssembler.MessageDOToIDTO(result, ids);
     }
 
     @Override
