@@ -272,9 +272,6 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private ProjectDTO getProjectById(Long projectId) {
-        return userFeignClient.queryProject(projectId).getBody();
-    }
 
     public IssueDTO queryIssueCreate(Long projectId, Long issueId) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
@@ -286,7 +283,7 @@ public class IssueServiceImpl implements IssueService {
         List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", result);
         String summary =  result.getIssueNum() + "-" + result.getSummary();
         String userName = result.getReporterName();
-        ProjectDTO projectDTO = getProjectById(projectId);
+        ProjectDTO projectDTO = userRepository.queryProject(projectId);
         String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId();
         userIds.stream().forEach(id -> { siteMsgUtil.issueCreate(id, userName, summary, url); });
         return result;
@@ -311,7 +308,7 @@ public class IssueServiceImpl implements IssueService {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_assigneed", result);
             String summary =  result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getAssigneeName();
-            ProjectDTO projectDTO = getProjectById(projectId);
+            ProjectDTO projectDTO = userRepository.queryProject(projectId);
             String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId();
             userIds.stream().forEach(id -> { siteMsgUtil.issueAssignee(id, userName, summary, url); });
         }

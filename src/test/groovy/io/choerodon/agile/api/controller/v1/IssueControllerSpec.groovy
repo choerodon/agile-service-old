@@ -150,6 +150,10 @@ class IssueControllerSpec extends Specification {
         siteMsgUtil.issueCreate(*_) >> null
         siteMsgUtil.issueAssignee(*_) >> null
         siteMsgUtil.issueSolve(*_) >> null
+        ProjectDTO projectDTO = new ProjectDTO()
+        projectDTO.setCode("AG")
+        projectDTO.setName("AG")
+        userRepository.queryProject(*_) >> projectDTO
     }
 
     def 'createIssue'() {
