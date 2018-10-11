@@ -42,6 +42,7 @@ public class BoardServiceImpl implements BoardService {
     private static final String URL_TEMPLATE2 = "&name=";
     private static final String URL_TEMPLATE3 = "&paramName=";
     private static final String URL_TEMPLATE4 = "&paramIssueId=";
+    private static final String URL_TEMPLATE5 = "&paramOpenIssueId=";
 
     @Autowired
     private BoardRepository boardRepository;
@@ -355,13 +356,16 @@ public class BoardServiceImpl implements BoardService {
         if (issueStatusMapper.selectByPrimaryKey(issueE.getStatusId()).getCompleted() && issueDO.getAssigneeId() != null) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDO, IssueDTO.class));
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
-            String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getIssueId();
+            StringBuilder url = new StringBuilder(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getIssueId());
+            if ("sub_task".equals(issueDO.getTypeCode())) {
+                url.append(URL_TEMPLATE5 + issueDO.getParentIssueId());
+            }
             String summary = projectDTO.getCode() + "-" + issueDO.getIssueNum() + "-" + issueDO.getSummary();
             Long[] ids = new Long[1];
             ids[0] = issueDO.getAssigneeId();
             List<UserDO> userDOList = userFeignClient.listUsersByIds(ids).getBody();
             String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName()+userDOList.get(0).getRealName() : "";
-            userIds.stream().forEach(id -> { siteMsgUtil.issueSolve(id, userName, summary, url); });
+            userIds.stream().forEach(id -> { siteMsgUtil.issueSolve(id, userName, summary, url.toString()); });
         }
         return ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);
     }
