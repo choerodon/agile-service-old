@@ -32,6 +32,6 @@ public class IssueSolvePmTemplate implements PmTemplate {
 
     @Override
     public String content() {
-        return "<p><a href=\"${url}\" target=\"_blank\">${summary}</a> 已经由 ${userName} 解决</p>";
+        return "<p><a href=${url} target=_blank>${summary}</a> 已经由 ${userName} 解决</p>";
     }
 }

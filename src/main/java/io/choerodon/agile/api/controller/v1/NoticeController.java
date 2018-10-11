@@ -28,7 +28,7 @@ public class NoticeController {
     private NoticeService noticeService;
 
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询项目下的通知")
     @GetMapping
     public ResponseEntity<List<MessageDTO>> queryByProjectId(@ApiParam(value = "项目id", required = true)
@@ -38,7 +38,7 @@ public class NoticeController {
                 .orElseThrow(() -> new CommonException("error.message.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更新项目下的通知")
     @PutMapping
     public ResponseEntity updateNotice(@ApiParam(value = "项目id", required = true)

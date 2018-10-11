@@ -31,6 +31,6 @@ public class IssueAssigneePmTemplate implements PmTemplate {
 
     @Override
     public String content() {
-        return "<p><a href=\"${url}\" target=\"_blank\">${summary}</a > 分配给 ${userName}</p>";
+        return "<p><a href=${url} target=_blank>${summary}</a > 分配给 ${userName}</p>";
     }
 }
