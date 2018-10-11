@@ -23,7 +23,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -106,11 +105,11 @@ public class ProductVersionController {
     public ResponseEntity<Page<ProductVersionPageDTO>> listByOptions(@ApiParam(value = "项目id", required = true)
                                                                      @PathVariable(name = "project_id") Long projectId,
                                                                      @ApiParam(value = "查询参数", required = false)
-                                                                     @RequestBody(required = false) Map<String, Object> searchParamMap,
+                                                                     @RequestBody(required = false) SearchDTO searchDTO,
                                                                      @ApiParam(value = "分页信息", required = true)
                                                                      @SortDefault(value = "sequence", direction = Sort.Direction.DESC)
                                                                      @ApiIgnore PageRequest pageRequest) {
-        return Optional.ofNullable(productVersionService.queryByProjectId(projectId, pageRequest, searchParamMap))
+        return Optional.ofNullable(productVersionService.queryByProjectId(projectId, pageRequest, searchDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_ERROR));
     }
@@ -153,9 +152,9 @@ public class ProductVersionController {
     @ApiOperation(value = "版本详情")
     @GetMapping(value = "/{versionId}/detail")
     public ResponseEntity<ProductVersionDetailDTO> queryVersionByVersionId(@ApiParam(value = "项目id", required = true)
-                                                                                         @PathVariable(name = "project_id") Long projectId,
-                                                                                         @ApiParam(value = "versionId", required = true)
-                                                                                         @PathVariable Long versionId) {
+                                                                           @PathVariable(name = "project_id") Long projectId,
+                                                                           @ApiParam(value = "versionId", required = true)
+                                                                           @PathVariable Long versionId) {
         return Optional.ofNullable(productVersionService.queryVersionByVersionId(projectId, versionId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_ERROR));
@@ -286,7 +285,7 @@ public class ProductVersionController {
     @ApiOperation(value = "查找所有项目的version ids")
     @GetMapping(value = "/ids")
     public ResponseEntity<List<Long>> listIds(@ApiParam(value = "项目id", required = true)
-                                               @PathVariable(name = "project_id") Long projectId) {
+                                              @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(productVersionService.listIds(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.versionIds.get"));
@@ -296,9 +295,9 @@ public class ProductVersionController {
     @ApiOperation(value = "拖动版本位置")
     @PutMapping(value = "/drag")
     public ResponseEntity<ProductVersionPageDTO> dragVersion(@ApiParam(value = "项目id", required = true)
-                                                                     @PathVariable(name = "project_id") Long projectId,
-                                                                     @ApiParam(value = "排序对象", required = true)
-                                                                     @RequestBody VersionSequenceDTO versionSequenceDTO) {
+                                                             @PathVariable(name = "project_id") Long projectId,
+                                                             @ApiParam(value = "排序对象", required = true)
+                                                             @RequestBody VersionSequenceDTO versionSequenceDTO) {
         return Optional.ofNullable(productVersionService.dragVersion(projectId, versionSequenceDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException(DRAG_ERROR));
@@ -308,9 +307,9 @@ public class ProductVersionController {
     @ApiOperation(value = "dashboard根据版本下类别统计数量数量")
     @GetMapping(value = "/{versionId}/issue_count")
     public ResponseEntity<VersionIssueCountDTO> queryByCategoryCode(@ApiParam(value = "项目id", required = true)
-                                                          @PathVariable(name = "project_id") Long projectId,
-                                                          @ApiParam(value = "version id", required = true)
-                                                          @PathVariable Long versionId) {
+                                                                    @PathVariable(name = "project_id") Long projectId,
+                                                                    @ApiParam(value = "version id", required = true)
+                                                                    @PathVariable Long versionId) {
         return Optional.ofNullable(productVersionService.queryByCategoryCode(projectId, versionId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.VersionIssueCountDTO.get"));

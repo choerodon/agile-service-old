@@ -44,6 +44,25 @@
         <if test="componentId != null">
             AND aic.component_id != #{componentId}
         </if>
+        <if test='searchArgs != null'>
+            <if test='searchArgs.name != null and searchArgs.name != "" '>
+                AND position(#{searchArgs.name} IN aic.name)
+            </if>
+            <if test='searchArgs.description != null and searchArgs.description != ""'>
+                AND position(#{searchArgs.description} IN aic.description)
+            </if>
+        </if>
+        <if test='advancedSearchArgs != null'>
+            <if test='advancedSearchArgs.defaultAssigneeRole != null and advancedSearchArgs.defaultAssigneeRole.size > 0'>
+                AND aic.default_assignee_role IN
+                <foreach collection="advancedSearchArgs.defaultAssigneeRole" item="defaultAssigneeRole" open="(" separator="," close=")">
+                    #{defaultAssigneeRole}
+                </foreach>
+            </if>
+        </if>
+        <if test='content != null and content != ""'>
+            AND (aic.name LIKE CONCAT(CONCAT('%', #{content}), '%') OR aic.description LIKE CONCAT(CONCAT('%',#{content}), '%'))
+        </if>
     </select>
 
     <select id="queryIssuesByComponentId" resultType="io.choerodon.agile.infra.dataobject.IssueDO">

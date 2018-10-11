@@ -22,28 +22,28 @@ import java.util.Optional;
  * @since 2018/10/9
  */
 @RestController
-@RequestMapping(value = "/v1/projects/{project_id}/work_calendar_holiday_refs")
+@RequestMapping(value = "/v1/organizations/{organization_id}/work_calendar_holiday_refs")
 public class WorkCalendarHolidayRefController {
 
     @Autowired
     private WorkCalendarHolidayRefService workCalendarHolidayRefService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("按年份更新工作日历假期")
     @PostMapping
     public ResponseEntity updateWorkCalendarHolidayRefByYear(@ApiParam(value = "项目id", required = true)
-                                                             @PathVariable(name = "project_id") Long projectId,
+                                                             @PathVariable(name = "organization_id") Long organizationId,
                                                              @ApiParam(value = "要更新的年份", required = true)
                                                              @RequestParam String year) {
         workCalendarHolidayRefService.updateWorkCalendarHolidayRefByYear(year);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据年份查询工作日历假期")
     @GetMapping
     public ResponseEntity<List<WorkCalendarHolidayRefDTO>> queryWorkCalendarHolidayRelByYear(@ApiParam(value = "项目id", required = true)
-                                                                                             @PathVariable(name = "project_id") Long projectId,
+                                                                                             @PathVariable(name = "organization_id") Long organizationId,
                                                                                              @ApiParam(value = "要更新的年份", required = true)
                                                                                              @RequestParam String year) {
         return Optional.ofNullable(workCalendarHolidayRefService.queryWorkCalendarHolidayRelByYear(year))

@@ -30,7 +30,7 @@ class WorkCalendarHolidayRefControllerSpec extends Specification {
 
     def 'updateWorkCalendarHolidayRefByYear'() {
         when: '向创建冲刺的接口发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/work_calendar_holiday_refs?year={year}', null, null, projectId, 2018)
+        def entity = restTemplate.postForEntity('/v1/organizations/{organization_id}/work_calendar_holiday_refs?year={year}', null, null, 1, 2018)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -38,7 +38,7 @@ class WorkCalendarHolidayRefControllerSpec extends Specification {
 
     def 'queryWorkCalendarHolidayRelByYear'() {
         when:
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/work_calendar_holiday_refs?year={year}', List.class, projectId, 2018)
+        def entity = restTemplate.getForEntity('/v1/organizations/{organization_id}/work_calendar_holiday_refs?year={year}', List.class, 1, 2018)
 
         then:
         entity.statusCode.is2xxSuccessful()

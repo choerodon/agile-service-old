@@ -26,6 +26,7 @@ public class DateUtil {
     private WorkCalendarHolidayRefMapper workCalendarHolidayRefMapper;
 
     private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final String PARSE_EXCEPTION = "ParseException{}";
 
     private DateUtil() {
     }
@@ -103,7 +104,7 @@ public class DateUtil {
             try {
                 a = sdf.parse(o1.getHoliday()).compareTo(sdf.parse(o2.getHoliday()));
             } catch (ParseException e) {
-                throw new CommonException("ParseException{}", e);
+                throw new CommonException(PARSE_EXCEPTION, e);
             }
             return a;
         });
@@ -117,77 +118,94 @@ public class DateUtil {
      * @return Date
      */
     public Set<Date> getNonWorkdaysDuring(Date dayOne, Date dayTwo) {
+        if (dayOne == null || dayTwo == null) {
+            return new HashSet<>();
+        } else if (isSameDay(dayOne, dayTwo)) {
+            return handleSameDayWorkDays(dayOne);
+        } else {
+            return handleDifferentDayWorkDays(dayOne, dayTwo);
+        }
+    }
+
+    private Set<Date> handleDifferentDayWorkDays(Date dayOne, Date dayTwo) {
         Set<Integer> year = new HashSet<>();
         Set<Date> dates = new HashSet<>();
-        if (dayOne == null || dayTwo == null) {
-            return dates;
-        } else if (isSameDay(dayOne, dayTwo)) {
-            final Date date = dayOne;
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(dayOne);
+        if (dayOne.after(dayTwo)) {
+            Date tmp = dayOne;
+            dayOne = dayTwo;
+            dayTwo = tmp;
+        }
+        final Date startDate = dayOne;
+        final Date endDate = dayTwo;
+        getDaysInterval(startDate, endDate, year, dates);
+        if (!dates.isEmpty()) {
+            Set<WorkCalendarHolidayRefDO> holidays = new HashSet<>();
+            year.forEach(y -> holidays.addAll(new HashSet<>(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(String.valueOf(y)))));
+            if (!holidays.isEmpty()) {
+                handleHolidays(dates, holidays, startDate, endDate);
+            }
+        }
+        return dates;
+    }
+
+    private void handleHolidays(Set<Date> dates, Set<WorkCalendarHolidayRefDO> holidays, Date startDate, Date endDate) {
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);
+        Set<Date> remove = new HashSet<>(dates.size() << 1);
+        Set<Date> add = new HashSet<>(dates.size() << 1);
+        dates.forEach(date -> holidays.forEach(holiday -> {
+            try {
+                Date holidayDate = sdf.parse(holiday.getHoliday());
+                if (isSameDay(holidayDate, date) && "1".equals(holiday.getStatus())) {
+                    remove.add(date);
+                } else if (holidayDate.before(endDate) && holidayDate.after(startDate)) {
+                    add.add(holidayDate);
+                }
+            } catch (ParseException e) {
+                LOGGER.warn(PARSE_EXCEPTION, e);
+            }
+        }));
+        dates.addAll(add);
+        dates.removeAll(remove);
+    }
+
+
+    private void getDaysInterval(Date startDate, Date endDate, Set<Integer> year, Set<Date> dates) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+        while (calendar.getTime().getTime() <= endDate.getTime()) {
             if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
                 dates.add(calendar.getTime());
             }
-            Set<WorkCalendarHolidayRefDO> holidays = (new HashSet<>(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(String.valueOf(calendar.get(Calendar.YEAR)))));
-            if (!holidays.isEmpty()) {
-                SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);
-                holidays.forEach(holiday -> {
-                    try {
-                        if (isSameDay(date, sdf.parse(holiday.getHoliday()))) {
-                            if ("0".equals(holiday.getStatus())) {
-                                dates.add(date);
-                            } else {
-                                dates.remove(date);
-                            }
-                        }
-                    } catch (ParseException e) {
-                        LOGGER.warn("ParseException{}", e);
-                    }
-                });
-            }
-            return dates;
-        } else {
-            if (dayOne.after(dayTwo)) {
-                Date tmp = dayOne;
-                dayOne = dayTwo;
-                dayTwo = tmp;
-            }
-            final Date startDate = dayOne;
-            final Date endDate = dayTwo;
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(startDate);
-            while (calendar.getTime().getTime() <= endDate.getTime()) {
-                if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-                    dates.add(calendar.getTime());
-                }
-                year.add(calendar.get(Calendar.YEAR));
-                calendar.add(Calendar.DAY_OF_YEAR, 1);
-            }
-            if (!dates.isEmpty()) {
-                SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);
-                Set<WorkCalendarHolidayRefDO> holidays = new HashSet<>();
-                year.forEach(y -> holidays.addAll(new HashSet<>(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(String.valueOf(y)))));
-                if (!holidays.isEmpty()) {
-                    Set<Date> remove = new HashSet<>(dates.size() << 1);
-                    Set<Date> add = new HashSet<>(dates.size() << 1);
-                    dates.forEach(date -> holidays.forEach(holiday -> {
-                        try {
-                            Date holidayDate = sdf.parse(holiday.getHoliday());
-                            if (isSameDay(holidayDate, date) && "1".equals(holiday.getStatus())) {
-                                remove.add(date);
-                            } else if (holidayDate.before(endDate) && holidayDate.after(startDate)) {
-                                add.add(holidayDate);
-                            }
-                        } catch (ParseException e) {
-                            LOGGER.warn("ParseException{}", e);
-                        }
-                    }));
-                    dates.addAll(add);
-                    dates.removeAll(remove);
-                }
-            }
-            return dates;
+            year.add(calendar.get(Calendar.YEAR));
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
+    }
+
+    private Set<Date> handleSameDayWorkDays(Date date) {
+        Set<Date> dates = new HashSet<>(1);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+            dates.add(calendar.getTime());
+        }
+        Set<WorkCalendarHolidayRefDO> holidays = (new HashSet<>(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(String.valueOf(calendar.get(Calendar.YEAR)))));
+        if (!holidays.isEmpty()) {
+            SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);
+            holidays.forEach(holiday -> {
+                try {
+                    if (isSameDay(date, sdf.parse(holiday.getHoliday()))) {
+                        if ("0".equals(holiday.getStatus())) {
+                            dates.add(date);
+                        } else {
+                            dates.remove(date);
+                        }
+                    }
+                } catch (ParseException e) {
+                    LOGGER.warn(PARSE_EXCEPTION, e);
+                }
+            });
+        }
+        return dates;
     }
 
     public static boolean isSameDay(Date date1, Date date2) {

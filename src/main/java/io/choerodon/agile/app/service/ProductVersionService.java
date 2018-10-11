@@ -5,7 +5,6 @@ import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by jian_zhang02@163.com on 2018/5/14.
@@ -24,7 +23,7 @@ public interface ProductVersionService {
 
     ProductVersionDetailDTO updateVersion(Long projectId, Long versionId, ProductVersionUpdateDTO versionUpdateDTO, List<String> fieldList);
 
-    Page<ProductVersionPageDTO> queryByProjectId(Long projectId, PageRequest pageRequest, Map<String, Object> searchParamMap);
+    Page<ProductVersionPageDTO> queryByProjectId(Long projectId, PageRequest pageRequest, SearchDTO searchDTO);
 
     Boolean repeatName(Long projectId, String name);
 

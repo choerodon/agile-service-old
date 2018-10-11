@@ -3,6 +3,7 @@ package io.choerodon.agile.app.service.impl;
 import com.google.common.collect.Ordering;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
+import io.choerodon.agile.domain.agile.repository.SprintWorkCalendarRefRepository;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
 import io.choerodon.agile.infra.common.utils.DateUtil;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -71,6 +73,8 @@ public class SprintServiceImpl implements SprintService {
     private DateUtil dateUtil;
     @Autowired
     private SprintWorkCalendarRefMapper sprintWorkCalendarRefMapper;
+    @Autowired
+    private SprintWorkCalendarRefRepository sprintWorkCalendarRefRepository;
 
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String SPRINT_DATA = "sprintData";
@@ -240,6 +244,19 @@ public class SprintServiceImpl implements SprintService {
         SprintE sprintE = sprintUpdateAssembler.toTarget(sprintUpdateDTO, SprintE.class);
         sprintE.checkDate();
         sprintE.startSprint();
+        if (sprintUpdateDTO.getWorkDates() != null && !sprintUpdateDTO.getWorkDates().isEmpty()) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Calendar calendar = Calendar.getInstance();
+            sprintUpdateDTO.getWorkDates().forEach(date -> {
+                SprintWorkCalendarRefDO sprintWorkCalendarRefDO = new SprintWorkCalendarRefDO();
+                sprintWorkCalendarRefDO.setSprintId(sprintE.getSprintId());
+                sprintWorkCalendarRefDO.setProjectId(sprintE.getProjectId());
+                sprintWorkCalendarRefDO.setWorkDay(dateFormat.format(date));
+                calendar.setTime(date);
+                sprintWorkCalendarRefDO.setYear(calendar.get(Calendar.YEAR));
+                sprintWorkCalendarRefRepository.create(sprintWorkCalendarRefDO);
+            });
+        }
         return sprintUpdateAssembler.toTarget(sprintRepository.updateSprint(sprintE), SprintDetailDTO.class);
     }
 
@@ -463,22 +480,26 @@ public class SprintServiceImpl implements SprintService {
             query.setSprintId(sprintId);
             query.setSprintId(projectId);
             List<SprintWorkCalendarRefDO> sprintWorkCalendarRefDOS = sprintWorkCalendarRefMapper.select(query);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-            if (sprintWorkCalendarRefDOS != null && !sprintWorkCalendarRefDOS.isEmpty()) {
-                Set<Date> remove = new HashSet<>(dates.size() << 1);
-                sprintWorkCalendarRefDOS.forEach(sprintWorkCalendarRefDO -> dates.forEach(date -> {
-                    try {
-                        Date workDay = sdf.parse(sprintWorkCalendarRefDO.getWorkDay());
-                        if (DateUtil.isSameDay(workDay, date)) {
-                            remove.add(date);
-                        }
-                    } catch (ParseException e) {
-                        throw new CommonException("ParseException{}", e);
-                    }
-                }));
-                dates.removeAll(remove);
-            }
+            handleSprintNonWorkdays(sprintWorkCalendarRefDOS, dates);
             return Ordering.from(Date::compareTo).sortedCopy(dates);
+        }
+    }
+
+    private void handleSprintNonWorkdays(List<SprintWorkCalendarRefDO> sprintWorkCalendarRefDOS, Set<Date> dates) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+        if (sprintWorkCalendarRefDOS != null && !sprintWorkCalendarRefDOS.isEmpty()) {
+            Set<Date> remove = new HashSet<>(dates.size() << 1);
+            sprintWorkCalendarRefDOS.forEach(sprintWorkCalendarRefDO -> dates.forEach(date -> {
+                try {
+                    Date workDay = sdf.parse(sprintWorkCalendarRefDO.getWorkDay());
+                    if (DateUtil.isSameDay(workDay, date)) {
+                        remove.add(date);
+                    }
+                } catch (ParseException e) {
+                    throw new CommonException("ParseException{}", e);
+                }
+            }));
+            dates.removeAll(remove);
         }
     }
 }

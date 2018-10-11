@@ -2,6 +2,7 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.ComponentForListDTO;
 import io.choerodon.agile.api.dto.IssueDTO;
+import io.choerodon.agile.api.dto.SearchDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.dto.IssueComponentDTO;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -98,11 +98,11 @@ public class IssueComponentController {
                                                                      @ApiParam(value = "是否包含测试")
                                                                      @RequestParam(required = false, name = "no_issue_test", defaultValue = "false") Boolean noIssueTest,
                                                                      @ApiParam(value = "查询参数", required = false)
-                                                                     @RequestBody(required = false) Map<String, Object> searchParamMap,
+                                                                     @RequestBody(required = false)SearchDTO searchDTO,
                                                                      @ApiParam(value = "分页信息", required = true)
                                                                      @SortDefault(value = "component_id", direction = Sort.Direction.DESC)
                                                                      @ApiIgnore PageRequest pageRequest) {
-        return Optional.ofNullable(issueComponentService.queryComponentByProjectId(projectId, componentId, noIssueTest,searchParamMap,pageRequest))
+        return Optional.ofNullable(issueComponentService.queryComponentByProjectId(projectId, componentId, noIssueTest,searchDTO,pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.componentList.get"));
     }
