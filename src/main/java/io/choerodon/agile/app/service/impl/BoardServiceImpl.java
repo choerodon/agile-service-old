@@ -38,6 +38,10 @@ public class BoardServiceImpl implements BoardService {
     private static final String STORY_POINTS = "story_point";
     private static final String PARENT_CHILD = "parent_child";
     private static final String BOARD = "board";
+    private static final String URL_TEMPLATE1 = "#/agile/issue?type=project&id=";
+    private static final String URL_TEMPLATE2 = "&name=";
+    private static final String URL_TEMPLATE3 = "&paramName=";
+    private static final String URL_TEMPLATE4 = "&paramIssueId=";
 
     @Autowired
     private BoardRepository boardRepository;
@@ -339,6 +343,10 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
+    private ProjectDTO getProjectById(Long projectId) {
+        return userFeignClient.queryProject(projectId).getBody();
+    }
+
     @Override
     public IssueMoveDTO move(Long projectId, Long issueId, IssueMoveDTO issueMoveDTO) {
         Long boardId = issueMoveDTO.getBoardId();
@@ -349,15 +357,14 @@ public class BoardServiceImpl implements BoardService {
         // 发送消息
         if (issueStatusMapper.selectByPrimaryKey(issueE.getStatusId()).getCompleted() && issueDO.getAssigneeId() != null) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDO, IssueDTO.class));
-            ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-            projectInfoDO.setProjectId(projectId);
-            ProjectInfoDO pi = projectInfoMapper.selectOne(projectInfoDO);
-            String summary = pi.getProjectCode() + "-" + issueDO.getIssueNum() + "-" + issueDO.getSummary();
+            ProjectDTO projectDTO = getProjectById(projectId);
+            String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getIssueId();
+            String summary = projectDTO.getCode() + "-" + issueDO.getIssueNum() + "-" + issueDO.getSummary();
             Long[] ids = new Long[1];
             ids[0] = issueDO.getAssigneeId();
             List<UserDO> userDOList = userFeignClient.listUsersByIds(ids).getBody();
             String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName()+userDOList.get(0).getRealName() : "";
-            userIds.stream().forEach(id -> { siteMsgUtil.issueSolve(id, userName, summary); });
+            userIds.stream().forEach(id -> { siteMsgUtil.issueSolve(id, userName, summary, url); });
         }
         return ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);
     }

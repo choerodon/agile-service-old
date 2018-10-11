@@ -185,6 +185,10 @@ public class IssueServiceImpl implements IssueService {
     private static final String STORYMAP_TYPE_NONE = "none";
     private static final String USERMAP = "usermap";
     private static final String STORYMAP = "storymap";
+    private static final String URL_TEMPLATE1 = "#/agile/issue?type=project&id=";
+    private static final String URL_TEMPLATE2 = "&name=";
+    private static final String URL_TEMPLATE3 = "&paramName=";
+    private static final String URL_TEMPLATE4 = "&paramIssueId=";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -268,6 +272,10 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
+    private ProjectDTO getProjectById(Long projectId) {
+        return userFeignClient.queryProject(projectId).getBody();
+    }
+
     public IssueDTO queryIssueCreate(Long projectId, Long issueId) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
@@ -278,7 +286,9 @@ public class IssueServiceImpl implements IssueService {
         List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", result);
         String summary =  result.getIssueNum() + "-" + result.getSummary();
         String userName = result.getReporterName();
-        userIds.stream().forEach(id -> { siteMsgUtil.issueCreate(id, userName, summary); });
+        ProjectDTO projectDTO = getProjectById(projectId);
+        String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId();
+        userIds.stream().forEach(id -> { siteMsgUtil.issueCreate(id, userName, summary, url); });
         return result;
     }
 
@@ -301,7 +311,9 @@ public class IssueServiceImpl implements IssueService {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_assigneed", result);
             String summary =  result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getAssigneeName();
-            userIds.stream().forEach(id -> { siteMsgUtil.issueAssignee(id, userName, summary); });
+            ProjectDTO projectDTO = getProjectById(projectId);
+            String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId();
+            userIds.stream().forEach(id -> { siteMsgUtil.issueAssignee(id, userName, summary, url); });
         }
         return result;
     }
