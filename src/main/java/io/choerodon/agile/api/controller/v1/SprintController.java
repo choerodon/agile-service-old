@@ -20,9 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by jian_zhang02@163.com on 2018/5/14.
@@ -173,7 +171,7 @@ public class SprintController {
     @ApiOperation(value = "查询项目下创建冲刺时当前默认的名称")
     @GetMapping(value = "/current_create_name")
     public ResponseEntity<String> queryCurrentSprintCreateName(@ApiParam(value = "项目id", required = true)
-                                                                @PathVariable(name = "project_id") Long projectId) {
+                                                               @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(sprintService.queryCurrentSprintCreateName(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.CurrentSprintCreateName.get"));
@@ -183,9 +181,9 @@ public class SprintController {
     @ApiOperation(value = "根据项目id和冲刺名称创建冲刺")
     @PostMapping(value = "/create")
     public ResponseEntity<SprintDetailDTO> createBySprintName(@ApiParam(value = "项目id", required = true)
-                                                               @PathVariable(name = "project_id") Long projectId,
-                                                               @ApiParam(value = "冲刺名称", required = true)
-                                                               @RequestParam String sprintName) {
+                                                              @PathVariable(name = "project_id") Long projectId,
+                                                              @ApiParam(value = "冲刺名称", required = true)
+                                                              @RequestParam String sprintName) {
         return Optional.ofNullable(sprintService.createBySprintName(projectId, sprintName))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.createBySprintName.post"));
@@ -205,10 +203,22 @@ public class SprintController {
     @ApiOperation(value = "查询活跃冲刺")
     @GetMapping(value = "/active")
     public ResponseEntity<ActiveSprintDTO> queryActiveSprint(@ApiParam(value = "项目id", required = true)
-                                                                     @PathVariable(name = "project_id") Long projectId) {
+                                                             @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(sprintService.queryActiveSprint(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.activeSprint.get"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation(value = "查询冲刺的时间范围内非工作日(包含周六周天)")
+    @GetMapping(value = "/query_non_workdays/{sprint_id}")
+    public ResponseEntity<List<Date>> queryNonWorkdays(@ApiParam(value = "项目id", required = true)
+                                                       @PathVariable(name = "project_id") Long projectId,
+                                                      @ApiParam(value = "项目id", required = true)
+                                                       @PathVariable(name = "sprint_id") Long sprintId) {
+        return Optional.ofNullable(sprintService.queryNonWorkdays(projectId,sprintId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.queryNonWorkdays.get"));
     }
 
 }

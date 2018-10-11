@@ -1,4 +1,4 @@
-package script.db
+package db
 
 /**
  *
@@ -28,12 +28,6 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_sprint_work_calendar_ref.gro
             column(name: "creation_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
             column(name: "last_updated_by", type: "BIGINT UNSIGNED", defaultValue: "0")
             column(name: "last_update_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
-        }
-        createIndex(tableName: "agile_sprint_work_calendar_ref", indexName: "idx_sprint_id") {
-            column(name: "sprint_id")
-        }
-        createIndex(tableName: "agile_sprint_work_calendar_ref", indexName: "idx_project_id") {
-            column(name: "project_id")
         }
     }
 }

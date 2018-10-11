@@ -15,6 +15,7 @@ import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.List;
  * @since 2018-05-14 20:30:48
  */
 @Component
+@Transactional(rollbackFor = Exception.class)
 public class IssueRepositoryImpl implements IssueRepository {
 
     private static final String UPDATE_ERROR = "error.Issue.update";

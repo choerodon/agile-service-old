@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.app.service.WorkCalendarService;
+import io.choerodon.agile.domain.agile.repository.WorkCalendarHolidayRefRepository;
 import io.choerodon.agile.infra.common.properties.WorkCalendarHolidayProperties;
 import io.choerodon.agile.infra.common.scheduled.WorkCalendarHolidayRefJobs;
 import io.choerodon.agile.infra.common.utils.DateUtil;
@@ -34,6 +35,7 @@ public class JuheWorkCalendarServiceImpl implements WorkCalendarService {
     private static final String GET = "GET";
     private static final String POST = "POST";
     private static final String DEF_CHAT_SET = "UTF-8";
+    private static final String ERROR_CODE = "error_code";
     private static final String URL = "http://v.juhe.cn/calendar/month";
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.66 Safari/537.36";
 
@@ -44,9 +46,12 @@ public class JuheWorkCalendarServiceImpl implements WorkCalendarService {
 
     private WorkCalendarHolidayRefMapper workCalendarHolidayRefMapper;
 
-    public JuheWorkCalendarServiceImpl(WorkCalendarHolidayProperties workCalendarHolidayProperties, WorkCalendarHolidayRefMapper workCalendarHolidayRefMapper) {
+    private WorkCalendarHolidayRefRepository workCalendarHolidayRefRepository;
+
+    public JuheWorkCalendarServiceImpl(WorkCalendarHolidayProperties workCalendarHolidayProperties, WorkCalendarHolidayRefMapper workCalendarHolidayRefMapper, WorkCalendarHolidayRefRepository workCalendarHolidayRefRepository) {
         this.workCalendarHolidayProperties = workCalendarHolidayProperties;
         this.workCalendarHolidayRefMapper = workCalendarHolidayRefMapper;
+        this.workCalendarHolidayRefRepository = workCalendarHolidayRefRepository;
     }
 
     @Override
@@ -83,7 +88,7 @@ public class JuheWorkCalendarServiceImpl implements WorkCalendarService {
             WorkCalendarHolidayRefDO query = new WorkCalendarHolidayRefDO();
             query.setHoliday(workCalendarHolidayRefDO.getHoliday());
             if (workCalendarHolidayRefMapper.selectOne(query) == null) {
-                workCalendarHolidayRefMapper.insert(workCalendarHolidayRefDO);
+                workCalendarHolidayRefRepository.create(workCalendarHolidayRefDO);
             }
         });
     }
@@ -108,10 +113,13 @@ public class JuheWorkCalendarServiceImpl implements WorkCalendarService {
                 throw new CommonException("IOException{}", e);
             }
             JSONObject object = JSON.parseObject(result);
-            if ((Integer) object.get("error_code") == 0) {
+            if ((Integer) object.get(ERROR_CODE) == 0) {
                 handleJsonToWorkCalendarHolidayRef(object, workCalendarHolidayRefDOS);
+            } else if ((Integer) object.get(ERROR_CODE) == 217701) {
+                LOGGER.info(object.get(ERROR_CODE) + ":{}", object.get("reason"));
             } else {
-                throw new CommonException(object.get("error_code") + ":" + object.get("reason"));
+                LOGGER.error(object.get(ERROR_CODE) + ":{}", object.get("reason"));
+                break;
             }
         }
         return DateUtil.stringDateCompare().sortedCopy(workCalendarHolidayRefDOS);

@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
+import com.google.common.collect.Ordering;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
@@ -24,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,6 +67,10 @@ public class SprintServiceImpl implements SprintService {
     private SprintRule sprintRule;
     @Autowired
     private QuickFilterMapper quickFilterMapper;
+    @Autowired
+    private DateUtil dateUtil;
+    @Autowired
+    private SprintWorkCalendarRefMapper sprintWorkCalendarRefMapper;
 
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String SPRINT_DATA = "sprintData";
@@ -443,5 +450,35 @@ public class SprintServiceImpl implements SprintService {
             }
         }
         return result;
+    }
+
+    @Override
+    public List<Date> queryNonWorkdays(Long projectId, Long sprintId) {
+        SprintDO sprintDO = sprintMapper.queryByProjectIdAndSprintId(projectId, sprintId);
+        if (sprintDO == null || sprintDO.getStartDate() == null || sprintDO.getEndDate() == null) {
+            return new ArrayList<>();
+        } else {
+            Set<Date> dates = dateUtil.getNonWorkdaysDuring(sprintDO.getStartDate(), sprintDO.getEndDate());
+            SprintWorkCalendarRefDO query = new SprintWorkCalendarRefDO();
+            query.setSprintId(sprintId);
+            query.setSprintId(projectId);
+            List<SprintWorkCalendarRefDO> sprintWorkCalendarRefDOS = sprintWorkCalendarRefMapper.select(query);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+            if (sprintWorkCalendarRefDOS != null && !sprintWorkCalendarRefDOS.isEmpty()) {
+                Set<Date> remove = new HashSet<>(dates.size() << 1);
+                sprintWorkCalendarRefDOS.forEach(sprintWorkCalendarRefDO -> dates.forEach(date -> {
+                    try {
+                        Date workDay = sdf.parse(sprintWorkCalendarRefDO.getWorkDay());
+                        if (DateUtil.isSameDay(workDay, date)) {
+                            remove.add(date);
+                        }
+                    } catch (ParseException e) {
+                        throw new CommonException("ParseException{}", e);
+                    }
+                }));
+                dates.removeAll(remove);
+            }
+            return Ordering.from(Date::compareTo).sortedCopy(dates);
+        }
     }
 }

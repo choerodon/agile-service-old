@@ -5,6 +5,7 @@ import io.choerodon.agile.infra.dataobject.SprintDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -43,4 +44,13 @@ public interface SprintService {
     List<SprintUnClosedDTO> queryUnClosedSprint(Long projectId);
 
     ActiveSprintDTO queryActiveSprint(Long projectId);
+
+    /**
+     * 查询冲刺期间非工作日
+     *
+     * @param projectId projectId
+     * @param sprintId  sprintId
+     * @return Date
+     */
+    List<Date> queryNonWorkdays(Long projectId, Long sprintId);
 }

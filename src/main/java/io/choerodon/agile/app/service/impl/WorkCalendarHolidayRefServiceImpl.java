@@ -6,7 +6,6 @@ import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
 import io.choerodon.agile.app.service.WorkCalendarService;
 import io.choerodon.agile.infra.common.properties.WorkCalendarHolidayProperties;
 import io.choerodon.agile.infra.common.utils.DateUtil;
-import io.choerodon.agile.infra.dataobject.WorkCalendarHolidayRefDO;
 import io.choerodon.agile.infra.factory.WorkCalendarFactory;
 import io.choerodon.agile.infra.mapper.WorkCalendarHolidayRefMapper;
 import org.springframework.beans.factory.annotation.Autowired;
