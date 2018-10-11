@@ -402,6 +402,15 @@ class SprintControllerSpec extends Specification {
         result
     }
 
+    def "queryNonWorkdays"() {
+        when: '发送请求'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/query_non_workdays/{sprint_id}', List.class, projectId, sprintIds[0])
+
+        then: '请求结果'
+        entity.statusCode.is2xxSuccessful()
+
+    }
+
     def "deleteSprint"() {
         when: '发送请求'
         def entity = restTemplate.exchange('/v1/projects/{project_id}/sprint/{sprintId}', HttpMethod.DELETE, new HttpEntity<Object>(), ResponseEntity.class, projectId, sprintId)
