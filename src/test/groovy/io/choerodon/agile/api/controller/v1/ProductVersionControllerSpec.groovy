@@ -384,6 +384,8 @@ class ProductVersionControllerSpec extends Specification {
         Map<String, Object> map = new HashMap<>()
         map.put("name", result.name)
         searchParamMap.put("searchArgs", map)
+        searchParamMap.put("advancedSearchArgs", map)
+        searchParamMap.put("content", "")
         HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(searchParamMap)
 
         when:

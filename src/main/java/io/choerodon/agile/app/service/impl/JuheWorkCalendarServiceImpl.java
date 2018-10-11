@@ -116,9 +116,9 @@ public class JuheWorkCalendarServiceImpl implements WorkCalendarService {
             if ((Integer) object.get(ERROR_CODE) == 0) {
                 handleJsonToWorkCalendarHolidayRef(object, workCalendarHolidayRefDOS);
             } else if ((Integer) object.get(ERROR_CODE) == 217701) {
-                LOGGER.info(object.get(ERROR_CODE) + ":{}", object.get("reason"));
+                LOGGER.info("error_code:{},reason:{}", object.get(ERROR_CODE), object.get("reason"));
             } else {
-                LOGGER.error(object.get(ERROR_CODE) + ":{}", object.get("reason"));
+                LOGGER.error("error_code:{},reason:{}", object.get(ERROR_CODE), object.get("reason"));
                 break;
             }
         }

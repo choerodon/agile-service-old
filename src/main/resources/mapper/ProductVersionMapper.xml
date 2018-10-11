@@ -22,6 +22,9 @@
                 </foreach>
             </if>
         </if>
+        <if test='content != null and content != ""'>
+            AND (name LIKE CONCAT(CONCAT('%', #{content}), '%') OR description LIKE CONCAT(CONCAT('%',#{content}), '%'))
+        </if>
     </select>
 
     <select id="queryVersionByIds" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDO">

@@ -26,9 +26,9 @@ public class SprintWorkCalendarRefDO extends AuditDomain {
 
     private String workDay;
 
-    private String year;
+    private Integer year;
 
-    private String projectId;
+    private Long projectId;
 
     public Long getCalendarId() {
         return calendarId;
@@ -54,19 +54,19 @@ public class SprintWorkCalendarRefDO extends AuditDomain {
         this.workDay = workDay;
     }
 
-    public String getYear() {
+    public Integer getYear() {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(Integer year) {
         this.year = year;
     }
 
-    public String getProjectId() {
+    public Long getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(String projectId) {
+    public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
 

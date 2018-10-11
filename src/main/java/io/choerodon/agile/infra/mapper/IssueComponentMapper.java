@@ -46,5 +46,6 @@ public interface IssueComponentMapper extends BaseMapper<IssueComponentDO> {
      * @return Long
      */
     List<ComponentForListDO> queryComponentByOption(@Param("projectId") Long projectId, @Param("noIssueTest") Boolean noIssueTest,
-                                                    @Param("componentId") Long componentId, @Param("searchArgs") Map<String, Object> searchArgs, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
+                                                    @Param("componentId") Long componentId, @Param("searchArgs") Map<String, Object> searchArgs,
+                                                    @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("content") String content);
 }

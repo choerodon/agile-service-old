@@ -1,7 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.ComponentForListDTO;
-import io.choerodon.agile.api.dto.IssueDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueComponentValidator;
 import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
 import io.choerodon.agile.domain.agile.repository.ComponentIssueRelRepository;
@@ -13,7 +12,6 @@ import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.convertor.ConvertPageHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.api.dto.IssueComponentDTO;
 import io.choerodon.agile.app.service.IssueComponentService;
 import io.choerodon.agile.domain.agile.entity.IssueComponentE;
 import io.choerodon.agile.domain.agile.repository.IssueComponentRepository;
@@ -53,8 +51,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     @Autowired
     private UserRepository userRepository;
 
-    private static final String SEARCH_ARGS = "searchArgs";
-    private static final String ADVANCE_SEARCH_ARGS = "advancedSearchArgs";
+    private static final String MANAGER = "manager";
 
     @Override
     public IssueComponentDTO create(Long projectId, IssueComponentDTO issueComponentDTO) {
@@ -110,10 +107,12 @@ public class IssueComponentServiceImpl implements IssueComponentService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Page<ComponentForListDTO> queryComponentByProjectId(Long projectId, Long componentId, Boolean noIssueTest, Map<String, Object> searchParamMap, PageRequest pageRequest) {
+    public Page<ComponentForListDTO> queryComponentByProjectId(Long projectId, Long componentId, Boolean noIssueTest, SearchDTO searchDTO, PageRequest pageRequest) {
+        //处理用户搜索
+        handleSearchUser(searchDTO, projectId);
         Page<ComponentForListDTO> componentForListDTOPage = ConvertPageHelper.convertPage(PageHelper.doPageAndSort(pageRequest, () ->
-                issueComponentMapper.queryComponentByOption(projectId, noIssueTest, componentId, (Map<String, Object>) searchParamMap.get(SEARCH_ARGS),
-                        (Map<String, Object>) searchParamMap.get(ADVANCE_SEARCH_ARGS))), ComponentForListDTO.class);
+                issueComponentMapper.queryComponentByOption(projectId, noIssueTest, componentId, searchDTO.getSearchArgs(),
+                        searchDTO.getAdvancedSearchArgs(),searchDTO.getContent())), ComponentForListDTO.class);
         if ((componentForListDTOPage.getContent() != null) && !componentForListDTOPage.getContent().isEmpty()) {
             List<Long> assigneeIds = componentForListDTOPage.getContent().stream().filter(componentForListDTO -> componentForListDTO.getManagerId() != null
                     && !Objects.equals(componentForListDTO.getManagerId(), 0L)).map(ComponentForListDTO::getManagerId).distinct().collect(Collectors.toList());
@@ -126,6 +125,18 @@ public class IssueComponentServiceImpl implements IssueComponentService {
             });
         }
         return componentForListDTOPage;
+    }
+
+    private void handleSearchUser(SearchDTO searchDTO, Long projectId) {
+        if (searchDTO.getSearchArgs() != null && searchDTO.getSearchArgs().get(MANAGER) != null) {
+            String userName = (String) searchDTO.getSearchArgs().get(MANAGER);
+            if (userName != null && !"".equals(userName)) {
+                List<UserDTO> userDTOS = userRepository.queryUsersByNameAndProjectId(projectId, userName);
+                if (userDTOS != null && !userDTOS.isEmpty()) {
+                    searchDTO.getAdvancedSearchArgs().put("managerId", userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));
+                }
+            }
+        }
     }
 
     @Override

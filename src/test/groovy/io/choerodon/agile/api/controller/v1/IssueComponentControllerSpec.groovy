@@ -150,6 +150,7 @@ class IssueComponentControllerSpec extends Specification {
         Map<String, Object> searchParamMap = new HashMap<>()
         searchParamMap.put("searchArgs", new HashMap<>())
         searchParamMap.put("advancedSearchArgs", new HashMap<>())
+        searchParamMap.put("content", "")
 
         when: '根据project id查询component'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/component/query_all', searchParamMap, Page, projectIds)

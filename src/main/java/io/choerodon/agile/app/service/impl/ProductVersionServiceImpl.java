@@ -63,8 +63,6 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     @Autowired
     private ProductVersionConverter productVersionConverter;
 
-    private static final String SEARCH_ARGS = "searchArgs";
-    private static final String ADVANCE_SEARCH_ARGS = "advancedSearchArgs";
     private static final String VERSION_PLANNING = "version_planning";
     private static final String NOT_EQUAL_ERROR = "error.projectId.notEqual";
     private static final String NOT_FOUND = "error.version.notFound";
@@ -168,10 +166,10 @@ public class ProductVersionServiceImpl implements ProductVersionService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Page<ProductVersionPageDTO> queryByProjectId(Long projectId, PageRequest pageRequest, Map<String, Object> searchParamMap) {
+    public Page<ProductVersionPageDTO> queryByProjectId(Long projectId, PageRequest pageRequest, SearchDTO searchDTO) {
         //过滤查询和排序
         Page<Long> versionIds = PageHelper.doPageAndSort(pageRequest, () ->
-                productVersionMapper.queryVersionIdsByProjectId(projectId, (Map<String, Object>) searchParamMap.get(SEARCH_ARGS), (Map<String, Object>) searchParamMap.get(ADVANCE_SEARCH_ARGS)));
+                productVersionMapper.queryVersionIdsByProjectId(projectId, searchDTO.getSearchArgs(), searchDTO.getAdvancedSearchArgs(), searchDTO.getContent()));
         Page<ProductVersionPageDTO> versionPage = new Page<>();
         versionPage.setNumber(versionIds.getNumber());
         versionPage.setNumberOfElements(versionIds.getNumberOfElements());
