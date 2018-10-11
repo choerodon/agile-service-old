@@ -190,6 +190,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String URL_TEMPLATE3 = "&paramName=";
     private static final String URL_TEMPLATE4 = "&paramIssueId=";
     private static final String URL_TEMPLATE5 = "&paramOpenIssueId=";
+    private static final String URL_TEMPLATE6 = "&organizationId=";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -285,7 +286,7 @@ public class IssueServiceImpl implements IssueService {
         String summary =  result.getIssueNum() + "-" + result.getSummary();
         String userName = result.getReporterName();
         ProjectDTO projectDTO = userRepository.queryProject(projectId);
-        String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId();
+        String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId();
         userIds.stream().forEach(id -> { siteMsgUtil.issueCreate(id, userName, summary, url); });
         return result;
     }
@@ -310,18 +311,22 @@ public class IssueServiceImpl implements IssueService {
             String summary =  result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getAssigneeName();
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
-            StringBuilder url = new StringBuilder(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId());
+            StringBuilder url = new StringBuilder();
             if ("sub_task".equals(result.getTypeCode())) {
-                url.append(URL_TEMPLATE5 + result.getParentIssueId());
+                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getParentIssueNum() + URL_TEMPLATE4 + result.getParentIssueId() + URL_TEMPLATE5 + result.getIssueId());
+            } else {
+                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId());
             }
             userIds.stream().forEach(id -> { siteMsgUtil.issueAssignee(id, userName, summary, url.toString()); });
         }
         if (fieldList.contains("statusId") && result.getStatusId() != null && issueStatusMapper.selectByPrimaryKey(result.getStatusId()).getCompleted() && result.getAssigneeId() != null) {
-            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(result, IssueDTO.class));
+            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", result);
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
-            StringBuilder url = new StringBuilder(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId());
+            StringBuilder url = new StringBuilder();
             if ("sub_task".equals(result.getTypeCode())) {
-                url.append(URL_TEMPLATE5 + result.getParentIssueId());
+                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getParentIssueNum() + URL_TEMPLATE4 + result.getParentIssueId() + URL_TEMPLATE5 + result.getIssueId());
+            } else {
+                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId());
             }
             Long[] ids = new Long[1];
             ids[0] = result.getAssigneeId();
@@ -899,7 +904,7 @@ public class IssueServiceImpl implements IssueService {
         String summary =  result.getIssueNum() + "-" + result.getSummary();
         String userName = result.getReporterName();
         ProjectDTO projectDTO = userRepository.queryProject(projectId);
-        String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getParentIssueId();
+        String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getParentIssueNum() + URL_TEMPLATE4 + result.getParentIssueId() + URL_TEMPLATE5 + result.getIssueId();
         userIds.stream().forEach(id -> { siteMsgUtil.issueCreate(id, userName, summary, url); });
         return result;
     }
