@@ -38,7 +38,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     private void getIds(List<MessageDO> result, List<Long> ids) {
         for (MessageDO messageDO : result) {
-            if ("users".equals(messageDO.getNoticeType()) && messageDO.getEnable() && messageDO.getUser() != null && messageDO.getUser().length() != 0) {
+            if ("users".equals(messageDO.getNoticeType()) && messageDO.getEnable() && messageDO.getUser() != null && messageDO.getUser().length() != 0 && !"null".equals(messageDO.getUser())) {
                 String[] strs = messageDO.getUser().split(",");
                 for (String str : strs) {
                     Long id = Long.parseLong(str);
@@ -145,7 +145,7 @@ public class NoticeServiceImpl implements NoticeService {
         String[] users = null;
         if (changeMessageDO.getEnable()) {
             res.add(changeMessageDO.getNoticeType());
-            users = "users".equals(changeMessageDO.getNoticeType()) && changeMessageDO.getUser() != null && !"null".equals(changeMessageDO.getUser()) ? changeMessageDO.getUser().split(",") : null;
+            users = "users".equals(changeMessageDO.getNoticeType()) && changeMessageDO.getUser() != null && changeMessageDO.getUser().length() != 0 && !"null".equals(changeMessageDO.getUser()) ? changeMessageDO.getUser().split(",") : null;
         }
         return users;
     }
