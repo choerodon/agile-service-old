@@ -343,9 +343,6 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
-    private ProjectDTO getProjectById(Long projectId) {
-        return userFeignClient.queryProject(projectId).getBody();
-    }
 
     @Override
     public IssueMoveDTO move(Long projectId, Long issueId, IssueMoveDTO issueMoveDTO) {
@@ -357,7 +354,7 @@ public class BoardServiceImpl implements BoardService {
         // 发送消息
         if (issueStatusMapper.selectByPrimaryKey(issueE.getStatusId()).getCompleted() && issueDO.getAssigneeId() != null) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDO, IssueDTO.class));
-            ProjectDTO projectDTO = getProjectById(projectId);
+            ProjectDTO projectDTO = userRepository.queryProject(projectId);
             String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getIssueId();
             String summary = projectDTO.getCode() + "-" + issueDO.getIssueNum() + "-" + issueDO.getSummary();
             Long[] ids = new Long[1];

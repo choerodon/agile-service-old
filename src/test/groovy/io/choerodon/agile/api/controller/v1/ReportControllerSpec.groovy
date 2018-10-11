@@ -14,6 +14,7 @@ import io.choerodon.agile.api.dto.IssuePriorityDistributionChartDTO
 import io.choerodon.agile.api.dto.IssueTypeDistributionChartDTO
 import io.choerodon.agile.api.dto.IssueUpdateDTO
 import io.choerodon.agile.api.dto.PieChartDTO
+import io.choerodon.agile.api.dto.ProjectDTO
 import io.choerodon.agile.api.dto.ReportIssueDTO
 import io.choerodon.agile.api.dto.SprintBurnDownReportDTO
 import io.choerodon.agile.api.dto.SprintDetailDTO
@@ -161,6 +162,10 @@ class ReportControllerSpec extends Specification {
         siteMsgUtil.issueCreate(*_) >> null
         siteMsgUtil.issueAssignee(*_) >> null
         siteMsgUtil.issueSolve(*_) >> null
+        ProjectDTO projectDTO = new ProjectDTO()
+        projectDTO.setCode("AG")
+        projectDTO.setName("AG")
+        userRepository.queryProject(*_) >> projectDTO
     }
 
     def 'createSprintToStart'() {
