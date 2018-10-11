@@ -43,6 +43,7 @@ public class BoardServiceImpl implements BoardService {
     private static final String URL_TEMPLATE3 = "&paramName=";
     private static final String URL_TEMPLATE4 = "&paramIssueId=";
     private static final String URL_TEMPLATE5 = "&paramOpenIssueId=";
+    private static final String URL_TEMPLATE6 = "&organizationId=";
 
     @Autowired
     private BoardRepository boardRepository;
@@ -356,9 +357,16 @@ public class BoardServiceImpl implements BoardService {
         if (issueStatusMapper.selectByPrimaryKey(issueE.getStatusId()).getCompleted() && issueDO.getAssigneeId() != null) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDO, IssueDTO.class));
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
-            StringBuilder url = new StringBuilder(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getIssueId());
+            StringBuilder url = new StringBuilder();
             if ("sub_task".equals(issueDO.getTypeCode())) {
-                url.append(URL_TEMPLATE5 + issueDO.getParentIssueId());
+                IssueDO pIssue = issueMapper.selectByPrimaryKey(issueDO.getParentIssueId());
+                String num = "";
+                if (pIssue != null) {
+                    num = pIssue.getIssueNum();
+                }
+                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + num + URL_TEMPLATE4 + issueDO.getIssueId() + URL_TEMPLATE5 + issueDO.getParentIssueId());
+            } else {
+                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
             }
             String summary = projectDTO.getCode() + "-" + issueDO.getIssueNum() + "-" + issueDO.getSummary();
             Long[] ids = new Long[1];
