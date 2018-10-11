@@ -36,7 +36,7 @@ public class NoticeMessageAssembler {
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(ids, true);
         messageDOList.forEach(messageDO -> {
             List<IdWithNameDTO> idWithNameDTOList = new ArrayList<>();
-            if (messageDO.getEnable() && messageDO.getUser() != null && messageDO.getUser().length() != 0) {
+            if (messageDO.getEnable() && messageDO.getUser() != null && messageDO.getUser().length() != 0 && !"null".equals(messageDO.getUser())) {
                 String[] strs = messageDO.getUser().split(",");
                 for (String str : strs) {
                     Long id = Long.parseLong(str);

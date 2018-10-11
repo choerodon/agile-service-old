@@ -18,7 +18,7 @@ public class SiteMsgUtil {
     @Autowired
     private NotifyFeignClient notifyFeignClient;
 
-    public void issueCreate(Long userId,String userName, String summary) {
+    public void issueCreate(Long userId,String userName, String summary, String url) {
         WsSendDTO wsSendDTO = new WsSendDTO();
         wsSendDTO.setId(userId);
         wsSendDTO.setCode("issueCreate");
@@ -26,11 +26,12 @@ public class SiteMsgUtil {
         Map<String, Object> params = new HashMap<>();
         params.put("userName", userName);
         params.put("summary", summary);
+        params.put("url", url);
         wsSendDTO.setParams(params);
         notifyFeignClient.postPm(wsSendDTO);
     }
 
-    public void issueAssignee(Long userId, String userName, String summary) {
+    public void issueAssignee(Long userId, String userName, String summary, String url) {
         WsSendDTO wsSendDTO = new WsSendDTO();
         wsSendDTO.setId(userId);
         wsSendDTO.setCode("issueAssignee");
@@ -38,11 +39,12 @@ public class SiteMsgUtil {
         Map<String, Object> params = new HashMap<>();
         params.put("userName", userName);
         params.put("summary", summary);
+        params.put("url", url);
         wsSendDTO.setParams(params);
         notifyFeignClient.postPm(wsSendDTO);
     }
 
-    public void issueSolve(Long userId, String userName, String summary) {
+    public void issueSolve(Long userId, String userName, String summary, String url) {
         WsSendDTO wsSendDTO = new WsSendDTO();
         wsSendDTO.setId(userId);
         wsSendDTO.setCode("issueSolve");
@@ -50,6 +52,7 @@ public class SiteMsgUtil {
         Map<String, Object> params = new HashMap<>();
         params.put("userName", userName);
         params.put("summary", summary);
+        params.put("url", url);
         wsSendDTO.setParams(params);
         notifyFeignClient.postPm(wsSendDTO);
     }
