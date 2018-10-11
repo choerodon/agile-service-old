@@ -103,8 +103,8 @@ public class NoticeServiceImpl implements NoticeService {
         }
     }
 
-    private void addUsersByAssigneer(List<String> res, List<Long> result, IssueDTO issueDTO) {
-        if (res.contains("assigneer") && issueDTO.getAssigneeId() != null && !result.contains(issueDTO.getAssigneeId())) {
+    private void addUsersByAssigneer(List<String> res, List<Long> result, IssueDTO issueDTO, String event) {
+        if (res.contains("assigneer") && issueDTO.getAssigneeId() != null && !result.contains(issueDTO.getAssigneeId()) && !"issue_created".equals(event)) {
             result.add(issueDTO.getAssigneeId());
         }
     }
@@ -171,7 +171,7 @@ public class NoticeServiceImpl implements NoticeService {
         }
         List<Long> result = new ArrayList<>();
         addUsersByReporter(res, result, issueDTO);
-        addUsersByAssigneer(res, result, issueDTO);
+        addUsersByAssigneer(res, result, issueDTO, event);
         addUsersByProjectOwner(projectId, res, result);
         addUsersByUsers(res, result, users);
         return result;
