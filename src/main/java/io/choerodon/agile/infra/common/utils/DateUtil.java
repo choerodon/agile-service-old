@@ -111,6 +111,58 @@ public class DateUtil {
     }
 
     /**
+     * 获取2个时间中的工作天数。排除周末和国家法定节假日
+     *
+     * @param dayOne       dayOne
+     * @param dayTwo       dayTwo
+     * @param excludedDate 要排除的日期
+     * @return Integer
+     */
+    public Integer getDaysBetweenDifferentDate(Date dayOne, Date dayTwo, List<Date> excludedDate) {
+        if (dayOne == null || dayTwo == null) {
+            throw new IllegalArgumentException("date can't be null");
+        } else if (isSameDay(dayOne, dayTwo)) {
+            return 0;
+        } else {
+            Set<Integer> year = new HashSet<>();
+            Set<Date> dates = new HashSet<>();
+            if (dayOne.after(dayTwo)) {
+                Date tmp = dayOne;
+                dayOne = dayTwo;
+                dayTwo = tmp;
+            }
+            final Date startDate = dayOne;
+            final Date endDate = dayTwo;
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(startDate);
+            int i = 0;
+            while (calendar.getTime().getTime() <= endDate.getTime()) {
+                if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+                    dates.add(calendar.getTime());
+                }
+                year.add(calendar.get(Calendar.YEAR));
+                calendar.add(Calendar.DAY_OF_YEAR, 1);
+                i++;
+            }
+            handleHolidays(dates, year, startDate, endDate);
+            handleExcludedDate(excludedDate, dates);
+            return i - dates.size();
+        }
+    }
+
+    private void handleExcludedDate(List<Date> excludedDate, Set<Date> dates) {
+        if (excludedDate != null && !excludedDate.isEmpty()) {
+            Set<Date> remove = new HashSet<>(dates.size());
+            dates.forEach(date -> excludedDate.forEach(d -> {
+                if (isSameDay(d, date)) {
+                    remove.add(date);
+                }
+            }));
+            dates.removeAll(remove);
+        }
+    }
+
+    /**
      * 获取时间段内的非工作日(包含周末和国家法定节假日)
      *
      * @param dayOne dayOne
@@ -138,20 +190,26 @@ public class DateUtil {
         final Date startDate = dayOne;
         final Date endDate = dayTwo;
         getDaysInterval(startDate, endDate, year, dates);
+        handleHolidays(dates, year, startDate, endDate);
+        return dates;
+    }
+
+    private void handleHolidays(Set<Date> dates, Set<Integer> year, Date startDate, Date endDate) {
         if (!dates.isEmpty()) {
             Set<WorkCalendarHolidayRefDO> holidays = new HashSet<>();
             year.forEach(y -> holidays.addAll(new HashSet<>(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(String.valueOf(y)))));
             if (!holidays.isEmpty()) {
-                handleHolidays(dates, holidays, startDate, endDate);
+                Set<Date> remove = new HashSet<>(dates.size() << 1);
+                Set<Date> add = new HashSet<>(dates.size() << 1);
+                handleHolidaysRemoveAndAdd(remove, add, dates, holidays, startDate, endDate);
+                dates.addAll(add);
+                dates.removeAll(remove);
             }
         }
-        return dates;
     }
 
-    private void handleHolidays(Set<Date> dates, Set<WorkCalendarHolidayRefDO> holidays, Date startDate, Date endDate) {
+    private void handleHolidaysRemoveAndAdd(Set<Date> remove, Set<Date> add, Set<Date> dates, Set<WorkCalendarHolidayRefDO> holidays, Date startDate, Date endDate) {
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);
-        Set<Date> remove = new HashSet<>(dates.size() << 1);
-        Set<Date> add = new HashSet<>(dates.size() << 1);
         dates.forEach(date -> holidays.forEach(holiday -> {
             try {
                 Date holidayDate = sdf.parse(holiday.getHoliday());
@@ -164,8 +222,6 @@ public class DateUtil {
                 LOGGER.warn(PARSE_EXCEPTION, e);
             }
         }));
-        dates.addAll(add);
-        dates.removeAll(remove);
     }
 
 
@@ -222,7 +278,7 @@ public class DateUtil {
 
     private static boolean isSameDay(Calendar cal1, Calendar cal2) {
         if (cal1 != null && cal2 != null) {
-            return cal1.get(0) == cal2.get(0) && cal1.get(1) == cal2.get(1) && cal1.get(6) == cal2.get(6);
+            return cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) && cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
         } else {
             throw new IllegalArgumentException("The date must not be null");
         }
