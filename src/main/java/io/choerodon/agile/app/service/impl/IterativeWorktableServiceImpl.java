@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import io.choerodon.agile.infra.mapper.SprintWorkCalendarRefMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +47,12 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private DateUtil dateUtil;
+
+    @Autowired
+    private SprintWorkCalendarRefMapper sprintWorkCalendarRefMapper;
 
     @Override
     public List<PriorityDistributeDTO> queryPriorityDistribute(Long projectId, Long sprintId) {
@@ -101,10 +108,11 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
         List<AssigneeIssueDO> assigneeIssueDOList = iterativeWorktableMapper.queryAssigneeInfoBySprintId(projectId, sprintId);
         result.setAssigneeIssueDTOList(iterativeWorktableAssembler.assigneeIssueDOToDTO(assigneeIssueDOList));
         if (result.getEndDate() != null) {
-            result.setDayRemain(DateUtil.differentDaysByMillisecond(new Date(), result.getEndDate()));
+            result.setDayRemain(dateUtil.getDaysBetweenDifferentDate(new Date(), result.getEndDate(), sprintWorkCalendarRefMapper.queryBySprintIdAndProjectId(sprintId, projectId)));
         }
         if (result.getStartDate() != null && result.getEndDate() != null) {
-            result.setDayTotal(DateUtil.differentDaysByMillisecond(result.getStartDate(), result.getEndDate()));
+            result.setDayRemain(dateUtil.getDaysBetweenDifferentDate(result.getStartDate(), result.getEndDate(), sprintWorkCalendarRefMapper.queryBySprintIdAndProjectId(sprintId, projectId)));
+
         }
         result.setIssueCount(sprintMapper.queryIssueCountInActiveBoard(projectId, sprintId));
         return result;
