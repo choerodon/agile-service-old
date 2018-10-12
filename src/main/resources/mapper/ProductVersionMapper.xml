@@ -238,6 +238,7 @@
         WHERE avir.version_id = #{versionId} AND ai.project_id = #{projectId}
               AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix' AND ai.status_id = ais.id
               AND ais.category_code != 'done'
+              AND ai.type_code NOT IN ('issue_test')
     </select>
 
     <select id="queryPlanVersionNames" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
