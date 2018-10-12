@@ -8,7 +8,6 @@ import io.choerodon.agile.infra.dataobject.MessageDetailDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.NoticeDetailMapper;
 import io.choerodon.agile.infra.mapper.NoticeMapper;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
