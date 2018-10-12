@@ -93,9 +93,6 @@ class SprintControllerSpec extends Specification {
     @Qualifier("mockEventProducerTemplate")
     private EventProducerTemplate eventProducerTemplate
 
-    @Autowired
-    @Qualifier("mockNoticeService")
-    private NoticeService noticeService
 
     @Autowired
     @Qualifier("mockSiteMsgUtil")
@@ -121,10 +118,6 @@ class SprintControllerSpec extends Specification {
         and: 'mockSagaClient'
         sagaClient.startSaga(_, _) >> null
 
-        and:
-        List<Long> users = new ArrayList<>();
-        users.add(1L)
-        noticeService.queryUserIdsByProjectId(*_) >> users
 
         and:
         siteMsgUtil.issueCreate(*_) >> null

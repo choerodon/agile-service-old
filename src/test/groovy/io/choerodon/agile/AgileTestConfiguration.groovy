@@ -125,12 +125,6 @@ class AgileTestConfiguration {
         detachedMockFactory.Mock(UserRepository)
     }
 
-    @Bean("mockNoticeService")
-    @Primary
-    NoticeService noticeService() {
-        detachedMockFactory.Mock(NoticeService)
-    }
-
     @Bean("mockSiteMsgUtil")
     @Primary
     SiteMsgUtil siteMsgUtil() {

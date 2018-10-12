@@ -46,7 +46,7 @@ public class NoticeController {
                                        @ApiParam(value = "修改的设置", required = true)
                                        @RequestBody List<MessageDTO> messageDTOList) {
         noticeService.updateNotice(projectId, messageDTOList);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
 }

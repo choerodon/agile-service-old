@@ -100,9 +100,6 @@ class ReportControllerSpec extends Specification {
     @Autowired
     private ReportMapper reportMapper
 
-    @Autowired
-    @Qualifier("mockNoticeService")
-    private NoticeService noticeService
 
     @Autowired
     @Qualifier("mockSiteMsgUtil")
@@ -153,10 +150,6 @@ class ReportControllerSpec extends Specification {
         Mockito.when(redisTemplate.opsForValue()).thenReturn(valueOperations)
         Mockito.doNothing().when(valueOperations).set(anyString(), anyString())
 
-        and:
-        List<Long> users = new ArrayList<>();
-        users.add(1L)
-        noticeService.queryUserIdsByProjectId(*_) >> users
 
         and:
         siteMsgUtil.issueCreate(*_) >> null

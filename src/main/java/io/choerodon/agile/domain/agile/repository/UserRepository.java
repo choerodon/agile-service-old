@@ -1,9 +1,12 @@
 package io.choerodon.agile.domain.agile.repository;
 
 import io.choerodon.agile.api.dto.ProjectDTO;
+import io.choerodon.agile.api.dto.RoleAssignmentSearchDTO;
+import io.choerodon.agile.api.dto.RoleDTO;
 import io.choerodon.agile.api.dto.UserDTO;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
+import io.choerodon.core.domain.Page;
 
 import java.util.List;
 import java.util.Map;
@@ -42,4 +45,8 @@ public interface UserRepository {
      * @return ProjectDTO
      */
     ProjectDTO queryProject(Long projectId);
+
+    List<RoleDTO> listRolesWithUserCountOnProjectLevel(Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO);
+
+    Page<UserDTO>  pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO);
 }

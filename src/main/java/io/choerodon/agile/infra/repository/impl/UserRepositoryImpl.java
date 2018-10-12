@@ -1,6 +1,8 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.api.dto.ProjectDTO;
+import io.choerodon.agile.api.dto.RoleAssignmentSearchDTO;
+import io.choerodon.agile.api.dto.RoleDTO;
 import io.choerodon.agile.api.dto.UserDTO;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.UserDO;
@@ -78,5 +80,17 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public ProjectDTO queryProject(Long projectId) {
         return userFeignClient.queryProject(projectId).getBody();
+    }
+
+    @Override
+    public List<RoleDTO> listRolesWithUserCountOnProjectLevel(Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO) {
+        ResponseEntity<List<RoleDTO>> roles = userFeignClient.listRolesWithUserCountOnProjectLevel(sourceId, roleAssignmentSearchDTO);
+        return roles != null ? roles.getBody() : new ArrayList<>();
+    }
+
+    @Override
+    public Page<UserDTO> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO) {
+        ResponseEntity<Page<UserDTO>> users = userFeignClient.pagingQueryUsersByRoleIdOnProjectLevel(page, size, roleId, sourceId, roleAssignmentSearchDTO);
+        return users != null ? users.getBody() : new Page<>();
     }
 }
