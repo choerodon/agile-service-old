@@ -349,16 +349,33 @@
     </select>
 
     <select id="hasIssue" resultType="java.lang.Boolean">
-        SELECT CASE COUNT(1) WHEN 0 THEN FALSE ELSE TRUE END
-        FROM agile_issue ai
-        LEFT JOIN agile_issue_sprint_rel aisr ON aisr.issue_id = ai.issue_id
-        WHERE ai.project_id = #{projectId} AND ai.type_code NOT IN ('sub_task', 'issue_test', 'issue_epic')
+        select CASE COUNT(1) WHEN 0 THEN FALSE ELSE TRUE END
+        from agile_issue ai
+        where ai.project_id = #{projectId} AND ai.type_code NOT IN ( 'sub_task', 'issue_test', 'issue_epic' )
+        and ai.issue_id
         <choose>
             <when test="sprintId != null and sprintId != 0">
-                AND aisr.sprint_id = #{sprintId}
+                in (SELECT
+                aisr1.issue_id
+                FROM
+                agile_issue_sprint_rel aisr1,
+                agile_sprint asp
+                WHERE
+                aisr1.project_id = #{projectId}
+                AND aisr1.sprint_id = asp.sprint_id
+                AND asp.status_code != 'closed'
+                AND aisr1.sprint_id = #{sprintId})
             </when>
             <otherwise>
-                AND (aisr.sprint_id IS NULL OR aisr.sprint_id = 0)
+                not in (SELECT
+                aisr1.issue_id
+                FROM
+                agile_issue_sprint_rel aisr1,
+                agile_sprint asp
+                WHERE
+                aisr1.project_id = #{projectId}
+                AND aisr1.sprint_id = asp.sprint_id
+                AND asp.status_code != 'closed' )
             </otherwise>
         </choose>
     </select>
