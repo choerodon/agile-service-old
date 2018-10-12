@@ -3,9 +3,9 @@ package io.choerodon.agile.app.service.impl;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.NoticeMessageAssembler;
 import io.choerodon.agile.app.service.NoticeService;
+import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.MessageDO;
 import io.choerodon.agile.infra.dataobject.MessageDetailDO;
-import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.NoticeDetailMapper;
 import io.choerodon.agile.infra.mapper.NoticeMapper;
 import io.choerodon.core.domain.Page;
@@ -30,7 +30,7 @@ public class NoticeServiceImpl implements NoticeService {
     private NoticeDetailMapper noticeDetailMapper;
 
     @Autowired
-    private UserFeignClient userFeignClient;
+    private UserRepository userRepository;
 
     @Autowired
     private NoticeMessageAssembler noticeMessageAssembler;
@@ -112,7 +112,7 @@ public class NoticeServiceImpl implements NoticeService {
         if (res.contains("project_owner")) {
             RoleAssignmentSearchDTO roleAssignmentSearchDTO = new RoleAssignmentSearchDTO();
             Long roleId = null;
-            List<RoleDTO> roleDTOS = userFeignClient.listRolesWithUserCountOnProjectLevel(projectId, roleAssignmentSearchDTO).getBody();
+            List<RoleDTO> roleDTOS = userRepository.listRolesWithUserCountOnProjectLevel(projectId, roleAssignmentSearchDTO);
             for (RoleDTO roleDTO : roleDTOS) {
                 if ("role/project/default/project-owner".equals(roleDTO.getCode())) {
                     roleId = roleDTO.getId();
@@ -120,7 +120,7 @@ public class NoticeServiceImpl implements NoticeService {
                 }
             }
             if (roleId != null) {
-                Page<UserDTO> userDTOS = userFeignClient.pagingQueryUsersByRoleIdOnProjectLevel(0, 200,roleId, projectId, roleAssignmentSearchDTO).getBody();
+                Page<UserDTO> userDTOS = userRepository.pagingQueryUsersByRoleIdOnProjectLevel(0, 300,roleId, projectId, roleAssignmentSearchDTO);
                 for (UserDTO userDTO : userDTOS) {
                     if (!result.contains(userDTO.getId())) {
                         result.add(userDTO.getId());

@@ -86,9 +86,6 @@ class IssueControllerSpec extends Specification {
     @Qualifier("mockUserRepository")
     private UserRepository userRepository
 
-    @Autowired
-    @Qualifier("mockNoticeService")
-    private NoticeService noticeService
 
     @Autowired
     @Qualifier("mockSiteMsgUtil")
@@ -141,10 +138,6 @@ class IssueControllerSpec extends Specification {
         and: 'mockSagaClient'
         sagaClient.startSaga(_, _) >> null
 
-        and:
-        List<Long> users = new ArrayList<>();
-        users.add(1L)
-        noticeService.queryUserIdsByProjectId(*_) >> users
 
         and:
         siteMsgUtil.issueCreate(*_) >> null
