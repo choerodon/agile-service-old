@@ -8,5 +8,11 @@ import io.choerodon.agile.infra.dataobject.SprintWorkCalendarRefDO;
  */
 public interface SprintWorkCalendarRefRepository {
 
+    /**
+     * 创建
+     * @param  sprintWorkCalendarRefDO sprintWorkCalendarRefDO
+     * @return SprintWorkCalendarRefDO
+     */
     SprintWorkCalendarRefDO create(SprintWorkCalendarRefDO sprintWorkCalendarRefDO);
+
 }

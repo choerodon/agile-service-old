@@ -66,7 +66,7 @@ public class IssueLinkTypeController {
         issueLinkTypeRule.verifyCreateData(issueLinkTypeCreateDTO, projectId);
         issueLinkTypeRule.verifyIssueLinkTypeName(projectId,issueLinkTypeCreateDTO.getLinkName(), null);
         return Optional.ofNullable(issueLinkTypeService.createIssueLinkType(issueLinkTypeCreateDTO))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.createIssueLinkType"));
     }
 
@@ -80,7 +80,7 @@ public class IssueLinkTypeController {
         issueLinkTypeRule.verifyUpdateData(issueLinkTypeDTO, projectId);
         issueLinkTypeRule.verifyIssueLinkTypeName(projectId,issueLinkTypeDTO.getLinkName(), issueLinkTypeDTO.getLinkTypeId());
         return Optional.ofNullable(issueLinkTypeService.updateIssueLinkType(issueLinkTypeDTO))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.updateIssueLinkType"));
     }
 

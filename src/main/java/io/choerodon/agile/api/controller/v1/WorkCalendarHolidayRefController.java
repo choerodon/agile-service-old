@@ -28,7 +28,7 @@ public class WorkCalendarHolidayRefController {
     @Autowired
     private WorkCalendarHolidayRefService workCalendarHolidayRefService;
 
-    @Permission(level = ResourceLevel.ORGANIZATION, roles = InitRoleCode.PROJECT_OWNER)
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = InitRoleCode.ORGANIZATION_ADMINISTRATOR)
     @ApiOperation("按年份更新工作日历假期")
     @PostMapping
     public ResponseEntity updateWorkCalendarHolidayRefByYear(@ApiParam(value = "项目id", required = true)
@@ -39,7 +39,7 @@ public class WorkCalendarHolidayRefController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR, InitRoleCode.ORGANIZATION_MEMBER})
     @ApiOperation("根据年份查询工作日历假期")
     @GetMapping
     public ResponseEntity<List<WorkCalendarHolidayRefDTO>> queryWorkCalendarHolidayRelByYear(@ApiParam(value = "项目id", required = true)
