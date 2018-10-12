@@ -140,6 +140,7 @@ public class NoticeServiceImpl implements NoticeService {
         }
     }
 
+
     private String[] judgeUserType(MessageDO changeMessageDO, List<String> res) {
         String[] users = null;
         if (changeMessageDO.getEnable()) {
