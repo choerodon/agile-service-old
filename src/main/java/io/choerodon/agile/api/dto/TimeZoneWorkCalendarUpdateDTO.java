@@ -1,17 +1,12 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
-import org.springframework.http.ResponseEntity;
-
-import java.util.function.Supplier;
 
 /**
  * @author dinghuang123@gmail.com
- * @since 2018/10/12
+ * @since 2018/10/15
  */
-public class TimeZoneWorkCalendarDTO  {
-
-    private Long timeZoneId;
+public class TimeZoneWorkCalendarUpdateDTO {
 
     private String areaCode;
 
@@ -21,30 +16,12 @@ public class TimeZoneWorkCalendarDTO  {
 
     private Long objectVersionNumber;
 
-    private Long organizationId;
-
-    public Long getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(Long organizationId) {
-        this.organizationId = organizationId;
-    }
-
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
     }
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
-    }
-
-    public Long getTimeZoneId() {
-        return timeZoneId;
-    }
-
-    public void setTimeZoneId(Long timeZoneId) {
-        this.timeZoneId = timeZoneId;
     }
 
     public String getAreaCode() {

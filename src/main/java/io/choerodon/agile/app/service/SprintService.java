@@ -52,5 +52,5 @@ public interface SprintService {
      * @param sprintId  sprintId
      * @return Date
      */
-    List<Date> queryNonWorkdays(Long projectId, Long sprintId);
+    List<String> queryNonWorkdays(Long projectId, Long sprintId);
 }

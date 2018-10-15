@@ -212,7 +212,7 @@ public class SprintController {
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "查询冲刺的时间范围内非工作日(包含周六周天)")
     @GetMapping(value = "/query_non_workdays/{sprint_id}")
-    public ResponseEntity<List<Date>> queryNonWorkdays(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<String>> queryNonWorkdays(@ApiParam(value = "项目id", required = true)
                                                        @PathVariable(name = "project_id") Long projectId,
                                                       @ApiParam(value = "项目id", required = true)
                                                        @PathVariable(name = "sprint_id") Long sprintId) {

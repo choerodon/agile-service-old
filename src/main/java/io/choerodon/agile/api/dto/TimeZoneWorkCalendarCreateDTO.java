@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import org.hibernate.validator.constraints.NotEmpty;
 
 /**
  * @author dinghuang123@gmail.com
@@ -8,31 +9,13 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class TimeZoneWorkCalendarCreateDTO {
 
-    private Long timeZoneId;
-
-    private Long organizationId;
-
+    @NotEmpty(message = "error.TimeZoneWorkCalendar.areaCode")
     private String areaCode;
 
+    @NotEmpty(message = "error.TimeZoneWorkCalendar.timeZoneCode")
     private String timeZoneCode;
 
     private String workTypeCode;
-
-    public Long getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(Long organizationId) {
-        this.organizationId = organizationId;
-    }
-
-    public Long getTimeZoneId() {
-        return timeZoneId;
-    }
-
-    public void setTimeZoneId(Long timeZoneId) {
-        this.timeZoneId = timeZoneId;
-    }
 
     public String getAreaCode() {
         return areaCode;

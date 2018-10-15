@@ -18,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(rollbackFor = Exception.class)
 public class TimeZoneWorkCalendarRepositoryImpl implements TimeZoneWorkCalendarRepository {
 
-    private static final String UPDATE_ERROR = "error.IssueLinkType.update";
-    private static final String INSERT_ERROR = "error.IssueLinkType.create";
+    private static final String UPDATE_ERROR = "error.TimeZoneWorkCalendar.update";
+    private static final String INSERT_ERROR = "error.TimeZoneWorkCalendar.create";
 
     @Autowired
     private TimeZoneWorkCalendarMapper timeZoneWorkCalendarMapper;
