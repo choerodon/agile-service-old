@@ -1,15 +1,10 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.dto.IdWithNameDTO;
-import io.choerodon.agile.api.dto.IssueCommonDTO;
 import io.choerodon.agile.api.dto.MessageDTO;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
-import io.choerodon.agile.infra.common.utils.ColorUtil;
-import io.choerodon.agile.infra.dataobject.IssueCommonDO;
-import io.choerodon.agile.infra.dataobject.LookupValueDO;
 import io.choerodon.agile.infra.dataobject.MessageDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
-import io.choerodon.agile.infra.mapper.LookupValueMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,8 +12,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/6/20.
@@ -31,7 +24,7 @@ public class NoticeMessageAssembler {
     private UserRepository userRepository;
 
 
-    public List<MessageDTO> MessageDOToIDTO(List<MessageDO> messageDOList, List<Long> ids) {
+    public List<MessageDTO> messageDOToIDTO(List<MessageDO> messageDOList, List<Long> ids) {
         List<MessageDTO> messageDTOList = new ArrayList<>(messageDOList.size());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(ids, true);
         messageDOList.forEach(messageDO -> {

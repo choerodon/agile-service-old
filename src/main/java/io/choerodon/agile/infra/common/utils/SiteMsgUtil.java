@@ -15,6 +15,10 @@ import java.util.Map;
 @Component
 public class SiteMsgUtil {
 
+    private static final String USERNAME = "userName";
+    private static final String SUMMARY = "summary";
+    private static final String URL = "url";
+
     @Autowired
     private NotifyFeignClient notifyFeignClient;
 
@@ -24,9 +28,9 @@ public class SiteMsgUtil {
         wsSendDTO.setCode("issueCreate");
         wsSendDTO.setTemplateCode("issueCreate-preset");
         Map<String, Object> params = new HashMap<>();
-        params.put("userName", userName);
-        params.put("summary", summary);
-        params.put("url", url);
+        params.put(USERNAME, userName);
+        params.put(SUMMARY, summary);
+        params.put(URL, url);
         wsSendDTO.setParams(params);
         notifyFeignClient.postPm(wsSendDTO);
     }
@@ -37,9 +41,9 @@ public class SiteMsgUtil {
         wsSendDTO.setCode("issueAssignee");
         wsSendDTO.setTemplateCode("issueAssignee-preset");
         Map<String, Object> params = new HashMap<>();
-        params.put("userName", userName);
-        params.put("summary", summary);
-        params.put("url", url);
+        params.put(USERNAME, userName);
+        params.put(SUMMARY, summary);
+        params.put(URL, url);
         wsSendDTO.setParams(params);
         notifyFeignClient.postPm(wsSendDTO);
     }
@@ -50,9 +54,9 @@ public class SiteMsgUtil {
         wsSendDTO.setCode("issueSolve");
         wsSendDTO.setTemplateCode("issueSolve-preset");
         Map<String, Object> params = new HashMap<>();
-        params.put("userName", userName);
-        params.put("summary", summary);
-        params.put("url", url);
+        params.put(USERNAME, userName);
+        params.put(SUMMARY, summary);
+        params.put(URL, url);
         wsSendDTO.setParams(params);
         notifyFeignClient.postPm(wsSendDTO);
     }
