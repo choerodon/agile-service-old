@@ -59,6 +59,12 @@
                     #{defaultAssigneeRole}
                 </foreach>
             </if>
+            <if test='advancedSearchArgs.managerId != null and advancedSearchArgs.managerId.size > 0'>
+                AND aic.manager_id IN
+                <foreach collection="advancedSearchArgs.managerId" item="managerId" open="(" separator="," close=")">
+                    #{managerId}
+                </foreach>
+            </if>
         </if>
         <if test='content != null and content != ""'>
             AND (aic.name LIKE CONCAT(CONCAT('%', #{content}), '%') OR aic.description LIKE CONCAT(CONCAT('%',#{content}), '%'))

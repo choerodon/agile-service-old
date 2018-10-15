@@ -98,11 +98,11 @@ public class IssueComponentController {
                                                                      @ApiParam(value = "是否包含测试")
                                                                      @RequestParam(required = false, name = "no_issue_test", defaultValue = "false") Boolean noIssueTest,
                                                                      @ApiParam(value = "查询参数", required = false)
-                                                                     @RequestBody(required = false)SearchDTO searchDTO,
+                                                                     @RequestBody(required = false) SearchDTO searchDTO,
                                                                      @ApiParam(value = "分页信息", required = true)
                                                                      @SortDefault(value = "component_id", direction = Sort.Direction.DESC)
                                                                      @ApiIgnore PageRequest pageRequest) {
-        return Optional.ofNullable(issueComponentService.queryComponentByProjectId(projectId, componentId, noIssueTest,searchDTO,pageRequest))
+        return Optional.ofNullable(issueComponentService.queryComponentByProjectId(projectId, componentId, noIssueTest, searchDTO, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.componentList.get"));
     }

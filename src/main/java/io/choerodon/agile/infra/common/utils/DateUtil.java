@@ -201,8 +201,14 @@ public class DateUtil {
             if (!holidays.isEmpty()) {
                 Set<Date> remove = new HashSet<>(dates.size() << 1);
                 Set<Date> add = new HashSet<>(dates.size() << 1);
+                Set<Date> adds = new HashSet<>(dates.size() << 1);
                 handleHolidaysRemoveAndAdd(remove, add, dates, holidays, startDate, endDate);
-                dates.addAll(add);
+                add.forEach(date -> dates.forEach(d -> {
+                    if (!isSameDay(date, d)) {
+                        adds.add(d);
+                    }
+                }));
+                dates.addAll(adds);
                 dates.removeAll(remove);
             }
         }

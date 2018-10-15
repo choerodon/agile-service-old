@@ -362,6 +362,9 @@ class SprintControllerSpec extends Specification {
         sprintUpdateDTO.objectVersionNumber = sprintDO.objectVersionNumber
         sprintUpdateDTO.startDate = sprintDO.startDate
         sprintUpdateDTO.endDate = sprintDO.endDate
+        List<Date> dateList = new ArrayList<>()
+        dateList.add(new Date())
+        sprintUpdateDTO.workDates = dateList
 
         when: '发送请求'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/sprint/start', sprintUpdateDTO, SprintDetailDTO.class, projectId)

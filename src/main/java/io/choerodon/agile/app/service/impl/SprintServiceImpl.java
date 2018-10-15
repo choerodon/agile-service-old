@@ -470,7 +470,7 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
-    public List<Date> queryNonWorkdays(Long projectId, Long sprintId) {
+    public List<String> queryNonWorkdays(Long projectId, Long sprintId) {
         SprintDO sprintDO = sprintMapper.queryByProjectIdAndSprintId(projectId, sprintId);
         if (sprintDO == null || sprintDO.getStartDate() == null || sprintDO.getEndDate() == null) {
             return new ArrayList<>();
@@ -481,7 +481,9 @@ public class SprintServiceImpl implements SprintService {
             query.setSprintId(projectId);
             List<SprintWorkCalendarRefDO> sprintWorkCalendarRefDOS = sprintWorkCalendarRefMapper.select(query);
             handleSprintNonWorkdays(sprintWorkCalendarRefDOS, dates);
-            return Ordering.from(Date::compareTo).sortedCopy(dates);
+            List<Date> result = Ordering.from(Date::compareTo).sortedCopy(dates);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+            return result.stream().map(sdf::format).collect(Collectors.toList());
         }
     }
 
