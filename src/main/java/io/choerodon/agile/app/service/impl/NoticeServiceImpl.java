@@ -23,6 +23,8 @@ import java.util.List;
 @Service
 public class NoticeServiceImpl implements NoticeService {
 
+    private static final String USERS = "users";
+
     @Autowired
     private NoticeMapper noticeMapper;
 
@@ -37,7 +39,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     private void getIds(List<MessageDO> result, List<Long> ids) {
         for (MessageDO messageDO : result) {
-            if ("users".equals(messageDO.getNoticeType()) && messageDO.getEnable() && messageDO.getUser() != null && messageDO.getUser().length() != 0 && !"null".equals(messageDO.getUser())) {
+            if (USERS.equals(messageDO.getNoticeType()) && messageDO.getEnable() && messageDO.getUser() != null && messageDO.getUser().length() != 0 && !"null".equals(messageDO.getUser())) {
                 String[] strs = messageDO.getUser().split(",");
                 for (String str : strs) {
                     Long id = Long.parseLong(str);
@@ -69,7 +71,7 @@ public class NoticeServiceImpl implements NoticeService {
         }
         List<Long> ids = new ArrayList<>();
         getIds(result, ids);
-        return noticeMessageAssembler.MessageDOToIDTO(result, ids);
+        return noticeMessageAssembler.messageDOToIDTO(result, ids);
     }
 
     @Override
@@ -131,7 +133,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     private void addUsersByUsers (List<String> res, List<Long> result, String[] users) {
-        if (res.contains("users") && users != null && users.length != 0) {
+        if (res.contains(USERS) && users != null && users.length != 0) {
             for (String str : users) {
                 if (!result.contains(Long.parseLong(str))) {
                     result.add(Long.parseLong(str));
@@ -145,7 +147,7 @@ public class NoticeServiceImpl implements NoticeService {
         String[] users = null;
         if (changeMessageDO.getEnable()) {
             res.add(changeMessageDO.getNoticeType());
-            users = "users".equals(changeMessageDO.getNoticeType()) && changeMessageDO.getUser() != null && changeMessageDO.getUser().length() != 0 && !"null".equals(changeMessageDO.getUser()) ? changeMessageDO.getUser().split(",") : null;
+            users = USERS.equals(changeMessageDO.getNoticeType()) && changeMessageDO.getUser() != null && changeMessageDO.getUser().length() != 0 && !"null".equals(changeMessageDO.getUser()) ? changeMessageDO.getUser().split(",") : null;
         }
         return users;
     }

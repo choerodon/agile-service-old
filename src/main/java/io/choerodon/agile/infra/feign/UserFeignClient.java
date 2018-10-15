@@ -7,14 +7,11 @@ import io.choerodon.agile.api.dto.UserDTO;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback;
 import io.choerodon.core.domain.Page;
-import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.choerodon.mybatis.pagehelper.domain.Sort;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.List;

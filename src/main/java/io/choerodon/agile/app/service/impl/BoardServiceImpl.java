@@ -380,7 +380,7 @@ public class BoardServiceImpl implements BoardService {
             ids[0] = issueDO.getAssigneeId();
             List<UserDO> userDOList = userFeignClient.listUsersByIds(ids).getBody();
             String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName()+userDOList.get(0).getRealName() : "";
-            userIds.stream().forEach(id -> { siteMsgUtil.issueSolve(id, userName, summary, url.toString()); });
+            userIds.stream().forEach(id -> siteMsgUtil.issueSolve(id, userName, summary, url.toString()));
         }
         return ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);
     }
