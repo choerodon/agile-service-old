@@ -4,17 +4,21 @@ import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.BoardDTO
 import io.choerodon.agile.api.dto.IssueMoveDTO
+import io.choerodon.agile.api.dto.ProjectDTO
 import io.choerodon.agile.api.dto.UserSettingDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.BoardService
+import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.BoardDO
 import io.choerodon.agile.infra.dataobject.ColumnAndIssueDO
 import io.choerodon.agile.infra.dataobject.IssueDO
 import io.choerodon.agile.infra.dataobject.IssueStatusDO
+import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.mapper.BoardMapper
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.IssueStatusMapper
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
@@ -55,14 +59,34 @@ class BoardControllerSpec extends Specification {
     @Autowired
     private IssueMapper issueMapper
 
+    @Autowired
+    @Qualifier("mockUserRepository")
+    private UserRepository userRepository
+
     @Shared
     def projectId = 2L
-    def boardName = "board-test2"
     def changeBoardName = "boardChange-2"
     def boardNameExtra = "boardExtra-3"
 
     @Shared
     def boardId
+
+    def setup() {
+        given:
+        ProjectDTO projectDTO = new ProjectDTO()
+        projectDTO.code = "AG"
+        projectDTO.name = "AG"
+        projectDTO.organizationId = 1L
+        userRepository.queryProject(*_) >> projectDTO
+
+        and:
+        UserDO userDO = new UserDO()
+        userDO.loginName = "1"
+        userDO.realName = "admin"
+        List<UserDO> userDOList = new ArrayList<>()
+        userDOList.add(userDO)
+        userRepository.listUsersByIds(*_) >> userDOList
+    }
 
 
     def 'createScrumBoard'() {
@@ -121,10 +145,10 @@ class BoardControllerSpec extends Specification {
         IssueMoveDTO issueMoveDTO = new IssueMoveDTO()
         IssueDO issue = issueMapper.selectByPrimaryKey(1L)
         issueMoveDTO.issueId = issue.getIssueId()
-        issueMoveDTO.statusId = 2L
+        issueMoveDTO.statusId = 3L
         issueMoveDTO.boardId = boardId
         issueMoveDTO.originColumnId = 1L
-        issueMoveDTO.columnId = 2L
+        issueMoveDTO.columnId = 3L
         issueMoveDTO.objectVersionNumber = 1L
 
         when:
@@ -138,7 +162,7 @@ class BoardControllerSpec extends Specification {
         then:
         entity.statusCode.is2xxSuccessful()
         IssueDO issueDO = issueMapper.selectByPrimaryKey(1L)
-        issueDO.statusId == 2L
+        issueDO.statusId == 3L
     }
 
     def 'queryByProjectId'() {

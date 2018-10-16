@@ -49,4 +49,6 @@ public interface UserRepository {
     List<RoleDTO> listRolesWithUserCountOnProjectLevel(Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO);
 
     Page<UserDTO>  pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO);
+
+    List<UserDO> listUsersByIds(Long[] ids);
 }

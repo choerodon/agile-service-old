@@ -93,4 +93,11 @@ public class UserRepositoryImpl implements UserRepository {
         ResponseEntity<Page<UserDTO>> users = userFeignClient.pagingQueryUsersByRoleIdOnProjectLevel(page, size, roleId, sourceId, roleAssignmentSearchDTO);
         return users != null ? users.getBody() : new Page<>();
     }
+
+    @Override
+    public List<UserDO> listUsersByIds(Long[] ids) {
+        ResponseEntity<List<UserDO>> users = userFeignClient.listUsersByIds(ids);
+        return users != null ? users.getBody() : new ArrayList<>();
+    }
+
 }

@@ -361,7 +361,7 @@ public class BoardServiceImpl implements BoardService {
         checkColumnContraint(projectId, issueMoveDTO, boardDO.getColumnConstraint(), issueDO.getStatusId());
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
         // 发送消息
-        if (issueStatusMapper.selectByPrimaryKey(issueE.getStatusId()).getCompleted() && issueDO.getAssigneeId() != null) {
+        if (issueStatusMapper.selectByPrimaryKey(issueE.getStatusId()).getCompleted() && issueDO.getAssigneeId() != null && !"issue_test".equals(issueDO.getTypeCode())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDO, IssueDTO.class));
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
             StringBuilder url = new StringBuilder();
@@ -378,7 +378,7 @@ public class BoardServiceImpl implements BoardService {
             String summary = projectDTO.getCode() + "-" + issueDO.getIssueNum() + "-" + issueDO.getSummary();
             Long[] ids = new Long[1];
             ids[0] = issueDO.getAssigneeId();
-            List<UserDO> userDOList = userFeignClient.listUsersByIds(ids).getBody();
+            List<UserDO> userDOList = userRepository.listUsersByIds(ids);
             String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName()+userDOList.get(0).getRealName() : "";
             userIds.stream().forEach(id -> siteMsgUtil.issueSolve(id, userName, summary, url.toString()));
         }
