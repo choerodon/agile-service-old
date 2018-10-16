@@ -4,10 +4,14 @@ import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.BoardDTO
 import io.choerodon.agile.api.dto.IssueMoveDTO
+import io.choerodon.agile.api.dto.MessageDTO
 import io.choerodon.agile.api.dto.ProjectDTO
+import io.choerodon.agile.api.dto.RoleDTO
+import io.choerodon.agile.api.dto.UserDTO
 import io.choerodon.agile.api.dto.UserSettingDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.BoardService
+import io.choerodon.agile.app.service.NoticeService
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.BoardDO
 import io.choerodon.agile.infra.dataobject.ColumnAndIssueDO
@@ -17,6 +21,7 @@ import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.mapper.BoardMapper
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.IssueStatusMapper
+import io.choerodon.core.domain.Page
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
@@ -29,6 +34,8 @@ import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
+
+import javax.management.relation.Role
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/8/7.
@@ -60,6 +67,9 @@ class BoardControllerSpec extends Specification {
     private IssueMapper issueMapper
 
     @Autowired
+    private NoticeService noticeService
+
+    @Autowired
     @Qualifier("mockUserRepository")
     private UserRepository userRepository
 
@@ -86,6 +96,19 @@ class BoardControllerSpec extends Specification {
         List<UserDO> userDOList = new ArrayList<>()
         userDOList.add(userDO)
         userRepository.listUsersByIds(*_) >> userDOList
+        List<RoleDTO> roles = new ArrayList<>()
+        RoleDTO roleDTO = new RoleDTO()
+        roleDTO.setCode("role/project/default/project-owner")
+        roleDTO.setId(1L)
+        roles.add(roleDTO)
+        userRepository.listRolesWithUserCountOnProjectLevel(*_) >> roles
+        Page<UserDTO> users = new Page<>()
+        List<UserDTO> userDOList1 = new ArrayList<>()
+        UserDTO u = new UserDTO()
+        u.setId(6L)
+        userDOList1.add(u)
+        users.setContent(userDOList1)
+        userRepository.pagingQueryUsersByRoleIdOnProjectLevel(*_) >> users
     }
 
 
@@ -150,6 +173,24 @@ class BoardControllerSpec extends Specification {
         issueMoveDTO.originColumnId = 1L
         issueMoveDTO.columnId = 3L
         issueMoveDTO.objectVersionNumber = 1L
+
+        and:
+        List<MessageDTO> messageDTOList = new ArrayList<>()
+        MessageDTO messageDTO1 = new MessageDTO()
+        messageDTO1.setEvent("issue_solved")
+        messageDTO1.setNoticeType("project_owner")
+        messageDTO1.setEnable(true)
+        messageDTO1.setNoticeName("项目所有者")
+        messageDTOList.add(messageDTO1)
+        MessageDTO messageDTO2 = new MessageDTO()
+        messageDTO2.setEvent("issue_solved")
+        messageDTO2.setNoticeType("users")
+        messageDTO2.setEnable(true)
+        messageDTO2.setNoticeName("用户")
+        messageDTO2.setUser("1,2")
+        messageDTOList.add(messageDTO2)
+
+        noticeService.updateNotice(projectId, messageDTOList)
 
         when:
         HttpEntity<IssueMoveDTO> issueMoveDTOHttpEntity = new HttpEntity<>(issueMoveDTO)
