@@ -32,7 +32,7 @@ public class WorkCalendarHolidayRefDO extends AuditDomain {
     /**
      * 状态，0为放假，1为补班
      */
-    private String status;
+    private Integer status;
 
     public Long getCalendarId() {
         return calendarId;
@@ -58,11 +58,11 @@ public class WorkCalendarHolidayRefDO extends AuditDomain {
         this.holiday = holiday;
     }
 
-    public String getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 

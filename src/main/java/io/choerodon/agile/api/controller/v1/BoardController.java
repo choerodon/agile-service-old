@@ -80,7 +80,7 @@ public class BoardController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("all data")
-    @GetMapping(value = "/{boardId}/all_data")
+    @GetMapping(value = "/{boardId}/all_data/{organization_id}")
     public ResponseEntity<JSONObject> queryByOptions(@ApiParam(value = "项目id", required = true)
                                                      @PathVariable(name = "project_id") Long projectId,
                                                      @ApiParam(value = "agile board id", required = true)
@@ -90,8 +90,10 @@ public class BoardController {
                                                      @ApiParam(value = "search item，only story", required = false)
                                                      @RequestParam(required = false) Boolean onlyStory,
                                                      @ApiParam(value = "quick filter", required = false)
-                                                     @RequestParam(required = false) List<Long> quickFilterIds) {
-        return Optional.ofNullable(boardService.queryAllData(projectId, boardId, assigneeId, onlyStory, quickFilterIds))
+                                                     @RequestParam(required = false) List<Long> quickFilterIds,
+                                                     @ApiParam(value = "组织id", required = true)
+                                                     @PathVariable(name = "organization_id") Long organizationId) {
+        return Optional.ofNullable(boardService.queryAllData(projectId, boardId, assigneeId, onlyStory, quickFilterIds, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.board.get"));
     }
@@ -152,7 +154,7 @@ public class BoardController {
                                                                  @PathVariable Long boardId,
                                                                  @ApiParam(value = "swimlaneBasedCode", required = true)
                                                                  @RequestParam String swimlaneBasedCode) {
-        return Optional.ofNullable(boardService.updateUserSettingBoard(projectId, boardId,swimlaneBasedCode))
+        return Optional.ofNullable(boardService.updateUserSettingBoard(projectId, boardId, swimlaneBasedCode))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.userSettingBoard.update"));
     }

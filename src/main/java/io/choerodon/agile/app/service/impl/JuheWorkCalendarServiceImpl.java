@@ -134,7 +134,7 @@ public class JuheWorkCalendarServiceImpl implements WorkCalendarService {
             WorkCalendarHolidayRefDO workCalendarHolidayRefDO = new WorkCalendarHolidayRefDO();
             workCalendarHolidayRefDO.setName(jsonObject.get("name") == null ? null : jsonObject.get("name").toString());
             workCalendarHolidayRefDO.setHoliday(jsonObject.get("festival").toString());
-            workCalendarHolidayRefDO.setStatus("0");
+            workCalendarHolidayRefDO.setStatus(0);
             workCalendarHolidayRefDO.setYear(Integer.valueOf(workCalendarHolidayRefDO.getHoliday().split("-")[0]));
             workCalendarHolidayRefDOS.add(workCalendarHolidayRefDO);
             List<DateStatus> list = JSON.parseArray(jsonObject.get("list").toString(), DateStatus.class).stream().filter(dateStatus -> !dateStatus.getDate().equals(workCalendarHolidayRefDO.getHoliday())).collect(Collectors.toList());
@@ -142,7 +142,7 @@ public class JuheWorkCalendarServiceImpl implements WorkCalendarService {
                 WorkCalendarHolidayRefDO day = new WorkCalendarHolidayRefDO();
                 day.setHoliday(dateStatus.getDate());
                 day.setYear(Integer.valueOf(day.getHoliday().split("-")[0]));
-                day.setStatus("1".equals(dateStatus.getStatus()) ? "0" : "1");
+                day.setStatus("1".equals(dateStatus.getStatus()) ? 0 : 1);
                 workCalendarHolidayRefDOS.add(day);
             });
         }

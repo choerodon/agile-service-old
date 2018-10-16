@@ -217,14 +217,15 @@ public class BoardServiceImpl implements BoardService {
         return sprintService.getActiveSprint(projectId);
     }
 
-    private BoardSprintDTO putCurrentSprint(SprintDO activeSprint) {
+    private BoardSprintDTO putCurrentSprint(SprintDO activeSprint, Long organizationId) {
         if (activeSprint != null) {
             BoardSprintDTO boardSprintDTO = new BoardSprintDTO();
             boardSprintDTO.setSprintId(activeSprint.getSprintId());
             boardSprintDTO.setSprintName(activeSprint.getSprintName());
             if (activeSprint.getEndDate() != null) {
                 boardSprintDTO.setDayRemain(dateUtil.getDaysBetweenDifferentDate(activeSprint.getStartDate(), activeSprint.getEndDate(),
-                        sprintWorkCalendarRefMapper.queryBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId())));
+                        sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()),
+                        sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()), organizationId));
             }
             return boardSprintDTO;
         }
@@ -250,7 +251,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public JSONObject queryAllData(Long projectId, Long boardId, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds) {
+    public JSONObject queryAllData(Long projectId, Long boardId, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId) {
         JSONObject jsonObject = new JSONObject(true);
         SprintDO activeSprint = getActiveSprint(projectId);
         Long activeSprintId = null;
@@ -278,7 +279,7 @@ public class BoardServiceImpl implements BoardService {
             issueForBoardDO.setImageUrl(imageUrl);
         })));
         jsonObject.put("columnsData", putColumnData(columns));
-        jsonObject.put("currentSprint", putCurrentSprint(activeSprint));
+        jsonObject.put("currentSprint", putCurrentSprint(activeSprint, organizationId));
         //处理用户默认看板设置，保存最近一次的浏览
         handleUserSetting(boardId, projectId);
         return jsonObject;
@@ -379,7 +380,7 @@ public class BoardServiceImpl implements BoardService {
             Long[] ids = new Long[1];
             ids[0] = issueDO.getAssigneeId();
             List<UserDO> userDOList = userRepository.listUsersByIds(ids);
-            String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName()+userDOList.get(0).getRealName() : "";
+            String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName() + userDOList.get(0).getRealName() : "";
             userIds.stream().forEach(id -> siteMsgUtil.issueSolve(id, userName, summary, url.toString()));
         }
         return ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);

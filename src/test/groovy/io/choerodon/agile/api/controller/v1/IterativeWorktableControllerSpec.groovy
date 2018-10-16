@@ -122,11 +122,12 @@ class IterativeWorktableControllerSpec extends Specification {
 
     def 'querySprintInfo'() {
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/sprint?sprintId={sprintId}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/sprint/{organizationId}?sprintId={sprintId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 SprintInfoDTO.class,
                 projectId,
+                1,
                 sprintId)
 
         then:
@@ -138,11 +139,12 @@ class IterativeWorktableControllerSpec extends Specification {
 
     def 'querySprintInfo fail'() {
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/sprint?sprintId={sprintId}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/sprint/{organizationId}?sprintId={sprintId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 String.class,
                 projectId,
+                1,
                 0L)
 
         then:

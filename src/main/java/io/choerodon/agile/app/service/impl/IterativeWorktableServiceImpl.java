@@ -101,17 +101,21 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
     }
 
     @Override
-    public SprintInfoDTO querySprintInfo(Long projectId, Long sprintId) {
+    public SprintInfoDTO querySprintInfo(Long projectId, Long sprintId, Long organizationId) {
         SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
         IterativeWorktableValidator.checkSprintExist(sprintDO);
         SprintInfoDTO result = ConvertHelper.convert(sprintDO, SprintInfoDTO.class);
         List<AssigneeIssueDO> assigneeIssueDOList = iterativeWorktableMapper.queryAssigneeInfoBySprintId(projectId, sprintId);
         result.setAssigneeIssueDTOList(iterativeWorktableAssembler.assigneeIssueDOToDTO(assigneeIssueDOList));
         if (result.getEndDate() != null) {
-            result.setDayRemain(dateUtil.getDaysBetweenDifferentDate(new Date(), result.getEndDate(), sprintWorkCalendarRefMapper.queryBySprintIdAndProjectId(sprintId, projectId)));
+            result.setDayRemain(dateUtil.getDaysBetweenDifferentDate(new Date(), result.getEndDate(),
+                    sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(sprintId, projectId),
+                    sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(sprintId, projectId), organizationId));
         }
         if (result.getStartDate() != null && result.getEndDate() != null) {
-            result.setDayRemain(dateUtil.getDaysBetweenDifferentDate(result.getStartDate(), result.getEndDate(), sprintWorkCalendarRefMapper.queryBySprintIdAndProjectId(sprintId, projectId)));
+            result.setDayRemain(dateUtil.getDaysBetweenDifferentDate(result.getStartDate(), result.getEndDate(),
+                    sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(sprintId, projectId),
+                    sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(sprintId, projectId), organizationId));
 
         }
         result.setIssueCount(sprintMapper.queryIssueCountInActiveBoard(projectId, sprintId));

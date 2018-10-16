@@ -48,9 +48,10 @@ public interface SprintService {
     /**
      * 查询冲刺期间非工作日
      *
-     * @param projectId projectId
-     * @param sprintId  sprintId
+     * @param projectId      projectId
+     * @param sprintId       sprintId
+     * @param organizationId organizationId
      * @return Date
      */
-    List<String> queryNonWorkdays(Long projectId, Long sprintId);
+    List<String> queryNonWorkdays(Long projectId, Long sprintId, Long organizationId);
 }

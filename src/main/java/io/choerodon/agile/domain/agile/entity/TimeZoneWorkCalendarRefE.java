@@ -5,13 +5,14 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/10/15
  */
 public class TimeZoneWorkCalendarRefE {
+
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     private Long calendarId;
 
@@ -25,11 +26,20 @@ public class TimeZoneWorkCalendarRefE {
 
     private Long objectVersionNumber;
 
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private Integer status;
 
-    public TimeZoneWorkCalendarRefE(Long timeZoneId, String workDay, Long organizationId) throws ParseException {
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public TimeZoneWorkCalendarRefE(Long timeZoneId, String workDay, Integer status, Long organizationId) throws ParseException {
         this.timeZoneId = timeZoneId;
         this.workDay = workDay;
+        this.status = status;
         this.organizationId = organizationId;
         this.year = initYear(workDay);
     }

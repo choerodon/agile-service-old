@@ -17,10 +17,16 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_time_zone_work_calendar.groo
             column(name: 'time_zone_code', type: 'VARCHAR(100)', remarks: '时区code') {
                 constraints(nullable: false)
             }
-            column(name: 'work_type_code', type: 'VARCHAR(50)', remarks: '工作类型', defaultValue: 'none') {
+            column(name: 'organization_id', type: 'BIGINT UNSIGNED', remarks: '组织id') {
                 constraints(nullable: false)
             }
-            column(name: 'organization_id', type: 'BIGINT UNSIGNED', remarks: '组织id') {
+            column(name: 'use_holiday', type: 'tinyint(1)', remarks: '是否包含节假日', defaultValue: '0') {
+                constraints(nullable: false)
+            }
+            column(name: 'saturday_work', type: 'tinyint(1)', remarks: '是否包含周六', defaultValue: '0') {
+                constraints(nullable: false)
+            }
+            column(name: 'sunday_work', type: 'tinyint(1)', remarks: '是否包含周日', defaultValue: '0') {
                 constraints(nullable: false)
             }
             column(name: "object_version_number", type: "BIGINT UNSIGNED", defaultValue: "1")

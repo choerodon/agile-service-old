@@ -30,6 +30,16 @@ public class SprintWorkCalendarRefDO extends AuditDomain {
 
     private Long projectId;
 
+    private Integer status;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     public Long getCalendarId() {
         return calendarId;
     }

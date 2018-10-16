@@ -1,9 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.TimeZoneWorkCalendarCreateDTO;
-import io.choerodon.agile.api.dto.TimeZoneWorkCalendarDTO;
-import io.choerodon.agile.api.dto.TimeZoneWorkCalendarRefDTO;
-import io.choerodon.agile.api.dto.TimeZoneWorkCalendarUpdateDTO;
+import io.choerodon.agile.api.dto.*;
 
 import java.util.List;
 
@@ -12,14 +9,6 @@ import java.util.List;
  * @since 2018/10/12
  */
 public interface TimeZoneWorkCalendarService {
-    /**
-     * 创建时区设置
-     *
-     * @param organizationId                organizationId
-     * @param timeZoneWorkCalendarCreateDTO timeZoneWorkCalendarCreateDTO
-     * @return TimeZoneWorkCalendarDTO
-     */
-    TimeZoneWorkCalendarDTO createTimeZoneWorkCalendar(Long organizationId, TimeZoneWorkCalendarCreateDTO timeZoneWorkCalendarCreateDTO);
 
     /**
      * 更新时区设置
@@ -32,22 +21,14 @@ public interface TimeZoneWorkCalendarService {
     TimeZoneWorkCalendarDTO updateTimeZoneWorkCalendar(Long organizationId, Long timeZoneId, TimeZoneWorkCalendarUpdateDTO timeZoneWorkCalendarUpdateDTO);
 
     /**
-     * 删除时区设置
-     *
-     * @param organizationId organizationId
-     * @param timeZoneId     timeZoneId
-     */
-    void deleteTimeZoneWorkCalendar(Long organizationId, Long timeZoneId);
-
-    /**
      * 创建时区下的工作日历
      *
-     * @param organizationId organizationId
-     * @param timeZoneId     timeZoneId
-     * @param date           date
+     * @param organizationId                   organizationId
+     * @param timeZoneId                       timeZoneId
+     * @param timeZoneWorkCalendarRefCreateDTO timeZoneWorkCalendarRefCreateDTO
      * @return TimeZoneWorkCalendarRefDTO
      */
-    TimeZoneWorkCalendarRefDTO createTimeZoneWorkCalendarRef(Long organizationId, Long timeZoneId, String date);
+    TimeZoneWorkCalendarRefDTO createTimeZoneWorkCalendarRef(Long organizationId, Long timeZoneId, TimeZoneWorkCalendarRefCreateDTO timeZoneWorkCalendarRefCreateDTO);
 
     /**
      * 删除工作日历
@@ -73,4 +54,13 @@ public interface TimeZoneWorkCalendarService {
      * @return TimeZoneWorkCalendarRefDTO
      */
     List<TimeZoneWorkCalendarRefDTO> queryTimeZoneWorkCalendarRefByTimeZoneId(Long organizationId, Long timeZoneId);
+
+    /**
+     * ¬
+     * 获取时区下的工作日历详情
+     *
+     * @param organizationId organizationId
+     * @return TimeZoneWorkCalendarRefCreateDTO
+     */
+    TimeZoneWorkCalendarRefDetailDTO queryTimeZoneWorkCalendarDetail(Long organizationId);
 }
