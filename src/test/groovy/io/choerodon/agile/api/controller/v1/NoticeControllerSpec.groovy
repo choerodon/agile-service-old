@@ -58,9 +58,11 @@ class NoticeControllerSpec extends Specification {
 
     def 'updateNotice'() {
         given:
+        String users = "1,2,3"
         List<MessageDO> originList = noticeMapper.selectAll()
         for (MessageDO messageDO : originList) {
             messageDO.setEnable(false)
+            messageDO.setUser(users)
         }
 
         when:
@@ -106,6 +108,7 @@ class NoticeControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
         for (MessageDTO messageDTO : entity.body) {
             messageDTO.enable == false
+            messageDTO.user == "1,2,3"
         }
     }
 
