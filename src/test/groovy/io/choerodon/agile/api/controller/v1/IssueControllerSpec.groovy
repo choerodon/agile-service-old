@@ -1119,6 +1119,29 @@ class IssueControllerSpec extends Specification {
         objectExpect != null
     }
 
+    def 'listStoryMapEpic'() {
+        when:
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/storymap/epics",
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                List.class,
+                projectId)
+        def entityWithParams = restTemplate.exchange("/v1/projects/{project_id}/issues/storymap/epics?showDoneEpic={showDoneEpic}&assigneeId={assigneeId}&onlyStory={onlyStory}",
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                List.class,
+                projectId,
+                true,
+                0L,
+                true)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+        entity.body.size() != 0
+        entityWithParams.statusCode.is2xxSuccessful()
+        entityWithParams.body.size() == 0
+    }
+
 
     def 'storymapMove'() {
         given:
