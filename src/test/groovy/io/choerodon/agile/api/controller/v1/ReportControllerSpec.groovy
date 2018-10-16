@@ -445,7 +445,7 @@ class ReportControllerSpec extends Specification {
 
         where: '设置期望值'
         fieldName      || expectSize
-        'assignee'     || 1
+        'assignee'     || 2
         'component'    || 1
         'typeCode'     || 2
         'version'      || 2
