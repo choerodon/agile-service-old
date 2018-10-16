@@ -384,6 +384,19 @@ class SprintControllerSpec extends Specification {
         result.statusCode == 'started'
     }
 
+    def 'queryUnClosedSprint'() {
+        when:
+        def entity = restTemplate.exchange('/v1/projects/{project_id}/sprint/unclosed',
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                List.class,
+                projectId)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+        entity.body.size() != 0
+    }
+
     def 'queryActiveSprint'() {
         when:
         def entity = restTemplate.exchange('/v1/projects/{project_id}/sprint/active',
