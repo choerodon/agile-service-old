@@ -16,6 +16,36 @@ public class TimeZoneWorkCalendarUpdateDTO {
 
     private Long objectVersionNumber;
 
+    private Boolean useHoliday;
+
+    private Boolean saturdayWork;
+
+    private Boolean sundayWork;
+
+    public Boolean getUseHoliday() {
+        return useHoliday;
+    }
+
+    public void setUseHoliday(Boolean useHoliday) {
+        this.useHoliday = useHoliday;
+    }
+
+    public Boolean getSaturdayWork() {
+        return saturdayWork;
+    }
+
+    public void setSaturdayWork(Boolean saturdayWork) {
+        this.saturdayWork = saturdayWork;
+    }
+
+    public Boolean getSundayWork() {
+        return sundayWork;
+    }
+
+    public void setSundayWork(Boolean sundayWork) {
+        this.sundayWork = sundayWork;
+    }
+
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
     }

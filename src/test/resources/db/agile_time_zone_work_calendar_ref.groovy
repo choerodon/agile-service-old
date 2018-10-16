@@ -23,6 +23,9 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_time_zone_work_calendar_ref.
             column(name: 'organization_id', type: 'BIGINT UNSIGNED', remarks: '组织id') {
                 constraints(nullable: false)
             }
+            column(name: 'status', type: 'tinyint(1)', remarks: '状态，0为放假，1为补班', defaultValue: '0') {
+                constraints(nullable: false)
+            }
             column(name: "object_version_number", type: "BIGINT UNSIGNED", defaultValue: "1")
             column(name: "created_by", type: "BIGINT UNSIGNED", defaultValue: "0")
             column(name: "creation_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")

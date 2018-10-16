@@ -8,6 +8,8 @@ import io.choerodon.mybatis.domain.AuditDomain;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.List;
 
 /**
  * @author dinghuang123@gmail.com
@@ -26,9 +28,24 @@ public class TimeZoneWorkCalendarDO extends AuditDomain {
 
     private String timeZoneCode;
 
-    private String workTypeCode;
-
     private Long organizationId;
+
+    private Boolean useHoliday;
+
+    private Boolean saturdayWork;
+
+    private Boolean sundayWork;
+
+    @Transient
+    private List<TimeZoneWorkCalendarRefDO>  timeZoneWorkCalendarRefDOS;
+
+    public List<TimeZoneWorkCalendarRefDO> getTimeZoneWorkCalendarRefDOS() {
+        return timeZoneWorkCalendarRefDOS;
+    }
+
+    public void setTimeZoneWorkCalendarRefDOS(List<TimeZoneWorkCalendarRefDO> timeZoneWorkCalendarRefDOS) {
+        this.timeZoneWorkCalendarRefDOS = timeZoneWorkCalendarRefDOS;
+    }
 
     public Long getOrganizationId() {
         return organizationId;
@@ -62,12 +79,28 @@ public class TimeZoneWorkCalendarDO extends AuditDomain {
         this.timeZoneCode = timeZoneCode;
     }
 
-    public String getWorkTypeCode() {
-        return workTypeCode;
+    public Boolean getUseHoliday() {
+        return useHoliday;
     }
 
-    public void setWorkTypeCode(String workTypeCode) {
-        this.workTypeCode = workTypeCode;
+    public void setUseHoliday(Boolean useHoliday) {
+        this.useHoliday = useHoliday;
+    }
+
+    public Boolean getSaturdayWork() {
+        return saturdayWork;
+    }
+
+    public void setSaturdayWork(Boolean saturdayWork) {
+        this.saturdayWork = saturdayWork;
+    }
+
+    public Boolean getSundayWork() {
+        return sundayWork;
+    }
+
+    public void setSundayWork(Boolean sundayWork) {
+        this.sundayWork = sundayWork;
     }
 
     @Override

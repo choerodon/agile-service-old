@@ -220,12 +220,12 @@ class BoardControllerSpec extends Specification {
 
     def 'queryByOptions'() {
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/board/{boardId}/all_data",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/board/{boardId}/all_data/{organizationId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 JSONObject.class,
                 projectId,
-                boardId)
+                boardId, 1)
         then:
         entity.statusCode.is2xxSuccessful()
         JSONObject result = entity.body

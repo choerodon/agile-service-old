@@ -211,12 +211,14 @@ public class SprintController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "查询冲刺的时间范围内非工作日(包含周六周天)")
-    @GetMapping(value = "/query_non_workdays/{sprint_id}")
+    @GetMapping(value = "/query_non_workdays/{sprint_id}/{organization_id}")
     public ResponseEntity<List<String>> queryNonWorkdays(@ApiParam(value = "项目id", required = true)
-                                                       @PathVariable(name = "project_id") Long projectId,
-                                                      @ApiParam(value = "项目id", required = true)
-                                                       @PathVariable(name = "sprint_id") Long sprintId) {
-        return Optional.ofNullable(sprintService.queryNonWorkdays(projectId,sprintId))
+                                                         @PathVariable(name = "project_id") Long projectId,
+                                                         @ApiParam(value = "冲刺", required = true)
+                                                         @PathVariable(name = "sprint_id") Long sprintId,
+                                                         @ApiParam(value = "组织id", required = true)
+                                                         @PathVariable(name = "organization_id") Long organizationId) {
+        return Optional.ofNullable(sprintService.queryNonWorkdays(projectId, sprintId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.queryNonWorkdays.get"));
     }

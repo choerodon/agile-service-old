@@ -380,6 +380,9 @@ class IssueControllerSpec extends Specification {
     def 'listIssueWithoutSub'() {
         given: '查询参数'
         SearchDTO searchDTO = new SearchDTO()
+        Map<String, Object> searchMap = new HashMap<>(1)
+        searchMap.put("assignee", "admin")
+        searchDTO.searchArgs = searchMap
         when: '向开始查询分页过滤查询issue列表的接口发请求'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/no_sub', searchDTO, Page, projectId)
 

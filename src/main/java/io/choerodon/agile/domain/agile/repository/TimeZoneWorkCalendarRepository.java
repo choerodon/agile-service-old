@@ -12,6 +12,4 @@ public interface TimeZoneWorkCalendarRepository {
 
     TimeZoneWorkCalendarE update(TimeZoneWorkCalendarE timeZoneWorkCalendarE);
 
-    int delete(Long organizationId,Long timeZoneId);
-
 }

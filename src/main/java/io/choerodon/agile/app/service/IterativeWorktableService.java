@@ -14,7 +14,7 @@ public interface IterativeWorktableService {
 
     List<StatusCategoryDTO> queryStatusCategoryDistribute(Long projectId, Long sprintId);
 
-    SprintInfoDTO querySprintInfo(Long projectId, Long sprintId);
+    SprintInfoDTO querySprintInfo(Long projectId, Long sprintId, Long organizationId);
 
     List<AssigneeDistributeDTO> queryAssigneeDistribute(Long projectId, Long sprintId);
 

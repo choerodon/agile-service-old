@@ -33,4 +33,20 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_time_zone_work_calendar.groo
             column(name: 'organization_id')
         }
     }
+    changeSet(id: '2018-10-16-agile-time-zone-work-calendar', author: 'dinghuang123@gmail.com') {
+        addColumn(tableName: 'agile_time_zone_work_calendar') {
+            column(name: 'use_holiday', type: 'tinyint(1)', remarks: '是否包含节假日', defaultValue: '0') {
+                constraints(nullable: false)
+            }
+            column(name: 'saturday_work', type: 'tinyint(1)', remarks: '是否包含周六', defaultValue: '0') {
+                constraints(nullable: false)
+            }
+            column(name: 'sunday_work', type: 'tinyint(1)', remarks: '是否包含周日', defaultValue: '0') {
+                constraints(nullable: false)
+            }
+        }
+        dropColumn(tableName: 'agile_time_zone_work_calendar') {
+            column(name: 'work_type_code')
+        }
+    }
 }

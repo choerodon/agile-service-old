@@ -36,4 +36,11 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_time_zone_work_calendar_ref.
             column(name: "organization_id")
         }
     }
+    changeSet(id: '2018-10-16-agile-time-zone-work-calendar-ref', author: 'dinghuang123@gmail.com') {
+        addColumn(tableName: 'agile_time_zone_work_calendar_ref') {
+            column(name: 'status', type: 'tinyint(1)', remarks: '状态，0为放假，1为补班', defaultValue: '0') {
+                constraints(nullable: false)
+            }
+        }
+    }
 }

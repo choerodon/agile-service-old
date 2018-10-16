@@ -20,5 +20,14 @@ public interface SprintWorkCalendarRefMapper extends BaseMapper<SprintWorkCalend
      * @param projectId projectId
      * @return Date
      */
-    List<Date> queryBySprintIdAndProjectId(@Param("sprintId") Long sprintId, @Param("projectId") Long projectId);
+    List<Date> queryWorkBySprintIdAndProjectId(@Param("sprintId") Long sprintId, @Param("projectId") Long projectId);
+
+    /**
+     * 根据冲刺id查询冲刺节假日期
+     *
+     * @param sprintId  sprintId
+     * @param projectId projectId
+     * @return Date
+     */
+    List<Date> queryHolidayBySprintIdAndProjectId(@Param("sprintId") Long sprintId, @Param("projectId") Long projectId);
 }

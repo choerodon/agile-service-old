@@ -54,12 +54,14 @@ public class IterativeWorktableController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("迭代冲刺台查询冲刺的基本信息")
-    @GetMapping(value = "/sprint")
+    @GetMapping(value = "/sprint/{organization_id}")
     public ResponseEntity<SprintInfoDTO> querySprintInfo(@ApiParam(value = "项目id", required = true)
                                                          @PathVariable(name = "project_id") Long projectId,
                                                          @ApiParam(value = "冲刺id", required = true)
-                                                         @RequestParam Long sprintId) {
-        return Optional.ofNullable(iterativeWorktableService.querySprintInfo(projectId, sprintId))
+                                                         @RequestParam Long sprintId,
+                                                         @ApiParam(value = "组织id", required = true)
+                                                         @PathVariable(name = "organization_id") Long organizationId) {
+        return Optional.ofNullable(iterativeWorktableService.querySprintInfo(projectId, sprintId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.SprintInfo.get"));
     }

@@ -1,11 +1,15 @@
 package io.choerodon.agile.api.dto;
 
+import io.choerodon.agile.infra.common.utils.StringUtil;
+
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
 /**
  * Created by jian_zhang02@163.com on 2018/5/15.
+ *
+ * @author dinghuang123@gmail.com
  */
 public class SprintUpdateDTO {
     private static final String OBJECT_VERSION_NUMBER_NULL_ERROR = "error.objectVersionNumber.NotNull";
@@ -16,10 +20,8 @@ public class SprintUpdateDTO {
     private Date startDate;
     private Date endDate;
     private Long projectId;
-    /**
-     * 法定节假日及周末要加班的日期
-     */
-    private List<Date> workDates;
+
+    private List<SprintWorkCalendarRefDTO> workDates;
 
     @NotNull(message = OBJECT_VERSION_NUMBER_NULL_ERROR)
     private Long objectVersionNumber;
@@ -80,11 +82,17 @@ public class SprintUpdateDTO {
         this.objectVersionNumber = objectVersionNumber;
     }
 
-    public List<Date> getWorkDates() {
+    public List<SprintWorkCalendarRefDTO> getWorkDates() {
         return workDates;
     }
 
-    public void setWorkDates(List<Date> workDates) {
+    public void setWorkDates(List<SprintWorkCalendarRefDTO> workDates) {
         this.workDates = workDates;
     }
+
+    @Override
+    public String toString() {
+        return StringUtil.getToString(this);
+    }
+
 }

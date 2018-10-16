@@ -42,11 +42,4 @@ public class TimeZoneWorkCalendarRepositoryImpl implements TimeZoneWorkCalendarR
         return ConvertHelper.convert(timeZoneWorkCalendarMapper.selectByPrimaryKey(timeZoneWorkCalendarDO.getTimeZoneId()), TimeZoneWorkCalendarE.class);
     }
 
-    @Override
-    public int delete(Long organizationId, Long timeZoneId) {
-        TimeZoneWorkCalendarDO issueLinkTypeDO = new TimeZoneWorkCalendarDO();
-        issueLinkTypeDO.setTimeZoneId(timeZoneId);
-        issueLinkTypeDO.setOrganizationId(organizationId);
-        return timeZoneWorkCalendarMapper.delete(issueLinkTypeDO);
-    }
 }

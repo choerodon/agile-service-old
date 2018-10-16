@@ -8,6 +8,7 @@ import io.choerodon.mybatis.domain.AuditDomain;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Objects;
 
 /**
  * @author dinghuang123@gmail.com
@@ -28,6 +29,16 @@ public class TimeZoneWorkCalendarRefDO extends AuditDomain {
     private Integer year;
 
     private Long organizationId;
+
+    private Integer status;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     public Long getCalendarId() {
         return calendarId;
@@ -67,6 +78,28 @@ public class TimeZoneWorkCalendarRefDO extends AuditDomain {
 
     public void setOrganizationId(Long organizationId) {
         this.organizationId = organizationId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof TimeZoneWorkCalendarRefDO)) {
+            return false;
+        }
+        TimeZoneWorkCalendarRefDO that = (TimeZoneWorkCalendarRefDO) o;
+        return Objects.equals(getCalendarId(), that.getCalendarId()) &&
+                Objects.equals(getTimeZoneId(), that.getTimeZoneId()) &&
+                Objects.equals(getWorkDay(), that.getWorkDay()) &&
+                Objects.equals(getYear(), that.getYear()) &&
+                Objects.equals(getOrganizationId(), that.getOrganizationId()) &&
+                Objects.equals(getStatus(), that.getStatus());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getCalendarId(), getTimeZoneId(), getWorkDay(), getYear(), getOrganizationId(), getStatus());
     }
 
     @Override

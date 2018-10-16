@@ -1,11 +1,12 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.EpicDataDTO
 import io.choerodon.agile.api.dto.EpicSequenceDTO
-import io.choerodon.agile.api.dto.TimeZoneWorkCalendarCreateDTO
+
 import io.choerodon.agile.api.dto.TimeZoneWorkCalendarDTO
+import io.choerodon.agile.api.dto.TimeZoneWorkCalendarRefCreateDTO
 import io.choerodon.agile.api.dto.TimeZoneWorkCalendarRefDTO
+import io.choerodon.agile.api.dto.TimeZoneWorkCalendarRefDetailDTO
 import io.choerodon.agile.api.dto.TimeZoneWorkCalendarUpdateDTO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -37,25 +38,6 @@ class TimeZoneWorkCalendarControllerSpec extends Specification {
     @Shared
     def organizationId = 1L
 
-    def 'createTimeZoneWorkCalendar'() {
-        given: '消息对象'
-        TimeZoneWorkCalendarCreateDTO timeZoneWorkCalendarCreateDTO = new TimeZoneWorkCalendarCreateDTO()
-        timeZoneWorkCalendarCreateDTO.areaCode = 'Asia'
-        timeZoneWorkCalendarCreateDTO.timeZoneCode = 'Shanghai'
-        timeZoneWorkCalendarCreateDTO.workTypeCode = 'include'
-        when: '向创建创建时区设置的接口发请求'
-        def entity = restTemplate.postForEntity('/v1/organizations/{organization_id}/time_zone_work_calendars', timeZoneWorkCalendarCreateDTO, TimeZoneWorkCalendarDTO, organizationId)
-
-        then: '返回值'
-        entity.statusCode.is2xxSuccessful()
-        TimeZoneWorkCalendarDTO timeZoneWorkCalendarDTO = entity.body
-
-        expect: '期望值'
-        timeZoneWorkCalendarDTO.workTypeCode == 'include'
-        timeZoneWorkCalendarDTO.timeZoneCode == 'Shanghai'
-        timeZoneWorkCalendarDTO.areaCode == 'Asia'
-    }
-
     def 'queryTimeZoneWorkCalendar'() {
         when:
         def entity = restTemplate.getForEntity('/v1/organizations/{organization_id}/time_zone_work_calendars', TimeZoneWorkCalendarDTO, organizationId)
@@ -65,8 +47,10 @@ class TimeZoneWorkCalendarControllerSpec extends Specification {
         TimeZoneWorkCalendarDTO timeZoneWorkCalendarDTO = entity.body
 
         expect: '期望值'
-        timeZoneWorkCalendarDTO.workTypeCode == 'include'
-        timeZoneWorkCalendarDTO.timeZoneCode == 'Shanghai'
+        !timeZoneWorkCalendarDTO.saturdayWork
+        !timeZoneWorkCalendarDTO.sundayWork
+        timeZoneWorkCalendarDTO.useHoliday
+        timeZoneWorkCalendarDTO.timeZoneCode == 'Asia/Shanghai'
         timeZoneWorkCalendarDTO.areaCode == 'Asia'
     }
 
@@ -75,9 +59,11 @@ class TimeZoneWorkCalendarControllerSpec extends Specification {
         TimeZoneWorkCalendarUpdateDTO timeZoneWorkCalendarUpdateDTO = new TimeZoneWorkCalendarUpdateDTO()
         timeZoneWorkCalendarUpdateDTO.areaCode = 'Europ'
         timeZoneWorkCalendarUpdateDTO.timeZoneCode = 'China'
-        timeZoneWorkCalendarUpdateDTO.workTypeCode = 'add'
+        timeZoneWorkCalendarUpdateDTO.saturdayWork = true
+        timeZoneWorkCalendarUpdateDTO.sundayWork = true
+        timeZoneWorkCalendarUpdateDTO.useHoliday = true
         timeZoneWorkCalendarUpdateDTO.objectVersionNumber = 1
-        HttpEntity<EpicSequenceDTO> requestEntity = new HttpEntity<EpicSequenceDTO>(timeZoneWorkCalendarUpdateDTO, null)
+        HttpEntity<TimeZoneWorkCalendarUpdateDTO> requestEntity = new HttpEntity<TimeZoneWorkCalendarUpdateDTO>(timeZoneWorkCalendarUpdateDTO, null)
         when: '向创建创建时区设置的接口发请求'
         def entity = restTemplate.exchange('/v1/organizations/{organization_id}/time_zone_work_calendars/{timeZoneId}', HttpMethod.PUT, requestEntity, TimeZoneWorkCalendarDTO, organizationId, 1)
         then: '返回值'
@@ -87,12 +73,18 @@ class TimeZoneWorkCalendarControllerSpec extends Specification {
         expect: '期望值'
         timeZoneWorkCalendarDTO.areaCode == 'Europ'
         timeZoneWorkCalendarDTO.timeZoneCode == 'China'
-        timeZoneWorkCalendarDTO.workTypeCode == 'add'
+        timeZoneWorkCalendarUpdateDTO.saturdayWork
+        timeZoneWorkCalendarUpdateDTO.sundayWork
+        timeZoneWorkCalendarUpdateDTO.useHoliday
     }
 
     def 'createTimeZoneWorkCalendarRef'() {
+        given: '消息体'
+        TimeZoneWorkCalendarRefCreateDTO timeZoneWorkCalendarRefCreateDTO = new TimeZoneWorkCalendarRefCreateDTO()
+        timeZoneWorkCalendarRefCreateDTO.status = 0
+        timeZoneWorkCalendarRefCreateDTO.workDay = "2018-10-1"
         when: '向创建创建时区日历的接口发请求'
-        def entity = restTemplate.postForEntity('/v1/organizations/{organization_id}/time_zone_work_calendars/ref/{timeZoneId}?date={date}', null, TimeZoneWorkCalendarRefDTO, organizationId, 1, "2018-09-11")
+        def entity = restTemplate.postForEntity('/v1/organizations/{organization_id}/time_zone_work_calendars/ref/{timeZoneId}', timeZoneWorkCalendarRefCreateDTO, TimeZoneWorkCalendarRefDTO, organizationId, 1)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -100,8 +92,9 @@ class TimeZoneWorkCalendarControllerSpec extends Specification {
 
         expect: '期望值'
         timeZoneWorkCalendarRefDTO.timeZoneId == 1
-        timeZoneWorkCalendarRefDTO.workDay == '2018-09-11'
+        timeZoneWorkCalendarRefDTO.workDay == '2018-10-1'
         timeZoneWorkCalendarRefDTO.year == 2018
+        timeZoneWorkCalendarRefDTO.status == 0
         timeZoneWorkCalendarRefDTO.organizationId == organizationId
     }
 
@@ -117,6 +110,20 @@ class TimeZoneWorkCalendarControllerSpec extends Specification {
         timeZoneWorkCalendarRefDTOList.size() == 1
     }
 
+    def 'queryTimeZoneWorkCalendarDetail'() {
+        when:
+        def entity = restTemplate.getForEntity('/v1/organizations/{organization_id}/time_zone_work_calendars/detail', TimeZoneWorkCalendarRefDetailDTO, organizationId)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+        TimeZoneWorkCalendarRefDetailDTO timeZoneWorkCalendarRefDetailDTO = entity.body
+
+        expect: '期望值'
+        timeZoneWorkCalendarRefDetailDTO.useHoliday
+        timeZoneWorkCalendarRefDetailDTO.sundayWork
+        timeZoneWorkCalendarRefDetailDTO.saturdayWork
+    }
+
     def 'deleteTimeZoneWorkCalendarRef'() {
         when:
         def entity = restTemplate.delete('/v1/organizations/{organization_id}/time_zone_work_calendars/ref/{calendarId}', organizationId, 1)
@@ -126,12 +133,4 @@ class TimeZoneWorkCalendarControllerSpec extends Specification {
 
     }
 
-    def 'deleteTimeZoneWorkCalendar'() {
-        when:
-        def entity = restTemplate.delete('/v1/organizations/{organization_id}/time_zone_work_calendars/{timeZoneId}', organizationId, 1)
-
-        then:
-        entity == null
-
-    }
 }

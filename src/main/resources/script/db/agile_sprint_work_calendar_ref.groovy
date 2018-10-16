@@ -36,4 +36,11 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_sprint_work_calendar_ref.gro
             column(name: "project_id")
         }
     }
+    changeSet(id: '2018-10-16-agile-sprint-calendar-ref', author: 'dinghuang123@gmail.com') {
+        addColumn(tableName: 'agile_sprint_work_calendar_ref') {
+            column(name: 'status', type: 'tinyint(1)', remarks: '状态，0为放假，1为补班', defaultValue: '0') {
+                constraints(nullable: false)
+            }
+        }
+    }
 }

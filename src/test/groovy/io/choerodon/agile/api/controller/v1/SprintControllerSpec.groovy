@@ -13,6 +13,7 @@ import io.choerodon.agile.api.dto.SprintDetailDTO
 import io.choerodon.agile.api.dto.SprintNameDTO
 import io.choerodon.agile.api.dto.SprintSearchDTO
 import io.choerodon.agile.api.dto.SprintUpdateDTO
+import io.choerodon.agile.api.dto.SprintWorkCalendarRefDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.NoticeService
@@ -363,8 +364,14 @@ class SprintControllerSpec extends Specification {
         sprintUpdateDTO.objectVersionNumber = sprintDO.objectVersionNumber
         sprintUpdateDTO.startDate = sprintDO.startDate
         sprintUpdateDTO.endDate = sprintDO.endDate
-        List<Date> dateList = new ArrayList<>()
-        dateList.add(new Date())
+        List<SprintWorkCalendarRefDTO> dateList = new ArrayList<>()
+        SprintWorkCalendarRefDTO sprintWorkCalendarRefDTO = new SprintWorkCalendarRefDTO()
+        sprintWorkCalendarRefDTO.status = 1
+        sprintWorkCalendarRefDTO.date = new Date()
+        SprintWorkCalendarRefDTO sprintWorkCalendarRefDTOTwo = new SprintWorkCalendarRefDTO()
+        sprintWorkCalendarRefDTOTwo.status = 0
+        sprintWorkCalendarRefDTOTwo.date = new Date()
+        dateList.add(sprintWorkCalendarRefDTO)
         sprintUpdateDTO.workDates = dateList
 
         when: '发送请求'
@@ -433,7 +440,7 @@ class SprintControllerSpec extends Specification {
 
     def "queryNonWorkdays"() {
         when: '发送请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/query_non_workdays/{sprint_id}', List.class, projectId, sprintIds[0])
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/query_non_workdays/{sprint_id}/{organizationId}', List.class, projectId, sprintIds[0], 1)
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
