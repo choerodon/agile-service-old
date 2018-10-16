@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
+import io.choerodon.agile.api.dto.ActiveSprintDTO
 import io.choerodon.agile.api.dto.BackLogIssueDTO
 import io.choerodon.agile.api.dto.IssueCreateDTO
 import io.choerodon.agile.api.dto.IssueDTO
@@ -381,6 +382,20 @@ class SprintControllerSpec extends Specification {
         result.issueCount == null
         result.objectVersionNumber == 3
         result.statusCode == 'started'
+    }
+
+    def 'queryActiveSprint'() {
+        when:
+        def entity = restTemplate.exchange('/v1/projects/{project_id}/sprint/active',
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                ActiveSprintDTO.class,
+                projectId)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+        entity.body != null
+        entity.body.sprintId == 2
     }
 
     def "completeSprint"() {
