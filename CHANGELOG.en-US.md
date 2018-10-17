@@ -1,6 +1,41 @@
 # Changelog
 All notable changes about agile service will be documented in this file.
 
+## [0.10.5] - 2018-10-22
+
+### Added
+
+- In-site notification functionality.Users can assign corresponding notification objects to the issue creation,issue assignment and issue resolution at the organizational level.
+- Time zone calendar functionality.Users can set time zones,holidays and workdays at the organizational level.It will be apply in agile-service.
+- Version management search functionality.The version management list adds the field search functionality.
+- Component management search functionality.The component management list adds the field search functionality.
+- Sprint Workday functionality.Users can set the working day and non-working day of the current sprint when user start sprint and selecting date.
+- Burndown chart expectation value workday screening functionality.Users can display the expected value on weekdays and non-working days when viewing the burndown chart.
+
+### Changed
+
+- Users can save the input data by pressing Enter or clicking on the blank space when modifying the issue information.
+- Add a guided prompt page after the sprint create.
+- Changes the icon of stories,tasks,epics,subtasks and bugs.
+- Use the calendar setting for the remaining time of the active sprint.
+- Active sprint switch table button style modification.
+- Add a verification to the issue in the story map.
+- Optimize creation issue request in the backlog list view.
+
+### Fixed
+
+- Users can create a issue link without entering a value in issue's detail.
+- Users converted a issue to a subtask that the issue's status color is incorrect.
+- The issue's details page component is not aligned.
+- The release version page link to uncompleted issue list filter error.
+- The link address Chinese has not been encoding to cause the request to be repeated.
+- The subtask icon in the list of issues in the release version is incorrect.
+- The no epic's issue card's style error in active sprint view.
+- In burndown chart report view,user click on the subtask link is the parent task details.
+- Link to issues management in the epic and version burndown chart, return to page 404.
+- The table of iterative workbench sprint details loads all the data at one time, and repeatedly loads the data when the page is clicked.
+- The number of uncompleted issues's counted errors when the version was released.
+
 ## [0.10.0] - 2018-09-24
 
 ### Added
