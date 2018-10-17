@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -246,14 +247,18 @@ public class SprintServiceImpl implements SprintService {
         if (sprintUpdateDTO.getWorkDates() != null && !sprintUpdateDTO.getWorkDates().isEmpty()) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Calendar calendar = Calendar.getInstance();
-            sprintUpdateDTO.getWorkDates().forEach(date -> {
+            sprintUpdateDTO.getWorkDates().forEach(workDates -> {
                 SprintWorkCalendarRefDO sprintWorkCalendarRefDO = new SprintWorkCalendarRefDO();
                 sprintWorkCalendarRefDO.setSprintId(sprintE.getSprintId());
                 sprintWorkCalendarRefDO.setProjectId(sprintE.getProjectId());
-                sprintWorkCalendarRefDO.setWorkDay(dateFormat.format(date.getDate()));
-                calendar.setTime(date.getDate());
+                sprintWorkCalendarRefDO.setWorkDay(workDates.getWorkDay());
+                try {
+                    calendar.setTime(dateFormat.parse(workDates.getWorkDay()));
+                } catch (ParseException e) {
+                    throw new CommonException("ParseException{}", e);
+                }
                 sprintWorkCalendarRefDO.setYear(calendar.get(Calendar.YEAR));
-                sprintWorkCalendarRefDO.setStatus(date.getStatus());
+                sprintWorkCalendarRefDO.setStatus(workDates.getStatus());
                 sprintWorkCalendarRefRepository.create(sprintWorkCalendarRefDO);
             });
         }
@@ -457,13 +462,15 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
-    public ActiveSprintDTO queryActiveSprint(Long projectId) {
+    public ActiveSprintDTO queryActiveSprint(Long projectId,Long organizationId) {
         ActiveSprintDTO result = new ActiveSprintDTO();
         SprintDO activeSprint = getActiveSprint(projectId);
         if (activeSprint != null) {
             result = ConvertHelper.convert(activeSprint, ActiveSprintDTO.class);
             if (result.getEndDate() != null) {
-                result.setDayRemain(DateUtil.differentDaysByMillisecond(new Date(), result.getEndDate()));
+                result.setDayRemain(dateUtil.getDaysBetweenDifferentDate(new Date(), activeSprint.getEndDate(),
+                        sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()),
+                        sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()), organizationId));
             }
         }
         return result;

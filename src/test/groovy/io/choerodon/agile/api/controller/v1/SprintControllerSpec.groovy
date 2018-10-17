@@ -367,10 +367,10 @@ class SprintControllerSpec extends Specification {
         List<SprintWorkCalendarRefDTO> dateList = new ArrayList<>()
         SprintWorkCalendarRefDTO sprintWorkCalendarRefDTO = new SprintWorkCalendarRefDTO()
         sprintWorkCalendarRefDTO.status = 1
-        sprintWorkCalendarRefDTO.date = new Date()
+        sprintWorkCalendarRefDTO.workDay = "2018-10-1"
         SprintWorkCalendarRefDTO sprintWorkCalendarRefDTOTwo = new SprintWorkCalendarRefDTO()
         sprintWorkCalendarRefDTOTwo.status = 0
-        sprintWorkCalendarRefDTOTwo.date = new Date()
+        sprintWorkCalendarRefDTOTwo.workDay = "2018-10-2"
         dateList.add(sprintWorkCalendarRefDTO)
         sprintUpdateDTO.workDates = dateList
 
@@ -406,16 +406,16 @@ class SprintControllerSpec extends Specification {
 
     def 'queryActiveSprint'() {
         when:
-        def entity = restTemplate.exchange('/v1/projects/{project_id}/sprint/active',
+        def entity = restTemplate.exchange('/v1/projects/{project_id}/sprint/active/{organizationId}',
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 ActiveSprintDTO.class,
-                projectId)
+                projectId, 1)
 
         then:
         entity.statusCode.is2xxSuccessful()
         entity.body != null
-        entity.body.sprintId == 2
+        entity.body.sprintId != null
     }
 
     def "completeSprint"() {

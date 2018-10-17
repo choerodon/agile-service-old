@@ -201,10 +201,12 @@ public class SprintController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "查询活跃冲刺")
-    @GetMapping(value = "/active")
+    @GetMapping(value = "/active/{organization_id}")
     public ResponseEntity<ActiveSprintDTO> queryActiveSprint(@ApiParam(value = "项目id", required = true)
-                                                             @PathVariable(name = "project_id") Long projectId) {
-        return Optional.ofNullable(sprintService.queryActiveSprint(projectId))
+                                                             @PathVariable(name = "project_id") Long projectId,
+                                                             @ApiParam(value = "组织id", required = true)
+                                                             @PathVariable(name = "organization_id") Long organizationId) {
+        return Optional.ofNullable(sprintService.queryActiveSprint(projectId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.activeSprint.get"));
     }

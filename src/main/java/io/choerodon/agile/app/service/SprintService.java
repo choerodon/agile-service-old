@@ -43,7 +43,7 @@ public interface SprintService {
 
     List<SprintUnClosedDTO> queryUnClosedSprint(Long projectId);
 
-    ActiveSprintDTO queryActiveSprint(Long projectId);
+    ActiveSprintDTO queryActiveSprint(Long projectId,Long organizationId);
 
     /**
      * 查询冲刺期间非工作日
