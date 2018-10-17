@@ -4,6 +4,7 @@ package io.choerodon.agile.api.controller.v1;
 import io.choerodon.agile.api.dto.WorkCalendarHolidayRefDTO;
 import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
@@ -38,7 +39,7 @@ public class WorkCalendarHolidayRefController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR, InitRoleCode.ORGANIZATION_MEMBER})
     @ApiOperation("根据年份查询工作日历假期")
     @GetMapping
     public ResponseEntity<List<WorkCalendarHolidayRefDTO>> queryWorkCalendarHolidayRelByYear(@ApiParam(value = "项目id", required = true)

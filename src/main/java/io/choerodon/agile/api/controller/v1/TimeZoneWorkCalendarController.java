@@ -4,6 +4,7 @@ import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.TimeZoneWorkCalendarService;
 import io.choerodon.agile.domain.agile.rule.TimeZoneWorkCalendarRule;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
@@ -91,7 +92,7 @@ public class TimeZoneWorkCalendarController {
                 .orElseThrow(() -> new CommonException("error.TimeZoneWorkCalendarController.queryTimeZoneWorkCalendarRefByTimeZoneId"));
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR, InitRoleCode.ORGANIZATION_MEMBER})
     @ApiOperation("获取时区下的工作日历")
     @GetMapping(value = "/detail")
     public ResponseEntity<TimeZoneWorkCalendarRefDetailDTO> queryTimeZoneWorkCalendarDetail(@ApiParam(value = "组织id", required = true)
