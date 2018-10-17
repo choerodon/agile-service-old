@@ -2,24 +2,22 @@ package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
-import java.util.Date;
-
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/10/16
  */
 public class SprintWorkCalendarRefDTO {
 
-    private Date date;
+    private String workDay;
 
     private Integer status;
 
-    public Date getDate() {
-        return date;
+    public String getWorkDay() {
+        return workDay;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setWorkDay(String workDay) {
+        this.workDay = workDay;
     }
 
     public Integer getStatus() {

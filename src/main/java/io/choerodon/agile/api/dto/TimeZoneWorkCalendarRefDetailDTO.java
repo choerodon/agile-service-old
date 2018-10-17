@@ -18,7 +18,7 @@ public class TimeZoneWorkCalendarRefDetailDTO {
 
     private Set<TimeZoneWorkCalendarRefCreateDTO> timeZoneWorkCalendarDTOS;
 
-    private Set<TimeZoneWorkCalendarRefCreateDTO> workHolidayCalendarDTOS;
+    private Set<TimeZoneWorkCalendarHolidayRefDTO> workHolidayCalendarDTOS;
 
     public Boolean getUseHoliday() {
         return useHoliday;
@@ -52,11 +52,11 @@ public class TimeZoneWorkCalendarRefDetailDTO {
         this.timeZoneWorkCalendarDTOS = timeZoneWorkCalendarDTOS;
     }
 
-    public Set<TimeZoneWorkCalendarRefCreateDTO> getWorkHolidayCalendarDTOS() {
+    public Set<TimeZoneWorkCalendarHolidayRefDTO> getWorkHolidayCalendarDTOS() {
         return workHolidayCalendarDTOS;
     }
 
-    public void setWorkHolidayCalendarDTOS(Set<TimeZoneWorkCalendarRefCreateDTO> workHolidayCalendarDTOS) {
+    public void setWorkHolidayCalendarDTOS(Set<TimeZoneWorkCalendarHolidayRefDTO> workHolidayCalendarDTOS) {
         this.workHolidayCalendarDTOS = workHolidayCalendarDTOS;
     }
 

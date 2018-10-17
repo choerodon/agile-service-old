@@ -38,66 +38,9 @@ public class DateUtil {
     private DateUtil() {
     }
 
-    /**
-     * 通过时间秒毫秒数判断两个时间的间隔
-     *
-     * @param date1,start_date date1,start_date
-     * @param date2,end_date   date2,end_date
-     * @return int
-     */
-    public static int differentDaysByMillisecond(Date date1, Date date2) {
-        int days = (int) ((date2.getTime() - date1.getTime()) / (1000 * 3600 * 24));
-        String format = "yyyy-MM-dd HH:mm:ss";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-        return days - getWeekendNum(simpleDateFormat.format(date1.getTime()), simpleDateFormat.format(date2.getTime()), format);
+    public void setTimeZoneWorkCalendarMapper(TimeZoneWorkCalendarMapper timeZoneWorkCalendarMapper) {
+        this.timeZoneWorkCalendarMapper = timeZoneWorkCalendarMapper;
     }
-
-    public static int getWeekendNum(String startDate, String endDate, String format) {
-        List yearMonthDayList = new ArrayList();
-        Date start = null;
-        Date stop = null;
-        try {
-            start = new SimpleDateFormat(format).parse(startDate);
-            stop = new SimpleDateFormat(format).parse(endDate);
-        } catch (ParseException e) {
-            throw new CommonException(e.getMessage());
-        }
-        if (start.after(stop)) {
-            Date tmp = start;
-            start = stop;
-            stop = tmp;
-        }
-        Calendar calendarTemp = Calendar.getInstance();
-        calendarTemp.setTime(start);
-        while (calendarTemp.getTime().getTime() <= stop.getTime()) {
-            yearMonthDayList.add(new SimpleDateFormat(format)
-                    .format(calendarTemp.getTime()));
-            calendarTemp.add(Calendar.DAY_OF_YEAR, 1);
-        }
-        Collections.sort(yearMonthDayList);
-        int num = 0;
-        int size = yearMonthDayList.size();
-        int week = 0;
-        for (int i = 0; i < size; i++) {
-            String day = (String) yearMonthDayList.get(i);
-            week = getWeek(day, format);
-            if (week == 6 || week == 0) {
-                num++;
-            }
-        }
-        return num;
-    }
-
-    public static int getWeek(String date, String format) {
-        Calendar calendarTemp = Calendar.getInstance();
-        try {
-            calendarTemp.setTime(new SimpleDateFormat(format).parse(date));
-        } catch (ParseException e) {
-            throw new CommonException(e.getMessage());
-        }
-        return calendarTemp.get(Calendar.DAY_OF_WEEK) - 1;
-    }
-
 
     /**
      * 从现有比较器返回一个
@@ -142,9 +85,9 @@ public class DateUtil {
             }
             final Date startDate = dayOne;
             final Date endDate = dayTwo;
-            int i = 0;
+            Integer i = 0;
             TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = timeZoneWorkCalendarMapper.queryTimeZoneDetailByOrganizationId(organizationId);
-            getWorkDaysInterval(i, timeZoneWorkCalendarDO, startDate, endDate, dates, year);
+            i = getWorkDaysInterval(i, timeZoneWorkCalendarDO, startDate, endDate, dates, year);
             handleHolidays(dates, year, startDate, endDate, timeZoneWorkCalendarDO);
             handleExcludedDate(workday, dates);
             handleAddDate(holiday, dates);
@@ -152,7 +95,7 @@ public class DateUtil {
         }
     }
 
-    private void getWorkDaysInterval(int i, TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Date startDate, Date endDate, Set<Date> dates, Set<Integer> year) {
+    private Integer getWorkDaysInterval(Integer i, TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Date startDate, Date endDate, Set<Date> dates, Set<Integer> year) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startDate);
         if (timeZoneWorkCalendarDO != null) {
@@ -162,6 +105,7 @@ public class DateUtil {
                 calendar.add(Calendar.DAY_OF_YEAR, 1);
                 i++;
             }
+            return i;
         } else {
             while (calendar.getTime().getTime() <= endDate.getTime()) {
                 handleSaturdayAndSundayNoTimeZone(calendar, dates);
@@ -169,6 +113,7 @@ public class DateUtil {
                 calendar.add(Calendar.DAY_OF_YEAR, 1);
                 i++;
             }
+            return i;
         }
     }
 
@@ -239,35 +184,45 @@ public class DateUtil {
             SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);
             List<TimeZoneWorkCalendarRefDO> timeZoneDate = timeZoneWorkCalendarDO.getTimeZoneWorkCalendarRefDOS();
             if (dates.isEmpty()) {
-                dates.addAll(timeZoneDate.stream().filter(timeZoneWorkCalendarRefDO -> timeZoneWorkCalendarRefDO.getStatus() == 0)
-                        .map(timeZoneWorkCalendarRefDO -> {
-                            Date date = new Date();
-                            try {
-                                date = sdf.parse(timeZoneWorkCalendarRefDO.getWorkDay());
-                            } catch (ParseException e) {
-                                LOGGER.warn(PARSE_EXCEPTION, e);
-                            }
-                            return date;
-                        }).collect(Collectors.toSet()));
+                handleEmptyDates(dates, timeZoneDate, sdf);
             } else {
-                dates.forEach(date -> timeZoneDate.forEach(timeZoneWorkCalendarRefDO -> {
-                    try {
-                        Date holidayDate = sdf.parse(timeZoneWorkCalendarRefDO.getWorkDay());
-                        if (isSameDay(holidayDate, date) && timeZoneWorkCalendarRefDO.getStatus() == 1) {
-                            remove.add(date);
-                        } else if (holidayDate.before(endDate) && holidayDate.after(startDate) && timeZoneWorkCalendarRefDO.getStatus() == 0) {
-                            add.add(holidayDate);
-                        }
-                    } catch (ParseException e) {
-                        LOGGER.warn(PARSE_EXCEPTION, e);
-                    }
-                }));
-                dates.addAll(add);
-                dates.removeAll(remove);
-                handleDuplicateDate(dates);
+                handleNoEmptyDates(dates, timeZoneDate, remove, add, sdf, endDate, startDate);
+
             }
         }
     }
+
+    private void handleEmptyDates(Set<Date> dates, List<TimeZoneWorkCalendarRefDO> timeZoneDate, SimpleDateFormat sdf) {
+        dates.addAll(timeZoneDate.stream().filter(timeZoneWorkCalendarRefDO -> timeZoneWorkCalendarRefDO.getStatus() == 0)
+                .map(timeZoneWorkCalendarRefDO -> {
+                    Date date = new Date();
+                    try {
+                        date = sdf.parse(timeZoneWorkCalendarRefDO.getWorkDay());
+                    } catch (ParseException e) {
+                        LOGGER.warn(PARSE_EXCEPTION, e);
+                    }
+                    return date;
+                }).collect(Collectors.toSet()));
+    }
+
+    private void handleNoEmptyDates(Set<Date> dates, List<TimeZoneWorkCalendarRefDO> timeZoneDate, Set<Date> remove, Set<Date> add, SimpleDateFormat sdf, Date endDate, Date startDate) {
+        dates.forEach(date -> timeZoneDate.forEach(timeZoneWorkCalendarRefDO -> {
+            try {
+                Date holidayDate = sdf.parse(timeZoneWorkCalendarRefDO.getWorkDay());
+                if (isSameDay(holidayDate, date) && timeZoneWorkCalendarRefDO.getStatus() == 1) {
+                    remove.add(date);
+                } else if (holidayDate.before(endDate) && holidayDate.after(startDate) && timeZoneWorkCalendarRefDO.getStatus() == 0) {
+                    add.add(holidayDate);
+                }
+            } catch (ParseException e) {
+                LOGGER.warn(PARSE_EXCEPTION, e);
+            }
+        }));
+        dates.addAll(add);
+        dates.removeAll(remove);
+        handleDuplicateDate(dates);
+    }
+
 
     private void handleHolidays(Set<Date> dates, Set<Integer> year, Date startDate, Date endDate, TimeZoneWorkCalendarDO timeZoneWorkCalendarDO) {
         if (!dates.isEmpty() && timeZoneWorkCalendarDO != null) {
@@ -281,7 +236,7 @@ public class DateUtil {
             year.forEach(y -> holidays.addAll(new HashSet<>(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(String.valueOf(y)))));
             if (!holidays.isEmpty()) {
                 SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);
-                dates.addAll(holidays.stream().filter(holiday -> holiday.getStatus() == 0).map(holiday -> {
+                dates.addAll(holidays.stream().map(holiday -> {
                     Date date = new Date();
                     try {
                         date = sdf.parse(holiday.getHoliday());
@@ -289,13 +244,13 @@ public class DateUtil {
                         LOGGER.warn(PARSE_EXCEPTION, e);
                     }
                     return date;
-                }).collect(Collectors.toSet()));
+                }).filter(holiday -> holiday.before(endDate) && holiday.after(startDate)).collect(Collectors.toSet()));
             }
         }
     }
 
     public void handleDuplicateDate(Set<Date> dates) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT);
         Set<String> date = dates.stream().map(simpleDateFormat::format).collect(Collectors.toSet());
         Set<Date> datesSet = date.stream().map(s -> {
             Date d = new Date();

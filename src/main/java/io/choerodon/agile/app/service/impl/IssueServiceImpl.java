@@ -191,6 +191,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String URL_TEMPLATE4 = "&paramIssueId=";
     private static final String URL_TEMPLATE5 = "&paramOpenIssueId=";
     private static final String URL_TEMPLATE6 = "&organizationId=";
+    private static final String ISSUE_TEST = "issue_test";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -282,9 +283,9 @@ public class IssueServiceImpl implements IssueService {
         }
         IssueDTO result = issueAssembler.issueDetailDoToDto(issue);
         // 发送消息
-        if (!"issue_test".equals(result.getTypeCode())) {
+        if (!ISSUE_TEST.equals(result.getTypeCode())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", result);
-            String summary =  result.getIssueNum() + "-" + result.getSummary();
+            String summary = result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getReporterName();
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
             String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId();
@@ -311,9 +312,9 @@ public class IssueServiceImpl implements IssueService {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
         IssueDTO result = issueAssembler.issueDetailDoToDto(issue);
-        if (fieldList.contains("assigneeId") && result.getAssigneeId() != null && !"issue_test".equals(result.getTypeCode())) {
+        if (fieldList.contains("assigneeId") && result.getAssigneeId() != null && !ISSUE_TEST.equals(result.getTypeCode())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_assigneed", result);
-            String summary =  result.getIssueNum() + "-" + result.getSummary();
+            String summary = result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getAssigneeName();
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
             StringBuilder url = new StringBuilder();
@@ -324,7 +325,7 @@ public class IssueServiceImpl implements IssueService {
             }
             userIds.stream().forEach(id -> siteMsgUtil.issueAssignee(id, userName, summary, url.toString()));
         }
-        if (fieldList.contains(STATUS_ID) && result.getStatusId() != null && issueStatusMapper.selectByPrimaryKey(result.getStatusId()).getCompleted() && result.getAssigneeId() != null && !"issue_test".equals(result.getTypeCode())) {
+        if (fieldList.contains(STATUS_ID) && result.getStatusId() != null && issueStatusMapper.selectByPrimaryKey(result.getStatusId()).getCompleted() && result.getAssigneeId() != null && !ISSUE_TEST.equals(result.getTypeCode())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", result);
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
             StringBuilder url = new StringBuilder();
@@ -336,7 +337,7 @@ public class IssueServiceImpl implements IssueService {
             Long[] ids = new Long[1];
             ids[0] = result.getAssigneeId();
             List<UserDO> userDOList = userFeignClient.listUsersByIds(ids).getBody();
-            String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName()+userDOList.get(0).getRealName() : "";
+            String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName() + userDOList.get(0).getRealName() : "";
             String summary = projectDTO.getCode() + "-" + result.getIssueNum() + "-" + result.getSummary();
             userIds.stream().forEach(id -> siteMsgUtil.issueSolve(id, userName, summary, url.toString()));
         }
@@ -902,11 +903,11 @@ public class IssueServiceImpl implements IssueService {
         }
         IssueSubDTO result = issueAssembler.issueDetailDoToIssueSubDto(issue);
         // 发送消息
-        if (!"issue_test".equals(result.getTypeCode())) {
+        if (!ISSUE_TEST.equals(result.getTypeCode())) {
             IssueDTO issueDTO = new IssueDTO();
             issueDTO.setReporterId(result.getReporterId());
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", issueDTO);
-            String summary =  result.getIssueNum() + "-" + result.getSummary();
+            String summary = result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getReporterName();
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
             String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getParentIssueNum() + URL_TEMPLATE4 + result.getParentIssueId() + URL_TEMPLATE5 + result.getIssueId();
