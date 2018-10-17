@@ -19,6 +19,7 @@ service:
 preJob:
   image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.5.2
   preConfig:
+    enable: true
     configFile: application.yml
     mysql:
       host: kanban-mysql.db.svc
@@ -27,6 +28,7 @@ preJob:
       username: root
       password: choerodon
   preInitDB:
+    enable: true
     mysql:
       host: kanban-mysql.db.svc
       port: 3308
