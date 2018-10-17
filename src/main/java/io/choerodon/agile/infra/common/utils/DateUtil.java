@@ -239,35 +239,45 @@ public class DateUtil {
             SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);
             List<TimeZoneWorkCalendarRefDO> timeZoneDate = timeZoneWorkCalendarDO.getTimeZoneWorkCalendarRefDOS();
             if (dates.isEmpty()) {
-                dates.addAll(timeZoneDate.stream().filter(timeZoneWorkCalendarRefDO -> timeZoneWorkCalendarRefDO.getStatus() == 0)
-                        .map(timeZoneWorkCalendarRefDO -> {
-                            Date date = new Date();
-                            try {
-                                date = sdf.parse(timeZoneWorkCalendarRefDO.getWorkDay());
-                            } catch (ParseException e) {
-                                LOGGER.warn(PARSE_EXCEPTION, e);
-                            }
-                            return date;
-                        }).collect(Collectors.toSet()));
+                handleEmptyDates(dates, timeZoneDate, sdf);
             } else {
-                dates.forEach(date -> timeZoneDate.forEach(timeZoneWorkCalendarRefDO -> {
-                    try {
-                        Date holidayDate = sdf.parse(timeZoneWorkCalendarRefDO.getWorkDay());
-                        if (isSameDay(holidayDate, date) && timeZoneWorkCalendarRefDO.getStatus() == 1) {
-                            remove.add(date);
-                        } else if (holidayDate.before(endDate) && holidayDate.after(startDate) && timeZoneWorkCalendarRefDO.getStatus() == 0) {
-                            add.add(holidayDate);
-                        }
-                    } catch (ParseException e) {
-                        LOGGER.warn(PARSE_EXCEPTION, e);
-                    }
-                }));
-                dates.addAll(add);
-                dates.removeAll(remove);
-                handleDuplicateDate(dates);
+                handleNoEmptyDates(dates, timeZoneDate, remove, add, sdf, endDate, startDate);
+
             }
         }
     }
+
+    private void handleEmptyDates(Set<Date> dates, List<TimeZoneWorkCalendarRefDO> timeZoneDate, SimpleDateFormat sdf) {
+        dates.addAll(timeZoneDate.stream().filter(timeZoneWorkCalendarRefDO -> timeZoneWorkCalendarRefDO.getStatus() == 0)
+                .map(timeZoneWorkCalendarRefDO -> {
+                    Date date = new Date();
+                    try {
+                        date = sdf.parse(timeZoneWorkCalendarRefDO.getWorkDay());
+                    } catch (ParseException e) {
+                        LOGGER.warn(PARSE_EXCEPTION, e);
+                    }
+                    return date;
+                }).collect(Collectors.toSet()));
+    }
+
+    private void handleNoEmptyDates(Set<Date> dates, List<TimeZoneWorkCalendarRefDO> timeZoneDate, Set<Date> remove, Set<Date> add, SimpleDateFormat sdf, Date endDate, Date startDate) {
+        dates.forEach(date -> timeZoneDate.forEach(timeZoneWorkCalendarRefDO -> {
+            try {
+                Date holidayDate = sdf.parse(timeZoneWorkCalendarRefDO.getWorkDay());
+                if (isSameDay(holidayDate, date) && timeZoneWorkCalendarRefDO.getStatus() == 1) {
+                    remove.add(date);
+                } else if (holidayDate.before(endDate) && holidayDate.after(startDate) && timeZoneWorkCalendarRefDO.getStatus() == 0) {
+                    add.add(holidayDate);
+                }
+            } catch (ParseException e) {
+                LOGGER.warn(PARSE_EXCEPTION, e);
+            }
+        }));
+        dates.addAll(add);
+        dates.removeAll(remove);
+        handleDuplicateDate(dates);
+    }
+
 
     private void handleHolidays(Set<Date> dates, Set<Integer> year, Date startDate, Date endDate, TimeZoneWorkCalendarDO timeZoneWorkCalendarDO) {
         if (!dates.isEmpty() && timeZoneWorkCalendarDO != null) {
@@ -295,7 +305,7 @@ public class DateUtil {
     }
 
     public void handleDuplicateDate(Set<Date> dates) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT);
         Set<String> date = dates.stream().map(simpleDateFormat::format).collect(Collectors.toSet());
         Set<Date> datesSet = date.stream().map(s -> {
             Date d = new Date();

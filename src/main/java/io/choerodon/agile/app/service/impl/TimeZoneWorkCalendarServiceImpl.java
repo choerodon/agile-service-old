@@ -121,10 +121,11 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
                     }).collect(Collectors.toSet()));
             if (timeZoneWorkCalendarDO.getUseHoliday()) {
                 timeZoneWorkCalendarRefDetailDTO.setWorkHolidayCalendarDTOS(workCalendarHolidayRefMapper.selectAll().stream().map(d -> {
-                    TimeZoneWorkCalendarRefCreateDTO timeZoneWorkCalendarRefCreateDTO = new TimeZoneWorkCalendarRefCreateDTO();
-                    timeZoneWorkCalendarRefCreateDTO.setStatus(d.getStatus());
-                    timeZoneWorkCalendarRefCreateDTO.setWorkDay(d.getHoliday());
-                    return timeZoneWorkCalendarRefCreateDTO;
+                    TimeZoneWorkCalendarHolidayRefDTO timeZoneWorkCalendarHolidayRefDTO = new TimeZoneWorkCalendarHolidayRefDTO();
+                    timeZoneWorkCalendarHolidayRefDTO.setStatus(d.getStatus());
+                    timeZoneWorkCalendarHolidayRefDTO.setHoliday(d.getHoliday());
+                    timeZoneWorkCalendarHolidayRefDTO.setName(d.getName());
+                    return timeZoneWorkCalendarHolidayRefDTO;
                 }).collect(Collectors.toSet()));
             }
         }

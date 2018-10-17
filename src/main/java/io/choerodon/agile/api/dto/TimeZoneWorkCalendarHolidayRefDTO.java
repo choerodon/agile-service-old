@@ -6,11 +6,9 @@ import java.util.Objects;
 
 /**
  * @author dinghuang123@gmail.com
- * @since 2018/10/9
+ * @since 2018/10/17
  */
-public class WorkCalendarHolidayRefDTO {
-
-    private Long calendarId;
+public class TimeZoneWorkCalendarHolidayRefDTO {
 
     private String name;
 
@@ -20,14 +18,6 @@ public class WorkCalendarHolidayRefDTO {
      * 状态，0为放假，1为补班
      */
     private Integer status;
-
-    public Long getCalendarId() {
-        return calendarId;
-    }
-
-    public void setCalendarId(Long calendarId) {
-        this.calendarId = calendarId;
-    }
 
     public String getName() {
         return name;
@@ -67,15 +57,13 @@ public class WorkCalendarHolidayRefDTO {
             return false;
         }
         WorkCalendarHolidayRefDTO that = (WorkCalendarHolidayRefDTO) o;
-        return Objects.equals(getCalendarId(), that.getCalendarId()) &&
-                Objects.equals(getName(), that.getName()) &&
+        return Objects.equals(getName(), that.getName()) &&
                 Objects.equals(getHoliday(), that.getHoliday()) &&
                 Objects.equals(getStatus(), that.getStatus());
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(getCalendarId(), getName(), getHoliday(), getStatus());
+        return Objects.hash(getName(), getHoliday(), getStatus());
     }
 }
