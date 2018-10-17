@@ -14,6 +14,7 @@ import io.choerodon.agile.api.dto.SprintNameDTO
 import io.choerodon.agile.api.dto.SprintSearchDTO
 import io.choerodon.agile.api.dto.SprintUpdateDTO
 import io.choerodon.agile.api.dto.SprintWorkCalendarRefDTO
+import io.choerodon.agile.api.dto.TimeZoneWorkCalendarRefDetailDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.NoticeService
@@ -445,6 +446,14 @@ class SprintControllerSpec extends Specification {
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
 
+    }
+
+    def 'queryTimeZoneWorkCalendarDetail'() {
+        when:
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/time_zone_detail/{organization_id}', TimeZoneWorkCalendarRefDetailDTO, projectId, 1)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
     }
 
     def "deleteSprint"() {

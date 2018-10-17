@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.app.service.TimeZoneWorkCalendarService;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
@@ -31,6 +32,9 @@ public class SprintController {
 
     @Autowired
     private SprintService sprintService;
+
+    @Autowired
+    private TimeZoneWorkCalendarService timeZoneWorkCalendarService;
 
     private static final String CREATE_ERROR = "error.sprint.create";
     private static final String UPDATE_ERROR = "error.sprint.update";
@@ -223,6 +227,18 @@ public class SprintController {
         return Optional.ofNullable(sprintService.queryNonWorkdays(projectId, sprintId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.queryNonWorkdays.get"));
+    }
+
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR, InitRoleCode.ORGANIZATION_MEMBER})
+    @ApiOperation("获取冲刺有关于组织层时区设置")
+    @GetMapping(value = "/time_zone_detail/{organization_id}")
+    public ResponseEntity<TimeZoneWorkCalendarRefDetailDTO> queryTimeZoneWorkCalendarDetail(@ApiParam(value = "项目id", required = true)
+                                                                                            @PathVariable(name = "project_id") Long projectId,
+                                                                                            @ApiParam(value = "组织id", required = true)
+                                                                                            @PathVariable(name = "organization_id") Long organizationId) {
+        return Optional.ofNullable(timeZoneWorkCalendarService.queryTimeZoneWorkCalendarDetail(organizationId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.TimeZoneWorkCalendarController.queryTimeZoneWorkCalendarDetail"));
     }
 
 }
