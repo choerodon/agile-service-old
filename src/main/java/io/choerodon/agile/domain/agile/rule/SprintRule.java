@@ -76,7 +76,7 @@ public class SprintRule {
         sprintDO.setSprintId(sprintId);
         sprintDO = sprintMapper.selectOne(sprintDO);
         if (sprintDO == null) {
-            throw new CommonException(SPRINT_DATE_ERROR);
+            throw new CommonException("error.spring.query");
         }
     }
 }
