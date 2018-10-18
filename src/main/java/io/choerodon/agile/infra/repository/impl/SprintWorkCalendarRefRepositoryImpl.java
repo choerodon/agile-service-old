@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SprintWorkCalendarRefRepositoryImpl implements SprintWorkCalendarRefRepository {
 
     private static final String INSERT_ERROR = "error.SprintWorkCalendarRef.create";
+    private static final String DELETE_ERROR = "error.SprintWorkCalendarRef.delete";
 
     @Autowired
     private SprintWorkCalendarRefMapper sprintWorkCalendarRefMapper;
@@ -27,5 +28,15 @@ public class SprintWorkCalendarRefRepositoryImpl implements SprintWorkCalendarRe
             throw new CommonException(INSERT_ERROR);
         }
         return sprintWorkCalendarRefDO;
+    }
+
+    @Override
+    public void delete(Long projectId, Long calendarId) {
+        SprintWorkCalendarRefDO sprintWorkCalendarRefDO = new SprintWorkCalendarRefDO();
+        sprintWorkCalendarRefDO.setProjectId(projectId);
+        sprintWorkCalendarRefDO.setCalendarId(calendarId);
+        if (sprintWorkCalendarRefMapper.delete(sprintWorkCalendarRefDO) != 1) {
+            throw new CommonException(DELETE_ERROR);
+        }
     }
 }

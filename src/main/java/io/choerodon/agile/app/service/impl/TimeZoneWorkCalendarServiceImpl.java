@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.validator.WorkCalendarValidator;
 import io.choerodon.agile.app.assembler.TimeZoneWorkCalendarAssembler;
 import io.choerodon.agile.app.service.TimeZoneWorkCalendarService;
 import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarE;
@@ -59,6 +60,7 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
 
     @Override
     public TimeZoneWorkCalendarRefDTO createTimeZoneWorkCalendarRef(Long organizationId, Long timeZoneId, TimeZoneWorkCalendarRefCreateDTO timeZoneWorkCalendarRefCreateDTO) {
+        WorkCalendarValidator.checkWorkDayAndStatus(timeZoneWorkCalendarRefCreateDTO.getWorkDay(), timeZoneWorkCalendarRefCreateDTO.getStatus());
         TimeZoneWorkCalendarRefE timeZoneWorkCalendarRefE;
         try {
             timeZoneWorkCalendarRefE = new TimeZoneWorkCalendarRefE(timeZoneId, timeZoneWorkCalendarRefCreateDTO.getWorkDay(), timeZoneWorkCalendarRefCreateDTO.getStatus(), organizationId);

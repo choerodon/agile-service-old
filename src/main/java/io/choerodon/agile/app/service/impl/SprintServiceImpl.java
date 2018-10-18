@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service.impl;
 
 import com.google.common.collect.Ordering;
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.validator.WorkCalendarValidator;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.domain.agile.repository.SprintWorkCalendarRefRepository;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
@@ -462,7 +463,7 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
-    public ActiveSprintDTO queryActiveSprint(Long projectId,Long organizationId) {
+    public ActiveSprintDTO queryActiveSprint(Long projectId, Long organizationId) {
         ActiveSprintDTO result = new ActiveSprintDTO();
         SprintDO activeSprint = getActiveSprint(projectId);
         if (activeSprint != null) {
@@ -488,6 +489,36 @@ public class SprintServiceImpl implements SprintService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
             return result.stream().map(sdf::format).collect(Collectors.toList());
         }
+    }
+
+    @Override
+    public SprintWorkCalendarDTO querySprintWorkCalendarRefs(Long projectId) {
+        SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
+        if (sprintSearchDO != null) {
+            SprintWorkCalendarDTO sprintWorkCalendarDTO = sprintSearchAssembler.toTarget(sprintSearchDO, SprintWorkCalendarDTO.class);
+            SprintWorkCalendarRefDO sprintWorkCalendarRefDO = new SprintWorkCalendarRefDO();
+            sprintWorkCalendarRefDO.setProjectId(projectId);
+            sprintWorkCalendarRefDO.setSprintId(sprintWorkCalendarDTO.getSprintId());
+            sprintWorkCalendarDTO.setSprintWorkCalendarRefDTOS(sprintCreateAssembler.toTargetList(sprintWorkCalendarRefMapper.select(sprintWorkCalendarRefDO), SprintWorkCalendarRefDTO.class));
+            return sprintWorkCalendarDTO;
+        } else {
+            return new SprintWorkCalendarDTO();
+        }
+
+    }
+
+    @Override
+    public SprintWorkCalendarRefDTO createSprintWorkCalendarRef(Long projectId, Long sprintId, SprintWorkCalendarRefCreateDTO sprintWorkCalendarRefCreateDTO) {
+        SprintWorkCalendarRefDO sprintWorkCalendarRefDO = sprintCreateAssembler.toTarget(sprintWorkCalendarRefCreateDTO, SprintWorkCalendarRefDO.class);
+        sprintWorkCalendarRefDO.setProjectId(projectId);
+        sprintWorkCalendarRefDO.setSprintId(sprintId);
+        WorkCalendarValidator.checkWorkDayAndStatus(sprintWorkCalendarRefDO.getWorkDay(), sprintWorkCalendarRefDO.getStatus());
+        return sprintSearchAssembler.toTarget(sprintWorkCalendarRefRepository.create(sprintWorkCalendarRefDO), SprintWorkCalendarRefDTO.class);
+    }
+
+    @Override
+    public void deleteSprintWorkCalendarRef(Long projectId, Long calendarId) {
+        sprintWorkCalendarRefRepository.delete(projectId, calendarId);
     }
 
     private void handleSprintNonWorkdays(Set<Date> dates, Long sprintId, Long projectId) {

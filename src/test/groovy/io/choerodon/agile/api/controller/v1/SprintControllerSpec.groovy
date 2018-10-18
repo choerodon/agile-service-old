@@ -13,6 +13,8 @@ import io.choerodon.agile.api.dto.SprintDetailDTO
 import io.choerodon.agile.api.dto.SprintNameDTO
 import io.choerodon.agile.api.dto.SprintSearchDTO
 import io.choerodon.agile.api.dto.SprintUpdateDTO
+import io.choerodon.agile.api.dto.SprintWorkCalendarDTO
+import io.choerodon.agile.api.dto.SprintWorkCalendarRefCreateDTO
 import io.choerodon.agile.api.dto.SprintWorkCalendarRefDTO
 import io.choerodon.agile.api.dto.TimeZoneWorkCalendarRefDetailDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
@@ -454,6 +456,47 @@ class SprintControllerSpec extends Specification {
 
         then:
         entity.statusCode.is2xxSuccessful()
+    }
+
+    def "createSprintWorkCalendarRef"() {
+        given: '冲刺更新对象'
+        SprintWorkCalendarRefCreateDTO sprintWorkCalendarRefCreateDTO = new SprintWorkCalendarRefCreateDTO()
+        sprintWorkCalendarRefCreateDTO.workDay = "2018-10-10"
+        sprintWorkCalendarRefCreateDTO.status = 0
+
+        when: '发送请求'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/sprint/work_calendar_create/{sprint_id}', sprintWorkCalendarRefCreateDTO, SprintWorkCalendarRefDTO, projectId, sprintIds[0])
+
+        then: '请求结果'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        SprintWorkCalendarRefDTO result = entity.body
+
+        expect: '期望值'
+        result.workDay == "2018-10-10"
+        result.status == 0
+    }
+
+    def "deleteSprintWorkCalendarRef"() {
+        when: '发送请求'
+        def entity = restTemplate.exchange('/v1/projects/{project_id}/sprint/work_calendar/{calendar_id}', HttpMethod.DELETE, new HttpEntity<Object>(), ResponseEntity.class, projectId, 1)
+
+        then: '请求结果'
+        entity.statusCode == HttpStatus.NO_CONTENT
+
+    }
+
+    def 'querySprintWorkCalendarRefs'() {
+        when:
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/work_calendar', SprintWorkCalendarDTO, projectId)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+        SprintWorkCalendarDTO sprintWorkCalendarDTO = entity.body
+
+        expect: "验证"
+        sprintWorkCalendarDTO != null
     }
 
     def "deleteSprint"() {

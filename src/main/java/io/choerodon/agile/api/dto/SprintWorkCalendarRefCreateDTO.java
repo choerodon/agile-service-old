@@ -4,23 +4,13 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
 
 /**
  * @author dinghuang123@gmail.com
- * @since 2018/10/16
+ * @since 2018/10/18
  */
-public class SprintWorkCalendarRefDTO {
-
-    private Long calendarId;
+public class SprintWorkCalendarRefCreateDTO {
 
     private String workDay;
 
     private Integer status;
-
-    public Long getCalendarId() {
-        return calendarId;
-    }
-
-    public void setCalendarId(Long calendarId) {
-        this.calendarId = calendarId;
-    }
 
     public String getWorkDay() {
         return workDay;
@@ -37,6 +27,7 @@ public class SprintWorkCalendarRefDTO {
     public void setStatus(Integer status) {
         this.status = status;
     }
+
 
     @Override
     public String toString() {
