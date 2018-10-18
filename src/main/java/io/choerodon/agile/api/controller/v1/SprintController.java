@@ -229,7 +229,7 @@ public class SprintController {
                 .orElseThrow(() -> new CommonException("error.queryNonWorkdays.get"));
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR, InitRoleCode.ORGANIZATION_MEMBER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("获取冲刺有关于组织层时区设置")
     @GetMapping(value = "/time_zone_detail/{organization_id}")
     public ResponseEntity<TimeZoneWorkCalendarRefDetailDTO> queryTimeZoneWorkCalendarDetail(@ApiParam(value = "项目id", required = true)
