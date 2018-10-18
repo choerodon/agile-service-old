@@ -27,4 +27,6 @@ public interface IssueComponentService {
     Page<ComponentForListDTO> queryComponentByProjectId(Long projectId, Long componentId, Boolean noIssueTest, SearchDTO searchDTO, PageRequest pageRequest);
 
     List<IssueDTO> queryIssuesByComponentId(Long projectId, Long componentId);
+
+    List<ComponentForListDTO> listByProjectIdForTest(Long projectId, Long componentId, Boolean noIssueTest);
 }

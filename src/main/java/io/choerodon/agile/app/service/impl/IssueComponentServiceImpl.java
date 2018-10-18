@@ -112,7 +112,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         handleSearchUser(searchDTO, projectId);
         Page<ComponentForListDTO> componentForListDTOPage = ConvertPageHelper.convertPage(PageHelper.doPageAndSort(pageRequest, () ->
                 issueComponentMapper.queryComponentByOption(projectId, noIssueTest, componentId, searchDTO.getSearchArgs(),
-                        searchDTO.getAdvancedSearchArgs(),searchDTO.getContent())), ComponentForListDTO.class);
+                        searchDTO.getAdvancedSearchArgs(), searchDTO.getContent())), ComponentForListDTO.class);
         if ((componentForListDTOPage.getContent() != null) && !componentForListDTOPage.getContent().isEmpty()) {
             List<Long> assigneeIds = componentForListDTOPage.getContent().stream().filter(componentForListDTO -> componentForListDTO.getManagerId() != null
                     && !Objects.equals(componentForListDTO.getManagerId(), 0L)).map(ComponentForListDTO::getManagerId).distinct().collect(Collectors.toList());
@@ -142,5 +142,21 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     @Override
     public List<IssueDTO> queryIssuesByComponentId(Long projectId, Long componentId) {
         return ConvertHelper.convertList(issueComponentMapper.queryIssuesByComponentId(projectId, componentId), IssueDTO.class);
+    }
+
+    @Override
+    public List<ComponentForListDTO> listByProjectIdForTest(Long projectId, Long componentId, Boolean noIssueTest) {
+        List<ComponentForListDTO> componentForListDTOList = ConvertHelper.convertList(
+                issueComponentMapper.queryComponentWithIssueNum(projectId, componentId, noIssueTest), ComponentForListDTO.class);
+        List<Long> assigneeIds = componentForListDTOList.stream().filter(componentForListDTO -> componentForListDTO.getManagerId() != null
+                && !Objects.equals(componentForListDTO.getManagerId(), 0L)).map(ComponentForListDTO::getManagerId).distinct().collect(Collectors.toList());
+        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+        componentForListDTOList.forEach(componentForListDTO -> {
+            String assigneeName = usersMap.get(componentForListDTO.getManagerId()) != null ? usersMap.get(componentForListDTO.getManagerId()).getName() : null;
+            String imageUrl = assigneeName != null ? usersMap.get(componentForListDTO.getManagerId()).getImageUrl() : null;
+            componentForListDTO.setManagerName(assigneeName);
+            componentForListDTO.setImageUrl(imageUrl);
+        });
+        return componentForListDTOList;
     }
 }

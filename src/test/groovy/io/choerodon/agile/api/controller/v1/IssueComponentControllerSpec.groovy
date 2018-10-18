@@ -169,6 +169,24 @@ class IssueComponentControllerSpec extends Specification {
         10L        | true        | 0
     }
 
+    def 'listByProjectIdForTest'() {
+        when: '根据project id查询component'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/component', List, projectIds, componentId, noIssueTest)
+
+        then: '请求结果'
+        entity.statusCode.is2xxSuccessful()
+        List<ComponentForListDTO> result = entity.body
+
+        and: '设置值'
+        result.size() == expectSize
+
+        where: '期望值'
+        projectIds | noIssueTest | expectSize
+        1L         | true        | 2
+        2L         | true        | 0
+        10L        | true        | 0
+    }
+
     def 'listByOptions'() {
         when: '根据id查询component下的issues'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/component/{id}/issues', List, projectId, componentIds)
