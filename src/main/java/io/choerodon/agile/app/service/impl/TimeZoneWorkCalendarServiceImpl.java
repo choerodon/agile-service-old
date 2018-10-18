@@ -103,32 +103,49 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
 
     @Override
     public TimeZoneWorkCalendarRefDetailDTO queryTimeZoneWorkCalendarDetail(Long organizationId) {
-        TimeZoneWorkCalendarRefDetailDTO timeZoneWorkCalendarRefDetailDTO = new TimeZoneWorkCalendarRefDetailDTO();
         TimeZoneWorkCalendarDO query = new TimeZoneWorkCalendarDO();
         query.setOrganizationId(organizationId);
         TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = timeZoneWorkCalendarMapper.selectOne(query);
         if (timeZoneWorkCalendarDO != null) {
-            TimeZoneWorkCalendarRefDO timeZoneWorkCalendarRefDO = new TimeZoneWorkCalendarRefDO();
-            timeZoneWorkCalendarRefDO.setOrganizationId(organizationId);
-            timeZoneWorkCalendarRefDO.setTimeZoneId(timeZoneWorkCalendarDO.getTimeZoneId());
-            timeZoneWorkCalendarRefDetailDTO = timeZoneWorkCalendarAssembler.toTarget(timeZoneWorkCalendarDO, TimeZoneWorkCalendarRefDetailDTO.class);
-            timeZoneWorkCalendarRefDetailDTO.setTimeZoneWorkCalendarDTOS(timeZoneWorkCalendarRefMapper.select(timeZoneWorkCalendarRefDO)
-                    .stream().map(d -> {
-                        TimeZoneWorkCalendarRefCreateDTO timeZoneWorkCalendarRefCreateDTO = new TimeZoneWorkCalendarRefCreateDTO();
-                        timeZoneWorkCalendarRefCreateDTO.setWorkDay(d.getWorkDay());
-                        timeZoneWorkCalendarRefCreateDTO.setStatus(d.getStatus());
-                        return timeZoneWorkCalendarRefCreateDTO;
-                    }).collect(Collectors.toSet()));
-            if (timeZoneWorkCalendarDO.getUseHoliday()) {
-                timeZoneWorkCalendarRefDetailDTO.setWorkHolidayCalendarDTOS(workCalendarHolidayRefMapper.selectAll().stream().map(d -> {
-                    TimeZoneWorkCalendarHolidayRefDTO timeZoneWorkCalendarHolidayRefDTO = new TimeZoneWorkCalendarHolidayRefDTO();
-                    timeZoneWorkCalendarHolidayRefDTO.setStatus(d.getStatus());
-                    timeZoneWorkCalendarHolidayRefDTO.setHoliday(d.getHoliday());
-                    timeZoneWorkCalendarHolidayRefDTO.setName(d.getName());
-                    return timeZoneWorkCalendarHolidayRefDTO;
+            return initTimeZoneWorkCalendarRefDetailDTO(timeZoneWorkCalendarDO, organizationId);
+        } else {
+            timeZoneWorkCalendarDO = new TimeZoneWorkCalendarDO();
+            timeZoneWorkCalendarDO.setAreaCode("Asia");
+            timeZoneWorkCalendarDO.setTimeZoneCode("Asia/Shanghai");
+            timeZoneWorkCalendarDO.setSaturdayWork(false);
+            timeZoneWorkCalendarDO.setSundayWork(false);
+            timeZoneWorkCalendarDO.setUseHoliday(true);
+            TimeZoneWorkCalendarE timeZoneWorkCalendarE = timeZoneWorkCalendarAssembler
+                    .toTarget(timeZoneWorkCalendarDO, TimeZoneWorkCalendarE.class);
+            timeZoneWorkCalendarE.setOrganizationId(organizationId);
+            timeZoneWorkCalendarDO = ConvertHelper.convert(timeZoneWorkCalendarRepository.create(timeZoneWorkCalendarE), TimeZoneWorkCalendarDO.class);
+            return initTimeZoneWorkCalendarRefDetailDTO(timeZoneWorkCalendarDO, organizationId);
+        }
+    }
+
+    private TimeZoneWorkCalendarRefDetailDTO initTimeZoneWorkCalendarRefDetailDTO(TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Long organizationId) {
+        TimeZoneWorkCalendarRefDO timeZoneWorkCalendarRefDO = new TimeZoneWorkCalendarRefDO();
+        timeZoneWorkCalendarRefDO.setOrganizationId(organizationId);
+        timeZoneWorkCalendarRefDO.setTimeZoneId(timeZoneWorkCalendarDO.getTimeZoneId());
+        TimeZoneWorkCalendarRefDetailDTO timeZoneWorkCalendarRefDetailDTO = timeZoneWorkCalendarAssembler.toTarget(timeZoneWorkCalendarDO, TimeZoneWorkCalendarRefDetailDTO.class);
+        timeZoneWorkCalendarRefDetailDTO.setTimeZoneWorkCalendarDTOS(timeZoneWorkCalendarRefMapper.select(timeZoneWorkCalendarRefDO)
+                .stream().map(d -> {
+                    TimeZoneWorkCalendarRefCreateDTO timeZoneWorkCalendarRefCreateDTO = new TimeZoneWorkCalendarRefCreateDTO();
+                    timeZoneWorkCalendarRefCreateDTO.setWorkDay(d.getWorkDay());
+                    timeZoneWorkCalendarRefCreateDTO.setStatus(d.getStatus());
+                    return timeZoneWorkCalendarRefCreateDTO;
                 }).collect(Collectors.toSet()));
-            }
+        if (timeZoneWorkCalendarDO.getUseHoliday()) {
+            timeZoneWorkCalendarRefDetailDTO.setWorkHolidayCalendarDTOS(workCalendarHolidayRefMapper.selectAll().stream().map(d -> {
+                TimeZoneWorkCalendarHolidayRefDTO timeZoneWorkCalendarHolidayRefDTO = new TimeZoneWorkCalendarHolidayRefDTO();
+                timeZoneWorkCalendarHolidayRefDTO.setStatus(d.getStatus());
+                timeZoneWorkCalendarHolidayRefDTO.setHoliday(d.getHoliday());
+                timeZoneWorkCalendarHolidayRefDTO.setName(d.getName());
+                return timeZoneWorkCalendarHolidayRefDTO;
+            }).collect(Collectors.toSet()));
         }
         return timeZoneWorkCalendarRefDetailDTO;
     }
+
+
 }
