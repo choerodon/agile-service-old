@@ -512,7 +512,7 @@ public class SprintServiceImpl implements SprintService {
         SprintWorkCalendarRefDO sprintWorkCalendarRefDO = sprintCreateAssembler.toTarget(sprintWorkCalendarRefCreateDTO, SprintWorkCalendarRefDO.class);
         sprintWorkCalendarRefDO.setProjectId(projectId);
         sprintWorkCalendarRefDO.setSprintId(sprintId);
-        WorkCalendarValidator.checkWorkDayAndStatus(sprintWorkCalendarRefDO.getWorkDay(), sprintWorkCalendarRefDO.getStatus());
+        sprintWorkCalendarRefDO.setYear(WorkCalendarValidator.checkWorkDayAndStatus(sprintWorkCalendarRefDO.getWorkDay(), sprintWorkCalendarRefDO.getStatus()));
         return sprintSearchAssembler.toTarget(sprintWorkCalendarRefRepository.create(sprintWorkCalendarRefDO), SprintWorkCalendarRefDTO.class);
     }
 

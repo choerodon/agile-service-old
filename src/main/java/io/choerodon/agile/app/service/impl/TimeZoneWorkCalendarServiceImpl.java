@@ -14,12 +14,10 @@ import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarRefMapper;
 import io.choerodon.agile.infra.mapper.WorkCalendarHolidayRefMapper;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,13 +58,13 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
 
     @Override
     public TimeZoneWorkCalendarRefDTO createTimeZoneWorkCalendarRef(Long organizationId, Long timeZoneId, TimeZoneWorkCalendarRefCreateDTO timeZoneWorkCalendarRefCreateDTO) {
-        WorkCalendarValidator.checkWorkDayAndStatus(timeZoneWorkCalendarRefCreateDTO.getWorkDay(), timeZoneWorkCalendarRefCreateDTO.getStatus());
         TimeZoneWorkCalendarRefE timeZoneWorkCalendarRefE;
-        try {
-            timeZoneWorkCalendarRefE = new TimeZoneWorkCalendarRefE(timeZoneId, timeZoneWorkCalendarRefCreateDTO.getWorkDay(), timeZoneWorkCalendarRefCreateDTO.getStatus(), organizationId);
-        } catch (ParseException e) {
-            throw new CommonException("ParseException{}", e);
-        }
+        timeZoneWorkCalendarRefE = new TimeZoneWorkCalendarRefE();
+        timeZoneWorkCalendarRefE.setTimeZoneId(timeZoneId);
+        timeZoneWorkCalendarRefE.setWorkDay(timeZoneWorkCalendarRefCreateDTO.getWorkDay());
+        timeZoneWorkCalendarRefE.setStatus(timeZoneWorkCalendarRefCreateDTO.getStatus());
+        timeZoneWorkCalendarRefE.setYear(WorkCalendarValidator.checkWorkDayAndStatus(timeZoneWorkCalendarRefCreateDTO.getWorkDay(), timeZoneWorkCalendarRefCreateDTO.getStatus()));
+        timeZoneWorkCalendarRefE.setOrganizationId(organizationId);
         return ConvertHelper.convert(timeZoneWorkCalendarRefRepository.create(timeZoneWorkCalendarRefE), TimeZoneWorkCalendarRefDTO.class);
     }
 

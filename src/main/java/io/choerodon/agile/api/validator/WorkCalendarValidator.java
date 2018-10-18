@@ -5,6 +5,8 @@ import io.choerodon.core.exception.CommonException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author dinghuang123@gmail.com
@@ -15,7 +17,7 @@ public class WorkCalendarValidator {
     private WorkCalendarValidator() {
     }
 
-    public static void checkWorkDayAndStatus(String workDay, Integer status) {
+    public static Integer checkWorkDayAndStatus(String workDay, Integer status) {
         if (workDay == null) {
             throw new CommonException("error.workDay.null");
         }
@@ -26,10 +28,14 @@ public class WorkCalendarValidator {
             throw new CommonException("error.status.error");
         }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date;
         try {
-            simpleDateFormat.parse(workDay);
+            date = simpleDateFormat.parse(workDay);
         } catch (ParseException e) {
             throw new CommonException("error.workDay.error");
         }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar.get(Calendar.YEAR);
     }
 }
