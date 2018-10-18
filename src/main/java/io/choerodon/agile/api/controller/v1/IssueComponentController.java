@@ -93,16 +93,31 @@ public class IssueComponentController {
     @PostMapping(value = "/query_all")
     public ResponseEntity<Page<ComponentForListDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
                                                                      @PathVariable(name = "project_id") Long projectId,
-                                                                     @ApiParam(value = "当前模块id", required = false)
+                                                                     @ApiParam(value = "当前模块id")
                                                                      @RequestParam(required = false) Long componentId,
                                                                      @ApiParam(value = "是否包含测试")
                                                                      @RequestParam(required = false, name = "no_issue_test", defaultValue = "false") Boolean noIssueTest,
-                                                                     @ApiParam(value = "查询参数", required = false)
+                                                                     @ApiParam(value = "查询参数")
                                                                      @RequestBody(required = false) SearchDTO searchDTO,
                                                                      @ApiParam(value = "分页信息", required = true)
                                                                      @SortDefault(value = "component_id", direction = Sort.Direction.DESC)
                                                                      @ApiIgnore PageRequest pageRequest) {
         return Optional.ofNullable(issueComponentService.queryComponentByProjectId(projectId, componentId, noIssueTest, searchDTO, pageRequest))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.componentList.get"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("根据project id查询component,测试服务用")
+    @GetMapping
+    public ResponseEntity<List<ComponentForListDTO>> listByProjectIdForTest(@ApiParam(value = "项目id", required = true)
+                                                                            @PathVariable(name = "project_id") Long projectId,
+                                                                            @ApiParam(value = "当前模块id")
+                                                                            @RequestParam(required = false) Long componentId,
+                                                                            @ApiParam(value = "是否包含测试")
+                                                                            @RequestParam(required = false, name = "no_issue_test", defaultValue = "false")
+                                                                                    Boolean noIssueTest) {
+        return Optional.ofNullable(issueComponentService.listByProjectIdForTest(projectId, componentId, noIssueTest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.componentList.get"));
     }
