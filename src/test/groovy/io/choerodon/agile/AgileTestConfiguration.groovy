@@ -10,6 +10,7 @@ import io.choerodon.agile.app.service.ProductVersionService
 import io.choerodon.agile.app.service.impl.IssueAttachmentServiceImpl
 import io.choerodon.agile.app.service.impl.IssueServiceImpl
 import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl
+import io.choerodon.agile.domain.agile.event.OrganizationCreateEventPayload
 import io.choerodon.agile.domain.agile.event.ProjectEvent
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
@@ -118,7 +119,7 @@ class AgileTestConfiguration {
 
     @Autowired
     private ProductVersionMapper productVersionMapper
-    
+
     @Bean("mockUserRepository")
     @Primary
     UserRepository userRepository() {
@@ -258,6 +259,10 @@ class AgileTestConfiguration {
         projectEvent.setProjectName("agile")
         String data = JSON.toJSONString(projectEvent)
         agileEventHandler.handleProjectInitByConsumeSagaTask(data)
+        OrganizationCreateEventPayload organizationCreateEventPayload = new OrganizationCreateEventPayload()
+        organizationCreateEventPayload.setId(1L)
+        String message = JSON.toJSONString(organizationCreateEventPayload)
+        agileEventHandler.handleOrganizationInitTimeZoneSagaTask(message)
     }
 
     private void initIssues() {
