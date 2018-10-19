@@ -91,7 +91,7 @@ public class DateUtil {
             handleHolidays(dates, year, startDate, endDate, timeZoneWorkCalendarDO);
             handleTimeZoneWorkCalendarRefRemoveAndAdd(dates, timeZoneWorkCalendarDO, startDate, endDate);
             handleExcludedDate(workday, dates);
-            handleAddDate(holiday, dates);
+            handleAddDate(holiday, dates, startDate, endDate);
             return i - dates.size();
         }
     }
@@ -124,9 +124,9 @@ public class DateUtil {
         }
     }
 
-    private void handleAddDate(List<Date> addDate, Set<Date> dates) {
+    private void handleAddDate(List<Date> addDate, Set<Date> dates, Date startDate, Date endDate) {
         if (addDate != null && !addDate.isEmpty()) {
-            dates.addAll(addDate);
+            dates.addAll(addDate.stream().filter(date -> (date.before(endDate) && date.after(startDate) || isSameDay(date, startDate) || isSameDay(date, endDate))).collect(Collectors.toSet()));
             handleDuplicateDate(dates);
         }
     }

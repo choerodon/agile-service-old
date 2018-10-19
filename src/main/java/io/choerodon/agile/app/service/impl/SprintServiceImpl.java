@@ -484,7 +484,7 @@ public class SprintServiceImpl implements SprintService {
             return new ArrayList<>();
         } else {
             Set<Date> dates = dateUtil.getNonWorkdaysDuring(sprintDO.getStartDate(), sprintDO.getEndDate(), organizationId);
-            handleSprintNonWorkdays(dates, sprintId, projectId);
+            handleSprintNonWorkdays(dates, sprintDO, projectId);
             List<Date> result = Ordering.from(Date::compareTo).sortedCopy(dates);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
             return result.stream().map(sdf::format).collect(Collectors.toList());
@@ -521,16 +521,16 @@ public class SprintServiceImpl implements SprintService {
         sprintWorkCalendarRefRepository.delete(projectId, calendarId);
     }
 
-    private void handleSprintNonWorkdays(Set<Date> dates, Long sprintId, Long projectId) {
+    private void handleSprintNonWorkdays(Set<Date> dates, SprintDO sprintDO, Long projectId) {
         Set<Date> remove = new HashSet<>(dates.size() << 1);
-        List<Date> workDays = sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(sprintId, projectId);
-        List<Date> holidays = sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(sprintId, projectId);
+        List<Date> workDays = sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(sprintDO.getSprintId(), projectId);
+        List<Date> holidays = sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(sprintDO.getSprintId(), projectId);
         workDays.forEach(d -> dates.forEach(date -> {
             if (DateUtil.isSameDay(d, date)) {
                 remove.add(date);
             }
         }));
-        dates.addAll(holidays);
+        dates.addAll(holidays.stream().filter(date -> (date.before(sprintDO.getEndDate()) && date.after(sprintDO.getStartDate()) || DateUtil.isSameDay(date, sprintDO.getStartDate()) || DateUtil.isSameDay(date, sprintDO.getEndDate()))).collect(Collectors.toSet()));
         dates.removeAll(remove);
         dateUtil.handleDuplicateDate(dates);
     }
