@@ -89,6 +89,7 @@ public class DateUtil {
             TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = timeZoneWorkCalendarMapper.queryTimeZoneDetailByOrganizationId(organizationId);
             i = getWorkDaysInterval(i, timeZoneWorkCalendarDO, startDate, endDate, dates, year);
             handleHolidays(dates, year, startDate, endDate, timeZoneWorkCalendarDO);
+            handleTimeZoneWorkCalendarRefRemoveAndAdd(dates, timeZoneWorkCalendarDO, startDate, endDate);
             handleExcludedDate(workday, dates);
             handleAddDate(holiday, dates);
             return i - dates.size();
@@ -187,7 +188,6 @@ public class DateUtil {
                 handleEmptyDates(dates, timeZoneDate, sdf);
             } else {
                 handleNoEmptyDates(dates, timeZoneDate, remove, add, sdf, endDate, startDate);
-
             }
         }
     }
@@ -211,8 +211,11 @@ public class DateUtil {
                 Date holidayDate = sdf.parse(timeZoneWorkCalendarRefDO.getWorkDay());
                 if (isSameDay(holidayDate, date) && timeZoneWorkCalendarRefDO.getStatus() == 1) {
                     remove.add(date);
-                } else if (holidayDate.before(endDate) && holidayDate.after(startDate) && timeZoneWorkCalendarRefDO.getStatus() == 0) {
-                    add.add(holidayDate);
+                } else {
+                    boolean condition = (holidayDate.before(endDate) && holidayDate.after(startDate) || isSameDay(holidayDate, startDate) || isSameDay(holidayDate, endDate)) && timeZoneWorkCalendarRefDO.getStatus() == 0;
+                    if (condition) {
+                        add.add(holidayDate);
+                    }
                 }
             } catch (ParseException e) {
                 LOGGER.warn(PARSE_EXCEPTION, e);
