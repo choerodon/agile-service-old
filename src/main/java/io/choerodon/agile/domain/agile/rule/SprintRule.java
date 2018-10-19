@@ -70,4 +70,13 @@ public class SprintRule {
         }
     }
 
+    public void validatorSprint(Long sprintId, Long projectId) {
+        SprintDO sprintDO = new SprintDO();
+        sprintDO.setProjectId(projectId);
+        sprintDO.setSprintId(sprintId);
+        sprintDO = sprintMapper.selectOne(sprintDO);
+        if (sprintDO == null) {
+            throw new CommonException("error.spring.query");
+        }
+    }
 }

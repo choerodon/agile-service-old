@@ -1,34 +1,39 @@
-package io.choerodon.agile.infra.dataobject;
+package io.choerodon.agile.api.dto;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.agile.infra.common.utils.StringUtil;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 /**
- * Created by jian_zhang02@163.com on 2018/5/14.
+ * @author dinghuang123@gmail.com
+ * @since 2018/10/18
  */
+public class SprintWorkCalendarDTO {
 
-@ModifyAudit
-@VersionAudit
-@Table(name = "agile_sprint")
-public class SprintDO extends AuditDomain {
-    @Id
-    @GeneratedValue
+    private List<SprintWorkCalendarRefDTO> sprintWorkCalendarRefDTOS;
+
     private Long sprintId;
-    private String sprintName;
-    private String sprintGoal;
+
     private Date startDate;
+
+    private String sprintName;
+
+    private String sprintGoal;
+
     private Date endDate;
+
     private Date actualEndDate;
+
     private String statusCode;
-    @NotNull
-    private Long projectId;
+
+    public List<SprintWorkCalendarRefDTO> getSprintWorkCalendarRefDTOS() {
+        return sprintWorkCalendarRefDTOS;
+    }
+
+    public void setSprintWorkCalendarRefDTOS(List<SprintWorkCalendarRefDTO> sprintWorkCalendarRefDTOS) {
+        this.sprintWorkCalendarRefDTOS = sprintWorkCalendarRefDTOS;
+    }
 
     public Long getSprintId() {
         return sprintId;
@@ -36,6 +41,14 @@ public class SprintDO extends AuditDomain {
 
     public void setSprintId(Long sprintId) {
         this.sprintId = sprintId;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
     public String getSprintName() {
@@ -52,14 +65,6 @@ public class SprintDO extends AuditDomain {
 
     public void setSprintGoal(String sprintGoal) {
         this.sprintGoal = sprintGoal;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
     }
 
     public Date getEndDate() {
@@ -86,11 +91,8 @@ public class SprintDO extends AuditDomain {
         this.statusCode = statusCode;
     }
 
-    public Long getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    @Override
+    public String toString() {
+        return StringUtil.getToString(this);
     }
 }

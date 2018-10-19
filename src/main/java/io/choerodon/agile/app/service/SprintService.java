@@ -43,7 +43,7 @@ public interface SprintService {
 
     List<SprintUnClosedDTO> queryUnClosedSprint(Long projectId);
 
-    ActiveSprintDTO queryActiveSprint(Long projectId,Long organizationId);
+    ActiveSprintDTO queryActiveSprint(Long projectId, Long organizationId);
 
     /**
      * 查询冲刺期间非工作日
@@ -54,4 +54,30 @@ public interface SprintService {
      * @return Date
      */
     List<String> queryNonWorkdays(Long projectId, Long sprintId, Long organizationId);
+
+    /**
+     * 查询冲刺工作日历设置
+     *
+     * @param projectId projectId
+     * @return SprintWorkCalendarRefDTO
+     */
+    SprintWorkCalendarDTO querySprintWorkCalendarRefs(Long projectId);
+
+    /**
+     * 创建冲刺工作日历
+     *
+     * @param projectId                      projectId
+     * @param sprintId                       sprintId
+     * @param sprintWorkCalendarRefCreateDTO sprintWorkCalendarRefCreateDTO
+     * @return SprintWorkCalendarRefDTO
+     */
+    SprintWorkCalendarRefDTO createSprintWorkCalendarRef(Long projectId, Long sprintId, SprintWorkCalendarRefCreateDTO sprintWorkCalendarRefCreateDTO);
+
+    /**
+     * 删除冲刺工作日历
+     *
+     * @param projectId  projectId
+     * @param calendarId calendarId
+     */
+    void deleteSprintWorkCalendarRef(Long projectId, Long calendarId);
 }

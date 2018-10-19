@@ -10,9 +10,17 @@ public interface SprintWorkCalendarRefRepository {
 
     /**
      * 创建
-     * @param  sprintWorkCalendarRefDO sprintWorkCalendarRefDO
+     *
+     * @param sprintWorkCalendarRefDO sprintWorkCalendarRefDO
      * @return SprintWorkCalendarRefDO
      */
     SprintWorkCalendarRefDO create(SprintWorkCalendarRefDO sprintWorkCalendarRefDO);
 
+    /**
+     * 删除冲刺工作日历
+     *
+     * @param projectId  projectId
+     * @param calendarId calendarId
+     */
+    void delete(Long projectId, Long calendarId);
 }
