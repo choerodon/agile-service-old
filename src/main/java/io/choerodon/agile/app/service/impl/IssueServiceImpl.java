@@ -277,7 +277,7 @@ public class IssueServiceImpl implements IssueService {
 
     private String convertProjectName(ProjectDTO projectDTO) {
         String projectName = projectDTO.getName();
-        projectName.replace(" ","%20");
+        projectName.replace("%20"," ");
         return projectName;
     }
 
