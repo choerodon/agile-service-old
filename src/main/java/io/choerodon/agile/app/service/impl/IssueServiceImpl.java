@@ -293,6 +293,9 @@ public class IssueServiceImpl implements IssueService {
             String summary = result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getReporterName();
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
+            if (projectDTO == null) {
+                throw new CommonException("error.project.notExist");
+            }
             String projectName = convertProjectName(projectDTO);
             String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId();
             userIds.stream().forEach(id -> siteMsgUtil.issueCreate(id, userName, summary, url));
@@ -323,6 +326,9 @@ public class IssueServiceImpl implements IssueService {
             String summary = result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getAssigneeName();
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
+            if (projectDTO == null) {
+                throw new CommonException("error.project.notExist");
+            }
             String projectName = convertProjectName(projectDTO);
             StringBuilder url = new StringBuilder();
             if (SUB_TASK.equals(result.getTypeCode())) {
@@ -335,6 +341,9 @@ public class IssueServiceImpl implements IssueService {
         if (fieldList.contains(STATUS_ID) && result.getStatusId() != null && issueStatusMapper.selectByPrimaryKey(result.getStatusId()).getCompleted() && result.getAssigneeId() != null && !ISSUE_TEST.equals(result.getTypeCode())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", result);
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
+            if (projectDTO == null) {
+                throw new CommonException("error.project.notExist");
+            }
             String projectName = convertProjectName(projectDTO);
             StringBuilder url = new StringBuilder();
             if (SUB_TASK.equals(result.getTypeCode())) {
@@ -918,6 +927,9 @@ public class IssueServiceImpl implements IssueService {
             String summary = result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getReporterName();
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
+            if (projectDTO == null) {
+                throw new CommonException("error.project.notExist");
+            }
             String projectName = convertProjectName(projectDTO);
             String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getParentIssueNum() + URL_TEMPLATE4 + result.getParentIssueId() + URL_TEMPLATE5 + result.getIssueId();
             userIds.stream().forEach(id -> siteMsgUtil.issueCreate(id, userName, summary, url));

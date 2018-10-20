@@ -371,6 +371,9 @@ public class BoardServiceImpl implements BoardService {
         if (issueStatusMapper.selectByPrimaryKey(issueE.getStatusId()).getCompleted() && issueDO.getAssigneeId() != null && !"issue_test".equals(issueDO.getTypeCode())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDO, IssueDTO.class));
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
+            if (projectDTO == null) {
+                throw new CommonException("error.project.notExist");
+            }
             StringBuilder url = new StringBuilder();
             String projectName = convertProjectName(projectDTO);
             if ("sub_task".equals(issueDO.getTypeCode())) {
