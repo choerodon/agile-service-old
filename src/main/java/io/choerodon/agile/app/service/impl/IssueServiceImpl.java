@@ -339,7 +339,7 @@ public class IssueServiceImpl implements IssueService {
             userIds.stream().forEach(id -> siteMsgUtil.issueAssignee(id, userName, summary, url.toString()));
         }
         Boolean completed = issueStatusMapper.selectByPrimaryKey(result.getStatusId()).getCompleted();
-        if (fieldList.contains(STATUS_ID) && result.getStatusId() != null && completed != null && completed && result.getAssigneeId() != null && !ISSUE_TEST.equals(result.getTypeCode())) {
+        if (fieldList.contains(STATUS_ID) && completed != null && completed && result.getAssigneeId() != null && !ISSUE_TEST.equals(result.getTypeCode())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", result);
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
             if (projectDTO == null) {
