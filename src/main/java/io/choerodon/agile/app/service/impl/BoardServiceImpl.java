@@ -368,7 +368,8 @@ public class BoardServiceImpl implements BoardService {
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
         IssueMoveDTO result = ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);
         // 发送消息
-        if (issueStatusMapper.selectByPrimaryKey(issueE.getStatusId()).getCompleted() && issueDO.getAssigneeId() != null && !"issue_test".equals(issueDO.getTypeCode())) {
+        Boolean completed = issueStatusMapper.selectByPrimaryKey(issueE.getStatusId()).getCompleted();
+        if (completed != null && completed && issueDO.getAssigneeId() != null && !"issue_test".equals(issueDO.getTypeCode())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDO, IssueDTO.class));
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
             if (projectDTO == null) {
