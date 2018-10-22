@@ -79,19 +79,15 @@ public class DateUtil {
             Set<Integer> year = new HashSet<>();
             Set<Date> dates = new HashSet<>();
             if (dayOne.after(dayTwo)) {
-                Date tmp = dayOne;
-                dayOne = dayTwo;
-                dayTwo = tmp;
+                return 0;
             }
-            final Date startDate = dayOne;
-            final Date endDate = dayTwo;
             Integer i = 0;
             TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = timeZoneWorkCalendarMapper.queryTimeZoneDetailByOrganizationId(organizationId);
-            i = getWorkDaysInterval(i, timeZoneWorkCalendarDO, startDate, endDate, dates, year);
-            handleHolidays(dates, year, startDate, endDate, timeZoneWorkCalendarDO);
-            handleTimeZoneWorkCalendarRefRemoveAndAdd(dates, timeZoneWorkCalendarDO, startDate, endDate);
+            i = getWorkDaysInterval(i, timeZoneWorkCalendarDO, dayOne, dayTwo, dates, year);
+            handleHolidays(dates, year, dayOne, dayTwo, timeZoneWorkCalendarDO);
+            handleTimeZoneWorkCalendarRefRemoveAndAdd(dates, timeZoneWorkCalendarDO, dayOne, dayTwo);
             handleExcludedDate(workday, dates);
-            handleAddDate(holiday, dates, startDate, endDate);
+            handleAddDate(holiday, dates, dayOne, dayTwo);
             return i - dates.size();
         }
     }

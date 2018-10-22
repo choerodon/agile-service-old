@@ -223,7 +223,7 @@ public class BoardServiceImpl implements BoardService {
             boardSprintDTO.setSprintId(activeSprint.getSprintId());
             boardSprintDTO.setSprintName(activeSprint.getSprintName());
             if (activeSprint.getEndDate() != null) {
-                boardSprintDTO.setDayRemain(dateUtil.getDaysBetweenDifferentDate(activeSprint.getStartDate(), activeSprint.getEndDate(),
+                boardSprintDTO.setDayRemain(dateUtil.getDaysBetweenDifferentDate(new Date(), activeSprint.getEndDate(),
                         sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()),
                         sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()), organizationId));
             }
