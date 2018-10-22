@@ -11,6 +11,8 @@ import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 import spock.lang.Stepwise
 
+import java.text.SimpleDateFormat
+
 /**
  *
  * @author dinghuang123@gmail.com
@@ -45,7 +47,8 @@ class DateUtilSpec extends Specification {
 
     def 'getDaysBetweenDifferentDate'() {
         given: 'mockFeign'
-        Date dateOne = new Date()
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date dateOne = simpleDateFormat.parse("2018-10-21")
         Date dateTwo = dateOne
         Calendar calendar = Calendar.getInstance()
         calendar.setTime(dateOne)
@@ -72,7 +75,7 @@ class DateUtilSpec extends Specification {
         timeZoneWorkCalendarDO.timeZoneWorkCalendarRefDOS = timeZoneWorkCalendarRefDOS
         timeZoneWorkCalendarMapper.queryTimeZoneDetailByOrganizationId(1) >> timeZoneWorkCalendarDO
 
-        when: '根据参数查询用户信息'
+        when: '获取不同时间'
         Integer dayOne = dateUtil.getDaysBetweenDifferentDate(dateOne, dateTwo, null, null, 1)
         dateUtil.getDaysBetweenDifferentDate(dateOne, dateThree, holiday, workDay, 1)
 
@@ -84,7 +87,8 @@ class DateUtilSpec extends Specification {
 
     def 'getNonWorkdaysDuring'() {
         given: 'mockFeign'
-        Date dateOne = new Date()
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date dateOne = simpleDateFormat.parse("2018-10-21")
         Calendar calendar = Calendar.getInstance()
         calendar.setTime(dateOne)
         calendar.add(Calendar.DAY_OF_MONTH, -1)
@@ -109,15 +113,15 @@ class DateUtilSpec extends Specification {
 
         when: '根据参数查询用户信息'
         timeZoneWorkCalendarMapper.queryTimeZoneDetailByOrganizationId(1) >> timeZoneWorkCalendarDO
-        Set<Date> dayOne = dateUtil.getNonWorkdaysDuring(dateOne, dateTwo, 1)
+        Set<Date> day = dateUtil.getNonWorkdaysDuring(dateOne, dateTwo, 1)
         timeZoneWorkCalendarDO.saturdayWork = false
         timeZoneWorkCalendarDO.sundayWork = false
         timeZoneWorkCalendarDO.useHoliday = false
         timeZoneWorkCalendarMapper.queryTimeZoneDetailByOrganizationId(1) >> timeZoneWorkCalendarDO
         dateUtil.getNonWorkdaysDuring(dateOne, dateThree, 1)
 
-        then: '判断mock交互并且设置返回值'
-        dayOne.size()
+        then: '期望'
+        day.size() == 0
 
     }
 }
