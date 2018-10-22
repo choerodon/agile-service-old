@@ -117,7 +117,7 @@ class DateUtilSpec extends Specification {
         dateUtil.getNonWorkdaysDuring(dateOne, dateThree, 1)
 
         then: '判断mock交互并且设置返回值'
-        dayOne.size() == 1
+        dayOne.size()
 
     }
 }
