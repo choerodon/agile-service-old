@@ -102,12 +102,22 @@ public class DateUtil {
                 calendar.add(Calendar.DAY_OF_YEAR, 1);
                 i++;
             }
+            if (calendar.getTime().getTime() > endDate.getTime() && isSameDay(calendar.getTime(), endDate)) {
+                handleSaturdayAndSunday(calendar, dates, timeZoneWorkCalendarDO);
+                year.add(calendar.get(Calendar.YEAR));
+                i++;
+            }
             return i;
         } else {
             while (calendar.getTime().getTime() <= endDate.getTime()) {
                 handleSaturdayAndSundayNoTimeZone(calendar, dates);
                 year.add(calendar.get(Calendar.YEAR));
                 calendar.add(Calendar.DAY_OF_YEAR, 1);
+                i++;
+            }
+            if (calendar.getTime().getTime() > endDate.getTime() && isSameDay(calendar.getTime(), endDate)) {
+                handleSaturdayAndSundayNoTimeZone(calendar, dates);
+                year.add(calendar.get(Calendar.YEAR));
                 i++;
             }
             return i;
@@ -181,16 +191,25 @@ public class DateUtil {
             SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);
             List<TimeZoneWorkCalendarRefDO> timeZoneDate = timeZoneWorkCalendarDO.getTimeZoneWorkCalendarRefDOS();
             if (dates.isEmpty()) {
-                handleEmptyDates(dates, timeZoneDate, sdf);
+                handleEmptyDates(dates, timeZoneDate, sdf, endDate, startDate);
             } else {
                 handleNoEmptyDates(dates, timeZoneDate, remove, add, sdf, endDate, startDate);
             }
         }
     }
 
-    private void handleEmptyDates(Set<Date> dates, List<TimeZoneWorkCalendarRefDO> timeZoneDate, SimpleDateFormat sdf) {
+    private void handleEmptyDates(Set<Date> dates, List<TimeZoneWorkCalendarRefDO> timeZoneDate, SimpleDateFormat sdf, Date endDate, Date startDate) {
         dates.addAll(timeZoneDate.stream().filter(timeZoneWorkCalendarRefDO -> timeZoneWorkCalendarRefDO.getStatus() == 0)
-                .map(timeZoneWorkCalendarRefDO -> {
+                .filter(timeZoneWorkCalendarRefDO -> {
+                    boolean condition = false;
+                    try {
+                        Date date = sdf.parse(timeZoneWorkCalendarRefDO.getWorkDay());
+                        condition = ((date).before(endDate) && date.after(startDate) || isSameDay(date, startDate) || isSameDay(date, endDate)) && timeZoneWorkCalendarRefDO.getStatus() == 0;
+                    } catch (ParseException e) {
+                        LOGGER.warn(PARSE_EXCEPTION, e);
+                    }
+                    return condition;
+                }).map(timeZoneWorkCalendarRefDO -> {
                     Date date = new Date();
                     try {
                         date = sdf.parse(timeZoneWorkCalendarRefDO.getWorkDay());
@@ -297,20 +316,32 @@ public class DateUtil {
     private void handleDaysInterval(Date endDate, Date startDate, Set<Date> dates, Set<Integer> year) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startDate);
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.setTime(endDate);
         while (calendar.getTime().getTime() <= endDate.getTime()) {
             handleSaturdayAndSundayNoTimeZone(calendar, dates);
             year.add(calendar.get(Calendar.YEAR));
             calendar.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        if (calendar.getTime().getTime() > endDate.getTime() && isSameDay(calendar.getTime(), endDate)) {
+            handleSaturdayAndSundayNoTimeZone(calendar, dates);
+            year.add(calendar.get(Calendar.YEAR));
         }
     }
 
     private void handleTimeZoneDaysInterval(Date endDate, Date startDate, TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Set<Date> dates, Set<Integer> year) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startDate);
-        while (calendar.getTime().getTime() <= endDate.getTime()) {
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.setTime(endDate);
+        while (calendar.getTime().getTime() <= endDate.getTime() || isSameDay(calendar, endCalendar)) {
             handleSaturdayAndSunday(calendar, dates, timeZoneWorkCalendarDO);
             year.add(calendar.get(Calendar.YEAR));
             calendar.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        if (calendar.getTime().getTime() > endDate.getTime() && isSameDay(calendar.getTime(), endDate)) {
+            handleSaturdayAndSundayNoTimeZone(calendar, dates);
+            year.add(calendar.get(Calendar.YEAR));
         }
     }
 
