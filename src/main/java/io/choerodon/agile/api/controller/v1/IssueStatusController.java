@@ -5,6 +5,7 @@ import io.choerodon.agile.api.dto.StatusAndIssuesDTO;
 import io.choerodon.agile.api.dto.StatusDTO;
 import io.choerodon.agile.api.dto.StatusMoveDTO;
 import io.choerodon.agile.app.service.IssueStatusService;
+import io.choerodon.agile.infra.dataobject.StatusForMoveDataDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
@@ -133,6 +134,16 @@ public class IssueStatusController {
                                                            @ApiParam(value = "分页信息", required = true)
                                                            @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
         return Optional.ofNullable(issueStatusService.listByProjectId(projectId, pageRequest))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.statusList.get"));
+    }
+
+
+    @ApiOperation("迁移数据，查询所有状态")
+    @GetMapping(value = "/move_status")
+    public ResponseEntity<List<StatusForMoveDataDO>> moveStatus(@ApiParam(value = "项目id", required = true)
+                                       @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(issueStatusService.moveStatus(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.statusList.get"));
     }

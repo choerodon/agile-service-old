@@ -4,6 +4,7 @@ import io.choerodon.agile.api.dto.IssueStatusDTO;
 import io.choerodon.agile.api.dto.StatusAndIssuesDTO;
 import io.choerodon.agile.api.dto.StatusDTO;
 import io.choerodon.agile.api.dto.StatusMoveDTO;
+import io.choerodon.agile.infra.dataobject.StatusForMoveDataDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
@@ -36,4 +37,6 @@ public interface IssueStatusService {
     IssueStatusDTO updateStatus(Long projectId, IssueStatusDTO issueStatusDTO);
 
     Page<StatusDTO> listByProjectId(Long projectId, PageRequest pageRequest);
+
+    List<StatusForMoveDataDO> moveStatus(Long projectId);
 }

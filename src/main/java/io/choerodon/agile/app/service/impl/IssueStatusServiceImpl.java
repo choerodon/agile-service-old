@@ -1,15 +1,13 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.IssueStatusDTO;
-import io.choerodon.agile.api.dto.StatusAndIssuesDTO;
-import io.choerodon.agile.api.dto.StatusDTO;
-import io.choerodon.agile.api.dto.StatusMoveDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueStatusValidator;
 import io.choerodon.agile.app.service.IssueStatusService;
 import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
 import io.choerodon.agile.domain.agile.entity.IssueStatusE;
 import io.choerodon.agile.domain.agile.repository.ColumnStatusRelRepository;
 import io.choerodon.agile.domain.agile.repository.IssueStatusRepository;
+import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.BoardColumnMapper;
 import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper;
@@ -25,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -52,6 +52,9 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 
     @Autowired
     private IssueMapper issueMapper;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public IssueStatusDTO create(Long projectId, IssueStatusDTO issueStatusDTO) {
@@ -179,5 +182,23 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         statusDTOPage.setSize(statusDOPage.getSize());
         statusDTOPage.setContent(ConvertHelper.convertList(statusDOPage.getContent(), StatusDTO.class));
         return statusDTOPage;
+    }
+
+    @Override
+    public List<StatusForMoveDataDO> moveStatus(Long projectId) {
+        List<StatusForMoveDataDO> result = new ArrayList<>();
+        List<IssueStatusDO> statuses = issueStatusMapper.selectAll();
+        Collections.sort(statuses, Comparator.comparing(IssueStatusDO::getId));
+        for (IssueStatusDO issueStatusDO : statuses) {
+            StatusForMoveDataDO statusForMoveDataDO = new StatusForMoveDataDO();
+            statusForMoveDataDO.setId(issueStatusDO.getId());
+            statusForMoveDataDO.setProjectId(issueStatusDO.getProjectId());
+            statusForMoveDataDO.setCategoryCode(issueStatusDO.getCategoryCode());
+            statusForMoveDataDO.setName(issueStatusDO.getName());
+            ProjectDTO projectDTO = userRepository.queryProject(issueStatusDO.getProjectId());
+            statusForMoveDataDO.setOrganizationId(projectDTO.getOrganizationId());
+            result.add(statusForMoveDataDO);
+        }
+        return result;
     }
 }
