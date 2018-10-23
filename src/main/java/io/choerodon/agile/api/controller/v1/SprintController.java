@@ -88,9 +88,9 @@ public class SprintController {
     @PostMapping(value = "/issues")
     public ResponseEntity<Map<String, Object>> queryByProjectId(@ApiParam(value = "项目id", required = true)
                                                                 @PathVariable(name = "project_id") Long projectId,
-                                                                @ApiParam(value = "查询参数", required = false)
+                                                                @ApiParam(value = "查询参数")
                                                                 @RequestBody(required = false) Map<String, Object> searchParamMap,
-                                                                @ApiParam(value = "quick filter", required = false)
+                                                                @ApiParam(value = "quick filter")
                                                                 @RequestParam(required = false) List<Long> quickFilterIds) {
         return Optional.ofNullable(sprintService.queryByProjectId(projectId, searchParamMap, quickFilterIds))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

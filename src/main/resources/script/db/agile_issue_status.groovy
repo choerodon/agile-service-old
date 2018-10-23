@@ -40,4 +40,12 @@ databaseChangeLog(logicalFilePath:'agile_issue_status.groovyoovy') {
             column(name: "category_code")
         }
     }
+
+    changeSet(id: '2018-10-23-agile-issue-status-fix', author: 'dinghuang123@gmail.com') {
+        sql(stripComments: true, splitStatements: true, endDelimiter: ';') {
+            "update agile_issue_status set is_completed = 0 where is_completed is null;"
+        }
+    }
+
+
 }

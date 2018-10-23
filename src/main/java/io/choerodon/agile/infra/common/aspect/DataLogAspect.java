@@ -968,7 +968,7 @@ public class DataLogAspect {
 
     private void deleteVersionCache(Long projectId, Long issueId, String type) {
         List<Long> versionId = issueMapper.queryVersionIdsByIssueId(issueId, projectId);
-        versionId.forEach(id -> redisUtil.deleteRedisCache(new String[]{VERSION_CHART + projectId + ':' + versionId + ":" + type}));
+        versionId.forEach(id -> redisUtil.deleteRedisCache(new String[]{VERSION_CHART + projectId + ':' + id + ":" + type}));
     }
 
     private void handleSprintDataLog(Object[] args) {
