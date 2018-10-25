@@ -2,6 +2,7 @@ package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.dto.AssigneeIssueDTO;
 import io.choerodon.agile.api.dto.IssueSearchDTO;
+import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.AssigneeIssueDO;
 import io.choerodon.agile.infra.dataobject.IssueSearchDO;
@@ -28,7 +29,7 @@ public class IssueSearchAssembler extends AbstractAssembler {
 
     private static final String ISSUE_STATUS_COLOR = "issue_status_color";
 
-    public List<IssueSearchDTO> doListToDTO(List<IssueSearchDO> issueSearchDOList, Map<Long, UserMessageDO> usersMap) {
+    public List<IssueSearchDTO> doListToDTO(List<IssueSearchDO> issueSearchDOList, Map<Long, UserMessageDO> usersMap, Map<Long, PriorityDTO> priorityMap) {
         List<IssueSearchDTO> issueSearchDTOList = new ArrayList<>(issueSearchDOList.size());
         LookupValueDO lookupValueDO = new LookupValueDO();
         lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
@@ -38,6 +39,7 @@ public class IssueSearchAssembler extends AbstractAssembler {
             String imageUrl = assigneeName != null ? usersMap.get(issueSearch.getAssigneeId()).getImageUrl() : null;
             issueSearch.setAssigneeName(assigneeName);
             issueSearch.setImageUrl(imageUrl);
+            issueSearch.setPriorityDTO(priorityMap.get(issueSearch.getPriorityId()));
             issueSearch.setStatusColor(ColorUtil.initializationStatusColor(issueSearch.getCategoryCode(), lookupValueMap));
             issueSearchDTOList.add(toTarget(issueSearch, IssueSearchDTO.class));
         });

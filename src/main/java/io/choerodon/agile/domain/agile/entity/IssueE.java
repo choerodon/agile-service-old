@@ -70,6 +70,8 @@ public class IssueE {
 
     private String mapRank;
 
+    private Long priorityId;
+
     public Integer getEpicSequence() {
         return epicSequence;
     }
@@ -252,6 +254,14 @@ public class IssueE {
 
     public String getMapRank() {
         return mapRank;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
     }
 
     @Override

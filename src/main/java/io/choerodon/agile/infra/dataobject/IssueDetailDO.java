@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.dataobject;
 
+import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
 import java.math.BigDecimal;
@@ -41,6 +42,8 @@ public class IssueDetailDO {
 
     private Long objectVersionNumber;
 
+    private Long priorityId;
+
     private List<VersionIssueRelDO> versionIssueRelDOList;
 
     private List<LabelIssueRelDO> labelIssueRelDOList;
@@ -63,7 +66,7 @@ public class IssueDetailDO {
 
     private Date lastUpdateDate;
 
-    private String priorityName;
+//    private String priorityName;
 
     private String statusName;
 
@@ -80,6 +83,8 @@ public class IssueDetailDO {
     private String rank;
 
     private String parentIssueNum;
+
+    private PriorityDTO priorityDTO;
 
     public Long getIssueId() {
         return issueId;
@@ -273,13 +278,13 @@ public class IssueDetailDO {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public String getPriorityName() {
-        return priorityName;
-    }
-
-    public void setPriorityName(String priorityName) {
-        this.priorityName = priorityName;
-    }
+//    public String getPriorityName() {
+//        return priorityName;
+//    }
+//
+//    public void setPriorityName(String priorityName) {
+//        this.priorityName = priorityName;
+//    }
 
     public String getStatusName() {
         return statusName;
@@ -359,6 +364,22 @@ public class IssueDetailDO {
 
     public void setCloseSprint(List<SprintNameDO> closeSprint) {
         this.closeSprint = closeSprint;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
+    }
+
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
+    }
+
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
     }
 
     @Override

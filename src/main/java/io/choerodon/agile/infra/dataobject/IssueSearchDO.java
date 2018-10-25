@@ -1,5 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
+import io.choerodon.agile.api.dto.PriorityDTO;
+
 import java.util.List;
 
 /**
@@ -30,6 +32,9 @@ public class IssueSearchDO {
     private String color;
     private String statusColor;
     private Long objectVersionNumber;
+
+    private PriorityDTO priorityDTO;
+    private Long priorityId;
 
     public Long getIssueId() {
         return issueId;
@@ -221,5 +226,21 @@ public class IssueSearchDO {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
+    }
+
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
     }
 }

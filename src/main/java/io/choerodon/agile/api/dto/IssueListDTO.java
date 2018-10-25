@@ -20,7 +20,7 @@ public class IssueListDTO implements Serializable {
 
     private String summary;
 
-    private String priorityCode;
+//    private String priorityCode;
 
     private Long assigneeId;
 
@@ -30,7 +30,7 @@ public class IssueListDTO implements Serializable {
 
     private String imageUrl;
 
-    private String priorityName;
+//    private String priorityName;
 
     private String statusName;
 
@@ -45,6 +45,8 @@ public class IssueListDTO implements Serializable {
     private Boolean addIssue;
 
     private BigDecimal remainingTime;
+
+    private PriorityDTO priorityDTO;
 
     public Long getIssueId() {
         return issueId;
@@ -86,13 +88,13 @@ public class IssueListDTO implements Serializable {
         this.summary = summary;
     }
 
-    public String getPriorityCode() {
-        return priorityCode;
-    }
-
-    public void setPriorityCode(String priorityCode) {
-        this.priorityCode = priorityCode;
-    }
+//    public String getPriorityCode() {
+//        return priorityCode;
+//    }
+//
+//    public void setPriorityCode(String priorityCode) {
+//        this.priorityCode = priorityCode;
+//    }
 
     public Long getAssigneeId() {
         return assigneeId;
@@ -118,13 +120,13 @@ public class IssueListDTO implements Serializable {
         this.assigneeName = assigneeName;
     }
 
-    public String getPriorityName() {
-        return priorityName;
-    }
-
-    public void setPriorityName(String priorityName) {
-        this.priorityName = priorityName;
-    }
+//    public String getPriorityName() {
+//        return priorityName;
+//    }
+//
+//    public void setPriorityName(String priorityName) {
+//        this.priorityName = priorityName;
+//    }
 
     public String getStatusName() {
         return statusName;
@@ -188,6 +190,14 @@ public class IssueListDTO implements Serializable {
 
     public void setRemainingTime(BigDecimal remainingTime) {
         this.remainingTime = remainingTime;
+    }
+
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
+    }
+
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
     }
 
     @Override

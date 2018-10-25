@@ -2,6 +2,7 @@ package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO;
 import io.choerodon.agile.api.dto.IssueBurnDownReportDTO;
+import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.SprintBurnDownReportDTO;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.ColumnDO;
@@ -53,7 +54,7 @@ public class ReportAssembler extends AbstractAssembler {
         return sprintBurnDownReportDTO;
     }
 
-    public List<IssueBurnDownReportDTO> issueBurnDownReportDoToDto(List<IssueBurnDownReportDO> issueBurnDownReportDOS) {
+    public List<IssueBurnDownReportDTO> issueBurnDownReportDoToDto(List<IssueBurnDownReportDO> issueBurnDownReportDOS, Map<Long, PriorityDTO> priorityMap) {
         List<IssueBurnDownReportDTO> issueBurnDownReportDTOS = new ArrayList<>(issueBurnDownReportDOS.size());
         if(!issueBurnDownReportDOS.isEmpty()){
             LookupValueDO lookupValueDO = new LookupValueDO();
@@ -62,6 +63,7 @@ public class ReportAssembler extends AbstractAssembler {
             issueBurnDownReportDOS.forEach(issueBurnDownReportDO -> {
                 IssueBurnDownReportDTO issueBurnDownReportDTO = new IssueBurnDownReportDTO();
                 BeanUtils.copyProperties(issueBurnDownReportDO,issueBurnDownReportDTO);
+                issueBurnDownReportDTO.setPriorityDTO(priorityMap.get(issueBurnDownReportDO.getPriorityId()));
                 issueBurnDownReportDTO.setStatusColor(ColorUtil.initializationStatusColor(issueBurnDownReportDTO.getStatusCode(), lookupValueMap));
                 issueBurnDownReportDTOS.add(issueBurnDownReportDTO);
             });

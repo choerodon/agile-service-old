@@ -9,6 +9,8 @@ import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil;
+import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -105,6 +107,12 @@ public class BoardServiceImpl implements BoardService {
     @Autowired
     private SprintWorkCalendarRefMapper sprintWorkCalendarRefMapper;
 
+    @Autowired
+    private StateMachineFeignClient stateMachineFeignClient;
+
+    @Autowired
+    private IssueFeignClient issueFeignClient;
+
 
     @Override
     public void create(Long projectId, String boardName) {
@@ -149,7 +157,7 @@ public class BoardServiceImpl implements BoardService {
         return columnsData;
     }
 
-    private void addIssueInfos(IssueForBoardDO issue, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds) {
+    private void addIssueInfos(IssueForBoardDO issue, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Map<Long, PriorityDTO> priorityMap) {
         if (issue.getParentIssueId() != null && issue.getParentIssueId() != 0 && !parentIds.contains(issue.getParentIssueId())) {
             parentIds.add(issue.getParentIssueId());
         } else {
@@ -161,18 +169,36 @@ public class BoardServiceImpl implements BoardService {
         if (issue.getEpicId() != null && !epicIds.contains(issue.getEpicId())) {
             epicIds.add(issue.getEpicId());
         }
+        issue.setPriorityDTO(priorityMap.get(issue.getPriorityId()));
     }
 
-    private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds) {
-        subStatuses.forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> addIssueInfos(issueForBoardDO, parentIds, assigneeIds, ids, epicIds)));
+    private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Long organizationId) {
+        Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        subStatuses.forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> addIssueInfos(issueForBoardDO, parentIds, assigneeIds, ids, epicIds, priorityMap)));
     }
 
 
-    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds, Boolean condition) {
+//    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds, Boolean condition) {
+//        List<Long> issueIds = new ArrayList<>();
+//        for (ColumnAndIssueDO column : columns) {
+//            List<SubStatus> subStatuses = column.getSubStatuses();
+//            getDatas(subStatuses, parentIds, assigneeIds, issueIds, epicIds);
+//            Collections.sort(subStatuses, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
+//        }
+//        //选择故事泳道选择仅我的任务后，子任务经办人为自己，父任务经办人不为自己的情况
+//        if (condition) {
+//            handleParentIdsWithSubIssues(parentIds, issueIds, columns, boardId);
+//        }
+//        Collections.sort(parentIds);
+//        Collections.sort(assigneeIds);
+//    }
+
+    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds, Boolean condition, Long organizationId) {
         List<Long> issueIds = new ArrayList<>();
         for (ColumnAndIssueDO column : columns) {
             List<SubStatus> subStatuses = column.getSubStatuses();
-            getDatas(subStatuses, parentIds, assigneeIds, issueIds, epicIds);
+            fillStatusData(subStatuses, organizationId);
+            getDatas(subStatuses, parentIds, assigneeIds, issueIds, epicIds, organizationId);
             Collections.sort(subStatuses, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
         }
         //选择故事泳道选择仅我的任务后，子任务经办人为自己，父任务经办人不为自己的情况
@@ -181,6 +207,15 @@ public class BoardServiceImpl implements BoardService {
         }
         Collections.sort(parentIds);
         Collections.sort(assigneeIds);
+    }
+
+    private void fillStatusData(List<SubStatus> subStatuses, Long organizationId) {
+        Map<Long, StatusMapDTO> map = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        for (SubStatus subStatus : subStatuses) {
+            StatusMapDTO status = map.get(subStatus.getStatusId());
+            subStatus.setCategoryCode(status.getType());
+            subStatus.setName(status.getName());
+        }
     }
 
     private void handleParentIdsWithSubIssues(List<Long> parentIds, List<Long> issueIds, List<ColumnAndIssueDO> columns, Long boardId) {
@@ -250,6 +285,41 @@ public class BoardServiceImpl implements BoardService {
         return sql.toString();
     }
 
+//    @Override
+//    public JSONObject queryAllData(Long projectId, Long boardId, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId) {
+//        JSONObject jsonObject = new JSONObject(true);
+//        SprintDO activeSprint = getActiveSprint(projectId);
+//        Long activeSprintId = null;
+//        if (activeSprint != null) {
+//            activeSprintId = activeSprint.getSprintId();
+//        }
+//        String filterSql = null;
+//        if (quickFilterIds != null && !quickFilterIds.isEmpty()) {
+//            filterSql = getQuickFilter(quickFilterIds);
+//        }
+//        List<Long> assigneeIds = new ArrayList<>();
+//        List<Long> parentIds = new ArrayList<>();
+//        List<Long> epicIds = new ArrayList<>();
+//        List<ColumnAndIssueDO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory, filterSql);
+//        Boolean condition = assigneeId != null && onlyStory;
+//        putDatasAndSort(columns, parentIds, assigneeIds, boardId, epicIds, condition);
+//        jsonObject.put("parentIds", parentIds);
+//        jsonObject.put("assigneeIds", assigneeIds);
+//        jsonObject.put("epicInfo", !epicIds.isEmpty() ? boardColumnMapper.selectEpicBatchByIds(epicIds) : null);
+//        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+//        columns.forEach(columnAndIssueDO -> columnAndIssueDO.getSubStatuses().forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> {
+//            String assigneeName = usersMap.get(issueForBoardDO.getAssigneeId()) != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getName() : null;
+//            String imageUrl = assigneeName != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getImageUrl() : null;
+//            issueForBoardDO.setAssigneeName(assigneeName);
+//            issueForBoardDO.setImageUrl(imageUrl);
+//        })));
+//        jsonObject.put("columnsData", putColumnData(columns));
+//        jsonObject.put("currentSprint", putCurrentSprint(activeSprint, organizationId));
+//        //处理用户默认看板设置，保存最近一次的浏览
+//        handleUserSetting(boardId, projectId);
+//        return jsonObject;
+//    }
+
     @Override
     public JSONObject queryAllData(Long projectId, Long boardId, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId) {
         JSONObject jsonObject = new JSONObject(true);
@@ -267,7 +337,7 @@ public class BoardServiceImpl implements BoardService {
         List<Long> epicIds = new ArrayList<>();
         List<ColumnAndIssueDO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory, filterSql);
         Boolean condition = assigneeId != null && onlyStory;
-        putDatasAndSort(columns, parentIds, assigneeIds, boardId, epicIds, condition);
+        putDatasAndSort(columns, parentIds, assigneeIds, boardId, epicIds, condition, organizationId);
         jsonObject.put("parentIds", parentIds);
         jsonObject.put("assigneeIds", assigneeIds);
         jsonObject.put("epicInfo", !epicIds.isEmpty() ? boardColumnMapper.selectEpicBatchByIds(epicIds) : null);

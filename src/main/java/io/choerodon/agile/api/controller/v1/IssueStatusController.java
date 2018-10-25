@@ -51,6 +51,18 @@ public class IssueStatusController {
                 .orElseThrow(() -> new CommonException("error.status.create"));
     }
 
+//    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+//    @ApiOperation("查询项目下未对应的状态")
+//    @GetMapping(value = "/list_by_options")
+//    public ResponseEntity<List<StatusAndIssuesDTO>> listUnCorrespondStatus(@ApiParam(value = "项目id", required = true)
+//                                                                           @PathVariable(name = "project_id") Long projectId,
+//                                                                           @ApiParam(value = "board id", required = true)
+//                                                                           @RequestParam Long boardId) {
+//        return Optional.ofNullable(issueStatusService.queryUnCorrespondStatus(projectId, boardId))
+//                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+//                .orElseThrow(() -> new CommonException(ERROR_STATUS_GET));
+//    }
+
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询项目下未对应的状态")
     @GetMapping(value = "/list_by_options")
@@ -141,10 +153,9 @@ public class IssueStatusController {
 
     @ApiOperation("迁移数据，查询所有状态")
     @GetMapping(value = "/move_status")
-    public ResponseEntity<List<StatusForMoveDataDO>> moveStatus(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity moveStatus(@ApiParam(value = "项目id", required = true)
                                        @PathVariable(name = "project_id") Long projectId) {
-        return Optional.ofNullable(issueStatusService.moveStatus(projectId))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.statusList.get"));
+        issueStatusService.moveStatus(projectId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

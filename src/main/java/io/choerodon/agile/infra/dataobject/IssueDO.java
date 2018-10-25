@@ -136,6 +136,8 @@ public class IssueDO extends AuditDomain {
 
     private String mapRank;
 
+    private Long priorityId;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -374,6 +376,14 @@ public class IssueDO extends AuditDomain {
 
     public String getMapRank() {
         return mapRank;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
     }
 
     @Override

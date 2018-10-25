@@ -44,6 +44,8 @@ public class StoryMapIssueDTO {
 
     private String mapRank;
 
+    private PriorityDTO priorityDTO;
+
     public Long getSprintId() {
         return sprintId;
     }
@@ -194,5 +196,13 @@ public class StoryMapIssueDTO {
 
     public String getMapRank() {
         return mapRank;
+    }
+
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
+    }
+
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
     }
 }

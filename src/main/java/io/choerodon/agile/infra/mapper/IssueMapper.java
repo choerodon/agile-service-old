@@ -394,4 +394,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @return IssueProjectDO
      */
     List<IssueProjectDO> queryIssueTestGroupByProject();
+
+    List<IssueDO> selectAllPriority();
+
+    void batchUpdatePriority(@Param("issueDOList") List<IssueDO> issueDOList);
 }

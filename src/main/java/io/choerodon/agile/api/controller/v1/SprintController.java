@@ -88,11 +88,13 @@ public class SprintController {
     @PostMapping(value = "/issues")
     public ResponseEntity<Map<String, Object>> queryByProjectId(@ApiParam(value = "项目id", required = true)
                                                                 @PathVariable(name = "project_id") Long projectId,
+                                                                @ApiParam(value = "组织id", required = true)
+                                                                @RequestParam Long organizationId,
                                                                 @ApiParam(value = "查询参数", required = false)
                                                                 @RequestBody(required = false) Map<String, Object> searchParamMap,
                                                                 @ApiParam(value = "quick filter", required = false)
                                                                 @RequestParam(required = false) List<Long> quickFilterIds) {
-        return Optional.ofNullable(sprintService.queryByProjectId(projectId, searchParamMap, quickFilterIds))
+        return Optional.ofNullable(sprintService.queryByProjectId(projectId, searchParamMap, quickFilterIds, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_ERROR));
     }
@@ -167,10 +169,12 @@ public class SprintController {
                                                                   @PathVariable Long sprintId,
                                                                   @ApiParam(value = "状态", required = true)
                                                                   @RequestParam String status,
+                                                                  @ApiParam(value = "组织id", required = true)
+                                                                  @RequestParam Long organizationId,
                                                                   @ApiParam(value = "分页信息", required = true)
                                                                   @SortDefault(value = "issue_id", direction = Sort.Direction.DESC)
                                                                   @ApiIgnore PageRequest pageRequest) {
-        return Optional.ofNullable(sprintService.queryIssueByOptions(projectId, sprintId, status, pageRequest))
+        return Optional.ofNullable(sprintService.queryIssueByOptions(projectId, sprintId, status, pageRequest, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_ERROR));
     }

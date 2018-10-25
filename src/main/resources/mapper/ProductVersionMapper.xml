@@ -200,12 +200,13 @@
         ai.type_code, ai.status_id,
         ais.name AS status_name,
         ais.category_code AS status_code,
-        ai.summary, ai.priority_code,
-        alv.name AS priority_name,
+--         ai.summary, ai.priority_code,
+--         alv.name AS priority_name,
+        ai.priority_id,
         ai.assignee_id, ai.project_id
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+--         LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
         , agile_version_issue_rel avir, agile_issue_status ais
         WHERE ai.project_id = #{projectId} AND avir.version_id = #{versionId} AND avir.relation_type = 'fix'
         AND ai.issue_id = avir.issue_id AND ai.status_id = ais.id AND ai.type_code != 'issue_test'

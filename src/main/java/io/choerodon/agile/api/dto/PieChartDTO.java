@@ -21,6 +21,8 @@ public class PieChartDTO implements Serializable {
 
     private JSONObject jsonObject;
 
+    private PriorityDTO priorityDTO;
+
     public String getName() {
         return name;
     }
@@ -59,6 +61,14 @@ public class PieChartDTO implements Serializable {
 
     public void setJsonObject(JSONObject jsonObject) {
         this.jsonObject = jsonObject;
+    }
+
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
+    }
+
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
     }
 
     @Override

@@ -9,6 +9,8 @@ import io.choerodon.agile.domain.agile.repository.ColumnStatusRelRepository;
 import io.choerodon.agile.domain.agile.repository.IssueStatusRepository;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.BoardColumnMapper;
 import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper;
 import io.choerodon.agile.infra.mapper.IssueMapper;
@@ -22,10 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/16.
@@ -55,6 +54,12 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private StateMachineFeignClient stateMachineFeignClient;
+
+    @Autowired
+    private IssueFeignClient issueFeignClient;
 
     @Override
     public IssueStatusDTO create(Long projectId, IssueStatusDTO issueStatusDTO) {
@@ -124,9 +129,31 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         return ConvertHelper.convert(issueStatusMapper.selectByPrimaryKey(id), IssueStatusDTO.class);
     }
 
+//    @Override
+//    public List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId) {
+//        List<StatusAndIssuesDO> statusAndIssuesDOList = issueStatusMapper.queryUnCorrespondStatus(projectId, boardId);
+//        List<StatusAndIssuesDTO> statusAndIssuesDTOList = new ArrayList<>();
+//        if (statusAndIssuesDOList != null) {
+//            statusAndIssuesDTOList = ConvertHelper.convertList(statusAndIssuesDOList, StatusAndIssuesDTO.class);
+//        }
+//        return statusAndIssuesDTOList;
+//    }
+
     @Override
     public List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId) {
         List<StatusAndIssuesDO> statusAndIssuesDOList = issueStatusMapper.queryUnCorrespondStatus(projectId, boardId);
+        if (statusAndIssuesDOList != null && !statusAndIssuesDOList.isEmpty()) {
+            List<Long> ids = new ArrayList<>();
+            for (StatusAndIssuesDO statusAndIssuesDO : statusAndIssuesDOList) {
+                ids.add(statusAndIssuesDO.getStatusId());
+            }
+            Map<Long, Status> map =  stateMachineFeignClient.batchStatusGet(ids).getBody();
+            for (StatusAndIssuesDO statusAndIssuesDO : statusAndIssuesDOList) {
+                Status status = map.get(statusAndIssuesDO.getStatusId());
+                statusAndIssuesDO.setCategoryCode(status.getType());
+                statusAndIssuesDO.setName(status.getName());
+            }
+        }
         List<StatusAndIssuesDTO> statusAndIssuesDTOList = new ArrayList<>();
         if (statusAndIssuesDOList != null) {
             statusAndIssuesDTOList = ConvertHelper.convertList(statusAndIssuesDOList, StatusAndIssuesDTO.class);
@@ -185,10 +212,12 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     }
 
     @Override
-    public List<StatusForMoveDataDO> moveStatus(Long projectId) {
+    public void moveStatus(Long projectId) {
         List<StatusForMoveDataDO> result = new ArrayList<>();
         List<IssueStatusDO> statuses = issueStatusMapper.selectAll();
         Collections.sort(statuses, Comparator.comparing(IssueStatusDO::getId));
+        List<Long> organizationIds = new ArrayList<>();
+        Map<Long, Long> proWithOrg = new HashMap<>();
         for (IssueStatusDO issueStatusDO : statuses) {
             StatusForMoveDataDO statusForMoveDataDO = new StatusForMoveDataDO();
             statusForMoveDataDO.setId(issueStatusDO.getId());
@@ -197,8 +226,45 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             statusForMoveDataDO.setName(issueStatusDO.getName());
             ProjectDTO projectDTO = userRepository.queryProject(issueStatusDO.getProjectId());
             statusForMoveDataDO.setOrganizationId(projectDTO.getOrganizationId());
+            if (projectDTO.getOrganizationId()!= null && projectDTO.getId() != null) {
+                proWithOrg.put(projectDTO.getId(), projectDTO.getOrganizationId());
+            }
+            if (!organizationIds.contains(projectDTO.getOrganizationId()) && projectDTO.getOrganizationId() != null) {
+                organizationIds.add(projectDTO.getOrganizationId());
+            }
             result.add(statusForMoveDataDO);
         }
-        return result;
+
+        // 迁移状态
+        Map<Long, List<Status>> returnStatus = stateMachineFeignClient.initStatus(result).getBody();
+        for (IssueStatusDO issueStatusDO : statuses) {
+            List<Status> partStatus = returnStatus.get(proWithOrg.get(issueStatusDO.getProjectId()));
+            if (partStatus != null) {
+                for (Status status : partStatus) {
+                    if (status.getName().equals(issueStatusDO.getName())) {
+                        issueStatusDO.setStatusId(status.getId());
+                        break;
+                    }
+                }
+            }
+        }
+        issueStatusMapper.batchUpdateStatus(statuses);
+//        issueStatusMapper.updateAllStatusId();
+//        issueStatusMapper.updateAllColumnStatusId();
+
+        // 迁移优先级
+        Map<Long, Map<String, Long>> prioritys = issueFeignClient.initProrityByOrganization(organizationIds).getBody();
+        List<IssueDO> issueDOList = issueMapper.selectAllPriority();
+        for (IssueDO issueDO : issueDOList) {
+            if (proWithOrg.get(issueDO.getProjectId()) != null) {
+                Map<String, Long> ps = prioritys.get(proWithOrg.get(issueDO.getProjectId()));
+                issueDO.setPriorityId(ps.get(issueDO.getPriorityCode()));
+            }
+
+        }
+        issueMapper.batchUpdatePriority(issueDOList);
+
+        // 迁移问题类型
+
     }
 }

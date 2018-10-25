@@ -1,5 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
+import io.choerodon.agile.api.dto.PriorityDTO;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/7/28.
  * Email: fuqianghuang01@gmail.com
@@ -25,6 +27,10 @@ public class GroupDataChartListDO {
     private int completed;
 
     private String statusColor;
+
+    private Long priorityId;
+
+    private PriorityDTO priorityDTO;
 
     public Long getIssueId() {
         return issueId;
@@ -104,5 +110,21 @@ public class GroupDataChartListDO {
 
     public String getStatusColor() {
         return statusColor;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
+    }
+
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
+    }
+
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
     }
 }

@@ -34,6 +34,8 @@ public class IssueStatusDO extends AuditDomain {
     @Column(name = "is_completed")
     private Boolean completed;
 
+    private Long statusId;
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -80,5 +82,13 @@ public class IssueStatusDO extends AuditDomain {
 
     public Boolean getCompleted() {
         return completed;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public Long getStatusId() {
+        return statusId;
     }
 }
