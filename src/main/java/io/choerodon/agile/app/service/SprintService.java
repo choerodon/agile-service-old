@@ -59,9 +59,10 @@ public interface SprintService {
      * 查询冲刺工作日历设置
      *
      * @param projectId projectId
+     * @param year      year
      * @return SprintWorkCalendarRefDTO
      */
-    SprintWorkCalendarDTO querySprintWorkCalendarRefs(Long projectId);
+    SprintWorkCalendarDTO querySprintWorkCalendarRefs(Long projectId, Integer year);
 
     /**
      * 创建冲刺工作日历

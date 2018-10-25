@@ -239,8 +239,10 @@ public class SprintController {
     public ResponseEntity<TimeZoneWorkCalendarRefDetailDTO> queryTimeZoneWorkCalendarDetail(@ApiParam(value = "项目id", required = true)
                                                                                             @PathVariable(name = "project_id") Long projectId,
                                                                                             @ApiParam(value = "组织id", required = true)
-                                                                                            @PathVariable(name = "organization_id") Long organizationId) {
-        return Optional.ofNullable(timeZoneWorkCalendarService.queryTimeZoneWorkCalendarDetail(organizationId))
+                                                                                            @PathVariable(name = "organization_id") Long organizationId,
+                                                                                            @ApiParam(value = "组织id", required = true)
+                                                                                            @RequestParam(name = "year") Integer year) {
+        return Optional.ofNullable(timeZoneWorkCalendarService.queryTimeZoneWorkCalendarDetail(organizationId, year))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.TimeZoneWorkCalendarController.queryTimeZoneWorkCalendarDetail"));
     }
@@ -275,8 +277,10 @@ public class SprintController {
     @ApiOperation("获取冲刺工作日历设置")
     @GetMapping(value = "/work_calendar")
     public ResponseEntity<SprintWorkCalendarDTO> querySprintWorkCalendarRefs(@ApiParam(value = "项目id", required = true)
-                                                                             @PathVariable(name = "project_id") Long projectId) {
-        return Optional.ofNullable(sprintService.querySprintWorkCalendarRefs(projectId))
+                                                                             @PathVariable(name = "project_id") Long projectId,
+                                                                             @ApiParam(value = "年份", required = true)
+                                                                             @RequestParam(name = "year") Integer year) {
+        return Optional.ofNullable(sprintService.querySprintWorkCalendarRefs(projectId, year))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.sprintController.querySprintWorkCalendarRefs"));
     }

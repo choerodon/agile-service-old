@@ -11,7 +11,7 @@ public interface WorkCalendarService {
      *
      * @param year year
      */
-    void updateWorkCalendarHolidayRefByYear(String year);
+    void updateWorkCalendarHolidayRefByYear(Integer year);
 
     /**
      * 自动更新日历

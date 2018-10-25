@@ -22,7 +22,7 @@ public interface WorkCalendarHolidayRefMapper extends BaseMapper<WorkCalendarHol
      * 根据年份查询节假日
      *
      * @param year year
-     * @return String
+     * @return WorkCalendarHolidayRefDO
      */
-    List<WorkCalendarHolidayRefDO> queryWorkCalendarHolidayRelByYear(String year);
+    List<WorkCalendarHolidayRefDO> queryWorkCalendarHolidayRelByYear(Integer year);
 }

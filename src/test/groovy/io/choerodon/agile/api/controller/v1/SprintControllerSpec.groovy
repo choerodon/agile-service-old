@@ -452,7 +452,7 @@ class SprintControllerSpec extends Specification {
 
     def 'queryTimeZoneWorkCalendarDetail'() {
         when:
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/time_zone_detail/{organization_id}', TimeZoneWorkCalendarRefDetailDTO, projectId, 1)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/time_zone_detail/{organization_id}?year={year}', TimeZoneWorkCalendarRefDetailDTO, projectId, 1, 2018)
 
         then:
         entity.statusCode.is2xxSuccessful()
@@ -489,7 +489,7 @@ class SprintControllerSpec extends Specification {
 
     def 'querySprintWorkCalendarRefs'() {
         when:
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/work_calendar', SprintWorkCalendarDTO, projectId)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/work_calendar?year={year}', SprintWorkCalendarDTO, projectId, 2018)
 
         then:
         entity.statusCode.is2xxSuccessful()
