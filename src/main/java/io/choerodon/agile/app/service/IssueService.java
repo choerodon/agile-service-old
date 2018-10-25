@@ -40,14 +40,14 @@ public interface IssueService {
     IssueDTO queryIssue(Long projectId, Long issueId);
 
     /**
-     * 分页过滤查询issueList（不包含子任务）
+     * 分页过滤查询issueList（包含子任务）
      *
      * @param projectId   projectId
      * @param searchDTO   searchDTO
      * @param pageRequest pageRequest
      * @return IssueListDTO
      */
-    Page<IssueListDTO> listIssueWithoutSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
+    Page<IssueListDTO> listIssueWithSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
 
     List<EpicDataDTO> listEpic(Long projectId);
 

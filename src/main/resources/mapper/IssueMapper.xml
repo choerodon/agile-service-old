@@ -240,7 +240,7 @@
         WHERE ai.parent_issue_id = #{issueId}
     </select>
 
-    <select id="queryIssueListWithoutSub" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+    <select id="queryIssueListWithSub" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
         SELECT search.* from (
         SELECT
         ai.issue_id,
@@ -253,11 +253,15 @@
         alv.name AS priority_name,
         ais.category_code AS status_code,
         ais.name AS status_name,
-        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
+        IF (
+        (ai.parent_issue_id IS NULL OR ai.parent_issue_id = 0),
+        CONCAT(api.project_code,'-', ai.issue_num),
+        CONCAT(api.project_code,'-',(SELECT issue_num FROM agile_issue WHERE issue_id = ai.parent_issue_id),'/',api.project_code,'-',ai.issue_num)
+        ) as issue_num
         FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
         LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task' AND ai.type_code != 'issue_test'
+        WHERE ai.project_id = #{projectId} AND ai.type_code != 'issue_test'
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
                 AND position(#{searchArgs.summary} IN ai.summary)
@@ -292,15 +296,24 @@
             </if>
         </if>
         <if test='searchArgs != null'>
+            <if test='searchArgs.updateStartDate != null and searchArgs.updateStartDate != "" and searchArgs.updateEndDate != null and searchArgs.updateEndDate != "" '>
+                and ai.last_update_date &gt;= #{searchArgs.updateStartDate} and ai.last_update_date &lt;= #{searchArgs.updateEndDate}
+            </if>
+            <if test='searchArgs.createStartDate != null and searchArgs.createStartDate != "" and searchArgs.createEndDate != null and searchArgs.createEndDate != "" '>
+                and ai.creation_date &gt;= #{searchArgs.createStartDate} and ai.creation_date &lt;= #{searchArgs.createEndDate}
+            </if>
             <if test='searchArgs.component != null and searchArgs.component != "" '>
                 AND ai.issue_id in (
                 SELECT acir.issue_id FROM agile_component_issue_rel acir,agile_issue_component aic
                 where acir.component_id = aic.component_id and position(#{searchArgs.component} IN aic.name) )
             </if>
             <if test='searchArgs.epic != null and searchArgs.epic != "" '>
-                AND ai.issue_id in (
+                AND ((ai.issue_id in (
                 SELECT ai3.issue_id FROM agile_issue ai3 ,agile_issue ai4
-                where ai3.epic_id = ai4.issue_id and position(#{searchArgs.epic} IN ai4.epic_name) )
+                where ai3.epic_id = ai4.issue_id and position(#{searchArgs.epic} IN ai4.epic_name) ))
+                or (ai.parent_issue_id in (
+                SELECT ai5.issue_id FROM agile_issue ai5 ,agile_issue ai6
+                where ai5.epic_id = ai6.issue_id and position(#{searchArgs.epic} IN ai6.epic_name) )))
             </if>
             <if test='searchArgs.version != null and searchArgs.version != "" '>
                 AND ai.issue_id in (
@@ -410,11 +423,18 @@
                             and (ai.epic_id is null or ai.epic_id = 0) and ai.type_code != 'issue_epic'
                         </when>
                         <otherwise>
-                            and ai.epic_id in
+                            and ((ai.epic_id in
                             <foreach collection="otherArgs.id" item="id" open="(" separator=","
                                      close=")">
                                 #{id}
-                            </foreach>
+                            </foreach>)
+                            or (ai.issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id = ai.parent_issue_id and
+                                ai7.epic_id in
+                                <foreach collection="otherArgs.id" item="id" open="(" separator=","
+                                         close=")">
+                                    #{id}
+                                </foreach>
+                            )))
                         </otherwise>
                     </choose>
                 </if>
@@ -1101,7 +1121,7 @@
                  close=")">
             #{issueId}
         </foreach>
-        ORDER BY ai.issue_id
+        ORDER BY issue_num
     </select>
 
     <select id="queryIssueEpicInfoByIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueDO">

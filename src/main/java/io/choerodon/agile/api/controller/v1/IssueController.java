@@ -122,10 +122,10 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("分页过滤查询issue列表(不包含子任务,不含测试任务)")
+    @ApiOperation("分页过滤查询issue列表(包含子任务,不含测试任务)")
     @CustomPageRequest
-    @PostMapping(value = "/no_sub")
-    public ResponseEntity<Page<IssueListDTO>> listIssueWithoutSub(@ApiIgnore
+    @PostMapping(value = "/include_sub")
+    public ResponseEntity<Page<IssueListDTO>> listIssueWithSub(@ApiIgnore
                                                                   @ApiParam(value = "分页信息", required = true)
                                                                   @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
                                                                           PageRequest pageRequest,
@@ -133,7 +133,7 @@ public class IssueController {
                                                                   @PathVariable(name = "project_id") Long projectId,
                                                                   @ApiParam(value = "查询参数", required = true)
                                                                   @RequestBody(required = false) SearchDTO searchDTO) {
-        return Optional.ofNullable(issueService.listIssueWithoutSub(projectId, searchDTO, pageRequest))
+        return Optional.ofNullable(issueService.listIssueWithSub(projectId, searchDTO, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.listIssueWithoutSub"));
     }
