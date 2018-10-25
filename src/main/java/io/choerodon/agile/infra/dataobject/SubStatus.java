@@ -10,6 +10,8 @@ public class SubStatus {
 
     private Long id;
 
+    private Long statusId;
+
     private String name;
 
     private Boolean completed;
@@ -26,6 +28,14 @@ public class SubStatus {
 
     public Long getId() {
         return id;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public Long getStatusId() {
+        return statusId;
     }
 
     public void setName(String name) {

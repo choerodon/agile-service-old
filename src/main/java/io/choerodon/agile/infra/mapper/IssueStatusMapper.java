@@ -14,6 +14,7 @@ import java.util.List;
  */
 public interface IssueStatusMapper extends BaseMapper<IssueStatusDO> {
 
+//    List queryUnCorrespondStatus(@Param("projectId") Long projectId, @Param("boardId") Long boardId);
     List queryUnCorrespondStatus(@Param("projectId") Long projectId, @Param("boardId") Long boardId);
 
     /**
@@ -27,4 +28,10 @@ public interface IssueStatusMapper extends BaseMapper<IssueStatusDO> {
     Integer checkSameStatus(@Param("projectId") Long projectId, @Param("statusName") String statusName);
 
     List<StatusDO> listByProjectId(@Param("projectId") Long projectId);
+
+    void batchUpdateStatus(@Param("statuses") List<IssueStatusDO> statuses);
+
+    void updateAllStatusId();
+
+    void updateAllColumnStatusId();
 }

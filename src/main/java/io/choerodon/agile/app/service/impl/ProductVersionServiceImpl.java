@@ -8,6 +8,7 @@ import io.choerodon.agile.domain.agile.event.VersionPayload;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.infra.dataobject.IssueCountDO;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
+import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaClient;
@@ -62,6 +63,9 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private ProductVersionMapper productVersionMapper;
     @Autowired
     private ProductVersionConverter productVersionConverter;
+
+    @Autowired
+    private IssueFeignClient issueFeignClient;
 
     private static final String VERSION_PLANNING = "version_planning";
     private static final String NOT_EQUAL_ERROR = "error.projectId.notEqual";
@@ -220,8 +224,9 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     }
 
     @Override
-    public List<IssueListDTO> queryIssueByVersionIdAndStatusCode(Long projectId, Long versionId, String statusCode) {
-        return issueAssembler.issueDoToIssueListDto(productVersionMapper.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode));
+    public List<IssueListDTO> queryIssueByVersionIdAndStatusCode(Long projectId, Long versionId, String statusCode, Long organizationId) {
+        Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        return issueAssembler.issueDoToIssueListDto(productVersionMapper.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode), priorityMap);
     }
 
     @Override

@@ -1,11 +1,9 @@
 package io.choerodon.agile.app.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.SprintWorkCalendarRefMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,43 +52,47 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
     @Autowired
     private SprintWorkCalendarRefMapper sprintWorkCalendarRefMapper;
 
+    @Autowired
+    private IssueFeignClient issueFeignClient;
+
     @Override
-    public List<PriorityDistributeDTO> queryPriorityDistribute(Long projectId, Long sprintId) {
+    public List<PriorityDistributeDTO> queryPriorityDistribute(Long projectId, Long sprintId, Long organizationId) {
         SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
         IterativeWorktableValidator.checkSprintExist(sprintDO);
-        Integer highCompletedNum = 0, highTotalNum = 0;
-        Integer mediumCompletedNum = 0, mediumTotalNum = 0;
-        Integer lowCompletedNum = 0, lowTotalNum = 0;
         List<PriorityDistributeDO> priorityDistributeDTOList = iterativeWorktableMapper.queryPriorityDistribute(projectId, sprintId);
+        Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         for (PriorityDistributeDO priorityDistributeDO : priorityDistributeDTOList) {
-            switch (priorityDistributeDO.getPriorityCode()) {
-                case PRIORITY_HIGH:
-                    highTotalNum += 1;
-                    if (CATEGORY_DONE.equals(priorityDistributeDO.getCategoryCode())) {
-                        highCompletedNum += 1;
-                    }
-                    break;
-                case PRIORITY_MEDIUM:
-                    mediumTotalNum += 1;
-                    if (CATEGORY_DONE.equals(priorityDistributeDO.getCategoryCode())) {
-                        mediumCompletedNum += 1;
-                    }
-                    break;
-                case PRIORITY_LOW:
-                    lowTotalNum += 1;
-                    if (CATEGORY_DONE.equals(priorityDistributeDO.getCategoryCode())) {
-                        lowCompletedNum += 1;
-                    }
-                    break;
-                default:
-                    break;
+            priorityDistributeDO.setPriorityDTO(priorityMap.get(priorityDistributeDO.getPriorityId()));
+        }
+        Map<Long, PriorityDistributeDTO> result = new HashMap<>();
+        for (PriorityDistributeDO priorityDistributeDO : priorityDistributeDTOList) {
+            Long priorityId = priorityDistributeDO.getPriorityDTO().getId();
+            if (result.get(priorityId) == null) {
+                PriorityDistributeDTO priorityDistributeDTO = new PriorityDistributeDTO();
+                priorityDistributeDTO.setTotalNum(1);
+                if (CATEGORY_DONE.equals(priorityDistributeDO.getCategoryCode())) {
+                    priorityDistributeDTO.setCompletedNum(1);
+                } else {
+                    priorityDistributeDTO.setCompletedNum(0);
+                }
+                priorityDistributeDTO.setPriorityDTO(priorityDistributeDO.getPriorityDTO());
+                result.put(priorityId, priorityDistributeDTO);
+            } else {
+                PriorityDistributeDTO priorityDistributeDTO = result.get(priorityId);
+                priorityDistributeDTO.setTotalNum(priorityDistributeDTO.getTotalNum() + 1);
+                if (CATEGORY_DONE.equals(priorityDistributeDO.getCategoryCode())) {
+                    priorityDistributeDTO.setCompletedNum(priorityDistributeDTO.getCompletedNum() + 1);
+                }
+                result.put(priorityId, priorityDistributeDTO);
             }
         }
-        List<PriorityDistributeDTO> result = new ArrayList<>();
-        result.add(new PriorityDistributeDTO(PRIORITY_HIGH, highCompletedNum, highTotalNum));
-        result.add(new PriorityDistributeDTO(PRIORITY_MEDIUM, mediumCompletedNum, mediumTotalNum));
-        result.add(new PriorityDistributeDTO(PRIORITY_LOW, lowCompletedNum, lowTotalNum));
-        return result;
+        List<PriorityDistributeDTO> res = new ArrayList<>();
+        for (Long key : result.keySet()) {
+            res.add(result.get(key));
+        }
+        Collections.sort(res, Comparator.comparing(PriorityDistributeDTO::getTotalNum));
+        Collections.reverse(res);
+        return res;
     }
 
     @Override

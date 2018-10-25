@@ -103,8 +103,10 @@ public class IssueController {
     public ResponseEntity<IssueDTO> queryIssue(@ApiParam(value = "项目id", required = true)
                                                @PathVariable(name = "project_id") Long projectId,
                                                @ApiParam(value = "issueId", required = true)
-                                               @PathVariable Long issueId) {
-        return Optional.ofNullable(issueService.queryIssue(projectId, issueId))
+                                               @PathVariable Long issueId,
+                                               @ApiParam(value = "组织id",required = true)
+                                               @RequestParam Long organizationId) {
+        return Optional.ofNullable(issueService.queryIssue(projectId, issueId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssue"));
     }
@@ -131,9 +133,11 @@ public class IssueController {
                                                                           PageRequest pageRequest,
                                                                   @ApiParam(value = "项目id", required = true)
                                                                   @PathVariable(name = "project_id") Long projectId,
+                                                                  @ApiParam(value = "组织id", required = true)
+                                                                  @RequestParam Long organizationId,
                                                                   @ApiParam(value = "查询参数", required = true)
                                                                   @RequestBody(required = false) SearchDTO searchDTO) {
-        return Optional.ofNullable(issueService.listIssueWithoutSub(projectId, searchDTO, pageRequest))
+        return Optional.ofNullable(issueService.listIssueWithoutSub(projectId, searchDTO, pageRequest, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.listIssueWithoutSub"));
     }
@@ -307,10 +311,12 @@ public class IssueController {
     @PostMapping("/update_type")
     public ResponseEntity<IssueDTO> updateIssueTypeCode(@ApiParam(value = "项目id", required = true)
                                                         @PathVariable(name = "project_id") Long projectId,
+                                                        @ApiParam(value = "组织id", required = true)
+                                                        @RequestParam Long organizationId,
                                                         @ApiParam(value = "修改类型信息", required = true)
                                                         @RequestBody IssueUpdateTypeDTO issueUpdateTypeDTO) {
         IssueE issueE = issueRule.verifyUpdateTypeData(projectId, issueUpdateTypeDTO);
-        return Optional.ofNullable(issueService.updateIssueTypeCode(issueE, issueUpdateTypeDTO))
+        return Optional.ofNullable(issueService.updateIssueTypeCode(issueE, issueUpdateTypeDTO, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.updateIssueTypeCode"));
     }
@@ -351,9 +357,11 @@ public class IssueController {
                                                         @PathVariable(name = "project_id") Long projectId,
                                                         @ApiParam(value = "issueId", required = true)
                                                         @PathVariable(name = "issueId") Long issueId,
+                                                        @ApiParam(value = "组织id", required = true)
+                                                        @RequestParam Long organizationId,
                                                         @ApiParam(value = "复制条件", required = true)
                                                         @RequestBody CopyConditionDTO copyConditionDTO) {
-        return Optional.ofNullable(issueService.cloneIssueByIssueId(projectId, issueId, copyConditionDTO))
+        return Optional.ofNullable(issueService.cloneIssueByIssueId(projectId, issueId, copyConditionDTO, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.cloneIssueByIssueId"));
     }
@@ -393,9 +401,11 @@ public class IssueController {
                                                                                          PageRequest pageRequest,
                                                                                  @ApiParam(value = "项目id", required = true)
                                                                                  @PathVariable(name = "project_id") Long projectId,
+                                                                                 @ApiParam(value = "组织id", required = true)
+                                                                                 @RequestParam Long organizationId,
                                                                                  @ApiParam(value = "查询参数", required = true)
                                                                                  @RequestBody(required = false) SearchDTO searchDTO) {
-        return Optional.ofNullable(issueService.listIssueWithoutSubToTestComponent(projectId, searchDTO, pageRequest))
+        return Optional.ofNullable(issueService.listIssueWithoutSubToTestComponent(projectId, searchDTO, pageRequest, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.listIssueWithoutSubToTestComponent"));
     }
@@ -411,9 +421,11 @@ public class IssueController {
                                                                                 PageRequest pageRequest,
                                                                         @ApiParam(value = "项目id", required = true)
                                                                         @PathVariable(name = "project_id") Long projectId,
+                                                                        @ApiParam(value = "组织id", required = true)
+                                                                        @RequestParam Long organizationId,
                                                                         @ApiParam(value = "查询参数", required = true)
                                                                         @RequestBody(required = false) SearchDTO searchDTO) {
-        return Optional.ofNullable(issueService.listIssueWithLinkedIssues(projectId, searchDTO, pageRequest))
+        return Optional.ofNullable(issueService.listIssueWithLinkedIssues(projectId, searchDTO, pageRequest, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.listIssueWithBlockedIssues"));
     }
@@ -482,6 +494,8 @@ public class IssueController {
                                                                         @PathVariable(name = "project_id") Long projectId,
                                                                         @ApiParam(value = "type:sprint, version, none", required = true)
                                                                         @RequestParam String type,
+                                                                        @ApiParam(value = "组织id", required = true)
+                                                                        @RequestParam Long organizationId,
                                                                         @ApiParam(value = "故事页面or待办页面 pageType:storymap,backlog", required = true)
                                                                         @RequestParam String pageType,
                                                                         @ApiParam(value = "search item，my problem", required = false)
@@ -490,7 +504,7 @@ public class IssueController {
                                                                         @RequestParam(required = false) Boolean onlyStory,
                                                                         @ApiParam(value = "quick filter", required = false)
                                                                         @RequestParam(required = false) List<Long> quickFilterIds) {
-        return Optional.ofNullable(issueService.listIssuesByProjectId(projectId, type, pageType, assigneeId, onlyStory, quickFilterIds))
+        return Optional.ofNullable(issueService.listIssuesByProjectId(projectId, type, pageType, assigneeId, onlyStory, quickFilterIds, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.listIssuesByProjectId"));
     }

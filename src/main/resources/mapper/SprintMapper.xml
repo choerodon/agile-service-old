@@ -38,6 +38,7 @@
         <id property="statusName" column="status_name"/>
         <id property="priorityCode" column="priority_code"/>
         <id property="priorityName" column="priority_name"/>
+        <id property="priorityId" column="priority_id"/>
         <id property="objectVersionNumber" column="is_object_version_number"/>
         <id property="epicName" column="issue_epic_name"/>
         <id property="color" column="color"/>
@@ -68,6 +69,7 @@
         ai.assignee_id, ai.project_id,
         ai.epic_id, asp1.sprint_id as is_sprint_id,
         ai.story_points, ai.status_id,
+        ai.priority_id,
         ais.category_code,
         ais.name AS status_name,
         ai.object_version_number as is_object_version_number, ai.priority_code,
@@ -169,6 +171,7 @@
         ai2.assignee_id, ai2.project_id,
         ai2.epic_id, asp1.sprint_id as is_sprint_id,
         ai2.story_points, ai2.status_id,
+        ai2.priority_id,
         ais.category_code,
         ais.name AS status_name,
         ai2.object_version_number as is_object_version_number, ai2.priority_code,

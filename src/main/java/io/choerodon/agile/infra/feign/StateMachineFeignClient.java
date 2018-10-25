@@ -1,0 +1,36 @@
+package io.choerodon.agile.infra.feign;
+
+import io.choerodon.agile.api.dto.Status;
+import io.choerodon.agile.api.dto.StatusDTO;
+import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.infra.dataobject.StatusForMoveDataDO;
+import io.swagger.annotations.ApiParam;
+import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by HuangFuqiang@choerodon.io on 2018/10/23.
+ * Email: fuqianghuang01@gmail.com
+ */
+@FeignClient(value = "state-machine-service", fallback = StateMachineFeignClient.class)
+public interface StateMachineFeignClient {
+
+    @PostMapping(value = "/v1/status/init")
+    ResponseEntity<Map<Long, List<Status>>> initStatus(@ApiParam(value = "状态数据", required = true)
+                                                       @RequestBody List<StatusForMoveDataDO> statusForMoveDataDOList);
+
+    @PostMapping(value = "/v1/status/batch")
+    ResponseEntity<Map<Long, Status>> batchStatusGet(@ApiParam(value = "状态ids", required = true)
+                                                     @RequestBody List<Long> ids);
+
+    @GetMapping(value = "/v1/organizations/{organization_id}/status/list_map")
+    ResponseEntity<Map<Long, StatusMapDTO>> queryAllStatusMap(@PathVariable("organization_id") Long organizationId);
+
+}

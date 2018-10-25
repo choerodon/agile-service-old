@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.dataobject;
 
+import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
 import java.util.Date;
@@ -20,7 +21,7 @@ public class IssueBurnDownReportDO {
 
     private String summary;
 
-    private String priorityCode;
+//    private String priorityCode;
 
     private Long assigneeId;
 
@@ -30,7 +31,7 @@ public class IssueBurnDownReportDO {
 
     private Integer storyPoints;
 
-    private String priorityName;
+//    private String priorityName;
 
     private String statusCode;
 
@@ -45,6 +46,10 @@ public class IssueBurnDownReportDO {
     private Boolean completed;
 
     private String name;
+
+    private Long priorityId;
+
+    private PriorityDTO priorityDTO;
 
     public Long getIssueId() {
         return issueId;
@@ -86,13 +91,13 @@ public class IssueBurnDownReportDO {
         this.summary = summary;
     }
 
-    public String getPriorityCode() {
-        return priorityCode;
-    }
-
-    public void setPriorityCode(String priorityCode) {
-        this.priorityCode = priorityCode;
-    }
+//    public String getPriorityCode() {
+//        return priorityCode;
+//    }
+//
+//    public void setPriorityCode(String priorityCode) {
+//        this.priorityCode = priorityCode;
+//    }
 
     public Long getAssigneeId() {
         return assigneeId;
@@ -126,13 +131,13 @@ public class IssueBurnDownReportDO {
         this.storyPoints = storyPoints;
     }
 
-    public String getPriorityName() {
-        return priorityName;
-    }
-
-    public void setPriorityName(String priorityName) {
-        this.priorityName = priorityName;
-    }
+//    public String getPriorityName() {
+//        return priorityName;
+//    }
+//
+//    public void setPriorityName(String priorityName) {
+//        this.priorityName = priorityName;
+//    }
 
     public String getStatusCode() {
         return statusCode;
@@ -188,6 +193,22 @@ public class IssueBurnDownReportDO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
+    }
+
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
+    }
+
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
     }
 
     @Override

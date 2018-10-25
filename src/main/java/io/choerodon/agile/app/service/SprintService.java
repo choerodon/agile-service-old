@@ -19,7 +19,7 @@ public interface SprintService {
 
     Boolean deleteSprint(Long projectId, Long sprintId);
 
-    Map<String, Object> queryByProjectId(Long projectId, Map<String, Object> searchParamMap, List<Long> quickFilterIds);
+    Map<String, Object> queryByProjectId(Long projectId, Map<String, Object> searchParamMap, List<Long> quickFilterIds, Long organizationId);
 
     List<SprintNameDTO> queryNameByOptions(Long projectId, List<String> sprintStatusCodes);
 
@@ -33,7 +33,7 @@ public interface SprintService {
 
     SprintDetailDTO querySprintById(Long projectId, Long sprintId);
 
-    Page<IssueListDTO> queryIssueByOptions(Long projectId, Long sprintId, String status, PageRequest pageRequest);
+    Page<IssueListDTO> queryIssueByOptions(Long projectId, Long sprintId, String status, PageRequest pageRequest, Long organizationId);
 
     String getQuickFilter(List<Long> quickFilterIds);
 

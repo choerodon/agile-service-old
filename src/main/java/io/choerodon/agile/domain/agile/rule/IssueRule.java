@@ -59,6 +59,9 @@ public class IssueRule {
         if (issueCreateDTO.getEpicName() != null && !ISSUE_EPIC.equals(issueCreateDTO.getTypeCode())) {
             throw new CommonException("error.IssueRule.EpicName");
         }
+        if (issueCreateDTO.getPriorityId() == null) {
+            throw new CommonException("error.priorityId.isNull");
+        }
     }
 
     public void verifyUpdateData(JSONObject issueUpdate, Long projectId) {

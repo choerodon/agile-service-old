@@ -122,4 +122,10 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue.groovy') {
             column(name: 'map_rank', type: 'VARCHAR(765)', remarks: 'issue map rank')
         }
     }
+
+    changeSet(id: '2018-10-23-add-column-priority-id', author: 'fuqianghuang01@gmail.com') {
+        addColumn(tableName: 'agile_issue') {
+            column(name: 'priority_id', type: 'BIGINT UNSIGNED', remarks: 'priority id')
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.assembler;
 
+import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.StoryMapIssueDTO;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
@@ -32,7 +33,7 @@ public class StoryMapIssueAssembler {
 
     private static final String ISSUE_STATUS_COLOR = "issue_status_color";
 
-    public List<StoryMapIssueDTO> storyMapIssueDOToDTO(List<StoryMapIssueDO> storyMapIssueDOList) {
+    public List<StoryMapIssueDTO> storyMapIssueDOToDTO(List<StoryMapIssueDO> storyMapIssueDOList, Map<Long, PriorityDTO> priorityMap) {
         LookupValueDO lookupValueDO = new LookupValueDO();
         lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
         List<StoryMapIssueDTO> storyMapIssueDTOList = new ArrayList<>(storyMapIssueDOList.size());
@@ -47,6 +48,7 @@ public class StoryMapIssueAssembler {
             storyMapIssueDTO.setStatusColor(ColorUtil.initializationStatusColor(storyMapIssueDTO.getStatusCode(), lookupValueMap));
             storyMapIssueDTO.setAssigneeName(assigneeName);
             storyMapIssueDTO.setImageUrl(imageUrl);
+            storyMapIssueDTO.setPriorityDTO(priorityMap.get(storyMapIssueDO.getPriorityId()));
             storyMapIssueDTOList.add(storyMapIssueDTO);
         });
         return storyMapIssueDTOList;

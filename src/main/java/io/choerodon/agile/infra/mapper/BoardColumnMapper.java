@@ -13,6 +13,13 @@ import java.util.List;
  */
 public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
 
+//    List selectColumnsByBoardId(@Param("projectId") Long projectId,
+//                                @Param("boardId") Long boardId,
+//                                @Param("activeSprintId") Long activeSprintId,
+//                                @Param("assigneeId") Long assigneeId,
+//                                @Param("onlyStory") Boolean onlyStory,
+//                                @Param("filterSql") String filterSql);
+
     List selectColumnsByBoardId(@Param("projectId") Long projectId,
                                 @Param("boardId") Long boardId,
                                 @Param("activeSprintId") Long activeSprintId,

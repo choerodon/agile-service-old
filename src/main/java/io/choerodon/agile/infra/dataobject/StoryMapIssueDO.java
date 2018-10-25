@@ -38,6 +38,8 @@ public class StoryMapIssueDO {
 
     private String mapRank;
 
+    private Long priorityId;
+
     public Long getSprintId() {
         return sprintId;
     }
@@ -165,5 +167,13 @@ public class StoryMapIssueDO {
 
     public String getMapRank() {
         return mapRank;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
     }
 }

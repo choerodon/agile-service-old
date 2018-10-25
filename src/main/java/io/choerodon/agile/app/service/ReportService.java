@@ -36,7 +36,7 @@ public interface ReportService {
      */
     List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO);
 
-    Page<IssueListDTO> queryIssueByOptions(Long projectId, Long versionId, String status, String type, PageRequest pageRequest);
+    Page<IssueListDTO> queryIssueByOptions(Long projectId, Long versionId, String status, String type, PageRequest pageRequest, Long organizationId);
 
     Map<String, Object> queryVersionLineChart(Long projectId, Long versionId, String type);
 
@@ -49,15 +49,15 @@ public interface ReportService {
      * @param fieldName fieldName
      * @return PieChartDTO
      */
-    List<PieChartDTO> queryPieChart(Long projectId, String fieldName);
+    List<PieChartDTO> queryPieChart(Long projectId, String fieldName, Long organizationId);
 
     List<GroupDataChartDO> queryEpicChart(Long projectId, Long epicId, String type);
 
     List<GroupDataChartDO> queryVersionChart(Long projectId, Long versionId, String type);
 
-    List<GroupDataChartListDO> queryEpicChartList(Long projectId, Long epicId);
+    List<GroupDataChartListDO> queryEpicChartList(Long projectId, Long epicId, Long organizationId);
 
-    List<GroupDataChartListDO> queryVersionChartList(Long projectId, Long versionId);
+    List<GroupDataChartListDO> queryVersionChartList(Long projectId, Long versionId, Long organizationId);
 
     /**
      * 查询燃尽图坐标信息
@@ -87,7 +87,7 @@ public interface ReportService {
      * @param type      type
      * @return BurnDownReportDTO
      */
-    BurnDownReportDTO queryBurnDownReportByType(Long projectId, Long id, String type);
+    BurnDownReportDTO queryBurnDownReportByType(Long projectId, Long id, String type, Long organizationId);
 
     void setReportMapper(ReportMapper reportMapper);
 
@@ -113,5 +113,5 @@ public interface ReportService {
      * @param projectId projectId
      * @return IssuePriorityDistributionChartDTO
      */
-    List<IssuePriorityDistributionChartDTO> queryIssuePriorityDistributionChart(Long projectId);
+    List<IssuePriorityDistributionChartDTO> queryIssuePriorityDistributionChart(Long projectId, Long organizationId);
 }

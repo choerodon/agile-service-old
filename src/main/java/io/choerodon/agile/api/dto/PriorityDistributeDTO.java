@@ -7,25 +7,11 @@ package io.choerodon.agile.api.dto;
  */
 public class PriorityDistributeDTO {
 
-    public PriorityDistributeDTO(String priorityCode, Integer completedNum, Integer totalNum) {
-        this.priorityCode = priorityCode;
-        this.completedNum = completedNum;
-        this.totalNum = totalNum;
-    }
-
-    private String priorityCode;
-
     private Integer completedNum;
 
     private Integer totalNum;
 
-    public String getPriorityCode() {
-        return priorityCode;
-    }
-
-    public void setPriorityCode(String priorityCode) {
-        this.priorityCode = priorityCode;
-    }
+    private PriorityDTO priorityDTO;
 
     public Integer getCompletedNum() {
         return completedNum;
@@ -41,5 +27,13 @@ public class PriorityDistributeDTO {
 
     public void setTotalNum(Integer totalNum) {
         this.totalNum = totalNum;
+    }
+
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
+    }
+
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
     }
 }

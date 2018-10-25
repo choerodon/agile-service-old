@@ -10,7 +10,7 @@
         <id column="status_code" property="statusCode"/>
         <id column="summary" property="summary"/>
         <id column="priority_code" property="priorityCode"/>
-        <id column="priority_name" property="priorityName"/>
+        <!--<id column="priority_name" property="priorityName"/>-->
         <id column="reporter_id" property="reporterId"/>
         <id column="description" property="description"/>
         <id column="assignee_id" property="assigneeId"/>
@@ -25,6 +25,7 @@
         <id column="epic_color" property="epicColor"/>
         <id column="parent_issue_num" property="parentIssueNum"/>
         <id column="object_version_number" property="objectVersionNumber"/>
+        <id column="priority_id" property="priorityId"/>
         <association property="activeSprint" column="issue_id" select="queryActiveSprintNameByIssueId"/>
         <collection property="versionIssueRelDOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
@@ -116,14 +117,14 @@
             ai.*,
             ais.category_code                                                                AS status_code,
             ais.name                                                                         AS status_name,
-            alv.name                                                                         AS priority_name,
+--             alv.name                                                                         AS priority_name,
             ai2.epic_name                                                                    AS issue_epic_name,
             alv2.name                                                                        AS epic_color,
             alv3.name                                                                        AS color_value,
             IF(ai3.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai3.issue_num)) AS parent_issue_num,
             CONCAT_WS('-', api.project_code, ai.issue_num)                                   AS issue_num_splicing
         FROM agile_issue ai LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
-            LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+--             LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
             LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
             LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code
             LEFT JOIN agile_lookup_value alv3 ON ai.color_code = alv3.value_code
@@ -250,6 +251,7 @@
         ai.assignee_id,
         ai.project_id,
         ai.status_id,
+        ai.priority_id,
         alv.name AS priority_name,
         ais.category_code AS status_code,
         ais.name AS status_name,
@@ -276,11 +278,11 @@
                     #{assigneeId}
                 </foreach>
             </if>
-            <if test='advancedSearchArgs.priorityCode != null and advancedSearchArgs.priorityCode.size > 0'>
-                AND ai.priority_code IN
-                <foreach collection="advancedSearchArgs.priorityCode" item="priorityCode" open="(" separator=","
+            <if test='advancedSearchArgs.priorityId != null and advancedSearchArgs.priorityId.size > 0'>
+                AND ai.priority_id IN
+                <foreach collection="advancedSearchArgs.priorityId" item="priorityId" open="(" separator=","
                          close=")">
-                    #{priorityCode}
+                    #{priorityId}
                 </foreach>
             </if>
             <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
@@ -1630,6 +1632,7 @@
         ai.story_points,
         ai.epic_id,
         ai.object_version_number,
+        ai.priority_id,
         ai.map_rank,
         CONCAT_WS(
         '-',
@@ -1679,6 +1682,7 @@
         ai.story_points,
         ai.epic_id,
         ai.object_version_number,
+        ai.priority_id,
         ai.map_rank,
         CONCAT_WS(
         '-',
@@ -1737,6 +1741,7 @@
         ai.story_points,
         ai.epic_id,
         ai.object_version_number,
+        ai.priority_id,
         ai.map_rank,
         CONCAT_WS(
         '-',
@@ -1790,6 +1795,7 @@
         ai.story_points,
         ai.epic_id,
         ai.object_version_number,
+        ai.priority_id,
         ai.map_rank,
         CONCAT_WS(
         '-',
@@ -1846,6 +1852,7 @@
         ai.story_points,
         ai.epic_id,
         ai.object_version_number,
+        ai.priority_id,
         ai.map_rank,
         CONCAT_WS(
         '-',
@@ -2032,8 +2039,7 @@
             aaa.status_code,
             aaa.completed,
             aaa.summary,
-            aaa.priority_code,
-            aaa.priority_name,
+            aaa.priority_id,
             aaa.assignee_id,
             aaa.project_id,
             aaa.name,
@@ -2056,10 +2062,9 @@
                 ais.category_code AS status_code,
                 ais.is_completed as completed,
                 ai.summary,
-                ai.priority_code,
-                alv.NAME AS priority_name,
                 ai.assignee_id,
                 ai.project_id,
+                ai.priority_id,
                 ai1.epic_name as name,
                 ai1.epic_name,
                 ai1.issue_id as id,
@@ -2095,7 +2100,7 @@
             FROM
                 agile_issue ai
                 LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-                LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+--                 LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
                 LEFT JOIN agile_lookup_value alv1 ON ai.type_code = alv1.value_code
                 LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
                 LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
@@ -2121,8 +2126,9 @@
             aaa.status_code,
             aaa.completed,
             aaa.summary,
-            aaa.priority_code,
-            aaa.priority_name,
+--             aaa.priority_code,
+--             aaa.priority_name,
+            aaa.priority_id,
             aaa.assignee_id,
             aaa.project_id,
             aaa.name,
@@ -2144,8 +2150,9 @@
                 ais.category_code AS status_code,
                 ais.is_completed AS completed,
                 ai.summary,
-                ai.priority_code,
-                alv.NAME AS priority_name,
+--                 ai.priority_code,
+--                 alv.NAME AS priority_name,
+                ai.priority_id,
                 ai.assignee_id,
                 ai.project_id,
                 ai.story_points,
@@ -2182,7 +2189,7 @@
             FROM
                 agile_issue ai
                 LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-                LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+--                 LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
                 LEFT JOIN agile_lookup_value alv1 ON ai.type_code = alv1.value_code
                 LEFT JOIN agile_version_issue_rel avir ON avir.issue_id = ai.issue_id
                 left join agile_product_version apv on apv.version_id = avir.version_id
@@ -2377,4 +2384,14 @@
         </collection>
     </resultMap>
 
+    <select id="selectAllPriority" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        select issue_id, priority_code, project_id
+        from agile_issue
+    </select>
+
+    <update id="batchUpdatePriority">
+        <foreach collection="issueDOList" item="issueDO" open="" close="" separator=";">
+            update agile_issue set priority_id = #{issueDO.priorityId} where issue_id = #{issueDO.issueId}
+        </foreach>
+    </update>
 </mapper>
