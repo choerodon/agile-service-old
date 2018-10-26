@@ -5,10 +5,7 @@
     <resultMap id="statusAndIssuesMap" type="io.choerodon.agile.infra.dataobject.StatusAndIssuesDO">
         <id property="id" column="ais_id"/>
         <id property="projectId" column="ais_project_id"/>
-        <!--<id property="name" column="ais_name"/>-->
-        <id property="enable" column="ais_enable"/>
         <id property="statusId" column="ais_status_id"/>
-        <!--<id property="categoryCode" column="ais_category_code"/>-->
         <id property="completed" column="ais_completed"/>
         <id property="objectVersionNumber" column="ais_object_version_number"/>
         <collection property="issues" autoMapping="true" columnPrefix="ai_"
@@ -48,19 +45,15 @@
         SELECT
             ais.id                    AS ais_id,
             ais.project_id            AS ais_project_id,
---             ais.name                  AS ais_name,
-            ais.is_enable             AS ais_enable,
---             ais.category_code            ais_category_code,
             ais.status_id             AS ais_status_id,
             ais.is_completed          AS ais_completed,
             ais.object_version_number AS ais_object_version_number,
             ai.issue_id               AS ai_issue_id,
             ai.summary                AS ai_summary,
-            ai.priority_code          AS ai_priority_code,
             ai.object_version_number  AS ai_object_version_number
         FROM
             agile_issue_status ais
-            LEFT JOIN agile_issue ai ON ai.status_id = ais.id
+            LEFT JOIN agile_issue ai ON ai.status_id = ais.status_id and ai.project_id = #{projectId}
         WHERE
             ais.project_id = #{projectId}
             AND (
@@ -70,7 +63,8 @@
                     WHERE
                         abc.board_id = #{boardId}
                         AND abcsr.column_id = abc.column_id
-                        AND ais.id = abcsr.status_id
+                        AND ais.status_id = abcsr.status_id
+                        and ais.project_id = #{projectId}
                 ) = 0
     </select>
 
@@ -131,5 +125,11 @@
     <update id="updateAllColumnStatusId">
         update agile_board_column_status_rel abcsr set abcsr.status_id =
         (nullif (select ais.status_id from agile_issue_status ais where abcsr.status_id = ais.id, 0))
+    </update>
+
+    <update id="updateDataLogStatusId">
+        update agile_data_log adl set adl.old_value = (select ais.status_id from agile_issue_status ais where adl.old_value = ais.id ) where field = 'status';
+        update agile_data_log adl set adl.new_value = (select ais.status_id from agile_issue_status ais where adl.new_value = ais.id ) where field = 'status';
+        update agile_data_log adl set adl.new_value = (select ais.status_id from agile_issue_status ais where adl.new_value = ais.id ) where field = 'resolution';
     </update>
 </mapper>

@@ -24,6 +24,8 @@ public class StatusAndIssuesDTO {
 
     private Long objectVersionNumber;
 
+    private Long statusId;
+
     private List<IssueForBoardDO> issues;
 
     public void setId(Long id) {
@@ -88,5 +90,13 @@ public class StatusAndIssuesDTO {
 
     public Boolean getCompleted() {
         return completed;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public Long getStatusId() {
+        return statusId;
     }
 }

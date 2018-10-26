@@ -198,20 +198,21 @@
         SELECT
         ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         ai.type_code, ai.status_id,
-        ais.name AS status_name,
-        ais.category_code AS status_code,
---         ai.summary, ai.priority_code,
---         alv.name AS priority_name,
+        ai.summary,
         ai.priority_id,
         ai.assignee_id, ai.project_id
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
---         LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
-        , agile_version_issue_rel avir, agile_issue_status ais
+        , agile_version_issue_rel avir
         WHERE ai.project_id = #{projectId} AND avir.version_id = #{versionId} AND avir.relation_type = 'fix'
-        AND ai.issue_id = avir.issue_id AND ai.status_id = ais.id AND ai.type_code != 'issue_test'
+        AND ai.issue_id = avir.issue_id
+        AND ai.type_code != 'issue_test'
         <if test="statusCode != null">
-            AND ais.category_code = #{statusCode}
+            AND ai.status_id in
+            <foreach collection="filterStatusIds" item="filterStatusId" index="index"
+                     open="(" close=")" separator=",">
+                #{filterStatusId}
+            </foreach>
         </if>
     </select>
 

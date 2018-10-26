@@ -135,7 +135,7 @@ public interface IssueService {
 
     Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Boolean onlyActiveSprint, Boolean self, String content, PageRequest pageRequest);
 
-    void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response);
+    void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response, Long organizationId);
 
     /**
      * 根据issueId复制一个issue

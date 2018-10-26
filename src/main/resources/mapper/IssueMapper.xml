@@ -253,11 +253,8 @@
         ai.status_id,
         ai.priority_id,
         alv.name AS priority_name,
-        ais.category_code AS status_code,
-        ais.name AS status_name,
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
-        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task' AND ai.type_code != 'issue_test'
         <if test='searchArgs != null'>
@@ -286,10 +283,9 @@
                 </foreach>
             </if>
             <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
-                AND ais.category_code IN
-                <foreach collection="advancedSearchArgs.statusCode" item="statusCode" open="(" separator=","
-                         close=")">
-                    #{statusCode}
+                and ai.status_id in
+                <foreach collection="filterStatusIds" item="filterStatusId" open="(" separator="," close=")">
+                    #{filterStatusId}
                 </foreach>
             </if>
         </if>
@@ -1634,13 +1630,14 @@
         ai.object_version_number,
         ai.priority_id,
         ai.map_rank,
+        ai.status_id,
         CONCAT_WS(
         '-',
         api.project_code,
         ai.issue_num
-        ) AS issue_num,
-        ais.category_code AS status_code,
-        ais.`name` AS status_name
+        ) AS issue_num
+--         ais.category_code AS status_code,
+--         ais.`name` AS status_name
         FROM
         agile_issue_sprint_rel aisr
         LEFT JOIN agile_sprint asp ON aisr.sprint_id = asp.sprint_id
@@ -1660,7 +1657,7 @@
             AND ai.issue_id IN (${filterSql})
         </if>
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+--         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         aisr.project_id = #{projectId} and aisr.issue_id = ai.issue_id
         and aisr.sprint_id in (select sprint_id from agile_sprint where status_code != 'closed')
@@ -1684,17 +1681,18 @@
         ai.object_version_number,
         ai.priority_id,
         ai.map_rank,
+        ai.status_id,
         CONCAT_WS(
         '-',
         api.project_code,
         ai.issue_num
-        ) AS issue_num,
-        ais.category_code AS status_code,
-        ais.`name` AS status_name
+        ) AS issue_num
+--         ais.category_code AS status_code,
+--         ais.`name` AS status_name
         FROM
         agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+--         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         ai.project_id = #{projectId}
         AND issue_id NOT IN (
@@ -1710,7 +1708,12 @@
         'sub_task',
         'issue_epic'
         )
-        and ais.category_code != 'done'
+--         and ais.category_code != 'done'
+        and ai.status_id not in
+        <foreach collection="doneIds" item="doneId" open="(" separator=","
+                 close=")">
+            #{doneId}
+        </foreach>
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
@@ -1743,13 +1746,14 @@
         ai.object_version_number,
         ai.priority_id,
         ai.map_rank,
+        ai.status_id,
         CONCAT_WS(
         '-',
         api.project_code,
         ai.issue_num
-        ) AS issue_num,
-        ais.category_code AS status_code,
-        ais.`name` AS status_name
+        ) AS issue_num
+--         ais.category_code AS status_code,
+--         ais.`name` AS status_name
         FROM
         agile_version_issue_rel avir
         LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
@@ -1769,7 +1773,7 @@
             AND ai.issue_id IN (${filterSql})
         </if>
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+--         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         avir.project_id = #{projectId} and avir.issue_id = ai.issue_id
         and avir.relation_type = 'fix'
@@ -1797,17 +1801,18 @@
         ai.object_version_number,
         ai.priority_id,
         ai.map_rank,
+        ai.status_id,
         CONCAT_WS(
         '-',
         api.project_code,
         ai.issue_num
-        ) AS issue_num,
-        ais.category_code AS status_code,
-        ais.`name` AS status_name
+        ) AS issue_num
+--         ais.category_code AS status_code,
+--         ais.`name` AS status_name
         FROM
         agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+--         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         ai.project_id = #{projectId}
         AND issue_id NOT IN (
@@ -1824,7 +1829,12 @@
         'sub_task',
         'issue_epic'
         )
-        and ais.category_code != 'done'
+--         and ais.category_code != 'done'
+        and ai.status_id not in
+        <foreach collection="doneIds" item="doneId" open="(" separator=","
+                 close=")">
+            #{doneId}
+        </foreach>
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
@@ -1854,17 +1864,18 @@
         ai.object_version_number,
         ai.priority_id,
         ai.map_rank,
+        ai.status_id,
         CONCAT_WS(
         '-',
         api.project_code,
         ai.issue_num
-        ) AS issue_num,
-        ais.category_code AS status_code,
-        ais.`name` AS status_name
+        ) AS issue_num
+--         ais.category_code AS status_code,
+--         ais.`name` AS status_name
         FROM
         agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+--         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         ai.project_id = #{projectId}
         AND ai.type_code NOT IN (
@@ -1872,7 +1883,12 @@
         'sub_task',
         'issue_epic'
         )
-        and ais.category_code != 'done'
+--         and ais.category_code != 'done'
+        and ai.status_id not in
+        <foreach collection="doneIds" item="doneId" open="(" separator=","
+                 close=")">
+            #{doneId}
+        </foreach>
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
@@ -2035,8 +2051,8 @@
             aaa.type_code,
             aaa.type_name,
             aaa.status_id,
-            aaa.status_name,
-            aaa.status_code,
+--             aaa.status_name,
+--             aaa.status_code,
             aaa.completed,
             aaa.summary,
             aaa.priority_id,
@@ -2058,8 +2074,8 @@
                 ai.type_code,
                 alv1.NAME AS type_name,
                 ai.status_id,
-                ais.NAME AS status_name,
-                ais.category_code AS status_code,
+--                 ais.NAME AS status_name,
+--                 ais.category_code AS status_code,
                 ais.is_completed as completed,
                 ai.summary,
                 ai.assignee_id,
@@ -2103,7 +2119,7 @@
 --                 LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
                 LEFT JOIN agile_lookup_value alv1 ON ai.type_code = alv1.value_code
                 LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
-                LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+                LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id and ais.project_id = #{projectId}
             WHERE
                 ai.epic_id = #{epicId}
                 AND ai.project_id = #{projectId}

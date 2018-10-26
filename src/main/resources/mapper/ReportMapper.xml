@@ -744,7 +744,7 @@
         </if>
         GROUP BY adl1.issue_id
         ) a
-        WHERE adl.log_id = a.log_id AND ais.id = adl.new_value
+        WHERE adl.log_id = a.log_id AND ais.status_id = adl.new_value and ais.project_id = #{projectId}
         ) adl2 ON adl2.issue_id = aisr.issue_id
         LEFT JOIN (
         SELECT adl.issue_id, adl.old_value, ais.is_completed
@@ -758,11 +758,11 @@
         </if>
         GROUP BY adl3.issue_id
         ) a
-        WHERE adl.log_id = a.log_id AND ais.id = adl.old_value
+        WHERE adl.log_id = a.log_id AND ais.status_id = adl.old_value and ais.project_id = #{projectId}
         ) adl4 ON adl4.issue_id = aisr.issue_id,
         agile_issue ai,agile_issue_status ais
         WHERE aisr.project_id = #{projectId} AND aisr.sprint_id = #{sprintId}
-        AND aisr.issue_id = ai.issue_id AND ai.status_id = ais.id
+        AND aisr.issue_id = ai.issue_id AND ai.status_id = ais.status_id and ais.project_id = #{projectId}
         AND ai.type_code != 'sub_task'
         AND (adl2.new_value IS NOT null AND adl2.new_value != '' AND adl2.is_completed = ${status}
         OR (
@@ -780,8 +780,8 @@
         SELECT
         ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         ai.type_code, ai.status_id,
-        ais.name AS status_name,
-        ais.category_code AS status_code,
+--         ais.name AS status_name,
+--         ais.category_code AS status_code,
 --         ai.summary, ai.priority_code,
 --         alv.name AS priority_name,
         ai.priority_id,
@@ -790,7 +790,7 @@
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
         , agile_issue_status ais
-        WHERE ai.project_id = #{projectId} AND ai.status_id = ais.id
+        WHERE ai.project_id = #{projectId} AND ai.status_id = ais.status_id and ais.project_id = #{projectId}
         AND ai.issue_id IN
         <foreach collection="issueIds" item="issueId"
                  open="(" close=")" separator=",">
@@ -818,14 +818,14 @@
     </select>
 
     <select id="queryBeforeIssueStatus" resultType="io.choerodon.agile.infra.dataobject.SprintReportIssueStatusDO">
-        SELECT adl.issue_id AS issue_id, ais.category_code AS category_code, ais.name AS status_name
+        SELECT adl.issue_id AS issue_id,
+        adl.new_value as status_id
         FROM agile_data_log adl,
-        agile_issue_status ais,
         (
         SELECT MAX(adl1.log_id) AS log_id
         FROM agile_data_log adl1, agile_issue_status ais1
         WHERE adl1.project_id = #{projectId} AND adl1.field = 'status'
-        AND ais1.id = adl1.new_value AND ais1.is_completed IS NOT NULL
+        and ais1.project_id = #{projectId} AND ais1.status_id = adl1.new_value AND ais1.is_completed IS NOT NULL
         AND adl1.issue_id IN
         <foreach collection="issueIds" item="issueId"
                  open="(" close=")" separator=",">
@@ -837,13 +837,13 @@
         </if>
         GROUP BY adl1.issue_id
         ) a
-        WHERE adl.log_id = a.log_id AND ais.id = adl.new_value
+        WHERE adl.log_id = a.log_id
     </select>
 
     <select id="queryAfterIssueStatus" resultType="io.choerodon.agile.infra.dataobject.SprintReportIssueStatusDO">
-        SELECT adl.issue_id AS issue_id, ais.category_code AS category_code, ais.name AS status_name
+        SELECT adl.issue_id AS issue_id,
+        adl.old_value as status_id
         FROM agile_data_log adl,
-        agile_issue_status ais,
         (
         SELECT MIN(log_id) AS log_id
         FROM agile_data_log
@@ -858,7 +858,7 @@
         </if>
         GROUP BY issue_id
         ) a
-        WHERE adl.log_id = a.log_id AND ais.id = adl.old_value
+        WHERE adl.log_id = a.log_id
     </select>
 
     <select id="checkIssueDoneStatus" resultType="java.lang.Boolean">
@@ -1005,8 +1005,9 @@
         SELECT
         ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         ai.type_code, alv1.name AS type_name,
-        ai.status_id, ais.name AS status_name,
-        ais.category_code AS status_code,
+        ai.status_id,
+--         ais.name AS status_name,
+--         ais.category_code AS status_code,
         ai.summary, ai.priority_code,
         alv.name AS priority_name,
         ai.assignee_id, ai.project_id,
@@ -1019,7 +1020,8 @@
         LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
         , agile_version_issue_rel avir, agile_issue_status ais
         WHERE avir.project_id = #{projectId} AND avir.version_id = #{versionId}
-        AND avir.issue_id = ai.issue_id AND ai.status_id = ais.id
+        AND avir.issue_id = ai.issue_id AND ai.status_id = ais.status_id
+        and ais.project_id = #{projectId}
         <choose>
             <when test='status == "done"'>
                 AND ai.type_code IN ('task', 'bug', 'issue_epic', 'story') AND ais.is_completed = TRUE
@@ -1791,21 +1793,21 @@
             ) AS issue_num,
             ai.summary,
             ai.type_code,
---             ai.priority_code,
             ai.priority_id,
-            ais.`name` AS status_name,
-            alv.name AS status_color,
+--             ais.`name` AS status_name,
+--             alv.name AS status_color,
+            ai.status_id,
             ai.story_points,
             ai.remaining_time + IFNULL(aw.work_times,0) AS remain_time,
             IF (t.new_value IS NULL, 0, 1) AS completed
         FROM
             agile_issue ai
         LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
-        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
-        LEFT JOIN agile_lookup_value alv ON alv.value_code = CASE ais.category_code WHEN 'todo' THEN 'issue_status_color_todo'
-                                                                                      WHEN 'doing' THEN 'issue_status_color_doing'
-                                                                                      WHEN 'done' THEN 'issue_status_color_done'
-                                                                                      ELSE 'issue_status_color_todo' END
+--         LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+--         LEFT JOIN agile_lookup_value alv ON alv.value_code = CASE ais.category_code WHEN 'todo' THEN 'issue_status_color_todo'
+--                                                                                       WHEN 'doing' THEN 'issue_status_color_doing'
+--                                                                                       WHEN 'done' THEN 'issue_status_color_done'
+--                                                                                       ELSE 'issue_status_color_todo' END
         LEFT JOIN (
             SELECT
                 awl.issue_id,
@@ -1852,19 +1854,20 @@
             ai.summary,
             ai.type_code,
             ai.priority_code,
-            ais.`name` AS status_name,
-            alv.name AS status_color,
+            ai.status_id,
+--             ais.`name` AS status_name,
+--             alv.name AS status_color,
             ai.story_points,
             ai.priority_id,
             ai.remaining_time + IFNULL(aw.work_times,0) AS remain_time,
             IF (t.new_value IS NULL, 0, 1) AS completed
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
-        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
-        LEFT JOIN agile_lookup_value alv ON alv.value_code = CASE ais.category_code WHEN 'todo' THEN 'issue_status_color_todo'
-                                                                                        WHEN 'doing' THEN 'issue_status_color_doing'
-                                                                                        WHEN 'done' THEN 'issue_status_color_done'
-                                                                                        ELSE 'issue_status_color_todo' END
+--         LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+--         LEFT JOIN agile_lookup_value alv ON alv.value_code = CASE ais.category_code WHEN 'todo' THEN 'issue_status_color_todo'
+--                                                                                         WHEN 'doing' THEN 'issue_status_color_doing'
+--                                                                                         WHEN 'done' THEN 'issue_status_color_done'
+--                                                                                         ELSE 'issue_status_color_todo' END
         LEFT JOIN (
             SELECT
                 awl.issue_id,

@@ -1,5 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
+import io.choerodon.agile.api.dto.StatusMapDTO;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/8/8.
  * Email: fuqianghuang01@gmail.com
@@ -39,6 +41,10 @@ public class StoryMapIssueDO {
     private String mapRank;
 
     private Long priorityId;
+
+    private Long statusId;
+
+    private StatusMapDTO statusMapDTO;
 
     public Long getSprintId() {
         return sprintId;
@@ -175,5 +181,21 @@ public class StoryMapIssueDO {
 
     public Long getPriorityId() {
         return priorityId;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public Long getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
+    }
+
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
     }
 }

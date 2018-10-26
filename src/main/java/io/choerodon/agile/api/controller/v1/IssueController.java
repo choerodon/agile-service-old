@@ -343,11 +343,13 @@ public class IssueController {
     @PostMapping(value = "/export")
     public void exportIssues(@ApiParam(value = "项目id", required = true)
                              @PathVariable(name = "project_id") Long projectId,
+                             @ApiParam(value = "组织id", required = true)
+                             @RequestParam Long organizationId,
                              @ApiParam(value = "查询参数", required = true)
                              @RequestBody(required = false) SearchDTO searchDTO,
                              HttpServletRequest request,
                              HttpServletResponse response) {
-        issueService.exportIssues(projectId, searchDTO, request, response);
+        issueService.exportIssues(projectId, searchDTO, request, response, organizationId);
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
