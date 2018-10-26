@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.BeanUtils;
@@ -152,6 +153,9 @@ public class IssueServiceImpl implements IssueService {
 
     @Autowired
     private IssueFeignClient issueFeignClient;
+
+    @Autowired
+    private StateMachineFeignClient stateMachineFeignClient;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -310,10 +314,21 @@ public class IssueServiceImpl implements IssueService {
         return priorityDTOResponseEntity.getBody();
     }
 
+    private StatusInfoDTO getStatusById(Long organizationId, Long statusId) {
+        ResponseEntity<StatusInfoDTO> statusInfoDTOResponseEntity = stateMachineFeignClient.queryStatusById(organizationId, statusId);
+        if (statusInfoDTOResponseEntity == null) {
+            throw new CommonException("error.status.get");
+        }
+        return statusInfoDTOResponseEntity.getBody();
+    }
+
     @Override
     public IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         issue.setPriorityDTO(getPriorityById(organizationId, issue.getPriorityId()));
+        StatusInfoDTO statusInfoDTO = getStatusById(organizationId, issue.getStatusId());
+        issue.setStatusCode(statusInfoDTO.getType());
+        issue.setStatusName(statusInfoDTO.getName());
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
@@ -358,15 +373,29 @@ public class IssueServiceImpl implements IssueService {
         return result;
     }
 
+    private void getAdvacedSearchStatusIds(SearchDTO searchDTO, List<Long> filterStatusIds, Map<Long, StatusMapDTO> statusMapDTOMap) {
+        if (searchDTO.getAdvancedSearchArgs() != null && searchDTO.getAdvancedSearchArgs().get("statusCode") != null) {
+            List<String> statusCodes = (ArrayList<String>)searchDTO.getAdvancedSearchArgs().get("statusCode");
+            for (Long key : statusMapDTOMap.keySet()) {
+                if (statusCodes.contains(statusMapDTOMap.get(key).getType())) {
+                    filterStatusIds.add(key);
+                }
+            }
+        }
+    }
+
     @Override
     public Page<IssueListDTO> listIssueWithoutSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
         //处理用户搜索
         handleSearchUser(searchDTO, projectId);
         //连表查询需要设置主表别名
         pageRequest.resetOrder(SEARCH, new HashMap<>());
+        List<Long> filterStatusIds = new ArrayList<>();
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        getAdvacedSearchStatusIds(searchDTO, filterStatusIds, statusMapDTOMap);
         Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
                 issueMapper.queryIssueListWithoutSub(projectId, searchDTO.getSearchArgs(),
-                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
+                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent(), filterStatusIds));
         return handlePageDoToDto(issueDOPage, organizationId);
     }
 
@@ -600,7 +629,7 @@ public class IssueServiceImpl implements IssueService {
         } else {
             issueRepository.batchRemoveVersion(projectId, issueIds);
         }
-        return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>(), new HashMap<>());
+        return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
     @Override
@@ -635,7 +664,7 @@ public class IssueServiceImpl implements IssueService {
     public List<IssueSearchDTO> batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds) {
         issueRule.judgeExist(projectId, epicId);
         issueRepository.batchIssueToEpic(projectId, epicId, issueIds);
-        return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>(), new HashMap<>());
+        return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
     @Override
@@ -643,7 +672,7 @@ public class IssueServiceImpl implements IssueService {
         List<Long> issueIds = storyMapMoveDTO.getEpicIssueIds();
         issueRule.judgeExist(projectId, epicId);
         issueRepository.batchIssueToEpic(projectId, epicId, issueIds);
-        return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>(), new HashMap<>());
+        return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
     private void dataLogRank(Long projectId, MoveIssueDTO moveIssueDTO, String rankStr, Long sprintId) {
@@ -690,7 +719,7 @@ public class IssueServiceImpl implements IssueService {
         List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds());
         List<Long> assigneeIds = issueSearchDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
-        return issueSearchAssembler.doListToDTO(issueSearchDOList, usersMap, new HashMap<>());
+        return issueSearchAssembler.doListToDTO(issueSearchDOList, usersMap, new HashMap<>(), new HashMap<>());
     }
 
     private void dealBoundBeforeRank(Long projectId, StoryMapMoveDTO storyMapMoveDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
@@ -819,7 +848,7 @@ public class IssueServiceImpl implements IssueService {
         List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, storyMapMoveDTO.getSprintIssueIds());
         List<Long> assigneeIds = issueSearchDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
-        return issueSearchAssembler.doListToDTO(issueSearchDOList, usersMap, new HashMap<>());
+        return issueSearchAssembler.doListToDTO(issueSearchDOList, usersMap, new HashMap<>(), new HashMap<>());
     }
 
     private void dataLogRankInStoryMap(Long projectId, StoryMapMoveDTO storyMapMoveDTO, String rankStr, Long sprintId) {
@@ -1237,7 +1266,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response) {
+    public void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response, Long organizationId) {
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
         projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
@@ -1248,8 +1277,11 @@ public class IssueServiceImpl implements IssueService {
         }
         project.setCode(projectInfoDO.getProjectCode());
         handleSearchUser(searchDTO, projectId);
+        List<Long> filterStatusIds = new ArrayList<>();
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        getAdvacedSearchStatusIds(searchDTO, filterStatusIds, statusMapDTOMap);
         List<IssueDO> issueDOList = issueMapper.queryIssueListWithoutSub(projectId, searchDTO.getSearchArgs(),
-                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent());
+                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent(), filterStatusIds);
         List<Long> issueIds = issueDOList.stream().map(IssueDO::getIssueId).collect(Collectors.toList());
         List<ExportIssuesDTO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId, issueIds, projectCode));
         if (!issueIds.isEmpty()) {
@@ -1454,7 +1486,8 @@ public class IssueServiceImpl implements IssueService {
         issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
         issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        issueListDTOPage.setContent(issueAssembler.issueDoToIssueListDto(issueDOPage.getContent(), priorityMap));
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        issueListDTOPage.setContent(issueAssembler.issueDoToIssueListDto(issueDOPage.getContent(), priorityMap, statusMapDTOMap));
         return issueListDTOPage;
     }
 
@@ -1585,6 +1618,14 @@ public class IssueServiceImpl implements IssueService {
         return sql.toString();
     }
 
+    private void getDoneIds(Map<Long, StatusMapDTO> statusMapDTOMap, List<Long> doneIds) {
+        for (Long key : statusMapDTOMap.keySet()) {
+            if ("done".equals(statusMapDTOMap.get(key).getType())) {
+                doneIds.add(key);
+            }
+        }
+    }
+
     @Override
     public List<StoryMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId) {
         List<StoryMapIssueDTO> storyMapIssueDTOList = null;
@@ -1595,15 +1636,18 @@ public class IssueServiceImpl implements IssueService {
         //保存用户选择的泳道
         handleSaveUserSetting(projectId, type, pageType);
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        List<Long> doneIds = new ArrayList<>();
+        getDoneIds(statusMapDTOMap ,doneIds);
         switch (type) {
             case STORYMAP_TYPE_SPRINT:
-                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId, pageType, assigneeId, onlyStory, filterSql), priorityMap);
+                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId, pageType, assigneeId, onlyStory, filterSql, doneIds), priorityMap, statusMapDTOMap);
                 break;
             case STORYMAP_TYPE_VERSION:
-                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdVersion(projectId, pageType, assigneeId, onlyStory, filterSql), priorityMap);
+                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdVersion(projectId, pageType, assigneeId, onlyStory, filterSql, doneIds), priorityMap, statusMapDTOMap);
                 break;
             case STORYMAP_TYPE_NONE:
-                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdNone(projectId, pageType, assigneeId, onlyStory, filterSql), priorityMap);
+                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdNone(projectId, pageType, assigneeId, onlyStory, filterSql, doneIds), priorityMap, statusMapDTOMap);
                 break;
             default:
                 break;

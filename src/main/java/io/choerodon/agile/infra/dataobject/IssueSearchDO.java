@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.api.dto.PriorityDTO;
+import io.choerodon.agile.api.dto.StatusMapDTO;
 
 import java.util.List;
 
@@ -35,6 +36,8 @@ public class IssueSearchDO {
 
     private PriorityDTO priorityDTO;
     private Long priorityId;
+
+    private StatusMapDTO statusMapDTO;
 
     public Long getIssueId() {
         return issueId;
@@ -242,5 +245,13 @@ public class IssueSearchDO {
 
     public Long getPriorityId() {
         return priorityId;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
+    }
+
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
     }
 }

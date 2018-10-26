@@ -34,4 +34,6 @@ public interface IssueStatusMapper extends BaseMapper<IssueStatusDO> {
     void updateAllStatusId();
 
     void updateAllColumnStatusId();
+
+    void updateDataLogStatusId();
 }

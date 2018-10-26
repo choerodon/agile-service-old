@@ -1,9 +1,6 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO;
-import io.choerodon.agile.api.dto.IssueBurnDownReportDTO;
-import io.choerodon.agile.api.dto.PriorityDTO;
-import io.choerodon.agile.api.dto.SprintBurnDownReportDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.ColumnDO;
 import io.choerodon.agile.infra.dataobject.IssueBurnDownReportDO;
@@ -54,7 +51,7 @@ public class ReportAssembler extends AbstractAssembler {
         return sprintBurnDownReportDTO;
     }
 
-    public List<IssueBurnDownReportDTO> issueBurnDownReportDoToDto(List<IssueBurnDownReportDO> issueBurnDownReportDOS, Map<Long, PriorityDTO> priorityMap) {
+    public List<IssueBurnDownReportDTO> issueBurnDownReportDoToDto(List<IssueBurnDownReportDO> issueBurnDownReportDOS, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap) {
         List<IssueBurnDownReportDTO> issueBurnDownReportDTOS = new ArrayList<>(issueBurnDownReportDOS.size());
         if(!issueBurnDownReportDOS.isEmpty()){
             LookupValueDO lookupValueDO = new LookupValueDO();
@@ -64,7 +61,8 @@ public class ReportAssembler extends AbstractAssembler {
                 IssueBurnDownReportDTO issueBurnDownReportDTO = new IssueBurnDownReportDTO();
                 BeanUtils.copyProperties(issueBurnDownReportDO,issueBurnDownReportDTO);
                 issueBurnDownReportDTO.setPriorityDTO(priorityMap.get(issueBurnDownReportDO.getPriorityId()));
-                issueBurnDownReportDTO.setStatusColor(ColorUtil.initializationStatusColor(issueBurnDownReportDTO.getStatusCode(), lookupValueMap));
+//                issueBurnDownReportDTO.setStatusColor(ColorUtil.initializationStatusColor(issueBurnDownReportDTO.getStatusCode(), lookupValueMap));
+                issueBurnDownReportDTO.setStatusMapDTO(statusMapDTOMap.get(issueBurnDownReportDO.getStatusId()));
                 issueBurnDownReportDTOS.add(issueBurnDownReportDTO);
             });
         }

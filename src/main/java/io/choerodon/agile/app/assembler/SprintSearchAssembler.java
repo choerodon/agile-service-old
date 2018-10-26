@@ -2,6 +2,7 @@ package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.SprintSearchDTO;
+import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.infra.dataobject.SprintSearchDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import org.springframework.beans.BeanUtils;
@@ -21,7 +22,7 @@ public class SprintSearchAssembler extends AbstractAssembler{
     @Autowired
     private IssueSearchAssembler issueSearchAssembler;
 
-    public SprintSearchDTO doToDTO(SprintSearchDO sprintSearchDO, Map<Long, UserMessageDO> usersMap, Map<Long, PriorityDTO> priorityMap) {
+    public SprintSearchDTO doToDTO(SprintSearchDO sprintSearchDO, Map<Long, UserMessageDO> usersMap, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap) {
         if (sprintSearchDO == null) {
             return null;
         }
@@ -29,17 +30,17 @@ public class SprintSearchAssembler extends AbstractAssembler{
         BeanUtils.copyProperties(sprintSearchDO, sprintSearchDTO);
         if (usersMap != null) {
             sprintSearchDTO.setAssigneeIssues(issueSearchAssembler.doListToAssigneeIssueDTO(sprintSearchDO.getAssigneeIssueDOList(), usersMap));
-            sprintSearchDTO.setIssueSearchDTOList(issueSearchAssembler.doListToDTO(sprintSearchDO.getIssueSearchDOList(), usersMap, priorityMap));
+            sprintSearchDTO.setIssueSearchDTOList(issueSearchAssembler.doListToDTO(sprintSearchDO.getIssueSearchDOList(), usersMap, priorityMap, statusMapDTOMap));
         }
         return sprintSearchDTO;
     }
 
-    public List<SprintSearchDTO> doListToDTO(List<SprintSearchDO> sprintSearchDOS, Map<Long, UserMessageDO> usersMap, Map<Long, PriorityDTO> priorityMap) {
+    public List<SprintSearchDTO> doListToDTO(List<SprintSearchDO> sprintSearchDOS, Map<Long, UserMessageDO> usersMap, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap) {
         if (sprintSearchDOS == null) {
             return new ArrayList<>();
         }
         List<SprintSearchDTO> sprintSearchList = new ArrayList<>(sprintSearchDOS.size());
-        sprintSearchDOS.forEach(sprintSearchDO -> sprintSearchList.add(doToDTO(sprintSearchDO, usersMap, priorityMap)));
+        sprintSearchDOS.forEach(sprintSearchDO -> sprintSearchList.add(doToDTO(sprintSearchDO, usersMap, priorityMap, statusMapDTOMap)));
         return sprintSearchList;
     }
 

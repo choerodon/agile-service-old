@@ -48,6 +48,8 @@ public class IssueListDTO implements Serializable {
 
     private PriorityDTO priorityDTO;
 
+    private StatusMapDTO statusMapDTO;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -198,6 +200,14 @@ public class IssueListDTO implements Serializable {
 
     public PriorityDTO getPriorityDTO() {
         return priorityDTO;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
+    }
+
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
     }
 
     @Override

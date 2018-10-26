@@ -46,6 +46,10 @@ public class StoryMapIssueDTO {
 
     private PriorityDTO priorityDTO;
 
+    private Long statusId;
+
+    private StatusMapDTO statusMapDTO;
+
     public Long getSprintId() {
         return sprintId;
     }
@@ -204,5 +208,21 @@ public class StoryMapIssueDTO {
 
     public PriorityDTO getPriorityDTO() {
         return priorityDTO;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public Long getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
+    }
+
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
     }
 }

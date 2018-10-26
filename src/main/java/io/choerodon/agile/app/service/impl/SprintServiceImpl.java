@@ -12,6 +12,7 @@ import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
@@ -80,6 +81,9 @@ public class SprintServiceImpl implements SprintService {
 
     @Autowired
     private IssueFeignClient issueFeignClient;
+
+    @Autowired
+    private StateMachineFeignClient stateMachineFeignClient;
 
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String SPRINT_DATA = "sprintData";
@@ -187,8 +191,9 @@ public class SprintServiceImpl implements SprintService {
         List<SprintSearchDTO> sprintSearchs = new ArrayList<>();
         BackLogIssueDTO backLogIssueDTO = new BackLogIssueDTO();
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         if (issueIds != null && !issueIds.isEmpty()) {
-            handleSprintIssueData(issueIds, sprintSearchs, backLogIssueDTO, projectId, priorityMap);
+            handleSprintIssueData(issueIds, sprintSearchs, backLogIssueDTO, projectId, priorityMap, statusMapDTOMap);
         } else {
             handleSprintNoIssue(sprintSearchs, projectId);
         }
@@ -199,9 +204,9 @@ public class SprintServiceImpl implements SprintService {
 
     private void handleSprintNoIssue(List<SprintSearchDTO> sprintSearchs, Long projectId) {
         SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
-        SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDO, null, null);
+        SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDO, null, null, null);
         List<SprintSearchDO> sprintSearchDTOS = sprintMapper.queryPlanSprintNoIssueIds(projectId);
-        List<SprintSearchDTO> planSprints = sprintSearchAssembler.doListToDTO(sprintSearchDTOS, null, null);
+        List<SprintSearchDTO> planSprints = sprintSearchAssembler.doListToDTO(sprintSearchDTOS, null, null, null);
         if (activeSprint != null) {
             sprintSearchs.add(activeSprint);
         }
@@ -210,12 +215,12 @@ public class SprintServiceImpl implements SprintService {
         }
     }
 
-    private void handleSprintIssueData(List<Long> issueIds, List<SprintSearchDTO> sprintSearchs, BackLogIssueDTO backLogIssueDTO, Long projectId, Map<Long, PriorityDTO> priorityMap) {
+    private void handleSprintIssueData(List<Long> issueIds, List<SprintSearchDTO> sprintSearchs, BackLogIssueDTO backLogIssueDTO, Long projectId, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap) {
         List<Long> assigneeIds = sprintMapper.queryAssigneeIdsByIssueIds(issueIds);
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprint(projectId, issueIds);
         if (sprintSearchDO != null) {
-            SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDO, usersMap, priorityMap);
+            SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDO, usersMap, priorityMap, statusMapDTOMap);
             activeSprint.setIssueCount(activeSprint.getIssueSearchDTOList().size());
             activeSprint.setTodoStoryPoint(sprintMapper.queryStoryPoint(CATEGORY_TODO_CODE, issueIds, projectId, activeSprint.getSprintId()));
             activeSprint.setDoingStoryPoint(sprintMapper.queryStoryPoint(CATEGORY_DOING_CODE, issueIds, projectId, activeSprint.getSprintId()));
@@ -223,14 +228,14 @@ public class SprintServiceImpl implements SprintService {
             sprintSearchs.add(activeSprint);
         }
         List<SprintSearchDO> sprintSearchDTOS = sprintMapper.queryPlanSprint(projectId, issueIds);
-        List<SprintSearchDTO> planSprints = sprintSearchAssembler.doListToDTO(sprintSearchDTOS, usersMap, priorityMap);
+        List<SprintSearchDTO> planSprints = sprintSearchAssembler.doListToDTO(sprintSearchDTOS, usersMap, priorityMap, statusMapDTOMap);
         if (!planSprints.isEmpty()) {
             planSprints.parallelStream().forEachOrdered(planSprint -> planSprint.setIssueCount(planSprint.getIssueSearchDTOList().size()));
             sprintSearchs.addAll(planSprints);
         }
 
         List<IssueSearchDO> backLogIssue = sprintMapper.queryBacklogIssues(projectId, issueIds);
-        backLogIssueDTO.setBackLogIssue(issueSearchAssembler.doListToDTO(backLogIssue, usersMap, priorityMap));
+        backLogIssueDTO.setBackLogIssue(issueSearchAssembler.doListToDTO(backLogIssue, usersMap, priorityMap, statusMapDTOMap));
         backLogIssueDTO.setBacklogIssueCount(backLogIssue.size());
     }
 
@@ -382,6 +387,7 @@ public class SprintServiceImpl implements SprintService {
         if (reportIssueIds.isEmpty()) {
             return reportPage;
         }
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         //冲刺报告查询的issue
         List<IssueDO> reportIssues = reportMapper.queryIssueByIssueIds(projectId, reportIssueIds);
         //冲刺中新添加的issue
@@ -392,11 +398,25 @@ public class SprintServiceImpl implements SprintService {
         Map<Long, SprintReportIssueStatusDO> reportIssueStoryPointsMap = reportIssueStoryPoints.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
         //冲刺完成前issue的最后变更状态
         List<SprintReportIssueStatusDO> reportIssueBeforeStatus = reportMapper.queryBeforeIssueStatus(projectId, reportIssueIds, startDate, actualEndDate);
-        Map<Long, SprintReportIssueStatusDO> reportIssueBeforeStatusMap = reportIssueBeforeStatus.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
+//        Map<Long, SprintReportIssueStatusDO> reportIssueBeforeStatusMap = reportIssueBeforeStatus.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
+        Map<Long, SprintReportIssueStatusDO> reportIssueBeforeStatusMap = new HashMap<>();
+        for (SprintReportIssueStatusDO sprintReportIssueStatusDO : reportIssueBeforeStatus) {
+            StatusMapDTO statusMapDTO = statusMapDTOMap.get(sprintReportIssueStatusDO.getStatusId());
+            sprintReportIssueStatusDO.setCategoryCode(statusMapDTO.getType());
+            sprintReportIssueStatusDO.setStatusName(statusMapDTO.getName());
+            reportIssueBeforeStatusMap.put(sprintReportIssueStatusDO.getIssueId(), sprintReportIssueStatusDO);
+        }
         //冲刺完成后issue的最初变更状态
         reportIssueIds.removeAll(reportIssueBeforeStatusMap.keySet());
         List<SprintReportIssueStatusDO> reportIssueAfterStatus = reportIssueIds.isEmpty() ? new ArrayList<>() : reportMapper.queryAfterIssueStatus(projectId, reportIssueIds, actualEndDate);
-        Map<Long, SprintReportIssueStatusDO> reportIssueAfterStatusMap = reportIssueAfterStatus.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
+//        Map<Long, SprintReportIssueStatusDO> reportIssueAfterStatusMap = reportIssueAfterStatus.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
+        Map<Long, SprintReportIssueStatusDO> reportIssueAfterStatusMap = new HashMap<>();
+        for (SprintReportIssueStatusDO sprintReportIssueStatusDO : reportIssueAfterStatus) {
+            StatusMapDTO statusMapDTO = statusMapDTOMap.get(sprintReportIssueStatusDO.getStatusId());
+            sprintReportIssueStatusDO.setCategoryCode(statusMapDTO.getType());
+            sprintReportIssueStatusDO.setStatusName(statusMapDTO.getName());
+            reportIssueAfterStatusMap.put(sprintReportIssueStatusDO.getIssueId(), sprintReportIssueStatusDO);
+        }
         reportIssues = reportIssues.stream().map(reportIssue -> {
             updateReportIssue(reportIssue, reportIssueStoryPointsMap, reportIssueBeforeStatusMap, reportIssueAfterStatusMap, issueIdAddList);
             return reportIssue;
@@ -407,7 +427,7 @@ public class SprintServiceImpl implements SprintService {
         reportPage.setNumberOfElements(reportIssuePage.getNumberOfElements());
         reportPage.setNumber(reportIssuePage.getNumber());
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        reportPage.setContent(issueAssembler.issueDoToIssueListDto(reportIssues, priorityMap));
+        reportPage.setContent(issueAssembler.issueDoToIssueListDto(reportIssues, priorityMap, statusMapDTOMap));
         return reportPage;
     }
 

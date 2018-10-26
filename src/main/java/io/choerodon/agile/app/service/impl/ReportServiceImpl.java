@@ -11,6 +11,7 @@ import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
@@ -65,6 +66,8 @@ public class ReportServiceImpl implements ReportService {
     private UserRepository userRepository;
     @Autowired
     private IssueFeignClient issueFeignClient;
+    @Autowired
+    private StateMachineFeignClient stateMachineFeignClient;
 
     private static final String STORY_POINTS = "storyPoints";
     private static final String REMAINING_ESTIMATED_TIME = "remainingEstimatedTime";
@@ -302,7 +305,8 @@ public class ReportServiceImpl implements ReportService {
         reportPage.setNumberOfElements(reportIssuePage.getNumberOfElements());
         reportPage.setNumber(reportIssuePage.getNumber());
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        reportPage.setContent(issueAssembler.issueDoToIssueListDto(reportIssuePage.getContent(), priorityMap));
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        reportPage.setContent(issueAssembler.issueDoToIssueListDto(reportIssuePage.getContent(), priorityMap, statusMapDTOMap));
         return reportPage;
     }
 
@@ -1181,8 +1185,10 @@ public class ReportServiceImpl implements ReportService {
     public List<GroupDataChartListDO> queryEpicChartList(Long projectId, Long epicId, Long organizationId) {
         List<GroupDataChartListDO> groupDataChartListDOList = reportMapper.selectEpicIssueList(projectId, epicId);
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         for (GroupDataChartListDO groupDataChartListDO : groupDataChartListDOList) {
             groupDataChartListDO.setPriorityDTO(priorityMap.get(groupDataChartListDO.getPriorityId()));
+            groupDataChartListDO.setStatusMapDTO(statusMapDTOMap.get(groupDataChartListDO.getStatusId()));
         }
         return groupDataChartListDOList;
     }
@@ -1267,25 +1273,26 @@ public class ReportServiceImpl implements ReportService {
         handleBurnDownReportTypeData(burnDownReportDTO, id, projectId, typeCondition);
         if (issueDOList != null && !issueDOList.isEmpty()) {
             Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+            Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
             List<IssueBurnDownReportDO> incompleteIssues = issueDOList.stream().filter(issueDO -> !issueDO.getCompleted()).collect(Collectors.toList());
-            burnDownReportDTO.setIncompleteIssues(reportAssembler.issueBurnDownReportDoToDto(incompleteIssues, priorityMap));
+            burnDownReportDTO.setIncompleteIssues(reportAssembler.issueBurnDownReportDoToDto(incompleteIssues, priorityMap, statusMapDTOMap));
             JSONObject jsonObject = handleSprintListAndStartDate(id, projectId, type);
             List<SprintDO> sprintDOList = (List<SprintDO>) jsonObject.get(SPRINT_DO_LIST);
             if (sprintDOList != null && !sprintDOList.isEmpty()) {
                 List<IssueBurnDownReportDO> completeIssues = issueDOList.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null).collect(Collectors.toList());
-                handleBurnDownReportSprintData(sprintDOList, completeIssues, burnDownReportDTO, priorityMap);
+                handleBurnDownReportSprintData(sprintDOList, completeIssues, burnDownReportDTO, priorityMap, statusMapDTOMap);
             }
         }
         return burnDownReportDTO;
     }
 
-    private void handleBurnDownReportSprintData(List<SprintDO> sprintDOList, List<IssueBurnDownReportDO> completeIssues, BurnDownReportDTO burnDownReportDTO, Map<Long, PriorityDTO> priorityMap) {
+    private void handleBurnDownReportSprintData(List<SprintDO> sprintDOList, List<IssueBurnDownReportDO> completeIssues, BurnDownReportDTO burnDownReportDTO, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap) {
         List<SprintBurnDownReportDTO> sprintBurnDownReportDTOS = new ArrayList<>();
         if (sprintDOList.size() == 1) {
             SprintBurnDownReportDTO sprintBurnDownReportDTO = reportAssembler.sprintBurnDownReportDoToDto(sprintDOList.get(0));
             List<IssueBurnDownReportDO> singleCompleteIssues = completeIssues.stream().filter(issueDO ->
                     issueDO.getDoneDate().after(sprintBurnDownReportDTO.getStartDate())).collect(Collectors.toList());
-            sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(singleCompleteIssues, priorityMap));
+            sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(singleCompleteIssues, priorityMap, statusMapDTOMap));
             sprintBurnDownReportDTOS.add(sprintBurnDownReportDTO);
         } else {
             for (int i = 0; i < sprintDOList.size() - 1; i++) {
@@ -1293,13 +1300,13 @@ public class ReportServiceImpl implements ReportService {
                 Date startDateOne = sprintBurnDownReportDTO.getStartDate();
                 Date startDateTwo = sprintDOList.get(i + 1).getStartDate();
                 List<IssueBurnDownReportDO> duringSprintIncompleteIssues = handleDuringSprintIncompleteIssues(completeIssues, startDateOne, startDateTwo);
-                sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(duringSprintIncompleteIssues, priorityMap));
+                sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(duringSprintIncompleteIssues, priorityMap, statusMapDTOMap));
                 sprintBurnDownReportDTOS.add(sprintBurnDownReportDTO);
                 if (i == sprintDOList.size() - 2) {
                     SprintBurnDownReportDTO lastSprintBurnDownReportDTO = reportAssembler.sprintBurnDownReportDoToDto(sprintDOList.get(i + 1));
                     List<IssueBurnDownReportDO> lastCompleteIssues = completeIssues.stream().filter(issueDO ->
                             issueDO.getDoneDate().after(lastSprintBurnDownReportDTO.getStartDate())).collect(Collectors.toList());
-                    lastSprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(lastCompleteIssues, priorityMap));
+                    lastSprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(lastCompleteIssues, priorityMap, statusMapDTOMap));
                     lastSprintBurnDownReportDTO.setEndDate(lastSprintBurnDownReportDTO.getEndDate() == null ? new Date() : lastSprintBurnDownReportDTO.getEndDate());
                     sprintBurnDownReportDTOS.add(lastSprintBurnDownReportDTO);
                 }
@@ -1440,8 +1447,10 @@ public class ReportServiceImpl implements ReportService {
     public List<GroupDataChartListDO> queryVersionChartList(Long projectId, Long versionId, Long organizationId) {
         List<GroupDataChartListDO> groupDataChartListDOList = reportMapper.selectVersionIssueList(projectId, versionId);
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         for (GroupDataChartListDO groupDataChartListDO : groupDataChartListDOList) {
             groupDataChartListDO.setPriorityDTO(priorityMap.get(groupDataChartListDO.getPriorityId()));
+            groupDataChartListDO.setStatusMapDTO(statusMapDTOMap.get(groupDataChartListDO.getStatusId()));
         }
         return groupDataChartListDOList;
     }

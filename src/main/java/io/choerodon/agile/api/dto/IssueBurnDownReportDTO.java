@@ -42,6 +42,8 @@ public class IssueBurnDownReportDTO {
 
     private PriorityDTO priorityDTO;
 
+    private StatusMapDTO statusMapDTO;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -160,6 +162,14 @@ public class IssueBurnDownReportDTO {
 
     public PriorityDTO getPriorityDTO() {
         return priorityDTO;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
+    }
+
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
     }
 
     @Override

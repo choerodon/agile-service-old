@@ -2,6 +2,7 @@ package io.choerodon.agile.infra.feign;
 
 import io.choerodon.agile.api.dto.Status;
 import io.choerodon.agile.api.dto.StatusDTO;
+import io.choerodon.agile.api.dto.StatusInfoDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.infra.dataobject.StatusForMoveDataDO;
 import io.swagger.annotations.ApiParam;
@@ -33,4 +34,7 @@ public interface StateMachineFeignClient {
     @GetMapping(value = "/v1/organizations/{organization_id}/status/list_map")
     ResponseEntity<Map<Long, StatusMapDTO>> queryAllStatusMap(@PathVariable("organization_id") Long organizationId);
 
+    @GetMapping(value = "/v1/organizations/{organization_id}/status/{status_id}")
+    ResponseEntity<StatusInfoDTO> queryStatusById(@PathVariable("organization_id") Long organizationId,
+                                                  @PathVariable("status_id") Long statusId);
 }

@@ -27,7 +27,7 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
 
     ProductVersionStatisticsDO queryVersionStatisticsByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
-    List<IssueDO> queryIssueByVersionIdAndStatusCode(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("statusCode") String statusCode);
+    List<IssueDO> queryIssueByVersionIdAndStatusCode(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("statusCode") String statusCode, @Param("filterStatusIds") List<Long> filterStatusIds);
 
     /**
      * 根据版本名称和项目id返回版本id

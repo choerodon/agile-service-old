@@ -103,7 +103,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                            @Param("searchArgs") Map<String, Object> searchArgs,
                                            @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
                                            @Param("otherArgs") Map<String, Object> otherArgs,
-                                           @Param("content") String content);
+                                           @Param("content") String content,
+                                           @Param("filterStatusIds") List<Long> filterStatusIds);
 
     List<IssueLabelDO> selectLabelNameByIssueId(@Param("issueId") Long issueId);
 
@@ -285,19 +286,22 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                                       @Param("pageType") String pageType,
                                                       @Param("assigneeId") Long assigneeId,
                                                       @Param("onlyStory") Boolean onlyStory,
-                                                      @Param("filterSql") String filterSql);
+                                                      @Param("filterSql") String filterSql,
+                                                      @Param("doneIds") List<Long> doneIds);
 
     List<StoryMapIssueDO> listIssuesByProjectIdVersion(@Param("projectId") Long projectId,
                                                        @Param("pageType") String pageType,
                                                        @Param("assigneeId") Long assigneeId,
                                                        @Param("onlyStory") Boolean onlyStory,
-                                                       @Param("filterSql") String filterSql);
+                                                       @Param("filterSql") String filterSql,
+                                                       @Param("doneIds") List<Long> doneIds);
 
     List<StoryMapIssueDO> listIssuesByProjectIdNone(@Param("projectId") Long projectId,
                                                     @Param("pageType") String pageType,
                                                     @Param("assigneeId") Long assigneeId,
                                                     @Param("onlyStory") Boolean onlyStory,
-                                                    @Param("filterSql") String filterSql);
+                                                    @Param("filterSql") String filterSql,
+                                                    @Param("doneIds") List<Long> doneIds);
 
     List<StoryMapEpicDO> queryStoryMapEpicList(@Param("projectId") Long projectId,
                                                @Param("showDoneEpic") Boolean showDoneEpic,
