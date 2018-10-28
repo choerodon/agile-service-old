@@ -119,6 +119,7 @@
         ai.summary AS ai_summary,
         ai.assignee_id AS ai_assignee_id,
         ai.priority_id AS ai_priority_id,
+        ai.issue_type_id AS ai_issue_type_id,
         ai.parent_issue_id AS ai_parent_issue_id,
         ai.type_code AS ai_type_code,
         ai.rank AS ai_rank,

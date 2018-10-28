@@ -30,6 +30,8 @@ public class IssueCreateDTO {
 
     private Long priorityId;
 
+    private Long issueTypeId;
+
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
@@ -168,6 +170,14 @@ public class IssueCreateDTO {
 
     public Long getPriorityId() {
         return priorityId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
     }
 
     @Override

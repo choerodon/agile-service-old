@@ -266,6 +266,14 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         issueMapper.batchUpdatePriority(issueDOList);
 
         // 迁移问题类型
-
+        Map<Long, Map<String, Long>> issueTypes = issueFeignClient.initIssueTypeData(1L, organizationIds).getBody();
+        List<IssueDO> issueDOForTypeList = issueMapper.selectAllType();
+        for (IssueDO issueDO : issueDOList) {
+            if (proWithOrg.get(issueDO.getProjectId()) != null) {
+                Map<String, Long> iTypes = issueTypes.get(proWithOrg.get(issueDO.getProjectId()));
+                issueDO.setIssueTypeId(iTypes.get(issueDO.getTypeCode()));
+            }
+        }
+        issueMapper.batchUpdateIssueType(issueDOForTypeList);
     }
 }

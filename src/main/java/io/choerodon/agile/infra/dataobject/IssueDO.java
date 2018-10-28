@@ -138,6 +138,8 @@ public class IssueDO extends AuditDomain {
 
     private Long priorityId;
 
+    private Long issueTypeId;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -384,6 +386,14 @@ public class IssueDO extends AuditDomain {
 
     public Long getPriorityId() {
         return priorityId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
     }
 
     @Override

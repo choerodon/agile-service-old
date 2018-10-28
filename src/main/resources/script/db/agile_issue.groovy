@@ -128,4 +128,10 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue.groovy') {
             column(name: 'priority_id', type: 'BIGINT UNSIGNED', remarks: 'priority id')
         }
     }
+
+    changeSet(id: '2018-10-27-add-column-issue-type-id', author: 'fuqianghuang01@gmail.com') {
+        addColumn(tableName: 'agile_issue') {
+            column(name: 'issue_type_id', type: 'BIGINT UNSIGNED', remarks: 'issue type id')
+        }
+    }
 }

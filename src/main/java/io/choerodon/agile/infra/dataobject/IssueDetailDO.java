@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.dataobject;
 
+import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
@@ -44,6 +45,8 @@ public class IssueDetailDO {
 
     private Long priorityId;
 
+    private Long issueTypeId;
+
     private List<VersionIssueRelDO> versionIssueRelDOList;
 
     private List<LabelIssueRelDO> labelIssueRelDOList;
@@ -85,6 +88,8 @@ public class IssueDetailDO {
     private String parentIssueNum;
 
     private PriorityDTO priorityDTO;
+
+    private IssueTypeDTO issueTypeDTO;
 
     public Long getIssueId() {
         return issueId;
@@ -380,6 +385,22 @@ public class IssueDetailDO {
 
     public PriorityDTO getPriorityDTO() {
         return priorityDTO;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.dataobject;
 
+import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
 
@@ -31,7 +32,11 @@ public class GroupDataChartListDO {
 
     private Long priorityId;
 
+    private Long issueTypeId;
+
     private PriorityDTO priorityDTO;
+
+    private IssueTypeDTO issueTypeDTO;
 
     private StatusMapDTO statusMapDTO;
 
@@ -147,5 +152,21 @@ public class GroupDataChartListDO {
 
     public Long getStatusId() {
         return statusId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
     }
 }

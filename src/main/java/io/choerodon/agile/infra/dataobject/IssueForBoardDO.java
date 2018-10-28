@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.dataobject;
 
+import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
 
 /**
@@ -35,6 +36,10 @@ public class IssueForBoardDO {
     private Long priorityId;
 
     private PriorityDTO priorityDTO;
+
+    private Long issueTypeId;
+
+    private IssueTypeDTO issueTypeDTO;
 
     public String getRank() {
         return rank;
@@ -146,5 +151,21 @@ public class IssueForBoardDO {
 
     public PriorityDTO getPriorityDTO() {
         return priorityDTO;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
     }
 }

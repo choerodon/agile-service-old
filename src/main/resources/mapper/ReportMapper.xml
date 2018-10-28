@@ -779,7 +779,9 @@
     <select id="queryIssueByIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
         SELECT
         ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
-        ai.type_code, ai.status_id,
+--         ai.type_code,
+        ai.issue_type_id,
+        ai.status_id,
 --         ais.name AS status_name,
 --         ais.category_code AS status_code,
 --         ai.summary, ai.priority_code,
@@ -1004,7 +1006,9 @@
     <select id="queryReportIssues" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
         SELECT
         ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
-        ai.type_code, alv1.name AS type_name,
+--         ai.type_code,
+--         alv1.name AS type_name,
+        ai.issue_type_id,
         ai.status_id,
 --         ais.name AS status_name,
 --         ais.category_code AS status_code,
@@ -1016,7 +1020,7 @@
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
-        LEFT JOIN agile_lookup_value alv1 ON ai.type_code = alv1.value_code
+--         LEFT JOIN agile_lookup_value alv1 ON ai.type_code = alv1.value_code
         LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
         , agile_version_issue_rel avir, agile_issue_status ais
         WHERE avir.project_id = #{projectId} AND avir.version_id = #{versionId}
@@ -1792,7 +1796,8 @@
                 ai.issue_num
             ) AS issue_num,
             ai.summary,
-            ai.type_code,
+--             ai.type_code,
+            ai.issue_type_id,
             ai.priority_id,
 --             ais.`name` AS status_name,
 --             alv.name AS status_color,
@@ -1852,7 +1857,8 @@
             ai.issue_num
             ) AS issue_num,
             ai.summary,
-            ai.type_code,
+--             ai.type_code,
+            ai.issue_type_id,
             ai.priority_code,
             ai.status_id,
 --             ais.`name` AS status_name,

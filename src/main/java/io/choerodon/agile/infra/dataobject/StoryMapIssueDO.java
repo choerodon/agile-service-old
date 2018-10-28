@@ -44,6 +44,8 @@ public class StoryMapIssueDO {
 
     private Long statusId;
 
+    private Long issueTypeId;
+
     private StatusMapDTO statusMapDTO;
 
     public Long getSprintId() {
@@ -197,5 +199,13 @@ public class StoryMapIssueDO {
 
     public StatusMapDTO getStatusMapDTO() {
         return statusMapDTO;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
     }
 }
