@@ -7,6 +7,7 @@
         <collection property="issueStatus" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.IssueStatus">
             <id property="issueNum" column="issue_num"/>
             <id property="categoryCode" column="category_code"/>
+            <id property="statusId" column="status_id"/>
         </collection>
     </resultMap>
 
@@ -24,14 +25,15 @@
     </select>
 
     <select id="queryStatusCategoryDistribute" resultType="io.choerodon.agile.infra.dataobject.StatusCategoryDO">
-        SELECT ais.category_code, count(ai.issue_id) as issue_num
+        SELECT ais.status_id, count(ai.issue_id) as issue_num
         from agile_issue_sprint_rel aisr, agile_issue ai, agile_issue_status ais
         where aisr.project_id = #{projectId}
             and aisr.sprint_id = #{sprintId}
             and aisr.issue_id = ai.issue_id
             and ai.type_code in ('story','task','bug','sub_task')
-            and ai.status_id = ais.id
-            GROUP BY ais.category_code
+            and ai.status_id = ais.status_id
+            and ais.project_id = #{projectId}
+            GROUP BY ais.status_id
     </select>
 
     <select id="queryAssigneeInfoBySprintId" resultType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
@@ -74,14 +76,16 @@
 
     <select id="queryIssueTypeDistribute" resultMap="IssueTypeDistribute">
         SELECT count(1) AS issue_num,
-            ai.type_code, ais.category_code
+            ai.type_code,
+            ais.status_id
         FROM agile_issue ai, agile_issue_status ais,agile_issue_sprint_rel aisr
         WHERE aisr.project_id = #{projectId}
         AND aisr.sprint_id =  #{sprintId}
         AND ai.issue_id = aisr.issue_id
-        AND ai.status_id = ais.id
+        AND ai.status_id = ais.status_id
+        and ais.project_id = #{projectId}
         AND ai.type_code IN ('story','task','bug','sub_task')
-        GROUP BY ai.type_code, ais.category_code
+        GROUP BY ai.type_code, ais.status_id
     </select>
 
 </mapper>

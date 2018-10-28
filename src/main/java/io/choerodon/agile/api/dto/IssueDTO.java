@@ -96,6 +96,8 @@ public class IssueDTO {
 
     private PriorityDTO priorityDTO;
 
+    private IssueTypeDTO issueTypeDTO;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -422,6 +424,14 @@ public class IssueDTO {
 
     public Long getPriorityId() {
         return priorityId;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
     }
 
     @Override

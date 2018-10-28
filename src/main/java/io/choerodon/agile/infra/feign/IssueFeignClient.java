@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.feign;
 
+import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.Status;
 import io.swagger.annotations.ApiParam;
@@ -34,5 +35,15 @@ public interface IssueFeignClient {
     ResponseEntity<Map<Long, PriorityDTO>> queryByOrganizationId(@ApiParam(value = "组织id", required = true)
                                                                  @PathVariable("organization_id") Long organizationId);
 
+    @GetMapping(value = "/v1/organizations/{organization_id}/issue_type/init_data")
+    ResponseEntity<Map<Long, Map<String, Long>>> initIssueTypeData(@PathVariable("organization_id") Long organizationId,
+                                                                   @RequestBody List<Long> orgIds);
+
+    @GetMapping(value = "/v1/organizations/{organization_id}/issue_type/type_map")
+    ResponseEntity<Map<Long, IssueTypeDTO>> listIssueTypeMap(@PathVariable("organization_id") Long organizationId);
+
+    @GetMapping(value = "/v1/organizations/{organization_id}/issue_type/{id}")
+    ResponseEntity<IssueTypeDTO> queryIssueTypeById(@PathVariable("organization_id") Long organizationId,
+                                                    @PathVariable("id") Long issueTypeId);
 
 }

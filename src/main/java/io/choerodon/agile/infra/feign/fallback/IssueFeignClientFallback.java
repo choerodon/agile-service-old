@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.feign.fallback;
 
+import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.Status;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
@@ -32,5 +33,20 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     @Override
     public ResponseEntity<Map<Long, PriorityDTO>> queryByOrganizationId(Long organizationId) {
         throw new CommonException("error.priorityList.get");
+    }
+
+    @Override
+    public ResponseEntity<Map<Long, Map<String, Long>>> initIssueTypeData(Long organizationId, List<Long> orgIds) {
+        throw new CommonException("error.issueTypeMap.get");
+    }
+
+    @Override
+    public ResponseEntity<Map<Long, IssueTypeDTO>> listIssueTypeMap(Long organizationId) {
+        throw new CommonException("error.issueTypeMap.get");
+    }
+
+    @Override
+    public ResponseEntity<IssueTypeDTO> queryIssueTypeById(Long organizationId, Long issueTypeId) {
+        throw new CommonException("error.issueType.get");
     }
 }

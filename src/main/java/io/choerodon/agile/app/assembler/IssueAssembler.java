@@ -80,7 +80,7 @@ public class IssueAssembler extends AbstractAssembler {
      * @param issueDOList issueDetailDO
      * @return IssueListDTO
      */
-    public List<IssueListDTO> issueDoToIssueListDto(List<IssueDO> issueDOList, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap) {
+    public List<IssueListDTO> issueDoToIssueListDto(List<IssueDO> issueDOList, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
         LookupValueDO lookupValueDO = new LookupValueDO();
         lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
         Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
@@ -96,6 +96,7 @@ public class IssueAssembler extends AbstractAssembler {
             issueListDTO.setStatusColor(ColorUtil.initializationStatusColor(issueListDTO.getStatusCode(), lookupValueMap));
             issueListDTO.setImageUrl(imageUrl);
             issueListDTO.setPriorityDTO(priorityMap.get(issueDO.getPriorityId()));
+            issueListDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueDO.getIssueId()));
             issueListDTO.setStatusMapDTO(statusMapDTOMap.get(issueDO.getStatusId()));
             issueListDTOList.add(issueListDTO);
         });

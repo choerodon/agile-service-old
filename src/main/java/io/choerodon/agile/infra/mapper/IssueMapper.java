@@ -401,5 +401,9 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<IssueDO> selectAllPriority();
 
+    List<IssueDO> selectAllType();
+
     void batchUpdatePriority(@Param("issueDOList") List<IssueDO> issueDOList);
+
+    void batchUpdateIssueType(@Param("issueDOForTypeList") List<IssueDO> issueDOForTypeList);
 }

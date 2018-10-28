@@ -165,17 +165,19 @@
         SELECT
         ai2.issue_id,
         IF(ai2.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai2.issue_num)) AS issue_num,
-        ai2.type_code, ai2.summary,
+--         ai2.type_code,
+        ai2.summary,
         ai2.rank,
         ai2.reporter_id, ai2.description,
         ai2.assignee_id, ai2.project_id,
         ai2.epic_id, asp1.sprint_id as is_sprint_id,
         ai2.story_points, ai2.status_id,
+        ai2.issue_type_id,
         ai2.priority_id,
 --         ais.category_code,
 --         ais.name AS status_name,
         ai2.object_version_number as is_object_version_number, ai2.priority_code,
-        alv.name AS priority_name,
+--         alv.name AS priority_name,
         ai1.epic_name AS issue_epic_name,
         alv2.name AS color,
         apv1.version_id AS version_id,
@@ -189,7 +191,7 @@
         </foreach>)ai2
 --         LEFT JOIN agile_issue_status ais ON ai2.status_id = ais.id
         LEFT JOIN agile_project_info api ON ai2.project_id = api.project_id
-        LEFT JOIN agile_lookup_value alv ON ai2.priority_code = alv.value_code
+--         LEFT JOIN agile_lookup_value alv ON ai2.priority_code = alv.value_code
         LEFT JOIN agile_issue ai1 ON ai2.epic_id = ai1.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
         left join agile_issue_sprint_rel aisr2 on aisr2.issue_id = ai2.issue_id
