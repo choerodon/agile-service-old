@@ -231,6 +231,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     public List<IssueListDTO> queryIssueByVersionIdAndStatusCode(Long projectId, Long versionId, String statusCode, Long organizationId) {
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         List<Long> filterStatusIds = new ArrayList<>();
         if (statusCode != null) {
             for (Long key : statusMapDTOMap.keySet()) {
@@ -239,7 +240,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
                 }
             }
         }
-        return issueAssembler.issueDoToIssueListDto(productVersionMapper.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, filterStatusIds), priorityMap, statusMapDTOMap);
+        return issueAssembler.issueDoToIssueListDto(productVersionMapper.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, filterStatusIds), priorityMap, statusMapDTOMap, issueTypeDTOMap);
     }
 
     @Override

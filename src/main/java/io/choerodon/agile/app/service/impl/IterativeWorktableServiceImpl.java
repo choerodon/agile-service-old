@@ -3,7 +3,9 @@ package io.choerodon.agile.app.service.impl;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.SprintWorkCalendarRefMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,10 +16,6 @@ import io.choerodon.agile.app.assembler.IterativeWorktableAssembler;
 import io.choerodon.agile.app.service.IterativeWorktableService;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.DateUtil;
-import io.choerodon.agile.infra.dataobject.AssigneeIssueDO;
-import io.choerodon.agile.infra.dataobject.PriorityDistributeDO;
-import io.choerodon.agile.infra.dataobject.SprintDO;
-import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.mapper.IterativeWorktableMapper;
 import io.choerodon.agile.infra.mapper.SprintMapper;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -54,6 +52,9 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
 
     @Autowired
     private IssueFeignClient issueFeignClient;
+
+    @Autowired
+    private StateMachineFeignClient stateMachineFeignClient;
 
     @Override
     public List<PriorityDistributeDTO> queryPriorityDistribute(Long projectId, Long sprintId, Long organizationId) {
@@ -96,10 +97,15 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
     }
 
     @Override
-    public List<StatusCategoryDTO> queryStatusCategoryDistribute(Long projectId, Long sprintId) {
+    public List<StatusCategoryDTO> queryStatusCategoryDistribute(Long projectId, Long sprintId, Long organizationId) {
         SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
         IterativeWorktableValidator.checkSprintExist(sprintDO);
-        return ConvertHelper.convertList(iterativeWorktableMapper.queryStatusCategoryDistribute(projectId, sprintId), StatusCategoryDTO.class);
+        List<StatusCategoryDO> statusCategoryDOList = iterativeWorktableMapper.queryStatusCategoryDistribute(projectId, sprintId);
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        for (StatusCategoryDO statusCategoryDO : statusCategoryDOList) {
+            statusCategoryDO.setCategoryCode(statusMapDTOMap.get(statusCategoryDO.getStatusId()).getType());
+        }
+        return ConvertHelper.convertList(statusCategoryDOList, StatusCategoryDTO.class);
     }
 
     @Override
@@ -144,7 +150,15 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
     }
 
     @Override
-    public List<IssueTypeDistributeDTO> queryIssueTypeDistribute(Long projectId, Long sprintId) {
-        return ConvertHelper.convertList(iterativeWorktableMapper.queryIssueTypeDistribute(projectId, sprintId), IssueTypeDistributeDTO.class);
+    public List<IssueTypeDistributeDTO> queryIssueTypeDistribute(Long projectId, Long sprintId, Long organizationId) {
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        List<IssueTypeDistributeDO> issueTypeDistributeDOList = iterativeWorktableMapper.queryIssueTypeDistribute(projectId, sprintId);
+        for (IssueTypeDistributeDO issueTypeDistributeDO : issueTypeDistributeDOList) {
+            List<IssueStatus> issueStatuses = issueTypeDistributeDO.getIssueStatus();
+            for (IssueStatus issueStatus : issueStatuses) {
+                issueStatus.setCategoryCode(statusMapDTOMap.get(issueStatus.getStatusId()).getType());
+            }
+        }
+        return ConvertHelper.convertList(issueTypeDistributeDOList, IssueTypeDistributeDTO.class);
     }
 }

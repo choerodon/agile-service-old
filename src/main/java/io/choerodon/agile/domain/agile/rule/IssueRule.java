@@ -62,6 +62,9 @@ public class IssueRule {
         if (issueCreateDTO.getPriorityId() == null) {
             throw new CommonException("error.priorityId.isNull");
         }
+        if (issueCreateDTO.getIssueTypeId() == null) {
+            throw new CommonException("error.issueTypeId.isNull");
+        }
     }
 
     public void verifyUpdateData(JSONObject issueUpdate, Long projectId) {

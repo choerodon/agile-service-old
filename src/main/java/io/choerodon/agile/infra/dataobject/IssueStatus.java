@@ -8,6 +8,7 @@ package io.choerodon.agile.infra.dataobject;
 public class IssueStatus {
     private Integer issueNum;
     private String categoryCode;
+    private Long statusId;
 
     public Integer getIssueNum() {
         return issueNum;
@@ -23,5 +24,13 @@ public class IssueStatus {
 
     public void setCategoryCode(String categoryCode) {
         this.categoryCode = categoryCode;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public Long getStatusId() {
+        return statusId;
     }
 }

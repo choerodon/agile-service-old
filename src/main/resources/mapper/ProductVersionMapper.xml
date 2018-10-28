@@ -200,6 +200,7 @@
         ai.type_code, ai.status_id,
         ai.summary,
         ai.priority_id,
+        ai.issue_type_id,
         ai.assignee_id, ai.project_id
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id

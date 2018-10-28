@@ -305,8 +305,9 @@ public class ReportServiceImpl implements ReportService {
         reportPage.setNumberOfElements(reportIssuePage.getNumberOfElements());
         reportPage.setNumber(reportIssuePage.getNumber());
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        reportPage.setContent(issueAssembler.issueDoToIssueListDto(reportIssuePage.getContent(), priorityMap, statusMapDTOMap));
+        reportPage.setContent(issueAssembler.issueDoToIssueListDto(reportIssuePage.getContent(), priorityMap, statusMapDTOMap, issueTypeDTOMap));
         return reportPage;
     }
 
@@ -1185,10 +1186,12 @@ public class ReportServiceImpl implements ReportService {
     public List<GroupDataChartListDO> queryEpicChartList(Long projectId, Long epicId, Long organizationId) {
         List<GroupDataChartListDO> groupDataChartListDOList = reportMapper.selectEpicIssueList(projectId, epicId);
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         for (GroupDataChartListDO groupDataChartListDO : groupDataChartListDOList) {
             groupDataChartListDO.setPriorityDTO(priorityMap.get(groupDataChartListDO.getPriorityId()));
             groupDataChartListDO.setStatusMapDTO(statusMapDTOMap.get(groupDataChartListDO.getStatusId()));
+            groupDataChartListDO.setIssueTypeDTO(issueTypeDTOMap.get(groupDataChartListDO.getIssueTypeId()));
         }
         return groupDataChartListDOList;
     }
@@ -1447,10 +1450,12 @@ public class ReportServiceImpl implements ReportService {
     public List<GroupDataChartListDO> queryVersionChartList(Long projectId, Long versionId, Long organizationId) {
         List<GroupDataChartListDO> groupDataChartListDOList = reportMapper.selectVersionIssueList(projectId, versionId);
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         for (GroupDataChartListDO groupDataChartListDO : groupDataChartListDOList) {
             groupDataChartListDO.setPriorityDTO(priorityMap.get(groupDataChartListDO.getPriorityId()));
             groupDataChartListDO.setStatusMapDTO(statusMapDTOMap.get(groupDataChartListDO.getStatusId()));
+            groupDataChartListDO.setIssueTypeDTO(issueTypeDTOMap.get(groupDataChartListDO.getIssueTypeId()));
         }
         return groupDataChartListDOList;
     }

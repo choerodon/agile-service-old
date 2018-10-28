@@ -72,6 +72,8 @@ public class IssueE {
 
     private Long priorityId;
 
+    private Long issueTypeId;
+
     public Integer getEpicSequence() {
         return epicSequence;
     }
@@ -262,6 +264,14 @@ public class IssueE {
 
     public Long getPriorityId() {
         return priorityId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
     }
 
     @Override
