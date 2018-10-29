@@ -123,8 +123,7 @@
     </update>
 
     <update id="updateAllColumnStatusId">
-        update agile_board_column_status_rel abcsr set abcsr.status_id =
-        (nullif (select ais.status_id from agile_issue_status ais where abcsr.status_id = ais.id, 0))
+        update agile_board_column_status_rel abcsr set abcsr.status_id = IFNULL((select ais.status_id from agile_issue_status ais where abcsr.status_id = ais.id), 0)
     </update>
 
     <update id="updateDataLogStatusId">
