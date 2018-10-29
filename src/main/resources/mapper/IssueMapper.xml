@@ -240,26 +240,78 @@
         WHERE ai.parent_issue_id = #{issueId}
     </select>
 
-    <select id="queryIssueListWithSub" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
-        SELECT search.* from (
+    <resultMap id="IssueWithSub" type="io.choerodon.agile.infra.dataobject.IssueDO">
+        <id property="issueId" column="issue_issue_id"/>
+        <id property="typeCode" column="type_code"/>
+        <id property="summary" column="summary"/>
+        <id property="priorityCode" column="priority_code"/>
+        <id property="assigneeId" column="assignee_id"/>
+        <id property="reporterId" column="reporter_id"/>
+        <id property="projectId" column="issue_project_id"/>
+        <id property="statusId" column="status_id"/>
+        <id property="priorityName" column="priority_name"/>
+        <id property="statusCode" column="issue_status_code"/>
+        <id property="statusName" column="status_name"/>
+        <id property="issueNum" column="issue_num"/>
+        <id property="lastUpdateDate" column="issue_last_update_date"/>
+        <collection property="versionIssueRelDOS" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.VersionIssueRelDO">
+            <id property="versionId" column="version_id"/>
+            <id property="statusCode" column="version_status_code"/>
+            <id property="relationType" column="relation_type"/>
+            <id property="issueId" column="version_issue_id"/>
+            <id property="projectId" column="version_project_id"/>
+            <id property="name" column="version_name"/>
+        </collection>
+    </resultMap>
+
+    <select id="queryIssueListWithSubByIssueIds" resultMap="IssueWithSub">
         SELECT
-        ai.issue_id,
+        ai.issue_id as issue_issue_id,
         ai.type_code,
         ai.summary,
         ai.priority_code,
         ai.assignee_id,
-        ai.project_id,
+        ai.reporter_id,
+        ai.project_id as issue_project_id,
         ai.status_id,
+        ai.last_update_date as issue_last_update_date,
         alv.name AS priority_name,
-        ais.category_code AS status_code,
+        ais.category_code AS issue_status_code,
         ais.name AS status_name,
-        IF (
-        (ai.parent_issue_id IS NULL OR ai.parent_issue_id = 0),
-        CONCAT(api.project_code,'-', ai.issue_num),
-        CONCAT(api.project_code,'-',(SELECT issue_num FROM agile_issue WHERE issue_id = ai.parent_issue_id),'/',api.project_code,'-',ai.issue_num)
-        ) as issue_num
+        apv.version_id,
+        apv.status_code as version_status_code,
+        apv.name as version_name,
+        avir.relation_type,
+        avir.project_id as version_project_id,
+        avir.issue_id as version_issue_id,
+        CONCAT(api.project_code,'-', ai.issue_num) as issue_num
         FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
         LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN agile_version_issue_rel avir on avir.issue_id = ai.issue_id
+        left join agile_product_version apv on avir.version_id = apv.version_id
+        WHERE
+        ai.issue_id IN
+        <foreach collection="issueIds" item="issueId" open="(" separator=","
+                 close=")">
+            #{issueId}
+        </foreach>
+        order by
+        field(
+        ai.issue_id,
+        <foreach collection="issueIds" index="index" item="issueId" separator=",">
+            #{issueId}
+        </foreach>
+        )
+    </select>
+
+    <select id="queryIssueIdsListWithSub" resultType="java.lang.Long">
+        SELECT search.issue_issue_id from (
+        SELECT
+        ai.issue_id as issue_issue_id,
+        ai.summary,
+        CONCAT(api.project_code,'-', ai.issue_num) as issue_num
+        FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         WHERE ai.project_id = #{projectId} AND ai.type_code != 'issue_test'
         <if test='searchArgs != null'>
@@ -318,7 +370,7 @@
             <if test='searchArgs.version != null and searchArgs.version != "" '>
                 AND ai.issue_id in (
                 SELECT avir.issue_id FROM agile_version_issue_rel avir,agile_product_version apv
-                where avir.version_id = apv.version_id and position(#{searchArgs.version} IN apv.name) )
+                where avir.version_id = apv.version_id and position(#{searchArgs.version} IN apv.name))
             </if>
             <if test='searchArgs.sprint != null and searchArgs.sprint != "" '>
                 AND ai.issue_id in (
@@ -429,11 +481,11 @@
                                 #{id}
                             </foreach>)
                             or (ai.issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id = ai.parent_issue_id and
-                                ai7.epic_id in
-                                <foreach collection="otherArgs.id" item="id" open="(" separator=","
-                                         close=")">
-                                    #{id}
-                                </foreach>
+                            ai7.epic_id in
+                            <foreach collection="otherArgs.id" item="id" open="(" separator=","
+                                     close=")">
+                                #{id}
+                            </foreach>
                             )))
                         </otherwise>
                     </choose>
@@ -462,6 +514,9 @@
                     #{issueId}
                 </foreach>
             </if>
+        </if>
+        <if test='filterSql != null'>
+            AND ai.issue_id IN (${filterSql})
         </if>
         )search where 1=1
         <if test='searchArgs != null'>

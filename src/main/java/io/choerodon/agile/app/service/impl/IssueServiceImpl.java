@@ -277,7 +277,7 @@ public class IssueServiceImpl implements IssueService {
 
     private String convertProjectName(ProjectDTO projectDTO) {
         String projectName = projectDTO.getName();
-        String result = projectName.replaceAll(" ","%20");
+        String result = projectName.replaceAll(" ", "%20");
         return result;
     }
 
@@ -366,12 +366,32 @@ public class IssueServiceImpl implements IssueService {
     public Page<IssueListDTO> listIssueWithSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
         //处理用户搜索
         handleSearchUser(searchDTO, projectId);
+        //处理表映射
+        Map<String, String> order = new HashMap<>(1);
+        order.put("issueId", "search.issue_issue_id");
+        String filterSql = null;
+        //处理自定义搜索
+        if (searchDTO.getQuickFilterIds() != null && !searchDTO.getQuickFilterIds().isEmpty()) {
+            filterSql = getQuickFilter(searchDTO.getQuickFilterIds());
+        }
+        final String searchSql = filterSql;
         //连表查询需要设置主表别名
-        pageRequest.resetOrder(SEARCH, new HashMap<>());
-        Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
-                issueMapper.queryIssueListWithSub(projectId, searchDTO.getSearchArgs(),
-                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
-        return handlePageDoToDto(issueDOPage);
+        pageRequest.resetOrder(SEARCH, order);
+        Page<Long> issueIdPage = PageHelper.doPageAndSort(pageRequest, () -> issueMapper.queryIssueIdsListWithSub
+                (projectId, searchDTO.getSearchArgs(), searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent(), searchSql));
+        Page<IssueListDTO> issueListDTOPage = new Page<>();
+        if (issueIdPage.getContent() != null && !issueIdPage.getContent().isEmpty()) {
+            List<IssueDO> issueDOList = issueMapper.queryIssueListWithSubByIssueIds(issueIdPage.getContent());
+            issueListDTOPage.setContent(issueAssembler.issueDoToIssueListDto(issueDOList));
+        } else {
+            issueListDTOPage.setContent(new ArrayList<>());
+        }
+        issueListDTOPage.setNumber(issueIdPage.getNumber());
+        issueListDTOPage.setNumberOfElements(issueIdPage.getNumberOfElements());
+        issueListDTOPage.setSize(issueIdPage.getSize());
+        issueListDTOPage.setTotalElements(issueIdPage.getTotalElements());
+        issueListDTOPage.setTotalPages(issueIdPage.getTotalPages());
+        return issueListDTOPage;
     }
 
     private void handleSearchUser(SearchDTO searchDTO, Long projectId) {
@@ -1256,9 +1276,13 @@ public class IssueServiceImpl implements IssueService {
         }
         project.setCode(projectInfoDO.getProjectCode());
         handleSearchUser(searchDTO, projectId);
-        List<IssueDO> issueDOList = issueMapper.queryIssueListWithSub(projectId, searchDTO.getSearchArgs(),
-                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent());
-        List<Long> issueIds = issueDOList.stream().map(IssueDO::getIssueId).collect(Collectors.toList());
+        String filterSql = null;
+        if (searchDTO.getQuickFilterIds() != null && !searchDTO.getQuickFilterIds().isEmpty()) {
+            filterSql = getQuickFilter(searchDTO.getQuickFilterIds());
+        }
+        final String searchSql = filterSql;
+        //连表查询需要设置主表别名
+        List<Long> issueIds = issueMapper.queryIssueIdsListWithSub(projectId, searchDTO.getSearchArgs(), searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent(), searchSql);
         List<ExportIssuesDTO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId, issueIds, projectCode));
         if (!issueIds.isEmpty()) {
             Map<Long, List<SprintNameDO>> closeSprintNames = issueMapper.querySprintNameByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(SprintNameDO::getIssueId));

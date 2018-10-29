@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.assembler;
 
+import com.google.common.collect.Lists;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.*;
@@ -84,16 +85,19 @@ public class IssueAssembler extends AbstractAssembler {
         lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
         Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
         List<IssueListDTO> issueListDTOList = new ArrayList<>(issueDOList.size());
-        List<Long> assigneeIds = issueDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDO::getAssigneeId).distinct().collect(Collectors.toList());
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+        Set<Long> userIds = issueDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDO::getAssigneeId).collect(Collectors.toSet());
+        userIds.addAll(issueDOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(IssueDO::getReporterId).collect(Collectors.toSet()));
+        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(Lists.newArrayList(userIds), true);
         issueDOList.forEach(issueDO -> {
             String assigneeName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getName() : null;
+            String reporterName = usersMap.get(issueDO.getReporterId()) != null ? usersMap.get(issueDO.getReporterId()).getName() : null;
             String imageUrl = assigneeName != null ? usersMap.get(issueDO.getAssigneeId()).getImageUrl() : null;
-            IssueListDTO issueListDTO = new IssueListDTO();
-            BeanUtils.copyProperties(issueDO, issueListDTO);
+            IssueListDTO issueListDTO = toTarget(issueDO, IssueListDTO.class);
             issueListDTO.setAssigneeName(assigneeName);
+            issueListDTO.setReporterName(reporterName);
             issueListDTO.setStatusColor(ColorUtil.initializationStatusColor(issueListDTO.getStatusCode(), lookupValueMap));
             issueListDTO.setImageUrl(imageUrl);
+            issueListDTO.setVersionIssueRelDTOS(toTargetList(issueDO.getVersionIssueRelDOS(), VersionIssueRelDTO.class));
             issueListDTOList.add(issueListDTO);
         });
         return issueListDTOList;

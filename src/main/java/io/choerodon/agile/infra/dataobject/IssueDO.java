@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 敏捷开发Issue
@@ -126,6 +127,9 @@ public class IssueDO extends AuditDomain {
     @Transient
     private Boolean completed;
 
+    @Transient
+    private List<VersionIssueRelDO> versionIssueRelDOS;
+
     private BigDecimal estimateTime;
 
     private BigDecimal remainingTime;
@@ -135,6 +139,14 @@ public class IssueDO extends AuditDomain {
     private Integer epicSequence;
 
     private String mapRank;
+
+    public List<VersionIssueRelDO> getVersionIssueRelDOS() {
+        return versionIssueRelDOS;
+    }
+
+    public void setVersionIssueRelDOS(List<VersionIssueRelDO> versionIssueRelDOS) {
+        this.versionIssueRelDOS = versionIssueRelDOS;
+    }
 
     public Long getIssueId() {
         return issueId;

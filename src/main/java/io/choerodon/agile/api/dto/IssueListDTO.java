@@ -4,6 +4,8 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author dinghuang123@gmail.com
@@ -24,9 +26,13 @@ public class IssueListDTO implements Serializable {
 
     private Long assigneeId;
 
+    private Long reporterId;
+
     private Long projectId;
 
     private String assigneeName;
+
+    private String reporterName;
 
     private String imageUrl;
 
@@ -45,6 +51,42 @@ public class IssueListDTO implements Serializable {
     private Boolean addIssue;
 
     private BigDecimal remainingTime;
+
+    private Date lastUpdateDate;
+
+    public Date getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
+    public void setLastUpdateDate(Date lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
+    }
+
+    private List<VersionIssueRelDTO> versionIssueRelDTOS;
+
+    public Long getReporterId() {
+        return reporterId;
+    }
+
+    public void setReporterId(Long reporterId) {
+        this.reporterId = reporterId;
+    }
+
+    public String getReporterName() {
+        return reporterName;
+    }
+
+    public void setReporterName(String reporterName) {
+        this.reporterName = reporterName;
+    }
+
+    public List<VersionIssueRelDTO> getVersionIssueRelDTOS() {
+        return versionIssueRelDTOS;
+    }
+
+    public void setVersionIssueRelDTOS(List<VersionIssueRelDTO> versionIssueRelDTOS) {
+        this.versionIssueRelDTOS = versionIssueRelDTOS;
+    }
 
     public Long getIssueId() {
         return issueId;
