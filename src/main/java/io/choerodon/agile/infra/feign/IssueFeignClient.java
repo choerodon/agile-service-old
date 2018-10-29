@@ -37,7 +37,7 @@ public interface IssueFeignClient {
     ResponseEntity<Map<Long, PriorityDTO>> queryByOrganizationId(@ApiParam(value = "组织id", required = true)
                                                                  @PathVariable("organization_id") Long organizationId);
 
-    @GetMapping(value = "/v1/organizations/{organization_id}/issue_type/init_data")
+    @PostMapping(value = "/v1/organizations/{organization_id}/issue_type/init_data")
     ResponseEntity<Map<Long, Map<String, Long>>> initIssueTypeData(@PathVariable("organization_id") Long organizationId,
                                                                    @RequestBody List<Long> orgIds);
 

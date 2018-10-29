@@ -252,8 +252,8 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         }
         issueStatusMapper.batchUpdateStatus(statuses);
         issueStatusMapper.updateAllStatusId();
-        issueStatusMapper.updateAllColumnStatusId();
-        issueStatusMapper.updateDataLogStatusId();
+//        issueStatusMapper.updateAllColumnStatusId();
+//        issueStatusMapper.updateDataLogStatusId();
 
         // 迁移优先级
         Map<Long, Map<String, Long>> prioritys = issueFeignClient.initProrityByOrganization(organizationIds).getBody();
@@ -270,7 +270,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         // 迁移问题类型
         Map<Long, Map<String, Long>> issueTypes = issueFeignClient.initIssueTypeData(1L, organizationIds).getBody();
         List<IssueDO> issueDOForTypeList = issueMapper.selectAllType();
-        for (IssueDO issueDO : issueDOList) {
+        for (IssueDO issueDO : issueDOForTypeList) {
             if (proWithOrg.get(issueDO.getProjectId()) != null) {
                 Map<String, Long> iTypes = issueTypes.get(proWithOrg.get(issueDO.getProjectId()));
                 issueDO.setIssueTypeId(iTypes.get(issueDO.getTypeCode()));
