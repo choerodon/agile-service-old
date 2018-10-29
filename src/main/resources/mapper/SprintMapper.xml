@@ -39,6 +39,7 @@
         <id property="priorityCode" column="priority_code"/>
         <id property="priorityName" column="priority_name"/>
         <id property="priorityId" column="priority_id"/>
+        <id property="issueTypeId" column="issue_type_id"/>
         <id property="objectVersionNumber" column="is_object_version_number"/>
         <id property="epicName" column="issue_epic_name"/>
         <id property="color" column="color"/>
@@ -70,6 +71,7 @@
         ai.epic_id, asp1.sprint_id as is_sprint_id,
         ai.story_points, ai.status_id,
         ai.priority_id,
+        ai.issue_type_id,
         ais.category_code,
         ais.name AS status_name,
         ai.object_version_number as is_object_version_number, ai.priority_code,
