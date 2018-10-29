@@ -232,11 +232,13 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             if (!organizationIds.contains(projectDTO.getOrganizationId()) && projectDTO.getOrganizationId() != null) {
                 organizationIds.add(projectDTO.getOrganizationId());
             }
-            result.add(statusForMoveDataDO);
+            if (statusForMoveDataDO.getOrganizationId() != null) {
+                result.add(statusForMoveDataDO);
+            }
         }
 
         // 迁移状态
-        Map<Long, List<Status>> returnStatus = stateMachineFeignClient.initStatus(result).getBody();
+        Map<Long, List<Status>> returnStatus = issueFeignClient.fixStateMachineScheme(result).getBody();
         for (IssueStatusDO issueStatusDO : statuses) {
             List<Status> partStatus = returnStatus.get(proWithOrg.get(issueStatusDO.getProjectId()));
             if (partStatus != null) {
