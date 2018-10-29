@@ -252,8 +252,8 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         }
         issueStatusMapper.batchUpdateStatus(statuses);
         issueStatusMapper.updateAllStatusId();
-//        issueStatusMapper.updateAllColumnStatusId();
-//        issueStatusMapper.updateDataLogStatusId();
+        issueStatusMapper.updateAllColumnStatusId();
+        issueStatusMapper.updateDataLogStatusId();
 
         // 迁移优先级
         Map<Long, Map<String, Long>> prioritys = issueFeignClient.initProrityByOrganization(organizationIds).getBody();
