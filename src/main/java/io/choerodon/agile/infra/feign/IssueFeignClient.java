@@ -3,6 +3,8 @@ package io.choerodon.agile.infra.feign;
 import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.Status;
+import io.choerodon.agile.api.dto.StatusDTO;
+import io.choerodon.agile.infra.dataobject.StatusForMoveDataDO;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -45,5 +47,9 @@ public interface IssueFeignClient {
     @GetMapping(value = "/v1/organizations/{organization_id}/issue_type/{id}")
     ResponseEntity<IssueTypeDTO> queryIssueTypeById(@PathVariable("organization_id") Long organizationId,
                                                     @PathVariable("id") Long issueTypeId);
+
+    @PostMapping(value = "/v1/organizations/fix_data/state_machine_scheme")
+    ResponseEntity<Map<Long, List<Status>>> fixStateMachineScheme(@ApiParam(value = "敏捷状态数据", required = true)
+                                                                  @RequestBody List<StatusForMoveDataDO> statusForMoveDataDOList);
 
 }
