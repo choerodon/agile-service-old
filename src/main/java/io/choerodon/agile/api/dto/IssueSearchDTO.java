@@ -35,6 +35,8 @@ public class IssueSearchDTO {
 
     private StatusMapDTO statusMapDTO;
 
+    private IssueTypeDTO issueTypeDTO;
+
     private Long priorityId;
 
     public Long getIssueId() {
@@ -251,5 +253,13 @@ public class IssueSearchDTO {
 
     public StatusMapDTO getStatusMapDTO() {
         return statusMapDTO;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
     }
 }
