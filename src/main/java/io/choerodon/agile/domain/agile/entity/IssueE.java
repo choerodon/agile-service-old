@@ -285,8 +285,8 @@ public class IssueE {
      * @param subIssueE subIssueE
      * @return IssueE
      */
-    public IssueE initializationSubIssue(IssueE subIssueE, ProjectInfoE projectInfoE) {
-        subIssueE.setStatusId(this.statusId);
+    public IssueE initializationSubIssue(IssueE subIssueE,Long statusId, ProjectInfoE projectInfoE) {
+        subIssueE.setStatusId(statusId);
         subIssueE.setParentIssueId(this.issueId);
         subIssueE.setSprintId(this.sprintId);
         subIssueE.setTypeCode(SUB_TASK);

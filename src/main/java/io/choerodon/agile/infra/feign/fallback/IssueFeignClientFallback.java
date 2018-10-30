@@ -56,4 +56,9 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     public ResponseEntity<Map<Long, Map<String, Long>>> queryIssueTypes() {
         throw new CommonException("error.issueType.get");
     }
+
+    @Override
+    public ResponseEntity<Long> queryStateMachineId(Long projectId, String schemeType, Long issueTypeId) {
+        throw new CommonException("error.stateMachineId.get");
+    }
 }

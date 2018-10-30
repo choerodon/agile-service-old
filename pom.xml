@@ -233,6 +233,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
+        <!--state-machine-client-->
+        <dependency>
+            <groupId>io.choerodon</groupId>
+            <artifactId>choerodon-starter-stateMachine</artifactId>
+            <version>0.1.0.RELEASE</version>
+        </dependency>
     </dependencies>
 
     <build>

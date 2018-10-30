@@ -8,10 +8,7 @@ import io.choerodon.agile.infra.dataobject.StatusForMoveDataDO;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -50,4 +47,9 @@ public interface IssueFeignClient {
 
     @GetMapping("/v1/fix_data/query_issue_types")
     ResponseEntity<Map<Long, Map<String, Long>>> queryIssueTypes();
+
+    @GetMapping(value = "/v1/projects/{project_id}/schemes/query_state_machine_id")
+    ResponseEntity<Long> queryStateMachineId(@PathVariable("project_id") Long projectId,
+                                             @RequestParam("scheme_type") String schemeType,
+                                             @RequestParam("issue_type_id") Long issueTypeId);
 }

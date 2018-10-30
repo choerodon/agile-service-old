@@ -1,17 +1,14 @@
 package io.choerodon.agile.infra.feign;
 
 import io.choerodon.agile.api.dto.Status;
-import io.choerodon.agile.api.dto.StatusDTO;
 import io.choerodon.agile.api.dto.StatusInfoDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
-import io.choerodon.agile.infra.dataobject.StatusForMoveDataDO;
+import io.choerodon.agile.infra.feign.fallback.StateMachineFeignClientFallback;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +17,7 @@ import java.util.Map;
  * Created by HuangFuqiang@choerodon.io on 2018/10/23.
  * Email: fuqianghuang01@gmail.com
  */
-@FeignClient(value = "state-machine-service", fallback = StateMachineFeignClient.class)
+@FeignClient(value = "state-machine-service", fallback = StateMachineFeignClientFallback.class)
 public interface StateMachineFeignClient {
 
     @PostMapping(value = "/v1/status/batch")
