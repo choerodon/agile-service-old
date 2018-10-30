@@ -4,6 +4,7 @@ import io.choerodon.agile.api.dto.ColumnSortDTO;
 import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
 import io.choerodon.agile.api.validator.BoardColumnValidator;
 import io.choerodon.agile.domain.agile.entity.BoardE;
+import io.choerodon.agile.domain.agile.event.StatusPayload;
 import io.choerodon.agile.infra.dataobject.BoardColumnDO;
 import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO;
 import io.choerodon.agile.infra.dataobject.ColumnWithStatusRelDO;
@@ -22,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -194,44 +197,62 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         return ConvertHelper.convert(boardColumnMapper.selectOne(boardColumnDO), BoardColumnDTO.class);
     }
 
-    private void initColumnWithStatus(Long projectId, Long boardId, String name, String categoryCode, Integer sequence, String colorCode) {
+    private void initColumnWithStatus(Long projectId, Long boardId, String name, String categoryCode, Long statusId, Integer sequence) {
         BoardColumnE column = new BoardColumnE();
         column.setBoardId(boardId);
         column.setName(name);
         column.setProjectId(projectId);
         column.setCategoryCode(categoryCode);
         column.setSequence(sequence);
-        column.setColorCode(colorCode);
+        switch (categoryCode) {
+            case "todo":
+                column.setColorCode(COLUMN_COLOR_TODO);
+                break;
+            case "doing":
+                column.setColorCode(COLUMN_COLOR_DOING);
+                break;
+            case "done":
+                column.setColorCode(COLUMN_COLOR_DONE);
+                break;
+            default:
+                column.setColorCode(COLUMN_COLOR_NO_STATUS);
+                break;
+        }
         BoardColumnE columnE = boardColumnRepository.create(column);
         IssueStatusE issueStatusE = new IssueStatusE();
         issueStatusE.setName(name);
         issueStatusE.setEnable(false);
         issueStatusE.setCategoryCode(categoryCode);
         issueStatusE.setProjectId(projectId);
+        issueStatusE.setStatusId(statusId);
         if (categoryCode.equals(DONE_CODE)) {
             issueStatusE.setCompleted(true);
         } else {
             issueStatusE.setCompleted(false);
         }
-        IssueStatusE result = issueStatusRepository.create(issueStatusE);
+        issueStatusRepository.create(issueStatusE);
         ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO();
         columnStatusRelDO.setColumnId(columnE.getColumnId());
-        columnStatusRelDO.setStatusId(result.getId());
+        columnStatusRelDO.setStatusId(statusId);
         if (columnStatusRelMapper.select(columnStatusRelDO).isEmpty()) {
             ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
             columnStatusRelE.setColumnId(columnE.getColumnId());
             columnStatusRelE.setPosition(POSITION);
-            columnStatusRelE.setStatusId(result.getId());
+            columnStatusRelE.setStatusId(statusId);
             columnStatusRelE.setProjectId(projectId);
             columnStatusRelRepository.create(columnStatusRelE);
         }
     }
 
     @Override
-    public void initBoardColumns(Long projectId, Long boardId) {
-        initColumnWithStatus(projectId, boardId, TODO, TODO_CODE, SEQUENCE_ONE, COLUMN_COLOR_TODO);
-        initColumnWithStatus(projectId, boardId, DOING, DOING_CODE, SEQUENCE_TWO, COLUMN_COLOR_DOING);
-        initColumnWithStatus(projectId, boardId, DONE, DONE_CODE, SEQUENCE_THREE, COLUMN_COLOR_DONE);
+    public void initBoardColumns(Long projectId, Long boardId, List<StatusPayload> statusPayloads) {
+//        initColumnWithStatus(projectId, boardId, TODO, TODO_CODE, SEQUENCE_ONE, COLUMN_COLOR_TODO);
+//        initColumnWithStatus(projectId, boardId, DOING, DOING_CODE, SEQUENCE_TWO, COLUMN_COLOR_DOING);
+//        initColumnWithStatus(projectId, boardId, DONE, DONE_CODE, SEQUENCE_THREE, COLUMN_COLOR_DONE);
+        Integer sequence = 0;
+        for (StatusPayload statusPayload : statusPayloads) {
+            initColumnWithStatus(projectId, boardId, statusPayload.getStatusName(), statusPayload.getType(), statusPayload.getStatusId(), sequence++);
+        }
     }
 
     @Override

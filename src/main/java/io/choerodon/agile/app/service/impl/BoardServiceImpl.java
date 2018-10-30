@@ -6,6 +6,7 @@ import io.choerodon.agile.api.validator.BoardValidator;
 import io.choerodon.agile.app.service.NoticeService;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.domain.agile.entity.*;
+import io.choerodon.agile.domain.agile.event.StatusPayload;
 import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil;
@@ -389,9 +390,9 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public void initBoard(Long projectId, String boardName) {
+    public void initBoard(Long projectId, String boardName, List<StatusPayload> statusPayloads) {
         BoardE boardResult = createBoard(projectId, boardName);
-        boardColumnService.initBoardColumns(projectId, boardResult.getBoardId());
+        boardColumnService.initBoardColumns(projectId, boardResult.getBoardId(), statusPayloads);
     }
 
     private void checkNumberContraint(BoardColumnCheckDO boardColumnCheckDO, BoardColumnCheckDO originBoardColumnCheckDO, Long currentStatusId, Long originStatusId) {
