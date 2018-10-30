@@ -98,16 +98,16 @@ public class BoardController {
 //                .orElseThrow(() -> new CommonException("error.board.get"));
 //    }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("init board,勿调用")
-    @PostMapping(value = "/init_board")
-    public ResponseEntity initBoard(@ApiParam(value = "项目id", required = true)
-                                    @PathVariable(name = "project_id") Long projectId,
-                                    @ApiParam(value = "board name", required = true)
-                                    @RequestParam String boardName) {
-        boardService.initBoard(projectId, boardName);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
+//    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+//    @ApiOperation("init board,勿调用")
+//    @PostMapping(value = "/init_board")
+//    public ResponseEntity initBoard(@ApiParam(value = "项目id", required = true)
+//                                    @PathVariable(name = "project_id") Long projectId,
+//                                    @ApiParam(value = "board name", required = true)
+//                                    @RequestParam String boardName) {
+//        boardService.initBoard(projectId, boardName);
+//        return new ResponseEntity<>(HttpStatus.CREATED);
+//    }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("移动issue")
