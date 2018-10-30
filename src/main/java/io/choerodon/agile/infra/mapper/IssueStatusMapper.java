@@ -36,4 +36,6 @@ public interface IssueStatusMapper extends BaseMapper<IssueStatusDO> {
     void updateAllColumnStatusId();
 
     void updateDataLogStatusId();
+
+    IssueStatusDO selectByStatusId(@Param("projectId")Long projectId,@Param("statusId")Long statusId);
 }

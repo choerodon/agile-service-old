@@ -13,32 +13,32 @@
     </resultMap>
 
     <!--<select id="queryUnCorrespondStatus" resultMap="statusAndIssuesMap">-->
-        <!--SELECT-->
-            <!--ais.id                    AS ais_id,-->
-            <!--ais.project_id            AS ais_project_id,-->
-            <!--ais.name                  AS ais_name,-->
-            <!--ais.is_enable             AS ais_enable,-->
-            <!--ais.category_code            ais_category_code,-->
-            <!--ais.is_completed          AS ais_completed,-->
-            <!--ais.object_version_number AS ais_object_version_number,-->
-            <!--ai.issue_id               AS ai_issue_id,-->
-            <!--ai.summary                AS ai_summary,-->
-            <!--ai.priority_code          AS ai_priority_code,-->
-            <!--ai.object_version_number  AS ai_object_version_number-->
-        <!--FROM-->
-            <!--agile_issue_status ais-->
-            <!--LEFT JOIN agile_issue ai ON ai.status_id = ais.id-->
-        <!--WHERE-->
-            <!--ais.project_id = #{projectId}-->
-            <!--AND (-->
-                    <!--SELECT COUNT(1) AS num-->
-                    <!--FROM-->
-                        <!--agile_board_column_status_rel abcsr, agile_board_column abc-->
-                    <!--WHERE-->
-                        <!--abc.board_id = #{boardId}-->
-                        <!--AND abcsr.column_id = abc.column_id-->
-                        <!--AND ais.id = abcsr.status_id-->
-                <!--) = 0-->
+    <!--SELECT-->
+    <!--ais.id                    AS ais_id,-->
+    <!--ais.project_id            AS ais_project_id,-->
+    <!--ais.name                  AS ais_name,-->
+    <!--ais.is_enable             AS ais_enable,-->
+    <!--ais.category_code            ais_category_code,-->
+    <!--ais.is_completed          AS ais_completed,-->
+    <!--ais.object_version_number AS ais_object_version_number,-->
+    <!--ai.issue_id               AS ai_issue_id,-->
+    <!--ai.summary                AS ai_summary,-->
+    <!--ai.priority_code          AS ai_priority_code,-->
+    <!--ai.object_version_number  AS ai_object_version_number-->
+    <!--FROM-->
+    <!--agile_issue_status ais-->
+    <!--LEFT JOIN agile_issue ai ON ai.status_id = ais.id-->
+    <!--WHERE-->
+    <!--ais.project_id = #{projectId}-->
+    <!--AND (-->
+    <!--SELECT COUNT(1) AS num-->
+    <!--FROM-->
+    <!--agile_board_column_status_rel abcsr, agile_board_column abc-->
+    <!--WHERE-->
+    <!--abc.board_id = #{boardId}-->
+    <!--AND abcsr.column_id = abc.column_id-->
+    <!--AND ais.id = abcsr.status_id-->
+    <!--) = 0-->
     <!--</select>-->
 
     <select id="queryUnCorrespondStatus" resultMap="statusAndIssuesMap">
@@ -131,4 +131,10 @@
         update agile_data_log adl set adl.new_value = (select ais.status_id from agile_issue_status ais where adl.new_value = ais.id ) where field = 'status';
         update agile_data_log adl set adl.new_value = (select ais.status_id from agile_issue_status ais where adl.new_value = ais.id ) where field = 'resolution';
     </update>
+
+    <select id="selectByStatusId" resultType="io.choerodon.agile.infra.dataobject.IssueStatusDO">
+        SELECT ais.*
+        FROM agile_issue_status ais
+        WHERE ais.project_id = #{projectId} AND ais.status_id = #{statusId}
+    </select>
 </mapper>

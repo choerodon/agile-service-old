@@ -1,27 +1,8 @@
 package io.choerodon.agile.app.service.impl;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
-import io.choerodon.agile.infra.common.utils.*;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.StateMachineFeignClient;
-import io.choerodon.agile.infra.feign.UserFeignClient;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.assembler.*;
@@ -32,7 +13,11 @@ import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
+import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.feign.StateMachineFeignClient;
+import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
@@ -44,6 +29,26 @@ import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.choerodon.statemachine.dto.ExecuteResult;
+import io.choerodon.statemachine.feign.InstanceFeignClient;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * 敏捷开发Issue
@@ -141,21 +146,22 @@ public class IssueServiceImpl implements IssueService {
     private UserSettingMapper userSettingMapper;
     @Autowired
     private IssueMapper issueMapper;
-
     @Autowired
     private SiteMsgUtil siteMsgUtil;
-
     @Autowired
     private NoticeService noticeService;
-
     @Autowired
     private UserFeignClient userFeignClient;
-
     @Autowired
     private IssueFeignClient issueFeignClient;
-
     @Autowired
     private StateMachineFeignClient stateMachineFeignClient;
+    @Autowired
+    private InstanceFeignClient instanceFeignClient;
+    @Autowired
+    private ProjectUtil projectUtil;
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
@@ -188,6 +194,9 @@ public class IssueServiceImpl implements IssueService {
     private static final String ERROR_ISSUE_NOT_FOUND = "error.Issue.queryIssue";
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
     private static final String ERROR_ISSUE_STATUS_NOT_FOUND = "error.createIssue.issueStatusNotFound";
+    private static final String ERROR_ISSUE_STATE_MACHINE_NOT_FOUND = "error.createIssue.stateMachineNotFound";
+    private static final String ERROR_CREATE_ISSUE_CREATE = "error.createIssue.create";
+    private static final String ERROR_CREATE_ISSUE_HANDLE_DATA = "error.createIssue.handleData";
     private static final String SEARCH = "search";
     private static final String STORYMAP_TYPE_SPRINT = "sprint";
     private static final String STORYMAP_TYPE_VERSION = "version";
@@ -201,6 +210,8 @@ public class IssueServiceImpl implements IssueService {
     private static final String URL_TEMPLATE5 = "&paramOpenIssueId=";
     private static final String URL_TEMPLATE6 = "&organizationId=";
     private static final String ISSUE_TEST = "issue_test";
+    private static final String AGILE = "agile";
+    private static final String AGILE_SERVICE = "agile-service";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -219,29 +230,79 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public synchronized IssueDTO createIssue(IssueCreateDTO issueCreateDTO) {
+
+//        //设置初始状态,如果有todo，就用todo，否则为doing，最后为done
+//        List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(issueE.getProjectId());
+//        IssueStatusCreateDO issueStatusDO = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
+//                issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
+//                        issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(null)));
+//        if (issueStatusDO == null) {
+//            throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
+//        }
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        //事物隔离级别：开启新事务
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        //获得事务状态
+        TransactionStatus status = transactionManager.getTransaction(def);
         IssueE issueE = issueAssembler.toTarget(issueCreateDTO, IssueE.class);
-        //设置初始状态,如果有todo，就用todo，否则为doing，最后为done
-        List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(issueE.getProjectId());
-        IssueStatusCreateDO issueStatusDO = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
-                issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
-                        issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(null)));
-        if (issueStatusDO == null) {
-            throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
+        Long projectId = issueE.getProjectId();
+        Long organizationId = projectUtil.getOrganizationId(projectId);
+        Long issueId;
+        ProjectInfoE projectInfoE;
+        Long stateMachineId;
+        try {
+            //获取状态机id
+            stateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueE.getIssueTypeId()).getBody();
+            if (stateMachineId == null) {
+                throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
+            }
+            Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
+            if (initStatusId == null) {
+                throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
+            }
+            //处理编号
+            ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+            projectInfoDO.setProjectId(projectId);
+            projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
+            if (projectInfoE == null) {
+                throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
+            }
+            handleInitIssue(issueE, initStatusId, projectInfoE);
+            //创建issue
+            issueId = issueRepository.create(issueE).getIssueId();
+
+            transactionManager.commit(status);
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            e.printStackTrace();
+            throw new CommonException(ERROR_CREATE_ISSUE_CREATE);
         }
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        projectInfoDO.setProjectId(issueE.getProjectId());
-        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
-        if (projectInfoE == null) {
-            throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
+
+        ResponseEntity<ExecuteResult> executeResult = instanceFeignClient.startInstance(organizationId, AGILE_SERVICE, stateMachineId, issueId);
+        //feign调用执行失败，抛出异常回滚
+        if (!executeResult.getBody().getSuccess()) {
+            //手动回滚数据
+            issueMapper.batchDeleteIssues(issueE.getProjectId(), Collections.singletonList(issueId));
+            throw new CommonException(executeResult.getBody().getErrorMessage());
         }
-        handleInitIssue(issueE, issueStatusDO.getId(), projectInfoE);
-        //创建issue
-        Long issueId = issueRepository.create(issueE).getIssueId();
-        //处理冲刺
-        handleCreateSprintRel(issueE.getSprintId(), issueE.getProjectId(), issueId);
-        handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
-        handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId, projectInfoE);
-        handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
+
+        DefaultTransactionDefinition defData = new DefaultTransactionDefinition();
+        defData.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        TransactionStatus statusData = transactionManager.getTransaction(defData);
+        try {
+            //处理冲刺
+            handleCreateSprintRel(issueE.getSprintId(), issueE.getProjectId(), issueId);
+            handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
+            handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId, projectInfoE);
+            handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
+            transactionManager.commit(statusData);
+        } catch (Exception e) {
+            transactionManager.rollback(statusData);
+            //手动回滚数据
+            issueMapper.batchDeleteIssues(issueE.getProjectId(), Collections.singletonList(issueId));
+            e.printStackTrace();
+            throw new CommonException(ERROR_CREATE_ISSUE_HANDLE_DATA);
+        }
         return queryIssueCreate(issueCreateDTO.getProjectId(), issueId);
     }
 
@@ -292,7 +353,7 @@ public class IssueServiceImpl implements IssueService {
         }
         IssueDTO result = issueAssembler.issueDetailDoToDto(issue);
         // 发送消息
-        if (!ISSUE_TEST.equals(result.getTypeCode())) {
+        if (ISSUE_TEST.equals(result.getTypeCode())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", result);
             String summary = result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getReporterName();
@@ -306,7 +367,7 @@ public class IssueServiceImpl implements IssueService {
         return result;
     }
 
-    private PriorityDTO getPriorityById(Long organizationId, Long priorityId){
+    private PriorityDTO getPriorityById(Long organizationId, Long priorityId) {
         ResponseEntity<PriorityDTO> priorityDTOResponseEntity = issueFeignClient.queryById(organizationId, priorityId);
         if (priorityDTOResponseEntity == null) {
             throw new CommonException("error.priority.get");
@@ -384,7 +445,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void getAdvacedSearchStatusIds(SearchDTO searchDTO, List<Long> filterStatusIds, Map<Long, StatusMapDTO> statusMapDTOMap) {
         if (searchDTO.getAdvancedSearchArgs() != null && searchDTO.getAdvancedSearchArgs().get("statusCode") != null) {
-            List<String> statusCodes = (ArrayList<String>)searchDTO.getAdvancedSearchArgs().get("statusCode");
+            List<String> statusCodes = (ArrayList<String>) searchDTO.getAdvancedSearchArgs().get("statusCode");
             for (Long key : statusMapDTOMap.keySet()) {
                 if (statusCodes.contains(statusMapDTOMap.get(key).getType())) {
                     filterStatusIds.add(key);
@@ -434,7 +495,8 @@ public class IssueServiceImpl implements IssueService {
         return queryIssueByUpdate(projectId, issueId, fieldList);
     }
 
-    private void handleUpdateIssue(IssueUpdateDTO issueUpdateDTO, List<String> fieldList, Long projectId) {
+    @Override
+    public void handleUpdateIssue(IssueUpdateDTO issueUpdateDTO, List<String> fieldList, Long projectId) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         IssueDO originIssue = issueMapper.queryIssueWithNoCloseSprint(issueUpdateDTO.getIssueId());
         IssueE issueE = issueAssembler.toTarget(issueUpdateDTO, IssueE.class);
@@ -583,31 +645,81 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO) {
         IssueE subIssueE = issueAssembler.toTarget(issueSubCreateDTO, IssueE.class);
-        List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(subIssueE.getProjectId());
-        IssueStatusCreateDO issueStatusDO = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
-                issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
-                        issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(null)));
-        if (issueStatusDO == null) {
-            throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
+//        List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(subIssueE.getProjectId());
+//        IssueStatusCreateDO issueStatusDO = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
+//                issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
+//                        issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(null)));
+//        if (issueStatusDO == null) {
+//            throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
+//        }
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        //事物隔离级别，开启新事务，这样会比较安全些
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        //获得事务状态
+        TransactionStatus status = transactionManager.getTransaction(def);
+        Long projectId = subIssueE.getProjectId();
+        Long organizationId = projectUtil.getOrganizationId(projectId);
+        Long issueId;
+        ProjectInfoE projectInfoE;
+        Long stateMachineId;
+        try {
+            //获取状态机id
+            stateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, subIssueE.getIssueTypeId()).getBody();
+            if (stateMachineId == null) {
+                throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
+            }
+            Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
+            if (initStatusId == null) {
+                throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
+            }
+            //处理编号
+            ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+            projectInfoDO.setProjectId(subIssueE.getProjectId());
+            projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
+            if (projectInfoE == null) {
+                throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
+            }
+            //初始化subIssue
+            handleInitSubIssue(subIssueE, initStatusId, projectInfoE);
+
+            //创建issue
+            issueId = issueRepository.create(subIssueE).getIssueId();
+
+            transactionManager.commit(status);
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            e.printStackTrace();
+            throw new CommonException(ERROR_CREATE_ISSUE_CREATE);
         }
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        projectInfoDO.setProjectId(subIssueE.getProjectId());
-        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
-        if (projectInfoE == null) {
-            throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
+
+        ResponseEntity<ExecuteResult> executeResult = instanceFeignClient.startInstance(organizationId, AGILE_SERVICE, stateMachineId, issueId);
+        //feign调用执行失败，抛出异常回滚
+        if (!executeResult.getBody().getSuccess()) {
+            //手动回滚数据
+            issueMapper.batchDeleteIssues(subIssueE.getProjectId(), Collections.singletonList(issueId));
+            throw new CommonException(executeResult.getBody().getErrorMessage());
         }
-        //初始化subIssue
-        handleInitSubIssue(subIssueE, projectInfoE);
-        //创建issue
-        Long issueId = issueRepository.create(subIssueE).getIssueId();
-        //处理冲刺
-        handleCreateSprintRel(subIssueE.getSprintId(), subIssueE.getProjectId(), issueId);
-        if (issueSubCreateDTO.getIssueLinkCreateDTOList() != null && !issueSubCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
-            issueLinkService.createIssueLinkList(issueSubCreateDTO.getIssueLinkCreateDTOList(), issueId, issueSubCreateDTO.getProjectId());
+
+        DefaultTransactionDefinition def2 = new DefaultTransactionDefinition();
+        def2.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        TransactionStatus status2 = transactionManager.getTransaction(def2);
+        try {
+            //处理冲刺
+            handleCreateSprintRel(subIssueE.getSprintId(), subIssueE.getProjectId(), issueId);
+            if (issueSubCreateDTO.getIssueLinkCreateDTOList() != null && !issueSubCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
+                issueLinkService.createIssueLinkList(issueSubCreateDTO.getIssueLinkCreateDTOList(), issueId, issueSubCreateDTO.getProjectId());
+            }
+            handleCreateLabelIssue(issueSubCreateDTO.getLabelIssueRelDTOList(), issueId);
+            handleCreateComponentIssueRel(issueSubCreateDTO.getComponentIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId, projectInfoE);
+            handleCreateVersionIssueRel(issueSubCreateDTO.getVersionIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
+            transactionManager.commit(status2);
+        } catch (Exception e) {
+            transactionManager.rollback(status2);
+            //手动回滚数据
+            issueMapper.batchDeleteIssues(subIssueE.getProjectId(), Collections.singletonList(issueId));
+            e.printStackTrace();
+            throw new CommonException(ERROR_CREATE_ISSUE_HANDLE_DATA);
         }
-        handleCreateLabelIssue(issueSubCreateDTO.getLabelIssueRelDTOList(), issueId);
-        handleCreateComponentIssueRel(issueSubCreateDTO.getComponentIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId, projectInfoE);
-        handleCreateVersionIssueRel(issueSubCreateDTO.getVersionIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
         return queryIssueSubByCreate(subIssueE.getProjectId(), issueId);
     }
 
@@ -621,10 +733,10 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void handleInitSubIssue(IssueE subIssueE, ProjectInfoE projectInfoE) {
+    private void handleInitSubIssue(IssueE subIssueE, Long statusId, ProjectInfoE projectInfoE) {
         IssueE parentIssueE = ConvertHelper.convert(issueMapper.queryIssueSprintNotClosed(subIssueE.getProjectId(), subIssueE.getParentIssueId()), IssueE.class);
         //设置初始状态,跟随父类状态
-        subIssueE = parentIssueE.initializationSubIssue(subIssueE, projectInfoE);
+        subIssueE = parentIssueE.initializationSubIssue(subIssueE, statusId, projectInfoE);
         projectInfoRepository.updateIssueMaxNum(subIssueE.getProjectId(), 1);
     }
 
@@ -955,7 +1067,7 @@ public class IssueServiceImpl implements IssueService {
         }
         IssueSubDTO result = issueAssembler.issueDetailDoToIssueSubDto(issue);
         // 发送消息
-        if (!ISSUE_TEST.equals(result.getTypeCode())) {
+        if (ISSUE_TEST.equals(result.getTypeCode())) {
             IssueDTO issueDTO = new IssueDTO();
             issueDTO.setReporterId(result.getReporterId());
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", issueDTO);
@@ -1649,7 +1761,7 @@ public class IssueServiceImpl implements IssueService {
         Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         List<Long> doneIds = new ArrayList<>();
-        getDoneIds(statusMapDTOMap ,doneIds);
+        getDoneIds(statusMapDTOMap, doneIds);
         switch (type) {
             case STORYMAP_TYPE_SPRINT:
                 storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId, pageType, assigneeId, onlyStory, filterSql, doneIds), priorityMap, statusMapDTOMap, issueTypeDTOMap);
@@ -1767,14 +1879,25 @@ public class IssueServiceImpl implements IssueService {
 
     private List<Long> batchCreateIssue(List<IssueDetailDO> issueDOList, Long projectId, Long versionId) {
         List<Long> issueIds = new ArrayList<>(issueDOList.size());
-        //设置初始状态,如果有todo，就用todo，否则为doing，最后为done
-        List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(projectId);
-        IssueStatusCreateDO issueStatusDO = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
-                issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
-                        issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(null)));
-        if (issueStatusDO == null) {
-            throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
+//        //设置初始状态,如果有todo，就用todo，否则为doing，最后为done
+//        List<IssueStatusCreateDO> issueStatusCreateDOList = issueStatusMapper.queryIssueStatus(projectId);
+//        IssueStatusCreateDO issueStatusDO = issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_TODO)).findFirst().orElse(
+//                issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DOING)).findFirst().orElse(
+//                        issueStatusCreateDOList.stream().filter(issueStatusCreateDO -> issueStatusCreateDO.getCategoryCode().equals(STATUS_CODE_DONE)).findFirst().orElse(null)));
+//        if (issueStatusDO == null) {
+//            throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
+//        }
+        //获取issueTypeId
+        Long issueTypeId = issueDOList.get(0).getIssueTypeId();
+        //获取状态机id
+        Long organizationId = projectUtil.getOrganizationId(projectId);
+        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueTypeId).getBody();
+        if (stateMachineId == null) {
+            throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
         }
+        //获取初始状态
+        Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
+
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
         ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
@@ -1784,7 +1907,7 @@ public class IssueServiceImpl implements IssueService {
         issueDOList.forEach(issueDetailDO -> {
             IssueE issueE = issueAssembler.toTarget(issueDetailDO, IssueE.class);
             //初始化创建issue设置issue编号、项目默认设置
-            issueE.initializationIssueByCopy(issueStatusDO.getId(), projectInfoE);
+            issueE.initializationIssueByCopy(initStatusId, projectInfoE);
             Long issueId = issueRepository.create(issueE).getIssueId();
             handleCreateCopyLabelIssueRel(issueDetailDO.getLabelIssueRelDOList(), issueId);
             handleCreateCopyComponentIssueRel(issueDetailDO.getComponentIssueRelDOList(), issueId);
