@@ -96,7 +96,7 @@ public class IssueAssembler extends AbstractAssembler {
             issueListDTO.setStatusColor(ColorUtil.initializationStatusColor(issueListDTO.getStatusCode(), lookupValueMap));
             issueListDTO.setImageUrl(imageUrl);
             issueListDTO.setPriorityDTO(priorityMap.get(issueDO.getPriorityId()));
-            issueListDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueDO.getIssueId()));
+            issueListDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
             issueListDTO.setStatusMapDTO(statusMapDTOMap.get(issueDO.getStatusId()));
             issueListDTOList.add(issueListDTO);
         });

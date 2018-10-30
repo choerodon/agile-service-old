@@ -22,11 +22,6 @@ import java.util.Map;
 public class StateMachineFeignClientFallback implements StateMachineFeignClient {
 
     @Override
-    public ResponseEntity<Map<Long, List<Status>>> initStatus(List<StatusForMoveDataDO> statusForMoveDataDOList) {
-        throw new CommonException("error.status.init");
-    }
-
-    @Override
     public ResponseEntity<Map<Long, Status>> batchStatusGet(List<Long> ids) {
         throw new CommonException("error.status.get");
     }
@@ -38,6 +33,11 @@ public class StateMachineFeignClientFallback implements StateMachineFeignClient 
 
     @Override
     public ResponseEntity<StatusInfoDTO> queryStatusById(Long organizationId, Long statusId) {
+        throw new CommonException("error.status.get");
+    }
+
+    @Override
+    public ResponseEntity<Map<Long, List<Status>>> queryAllStatus() {
         throw new CommonException("error.status.get");
     }
 }

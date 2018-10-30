@@ -23,11 +23,6 @@ import java.util.Map;
 public class IssueFeignClientFallback implements IssueFeignClient {
 
     @Override
-    public ResponseEntity<Map<Long, Map<String, Long>>> initProrityByOrganization(List<Long> organizationIds) {
-        throw new CommonException("error.priorityList.get");
-    }
-
-    @Override
     public ResponseEntity<PriorityDTO> queryById(Long organizationId, Long id) {
         throw new CommonException("error.priority.get");
     }
@@ -35,11 +30,6 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     @Override
     public ResponseEntity<Map<Long, PriorityDTO>> queryByOrganizationId(Long organizationId) {
         throw new CommonException("error.priorityList.get");
-    }
-
-    @Override
-    public ResponseEntity<Map<Long, Map<String, Long>>> initIssueTypeData(Long organizationId, List<Long> orgIds) {
-        throw new CommonException("error.issueTypeMap.get");
     }
 
     @Override
@@ -53,7 +43,17 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity<Map<Long, List<Status>>> fixStateMachineScheme(List<StatusForMoveDataDO> statusForMoveDataDOList) {
-        throw new CommonException("error.status.get");
+    public ResponseEntity fixStateMachineScheme(List<StatusForMoveDataDO> statusForMoveDataDOList) {
+        throw new CommonException("error.status.init");
+    }
+
+    @Override
+    public ResponseEntity<Map<Long, Map<String, Long>>> queryPriorities() {
+        throw new CommonException("error.priority.get");
+    }
+
+    @Override
+    public ResponseEntity<Map<Long, Map<String, Long>>> queryIssueTypes() {
+        throw new CommonException("error.issueType.get");
     }
 }

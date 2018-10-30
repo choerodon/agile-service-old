@@ -23,10 +23,6 @@ import java.util.Map;
 @FeignClient(value = "state-machine-service", fallback = StateMachineFeignClient.class)
 public interface StateMachineFeignClient {
 
-    @PostMapping(value = "/v1/status/init")
-    ResponseEntity<Map<Long, List<Status>>> initStatus(@ApiParam(value = "状态数据", required = true)
-                                                       @RequestBody List<StatusForMoveDataDO> statusForMoveDataDOList);
-
     @PostMapping(value = "/v1/status/batch")
     ResponseEntity<Map<Long, Status>> batchStatusGet(@ApiParam(value = "状态ids", required = true)
                                                      @RequestBody List<Long> ids);
@@ -37,4 +33,7 @@ public interface StateMachineFeignClient {
     @GetMapping(value = "/v1/organizations/{organization_id}/status/{status_id}")
     ResponseEntity<StatusInfoDTO> queryStatusById(@PathVariable("organization_id") Long organizationId,
                                                   @PathVariable("status_id") Long statusId);
+
+    @GetMapping(value = "/v1/fix_data/query_status")
+    ResponseEntity<Map<Long, List<Status>>> queryAllStatus();
 }

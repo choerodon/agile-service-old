@@ -23,10 +23,6 @@ import java.util.Map;
 @FeignClient(value = "issue-service", fallback = IssueFeignClient.class)
 public interface IssueFeignClient {
 
-    @PostMapping("/v1/init_prority")
-    ResponseEntity<Map<Long, Map<String, Long>>> initProrityByOrganization(@ApiParam(value = "组织ids", required = true)
-                                                                           @RequestBody List<Long> organizationIds);
-
     @GetMapping("/v1/organizations/{organization_id}/priority/{id}")
     ResponseEntity<PriorityDTO> queryById(@ApiParam(value = "组织id", required = true)
                                           @PathVariable("organization_id") Long organizationId,
@@ -37,9 +33,6 @@ public interface IssueFeignClient {
     ResponseEntity<Map<Long, PriorityDTO>> queryByOrganizationId(@ApiParam(value = "组织id", required = true)
                                                                  @PathVariable("organization_id") Long organizationId);
 
-    @PostMapping(value = "/v1/organizations/{organization_id}/issue_type/init_data")
-    ResponseEntity<Map<Long, Map<String, Long>>> initIssueTypeData(@PathVariable("organization_id") Long organizationId,
-                                                                   @RequestBody List<Long> orgIds);
 
     @GetMapping(value = "/v1/organizations/{organization_id}/issue_type/type_map")
     ResponseEntity<Map<Long, IssueTypeDTO>> listIssueTypeMap(@PathVariable("organization_id") Long organizationId);
@@ -48,8 +41,13 @@ public interface IssueFeignClient {
     ResponseEntity<IssueTypeDTO> queryIssueTypeById(@PathVariable("organization_id") Long organizationId,
                                                     @PathVariable("id") Long issueTypeId);
 
-    @PostMapping(value = "/v1/organizations/fix_data/state_machine_scheme")
-    ResponseEntity<Map<Long, List<Status>>> fixStateMachineScheme(@ApiParam(value = "敏捷状态数据", required = true)
-                                                                  @RequestBody List<StatusForMoveDataDO> statusForMoveDataDOList);
+    @PostMapping(value = "/v1/fix_data/state_machine_scheme")
+    ResponseEntity fixStateMachineScheme(@ApiParam(value = "敏捷状态数据", required = true)
+                                         @RequestBody List<StatusForMoveDataDO> statusForMoveDataDOList);
 
+    @GetMapping("/v1/fix_data/query_priorities")
+    ResponseEntity<Map<Long, Map<String, Long>>> queryPriorities();
+
+    @GetMapping("/v1/fix_data/query_issue_types")
+    ResponseEntity<Map<Long, Map<String, Long>>> queryIssueTypes();
 }
