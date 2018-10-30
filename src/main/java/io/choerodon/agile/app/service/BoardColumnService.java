@@ -4,6 +4,9 @@ import io.choerodon.agile.api.dto.BoardColumnDTO;
 import io.choerodon.agile.api.dto.ColumnSortDTO;
 import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
 import io.choerodon.agile.domain.agile.entity.BoardE;
+import io.choerodon.agile.domain.agile.event.StatusPayload;
+
+import java.util.List;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
@@ -19,7 +22,7 @@ public interface BoardColumnService {
 
     BoardColumnDTO queryBoardColumnById(Long projectId, Long columnId);
 
-    void initBoardColumns(Long projectId, Long boardId);
+    void initBoardColumns(Long projectId, Long boardId, List<StatusPayload> statusPayloads);
 
     void columnSort(Long projectId, ColumnSortDTO columnSortDTO);
 

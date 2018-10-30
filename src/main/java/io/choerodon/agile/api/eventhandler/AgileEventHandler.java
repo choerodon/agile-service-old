@@ -6,7 +6,9 @@ import io.choerodon.agile.app.service.IssueLinkTypeService;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarE;
 import io.choerodon.agile.domain.agile.event.OrganizationCreateEventPayload;
+import io.choerodon.agile.domain.agile.event.ProjectCreateAgilePayload;
 import io.choerodon.agile.domain.agile.event.ProjectEvent;
+import io.choerodon.agile.domain.agile.event.StatusPayload;
 import io.choerodon.agile.domain.agile.repository.TimeZoneWorkCalendarRepository;
 import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
@@ -15,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/22.
@@ -40,8 +44,10 @@ public class AgileEventHandler {
 
     private static final String AGILE_INIT_TIMEZONE = "agile-init-timezone";
     private static final String AGILE_INIT_PROJECT = "agile-init-project";
+    private static final String STATE_MACHINE_INIT_PROJECT = "state-machine-init-project";
     private static final String IAM_CREATE_PROJECT = "iam-create-project";
     private static final String ORG_CREATE = "org-create-organization";
+    private static final String PROJECT_CREATE_STATE_MACHINE = "project-create-state-machine";
 
     /**
      * 创建项目事件
@@ -54,10 +60,24 @@ public class AgileEventHandler {
             seq = 2)
     public String handleProjectInitByConsumeSagaTask(String message) {
         ProjectEvent projectEvent = JSONObject.parseObject(message, ProjectEvent.class);
-        boardService.initBoard(projectEvent.getProjectId(), projectEvent.getProjectName() + BOARD);
+//        boardService.initBoard(projectEvent.getProjectId(), projectEvent.getProjectName() + BOARD);
         projectInfoService.initializationProjectInfo(projectEvent);
         issueLinkTypeService.initIssueLinkType(projectEvent.getProjectId());
         LOGGER.info("接受项目创建消息{}", message);
+        return message;
+    }
+
+
+    @SagaTask(code = STATE_MACHINE_INIT_PROJECT,
+            description = "agile消费创建项目事件初始化看板",
+            sagaCode = PROJECT_CREATE_STATE_MACHINE,
+            seq = 3)
+    public String dealStateMachineInitProject(String message) {
+        ProjectCreateAgilePayload projectCreateAgilePayload = JSONObject.parseObject(message, ProjectCreateAgilePayload.class);
+        ProjectEvent projectEvent = projectCreateAgilePayload.getProjectEvent();
+        List<StatusPayload> statusPayloads = projectCreateAgilePayload.getStatusPayloads();
+        boardService.initBoard(projectEvent.getProjectId(), projectEvent.getProjectName() + BOARD, statusPayloads);
+        LOGGER.info("接受接收状态服务消息{}", message);
         return message;
     }
 
