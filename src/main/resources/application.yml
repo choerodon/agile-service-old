@@ -79,8 +79,8 @@ feign:
             thread:
               timeoutInMilliseconds: 30000
 ribbon:
-  ConnectTimeout: 5000
-  ReadTimeout: 5000
+  ConnectTimeout: 30000
+  ReadTimeout: 30000
 services:
   attachment:
     url: example.com

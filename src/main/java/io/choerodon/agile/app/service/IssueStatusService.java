@@ -41,4 +41,6 @@ public interface IssueStatusService {
     Page<StatusDTO> listByProjectId(Long projectId, PageRequest pageRequest);
 
     void moveStatus(Long projectId);
+
+    void updateAllData(Long projectId);
 }
