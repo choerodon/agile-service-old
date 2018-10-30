@@ -206,6 +206,8 @@ public class IssueController {
     @GetMapping(value = "/storymap/epics")
     public ResponseEntity<List<StoryMapEpicDTO>> listStoryMapEpic(@ApiParam(value = "项目id", required = true)
                                                                   @PathVariable(name = "project_id") Long projectId,
+                                                                  @ApiParam(value = "组织id", required = true)
+                                                                  @RequestParam Long organizationId,
                                                                   @ApiParam(value = "show done epic", required = false)
                                                                   @RequestParam(required = false) Boolean showDoneEpic,
                                                                   @ApiParam(value = "search item，my problem", required = false)
@@ -214,7 +216,7 @@ public class IssueController {
                                                                   @RequestParam(required = false) Boolean onlyStory,
                                                                   @ApiParam(value = "quick filter", required = false)
                                                                   @RequestParam(required = false) List<Long> quickFilterIds) {
-        return Optional.ofNullable(issueService.listStoryMapEpic(projectId, showDoneEpic, assigneeId, onlyStory, quickFilterIds))
+        return Optional.ofNullable(issueService.listStoryMapEpic(projectId, organizationId, showDoneEpic, assigneeId, onlyStory, quickFilterIds))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Epic.listStoryMapEpic"));
     }

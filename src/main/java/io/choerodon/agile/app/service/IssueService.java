@@ -52,7 +52,7 @@ public interface IssueService {
 
     List<EpicDataDTO> listEpic(Long projectId);
 
-    List<StoryMapEpicDTO> listStoryMapEpic(Long projectId, Boolean showDoneEpic, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds);
+    List<StoryMapEpicDTO> listStoryMapEpic(Long projectId, Long organizationId, Boolean showDoneEpic, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds);
 
     /**
      * 更新issue
