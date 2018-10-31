@@ -313,6 +313,7 @@
         CONCAT(api.project_code,'-', ai.issue_num) as issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        left join agile_issue_status ais on ais.id = ai.status_id
         WHERE ai.project_id = #{projectId} AND ai.type_code != 'issue_test'
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
