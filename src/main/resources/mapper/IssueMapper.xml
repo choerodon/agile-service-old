@@ -541,23 +541,10 @@
         ) AS issue_num,
         ai.status_id,
         ai.issue_type_id
---         alv2. NAME AS status_color,
---         ais. NAME AS status_name
         FROM
         agile_issue ai
         LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
---         LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
---         LEFT JOIN agile_lookup_value alv2 ON alv2.value_code = CASE ais.category_code
---         WHEN 'todo' THEN
---         'issue_status_color_todo'
---         WHEN 'doing' THEN
---         'issue_status_color_doing'
---         WHEN 'done' THEN
---         'issue_status_color_done'
---         ELSE
---         'issue_status_color_todo'
---         END
         WHERE
         ai.project_id = #{projectId}
         AND ai.type_code = 'issue_epic'

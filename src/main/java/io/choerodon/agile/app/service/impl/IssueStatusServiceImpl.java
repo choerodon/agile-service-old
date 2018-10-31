@@ -21,6 +21,7 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,69 +65,92 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     @Override
     public IssueStatusDTO create(Long projectId, IssueStatusDTO issueStatusDTO) {
         IssueStatusValidator.checkCreateStatus(projectId, issueStatusDTO);
+        StatusInfoDTO statusInfoDTO = new StatusInfoDTO();
+        statusInfoDTO.setType(issueStatusDTO.getCategoryCode());
+        statusInfoDTO.setName(issueStatusDTO.getName());
+        ResponseEntity<StatusInfoDTO> responseEntity = issueFeignClient.createStatusForAgile(projectId, statusInfoDTO);
+        if (responseEntity.getStatusCode().value() == 200 && responseEntity.getBody() != null && responseEntity.getBody().getId() != null) {
+            Long statusId = responseEntity.getBody().getId();
+            if (issueStatusMapper.selectByStatusId(projectId, statusId) != null) {
+                throw new CommonException("error.status.exist");
+            }
+            issueStatusDTO.setCompleted(false);
+            issueStatusDTO.setStatusId(statusId);
+            IssueStatusE issueStatusE = ConvertHelper.convert(issueStatusDTO, IssueStatusE.class);
+            return ConvertHelper.convert(issueStatusRepository.create(issueStatusE), IssueStatusDTO.class);
+        } else {
+            throw new CommonException("error.status.create");
+        }
+    }
+
+    @Override
+    public IssueStatusDTO createStatusByStateMachine(Long projectId, IssueStatusDTO issueStatusDTO) {
+        if (issueStatusMapper.selectByStatusId(projectId, issueStatusDTO.getStatusId()) != null) {
+            throw new CommonException("error.status.exist");
+        }
         issueStatusDTO.setCompleted(false);
-        IssueStatusE issueStatusE = ConvertHelper.convert(issueStatusDTO, IssueStatusE.class);
-        return ConvertHelper.convert(issueStatusRepository.create(issueStatusE), IssueStatusDTO.class);
+        return ConvertHelper.convert(issueStatusRepository.create(ConvertHelper.convert(issueStatusDTO, IssueStatusE.class)), IssueStatusDTO.class);
     }
 
-    public IssueStatusE updateStatus(Long projectId, Long id, StatusMoveDTO statusMoveDTO) {
-        BoardColumnDO boardColumnDO = boardColumnMapper.selectByPrimaryKey(statusMoveDTO.getColumnId());
-        IssueStatusE issueStatusE = new IssueStatusE();
-        issueStatusE.setId(id);
-        issueStatusE.setProjectId(projectId);
-        issueStatusE.setCategoryCode(boardColumnDO.getCategoryCode());
-        issueStatusE.setObjectVersionNumber(statusMoveDTO.getStatusObjectVersionNumber());
-        return issueStatusRepository.update(issueStatusE);
-    }
+//    public IssueStatusE updateStatus(Long projectId, Long id, StatusMoveDTO statusMoveDTO) {
+//        BoardColumnDO boardColumnDO = boardColumnMapper.selectByPrimaryKey(statusMoveDTO.getColumnId());
+//        IssueStatusE issueStatusE = new IssueStatusE();
+//        issueStatusE.setId(id);
+//        issueStatusE.setProjectId(projectId);
+//        issueStatusE.setCategoryCode(boardColumnDO.getCategoryCode());
+//        issueStatusE.setObjectVersionNumber(statusMoveDTO.getStatusObjectVersionNumber());
+//        return issueStatusRepository.update(issueStatusE);
+//    }
 
-    public Boolean checkColumnStatusRelExist(Long projectId, Long id, Long originColumnId) {
+    public Boolean checkColumnStatusRelExist(Long projectId, Long statusId, Long originColumnId) {
         ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO();
-        columnStatusRelDO.setStatusId(id);
+        columnStatusRelDO.setStatusId(statusId);
         columnStatusRelDO.setColumnId(originColumnId);
         columnStatusRelDO.setProjectId(projectId);
         ColumnStatusRelDO rel = columnStatusRelMapper.selectOne(columnStatusRelDO);
         return rel == null;
     }
 
-    public void deleteColumnStatusRel(Long projectId, Long id, Long originColumnId) {
+    public void deleteColumnStatusRel(Long projectId, Long statusId, Long originColumnId) {
         ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
-        columnStatusRelE.setStatusId(id);
+        columnStatusRelE.setStatusId(statusId);
         columnStatusRelE.setColumnId(originColumnId);
         columnStatusRelE.setProjectId(projectId);
         columnStatusRelRepository.delete(columnStatusRelE);
     }
 
-    public void createColumnStatusRel(Long projectId, Long id, StatusMoveDTO statusMoveDTO) {
+    public void createColumnStatusRel(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO) {
         ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO();
-        columnStatusRelDO.setStatusId(id);
+        columnStatusRelDO.setStatusId(statusId);
+        columnStatusRelDO.setProjectId(projectId);
         columnStatusRelDO.setColumnId(statusMoveDTO.getColumnId());
         if (columnStatusRelMapper.select(columnStatusRelDO).isEmpty()) {
             ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
             columnStatusRelE.setColumnId(statusMoveDTO.getColumnId());
             columnStatusRelE.setPosition(statusMoveDTO.getPosition());
-            columnStatusRelE.setStatusId(id);
+            columnStatusRelE.setStatusId(statusId);
             columnStatusRelE.setProjectId(projectId);
             columnStatusRelRepository.create(columnStatusRelE);
         }
     }
 
     @Override
-    public IssueStatusDTO moveStatusToColumn(Long projectId, Long id, StatusMoveDTO statusMoveDTO) {
-        if (!checkColumnStatusRelExist(projectId, id, statusMoveDTO.getOriginColumnId())) {
-            deleteColumnStatusRel(projectId, id, statusMoveDTO.getOriginColumnId());
+    public IssueStatusDTO moveStatusToColumn(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO) {
+        if (!checkColumnStatusRelExist(projectId, statusId, statusMoveDTO.getOriginColumnId())) {
+            deleteColumnStatusRel(projectId, statusId, statusMoveDTO.getOriginColumnId());
         }
-        createColumnStatusRel(projectId, id, statusMoveDTO);
-        return ConvertHelper.convert(issueStatusMapper.selectByPrimaryKey(id), IssueStatusDTO.class);
+        createColumnStatusRel(projectId, statusId, statusMoveDTO);
+        return ConvertHelper.convert(issueStatusMapper.selectByStatusId(projectId, statusId), IssueStatusDTO.class);
     }
 
     @Override
-    public IssueStatusDTO moveStatusToUnCorrespond(Long projectId, Long id, StatusMoveDTO statusMoveDTO) {
+    public IssueStatusDTO moveStatusToUnCorrespond(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO) {
         ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
-        columnStatusRelE.setStatusId(id);
+        columnStatusRelE.setStatusId(statusId);
         columnStatusRelE.setColumnId(statusMoveDTO.getColumnId());
         columnStatusRelE.setProjectId(projectId);
         columnStatusRelRepository.delete(columnStatusRelE);
-        return ConvertHelper.convert(issueStatusMapper.selectByPrimaryKey(id), IssueStatusDTO.class);
+        return ConvertHelper.convert(issueStatusMapper.selectByStatusId(projectId, statusId), IssueStatusDTO.class);
     }
 
 //    @Override
@@ -171,25 +195,25 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         }
     }
 
-    @Override
-    public void deleteStatus(Long projectId, Long id) {
-        checkIssueNumOfStatus(projectId, id);
-        ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
-        columnStatusRelE.setProjectId(projectId);
-        columnStatusRelE.setStatusId(id);
-        columnStatusRelRepository.delete(columnStatusRelE);
-        IssueStatusE issueStatusE = new IssueStatusE();
-        issueStatusE.setProjectId(projectId);
-        issueStatusE.setId(id);
-        issueStatusRepository.delete(issueStatusE);
-    }
+//    @Override
+//    public void deleteStatus(Long projectId, Long id) {
+//        checkIssueNumOfStatus(projectId, id);
+//        ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
+//        columnStatusRelE.setProjectId(projectId);
+//        columnStatusRelE.setStatusId(id);
+//        columnStatusRelRepository.delete(columnStatusRelE);
+//        IssueStatusE issueStatusE = new IssueStatusE();
+//        issueStatusE.setProjectId(projectId);
+//        issueStatusE.setId(id);
+//        issueStatusRepository.delete(issueStatusE);
+//    }
 
-    @Override
-    public List<IssueStatusDTO> queryIssueStatusList(Long projectId) {
-        IssueStatusDO issueStatusDO = new IssueStatusDO();
-        issueStatusDO.setProjectId(projectId);
-        return ConvertHelper.convertList(issueStatusMapper.select(issueStatusDO), IssueStatusDTO.class);
-    }
+//    @Override
+//    public List<IssueStatusDTO> queryIssueStatusList(Long projectId) {
+//        IssueStatusDO issueStatusDO = new IssueStatusDO();
+//        issueStatusDO.setProjectId(projectId);
+//        return ConvertHelper.convertList(issueStatusMapper.select(issueStatusDO), IssueStatusDTO.class);
+//    }
 
     @Override
     public IssueStatusDTO updateStatus(Long projectId, IssueStatusDTO issueStatusDTO) {
@@ -198,18 +222,18 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         return ConvertHelper.convert(issueStatusRepository.update(issueStatusE), IssueStatusDTO.class);
     }
 
-    @Override
-    public Page<StatusDTO> listByProjectId(Long projectId, PageRequest pageRequest) {
-        Page<StatusDO> statusDOPage = PageHelper.doPageAndSort(pageRequest, () -> issueStatusMapper.listByProjectId(projectId));
-        Page<StatusDTO> statusDTOPage = new Page<>();
-        statusDTOPage.setTotalPages(statusDOPage.getTotalPages());
-        statusDTOPage.setNumber(statusDOPage.getNumber());
-        statusDTOPage.setNumberOfElements(statusDOPage.getNumberOfElements());
-        statusDTOPage.setTotalElements(statusDOPage.getTotalElements());
-        statusDTOPage.setSize(statusDOPage.getSize());
-        statusDTOPage.setContent(ConvertHelper.convertList(statusDOPage.getContent(), StatusDTO.class));
-        return statusDTOPage;
-    }
+//    @Override
+//    public Page<StatusDTO> listByProjectId(Long projectId, PageRequest pageRequest) {
+//        Page<StatusDO> statusDOPage = PageHelper.doPageAndSort(pageRequest, () -> issueStatusMapper.listByProjectId(projectId));
+//        Page<StatusDTO> statusDTOPage = new Page<>();
+//        statusDTOPage.setTotalPages(statusDOPage.getTotalPages());
+//        statusDTOPage.setNumber(statusDOPage.getNumber());
+//        statusDTOPage.setNumberOfElements(statusDOPage.getNumberOfElements());
+//        statusDTOPage.setTotalElements(statusDOPage.getTotalElements());
+//        statusDTOPage.setSize(statusDOPage.getSize());
+//        statusDTOPage.setContent(ConvertHelper.convertList(statusDOPage.getContent(), StatusDTO.class));
+//        return statusDTOPage;
+//    }
 
     @Override
     public void moveStatus(Long projectId) {

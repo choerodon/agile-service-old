@@ -51,6 +51,18 @@ public class IssueStatusController {
                 .orElseThrow(() -> new CommonException("error.status.create"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+    @ApiOperation("状态机服务回写状态信息")
+    @PostMapping("/back_update")
+    public ResponseEntity<IssueStatusDTO> createStatusByStateMachine(@ApiParam(value = "项目id", required = true)
+                                                                     @PathVariable(name = "project_id") Long projectId,
+                                                                     @ApiParam(value = "issue status object", required = true)
+                                                                     @RequestBody IssueStatusDTO issueStatusDTO) {
+        return Optional.ofNullable(issueStatusService.createStatusByStateMachine(projectId, issueStatusDTO))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.status.create"));
+    }
+
 //    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
 //    @ApiOperation("查询项目下未对应的状态")
 //    @GetMapping(value = "/list_by_options")
@@ -77,52 +89,52 @@ public class IssueStatusController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("状态移动至列中")
-    @PostMapping(value = "/{id}/move_to_column")
+    @PostMapping(value = "/{statusId}/move_to_column")
     public ResponseEntity<IssueStatusDTO> moveStatusToColumn(@ApiParam(value = "项目id", required = true)
                                                              @PathVariable(name = "project_id") Long projectId,
-                                                             @ApiParam(value = "状态id", required = true)
-                                                             @PathVariable Long id,
+                                                             @ApiParam(value = "状态statusId", required = true)
+                                                             @PathVariable Long statusId,
                                                              @ApiParam(value = "status move object", required = true)
                                                              @RequestBody StatusMoveDTO statusMoveDTO) {
-        return Optional.ofNullable(issueStatusService.moveStatusToColumn(projectId, id, statusMoveDTO))
+        return Optional.ofNullable(issueStatusService.moveStatusToColumn(projectId, statusId, statusMoveDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException(ERROR_STATUS_GET));
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("状态移动至未对应")
-    @PostMapping(value = "/{id}/move_to_uncorrespond")
+    @PostMapping(value = "/{statusId}/move_to_uncorrespond")
     public ResponseEntity<IssueStatusDTO> moveStatusToUnCorrespond(@ApiParam(value = "项目id", required = true)
                                                                    @PathVariable(name = "project_id") Long projectId,
                                                                    @ApiParam(value = "状态id", required = true)
-                                                                   @PathVariable Long id,
+                                                                   @PathVariable Long statusId,
                                                                    @ApiParam(value = "status move object", required = true)
                                                                    @RequestBody StatusMoveDTO statusMoveDTO) {
-        return Optional.ofNullable(issueStatusService.moveStatusToUnCorrespond(projectId, id, statusMoveDTO))
+        return Optional.ofNullable(issueStatusService.moveStatusToUnCorrespond(projectId, statusId, statusMoveDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException(ERROR_STATUS_GET));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
-    @ApiOperation("删除未对应的状态")
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity deleteStatus(@ApiParam(value = "项目id", required = true)
-                                       @PathVariable(name = "project_id") Long projectId,
-                                       @ApiParam(value = "状态code", required = true)
-                                       @PathVariable Long id) {
-        issueStatusService.deleteStatus(projectId, id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+//    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+//    @ApiOperation("删除未对应的状态")
+//    @DeleteMapping(value = "/{id}")
+//    public ResponseEntity deleteStatus(@ApiParam(value = "项目id", required = true)
+//                                       @PathVariable(name = "project_id") Long projectId,
+//                                       @ApiParam(value = "状态code", required = true)
+//                                       @PathVariable Long id) {
+//        issueStatusService.deleteStatus(projectId, id);
+//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//    }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("查询项目下的issue状态")
-    @GetMapping(value = "/list")
-    public ResponseEntity<List<IssueStatusDTO>> listStatusByProjectId(@ApiParam(value = "项目id", required = true)
-                                                                      @PathVariable(name = "project_id") Long projectId) {
-        return Optional.ofNullable(issueStatusService.queryIssueStatusList(projectId))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.status.queryIssueStatusList"));
-    }
+//    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+//    @ApiOperation("查询项目下的issue状态")
+//    @GetMapping(value = "/list")
+//    public ResponseEntity<List<IssueStatusDTO>> listStatusByProjectId(@ApiParam(value = "项目id", required = true)
+//                                                                      @PathVariable(name = "project_id") Long projectId) {
+//        return Optional.ofNullable(issueStatusService.queryIssueStatusList(projectId))
+//                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+//                .orElseThrow(() -> new CommonException("error.status.queryIssueStatusList"));
+//    }
 
     @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("更新状态")
@@ -136,19 +148,19 @@ public class IssueStatusController {
                 .orElseThrow(() -> new CommonException("error.status.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("根据项目id查询状态列表")
-    @CustomPageRequest
-    @GetMapping(value = "/statuses")
-    public ResponseEntity<Page<StatusDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
-                                                           @PathVariable(name = "project_id") Long projectId,
-                                                           @ApiIgnore
-                                                           @ApiParam(value = "分页信息", required = true)
-                                                           @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-        return Optional.ofNullable(issueStatusService.listByProjectId(projectId, pageRequest))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.statusList.get"));
-    }
+//    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+//    @ApiOperation("根据项目id查询状态列表")
+//    @CustomPageRequest
+//    @GetMapping(value = "/statuses")
+//    public ResponseEntity<Page<StatusDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
+//                                                           @PathVariable(name = "project_id") Long projectId,
+//                                                           @ApiIgnore
+//                                                           @ApiParam(value = "分页信息", required = true)
+//                                                           @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
+//        return Optional.ofNullable(issueStatusService.listByProjectId(projectId, pageRequest))
+//                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+//                .orElseThrow(() -> new CommonException("error.statusList.get"));
+//    }
 
 
     @ApiOperation("迁移数据，查询所有状态，执行1")

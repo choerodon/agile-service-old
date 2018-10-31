@@ -18,15 +18,17 @@ public interface IssueStatusService {
 
     IssueStatusDTO create(Long projectId, IssueStatusDTO issueStatusDTO);
 
-    IssueStatusDTO moveStatusToColumn(Long projectId, Long id, StatusMoveDTO statusMoveDTO);
+    IssueStatusDTO createStatusByStateMachine(Long projectId, IssueStatusDTO issueStatusDTO);
+
+    IssueStatusDTO moveStatusToColumn(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO);
 
 //    List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId);
 
     List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId);
 
-    IssueStatusDTO moveStatusToUnCorrespond(Long projectId, Long id, StatusMoveDTO statusMoveDTO);
+    IssueStatusDTO moveStatusToUnCorrespond(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO);
 
-    void deleteStatus(Long projectId, Long id);
+//    void deleteStatus(Long projectId, Long id);
 
     /**
      * 查询issueStatus列表
@@ -34,11 +36,11 @@ public interface IssueStatusService {
      * @param projectId projectId
      * @return IssueStatusDTO
      */
-    List<IssueStatusDTO> queryIssueStatusList(Long projectId);
+//    List<IssueStatusDTO> queryIssueStatusList(Long projectId);
 
     IssueStatusDTO updateStatus(Long projectId, IssueStatusDTO issueStatusDTO);
 
-    Page<StatusDTO> listByProjectId(Long projectId, PageRequest pageRequest);
+//    Page<StatusDTO> listByProjectId(Long projectId, PageRequest pageRequest);
 
     void moveStatus(Long projectId);
 
