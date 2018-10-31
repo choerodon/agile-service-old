@@ -245,13 +245,13 @@ public class DateUtil {
     private void handleHolidays(Set<Date> dates, Set<Integer> year, Date startDate, Date endDate, TimeZoneWorkCalendarDO timeZoneWorkCalendarDO) {
         if (!dates.isEmpty() && timeZoneWorkCalendarDO != null) {
             Set<WorkCalendarHolidayRefDO> holidays = new HashSet<>();
-            year.forEach(y -> holidays.addAll(new HashSet<>(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(String.valueOf(y)))));
+            year.forEach(y -> holidays.addAll(new HashSet<>(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(y))));
             if (timeZoneWorkCalendarDO.getUseHoliday() && !holidays.isEmpty()) {
                 handleHolidaysRemoveAndAdd(dates, holidays, startDate, endDate);
             }
         } else if (dates.isEmpty() && timeZoneWorkCalendarDO != null && timeZoneWorkCalendarDO.getUseHoliday()) {
             Set<WorkCalendarHolidayRefDO> holidays = new HashSet<>();
-            year.forEach(y -> holidays.addAll(new HashSet<>(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(String.valueOf(y)))));
+            year.forEach(y -> holidays.addAll(new HashSet<>(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(y))));
             if (!holidays.isEmpty()) {
                 SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);
                 dates.addAll(holidays.stream().map(holiday -> {
@@ -388,7 +388,7 @@ public class DateUtil {
 
     private void handleSameDayHoliday(Calendar calendar, TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Set<Date> dates, Date date) {
         if (timeZoneWorkCalendarDO.getUseHoliday()) {
-            Set<WorkCalendarHolidayRefDO> holidays = (new HashSet<>(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(String.valueOf(calendar.get(Calendar.YEAR)))));
+            Set<WorkCalendarHolidayRefDO> holidays = (new HashSet<>(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(calendar.get(Calendar.YEAR))));
             if (!holidays.isEmpty()) {
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);

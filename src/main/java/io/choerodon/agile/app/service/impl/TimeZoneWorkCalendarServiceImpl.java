@@ -94,20 +94,21 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
     }
 
     @Override
-    public List<TimeZoneWorkCalendarRefDTO> queryTimeZoneWorkCalendarRefByTimeZoneId(Long organizationId, Long timeZoneId) {
+    public List<TimeZoneWorkCalendarRefDTO> queryTimeZoneWorkCalendarRefByTimeZoneId(Long organizationId, Long timeZoneId, Integer year) {
         TimeZoneWorkCalendarRefDO timeZoneWorkCalendarRefDO = new TimeZoneWorkCalendarRefDO();
         timeZoneWorkCalendarRefDO.setOrganizationId(organizationId);
         timeZoneWorkCalendarRefDO.setTimeZoneId(timeZoneId);
+        timeZoneWorkCalendarRefDO.setYear(year);
         return ConvertHelper.convertList(timeZoneWorkCalendarRefMapper.select(timeZoneWorkCalendarRefDO), TimeZoneWorkCalendarRefDTO.class);
     }
 
     @Override
-    public TimeZoneWorkCalendarRefDetailDTO queryTimeZoneWorkCalendarDetail(Long organizationId) {
+    public TimeZoneWorkCalendarRefDetailDTO queryTimeZoneWorkCalendarDetail(Long organizationId, Integer year) {
         TimeZoneWorkCalendarDO query = new TimeZoneWorkCalendarDO();
         query.setOrganizationId(organizationId);
         TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = timeZoneWorkCalendarMapper.selectOne(query);
         if (timeZoneWorkCalendarDO != null) {
-            return initTimeZoneWorkCalendarRefDetailDTO(timeZoneWorkCalendarDO, organizationId);
+            return initTimeZoneWorkCalendarRefDetailDTO(timeZoneWorkCalendarDO, organizationId, year);
         } else {
             timeZoneWorkCalendarDO = new TimeZoneWorkCalendarDO();
             timeZoneWorkCalendarDO.setAreaCode("Asia");
@@ -119,13 +120,14 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
                     .toTarget(timeZoneWorkCalendarDO, TimeZoneWorkCalendarE.class);
             timeZoneWorkCalendarE.setOrganizationId(organizationId);
             timeZoneWorkCalendarDO = ConvertHelper.convert(timeZoneWorkCalendarRepository.create(timeZoneWorkCalendarE), TimeZoneWorkCalendarDO.class);
-            return initTimeZoneWorkCalendarRefDetailDTO(timeZoneWorkCalendarDO, organizationId);
+            return initTimeZoneWorkCalendarRefDetailDTO(timeZoneWorkCalendarDO, organizationId, year);
         }
     }
 
-    private TimeZoneWorkCalendarRefDetailDTO initTimeZoneWorkCalendarRefDetailDTO(TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Long organizationId) {
+    private TimeZoneWorkCalendarRefDetailDTO initTimeZoneWorkCalendarRefDetailDTO(TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Long organizationId, Integer year) {
         TimeZoneWorkCalendarRefDO timeZoneWorkCalendarRefDO = new TimeZoneWorkCalendarRefDO();
         timeZoneWorkCalendarRefDO.setOrganizationId(organizationId);
+        timeZoneWorkCalendarRefDO.setYear(year);
         timeZoneWorkCalendarRefDO.setTimeZoneId(timeZoneWorkCalendarDO.getTimeZoneId());
         TimeZoneWorkCalendarRefDetailDTO timeZoneWorkCalendarRefDetailDTO = timeZoneWorkCalendarAssembler.toTarget(timeZoneWorkCalendarDO, TimeZoneWorkCalendarRefDetailDTO.class);
         timeZoneWorkCalendarRefDetailDTO.setTimeZoneWorkCalendarDTOS(timeZoneWorkCalendarRefMapper.select(timeZoneWorkCalendarRefDO)
@@ -136,7 +138,7 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
                     return timeZoneWorkCalendarRefCreateDTO;
                 }).collect(Collectors.toSet()));
         if (timeZoneWorkCalendarDO.getUseHoliday()) {
-            timeZoneWorkCalendarRefDetailDTO.setWorkHolidayCalendarDTOS(workCalendarHolidayRefMapper.selectAll().stream().map(d -> {
+            timeZoneWorkCalendarRefDetailDTO.setWorkHolidayCalendarDTOS(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(year).stream().map(d -> {
                 TimeZoneWorkCalendarHolidayRefDTO timeZoneWorkCalendarHolidayRefDTO = new TimeZoneWorkCalendarHolidayRefDTO();
                 timeZoneWorkCalendarHolidayRefDTO.setStatus(d.getStatus());
                 timeZoneWorkCalendarHolidayRefDTO.setHoliday(d.getHoliday());

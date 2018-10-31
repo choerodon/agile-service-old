@@ -520,13 +520,14 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
-    public SprintWorkCalendarDTO querySprintWorkCalendarRefs(Long projectId) {
+    public SprintWorkCalendarDTO querySprintWorkCalendarRefs(Long projectId, Integer year) {
         SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
         if (sprintSearchDO != null) {
             SprintWorkCalendarDTO sprintWorkCalendarDTO = sprintSearchAssembler.toTarget(sprintSearchDO, SprintWorkCalendarDTO.class);
             SprintWorkCalendarRefDO sprintWorkCalendarRefDO = new SprintWorkCalendarRefDO();
             sprintWorkCalendarRefDO.setProjectId(projectId);
             sprintWorkCalendarRefDO.setSprintId(sprintWorkCalendarDTO.getSprintId());
+            sprintWorkCalendarRefDO.setYear(year);
             sprintWorkCalendarDTO.setSprintWorkCalendarRefDTOS(sprintCreateAssembler.toTargetList(sprintWorkCalendarRefMapper.select(sprintWorkCalendarRefDO), SprintWorkCalendarRefDTO.class));
             return sprintWorkCalendarDTO;
         } else {

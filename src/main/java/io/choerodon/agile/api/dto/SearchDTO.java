@@ -2,6 +2,7 @@ package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,10 +26,20 @@ public class SearchDTO {
      */
     private Map<String, Object> otherArgs;
 
+    private List<Long> quickFilterIds;
+
     /**
      * issueNum+summary模糊搜索
      */
     private String content;
+
+    public List<Long> getQuickFilterIds() {
+        return quickFilterIds;
+    }
+
+    public void setQuickFilterIds(List<Long> quickFilterIds) {
+        this.quickFilterIds = quickFilterIds;
+    }
 
     public Map<String, Object> getSearchArgs() {
         return searchArgs;

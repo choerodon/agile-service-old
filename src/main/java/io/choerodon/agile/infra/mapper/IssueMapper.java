@@ -89,23 +89,6 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<IssueCountDO> queryTotalEstimateByEpicIds(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds);
 
-    /**
-     * 分页过滤查询issue列表，不包括子任务
-     *
-     * @param projectId          projectId
-     * @param searchArgs         searchArgs
-     * @param advancedSearchArgs advancedSearchArgs
-     * @param otherArgs          otherArgs
-     * @param content            content
-     * @return IssueDO
-     */
-    List<IssueDO> queryIssueListWithoutSub(@Param("projectId") Long projectId,
-                                           @Param("searchArgs") Map<String, Object> searchArgs,
-                                           @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
-                                           @Param("otherArgs") Map<String, Object> otherArgs,
-                                           @Param("content") String content,
-                                           @Param("filterStatusIds") List<Long> filterStatusIds);
-
     List<IssueLabelDO> selectLabelNameByIssueId(@Param("issueId") Long issueId);
 
     List<IssueCommonDO> listByOptions(@Param("projectId") Long projectId,
@@ -406,4 +389,13 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     void batchUpdatePriority(@Param("issueDOList") List<IssueDO> issueDOList);
 
     void batchUpdateIssueType(@Param("issueDOForTypeList") List<IssueDO> issueDOForTypeList);
+
+    List<Long> queryIssueIdsListWithSub(@Param("projectId") Long projectId,
+                                           @Param("searchArgs") Map<String, Object> searchArgs,
+                                           @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
+                                           @Param("otherArgs") Map<String, Object> otherArgs,
+                                           @Param("content") String content,
+                                           @Param("filterSql") String filterSql, @Param("filterStatusIds") List<Long> filterStatusIds);
+
+    List<IssueDO> queryIssueListWithSubByIssueIds(@Param("issueIds") List<Long> issueIds);
 }

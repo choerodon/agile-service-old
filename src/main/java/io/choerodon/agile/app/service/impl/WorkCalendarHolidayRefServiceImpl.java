@@ -34,7 +34,7 @@ public class WorkCalendarHolidayRefServiceImpl implements WorkCalendarHolidayRef
     private WorkCalendarFactory workCalendarFactory;
 
     @Override
-    public void updateWorkCalendarHolidayRefByYear(String year) {
+    public void updateWorkCalendarHolidayRefByYear(Integer year) {
         WorkCalendarService workCalendarService = workCalendarFactory.getWorkCalendarHoliday(workCalendarHolidayProperties.getType());
         if (workCalendarService != null) {
             workCalendarService.updateWorkCalendarHolidayRefByYear(year);
@@ -42,7 +42,7 @@ public class WorkCalendarHolidayRefServiceImpl implements WorkCalendarHolidayRef
     }
 
     @Override
-    public List<WorkCalendarHolidayRefDTO> queryWorkCalendarHolidayRelByYear(String year) {
+    public List<WorkCalendarHolidayRefDTO> queryWorkCalendarHolidayRelByYear(Integer year) {
         return workCalendarHolidayRefAssembler.toTargetList(DateUtil.stringDateCompare().
                 sortedCopy(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(year)), WorkCalendarHolidayRefDTO.class);
     }

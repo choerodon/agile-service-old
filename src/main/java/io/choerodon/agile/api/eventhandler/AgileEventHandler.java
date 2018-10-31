@@ -54,6 +54,7 @@ public class AgileEventHandler {
     private static final String IAM_CREATE_PROJECT = "iam-create-project";
     private static final String ORG_CREATE = "org-create-organization";
     private static final String PROJECT_CREATE_STATE_MACHINE = "project-create-state-machine";
+    private static final String ORG_REGISTER = "org-register";
 
     /**
      * 创建项目事件
@@ -108,8 +109,22 @@ public class AgileEventHandler {
     }
 
     @SagaTask(code = AGILE_INIT_TIMEZONE, sagaCode = ORG_CREATE, seq = 1, description = "接收org服务创建组织事件初始化时区")
-    public String handleOrganizationInitTimeZoneSagaTask(String message) {
-        OrganizationCreateEventPayload organizationCreateEventPayload = JSONObject.parseObject(message, OrganizationCreateEventPayload.class);
+    public String handleOrgaizationCreateByConsumeSagaTask(String message) {
+        handleOrganizationInitTimeZoneSagaTask(message);
+        return message;
+    }
+
+    @SagaTask(code = AGILE_INIT_TIMEZONE,
+            description = "issue消费注册组织初始化数据",
+            sagaCode = ORG_REGISTER,
+            seq = 3)
+    public String handleOrgaizationRegisterByConsumeSagaTask(String data) {
+        handleOrganizationInitTimeZoneSagaTask(data);
+        return data;
+    }
+
+    private void handleOrganizationInitTimeZoneSagaTask(String data) {
+        OrganizationCreateEventPayload organizationCreateEventPayload = JSONObject.parseObject(data, OrganizationCreateEventPayload.class);
         Long organizationId = organizationCreateEventPayload.getId();
         TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = new TimeZoneWorkCalendarDO();
         timeZoneWorkCalendarDO.setOrganizationId(organizationId);
@@ -124,8 +139,7 @@ public class AgileEventHandler {
             timeZoneWorkCalendarE.setOrganizationId(organizationId);
             timeZoneWorkCalendarRepository.create(timeZoneWorkCalendarE);
         }
-        LOGGER.info("接受组织创建消息{}", message);
-        return message;
+        LOGGER.info("接受组织创建消息{}", data);
     }
 
 }

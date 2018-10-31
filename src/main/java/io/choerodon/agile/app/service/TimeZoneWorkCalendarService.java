@@ -51,16 +51,18 @@ public interface TimeZoneWorkCalendarService {
      *
      * @param organizationId organizationId
      * @param timeZoneId     timeZoneId
+     * @param year           year
      * @return TimeZoneWorkCalendarRefDTO
      */
-    List<TimeZoneWorkCalendarRefDTO> queryTimeZoneWorkCalendarRefByTimeZoneId(Long organizationId, Long timeZoneId);
+    List<TimeZoneWorkCalendarRefDTO> queryTimeZoneWorkCalendarRefByTimeZoneId(Long organizationId, Long timeZoneId, Integer year);
 
     /**
      * ¬
      * 获取时区下的工作日历详情
      *
      * @param organizationId organizationId
+     * @param year           year
      * @return TimeZoneWorkCalendarRefCreateDTO
      */
-    TimeZoneWorkCalendarRefDetailDTO queryTimeZoneWorkCalendarDetail(Long organizationId);
+    TimeZoneWorkCalendarRefDetailDTO queryTimeZoneWorkCalendarDetail(Long organizationId, Integer year);
 }
