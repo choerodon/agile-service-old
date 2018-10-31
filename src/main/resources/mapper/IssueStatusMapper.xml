@@ -133,7 +133,10 @@
     </update>
 
     <select id="selectByStatusId" resultType="io.choerodon.agile.infra.dataobject.IssueStatusDO">
-        SELECT ais.*
+        SELECT
+        ais.*,
+        ais.is_enable enable,
+        ais.is_completed completed
         FROM agile_issue_status ais
         WHERE ais.project_id = #{projectId} AND ais.status_id = #{statusId}
     </select>

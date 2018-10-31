@@ -124,7 +124,7 @@
             alv3.name                                                                        AS color_value,
             IF(ai3.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai3.issue_num)) AS parent_issue_num,
             CONCAT_WS('-', api.project_code, ai.issue_num)                                   AS issue_num_splicing
-        FROM agile_issue ai LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
+        FROM agile_issue ai LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id AND ais.project_id = ai.project_id
 --             LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
             LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
             LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code

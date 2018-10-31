@@ -4,11 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.service.IssueService;
+import io.choerodon.agile.app.service.StateMachineService;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
-import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
@@ -45,10 +45,8 @@ public class IssueController {
 
     @Autowired
     private IssueRule issueRule;
-
     @Autowired
     private VerifyUpdateUtil verifyUpdateUtil;
-
     @Autowired
     private IssueValidator issueValidator;
 
@@ -95,6 +93,20 @@ public class IssueController {
         return Optional.ofNullable(issueService.updateIssue(projectId, issueUpdateDTO, fieldList))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.Issue.updateIssue"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("更新issue的状态")
+    @PutMapping("/update_status")
+    public ResponseEntity<IssueDTO> updateIssueStatus(@ApiParam(value = "项目id", required = true)
+                                                      @PathVariable(name = "project_id") Long projectId,
+                                                      @ApiParam(value = "转换id", required = true)
+                                                      @RequestParam Long transformId,
+                                                      @ApiParam(value = "问题id", required = true)
+                                                      @RequestParam Long issueId) {
+        return Optional.ofNullable(issueService.updateIssueStatus(projectId, issueId, transformId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.Issue.updateIssueStatus"));
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})

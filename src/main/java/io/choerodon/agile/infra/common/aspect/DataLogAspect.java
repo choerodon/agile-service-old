@@ -941,7 +941,7 @@ public class DataLogAspect {
             IssueE issueE = (IssueE) result;
             if (issueE != null) {
                 //若创建issue的初始状态为已完成，生成日志
-                IssueStatusDO issueStatusDO = issueStatusMapper.selectByStatusId(issueE.getProjectId(),issueE.getStatusId());
+                IssueStatusDO issueStatusDO = issueStatusMapper.selectByStatusId(issueE.getProjectId(), issueE.getStatusId());
                 redisUtil.deleteRedisCache(new String[]{PIECHART + issueE.getProjectId() + ':' + "*"});
                 if ((issueStatusDO.getCompleted() != null && issueStatusDO.getCompleted())) {
                     deleteBurnDownCache(issueE.getSprintId(), issueE.getProjectId(), issueE.getIssueId(), "*");
@@ -1073,8 +1073,8 @@ public class DataLogAspect {
             if (originIssueDO.getStatusId().equals(issueE.getStatusId())) {
                 return;
             }
-            IssueStatusDO originStatus = issueStatusMapper.selectByPrimaryKey(originIssueDO.getStatusId());
-            IssueStatusDO currentStatus = issueStatusMapper.selectByPrimaryKey(issueE.getStatusId());
+            IssueStatusDO originStatus = issueStatusMapper.selectByStatusId(originIssueDO.getProjectId(), originIssueDO.getStatusId());
+            IssueStatusDO currentStatus = issueStatusMapper.selectByStatusId(originIssueDO.getProjectId(), issueE.getStatusId());
             createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
                     FIELD_STATUS, originStatus.getName(), currentStatus.getName(),
                     originIssueDO.getStatusId().toString(),

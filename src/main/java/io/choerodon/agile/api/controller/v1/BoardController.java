@@ -1,11 +1,11 @@
 package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
+import io.choerodon.agile.api.dto.BoardDTO;
 import io.choerodon.agile.api.dto.IssueMoveDTO;
 import io.choerodon.agile.api.dto.UserSettingDTO;
-import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.api.dto.BoardDTO;
 import io.choerodon.agile.app.service.BoardService;
+import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
@@ -116,9 +116,11 @@ public class BoardController {
                                              @PathVariable(name = "project_id") Long projectId,
                                              @ApiParam(value = "issue id", required = true)
                                              @PathVariable Long issueId,
+                                             @ApiParam(value = "转换id", required = true)
+                                             @RequestParam Long transformId,
                                              @ApiParam(value = "issue move object", required = true)
                                              @RequestBody IssueMoveDTO issueMoveDTO) {
-        return Optional.ofNullable(boardService.move(projectId, issueId, issueMoveDTO))
+        return Optional.ofNullable(boardService.move(projectId, issueId, transformId, issueMoveDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.update"));
     }

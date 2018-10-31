@@ -236,7 +236,7 @@
         <!--state-machine-client-->
         <dependency>
             <groupId>io.choerodon</groupId>
-            <artifactId>choerodon-starter-stateMachine</artifactId>
+            <artifactId>choerodon-starter-statemachine</artifactId>
             <version>0.1.0.RELEASE</version>
         </dependency>
     </dependencies>

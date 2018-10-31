@@ -65,6 +65,16 @@ public interface IssueService {
     IssueDTO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList);
 
     /**
+     * 更新issue的状态
+     *
+     * @param projectId
+     * @param issueId
+     * @param transformId
+     * @return
+     */
+    IssueDTO updateIssueStatus(Long projectId, Long issueId, Long transformId);
+
+    /**
      * 更新issue自己的字段
      *
      * @param issueUpdateDTO
