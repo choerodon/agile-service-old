@@ -18,6 +18,8 @@ public class IssueUpdateTypeDTO {
 
     private Long projectId;
 
+    private Long issueTypeId;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -56,6 +58,14 @@ public class IssueUpdateTypeDTO {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
     }
 
     @Override
