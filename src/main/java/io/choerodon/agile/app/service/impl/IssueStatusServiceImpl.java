@@ -261,6 +261,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         issueFeignClient.fixStateMachineScheme(result);
     }
 
+
     @Override
     public void updateAllData(Long projectId) {
         List<IssueStatusDO> statuses = issueStatusMapper.selectAll();
@@ -304,7 +305,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 
         // 迁移问题类型
         Map<Long, Map<String, Long>> issueTypes = issueFeignClient.queryIssueTypes().getBody();
-                List<IssueDO> issueDOForTypeList = issueMapper.selectAllType();
+        List<IssueDO> issueDOForTypeList = issueMapper.selectAllType();
         for (IssueDO issueDO : issueDOForTypeList) {
             if (proWithOrg.get(issueDO.getProjectId()) != null) {
                 Map<String, Long> iTypes = issueTypes.get(proWithOrg.get(issueDO.getProjectId()));
@@ -313,4 +314,5 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         }
         issueMapper.batchUpdateIssueType(issueDOForTypeList);
     }
+
 }

@@ -8,6 +8,7 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class IssuePriorityDistributionChartDTO {
 
+    private String name;
 //    private String name;
 //
 //    private String priorityCode;
@@ -18,7 +19,15 @@ public class IssuePriorityDistributionChartDTO {
 
     private PriorityDTO priorityDTO;
 
-//    public String getName() {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    //    public String getName() {
 //        return name;
 //    }
 //

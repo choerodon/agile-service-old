@@ -61,8 +61,8 @@ public class JuheWorkCalendarServiceImpl implements WorkCalendarService {
     }
 
     @Override
-    public void updateWorkCalendarHolidayRefByYear(String year) {
-        handleUpdateWorkCalendarHolidayRef(Integer.parseInt(year), false);
+    public void updateWorkCalendarHolidayRefByYear(Integer year) {
+        handleUpdateWorkCalendarHolidayRef(year, false);
     }
 
     private void handleUpdateWorkCalendarHolidayRef(int y, Boolean automatic) {

@@ -135,23 +135,21 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssueSub"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("分页过滤查询issue列表(不包含子任务,不含测试任务)")
-    @CustomPageRequest
-    @PostMapping(value = "/no_sub")
-    public ResponseEntity<Page<IssueListDTO>> listIssueWithoutSub(@ApiIgnore
-                                                                  @ApiParam(value = "分页信息", required = true)
-                                                                  @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
-                                                                          PageRequest pageRequest,
-                                                                  @ApiParam(value = "项目id", required = true)
-                                                                  @PathVariable(name = "project_id") Long projectId,
-                                                                  @ApiParam(value = "组织id", required = true)
-                                                                  @RequestParam Long organizationId,
-                                                                  @ApiParam(value = "查询参数", required = true)
-                                                                  @RequestBody(required = false) SearchDTO searchDTO) {
-        return Optional.ofNullable(issueService.listIssueWithoutSub(projectId, searchDTO, pageRequest, organizationId))
+
+    @PostMapping(value = "/include_sub")
+    public ResponseEntity<Page<IssueListDTO>> listIssueWithSub(@ApiIgnore
+                                                               @ApiParam(value = "分页信息", required = true)
+                                                               @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
+                                                                       PageRequest pageRequest,
+                                                               @ApiParam(value = "项目id", required = true)
+                                                               @PathVariable(name = "project_id") Long projectId,
+                                                               @ApiParam(value = "查询参数", required = true)
+                                                               @RequestBody(required = false) SearchDTO searchDTO,
+                                                               @ApiParam(value = "查询参数", required = true)
+                                                               @RequestParam Long organizationId) {
+        return Optional.ofNullable(issueService.listIssueWithSub(projectId, searchDTO, pageRequest, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.Issue.listIssueWithoutSub"));
+                .orElseThrow(() -> new CommonException("error.Issue.listIssueWithSub"));
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})

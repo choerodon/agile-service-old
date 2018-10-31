@@ -34,7 +34,7 @@ public class WorkCalendarHolidayRefController {
     public ResponseEntity updateWorkCalendarHolidayRefByYear(@ApiParam(value = "项目id", required = true)
                                                              @PathVariable(name = "organization_id") Long organizationId,
                                                              @ApiParam(value = "要更新的年份", required = true)
-                                                             @RequestParam String year) {
+                                                             @RequestParam Integer year) {
         workCalendarHolidayRefService.updateWorkCalendarHolidayRefByYear(year);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -45,7 +45,7 @@ public class WorkCalendarHolidayRefController {
     public ResponseEntity<List<WorkCalendarHolidayRefDTO>> queryWorkCalendarHolidayRelByYear(@ApiParam(value = "项目id", required = true)
                                                                                              @PathVariable(name = "organization_id") Long organizationId,
                                                                                              @ApiParam(value = "要更新的年份", required = true)
-                                                                                             @RequestParam String year) {
+                                                                                             @RequestParam Integer year) {
         return Optional.ofNullable(workCalendarHolidayRefService.queryWorkCalendarHolidayRelByYear(year))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.WorkCalendarHolidayRefController.queryWorkCalendarHolidayRelByYear"));

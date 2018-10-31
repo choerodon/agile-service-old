@@ -16,7 +16,7 @@ public interface WorkCalendarHolidayRefService {
      *
      * @param year year
      */
-    void updateWorkCalendarHolidayRefByYear(String year);
+    void updateWorkCalendarHolidayRefByYear(Integer year);
 
     /**
      * 根据年份查询工作日历
@@ -24,5 +24,5 @@ public interface WorkCalendarHolidayRefService {
      * @param year year
      * @return WorkCalendarHolidayRefDTO
      */
-    List<WorkCalendarHolidayRefDTO> queryWorkCalendarHolidayRelByYear(String year);
+    List<WorkCalendarHolidayRefDTO> queryWorkCalendarHolidayRelByYear(Integer year);
 }

@@ -170,4 +170,5 @@ public class IssueStatusController {
         issueStatusService.updateAllData(projectId);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
 }

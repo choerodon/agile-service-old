@@ -35,10 +35,6 @@ public class IssueBurnDownReportDO {
 
     private String statusCode;
 
-    private String statusName;
-
-    private String typeName;
-
     private Date addDate;
 
     private Date doneDate;
@@ -47,7 +43,17 @@ public class IssueBurnDownReportDO {
 
     private String name;
 
+    private Long issueTypeId;
+
     private Long priorityId;
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
 
     private PriorityDTO priorityDTO;
 
@@ -145,22 +151,6 @@ public class IssueBurnDownReportDO {
 
     public void setStatusCode(String statusCode) {
         this.statusCode = statusCode;
-    }
-
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
-    }
-
-    public String getTypeName() {
-        return typeName;
-    }
-
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
     }
 
     public Date getAddDate() {

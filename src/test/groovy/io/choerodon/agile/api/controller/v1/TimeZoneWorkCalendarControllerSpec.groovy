@@ -100,7 +100,7 @@ class TimeZoneWorkCalendarControllerSpec extends Specification {
 
     def 'queryTimeZoneWorkCalendarRefByTimeZoneId'() {
         when:
-        def entity = restTemplate.getForEntity('/v1/organizations/{organization_id}/time_zone_work_calendars/ref/{timeZoneId}', List, organizationId, 1)
+        def entity = restTemplate.getForEntity('/v1/organizations/{organization_id}/time_zone_work_calendars/ref/{timeZoneId}?year={year}', List, organizationId, 1, 2018)
 
         then:
         entity.statusCode.is2xxSuccessful()
@@ -112,7 +112,7 @@ class TimeZoneWorkCalendarControllerSpec extends Specification {
 
     def 'queryTimeZoneWorkCalendarDetail'() {
         when:
-        def entity = restTemplate.getForEntity('/v1/organizations/{organization_id}/time_zone_work_calendars/detail', TimeZoneWorkCalendarRefDetailDTO, organizationId)
+        def entity = restTemplate.getForEntity('/v1/organizations/{organization_id}/time_zone_work_calendars/detail?year={year}', TimeZoneWorkCalendarRefDetailDTO, organizationId, 2018)
 
         then:
         entity.statusCode.is2xxSuccessful()

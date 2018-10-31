@@ -148,6 +148,7 @@
         ORDER BY abc.sequence
     </select>
 
+
     <select id="queryColumnsByIssueIds" resultMap="BoardColumnAndIssues">
         SELECT
         abc.column_id AS abc_column_id,

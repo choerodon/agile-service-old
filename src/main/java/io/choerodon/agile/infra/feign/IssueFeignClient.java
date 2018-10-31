@@ -1,5 +1,7 @@
 package io.choerodon.agile.infra.feign;
 
+import io.choerodon.agile.api.dto.IssueTypeDTO;
+import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.infra.dataobject.StatusForMoveDataDO;
 import io.swagger.annotations.ApiParam;
@@ -49,6 +51,9 @@ public interface IssueFeignClient {
     ResponseEntity<Long> queryStateMachineId(@PathVariable("project_id") Long projectId,
                                              @RequestParam("scheme_type") String schemeType,
                                              @RequestParam("issue_type_id") Long issueTypeId);
+
+    @GetMapping(value = "/v1/projects/{project_id}/schemes/query_issue_types")
+    ResponseEntity<List<IssueTypeDTO>> queryIssueTypesByProjectId(@PathVariable("project_id") Long projectId, @RequestParam("scheme_type") String schemeType);
 
     @PostMapping(value = "/v1/projects/{project_id}/schemes/create_status_for_agile")
     ResponseEntity<StatusInfoDTO> createStatusForAgile(@PathVariable("project_id") Long projectId,

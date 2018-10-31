@@ -24,6 +24,8 @@ public interface IssueStatusService {
 
 //    List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId);
 
+//    List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId);
+
     List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId);
 
     IssueStatusDTO moveStatusToUnCorrespond(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO);

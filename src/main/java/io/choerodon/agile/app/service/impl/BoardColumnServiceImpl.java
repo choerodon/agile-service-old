@@ -6,6 +6,9 @@ import io.choerodon.agile.api.dto.StatusInfoDTO;
 import io.choerodon.agile.api.validator.BoardColumnValidator;
 import io.choerodon.agile.domain.agile.entity.BoardE;
 import io.choerodon.agile.domain.agile.event.StatusPayload;
+import io.choerodon.agile.infra.dataobject.BoardColumnDO;
+import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO;
+import io.choerodon.agile.infra.dataobject.ColumnWithStatusRelDO;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper;
@@ -20,14 +23,11 @@ import io.choerodon.agile.domain.agile.repository.BoardColumnRepository;
 import io.choerodon.agile.domain.agile.repository.ColumnStatusRelRepository;
 import io.choerodon.agile.domain.agile.repository.IssueStatusRepository;
 import io.choerodon.agile.infra.mapper.BoardColumnMapper;
-import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**

@@ -9,6 +9,7 @@ import io.choerodon.agile.domain.agile.converter.SprintConverter;
 import io.choerodon.agile.domain.agile.entity.ReportIssueE;
 import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
+import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
@@ -112,22 +113,17 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<IssueTypeDistributionChartDTO> queryIssueTypeDistributionChart(Long projectId) {
-        return reportAssembler.toTargetList(reportMapper.queryIssueTypeDistributionChart(projectId), IssueTypeDistributionChartDTO.class);
+        return reportAssembler.toIssueTypeDistributionChartDTO(projectId, reportMapper.queryIssueTypeDistributionChart(projectId));
     }
 
     @Override
     public List<IssueTypeDistributionChartDTO> queryVersionProgressChart(Long projectId) {
-        return reportAssembler.toTargetList(reportMapper.queryVersionProgressChart(projectId), IssueTypeDistributionChartDTO.class);
+        return reportAssembler.toIssueTypeVersionDistributionChartDTO(projectId, reportMapper.queryVersionProgressChart(projectId));
     }
 
     @Override
     public List<IssuePriorityDistributionChartDTO> queryIssuePriorityDistributionChart(Long projectId, Long organizationId) {
-        List<IssuePriorityDistributionChartDO> res = reportMapper.queryIssuePriorityDistributionChart(projectId);
-        Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        for (IssuePriorityDistributionChartDO issuePriority : res) {
-            issuePriority.setPriorityDTO(priorityMap.get(issuePriority.getPriorityId()));
-        }
-        return reportAssembler.toTargetList(res, IssuePriorityDistributionChartDTO.class);
+        return reportAssembler.toIssuePriorityDistributionChartDTO(projectId, reportMapper.queryIssuePriorityDistributionChart(projectId));
     }
 
 
@@ -203,7 +199,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-    @Cacheable(cacheNames = AGILE, key = "'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()")
+//    @Cacheable(cacheNames = AGILE, key = "'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()")
     public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
         //获取当前符合条件的所有issueIds
         String filterSql = null;
@@ -237,7 +233,7 @@ public class ReportServiceImpl implements ReportService {
                 try {
                     coordinateDTO.setDate(bf.parse(k));
                 } catch (ParseException e) {
-                    LOGGER.error("Exception:{}",e);
+                    LOGGER.error("Exception:{}", e);
                 }
                 coordinateDTOS.add(coordinateDTO);
             });
@@ -251,6 +247,7 @@ public class ReportServiceImpl implements ReportService {
             report.put(bf.format(startDate), 0);
         }
         String columnId = cumulativeFlowDiagramDTO.getColumnId().toString();
+        //处理同一天数据
         columnChange.forEach(columnChangeDTO -> handleColumnCoordinateSameDate(bf, report, columnChangeDTO, columnId));
         Date lastDate = columnChange.get(columnChange.size() - 1).getDate();
         if (lastDate.before(endDate)) {
@@ -940,11 +937,11 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = AGILE, key = "'VelocityChart' + #projectId + ':' + #type")
+//    @Cacheable(cacheNames = AGILE, key = "'VelocityChart' + #projectId + ':' + #type")
     public List<VelocitySprintDTO> queryVelocityChart(Long projectId, String type) {
         List<VelocitySprintDO> sprintDOList = reportMapper.selectRecentSprint(projectId);
         if (sprintDOList.isEmpty()) {
-            return new ArrayList();
+            return new ArrayList<>();
         }
         List<Long> ids = new ArrayList<>();
         for (VelocitySprintDO velocitySprintDO : sprintDOList) {
@@ -965,8 +962,8 @@ public class ReportServiceImpl implements ReportService {
                 break;
             case TYPE_REMAIN_TIME:
                 List<VelocitySingleDO> remainTimeCommitted = reportMapper.selectByRemainTimeCommitted(projectId, ids, now);
-                List<VelocitySingleDO> remainTimecompleted = reportMapper.selectByRemainTimeCompleted(projectId, ids, now);
-                dealRemainTimeResult(remainTimeCommitted, remainTimecompleted, sprintDOList, result);
+                List<VelocitySingleDO> remainTimeCompleted = reportMapper.selectByRemainTimeCompleted(projectId, ids, now);
+                dealRemainTimeResult(remainTimeCommitted, remainTimeCompleted, sprintDOList, result);
                 break;
             default:
                 break;
@@ -983,19 +980,13 @@ public class ReportServiceImpl implements ReportService {
             case COMPONENT:
                 return handlePieChartByType(projectId, "component_id", false, false);
             case ISSUE_TYPE:
-                return handlePieChartByType(projectId, "type_code", true, true);
+                return handlePieChartByTypeCode(projectId);
             case VERSION:
                 return handlePieChartByType(projectId, "version_id", false, false);
             case PRIORITY:
-                List<PieChartDTO> res = handlePieChartByType(projectId, "priority_id", true, false);
-                Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-                for (PieChartDTO pieChartDTO : res) {
-                    pieChartDTO.setPriorityDTO(priorityMap.get(Long.parseLong(pieChartDTO.getTypeName())));
-                    pieChartDTO.setName(pieChartDTO.getPriorityDTO().getName());
-                }
-                return res;
+                return handlePieChartByPriorityType(projectId, organizationId);
             case STATUS:
-                return handlePieChartByType(projectId, "status_id", true, false);
+                return handlePieChartByStatusType(projectId);
             case SPRINT:
                 return handlePieChartByType(projectId, "sprint_id", false, false);
             case EPIC:
@@ -1006,6 +997,49 @@ public class ReportServiceImpl implements ReportService {
                 break;
         }
         return new ArrayList<>();
+    }
+
+    private List<PieChartDTO> handlePieChartByPriorityType(Long projectId, Long organizationId) {
+        List<PieChartDTO> pieChartDTOS = handlePieChartByType(projectId, "priority_id", true, false);
+        Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        pieChartDTOS.forEach(pieChartDTO -> {
+            pieChartDTO.setPriorityDTO(priorityMap.get(Long.parseLong(pieChartDTO.getTypeName())));
+            pieChartDTO.setName(pieChartDTO.getPriorityDTO().getName());
+        });
+        return pieChartDTOS;
+    }
+
+    private List<PieChartDTO> handlePieChartByStatusType(Long projectId) {
+        Integer total = reportMapper.queryIssueCountByFieldName(projectId, "status_id");
+        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "status_id", false, total);
+        if (pieChartDOS != null && !pieChartDOS.isEmpty()) {
+            List<PieChartDTO> pieChartDTOS = reportAssembler.toTargetList(pieChartDOS, PieChartDTO.class);
+            Map<Long, StatusMapDTO> statusMap = ConvertUtil.getIssueStatusMap(projectId);
+            pieChartDTOS.forEach(pieChartDTO -> pieChartDTO.setName(statusMap.get(Long.parseLong(pieChartDTO.getTypeName())).getName()));
+            return pieChartDTOS;
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    private List<PieChartDTO> handlePieChartByTypeCode(Long projectId) {
+        Integer total = reportMapper.queryIssueCountByFieldName(projectId, "type_code");
+        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "type_code", true, total);
+        if (pieChartDOS != null && !pieChartDOS.isEmpty()) {
+            List<PieChartDTO> pieChartDTOS = reportAssembler.toTargetList(pieChartDOS, PieChartDTO.class);
+            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
+            pieChartDTOS.forEach(pieChartDTO -> {
+                IssueTypeDTO issueTypeDTO = issueTypeDTOMap.get(Long.parseLong(pieChartDTO.getTypeName()));
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("color", issueTypeDTO.getColour());
+                jsonObject.put("icon", issueTypeDTO.getIcon());
+                pieChartDTO.setJsonObject(jsonObject);
+                pieChartDTO.setName(issueTypeDTO.getName());
+            });
+            return pieChartDTOS;
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     private List<PieChartDTO> handlePieChartByEpic(Long projectId) {
@@ -1151,7 +1185,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = AGILE, key = "'EpicChart' + #projectId + ':' + #epicId + ':' + #type")
+//    @Cacheable(cacheNames = AGILE, key = "'EpicChart' + #projectId + ':' + #epicId + ':' + #type")
     public List<GroupDataChartDO> queryEpicChart(Long projectId, Long epicId, String type) {
         List<GroupDataChartDO> result = null;
         switch (type) {
@@ -1197,7 +1231,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = AGILE, key = "'BurnDownCoordinate' + #projectId + ':' + #sprintId + ':' + #type")
+//    @Cacheable(cacheNames = AGILE, key = "'BurnDownCoordinate' + #projectId + ':' + #sprintId + ':' + #type")
     public JSONObject queryBurnDownCoordinate(Long projectId, Long sprintId, String type) {
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
         return handleSameDay(reportIssueEList.stream().filter(reportIssueE -> !"endSprint".equals(reportIssueE.getType())).
@@ -1206,7 +1240,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @SuppressWarnings("unchecked")
-    @Cacheable(cacheNames = AGILE, key = "'BurnDownCoordinateByType' + #projectId + ':' + #type  + ':' + #id")
+//    @Cacheable(cacheNames = AGILE, key = "'BurnDownCoordinateByType' + #projectId + ':' + #type  + ':' + #id")
     public List<BurnDownReportCoordinateDTO> queryBurnDownCoordinateByType(Long projectId, Long id, String type) {
         List<IssueBurnDownReportDO> issueDOList = E_PIC.equals(type) ? issueMapper.queryIssueByEpicId(projectId, id) : issueMapper.queryIssueByVersionId(projectId, id);
         if (issueDOList != null && !issueDOList.isEmpty()) {
@@ -1277,25 +1311,26 @@ public class ReportServiceImpl implements ReportService {
         if (issueDOList != null && !issueDOList.isEmpty()) {
             Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
             Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
             List<IssueBurnDownReportDO> incompleteIssues = issueDOList.stream().filter(issueDO -> !issueDO.getCompleted()).collect(Collectors.toList());
-            burnDownReportDTO.setIncompleteIssues(reportAssembler.issueBurnDownReportDoToDto(incompleteIssues, priorityMap, statusMapDTOMap));
+            burnDownReportDTO.setIncompleteIssues(reportAssembler.issueBurnDownReportDoToDto(incompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
             JSONObject jsonObject = handleSprintListAndStartDate(id, projectId, type);
             List<SprintDO> sprintDOList = (List<SprintDO>) jsonObject.get(SPRINT_DO_LIST);
             if (sprintDOList != null && !sprintDOList.isEmpty()) {
                 List<IssueBurnDownReportDO> completeIssues = issueDOList.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null).collect(Collectors.toList());
-                handleBurnDownReportSprintData(sprintDOList, completeIssues, burnDownReportDTO, priorityMap, statusMapDTOMap);
+                handleBurnDownReportSprintData(sprintDOList, completeIssues, burnDownReportDTO, priorityMap, statusMapDTOMap, issueTypeDTOMap);
             }
         }
         return burnDownReportDTO;
     }
 
-    private void handleBurnDownReportSprintData(List<SprintDO> sprintDOList, List<IssueBurnDownReportDO> completeIssues, BurnDownReportDTO burnDownReportDTO, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap) {
+    private void handleBurnDownReportSprintData(List<SprintDO> sprintDOList, List<IssueBurnDownReportDO> completeIssues, BurnDownReportDTO burnDownReportDTO, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
         List<SprintBurnDownReportDTO> sprintBurnDownReportDTOS = new ArrayList<>();
         if (sprintDOList.size() == 1) {
             SprintBurnDownReportDTO sprintBurnDownReportDTO = reportAssembler.sprintBurnDownReportDoToDto(sprintDOList.get(0));
             List<IssueBurnDownReportDO> singleCompleteIssues = completeIssues.stream().filter(issueDO ->
                     issueDO.getDoneDate().after(sprintBurnDownReportDTO.getStartDate())).collect(Collectors.toList());
-            sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(singleCompleteIssues, priorityMap, statusMapDTOMap));
+            sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(singleCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
             sprintBurnDownReportDTOS.add(sprintBurnDownReportDTO);
         } else {
             for (int i = 0; i < sprintDOList.size() - 1; i++) {
@@ -1303,13 +1338,13 @@ public class ReportServiceImpl implements ReportService {
                 Date startDateOne = sprintBurnDownReportDTO.getStartDate();
                 Date startDateTwo = sprintDOList.get(i + 1).getStartDate();
                 List<IssueBurnDownReportDO> duringSprintIncompleteIssues = handleDuringSprintIncompleteIssues(completeIssues, startDateOne, startDateTwo);
-                sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(duringSprintIncompleteIssues, priorityMap, statusMapDTOMap));
+                sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(duringSprintIncompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
                 sprintBurnDownReportDTOS.add(sprintBurnDownReportDTO);
                 if (i == sprintDOList.size() - 2) {
                     SprintBurnDownReportDTO lastSprintBurnDownReportDTO = reportAssembler.sprintBurnDownReportDoToDto(sprintDOList.get(i + 1));
                     List<IssueBurnDownReportDO> lastCompleteIssues = completeIssues.stream().filter(issueDO ->
                             issueDO.getDoneDate().after(lastSprintBurnDownReportDTO.getStartDate())).collect(Collectors.toList());
-                    lastSprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(lastCompleteIssues, priorityMap, statusMapDTOMap));
+                    lastSprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(lastCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
                     lastSprintBurnDownReportDTO.setEndDate(lastSprintBurnDownReportDTO.getEndDate() == null ? new Date() : lastSprintBurnDownReportDTO.getEndDate());
                     sprintBurnDownReportDTOS.add(lastSprintBurnDownReportDTO);
                 }
@@ -1415,7 +1450,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-    @Cacheable(cacheNames = AGILE, key = "'VersionChart' + #projectId + ':' + #versionId + ':' + #type")
+//    @Cacheable(cacheNames = AGILE, key = "'VersionChart' + #projectId + ':' + #versionId + ':' + #type")
     public List<GroupDataChartDO> queryVersionChart(Long projectId, Long versionId, String type) {
         List<GroupDataChartDO> result = null;
         switch (type) {
