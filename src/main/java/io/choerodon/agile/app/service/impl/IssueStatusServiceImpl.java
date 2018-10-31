@@ -89,6 +89,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             throw new CommonException("error.status.exist");
         }
         issueStatusDTO.setCompleted(false);
+        issueStatusDTO.setEnable(false);
         return ConvertHelper.convert(issueStatusRepository.create(ConvertHelper.convert(issueStatusDTO, IssueStatusE.class)), IssueStatusDTO.class);
     }
 
@@ -241,7 +242,6 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         List<IssueStatusDO> statuses = issueStatusMapper.selectAll();
         Collections.sort(statuses, Comparator.comparing(IssueStatusDO::getId));
         List<Long> organizationIds = new ArrayList<>();
-//        Map<Long, Long> proWithOrg = new HashMap<>();
         for (IssueStatusDO issueStatusDO : statuses) {
             StatusForMoveDataDO statusForMoveDataDO = new StatusForMoveDataDO();
             statusForMoveDataDO.setId(issueStatusDO.getId());
@@ -250,9 +250,6 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             statusForMoveDataDO.setName(issueStatusDO.getName());
             ProjectDTO projectDTO = userRepository.queryProject(issueStatusDO.getProjectId());
             statusForMoveDataDO.setOrganizationId(projectDTO.getOrganizationId());
-//            if (projectDTO.getOrganizationId()!= null && projectDTO.getId() != null) {
-//                proWithOrg.put(projectDTO.getId(), projectDTO.getOrganizationId());
-//            }
             if (!organizationIds.contains(projectDTO.getOrganizationId()) && projectDTO.getOrganizationId() != null) {
                 organizationIds.add(projectDTO.getOrganizationId());
             }
@@ -262,47 +259,6 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         }
 
         issueFeignClient.fixStateMachineScheme(result);
-
-        // 迁移状态
-//        Map<Long, List<Status>> returnStatus = issueFeignClient.fixStateMachineScheme(result).getBody();
-//        for (IssueStatusDO issueStatusDO : statuses) {
-//            List<Status> partStatus = returnStatus.get(proWithOrg.get(issueStatusDO.getProjectId()));
-//            if (partStatus != null) {
-//                for (Status status : partStatus) {
-//                    if (status.getName().equals(issueStatusDO.getName())) {
-//                        issueStatusDO.setStatusId(status.getId());
-//                        break;
-//                    }
-//                }
-//            }
-//        }
-//        issueStatusMapper.batchUpdateStatus(statuses);
-//        issueStatusMapper.updateAllStatusId();
-//        issueStatusMapper.updateAllColumnStatusId();
-//        issueStatusMapper.updateDataLogStatusId();
-
-        // 迁移优先级
-//        Map<Long, Map<String, Long>> prioritys = issueFeignClient.initProrityByOrganization(organizationIds).getBody();
-//        List<IssueDO> issueDOList = issueMapper.selectAllPriority();
-//        for (IssueDO issueDO : issueDOList) {
-//            if (proWithOrg.get(issueDO.getProjectId()) != null) {
-//                Map<String, Long> ps = prioritys.get(proWithOrg.get(issueDO.getProjectId()));
-//                issueDO.setPriorityId(ps.get(issueDO.getPriorityCode()));
-//            }
-//
-//        }
-//        issueMapper.batchUpdatePriority(issueDOList);
-
-        // 迁移问题类型
-//        Map<Long, Map<String, Long>> issueTypes = issueFeignClient.initIssueTypeData(1L, organizationIds).getBody();
-//        List<IssueDO> issueDOForTypeList = issueMapper.selectAllType();
-//        for (IssueDO issueDO : issueDOForTypeList) {
-//            if (proWithOrg.get(issueDO.getProjectId()) != null) {
-//                Map<String, Long> iTypes = issueTypes.get(proWithOrg.get(issueDO.getProjectId()));
-//                issueDO.setIssueTypeId(iTypes.get(issueDO.getTypeCode()));
-//            }
-//        }
-//        issueMapper.batchUpdateIssueType(issueDOForTypeList);
     }
 
     @Override
@@ -343,7 +299,6 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 Map<String, Long> ps = prioritys.get(proWithOrg.get(issueDO.getProjectId()));
                 issueDO.setPriorityId(ps.get(issueDO.getPriorityCode()));
             }
-
         }
         issueMapper.batchUpdatePriority(issueDOList);
 

@@ -142,6 +142,9 @@ public class IssueRule {
         if (issueUpdateTypeDTO.getIssueId() == null) {
             throw new CommonException(ERROR_ISSUE_ID_NOT_FOUND);
         }
+        if (issueUpdateTypeDTO.getIssueTypeId() == null) {
+            throw new CommonException("error.issuetypeId.isNull");
+        }
         if (issueUpdateTypeDTO.getTypeCode() == null) {
             throw new CommonException("error.IssueRule.typeCode");
         }
