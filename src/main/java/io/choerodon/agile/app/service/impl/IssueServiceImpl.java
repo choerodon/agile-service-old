@@ -164,6 +164,8 @@ public class IssueServiceImpl implements IssueService {
     private ProjectUtil projectUtil;
     @Autowired
     private PlatformTransactionManager transactionManager;
+    @Autowired
+    private StateMachineService stateMachineService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IssueServiceImpl.class);
 
@@ -418,10 +420,13 @@ public class IssueServiceImpl implements IssueService {
         return issueAssembler.issueDetailDoToDto(issue);
     }
 
-    public IssueDTO queryIssueByUpdate(Long projectId, Long issueId, List<String> fieldList) {
+    public IssueDTO queryIssueByUpdate(Long projectId, Long issueId,Long resultStatusId, List<String> fieldList) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
+        }
+        if(resultStatusId!=null){
+            issue.setStatusId(resultStatusId);
         }
         IssueDTO result = issueAssembler.issueDetailDoToDto(issue);
         if (fieldList.contains("assigneeId") && result.getAssigneeId() != null && !ISSUE_TEST.equals(result.getTypeCode())) {
@@ -441,7 +446,7 @@ public class IssueServiceImpl implements IssueService {
             }
             userIds.stream().forEach(id -> siteMsgUtil.issueAssignee(id, userName, summary, url.toString()));
         }
-        Boolean completed = issueStatusMapper.selectByPrimaryKey(result.getStatusId()).getCompleted();
+        Boolean completed = issueStatusMapper.selectByStatusId(projectId, result.getStatusId()).getCompleted();
         if (fieldList.contains(STATUS_ID) && completed != null && completed && result.getAssigneeId() != null && !ISSUE_TEST.equals(result.getTypeCode())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", result);
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
@@ -514,7 +519,13 @@ public class IssueServiceImpl implements IssueService {
         handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId, projectId);
         handleUpdateComponentIssueRel(issueUpdateDTO.getComponentIssueRelDTOList(), projectId, issueId);
         handleUpdateVersionIssueRel(issueUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId, issueUpdateDTO.getVersionType());
-        return queryIssueByUpdate(projectId, issueId, fieldList);
+        return queryIssueByUpdate(projectId, issueId, null, fieldList);
+    }
+
+    @Override
+    public IssueDTO updateIssueStatus(Long projectId, Long issueId, Long transformId) {
+        Long resultStatusId = stateMachineService.executeTransform(projectId, issueId, transformId).getResultStatusId();
+        return queryIssueByUpdate(projectId, issueId,resultStatusId, Collections.singletonList("statusId"));
     }
 
     @Override

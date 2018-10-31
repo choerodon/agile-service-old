@@ -3,22 +3,22 @@ package io.choerodon.agile.app.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.BoardValidator;
-import io.choerodon.agile.app.service.NoticeService;
-import io.choerodon.agile.app.service.SprintService;
-import io.choerodon.agile.domain.agile.entity.*;
+import io.choerodon.agile.app.service.*;
+import io.choerodon.agile.domain.agile.entity.BoardE;
+import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
+import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.domain.agile.entity.UserSettingE;
 import io.choerodon.agile.domain.agile.event.StatusPayload;
 import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil;
+import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.app.service.BoardColumnService;
-import io.choerodon.agile.app.service.BoardService;
-import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +114,8 @@ public class BoardServiceImpl implements BoardService {
     @Autowired
     private IssueFeignClient issueFeignClient;
 
+    @Autowired
+    private StateMachineService stateMachineService;
 
     @Override
     public void create(Long projectId, String boardName) {
@@ -433,15 +435,20 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public IssueMoveDTO move(Long projectId, Long issueId, IssueMoveDTO issueMoveDTO) {
+    public IssueMoveDTO move(Long projectId, Long issueId, Long transformId, IssueMoveDTO issueMoveDTO) {
         Long boardId = issueMoveDTO.getBoardId();
         IssueDO issueDO = issueMapper.selectByPrimaryKey(issueMoveDTO.getIssueId());
         BoardDO boardDO = boardMapper.selectByPrimaryKey(boardId);
         checkColumnContraint(projectId, issueMoveDTO, boardDO.getColumnConstraint(), issueDO.getStatusId());
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
-        IssueMoveDTO result = ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);
+//        IssueMoveDTO result = ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);
+        //执行状态机转换
+        Long resultStatusId = stateMachineService.executeTransform(projectId, issueId, transformId).getResultStatusId();
+        IssueMoveDTO result = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueMoveDTO.class);
+        result.setStatusId(resultStatusId);
+
         // 发送消息
-        Boolean completed = issueStatusMapper.selectByPrimaryKey(issueE.getStatusId()).getCompleted();
+        Boolean completed = issueStatusMapper.selectByStatusId(projectId, issueE.getStatusId()).getCompleted();
         if (completed != null && completed && issueDO.getAssigneeId() != null && !"issue_test".equals(issueDO.getTypeCode())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDO, IssueDTO.class));
             ProjectDTO projectDTO = userRepository.queryProject(projectId);

@@ -28,7 +28,7 @@ public interface BoardService {
 
     void initBoard(Long projectId, String boardName, List<StatusPayload> statusPayloads);
 
-    IssueMoveDTO move(Long projectId, Long issueId, IssueMoveDTO issueMoveDTO);
+    IssueMoveDTO move(Long projectId, Long issueId, Long transformId, IssueMoveDTO issueMoveDTO);
 
     List<BoardDTO> queryByProjectId(Long projectId);
 
