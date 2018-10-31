@@ -70,15 +70,16 @@ public class StateMachineServiceImpl implements StateMachineService {
     @UpdateStatus
     public void updateStatus(Long instanceId, Long targetStatusId) {
         IssueDO issue = issueMapper.selectByPrimaryKey(instanceId);
-        if (targetStatusId == null) {
-            throw new CommonException("error.updateStatus.targetStateId.null");
-        }
         if (issue == null) {
             throw new CommonException("error.updateStatus.instanceId.notFound");
         }
-        IssueUpdateDTO issueUpdateDTO = issueAssembler.toTarget(issue, IssueUpdateDTO.class);
-        issueUpdateDTO.setStatusId(targetStatusId);
-        issueService.handleUpdateIssue(issueUpdateDTO, Collections.singletonList("statusId"), issue.getProjectId());
-        System.out.println("状态更新成功");
+        if (targetStatusId == null) {
+            throw new CommonException("error.updateStatus.targetStateId.null");
+        }
+        if(!issue.getStatusId().equals(targetStatusId)){
+            IssueUpdateDTO issueUpdateDTO = issueAssembler.toTarget(issue, IssueUpdateDTO.class);
+            issueUpdateDTO.setStatusId(targetStatusId);
+            issueService.handleUpdateIssue(issueUpdateDTO, Collections.singletonList("statusId"), issue.getProjectId());
+        }
     }
 }
