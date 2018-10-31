@@ -8,6 +8,7 @@ public class SprintReportIssueStatusDO {
     private String categoryCode;
     private String statusName;
     private String storyPoints;
+    private Long statusId;
 
     public Long getIssueId() {
         return issueId;
@@ -39,5 +40,13 @@ public class SprintReportIssueStatusDO {
 
     public void setStoryPoints(String storyPoints) {
         this.storyPoints = storyPoints;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public Long getStatusId() {
+        return statusId;
     }
 }

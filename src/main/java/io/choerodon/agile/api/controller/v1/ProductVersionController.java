@@ -167,9 +167,11 @@ public class ProductVersionController {
                                                                             @PathVariable(name = "project_id") Long projectId,
                                                                             @ApiParam(value = "versionId", required = true)
                                                                             @PathVariable Long versionId,
+                                                                            @ApiParam(value = "组织id", required = true)
+                                                                            @RequestParam Long organizationId,
                                                                             @ApiParam(value = "issue状态码", required = false)
                                                                             @RequestParam(required = false) String statusCode) {
-        return Optional.ofNullable(productVersionService.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode))
+        return Optional.ofNullable(productVersionService.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_ISSUE_ERROR));
     }

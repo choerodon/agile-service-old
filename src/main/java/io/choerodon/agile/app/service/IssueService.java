@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
+import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
@@ -37,7 +38,7 @@ public interface IssueService {
      * @param issueId   issueId
      * @return IssueDTO
      */
-    IssueDTO queryIssue(Long projectId, Long issueId);
+    IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId);
 
     /**
      * 分页过滤查询issueList（不包含子任务）
@@ -47,11 +48,11 @@ public interface IssueService {
      * @param pageRequest pageRequest
      * @return IssueListDTO
      */
-    Page<IssueListDTO> listIssueWithoutSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
+    Page<IssueListDTO> listIssueWithoutSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId);
 
     List<EpicDataDTO> listEpic(Long projectId);
 
-    List<StoryMapEpicDTO> listStoryMapEpic(Long projectId, Boolean showDoneEpic, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds);
+    List<StoryMapEpicDTO> listStoryMapEpic(Long projectId, Long organizationId, Boolean showDoneEpic, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds);
 
     /**
      * 更新issue
@@ -63,6 +64,24 @@ public interface IssueService {
      */
     IssueDTO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList);
 
+    /**
+     * 更新issue的状态
+     *
+     * @param projectId
+     * @param issueId
+     * @param transformId
+     * @return
+     */
+    IssueDTO updateIssueStatus(Long projectId, Long issueId, Long transformId);
+
+    /**
+     * 更新issue自己的字段
+     *
+     * @param issueUpdateDTO
+     * @param fieldList
+     * @param projectId
+     */
+    void handleUpdateIssue(IssueUpdateDTO issueUpdateDTO, List<String> fieldList, Long projectId);
     /**
      * 删除issue
      *
@@ -120,7 +139,7 @@ public interface IssueService {
      * @param issueUpdateTypeDTO issueUpdateTypeDTO
      * @return IssueDTO
      */
-    IssueDTO updateIssueTypeCode(IssueE issueE, IssueUpdateTypeDTO issueUpdateTypeDTO);
+    IssueDTO updateIssueTypeCode(IssueE issueE, IssueUpdateTypeDTO issueUpdateTypeDTO, Long organizationId);
 
     /**
      * 通过项目id和issueId查询issueE
@@ -135,7 +154,7 @@ public interface IssueService {
 
     Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Boolean onlyActiveSprint, Boolean self, String content, PageRequest pageRequest);
 
-    void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response);
+    void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response, Long organizationId);
 
     /**
      * 根据issueId复制一个issue
@@ -145,7 +164,7 @@ public interface IssueService {
      * @param copyConditionDTO copyConditionDTO
      * @return IssueDTO
      */
-    IssueDTO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO);
+    IssueDTO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO, Long organizationId);
 
     /**
      * 根据issueId转换为子任务
@@ -166,9 +185,9 @@ public interface IssueService {
      * @param pageRequest pageRequest
      * @return IssueListDTO
      */
-    Page<IssueListDTO> listIssueWithoutSubToTestComponent(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
+    Page<IssueListDTO> listIssueWithoutSubToTestComponent(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId);
 
-    Page<IssueListDTO> listIssueWithLinkedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
+    Page<IssueListDTO> listIssueWithLinkedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId);
 
     List<IssueCreationNumDTO> queryIssueNumByTimeSlot(Long projectId, String typeCode, Integer timeSlot);
 
@@ -215,7 +234,7 @@ public interface IssueService {
      */
     Page<IssueComponentDetailDTO> listIssueWithoutSubDetail(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
 
-    List<StoryMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds);
+    List<StoryMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId);
 
     IssueDTO issueParentIdUpdate(Long projectId, IssueUpdateParentIdDTO issueUpdateParentIdDTO);
 

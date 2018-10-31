@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.BoardDTO;
 import io.choerodon.agile.api.dto.IssueMoveDTO;
 import io.choerodon.agile.api.dto.UserSettingDTO;
+import io.choerodon.agile.domain.agile.event.StatusPayload;
 
 import java.util.List;
 
@@ -21,11 +22,13 @@ public interface BoardService {
 
     BoardDTO queryScrumBoardById(Long projectId, Long boardId);
 
+//    JSONObject queryAllData(Long projectId, Long boardId, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds,Long organizationId);
+
     JSONObject queryAllData(Long projectId, Long boardId, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds,Long organizationId);
 
-    void initBoard(Long projectId, String boardName);
+    void initBoard(Long projectId, String boardName, List<StatusPayload> statusPayloads);
 
-    IssueMoveDTO move(Long projectId, Long issueId, IssueMoveDTO issueMoveDTO);
+    IssueMoveDTO move(Long projectId, Long issueId, Long transformId, IssueMoveDTO issueMoveDTO);
 
     List<BoardDTO> queryByProjectId(Long projectId);
 

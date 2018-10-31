@@ -31,6 +31,14 @@ public class IssueSearchDTO {
     private String statusColor;
     private Long objectVersionNumber;
 
+    private PriorityDTO priorityDTO;
+
+    private StatusMapDTO statusMapDTO;
+
+    private IssueTypeDTO issueTypeDTO;
+
+    private Long priorityId;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -221,5 +229,37 @@ public class IssueSearchDTO {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
+    }
+
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
+    }
+
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
     }
 }

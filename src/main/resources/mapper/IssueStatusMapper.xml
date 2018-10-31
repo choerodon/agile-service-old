@@ -5,31 +5,55 @@
     <resultMap id="statusAndIssuesMap" type="io.choerodon.agile.infra.dataobject.StatusAndIssuesDO">
         <id property="id" column="ais_id"/>
         <id property="projectId" column="ais_project_id"/>
-        <id property="name" column="ais_name"/>
-        <id property="enable" column="ais_enable"/>
-        <id property="categoryCode" column="ais_category_code"/>
+        <id property="statusId" column="ais_status_id"/>
         <id property="completed" column="ais_completed"/>
         <id property="objectVersionNumber" column="ais_object_version_number"/>
         <collection property="issues" autoMapping="true" columnPrefix="ai_"
                     ofType="io.choerodon.agile.infra.dataobject.IssueForBoardDO"/>
     </resultMap>
 
+    <!--<select id="queryUnCorrespondStatus" resultMap="statusAndIssuesMap">-->
+    <!--SELECT-->
+    <!--ais.id                    AS ais_id,-->
+    <!--ais.project_id            AS ais_project_id,-->
+    <!--ais.name                  AS ais_name,-->
+    <!--ais.is_enable             AS ais_enable,-->
+    <!--ais.category_code            ais_category_code,-->
+    <!--ais.is_completed          AS ais_completed,-->
+    <!--ais.object_version_number AS ais_object_version_number,-->
+    <!--ai.issue_id               AS ai_issue_id,-->
+    <!--ai.summary                AS ai_summary,-->
+    <!--ai.priority_code          AS ai_priority_code,-->
+    <!--ai.object_version_number  AS ai_object_version_number-->
+    <!--FROM-->
+    <!--agile_issue_status ais-->
+    <!--LEFT JOIN agile_issue ai ON ai.status_id = ais.id-->
+    <!--WHERE-->
+    <!--ais.project_id = #{projectId}-->
+    <!--AND (-->
+    <!--SELECT COUNT(1) AS num-->
+    <!--FROM-->
+    <!--agile_board_column_status_rel abcsr, agile_board_column abc-->
+    <!--WHERE-->
+    <!--abc.board_id = #{boardId}-->
+    <!--AND abcsr.column_id = abc.column_id-->
+    <!--AND ais.id = abcsr.status_id-->
+    <!--) = 0-->
+    <!--</select>-->
+
     <select id="queryUnCorrespondStatus" resultMap="statusAndIssuesMap">
         SELECT
             ais.id                    AS ais_id,
             ais.project_id            AS ais_project_id,
-            ais.name                  AS ais_name,
-            ais.is_enable             AS ais_enable,
-            ais.category_code            ais_category_code,
+            ais.status_id             AS ais_status_id,
             ais.is_completed          AS ais_completed,
             ais.object_version_number AS ais_object_version_number,
             ai.issue_id               AS ai_issue_id,
             ai.summary                AS ai_summary,
-            ai.priority_code          AS ai_priority_code,
             ai.object_version_number  AS ai_object_version_number
         FROM
             agile_issue_status ais
-            LEFT JOIN agile_issue ai ON ai.status_id = ais.id
+            LEFT JOIN agile_issue ai ON ai.status_id = ais.status_id and ai.project_id = #{projectId}
         WHERE
             ais.project_id = #{projectId}
             AND (
@@ -39,27 +63,28 @@
                     WHERE
                         abc.board_id = #{boardId}
                         AND abcsr.column_id = abc.column_id
-                        AND ais.id = abcsr.status_id
+                        AND ais.status_id = abcsr.status_id
+                        and ais.project_id = #{projectId}
                 ) = 0
     </select>
 
-    <select id="queryIssueStatus" resultType="io.choerodon.agile.infra.dataobject.IssueStatusCreateDO">
-        SELECT
-            id,
-            category_code,
-            is_completed as completed,
-            name
-        FROM
-            agile_issue_status
-        WHERE
-            project_id = #{projectId}
-            AND (category_code = 'todo'
-                 OR category_code = 'doing'
-                 OR category_code = 'done')
-            AND id IS NOT NULL
-        ORDER BY
-            id ASC
-    </select>
+    <!--<select id="queryIssueStatus" resultType="io.choerodon.agile.infra.dataobject.IssueStatusCreateDO">-->
+        <!--SELECT-->
+            <!--id,-->
+            <!--category_code,-->
+            <!--is_completed as completed,-->
+            <!--name-->
+        <!--FROM-->
+            <!--agile_issue_status-->
+        <!--WHERE-->
+            <!--project_id = #{projectId}-->
+            <!--AND (category_code = 'todo'-->
+                 <!--OR category_code = 'doing'-->
+                 <!--OR category_code = 'done')-->
+            <!--AND id IS NOT NULL-->
+        <!--ORDER BY-->
+            <!--id ASC-->
+    <!--</select>-->
 
     <select id="checkSameStatus" resultType="java.lang.Integer">
         SELECT COUNT(id)
@@ -68,24 +93,51 @@
         WHERE project_id = #{projectId} AND LOWER(`name`) = LOWER(#{statusName})
     </select>
 
-    <select id="listByProjectId" resultType="io.choerodon.agile.infra.dataobject.StatusDO">
+    <!--<select id="listByProjectId" resultType="io.choerodon.agile.infra.dataobject.StatusDO">-->
+        <!--SELECT-->
+            <!--ais.id,-->
+            <!--ais.project_id,-->
+            <!--ais.name,-->
+            <!--ais.category_code,-->
+            <!--alv_category.name  AS category_name,-->
+            <!--COUNT(ai.issue_id) AS issue_num_count,-->
+            <!--ais.object_version_number-->
+        <!--FROM-->
+            <!--agile_issue_status ais-->
+            <!--LEFT JOIN agile_issue ai ON ais.id = ai.status_id-->
+            <!--LEFT JOIN agile_lookup_value alv_category ON alv_category.value_code = ais.category_code-->
+        <!--WHERE-->
+            <!--ais.project_id = #{projectId}-->
+        <!--GROUP BY-->
+            <!--ais.id-->
+    <!--</select>-->
+
+    <update id="batchUpdateStatus">
+        <foreach collection="statuses" item="sta" open="" close="" separator=";">
+            update agile_issue_status set status_id = #{sta.statusId} where id = #{sta.id}
+        </foreach>
+    </update>
+
+    <update id="updateAllStatusId">
+        update agile_issue ai set ai.status_id = (select ais.status_id from agile_issue_status ais where ai.status_id = ais.id)
+    </update>
+
+    <update id="updateAllColumnStatusId">
+        update agile_board_column_status_rel abcsr set abcsr.status_id = IFNULL((select ais.status_id from agile_issue_status ais where abcsr.status_id = ais.id), 0)
+    </update>
+
+    <update id="updateDataLogStatusId">
+        update agile_data_log adl set adl.old_value = (select ais.status_id from agile_issue_status ais where adl.old_value = ais.id ) where field = 'status';
+        update agile_data_log adl set adl.new_value = (select ais.status_id from agile_issue_status ais where adl.new_value = ais.id ) where field = 'status';
+        update agile_data_log adl set adl.new_value = (select ais.status_id from agile_issue_status ais where adl.new_value = ais.id ) where field = 'resolution';
+    </update>
+
+    <select id="selectByStatusId" resultType="io.choerodon.agile.infra.dataobject.IssueStatusDO">
         SELECT
-            ais.id,
-            ais.project_id,
-            ais.name,
-            ais.category_code,
-            alv_category.name  AS category_name,
-            COUNT(ai.issue_id) AS issue_num_count,
-            ais.object_version_number
-        FROM
-            agile_issue_status ais
-            LEFT JOIN agile_issue ai ON ais.id = ai.status_id
-            LEFT JOIN agile_lookup_value alv_category ON alv_category.value_code = ais.category_code
-        WHERE
-            ais.project_id = #{projectId}
-        GROUP BY
-            ais.id
+        ais.*,
+        ais.is_enable enable,
+        ais.is_completed completed
+        FROM agile_issue_status ais
+        WHERE ais.project_id = #{projectId} AND ais.status_id = #{statusId}
     </select>
-
-
 </mapper>

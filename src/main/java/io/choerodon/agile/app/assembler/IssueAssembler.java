@@ -3,6 +3,7 @@ package io.choerodon.agile.app.assembler;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.LookupValueMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.agile.api.dto.*;
@@ -79,7 +80,7 @@ public class IssueAssembler extends AbstractAssembler {
      * @param issueDOList issueDetailDO
      * @return IssueListDTO
      */
-    public List<IssueListDTO> issueDoToIssueListDto(List<IssueDO> issueDOList) {
+    public List<IssueListDTO> issueDoToIssueListDto(List<IssueDO> issueDOList, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
         LookupValueDO lookupValueDO = new LookupValueDO();
         lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
         Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
@@ -94,6 +95,9 @@ public class IssueAssembler extends AbstractAssembler {
             issueListDTO.setAssigneeName(assigneeName);
             issueListDTO.setStatusColor(ColorUtil.initializationStatusColor(issueListDTO.getStatusCode(), lookupValueMap));
             issueListDTO.setImageUrl(imageUrl);
+            issueListDTO.setPriorityDTO(priorityMap.get(issueDO.getPriorityId()));
+            issueListDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
+            issueListDTO.setStatusMapDTO(statusMapDTOMap.get(issueDO.getStatusId()));
             issueListDTOList.add(issueListDTO);
         });
         return issueListDTOList;

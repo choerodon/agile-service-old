@@ -28,6 +28,10 @@ public class IssueCreateDTO {
 
     private Long sprintId;
 
+    private Long priorityId;
+
+    private Long issueTypeId;
+
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
@@ -158,6 +162,22 @@ public class IssueCreateDTO {
 
     public void setReporterId(Long reporterId) {
         this.reporterId = reporterId;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
     }
 
     @Override

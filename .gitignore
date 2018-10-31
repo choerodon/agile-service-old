@@ -26,3 +26,5 @@ nbdist/
 application-default.yml
 /src/main/resources/rebel.xml
 .DS_Store
+
+init-local-database-csn.sh

@@ -70,6 +70,10 @@ public class IssueE {
 
     private String mapRank;
 
+    private Long priorityId;
+
+    private Long issueTypeId;
+
     public Integer getEpicSequence() {
         return epicSequence;
     }
@@ -254,6 +258,22 @@ public class IssueE {
         return mapRank;
     }
 
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
     @Override
     public String toString() {
         return StringUtil.getToString(this);
@@ -265,8 +285,8 @@ public class IssueE {
      * @param subIssueE subIssueE
      * @return IssueE
      */
-    public IssueE initializationSubIssue(IssueE subIssueE, ProjectInfoE projectInfoE) {
-        subIssueE.setStatusId(this.statusId);
+    public IssueE initializationSubIssue(IssueE subIssueE,Long statusId, ProjectInfoE projectInfoE) {
+        subIssueE.setStatusId(statusId);
         subIssueE.setParentIssueId(this.issueId);
         subIssueE.setSprintId(this.sprintId);
         subIssueE.setTypeCode(SUB_TASK);

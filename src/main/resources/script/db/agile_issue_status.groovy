@@ -48,4 +48,9 @@ databaseChangeLog(logicalFilePath:'agile_issue_status.groovyoovy') {
     }
 
 
+    changeSet(id: '2018-10-23-status-add-column-status-id', author: 'fuqianghuang01@gmail.com') {
+        addColumn(tableName: 'agile_issue_status') {
+            column(name: 'status_id', type: 'BIGINT UNSIGNED', remarks: 'status id')
+        }
+    }
 }

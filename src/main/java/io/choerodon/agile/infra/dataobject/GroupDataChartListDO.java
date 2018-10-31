@@ -1,5 +1,9 @@
 package io.choerodon.agile.infra.dataobject;
 
+import io.choerodon.agile.api.dto.IssueTypeDTO;
+import io.choerodon.agile.api.dto.PriorityDTO;
+import io.choerodon.agile.api.dto.StatusMapDTO;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/7/28.
  * Email: fuqianghuang01@gmail.com
@@ -25,6 +29,18 @@ public class GroupDataChartListDO {
     private int completed;
 
     private String statusColor;
+
+    private Long priorityId;
+
+    private Long issueTypeId;
+
+    private PriorityDTO priorityDTO;
+
+    private IssueTypeDTO issueTypeDTO;
+
+    private StatusMapDTO statusMapDTO;
+
+    private Long statusId;
 
     public Long getIssueId() {
         return issueId;
@@ -104,5 +120,53 @@ public class GroupDataChartListDO {
 
     public String getStatusColor() {
         return statusColor;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
+    }
+
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
+    }
+
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
+    }
+
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public Long getStatusId() {
+        return statusId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
     }
 }

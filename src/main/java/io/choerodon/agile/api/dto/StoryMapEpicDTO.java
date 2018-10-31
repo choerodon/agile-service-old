@@ -17,8 +17,12 @@ public class StoryMapEpicDTO {
     private String color;
     private Long objectVersionNumber;
     private Integer epicSequence;
-    private String statusColor;
-    private String statusName;
+//    private String statusColor;
+//    private String statusName;
+    private Long statusId;
+    private StatusMapDTO statusMapDTO;
+    private Long issueTypeId;
+    private IssueTypeDTO issueTypeDTO;
     private String issueNum;
 
     public Integer getEpicSequence() {
@@ -117,21 +121,21 @@ public class StoryMapEpicDTO {
         this.objectVersionNumber = objectVersionNumber;
     }
 
-    public String getStatusColor() {
-        return statusColor;
-    }
-
-    public void setStatusColor(String statusColor) {
-        this.statusColor = statusColor;
-    }
-
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
-    }
+//    public String getStatusColor() {
+//        return statusColor;
+//    }
+//
+//    public void setStatusColor(String statusColor) {
+//        this.statusColor = statusColor;
+//    }
+//
+//    public String getStatusName() {
+//        return statusName;
+//    }
+//
+//    public void setStatusName(String statusName) {
+//        this.statusName = statusName;
+//    }
 
     public String getIssueNum() {
         return issueNum;
@@ -139,5 +143,37 @@ public class StoryMapEpicDTO {
 
     public void setIssueNum(String issueNum) {
         this.issueNum = issueNum;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public Long getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
+    }
+
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
     }
 }

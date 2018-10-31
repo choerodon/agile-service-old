@@ -59,6 +59,8 @@ public class IssueUpdateDTO {
 
     private String epicName;
 
+    private Long priorityId;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -241,6 +243,14 @@ public class IssueUpdateDTO {
 
     public String getVersionType() {
         return versionType;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
     }
 
     @Override

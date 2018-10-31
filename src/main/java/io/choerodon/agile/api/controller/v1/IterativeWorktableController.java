@@ -34,8 +34,10 @@ public class IterativeWorktableController {
     public ResponseEntity<List<PriorityDistributeDTO>> queryPriorityDistribute(@ApiParam(value = "项目id", required = true)
                                                                                @PathVariable(name = "project_id") Long projectId,
                                                                                @ApiParam(value = "冲刺id", required = true)
-                                                                               @RequestParam Long sprintId) {
-        return Optional.ofNullable(iterativeWorktableService.queryPriorityDistribute(projectId, sprintId))
+                                                                               @RequestParam Long sprintId,
+                                                                               @ApiParam(value = "组织id", required = true)
+                                                                               @RequestParam Long organizationId) {
+        return Optional.ofNullable(iterativeWorktableService.queryPriorityDistribute(projectId, sprintId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.PriorityDistribute.get"));
     }
@@ -46,8 +48,10 @@ public class IterativeWorktableController {
     public ResponseEntity<List<StatusCategoryDTO>> queryStatusCategoryDistribute(@ApiParam(value = "项目id", required = true)
                                                                                  @PathVariable(name = "project_id") Long projectId,
                                                                                  @ApiParam(value = "冲刺id", required = true)
-                                                                                 @RequestParam Long sprintId) {
-        return Optional.ofNullable(iterativeWorktableService.queryStatusCategoryDistribute(projectId, sprintId))
+                                                                                 @RequestParam Long sprintId,
+                                                                                 @ApiParam(value = "组织id", required = true)
+                                                                                 @RequestParam Long organizationId) {
+        return Optional.ofNullable(iterativeWorktableService.queryStatusCategoryDistribute(projectId, sprintId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.StatusDistribute.get"));
     }
@@ -84,8 +88,10 @@ public class IterativeWorktableController {
     public ResponseEntity<List<IssueTypeDistributeDTO>> queryIssueTypeDistribute(@ApiParam(value = "项目id", required = true)
                                                                                  @PathVariable(name = "project_id") Long projectId,
                                                                                  @ApiParam(value = "冲刺id", required = true)
-                                                                                 @RequestParam Long sprintId) {
-        return Optional.ofNullable(iterativeWorktableService.queryIssueTypeDistribute(projectId, sprintId))
+                                                                                 @RequestParam Long sprintId,
+                                                                                 @ApiParam(value = "组织id", required = true)
+                                                                                 @RequestParam Long organizationId) {
+        return Optional.ofNullable(iterativeWorktableService.queryIssueTypeDistribute(projectId, sprintId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.queryIssueTypeDistribute.get"));
     }

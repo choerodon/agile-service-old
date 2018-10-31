@@ -17,8 +17,10 @@ public class StoryMapEpicDO {
     private String color;
     private Long objectVersionNumber;
     private Integer epicSequence;
-    private String statusColor;
-    private String statusName;
+    private Long statusId;
+    private Long issueTypeId;
+//    private String statusColor;
+//    private String statusName;
     private String issueNum;
 
     public Integer getEpicSequence() {
@@ -117,20 +119,37 @@ public class StoryMapEpicDO {
         this.objectVersionNumber = objectVersionNumber;
     }
 
-    public String getStatusColor() {
-        return statusColor;
+//    public String getStatusColor() {
+//        return statusColor;
+//    }
+//
+//    public void setStatusColor(String statusColor) {
+//        this.statusColor = statusColor;
+//    }
+//
+//    public String getStatusName() {
+//        return statusName;
+//    }
+//
+//    public void setStatusName(String statusName) {
+//        this.statusName = statusName;
+//    }
+
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
     }
 
-    public void setStatusColor(String statusColor) {
-        this.statusColor = statusColor;
+    public Long getStatusId() {
+        return statusId;
     }
 
-    public String getStatusName() {
-        return statusName;
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
     }
 
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
+    public Long getIssueTypeId() {
+        return issueTypeId;
     }
 
     public String getIssueNum() {

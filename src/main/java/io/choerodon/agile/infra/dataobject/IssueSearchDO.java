@@ -1,5 +1,9 @@
 package io.choerodon.agile.infra.dataobject;
 
+import io.choerodon.agile.api.dto.IssueTypeDTO;
+import io.choerodon.agile.api.dto.PriorityDTO;
+import io.choerodon.agile.api.dto.StatusMapDTO;
+
 import java.util.List;
 
 /**
@@ -30,6 +34,14 @@ public class IssueSearchDO {
     private String color;
     private String statusColor;
     private Long objectVersionNumber;
+
+    private PriorityDTO priorityDTO;
+    private Long priorityId;
+
+    private StatusMapDTO statusMapDTO;
+
+    private Long issueTypeId;
+    private IssueTypeDTO issueTypeDTO;
 
     public Long getIssueId() {
         return issueId;
@@ -221,5 +233,45 @@ public class IssueSearchDO {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
+    }
+
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
+    }
+
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
     }
 }

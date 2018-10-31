@@ -5,12 +5,12 @@
     <resultMap type="io.choerodon.agile.infra.dataobject.IssueDetailDO" id="issueDetail">
         <id column="issue_id" property="issueId"/>
         <id column="issue_num_splicing" property="issueNum"/>
-        <id column="type_code" property="typeCode"/>
+        <!--<id column="type_code" property="typeCode"/>-->
         <id column="status_id" property="statusId"/>
         <id column="status_code" property="statusCode"/>
         <id column="summary" property="summary"/>
         <id column="priority_code" property="priorityCode"/>
-        <id column="priority_name" property="priorityName"/>
+        <!--<id column="priority_name" property="priorityName"/>-->
         <id column="reporter_id" property="reporterId"/>
         <id column="description" property="description"/>
         <id column="assignee_id" property="assigneeId"/>
@@ -25,6 +25,8 @@
         <id column="epic_color" property="epicColor"/>
         <id column="parent_issue_num" property="parentIssueNum"/>
         <id column="object_version_number" property="objectVersionNumber"/>
+        <id column="priority_id" property="priorityId"/>
+        <id column="issue_type_id" property="issueTypeId"/>
         <association property="activeSprint" column="issue_id" select="queryActiveSprintNameByIssueId"/>
         <collection property="versionIssueRelDOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
@@ -116,14 +118,14 @@
             ai.*,
             ais.category_code                                                                AS status_code,
             ais.name                                                                         AS status_name,
-            alv.name                                                                         AS priority_name,
+--             alv.name                                                                         AS priority_name,
             ai2.epic_name                                                                    AS issue_epic_name,
             alv2.name                                                                        AS epic_color,
             alv3.name                                                                        AS color_value,
             IF(ai3.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai3.issue_num)) AS parent_issue_num,
             CONCAT_WS('-', api.project_code, ai.issue_num)                                   AS issue_num_splicing
-        FROM agile_issue ai LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
-            LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+        FROM agile_issue ai LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id AND ais.project_id = ai.project_id
+--             LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
             LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
             LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code
             LEFT JOIN agile_lookup_value alv3 ON ai.color_code = alv3.value_code
@@ -250,12 +252,11 @@
         ai.assignee_id,
         ai.project_id,
         ai.status_id,
+        ai.priority_id,
+        ai.issue_type_id,
         alv.name AS priority_name,
-        ais.category_code AS status_code,
-        ais.name AS status_name,
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
-        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task' AND ai.type_code != 'issue_test'
         <if test='searchArgs != null'>
@@ -276,18 +277,17 @@
                     #{assigneeId}
                 </foreach>
             </if>
-            <if test='advancedSearchArgs.priorityCode != null and advancedSearchArgs.priorityCode.size > 0'>
-                AND ai.priority_code IN
-                <foreach collection="advancedSearchArgs.priorityCode" item="priorityCode" open="(" separator=","
+            <if test='advancedSearchArgs.priorityId != null and advancedSearchArgs.priorityId.size > 0'>
+                AND ai.priority_id IN
+                <foreach collection="advancedSearchArgs.priorityId" item="priorityId" open="(" separator=","
                          close=")">
-                    #{priorityCode}
+                    #{priorityId}
                 </foreach>
             </if>
             <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
-                AND ais.category_code IN
-                <foreach collection="advancedSearchArgs.statusCode" item="statusCode" open="(" separator=","
-                         close=")">
-                    #{statusCode}
+                and ai.status_id in
+                <foreach collection="filterStatusIds" item="filterStatusId" open="(" separator="," close=")">
+                    #{filterStatusId}
                 </foreach>
             </if>
         </if>
@@ -539,23 +539,12 @@
         api.project_code,
         ai.issue_num
         ) AS issue_num,
-        alv2. NAME AS status_color,
-        ais. NAME AS status_name
+        ai.status_id,
+        ai.issue_type_id
         FROM
         agile_issue ai
         LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
-        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_lookup_value alv2 ON alv2.value_code = CASE ais.category_code
-        WHEN 'todo' THEN
-        'issue_status_color_todo'
-        WHEN 'doing' THEN
-        'issue_status_color_doing'
-        WHEN 'done' THEN
-        'issue_status_color_done'
-        ELSE
-        'issue_status_color_todo'
-        END
         WHERE
         ai.project_id = #{projectId}
         AND ai.type_code = 'issue_epic'
@@ -1630,14 +1619,17 @@
         ai.story_points,
         ai.epic_id,
         ai.object_version_number,
+        ai.priority_id,
+        ai.issue_type_id,
         ai.map_rank,
+        ai.status_id,
         CONCAT_WS(
         '-',
         api.project_code,
         ai.issue_num
-        ) AS issue_num,
-        ais.category_code AS status_code,
-        ais.`name` AS status_name
+        ) AS issue_num
+--         ais.category_code AS status_code,
+--         ais.`name` AS status_name
         FROM
         agile_issue_sprint_rel aisr
         LEFT JOIN agile_sprint asp ON aisr.sprint_id = asp.sprint_id
@@ -1657,7 +1649,7 @@
             AND ai.issue_id IN (${filterSql})
         </if>
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+--         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         aisr.project_id = #{projectId} and aisr.issue_id = ai.issue_id
         and aisr.sprint_id in (select sprint_id from agile_sprint where status_code != 'closed')
@@ -1679,18 +1671,21 @@
         ai.story_points,
         ai.epic_id,
         ai.object_version_number,
+        ai.priority_id,
         ai.map_rank,
+        ai.status_id,
+        ai.issue_type_id,
         CONCAT_WS(
         '-',
         api.project_code,
         ai.issue_num
-        ) AS issue_num,
-        ais.category_code AS status_code,
-        ais.`name` AS status_name
+        ) AS issue_num
+--         ais.category_code AS status_code,
+--         ais.`name` AS status_name
         FROM
         agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+--         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         ai.project_id = #{projectId}
         AND issue_id NOT IN (
@@ -1706,7 +1701,12 @@
         'sub_task',
         'issue_epic'
         )
-        and ais.category_code != 'done'
+--         and ais.category_code != 'done'
+        and ai.status_id not in
+        <foreach collection="doneIds" item="doneId" open="(" separator=","
+                 close=")">
+            #{doneId}
+        </foreach>
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
@@ -1737,14 +1737,17 @@
         ai.story_points,
         ai.epic_id,
         ai.object_version_number,
+        ai.priority_id,
+        ai.issue_type_id,
         ai.map_rank,
+        ai.status_id,
         CONCAT_WS(
         '-',
         api.project_code,
         ai.issue_num
-        ) AS issue_num,
-        ais.category_code AS status_code,
-        ais.`name` AS status_name
+        ) AS issue_num
+--         ais.category_code AS status_code,
+--         ais.`name` AS status_name
         FROM
         agile_version_issue_rel avir
         LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
@@ -1764,7 +1767,7 @@
             AND ai.issue_id IN (${filterSql})
         </if>
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+--         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         avir.project_id = #{projectId} and avir.issue_id = ai.issue_id
         and avir.relation_type = 'fix'
@@ -1790,18 +1793,21 @@
         ai.story_points,
         ai.epic_id,
         ai.object_version_number,
+        ai.priority_id,
+        ai.issue_type_id,
         ai.map_rank,
+        ai.status_id,
         CONCAT_WS(
         '-',
         api.project_code,
         ai.issue_num
-        ) AS issue_num,
-        ais.category_code AS status_code,
-        ais.`name` AS status_name
+        ) AS issue_num
+--         ais.category_code AS status_code,
+--         ais.`name` AS status_name
         FROM
         agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+--         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         ai.project_id = #{projectId}
         AND issue_id NOT IN (
@@ -1818,7 +1824,12 @@
         'sub_task',
         'issue_epic'
         )
-        and ais.category_code != 'done'
+--         and ais.category_code != 'done'
+        and ai.status_id not in
+        <foreach collection="doneIds" item="doneId" open="(" separator=","
+                 close=")">
+            #{doneId}
+        </foreach>
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
@@ -1846,18 +1857,21 @@
         ai.story_points,
         ai.epic_id,
         ai.object_version_number,
+        ai.priority_id,
+        ai.issue_type_id,
         ai.map_rank,
+        ai.status_id,
         CONCAT_WS(
         '-',
         api.project_code,
         ai.issue_num
-        ) AS issue_num,
-        ais.category_code AS status_code,
-        ais.`name` AS status_name
+        ) AS issue_num
+--         ais.category_code AS status_code,
+--         ais.`name` AS status_name
         FROM
         agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+--         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         ai.project_id = #{projectId}
         AND ai.type_code NOT IN (
@@ -1865,7 +1879,12 @@
         'sub_task',
         'issue_epic'
         )
-        and ais.category_code != 'done'
+--         and ais.category_code != 'done'
+        and ai.status_id not in
+        <foreach collection="doneIds" item="doneId" open="(" separator=","
+                 close=")">
+            #{doneId}
+        </foreach>
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
         </if>
@@ -2028,12 +2047,11 @@
             aaa.type_code,
             aaa.type_name,
             aaa.status_id,
-            aaa.status_name,
-            aaa.status_code,
+--             aaa.status_name,
+--             aaa.status_code,
             aaa.completed,
             aaa.summary,
-            aaa.priority_code,
-            aaa.priority_name,
+            aaa.priority_id,
             aaa.assignee_id,
             aaa.project_id,
             aaa.name,
@@ -2052,14 +2070,13 @@
                 ai.type_code,
                 alv1.NAME AS type_name,
                 ai.status_id,
-                ais.NAME AS status_name,
-                ais.category_code AS status_code,
+--                 ais.NAME AS status_name,
+--                 ais.category_code AS status_code,
                 ais.is_completed as completed,
                 ai.summary,
-                ai.priority_code,
-                alv.NAME AS priority_name,
                 ai.assignee_id,
                 ai.project_id,
+                ai.priority_id,
                 ai1.epic_name as name,
                 ai1.epic_name,
                 ai1.issue_id as id,
@@ -2095,10 +2112,10 @@
             FROM
                 agile_issue ai
                 LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-                LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+--                 LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
                 LEFT JOIN agile_lookup_value alv1 ON ai.type_code = alv1.value_code
                 LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
-                LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+                LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id and ais.project_id = #{projectId}
             WHERE
                 ai.epic_id = #{epicId}
                 AND ai.project_id = #{projectId}
@@ -2121,8 +2138,9 @@
             aaa.status_code,
             aaa.completed,
             aaa.summary,
-            aaa.priority_code,
-            aaa.priority_name,
+--             aaa.priority_code,
+--             aaa.priority_name,
+            aaa.priority_id,
             aaa.assignee_id,
             aaa.project_id,
             aaa.name,
@@ -2144,8 +2162,9 @@
                 ais.category_code AS status_code,
                 ais.is_completed AS completed,
                 ai.summary,
-                ai.priority_code,
-                alv.NAME AS priority_name,
+--                 ai.priority_code,
+--                 alv.NAME AS priority_name,
+                ai.priority_id,
                 ai.assignee_id,
                 ai.project_id,
                 ai.story_points,
@@ -2182,7 +2201,7 @@
             FROM
                 agile_issue ai
                 LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-                LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+--                 LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
                 LEFT JOIN agile_lookup_value alv1 ON ai.type_code = alv1.value_code
                 LEFT JOIN agile_version_issue_rel avir ON avir.issue_id = ai.issue_id
                 left join agile_product_version apv on apv.version_id = avir.version_id
@@ -2377,4 +2396,25 @@
         </collection>
     </resultMap>
 
+    <select id="selectAllPriority" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        select issue_id, priority_code, project_id
+        from agile_issue
+    </select>
+
+    <select id="selectAllType" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        select issue_id, type_code, project_id
+        from agile_issue
+    </select>
+
+    <update id="batchUpdatePriority">
+        <foreach collection="issueDOList" item="issueDO" open="" close="" separator=";">
+            update agile_issue set priority_id = #{issueDO.priorityId} where issue_id = #{issueDO.issueId}
+        </foreach>
+    </update>
+
+    <update id="batchUpdateIssueType">
+        <foreach collection="issueDOForTypeList" item="issueDO" open="" close="" separator=";">
+            update agile_issue set issue_type_id = #{issueDO.issueTypeId} where issue_id = #{issueDO.issueId}
+        </foreach>
+    </update>
 </mapper>

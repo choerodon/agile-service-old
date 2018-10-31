@@ -1,11 +1,11 @@
 package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
+import io.choerodon.agile.api.dto.BoardDTO;
 import io.choerodon.agile.api.dto.IssueMoveDTO;
 import io.choerodon.agile.api.dto.UserSettingDTO;
-import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.api.dto.BoardDTO;
 import io.choerodon.agile.app.service.BoardService;
+import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
@@ -78,36 +78,36 @@ public class BoardController {
                 .orElseThrow(() -> new CommonException("error.board.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("all data")
-    @GetMapping(value = "/{boardId}/all_data/{organization_id}")
-    public ResponseEntity<JSONObject> queryByOptions(@ApiParam(value = "项目id", required = true)
-                                                     @PathVariable(name = "project_id") Long projectId,
-                                                     @ApiParam(value = "agile board id", required = true)
-                                                     @PathVariable Long boardId,
-                                                     @ApiParam(value = "search item，my problem", required = false)
-                                                     @RequestParam(required = false) Long assigneeId,
-                                                     @ApiParam(value = "search item，only story", required = false)
-                                                     @RequestParam(required = false) Boolean onlyStory,
-                                                     @ApiParam(value = "quick filter", required = false)
-                                                     @RequestParam(required = false) List<Long> quickFilterIds,
-                                                     @ApiParam(value = "组织id", required = true)
-                                                     @PathVariable(name = "organization_id") Long organizationId) {
-        return Optional.ofNullable(boardService.queryAllData(projectId, boardId, assigneeId, onlyStory, quickFilterIds, organizationId))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.board.get"));
-    }
+//    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+//    @ApiOperation("all data")
+//    @GetMapping(value = "/{boardId}/all_data/{organization_id}")
+//    public ResponseEntity<JSONObject> queryByOptions(@ApiParam(value = "项目id", required = true)
+//                                                     @PathVariable(name = "project_id") Long projectId,
+//                                                     @ApiParam(value = "agile board id", required = true)
+//                                                     @PathVariable Long boardId,
+//                                                     @ApiParam(value = "search item，my problem", required = false)
+//                                                     @RequestParam(required = false) Long assigneeId,
+//                                                     @ApiParam(value = "search item，only story", required = false)
+//                                                     @RequestParam(required = false) Boolean onlyStory,
+//                                                     @ApiParam(value = "quick filter", required = false)
+//                                                     @RequestParam(required = false) List<Long> quickFilterIds,
+//                                                     @ApiParam(value = "组织id", required = true)
+//                                                     @PathVariable(name = "organization_id") Long organizationId) {
+//        return Optional.ofNullable(boardService.queryAllData(projectId, boardId, assigneeId, onlyStory, quickFilterIds, organizationId))
+//                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+//                .orElseThrow(() -> new CommonException("error.board.get"));
+//    }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("init board,勿调用")
-    @PostMapping(value = "/init_board")
-    public ResponseEntity initBoard(@ApiParam(value = "项目id", required = true)
-                                    @PathVariable(name = "project_id") Long projectId,
-                                    @ApiParam(value = "board name", required = true)
-                                    @RequestParam String boardName) {
-        boardService.initBoard(projectId, boardName);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
+//    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+//    @ApiOperation("init board,勿调用")
+//    @PostMapping(value = "/init_board")
+//    public ResponseEntity initBoard(@ApiParam(value = "项目id", required = true)
+//                                    @PathVariable(name = "project_id") Long projectId,
+//                                    @ApiParam(value = "board name", required = true)
+//                                    @RequestParam String boardName) {
+//        boardService.initBoard(projectId, boardName);
+//        return new ResponseEntity<>(HttpStatus.CREATED);
+//    }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("移动issue")
@@ -116,9 +116,11 @@ public class BoardController {
                                              @PathVariable(name = "project_id") Long projectId,
                                              @ApiParam(value = "issue id", required = true)
                                              @PathVariable Long issueId,
+                                             @ApiParam(value = "转换id", required = true)
+                                             @RequestParam Long transformId,
                                              @ApiParam(value = "issue move object", required = true)
                                              @RequestBody IssueMoveDTO issueMoveDTO) {
-        return Optional.ofNullable(boardService.move(projectId, issueId, issueMoveDTO))
+        return Optional.ofNullable(boardService.move(projectId, issueId, transformId, issueMoveDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.update"));
     }
@@ -157,6 +159,26 @@ public class BoardController {
         return Optional.ofNullable(boardService.updateUserSettingBoard(projectId, boardId, swimlaneBasedCode))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.userSettingBoard.update"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("all data , Refactoring")
+    @GetMapping(value = "/{boardId}/all_data/{organization_id}")
+    public ResponseEntity<JSONObject> queryByOptions(@ApiParam(value = "项目id", required = true)
+                                                     @PathVariable(name = "project_id") Long projectId,
+                                                     @ApiParam(value = "agile board id", required = true)
+                                                     @PathVariable Long boardId,
+                                                     @ApiParam(value = "search item，my problem", required = false)
+                                                     @RequestParam(required = false) Long assigneeId,
+                                                     @ApiParam(value = "search item，only story", required = false)
+                                                     @RequestParam(required = false) Boolean onlyStory,
+                                                     @ApiParam(value = "quick filter", required = false)
+                                                     @RequestParam(required = false) List<Long> quickFilterIds,
+                                                     @ApiParam(value = "组织id", required = true)
+                                                     @PathVariable(name = "organization_id") Long organizationId) {
+        return Optional.ofNullable(boardService.queryAllData(projectId, boardId, assigneeId, onlyStory, quickFilterIds, organizationId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.board.get"));
     }
 
 }

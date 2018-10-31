@@ -68,7 +68,7 @@ public class IssueDTO {
 
     private Date lastUpdateDate;
 
-    private String priorityName;
+//    private String priorityName;
 
     private String statusName;
 
@@ -91,6 +91,12 @@ public class IssueDTO {
     private String assigneeImageUrl;
 
     private String reporterImageUrl;
+
+    private Long priorityId;
+
+    private PriorityDTO priorityDTO;
+
+    private IssueTypeDTO issueTypeDTO;
 
     public Long getIssueId() {
         return issueId;
@@ -276,13 +282,13 @@ public class IssueDTO {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public String getPriorityName() {
-        return priorityName;
-    }
-
-    public void setPriorityName(String priorityName) {
-        this.priorityName = priorityName;
-    }
+//    public String getPriorityName() {
+//        return priorityName;
+//    }
+//
+//    public void setPriorityName(String priorityName) {
+//        this.priorityName = priorityName;
+//    }
 
     public String getStatusName() {
         return statusName;
@@ -402,6 +408,30 @@ public class IssueDTO {
 
     public void setReporterImageUrl(String reporterImageUrl) {
         this.reporterImageUrl = reporterImageUrl;
+    }
+
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
+    }
+
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
     }
 
     @Override

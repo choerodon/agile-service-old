@@ -7,9 +7,19 @@ package io.choerodon.agile.infra.dataobject;
  */
 public class StatusCategoryDO {
 
+    private Long statusId;
+
     private String categoryCode;
 
     private Integer issueNum;
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public Long getStatusId() {
+        return statusId;
+    }
 
     public String getCategoryCode() {
         return categoryCode;

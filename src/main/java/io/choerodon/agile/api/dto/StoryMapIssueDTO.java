@@ -44,6 +44,14 @@ public class StoryMapIssueDTO {
 
     private String mapRank;
 
+    private PriorityDTO priorityDTO;
+
+    private IssueTypeDTO issueTypeDTO;
+
+    private Long statusId;
+
+    private StatusMapDTO statusMapDTO;
+
     public Long getSprintId() {
         return sprintId;
     }
@@ -194,5 +202,37 @@ public class StoryMapIssueDTO {
 
     public String getMapRank() {
         return mapRank;
+    }
+
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
+    }
+
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public Long getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
+    }
+
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
     }
 }

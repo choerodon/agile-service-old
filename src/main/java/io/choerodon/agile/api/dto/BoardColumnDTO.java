@@ -31,6 +31,8 @@ public class BoardColumnDTO {
 
     private String colorCode;
 
+    private Long statusId;
+
     private Long objectVersionNumber;
 
     public Long getColumnId() {
@@ -119,6 +121,14 @@ public class BoardColumnDTO {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public Long getStatusId() {
+        return statusId;
     }
 
     @Override
