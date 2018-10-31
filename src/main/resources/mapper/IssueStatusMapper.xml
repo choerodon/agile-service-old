@@ -119,7 +119,7 @@
     </update>
 
     <update id="updateAllStatusId">
-        update agile_issue ai set ai.status_id = (select ais.status_id from agile_issue_status ais where ai.status_id = ais.id)
+        update agile_issue ai set ai.status_id = IFNULL((select ais.status_id from agile_issue_status ais where ai.status_id = ais.id), 0)
     </update>
 
     <update id="updateAllColumnStatusId">
