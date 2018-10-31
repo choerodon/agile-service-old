@@ -10,9 +10,9 @@ public class IssueTypeDistributionChartDO {
 
     private String name;
 
-    private String statusName;
+    private Long  statusId;
 
-    private String statusCode;
+    private Long issueTypeId;
 
     private Integer count;
 
@@ -24,14 +24,6 @@ public class IssueTypeDistributionChartDO {
         this.name = name;
     }
 
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
-    }
-
     public Integer getCount() {
         return count;
     }
@@ -40,12 +32,20 @@ public class IssueTypeDistributionChartDO {
         this.count = count;
     }
 
-    public String getStatusCode() {
-        return statusCode;
+    public Long getStatusId() {
+        return statusId;
     }
 
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
     }
 
     @Override

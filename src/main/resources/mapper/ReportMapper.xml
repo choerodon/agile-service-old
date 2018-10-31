@@ -1006,21 +1006,19 @@
     <select id="queryReportIssues" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
         SELECT
         ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
---         ai.type_code,
---         alv1.name AS type_name,
         ai.issue_type_id,
         ai.status_id,
---         ais.name AS status_name,
---         ais.category_code AS status_code,
-        ai.summary, ai.priority_code,
-        alv.name AS priority_name,
-        ai.assignee_id, ai.project_id,
-        ai1.epic_name, ai.story_points,
+        ai.type_code,
+        ai.issue_type_id,
+        ai.summary,
+        ai.priority_id,
+        ai.assignee_id,
+        ai.project_id,
+        ai1.epic_name,
+        ai.story_points,
         ai.remaining_time
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
---         LEFT JOIN agile_lookup_value alv1 ON ai.type_code = alv1.value_code
         LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
         , agile_version_issue_rel avir, agile_issue_status ais
         WHERE avir.project_id = #{projectId} AND avir.version_id = #{versionId}
@@ -1650,13 +1648,7 @@
         SELECT
         <choose>
             <when test="own">
-                ai.${fieldName} AS type_name,
-                <if test="typeCode">
-                    alv.name AS name,
-                </if>
-                <if test="fieldName == 'status_id'">
-                    ais.name AS name,
-                </if>
+                ai.${fieldName} AS type_name
             </when>
             <otherwise>
                 <if test="fieldName == 'resolution'">
@@ -1680,12 +1672,6 @@
         count( * ) AS value
         FROM
         agile_issue ai
-        <if test="typeCode!=null and typeCode!=''">
-            LEFT JOIN agile_lookup_value alv on ai.${fieldName} = alv.value_code
-        </if>
-        <if test="fieldName == 'status_id'">
-            LEFT JOIN agile_issue_status ais on ais.id = ai.${fieldName}
-        </if>
         <if test="!own">
             <if test="fieldName == 'resolution'">
                 LEFT JOIN agile_issue_status other on ai.status_id = other.id
@@ -3109,36 +3095,36 @@
 
     <select id="queryIssueTypeDistributionChart" resultType="io.choerodon.agile.infra.dataobject.IssueTypeDistributionChartDO">
        SELECT
-            alv.name,
-            alv2.name as status_name,
-            ais.category_code as status_code,
+            ai.issue_type_id,
+            ai.status_id,
             count( * ) AS count
         FROM
-            agile_issue ai
-            LEFT JOIN agile_issue ai2 ON ai.parent_issue_id = ai2.issue_id
-            LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
-            left join agile_lookup_value alv on alv.value_code = ai.type_code
-            left join agile_lookup_value alv2 on alv2.value_code = ais.category_code
+            (select * from agile_issue ai3
+            LEFT JOIN agile_issue ai2 ON ai3.parent_issue_id = ai2.issue_id
+            AND ai3.type_code != 'issue_test'
+            AND ( ai2.type_code != 'issue_test' OR ai2.type_code IS NULL )
+            )ai
         WHERE
             ai.project_id = #{projectId}
-            AND ai.type_code != 'issue_test'
-            AND ( ai2.type_code != 'issue_test' OR ai2.type_code IS NULL )
         GROUP BY
-            ai.type_code,
-            ais.category_code
+            ai.issue_type_id,
+            ai.status_id
     </select>
 
     <select id="queryVersionProgressChart" resultType="io.choerodon.agile.infra.dataobject.IssueTypeDistributionChartDO">
        SELECT
             apv.name,
-            alv2.name AS status_name,
-            ais.category_code as status_code,
+            ai.issue_type_id,
+            ai.status_id,
             count( * ) AS count
         FROM
             agile_version_issue_rel avir
-            LEFT JOIN agile_issue ai ON avir.issue_id = ai.issue_id
-            LEFT JOIN agile_issue ai2 ON ai.parent_issue_id = ai2.issue_id
-            LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+            LEFT JOIN
+            (select * from agile_issue ai3
+            LEFT JOIN agile_issue ai2 ON ai3.parent_issue_id = ai2.issue_id
+            AND ai3.type_code != 'issue_test'
+            AND ( ai2.type_code != 'issue_test' OR ai2.type_code IS NULL )
+            )ai ON avir.issue_id = ai.issue_id
             LEFT JOIN (
                 SELECT
                     apv1.sequence,
@@ -3151,15 +3137,12 @@
                 ORDER BY
                     apv1.sequence LIMIT 5
                 ) apv ON avir.version_id = apv.version_id
-            LEFT JOIN agile_lookup_value alv2 ON alv2.value_code = ais.category_code
         WHERE
             avir.project_id = #{projectId}
-            AND ai.type_code != 'issue_test'
-            AND ( ai2.type_code != 'issue_test' OR ai2.type_code IS NULL )
             AND apv.NAME IS NOT NULL
         GROUP BY
             apv.NAME,
-            ais.category_code
+            ai.status_id
     </select>
 
     <select id="queryIssuePriorityDistributionChart" resultType="io.choerodon.agile.infra.dataobject.IssuePriorityDistributionChartDO">
@@ -3174,13 +3157,14 @@
             ais.is_completed,
             count( * ) AS count
         FROM
-            agile_issue ai
-            LEFT JOIN agile_issue ai2 ON ai.parent_issue_id = ai2.issue_id
+            (select * from agile_issue ai3
+            LEFT JOIN agile_issue ai2 ON ai3.parent_issue_id = ai2.issue_id
+            AND ai3.type_code != 'issue_test'
+            AND ( ai2.type_code != 'issue_test' OR ai2.type_code IS NULL )
+            )ai
             LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
             ai.project_id = #{projectId}
-            AND ai.type_code != 'issue_test'
-            AND ( ai2.type_code != 'issue_test' OR ai2.type_code IS NULL )
         GROUP BY
             ai.priority_id,
             ais.is_completed

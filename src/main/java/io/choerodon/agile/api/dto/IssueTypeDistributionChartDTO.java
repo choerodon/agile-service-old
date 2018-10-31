@@ -10,9 +10,25 @@ public class IssueTypeDistributionChartDTO {
 
     private String name;
 
-    private String statusName;
+    private IssueTypeDTO issueTypeDTO;
 
-    private String statusCode;
+    private StatusMapDTO statusMapDTO;
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
+    }
 
     private Integer count;
 
@@ -24,24 +40,8 @@ public class IssueTypeDistributionChartDTO {
         this.name = name;
     }
 
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
-    }
-
     public Integer getCount() {
         return count;
-    }
-
-    public String getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
     }
 
     public void setCount(Integer count) {

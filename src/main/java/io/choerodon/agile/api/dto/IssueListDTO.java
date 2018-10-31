@@ -16,29 +16,19 @@ public class IssueListDTO implements Serializable {
 
     private String typeCode;
 
-    private String statusCode;
-
     private String summary;
-
-//    private String priorityCode;
 
     private Long assigneeId;
 
     private Long projectId;
 
+    private Long issueTypeId;
+
     private String assigneeName;
 
     private String imageUrl;
 
-//    private String priorityName;
-
-    private String statusName;
-
-    private String typeName;
-
     private String epicName;
-
-    private String statusColor;
 
     private Integer storyPoints;
 
@@ -51,6 +41,14 @@ public class IssueListDTO implements Serializable {
     private StatusMapDTO statusMapDTO;
 
     private IssueTypeDTO issueTypeDTO;
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
 
     public Long getIssueId() {
         return issueId;
@@ -74,14 +72,6 @@ public class IssueListDTO implements Serializable {
 
     public void setTypeCode(String typeCode) {
         this.typeCode = typeCode;
-    }
-
-    public String getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
     }
 
     public String getSummary() {
@@ -132,28 +122,12 @@ public class IssueListDTO implements Serializable {
 //        this.priorityName = priorityName;
 //    }
 
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
-    }
-
     public String getImageUrl() {
         return imageUrl;
     }
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public String getStatusColor() {
-        return statusColor;
-    }
-
-    public void setStatusColor(String statusColor) {
-        this.statusColor = statusColor;
     }
 
     public Integer getStoryPoints() {
@@ -170,14 +144,6 @@ public class IssueListDTO implements Serializable {
 
     public void setAddIssue(Boolean addIssue) {
         this.addIssue = addIssue;
-    }
-
-    public String getTypeName() {
-        return typeName;
-    }
-
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
     }
 
     public String getEpicName() {

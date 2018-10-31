@@ -18,10 +18,6 @@ public class IssueBurnDownReportDTO {
 
     private String summary;
 
-//    private String priorityCode;
-
-    private String statusColor;
-
     private Long assigneeId;
 
     private Long projectId;
@@ -30,19 +26,21 @@ public class IssueBurnDownReportDTO {
 
     private Integer storyPoints;
 
-//    private String priorityName;
-
-    private String statusCode;
-
-    private String statusName;
-
-    private String typeName;
-
     private Long priorityId;
 
     private PriorityDTO priorityDTO;
 
     private StatusMapDTO statusMapDTO;
+
+    private IssueTypeDTO issueTypeDTO;
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
 
     public Long getIssueId() {
         return issueId;
@@ -114,38 +112,6 @@ public class IssueBurnDownReportDTO {
 
     public void setStoryPoints(Integer storyPoints) {
         this.storyPoints = storyPoints;
-    }
-
-    public String getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
-    }
-
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
-    }
-
-    public String getTypeName() {
-        return typeName;
-    }
-
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
-    }
-
-    public String getStatusColor() {
-        return statusColor;
-    }
-
-    public void setStatusColor(String statusColor) {
-        this.statusColor = statusColor;
     }
 
     public void setPriorityId(Long priorityId) {

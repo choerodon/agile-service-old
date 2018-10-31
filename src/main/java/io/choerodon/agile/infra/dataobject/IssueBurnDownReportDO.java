@@ -21,8 +21,6 @@ public class IssueBurnDownReportDO {
 
     private String summary;
 
-//    private String priorityCode;
-
     private Long assigneeId;
 
     private Long projectId;
@@ -31,13 +29,7 @@ public class IssueBurnDownReportDO {
 
     private Integer storyPoints;
 
-//    private String priorityName;
-
     private String statusCode;
-
-    private String statusName;
-
-    private String typeName;
 
     private Date addDate;
 
@@ -47,9 +39,17 @@ public class IssueBurnDownReportDO {
 
     private String name;
 
+    private Long issueTypeId;
+
     private Long priorityId;
 
-    private PriorityDTO priorityDTO;
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
 
     public Long getIssueId() {
         return issueId;
@@ -147,22 +147,6 @@ public class IssueBurnDownReportDO {
         this.statusCode = statusCode;
     }
 
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
-    }
-
-    public String getTypeName() {
-        return typeName;
-    }
-
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
-    }
-
     public Date getAddDate() {
         return addDate;
     }
@@ -201,14 +185,6 @@ public class IssueBurnDownReportDO {
 
     public Long getPriorityId() {
         return priorityId;
-    }
-
-    public void setPriorityDTO(PriorityDTO priorityDTO) {
-        this.priorityDTO = priorityDTO;
-    }
-
-    public PriorityDTO getPriorityDTO() {
-        return priorityDTO;
     }
 
     @Override

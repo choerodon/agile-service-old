@@ -52,4 +52,7 @@ public interface IssueFeignClient {
     ResponseEntity<Long> queryStateMachineId(@PathVariable("project_id") Long projectId,
                                              @RequestParam("scheme_type") String schemeType,
                                              @RequestParam("issue_type_id") Long issueTypeId);
+
+    @GetMapping(value = "/v1/projects/{project_id}/schemes/query_issue_types")
+    ResponseEntity<List<IssueTypeDTO>> queryIssueTypesByProjectId(@PathVariable("project_id") Long projectId, @RequestParam("scheme_type") String schemeType);
 }
