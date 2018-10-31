@@ -23,6 +23,8 @@ public class IssueStatusDTO {
 
     private Boolean completed;
 
+    private Long statusId;
+
     private Long objectVersionNumber;
 
     public void setId(Long id) {
@@ -79,5 +81,13 @@ public class IssueStatusDTO {
 
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public Long getStatusId() {
+        return statusId;
     }
 }

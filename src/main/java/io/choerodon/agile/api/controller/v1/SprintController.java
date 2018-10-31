@@ -92,7 +92,7 @@ public class SprintController {
                                                                 @RequestParam Long organizationId,
                                                                 @ApiParam(value = "查询参数", required = false)
                                                                 @RequestBody(required = false) Map<String, Object> searchParamMap,
-                                                                @ApiParam(value = "quick filter", required = false)
+                                                                @ApiParam(value = "quick filter")
                                                                 @RequestParam(required = false) List<Long> quickFilterIds) {
         return Optional.ofNullable(sprintService.queryByProjectId(projectId, searchParamMap, quickFilterIds, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

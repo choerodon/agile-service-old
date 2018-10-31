@@ -114,28 +114,28 @@ public class IssueBurnDownReportDTO {
         this.storyPoints = storyPoints;
     }
 
-    public void setPriorityId(Long priorityId) {
-        this.priorityId = priorityId;
-    }
-
     public Long getPriorityId() {
         return priorityId;
     }
 
-    public void setPriorityDTO(PriorityDTO priorityDTO) {
-        this.priorityDTO = priorityDTO;
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
     }
 
     public PriorityDTO getPriorityDTO() {
         return priorityDTO;
     }
 
-    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
-        this.statusMapDTO = statusMapDTO;
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
     }
 
     public StatusMapDTO getStatusMapDTO() {
         return statusMapDTO;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
     }
 
     @Override

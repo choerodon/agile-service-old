@@ -28,6 +28,12 @@ public class IssueListDTO implements Serializable {
 
     private String imageUrl;
 
+//    private String priorityName;
+
+    private String statusName;
+
+    private String typeName;
+
     private String epicName;
 
     private Integer storyPoints;
@@ -121,6 +127,14 @@ public class IssueListDTO implements Serializable {
 //    public void setPriorityName(String priorityName) {
 //        this.priorityName = priorityName;
 //    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
 
     public String getImageUrl() {
         return imageUrl;

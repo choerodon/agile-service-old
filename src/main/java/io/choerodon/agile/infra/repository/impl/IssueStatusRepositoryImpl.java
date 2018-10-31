@@ -43,7 +43,7 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
             throw new CommonException("error.IssueStatus.insert");
         }
         redisUtil.deleteRedisCache(new String[]{PIECHART + issueStatusE.getProjectId() + ':' + STATUS});
-        return ConvertHelper.convert(issueStatusMapper.selectByPrimaryKey(issueStatusDO.getId()), IssueStatusE.class);
+        return ConvertHelper.convert(issueStatusMapper.selectByStatusId(issueStatusDO.getProjectId(), issueStatusDO.getStatusId()), IssueStatusE.class);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
                 PIECHART + issueStatusE.getProjectId() + ':' + STATUS,
                 PIECHART + issueStatusE.getProjectId() + ':' + "resolution"
         });
-        return ConvertHelper.convert(issueStatusMapper.selectByPrimaryKey(issueStatusDO.getId()), IssueStatusE.class);
+        return ConvertHelper.convert(issueStatusMapper.selectByStatusId(issueStatusDO.getProjectId(), issueStatusDO.getStatusId()), IssueStatusE.class);
     }
 
     @Override

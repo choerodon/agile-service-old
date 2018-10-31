@@ -108,9 +108,7 @@
         abc.sequence AS abc_sequence,
         alv1.name AS abc_color,
         abc.object_version_number AS abc_object_version_number,
---         ais.id AS ais_id,
---         ais.name AS ais_name,
---         ais.category_code AS ais_category_code,
+        ais.id AS ais_id,
         ais.is_completed AS ais_completed,
         ais.status_id as ais_status_id,
         ais.object_version_number AS ais_object_version_number,
@@ -149,6 +147,7 @@
         abc.project_id = #{projectId} AND abc.board_id = #{boardId}
         ORDER BY abc.sequence
     </select>
+
 
     <select id="queryColumnsByIssueIds" resultMap="BoardColumnAndIssues">
         SELECT

@@ -3,6 +3,9 @@ package io.choerodon.agile.app.assembler;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.dataobject.ColumnDO;
+import io.choerodon.agile.infra.dataobject.IssueBurnDownReportDO;
+import io.choerodon.agile.infra.dataobject.SprintDO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -50,6 +53,7 @@ public class ReportAssembler extends AbstractAssembler {
                 issueBurnDownReportDTO.setPriorityDTO(priorityDTOMap.get(issueBurnDownReportDO.getPriorityId()));
                 issueBurnDownReportDTO.setStatusMapDTO(statusMapDTOMap.get(issueBurnDownReportDO.getStatusId()));
                 issueBurnDownReportDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueBurnDownReportDO.getIssueTypeId()));
+//                issueBurnDownReportDTO.setStatusColor(ColorUtil.initializationStatusColor(issueBurnDownReportDTO.getStatusCode(), lookupValueMap));
                 issueBurnDownReportDTOS.add(issueBurnDownReportDTO);
             });
         }

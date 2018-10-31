@@ -1,8 +1,11 @@
 package io.choerodon.agile.api.eventhandler;
 
 import com.alibaba.fastjson.JSONObject;
+import io.choerodon.agile.api.dto.DeployStatusPayload;
+import io.choerodon.agile.api.dto.IssueStatusDTO;
 import io.choerodon.agile.app.service.BoardService;
 import io.choerodon.agile.app.service.IssueLinkTypeService;
+import io.choerodon.agile.app.service.IssueStatusService;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarE;
 import io.choerodon.agile.domain.agile.event.OrganizationCreateEventPayload;
@@ -39,12 +42,15 @@ public class AgileEventHandler {
     private TimeZoneWorkCalendarMapper timeZoneWorkCalendarMapper;
     @Autowired
     private TimeZoneWorkCalendarRepository timeZoneWorkCalendarRepository;
+    @Autowired
+    private IssueStatusService issueStatusService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgileEventHandler.class);
 
     private static final String AGILE_INIT_TIMEZONE = "agile-init-timezone";
     private static final String AGILE_INIT_PROJECT = "agile-init-project";
     private static final String STATE_MACHINE_INIT_PROJECT = "state-machine-init-project";
+    private static final String STATUS_CREATE_CONSUME_ORG = "status-create-consume-org";
     private static final String IAM_CREATE_PROJECT = "iam-create-project";
     private static final String ORG_CREATE = "org-create-organization";
     private static final String PROJECT_CREATE_STATE_MACHINE = "project-create-state-machine";
@@ -79,6 +85,26 @@ public class AgileEventHandler {
         boardService.initBoard(projectEvent.getProjectId(), projectEvent.getProjectName() + BOARD, statusPayloads);
         LOGGER.info("接受接收状态服务消息{}", message);
         return message;
+    }
+
+    @SagaTask(code = STATUS_CREATE_CONSUME_ORG,
+            description = "agile消费组织层创建状态",
+            sagaCode = PROJECT_CREATE_STATE_MACHINE,
+            seq = 4)
+    public void dealStatusCreateOrg(String message) {
+        DeployStatusPayload deployStatusPayload = JSONObject.parseObject(message, DeployStatusPayload.class);
+        List<Long> projectIds = deployStatusPayload.getProjectIds();
+        List<StatusPayload> statusPayloads = deployStatusPayload.getStatusPayloads();
+        for (Long projectId: projectIds) {
+            for (StatusPayload statusPayload : statusPayloads) {
+                IssueStatusDTO issueStatusDTO = new IssueStatusDTO();
+                issueStatusDTO.setStatusId(statusPayload.getStatusId());
+                issueStatusDTO.setCategoryCode(statusPayload.getType());
+                issueStatusDTO.setName(statusPayload.getStatusName());
+                issueStatusDTO.setProjectId(projectId);
+                issueStatusService.createStatusByStateMachine(projectId, issueStatusDTO);
+            }
+        }
     }
 
     @SagaTask(code = AGILE_INIT_TIMEZONE, sagaCode = ORG_CREATE, seq = 1, description = "接收org服务创建组织事件初始化时区")

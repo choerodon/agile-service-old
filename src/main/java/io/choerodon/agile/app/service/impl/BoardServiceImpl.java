@@ -263,7 +263,7 @@ public class BoardServiceImpl implements BoardService {
             boardSprintDTO.setSprintId(activeSprint.getSprintId());
             boardSprintDTO.setSprintName(activeSprint.getSprintName());
             if (activeSprint.getEndDate() != null) {
-                boardSprintDTO.setDayRemain(dateUtil.getDaysBetweenDifferentDate(activeSprint.getStartDate(), activeSprint.getEndDate(),
+                boardSprintDTO.setDayRemain(dateUtil.getDaysBetweenDifferentDate(new Date(), activeSprint.getEndDate(),
                         sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()),
                         sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()), organizationId));
             }
@@ -428,6 +428,11 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
+    private String convertProjectName(ProjectDTO projectDTO) {
+        String projectName = projectDTO.getName();
+        String result = projectName.replaceAll(" ","%20");
+        return result;
+    }
 
     @Override
     public IssueMoveDTO move(Long projectId, Long issueId, Long transformId, IssueMoveDTO issueMoveDTO) {
@@ -443,19 +448,24 @@ public class BoardServiceImpl implements BoardService {
         result.setStatusId(resultStatusId);
 
         // 发送消息
-        if (issueStatusMapper.selectByStatusId(projectId, issueE.getStatusId()).getCompleted() && issueDO.getAssigneeId() != null && !"issue_test".equals(issueDO.getTypeCode())) {
+        Boolean completed = issueStatusMapper.selectByStatusId(projectId, issueE.getStatusId()).getCompleted();
+        if (completed != null && completed && issueDO.getAssigneeId() != null && !"issue_test".equals(issueDO.getTypeCode())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDO, IssueDTO.class));
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
+            if (projectDTO == null) {
+                throw new CommonException("error.project.notExist");
+            }
             StringBuilder url = new StringBuilder();
+            String projectName = convertProjectName(projectDTO);
             if ("sub_task".equals(issueDO.getTypeCode())) {
                 IssueDO pIssue = issueMapper.selectByPrimaryKey(issueDO.getParentIssueId());
                 String num = "";
                 if (pIssue != null) {
                     num = pIssue.getIssueNum();
                 }
-                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + num + URL_TEMPLATE4 + issueDO.getParentIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
+                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + num + URL_TEMPLATE4 + issueDO.getParentIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
             } else {
-                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectDTO.getName() + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
+                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
             }
             String summary = projectDTO.getCode() + "-" + issueDO.getIssueNum() + "-" + issueDO.getSummary();
             Long[] ids = new Long[1];

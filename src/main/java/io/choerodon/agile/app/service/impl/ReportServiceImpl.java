@@ -1,6 +1,5 @@
 package io.choerodon.agile.app.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.IssueAssembler;
@@ -1310,7 +1309,6 @@ public class ReportServiceImpl implements ReportService {
         burnDownReportDTO.setJsonObject(new JSONObject());
         handleBurnDownReportTypeData(burnDownReportDTO, id, projectId, typeCondition);
         if (issueDOList != null && !issueDOList.isEmpty()) {
-
             Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
             Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
             Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);

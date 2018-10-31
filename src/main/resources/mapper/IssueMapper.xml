@@ -541,23 +541,10 @@
         ) AS issue_num,
         ai.status_id,
         ai.issue_type_id
---         alv2. NAME AS status_color,
---         ais. NAME AS status_name
         FROM
         agile_issue ai
         LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
---         LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
---         LEFT JOIN agile_lookup_value alv2 ON alv2.value_code = CASE ais.category_code
---         WHEN 'todo' THEN
---         'issue_status_color_todo'
---         WHEN 'doing' THEN
---         'issue_status_color_doing'
---         WHEN 'done' THEN
---         'issue_status_color_done'
---         ELSE
---         'issue_status_color_todo'
---         END
         WHERE
         ai.project_id = #{projectId}
         AND ai.type_code = 'issue_epic'
@@ -682,8 +669,9 @@
         FROM agile_issue ai
         left join agile_issue_status ais on ai.status_id = ais.id
         WHERE
-        ais.is_completed != 1
-        and ai.project_id = #{projectId} AND ai.type_code !='sub_task' AND ai.type_code != 'issue_epic' AND ai.type_code != 'issue_test'
+        (ais.is_completed != 1 or ais.is_completed is null)
+        and ai.project_id = #{projectId} AND ai.type_code !='sub_task' AND ai.type_code != 'issue_epic' AND ai.type_code
+        != 'issue_test'
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.versionId != null'>
                 AND ai.issue_id IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id =
@@ -849,7 +837,7 @@
     <select id="queryIssueSubListByIssueIds" resultType="java.lang.Long">
         SELECT issue_id
         FROM
-            agile_issue
+        agile_issue
         WHERE project_id = #{projectId} AND parent_issue_id IN
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
@@ -897,10 +885,11 @@
         DELETE FROM agile_version_issue_rel
         WHERE EXISTS
         (
-            SELECT 0 FROM agile_product_version apv WHERE apv.version_id = agile_version_issue_rel.version_id
-            AND apv.status_code != 'archived' and apv.status_code != 'released'
+        SELECT 0 FROM agile_product_version apv WHERE apv.version_id = agile_version_issue_rel.version_id
+        AND apv.status_code != 'archived' and apv.status_code != 'released'
         )
-        AND agile_version_issue_rel.project_id = #{projectId} AND agile_version_issue_rel.relation_type = 'fix' AND agile_version_issue_rel.issue_id IN
+        AND agile_version_issue_rel.project_id = #{projectId} AND agile_version_issue_rel.relation_type = 'fix' AND
+        agile_version_issue_rel.issue_id IN
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
             #{issueId}
@@ -1169,9 +1158,9 @@
         WHERE ai.project_id = #{projectId}
         and ai.issue_id in
         (
-           select ail.linked_issue_id
-           from agile_issue_link ail, agile_issue ai2
-           where ai2.project_id = #{projectId} and ail.issue_id = ai2.issue_id and ai2.type_code = 'issue_test'
+        select ail.linked_issue_id
+        from agile_issue_link ail, agile_issue ai2
+        where ai2.project_id = #{projectId} and ail.issue_id = ai2.issue_id and ai2.type_code = 'issue_test'
         )
         AND ai.type_code != 'sub_task'
         <if test='searchArgs != null'>
@@ -1783,7 +1772,8 @@
         avir.project_id = #{projectId} and avir.issue_id = ai.issue_id
         and avir.relation_type = 'fix'
         and avir.version_id in (
-        select version_id from agile_product_version where project_id = #{projectId} and status_code = 'version_planning'
+        select version_id from agile_product_version where project_id = #{projectId} and status_code =
+        'version_planning'
         )
         <if test="pageType != null and pageType == 'storymap'">
             AND ai.epic_id IS NOT NULL AND ai.epic_id != 0
@@ -2057,6 +2047,8 @@
             aaa.type_code,
             aaa.status_id,
             aaa.issue_type_id,
+--             aaa.status_name,
+--             aaa.status_code,
             aaa.completed,
             aaa.summary,
             aaa.priority_id,
@@ -2077,6 +2069,8 @@
                 CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,
                 ai.type_code,
                 ai.status_id,
+--                 ais.NAME AS status_name,
+--                 ais.category_code AS status_code,
                 ais.is_completed as completed,
                 ai.summary,
                 ai.assignee_id,
@@ -2119,6 +2113,7 @@
                 agile_issue ai
                 LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
 --                 LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+--                 LEFT JOIN agile_lookup_value alv1 ON ai.type_code = alv1.value_code
                 LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
                 LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id and ais.project_id = #{projectId}
             WHERE
@@ -2224,30 +2219,30 @@
 
     <select id="queryByIssueIds" resultMap="issueDetail">
         SELECT
-            ai.issue_id,
-            ai.type_code,
-            ai.status_id,
-            ai.summary,
-            ai.priority_code,
-            ai.reporter_id,
-            ai.description,
-            ai.assignee_id,
-            ai.project_id
+        ai.issue_id,
+        ai.type_code,
+        ai.status_id,
+        ai.summary,
+        ai.priority_code,
+        ai.reporter_id,
+        ai.description,
+        ai.assignee_id,
+        ai.project_id
         FROM
-            agile_issue ai
+        agile_issue ai
         WHERE
-            ai.project_id = #{projectId}
-            AND ai.type_code = 'issue_test'
-            AND ai.issue_id IN
-            <foreach collection="issueIds" item="issueId" open="(" separator="," close=")">
-              #{issueId}
-            </foreach>
-            ORDER BY
-            field(ai.issue_id,
-            <foreach collection="issueIds" item="issueId" separator="," >
-                #{issueId}
-            </foreach>
-            );
+        ai.project_id = #{projectId}
+        AND ai.type_code = 'issue_test'
+        AND ai.issue_id IN
+        <foreach collection="issueIds" item="issueId" open="(" separator="," close=")">
+            #{issueId}
+        </foreach>
+        ORDER BY
+        field(ai.issue_id,
+        <foreach collection="issueIds" item="issueId" separator=",">
+            #{issueId}
+        </foreach>
+        );
     </select>
 
     <select id="selectMinRankByProjectId" resultType="java.lang.String">
