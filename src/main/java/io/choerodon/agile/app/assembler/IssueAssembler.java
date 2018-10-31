@@ -91,12 +91,14 @@ public class IssueAssembler extends AbstractAssembler {
         issueDOList.forEach(issueDO -> {
             String assigneeName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getName() : null;
             String reporterName = usersMap.get(issueDO.getReporterId()) != null ? usersMap.get(issueDO.getReporterId()).getName() : null;
-            String imageUrl = assigneeName != null ? usersMap.get(issueDO.getAssigneeId()).getImageUrl() : null;
+            String assigneeImageUrl = assigneeName != null ? usersMap.get(issueDO.getAssigneeId()).getImageUrl() : null;
+            String reporterImageUrl = reporterName != null ? usersMap.get(issueDO.getReporterId()).getImageUrl() : null;
             IssueListDTO issueListDTO = toTarget(issueDO, IssueListDTO.class);
             issueListDTO.setAssigneeName(assigneeName);
             issueListDTO.setReporterName(reporterName);
             issueListDTO.setStatusColor(ColorUtil.initializationStatusColor(issueListDTO.getStatusCode(), lookupValueMap));
-            issueListDTO.setImageUrl(imageUrl);
+            issueListDTO.setAssigneeImageUrl(assigneeImageUrl);
+            issueListDTO.setReporterImageUrl(reporterImageUrl);
             issueListDTO.setVersionIssueRelDTOS(toTargetList(issueDO.getVersionIssueRelDOS(), VersionIssueRelDTO.class));
             issueListDTOList.add(issueListDTO);
         });

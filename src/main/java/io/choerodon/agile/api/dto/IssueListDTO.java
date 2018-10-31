@@ -34,7 +34,9 @@ public class IssueListDTO implements Serializable {
 
     private String reporterName;
 
-    private String imageUrl;
+    private String reporterImageUrl;
+
+    private String assigneeImageUrl;
 
     private String priorityName;
 
@@ -176,12 +178,20 @@ public class IssueListDTO implements Serializable {
         this.statusName = statusName;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getReporterImageUrl() {
+        return reporterImageUrl;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setReporterImageUrl(String reporterImageUrl) {
+        this.reporterImageUrl = reporterImageUrl;
+    }
+
+    public String getAssigneeImageUrl() {
+        return assigneeImageUrl;
+    }
+
+    public void setAssigneeImageUrl(String assigneeImageUrl) {
+        this.assigneeImageUrl = assigneeImageUrl;
     }
 
     public String getStatusColor() {

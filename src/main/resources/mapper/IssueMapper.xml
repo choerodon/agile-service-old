@@ -310,7 +310,11 @@
         SELECT
         ai.issue_id as issue_issue_id,
         ai.summary,
-        CONCAT(api.project_code,'-', ai.issue_num) as issue_num
+        CONCAT(api.project_code,'-', ai.issue_num) as issue_num,
+        ai.reporter_id,
+        ai.last_update_date,
+        ai.priority_code,
+        ai.assignee_id
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         left join agile_issue_status ais on ais.id = ai.status_id
