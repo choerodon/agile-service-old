@@ -32,6 +32,8 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -163,6 +165,8 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private PlatformTransactionManager transactionManager;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(IssueServiceImpl.class);
+
     private static final String STATUS_CODE_TODO = "todo";
     private static final String STATUS_CODE_DOING = "doing";
     private static final String STATUS_CODE_DONE = "done";
@@ -270,7 +274,6 @@ public class IssueServiceImpl implements IssueService {
             handleInitIssue(issueE, initStatusId, projectInfoE);
             //创建issue
             issueId = issueRepository.create(issueE).getIssueId();
-
             transactionManager.commit(status);
         } catch (Exception e) {
             transactionManager.rollback(status);
@@ -283,27 +286,28 @@ public class IssueServiceImpl implements IssueService {
         if (!executeResult.getBody().getSuccess()) {
             //手动回滚数据
             issueMapper.batchDeleteIssues(issueE.getProjectId(), Collections.singletonList(issueId));
-            throw new CommonException(executeResult.getBody().getErrorMessage());
+            LOGGER.error(executeResult.getBody().getErrorMessage());
+            return null;
+        } else {
+            DefaultTransactionDefinition defData = new DefaultTransactionDefinition();
+            defData.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+            TransactionStatus statusData = transactionManager.getTransaction(defData);
+            try {
+                //处理冲刺
+                handleCreateSprintRel(issueE.getSprintId(), issueE.getProjectId(), issueId);
+                handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
+                handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId, projectInfoE);
+                handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
+                transactionManager.commit(statusData);
+            } catch (Exception e) {
+                transactionManager.rollback(statusData);
+                //手动回滚数据
+                issueMapper.batchDeleteIssues(issueE.getProjectId(), Collections.singletonList(issueId));
+                LOGGER.error(executeResult.getBody().getErrorMessage());
+                return null;
+            }
+            return queryIssueCreate(issueCreateDTO.getProjectId(), issueId);
         }
-
-        DefaultTransactionDefinition defData = new DefaultTransactionDefinition();
-        defData.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        TransactionStatus statusData = transactionManager.getTransaction(defData);
-        try {
-            //处理冲刺
-            handleCreateSprintRel(issueE.getSprintId(), issueE.getProjectId(), issueId);
-            handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
-            handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId, projectInfoE);
-            handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
-            transactionManager.commit(statusData);
-        } catch (Exception e) {
-            transactionManager.rollback(statusData);
-            //手动回滚数据
-            issueMapper.batchDeleteIssues(issueE.getProjectId(), Collections.singletonList(issueId));
-            e.printStackTrace();
-            throw new CommonException(ERROR_CREATE_ISSUE_HANDLE_DATA);
-        }
-        return queryIssueCreate(issueCreateDTO.getProjectId(), issueId);
     }
 
     private void handleInitIssue(IssueE issueE, Long statusId, ProjectInfoE projectInfoE) {
@@ -719,7 +723,8 @@ public class IssueServiceImpl implements IssueService {
         if (!executeResult.getBody().getSuccess()) {
             //手动回滚数据
             issueMapper.batchDeleteIssues(subIssueE.getProjectId(), Collections.singletonList(issueId));
-            throw new CommonException(executeResult.getBody().getErrorMessage());
+            LOGGER.error(executeResult.getBody().getErrorMessage());
+            return null;
         }
 
         DefaultTransactionDefinition def2 = new DefaultTransactionDefinition();
@@ -739,8 +744,8 @@ public class IssueServiceImpl implements IssueService {
             transactionManager.rollback(status2);
             //手动回滚数据
             issueMapper.batchDeleteIssues(subIssueE.getProjectId(), Collections.singletonList(issueId));
-            e.printStackTrace();
-            throw new CommonException(ERROR_CREATE_ISSUE_HANDLE_DATA);
+            LOGGER.error(executeResult.getBody().getErrorMessage());
+            return null;
         }
         return queryIssueSubByCreate(subIssueE.getProjectId(), issueId);
     }
