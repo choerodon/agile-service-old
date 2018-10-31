@@ -161,8 +161,6 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private InstanceFeignClient instanceFeignClient;
     @Autowired
-    private ProjectUtil projectUtil;
-    @Autowired
     private PlatformTransactionManager transactionManager;
     @Autowired
     private StateMachineService stateMachineService;
@@ -252,7 +250,7 @@ public class IssueServiceImpl implements IssueService {
         TransactionStatus status = transactionManager.getTransaction(def);
         IssueE issueE = issueAssembler.toTarget(issueCreateDTO, IssueE.class);
         Long projectId = issueE.getProjectId();
-        Long organizationId = projectUtil.getOrganizationId(projectId);
+        Long organizationId = ConvertUtil.getOrganizationId(projectId);
         Long issueId;
         ProjectInfoE projectInfoE;
         Long stateMachineId;
@@ -677,7 +675,7 @@ public class IssueServiceImpl implements IssueService {
         //获得事务状态
         TransactionStatus status = transactionManager.getTransaction(def);
         Long projectId = subIssueE.getProjectId();
-        Long organizationId = projectUtil.getOrganizationId(projectId);
+        Long organizationId = ConvertUtil.getOrganizationId(projectId);
         Long issueId;
         ProjectInfoE projectInfoE;
         Long stateMachineId;
@@ -1910,7 +1908,7 @@ public class IssueServiceImpl implements IssueService {
         //获取issueTypeId
         Long issueTypeId = issueDOList.get(0).getIssueTypeId();
         //获取状态机id
-        Long organizationId = projectUtil.getOrganizationId(projectId);
+        Long organizationId = ConvertUtil.getOrganizationId(projectId);
         Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueTypeId).getBody();
         if (stateMachineId == null) {
             throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);

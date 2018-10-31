@@ -4,7 +4,7 @@ import io.choerodon.agile.api.dto.IssueUpdateDTO;
 import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
-import io.choerodon.agile.infra.common.utils.ProjectUtil;
+import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
@@ -51,13 +51,11 @@ public class StateMachineServiceImpl implements StateMachineService {
     private InstanceFeignClient instanceFeignClient;
     @Autowired
     private IssueFeignClient issueFeignClient;
-    @Autowired
-    private ProjectUtil projectUtil;
 
     @Override
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public ExecuteResult executeTransform(Long projectId, Long issueId, Long transformId) {
-        Long organizationId = projectUtil.getOrganizationId(projectId);
+        Long organizationId = ConvertUtil.getOrganizationId(projectId);
         IssueDO issue = issueMapper.selectByPrimaryKey(issueId);
         if (issue == null) {
             throw new CommonException(ERROR_ISSUE_NOT_FOUND);
