@@ -161,8 +161,6 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private InstanceFeignClient instanceFeignClient;
     @Autowired
-    private ProjectUtil projectUtil;
-    @Autowired
     private PlatformTransactionManager transactionManager;
     @Autowired
     private StateMachineService stateMachineService;
