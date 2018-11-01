@@ -209,12 +209,12 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 //        issueStatusRepository.delete(issueStatusE);
 //    }
 
-//    @Override
-//    public List<IssueStatusDTO> queryIssueStatusList(Long projectId) {
-//        IssueStatusDO issueStatusDO = new IssueStatusDO();
-//        issueStatusDO.setProjectId(projectId);
-//        return ConvertHelper.convertList(issueStatusMapper.select(issueStatusDO), IssueStatusDTO.class);
-//    }
+    @Override
+    public List<IssueStatusDTO> queryIssueStatusList(Long projectId) {
+        IssueStatusDO issueStatusDO = new IssueStatusDO();
+        issueStatusDO.setProjectId(projectId);
+        return ConvertHelper.convertList(issueStatusMapper.select(issueStatusDO), IssueStatusDTO.class);
+    }
 
     @Override
     public IssueStatusDTO updateStatus(Long projectId, IssueStatusDTO issueStatusDTO) {

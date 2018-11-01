@@ -118,15 +118,15 @@ public class IssueStatusController {
 //        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 //    }
 
-//    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-//    @ApiOperation("查询项目下的issue状态")
-//    @GetMapping(value = "/list")
-//    public ResponseEntity<List<IssueStatusDTO>> listStatusByProjectId(@ApiParam(value = "项目id", required = true)
-//                                                                      @PathVariable(name = "project_id") Long projectId) {
-//        return Optional.ofNullable(issueStatusService.queryIssueStatusList(projectId))
-//                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-//                .orElseThrow(() -> new CommonException("error.status.queryIssueStatusList"));
-//    }
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("查询项目下的issue状态")
+    @GetMapping(value = "/list")
+    public ResponseEntity<List<IssueStatusDTO>> listStatusByProjectId(@ApiParam(value = "项目id", required = true)
+                                                                      @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(issueStatusService.queryIssueStatusList(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.status.queryIssueStatusList"));
+    }
 
     @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("更新状态")

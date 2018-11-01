@@ -38,7 +38,7 @@ public interface IssueStatusService {
      * @param projectId projectId
      * @return IssueStatusDTO
      */
-//    List<IssueStatusDTO> queryIssueStatusList(Long projectId);
+    List<IssueStatusDTO> queryIssueStatusList(Long projectId);
 
     IssueStatusDTO updateStatus(Long projectId, IssueStatusDTO issueStatusDTO);
 
