@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.feign.fallback;
 
 import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.dto.StatusInfoDTO;
 import io.choerodon.agile.infra.dataobject.StatusForMoveDataDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.core.exception.CommonException;
@@ -41,9 +41,10 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity fixStateMachineScheme(List<StatusForMoveDataDO> statusForMoveDataDOList) {
+    public ResponseEntity fixStateMachineScheme(List<StatusForMoveDataDO> statusForMoveDataDOList, Boolean isFixStatus) {
         throw new CommonException("error.status.init");
     }
+
 
     @Override
     public ResponseEntity<Map<Long, Map<String, Long>>> queryPriorities() {
@@ -64,6 +65,7 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     public ResponseEntity<List<IssueTypeDTO>> queryIssueTypesByProjectId(Long projectId, String schemeType) {
         throw new CommonException("error.queryIssueTypesByProjectId.get");
     }
+
     @Override
     public ResponseEntity<StatusInfoDTO> createStatusForAgile(Long projectId, StatusInfoDTO statusInfoDTO) {
         throw new CommonException("error.status.create");

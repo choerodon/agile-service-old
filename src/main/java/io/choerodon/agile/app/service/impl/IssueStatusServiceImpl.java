@@ -237,7 +237,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 //    }
 
     @Override
-    public void moveStatus(Long projectId) {
+    public void moveStatus(Long projectId, Boolean isFixStatus) {
         List<StatusForMoveDataDO> result = new ArrayList<>();
         List<IssueStatusDO> statuses = issueStatusMapper.selectAll();
         Collections.sort(statuses, Comparator.comparing(IssueStatusDO::getId));
@@ -258,7 +258,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             }
         }
 
-        issueFeignClient.fixStateMachineScheme(result);
+        issueFeignClient.fixStateMachineScheme(result, isFixStatus);
     }
 
 
