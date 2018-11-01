@@ -55,6 +55,7 @@ public class AgileEventHandler {
     private static final String ORG_CREATE = "org-create-organization";
     private static final String PROJECT_CREATE_STATE_MACHINE = "project-create-state-machine";
     private static final String ORG_REGISTER = "org-register";
+    private static final String DEPLOY_STATEMACHINE_ADD_STATUS = "deploy-statemachine-add-status";
 
     /**
      * 创建项目事件
@@ -90,7 +91,7 @@ public class AgileEventHandler {
 
     @SagaTask(code = STATUS_CREATE_CONSUME_ORG,
             description = "agile消费组织层创建状态",
-            sagaCode = PROJECT_CREATE_STATE_MACHINE,
+            sagaCode = DEPLOY_STATEMACHINE_ADD_STATUS,
             seq = 4)
     public void dealStatusCreateOrg(String message) {
         DeployStatusPayload deployStatusPayload = JSONObject.parseObject(message, DeployStatusPayload.class);
