@@ -1,42 +1,40 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.dto.IssueLinkDTO;
-import io.choerodon.agile.infra.common.utils.ColorUtil;
+import io.choerodon.agile.api.dto.IssueTypeDTO;
+import io.choerodon.agile.api.dto.PriorityDTO;
+import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.IssueLinkDO;
-import io.choerodon.agile.infra.dataobject.LookupValueDO;
-import io.choerodon.agile.infra.mapper.LookupValueMapper;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/6/14
  */
 @Component
-public class IssueLinkAssembler extends AbstractAssembler{
+public class IssueLinkAssembler extends AbstractAssembler {
 
-    @Autowired
-    private LookupValueMapper lookupValueMapper;
-
-    private static final String ISSUE_STATUS_COLOR = "issue_status_color";
-
-    public List<IssueLinkDTO> issueLinkDoToDto(List<IssueLinkDO> issueLinkDOList) {
-        LookupValueDO lookupValueDO = new LookupValueDO();
-        lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
-        Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
+    public List<IssueLinkDTO> issueLinkDoToDto(Long projectId, List<IssueLinkDO> issueLinkDOList) {
         List<IssueLinkDTO> issueLinkDTOList = new ArrayList<>(issueLinkDOList.size());
-        issueLinkDOList.forEach(issueLinkDO -> {
-            IssueLinkDTO issueLinkDTO = new IssueLinkDTO();
-            BeanUtils.copyProperties(issueLinkDO, issueLinkDTO);
-            issueLinkDTO.setStatusColor(ColorUtil.initializationStatusColor(issueLinkDTO.getStatusCode(), lookupValueMap));
-            issueLinkDTOList.add(issueLinkDTO);
-        });
+        if (!issueLinkDOList.isEmpty()) {
+            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
+            Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+            Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
+            issueLinkDOList.forEach(issueLinkDO -> {
+                IssueLinkDTO issueLinkDTO = new IssueLinkDTO();
+                BeanUtils.copyProperties(issueLinkDO, issueLinkDTO);
+                issueLinkDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
+                issueLinkDTO.setStatusMapDTO(statusMapDTOMap.get(issueLinkDO.getStatusId()));
+                issueLinkDTO.setPriorityDTO(priorityDTOMap.get(issueLinkDO.getPriorityId()));
+                issueLinkDTOList.add(issueLinkDTO);
+            });
+        }
         return issueLinkDTOList;
     }
 }
