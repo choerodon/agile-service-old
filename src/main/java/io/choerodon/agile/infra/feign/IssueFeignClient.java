@@ -2,8 +2,9 @@ package io.choerodon.agile.infra.feign;
 
 import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.dto.StatusInfoDTO;
 import io.choerodon.agile.infra.dataobject.StatusForMoveDataDO;
+import io.choerodon.agile.infra.feign.fallback.IssueFeignClientFallback;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ import java.util.Map;
  * Created by HuangFuqiang@choerodon.io on 2018/10/23.
  * Email: fuqianghuang01@gmail.com
  */
-@FeignClient(value = "issue-service", fallback = IssueFeignClient.class)
+@FeignClient(value = "issue-service", fallback = IssueFeignClientFallback.class)
 public interface IssueFeignClient {
 
     @GetMapping("/v1/organizations/{organization_id}/priority/{id}")
@@ -39,7 +40,8 @@ public interface IssueFeignClient {
 
     @PostMapping(value = "/v1/fix_data/state_machine_scheme")
     ResponseEntity fixStateMachineScheme(@ApiParam(value = "敏捷状态数据", required = true)
-                                         @RequestBody List<StatusForMoveDataDO> statusForMoveDataDOList);
+                                         @RequestBody List<StatusForMoveDataDO> statusForMoveDataDOList,
+                                         @RequestParam Boolean isFixStatus);
 
     @GetMapping("/v1/fix_data/query_priorities")
     ResponseEntity<Map<Long, Map<String, Long>>> queryPriorities();
