@@ -539,8 +539,8 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueDTO updateIssueStatus(Long projectId, Long issueId, Long transformId) {
-        Long resultStatusId = stateMachineService.executeTransform(projectId, issueId, transformId).getResultStatusId();
+    public IssueDTO updateIssueStatus(Long projectId, Long issueId, Long transformId, Long objectVersionNumber) {
+        Long resultStatusId = stateMachineService.executeTransform(projectId, issueId, transformId, objectVersionNumber).getResultStatusId();
         return queryIssueByUpdate(projectId, issueId, resultStatusId, Collections.singletonList("statusId"));
     }
 

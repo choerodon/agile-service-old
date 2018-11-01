@@ -245,14 +245,12 @@
         <id property="issueId" column="issue_issue_id"/>
         <id property="typeCode" column="type_code"/>
         <id property="summary" column="summary"/>
-        <id property="priorityCode" column="priority_code"/>
+        <id property="priorityId" column="priority_id"/>
+        <id property="issueTypeId" column="issue_type_id"/>
         <id property="assigneeId" column="assignee_id"/>
         <id property="reporterId" column="reporter_id"/>
         <id property="projectId" column="issue_project_id"/>
         <id property="statusId" column="status_id"/>
-        <id property="priorityName" column="priority_name"/>
-        <id property="statusCode" column="issue_status_code"/>
-        <id property="statusName" column="status_name"/>
         <id property="issueNum" column="issue_num"/>
         <id property="lastUpdateDate" column="issue_last_update_date"/>
         <collection property="versionIssueRelDOS" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.VersionIssueRelDO">

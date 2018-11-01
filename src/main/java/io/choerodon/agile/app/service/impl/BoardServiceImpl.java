@@ -443,7 +443,7 @@ public class BoardServiceImpl implements BoardService {
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
 //        IssueMoveDTO result = ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);
         //执行状态机转换
-        Long resultStatusId = stateMachineService.executeTransform(projectId, issueId, transformId).getResultStatusId();
+        Long resultStatusId = stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber()).getResultStatusId();
         IssueMoveDTO result = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueMoveDTO.class);
         result.setStatusId(resultStatusId);
 

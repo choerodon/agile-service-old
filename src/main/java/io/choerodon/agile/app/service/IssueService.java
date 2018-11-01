@@ -72,7 +72,7 @@ public interface IssueService {
      * @param transformId
      * @return
      */
-    IssueDTO updateIssueStatus(Long projectId, Long issueId, Long transformId);
+    IssueDTO updateIssueStatus(Long projectId, Long issueId, Long transformId, Long objectVersionNumber);
 
     /**
      * 更新issue自己的字段

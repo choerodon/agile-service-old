@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.service.IssueService;
-import io.choerodon.agile.app.service.StateMachineService;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
@@ -103,8 +102,10 @@ public class IssueController {
                                                       @ApiParam(value = "转换id", required = true)
                                                       @RequestParam Long transformId,
                                                       @ApiParam(value = "问题id", required = true)
-                                                      @RequestParam Long issueId) {
-        return Optional.ofNullable(issueService.updateIssueStatus(projectId, issueId, transformId))
+                                                      @RequestParam Long issueId,
+                                                      @ApiParam(value = "版本号", required = true)
+                                                      @RequestParam Long objectVersionNumber) {
+        return Optional.ofNullable(issueService.updateIssueStatus(projectId, issueId, transformId, objectVersionNumber))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.Issue.updateIssueStatus"));
     }
@@ -136,6 +137,8 @@ public class IssueController {
     }
 
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("分页查询问题列表，包含子任务")
     @PostMapping(value = "/include_sub")
     public ResponseEntity<Page<IssueListDTO>> listIssueWithSub(@ApiIgnore
                                                                @ApiParam(value = "分页信息", required = true)

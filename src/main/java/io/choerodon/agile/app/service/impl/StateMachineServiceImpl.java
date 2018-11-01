@@ -39,6 +39,7 @@ public class StateMachineServiceImpl implements StateMachineService {
     private static final String AGILE_SERVICE = "agile-service";
     private static final String ERROR_ISSUE_STATE_MACHINE_NOT_FOUND = "error.issueStateMachine.notFound";
     private static final String ERROR_ISSUE_NOT_FOUND = "error.issue.notFound";
+    private static final String ERROR_ISSUE_VERSION = "error.issue.version";
     private static final String ERROR_INSTANCE_FEGIN_CLIENT_EXECUTE_TRANSFORM = "error.instanceFeignClient.executeTransform";
 
     @Autowired
@@ -54,11 +55,14 @@ public class StateMachineServiceImpl implements StateMachineService {
 
     @Override
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public ExecuteResult executeTransform(Long projectId, Long issueId, Long transformId) {
+    public ExecuteResult executeTransform(Long projectId, Long issueId, Long transformId, Long objectVersionNumber) {
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
         IssueDO issue = issueMapper.selectByPrimaryKey(issueId);
         if (issue == null) {
             throw new CommonException(ERROR_ISSUE_NOT_FOUND);
+        }
+        if (!objectVersionNumber.equals(issue.getObjectVersionNumber())) {
+            throw new CommonException(ERROR_ISSUE_VERSION);
         }
         //获取状态机id
         Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issue.getIssueTypeId()).getBody();
@@ -118,7 +122,7 @@ public class StateMachineServiceImpl implements StateMachineService {
         if (targetStatusId == null) {
             throw new CommonException("error.updateStatus.targetStateId.null");
         }
-        if(!issue.getStatusId().equals(targetStatusId)){
+        if (!issue.getStatusId().equals(targetStatusId)) {
             IssueUpdateDTO issueUpdateDTO = issueAssembler.toTarget(issue, IssueUpdateDTO.class);
             issueUpdateDTO.setStatusId(targetStatusId);
             issueService.handleUpdateIssue(issueUpdateDTO, Collections.singletonList("statusId"), issue.getProjectId());

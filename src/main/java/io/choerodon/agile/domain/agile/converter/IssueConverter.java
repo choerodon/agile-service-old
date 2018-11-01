@@ -58,4 +58,5 @@ public class IssueConverter implements ConvertorI<IssueE, IssueDO, IssueDTO> {
         BeanUtils.copyProperties(issueDTO, issueDO);
         return issueDO;
     }
+
 }
