@@ -244,7 +244,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      */
     List<IssueComponentDetailDO> listIssueWithoutSubDetail(@Param("projectId") Long projectId, @Param("searchArgs") Map<String, Object> searchArgs,
                                                            @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
-                                                           @Param("otherArgs") Map<String, Object> otherArgs, @Param("content") String content);
+                                                           @Param("otherArgs") Map<String, Object> otherArgs, @Param("content") String content,
+                                                           @Param("filterStatusIds") List<Long> filterStatusIds);
 
     /**
      * 待办事项查询相关issue的issueIds

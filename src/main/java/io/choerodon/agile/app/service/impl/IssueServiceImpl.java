@@ -1741,21 +1741,24 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public Page<IssueComponentDetailDTO> listIssueWithoutSubDetail(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
         //连表查询需要设置主表别名
+        List<Long> filterStatusIds = new ArrayList<>();
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(ConvertUtil.getOrganizationId(projectId)).getBody();
+        getAdvacedSearchStatusIds(searchDTO, filterStatusIds, statusMapDTOMap);
         pageRequest.resetOrder(SEARCH, new HashMap<>());
         Page<IssueComponentDetailDO> issueComponentDetailDOPage = PageHelper.doPageAndSort(pageRequest, () ->
                 issueMapper.listIssueWithoutSubDetail(projectId, searchDTO.getSearchArgs(),
-                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
-        return handleIssueComponentDetailPageDoToDto(issueComponentDetailDOPage);
+                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent(), filterStatusIds));
+        return handleIssueComponentDetailPageDoToDto(projectId, issueComponentDetailDOPage);
     }
 
-    private Page<IssueComponentDetailDTO> handleIssueComponentDetailPageDoToDto(Page<IssueComponentDetailDO> issueComponentDetailDOPage) {
+    private Page<IssueComponentDetailDTO> handleIssueComponentDetailPageDoToDto(Long projectId, Page<IssueComponentDetailDO> issueComponentDetailDOPage) {
         Page<IssueComponentDetailDTO> issueComponentDetailDTOPage = new Page<>();
         issueComponentDetailDTOPage.setNumber(issueComponentDetailDOPage.getNumber());
         issueComponentDetailDTOPage.setNumberOfElements(issueComponentDetailDOPage.getNumberOfElements());
         issueComponentDetailDTOPage.setSize(issueComponentDetailDOPage.getSize());
         issueComponentDetailDTOPage.setTotalElements(issueComponentDetailDOPage.getTotalElements());
         issueComponentDetailDTOPage.setTotalPages(issueComponentDetailDOPage.getTotalPages());
-        issueComponentDetailDTOPage.setContent(issueAssembler.issueComponentDetailDoToDto(issueComponentDetailDOPage.getContent()));
+        issueComponentDetailDTOPage.setContent(issueAssembler.issueComponentDetailDoToDto(projectId, issueComponentDetailDOPage.getContent()));
         return issueComponentDetailDTOPage;
     }
 
