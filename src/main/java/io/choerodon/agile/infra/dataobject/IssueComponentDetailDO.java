@@ -19,17 +19,9 @@ public class IssueComponentDetailDO {
 
     private Long statusId;
 
-    private String priorityCode;
-
     private Long assigneeId;
 
     private Long projectId;
-
-    private String priorityName;
-
-    private String statusCode;
-
-    private String statusName;
 
     private String issueNum;
 
@@ -42,6 +34,12 @@ public class IssueComponentDetailDO {
     private String epicName;
 
     private String epicColor;
+
+    private String description;
+
+    private Long priorityId;
+
+    private Long issueTypeId;
 
     private List<VersionIssueRelDO> versionIssueRelDOList;
 
@@ -81,14 +79,6 @@ public class IssueComponentDetailDO {
         this.statusId = statusId;
     }
 
-    public String getPriorityCode() {
-        return priorityCode;
-    }
-
-    public void setPriorityCode(String priorityCode) {
-        this.priorityCode = priorityCode;
-    }
-
     public Long getAssigneeId() {
         return assigneeId;
     }
@@ -105,28 +95,28 @@ public class IssueComponentDetailDO {
         this.projectId = projectId;
     }
 
-    public String getPriorityName() {
-        return priorityName;
+    public String getDescription() {
+        return description;
     }
 
-    public void setPriorityName(String priorityName) {
-        this.priorityName = priorityName;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getStatusCode() {
-        return statusCode;
+    public Long getPriorityId() {
+        return priorityId;
     }
 
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
     }
 
-    public String getStatusName() {
-        return statusName;
+    public Long getIssueTypeId() {
+        return issueTypeId;
     }
 
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
     }
 
     public String getIssueNum() {

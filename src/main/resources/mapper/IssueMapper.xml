@@ -84,18 +84,17 @@
         <id column="type_code" property="typeCode"/>
         <id column="summary" property="summary"/>
         <id column="status_id" property="statusId"/>
-        <id column="priority_code" property="priorityCode"/>
         <id column="assignee_id" property="assigneeId"/>
         <id column="project_id" property="projectId"/>
-        <id column="priority_name" property="priorityName"/>
-        <id column="status_code" property="statusCode"/>
-        <id column="status_name" property="statusName"/>
         <id column="issue_num" property="issueNum"/>
         <id column="reporter_id" property="reporterId"/>
         <id column="last_update_date" property="lastUpdateDate"/>
         <id column="creation_date" property="creationDate"/>
         <id column="epic_name" property="epicName"/>
         <id column="epic_color" property="epicColor"/>
+        <id column="description" property="description"/>
+        <id column="priority_id" property="priorityId"/>
+        <id column="issue_type_id" property="issueTypeId"/>
         <collection property="versionIssueRelDOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueComponentDetailDO"
                     select="queryVersionIssueRelByIssueId"/>
@@ -1457,7 +1456,6 @@
         ai.type_code,
         ai.summary,
         ai.status_id,
-        ai.priority_code,
         ai.assignee_id,
         ai.project_id,
         ai.last_update_date,
@@ -1465,12 +1463,11 @@
         ai.reporter_id,
         ai2.epic_name,
         alv2.name as epic_color,
-        alv.name AS priority_name,
-        ais.category_code AS status_code,
-        ais.name AS status_name,
-        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
-        FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
-        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,
+        ai.description,
+        ai.priority_id,
+        ai.issue_type_id
+        FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
         LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code
@@ -1498,10 +1495,9 @@
                 </foreach>
             </if>
             <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
-                AND ais.category_code IN
-                <foreach collection="advancedSearchArgs.statusCode" item="statusCode" open="(" separator=","
-                         close=")">
-                    #{statusCode}
+                and ai.status_id in
+                <foreach collection="filterStatusIds" item="filterStatusId" open="(" separator="," close=")">
+                    #{filterStatusId}
                 </foreach>
             </if>
         </if>
