@@ -25,21 +25,15 @@ public class IssueLinkDTO {
 
     private String summary;
 
-    private String priorityCode;
-
-    private String name;
-
-    private String statusCode;
-
-    private String statusColor;
-
     private String typeCode;
 
-    private String statusName;
-
-    private String priorityName;
-
     private Long linkId;
+
+    private IssueTypeDTO issueTypeDTO;
+
+    private StatusMapDTO statusMapDTO;
+
+    private PriorityDTO priorityDTO;
 
     public Long getIssueId() {
         return issueId;
@@ -97,38 +91,6 @@ public class IssueLinkDTO {
         this.issueNum = issueNum;
     }
 
-    public String getPriorityCode() {
-        return priorityCode;
-    }
-
-    public void setPriorityCode(String priorityCode) {
-        this.priorityCode = priorityCode;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
-    }
-
-    public String getStatusColor() {
-        return statusColor;
-    }
-
-    public void setStatusColor(String statusColor) {
-        this.statusColor = statusColor;
-    }
-
     public String getTypeCode() {
         return typeCode;
     }
@@ -137,20 +99,28 @@ public class IssueLinkDTO {
         this.typeCode = typeCode;
     }
 
-    public String getStatusName() {
-        return statusName;
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
     }
 
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
     }
 
-    public String getPriorityName() {
-        return priorityName;
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
     }
 
-    public void setPriorityName(String priorityName) {
-        this.priorityName = priorityName;
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
+    }
+
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
+    }
+
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
     }
 
     public Long getLinkId() {

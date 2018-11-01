@@ -40,19 +40,15 @@
                     ailt.out_ward                                  AS ward,
                     CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
                     ai.summary,
-                    ai.priority_code,
-                    ais.NAME,
-                    ais.category_code                              AS status_code,
-                    ai.type_code,
-                    alv.name                                       AS priority_name,
-                    ais.name                                       AS status_name
+                    ai.priority_id,
+                    ai.status_id,
+                    ai.issue_type_id,
+                    ai.type_code
                 FROM
                     agile_issue_link ail
                     LEFT JOIN agile_issue_link_type ailt ON ailt.link_type_id = ail.link_type_id
                     LEFT JOIN agile_issue ai ON ail.linked_issue_id = ai.issue_id
                     LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
-                    LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
-                    LEFT JOIN agile_lookup_value alv ON alv.value_code = ai.priority_code
                 WHERE
                     ail.issue_id = #{issueId}
                     AND ai.project_id = #{projectId}
@@ -66,19 +62,15 @@
                     ailt1.in_ward                                    AS ward,
                     CONCAT_WS('-', api1.project_code, ai1.issue_num) AS issue_num,
                     ai1.summary,
-                    ai1.priority_code,
-                    ais1.NAME,
-                    ais1.category_code                               AS status_code,
-                    ai1.type_code,
-                    alv1.name                                        AS priority_name,
-                    ais1.name                                        AS status_name
+                    ai1.priority_id,
+                    ai1.status_id,
+                    ai1.issue_type_id,
+                    ai1.type_code
                 FROM
                     agile_issue_link ail1
                     LEFT JOIN agile_issue_link_type ailt1 ON ailt1.link_type_id = ail1.link_type_id
                     LEFT JOIN agile_issue ai1 ON ail1.issue_id = ai1.issue_id
                     LEFT JOIN agile_project_info api1 ON api1.project_id = ai1.project_id
-                    LEFT JOIN agile_issue_status ais1 ON ais1.id = ai1.status_id
-                    LEFT JOIN agile_lookup_value alv1 ON alv1.value_code = ai1.priority_code
                 WHERE
                     ail1.linked_issue_id = #{issueId}
                     AND ai1.project_id = #{projectId}
@@ -106,19 +98,15 @@
                 ailt.out_ward                                  AS ward,
                 CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
                 ai.summary,
-                ai.priority_code,
-                ais.NAME,
-                ais.category_code                              AS status_code,
-                ai.type_code,
-                alv.name                                       AS priority_name,
-                ais.name                                       AS status_name
+                ai.priority_id,
+                ai.status_id,
+                ai.issue_type_id,
+                ai.type_code
             FROM
                 agile_issue_link ail
             LEFT JOIN agile_issue_link_type ailt ON ailt.link_type_id = ail.link_type_id
             LEFT JOIN agile_issue ai ON ail.linked_issue_id = ai.issue_id
             LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
-            LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
-            LEFT JOIN agile_lookup_value alv ON alv.value_code = ai.priority_code
             WHERE
             ail.issue_id IN
                 <foreach collection="issueIds" item="issueId" open="("
@@ -128,24 +116,21 @@
             AND ai.project_id = #{projectId}
             UNION ALL
             SELECT
-            ail1.*,
-            ailt1.link_name                                  AS link_type_name,
-            ailt1.in_ward                                    AS ward,
-            CONCAT_WS('-', api1.project_code, ai1.issue_num) AS issue_num,
-            ai1.summary,
-            ai1.priority_code,
-            ais1.NAME,
-            ais1.category_code                               AS status_code,
-            ai1.type_code,
-            alv1.name                                        AS priority_name,
-            ais1.name                                        AS status_name
+                ail1.*,
+                ailt1.link_name                                  AS link_type_name,
+                ailt1.in_ward                                    AS ward,
+                CONCAT_WS('-', api1.project_code, ai1.issue_num) AS issue_num,
+                ai1.summary,
+                ai1.priority_code,
+                ai1.priority_id,
+                ai1.status_id,
+                ai1.issue_type_id,
+                ai1.type_code
             FROM
-            agile_issue_link ail1
+                agile_issue_link ail1
             LEFT JOIN agile_issue_link_type ailt1 ON ailt1.link_type_id = ail1.link_type_id
             LEFT JOIN agile_issue ai1 ON ail1.issue_id = ai1.issue_id
             LEFT JOIN agile_project_info api1 ON api1.project_id = ai1.project_id
-            LEFT JOIN agile_issue_status ais1 ON ais1.id = ai1.status_id
-            LEFT JOIN agile_lookup_value alv1 ON alv1.value_code = ai1.priority_code
             WHERE
             ail1.linked_issue_id IN
                 <foreach collection="issueIds" item="issueId" open="("

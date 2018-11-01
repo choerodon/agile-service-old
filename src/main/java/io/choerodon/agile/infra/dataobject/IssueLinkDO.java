@@ -53,19 +53,13 @@ public class IssueLinkDO extends AuditDomain {
     private String summary;
 
     @Transient
-    private String priorityCode;
+    private Long priorityId;
 
     @Transient
-    private String name;
+    private Long issueTypeId;
 
     @Transient
-    private String statusCode;
-
-    @Transient
-    private String statusName;
-
-    @Transient
-    private String priorityName;
+    private Long statusId;
 
     @Transient
     private String typeCode;
@@ -134,28 +128,28 @@ public class IssueLinkDO extends AuditDomain {
         this.issueNum = issueNum;
     }
 
-    public String getPriorityCode() {
-        return priorityCode;
+    public Long getPriorityId() {
+        return priorityId;
     }
 
-    public void setPriorityCode(String priorityCode) {
-        this.priorityCode = priorityCode;
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
     }
 
-    public String getName() {
-        return name;
+    public Long getIssueTypeId() {
+        return issueTypeId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
     }
 
-    public String getStatusCode() {
-        return statusCode;
+    public Long getStatusId() {
+        return statusId;
     }
 
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
     }
 
     public String getTypeCode() {
@@ -164,22 +158,6 @@ public class IssueLinkDO extends AuditDomain {
 
     public void setTypeCode(String typeCode) {
         this.typeCode = typeCode;
-    }
-
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
-    }
-
-    public String getPriorityName() {
-        return priorityName;
-    }
-
-    public void setPriorityName(String priorityName) {
-        this.priorityName = priorityName;
     }
 
     @Override
