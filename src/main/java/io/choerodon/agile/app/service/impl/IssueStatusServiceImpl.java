@@ -20,6 +20,8 @@ import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,8 @@ import java.util.*;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class IssueStatusServiceImpl implements IssueStatusService {
+
+    private static final Logger logger = LoggerFactory.getLogger(IssueStatusServiceImpl.class);
 
     @Autowired
     private IssueStatusRepository issueStatusRepository;
@@ -242,23 +246,33 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         List<IssueStatusDO> statuses = issueStatusMapper.selectAll();
         Collections.sort(statuses, Comparator.comparing(IssueStatusDO::getId));
         List<Long> organizationIds = new ArrayList<>();
+        Map<Long, ProjectDTO> projectDTOMap = new HashMap<>();
         for (IssueStatusDO issueStatusDO : statuses) {
             StatusForMoveDataDO statusForMoveDataDO = new StatusForMoveDataDO();
             statusForMoveDataDO.setId(issueStatusDO.getId());
             statusForMoveDataDO.setProjectId(issueStatusDO.getProjectId());
             statusForMoveDataDO.setCategoryCode(issueStatusDO.getCategoryCode());
             statusForMoveDataDO.setName(issueStatusDO.getName());
-            ProjectDTO projectDTO = userRepository.queryProject(issueStatusDO.getProjectId());
-            statusForMoveDataDO.setOrganizationId(projectDTO.getOrganizationId());
-            if (!organizationIds.contains(projectDTO.getOrganizationId()) && projectDTO.getOrganizationId() != null) {
-                organizationIds.add(projectDTO.getOrganizationId());
+            ProjectDTO projectDTO = null;
+            if (projectDTOMap.get(issueStatusDO.getProjectId()) != null) {
+                projectDTO = projectDTOMap.get(issueStatusDO.getProjectId());
+            } else {
+                projectDTO = userRepository.queryProject(issueStatusDO.getProjectId());
+                projectDTOMap.put(issueStatusDO.getProjectId(), projectDTO);
             }
-            if (statusForMoveDataDO.getOrganizationId() != null) {
-                result.add(statusForMoveDataDO);
+            if (projectDTO != null) {
+                statusForMoveDataDO.setOrganizationId(projectDTO.getOrganizationId());
+                if (!organizationIds.contains(projectDTO.getOrganizationId()) && projectDTO.getOrganizationId() != null) {
+                    organizationIds.add(projectDTO.getOrganizationId());
+                }
+                if (statusForMoveDataDO.getOrganizationId() != null) {
+                    result.add(statusForMoveDataDO);
+                }
             }
         }
 
         issueFeignClient.fixStateMachineScheme(result, isFixStatus);
+        logger.info("步骤1执行完成");
     }
 
 
@@ -313,6 +327,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             }
         }
         issueMapper.batchUpdateIssueType(issueDOForTypeList);
+        logger.info("步骤2执行完成");
     }
 
 }
