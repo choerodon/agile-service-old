@@ -12,20 +12,12 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class IssueMoveConverter implements ConvertorI<IssueE, Object, IssueMoveDTO> {
+public class IssueDOToMoveDTOConverter implements ConvertorI<Object, IssueDO, IssueMoveDTO> {
 
     @Override
-    public IssueE dtoToEntity(IssueMoveDTO issueMoveDTO) {
-        IssueE issueE = new IssueE();
-        BeanUtils.copyProperties(issueMoveDTO, issueE);
-        return issueE;
-    }
-
-    @Override
-    public IssueMoveDTO entityToDto(IssueE issueE) {
+    public IssueMoveDTO doToDto(IssueDO issueDO) {
         IssueMoveDTO issueMoveDTO = new IssueMoveDTO();
-        BeanUtils.copyProperties(issueE, issueMoveDTO);
+        BeanUtils.copyProperties(issueDO, issueMoveDTO);
         return issueMoveDTO;
     }
-
 }
