@@ -1341,7 +1341,6 @@
         ai.priority_id,
         ai.assignee_id,
         ai.project_id,
-        ai.status_id,
         ai.issue_type_id,
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
