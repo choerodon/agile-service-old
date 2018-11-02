@@ -38,7 +38,7 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     int queryIssueCount(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    int queryStoryPoint(@Param("categoryCode") String categoryCode, @Param("issueIds") List<Long> issueIds, @Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+    int queryStoryPoint(@Param("statusIds") List<Long> statusIds, @Param("issueIds") List<Long> issueIds, @Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
     SprintDO queryLastSprint(@Param("projectId") Long projectId);
 
