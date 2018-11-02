@@ -567,6 +567,7 @@
         SELECT
         ai.issue_id, ai.summary,
         ai.project_id, ai.type_code,
+        ai.issue_type_id,
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
@@ -1183,6 +1184,7 @@
         SELECT
         ai.issue_id, ai.summary,
         ai.project_id, ai.type_code,
+        ai.issue_type_id,
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
