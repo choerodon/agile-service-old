@@ -1747,9 +1747,9 @@
         ai.epic_id,
         ai.object_version_number,
         ai.priority_id,
+        ai.issue_type_id,
         ai.map_rank,
         ai.status_id,
-        ai.issue_type_id,
         CONCAT_WS(
         '-',
         api.project_code,
