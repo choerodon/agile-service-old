@@ -129,9 +129,11 @@ public class IssueController {
     @GetMapping(value = "/sub_issue/{issueId}")
     public ResponseEntity<IssueSubDTO> queryIssueSub(@ApiParam(value = "项目id", required = true)
                                                      @PathVariable(name = "project_id") Long projectId,
+                                                     @ApiParam(value = "组织id", required = true)
+                                                     @RequestParam Long organizationId,
                                                      @ApiParam(value = "issueId", required = true)
                                                      @PathVariable Long issueId) {
-        return Optional.ofNullable(issueService.queryIssueSub(projectId, issueId))
+        return Optional.ofNullable(issueService.queryIssueSub(projectId, organizationId, issueId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssueSub"));
     }
@@ -388,10 +390,12 @@ public class IssueController {
     @PostMapping("/transformed_sub_task")
     public ResponseEntity<IssueSubDTO> transformedSubTask(@ApiParam(value = "项目id", required = true)
                                                           @PathVariable(name = "project_id") Long projectId,
+                                                          @ApiParam(value = "组织id", required = true)
+                                                          @RequestParam Long organizationId,
                                                           @ApiParam(value = "转换子任务信息", required = true)
                                                           @RequestBody IssueTransformSubTask issueTransformSubTask) {
         issueRule.verifyTransformedSubTask(issueTransformSubTask);
-        return Optional.ofNullable(issueService.transformedSubTask(projectId, issueTransformSubTask))
+        return Optional.ofNullable(issueService.transformedSubTask(projectId, organizationId, issueTransformSubTask))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.transformedSubTask"));
     }

@@ -130,7 +130,7 @@ public interface IssueService {
      * @param issueId   issueId
      * @return IssueSubDTO
      */
-    IssueSubDTO queryIssueSub(Long projectId, Long issueId);
+    IssueSubDTO queryIssueSub(Long projectId, Long organizationId, Long issueId);
 
     /**
      * 更改issue类型
@@ -173,7 +173,7 @@ public interface IssueService {
      * @param issueTransformSubTask issueTransformSubTask
      * @return IssueSubDTO
      */
-    IssueSubDTO transformedSubTask(Long projectId, IssueTransformSubTask issueTransformSubTask);
+    IssueSubDTO transformedSubTask(Long projectId, Long organizationId, IssueTransformSubTask issueTransformSubTask);
 
     List<IssueInfoDTO> listByIssueIds(Long projectId, List<Long> issueIds);
 

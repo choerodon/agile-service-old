@@ -1106,8 +1106,13 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueSubDTO queryIssueSub(Long projectId, Long issueId) {
+    public IssueSubDTO queryIssueSub(Long projectId, Long organizationId, Long issueId) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
+        issue.setPriorityDTO(getPriorityById(organizationId, issue.getPriorityId()));
+        issue.setIssueTypeDTO(getIssueTypeById(organizationId, issue.getIssueTypeId()));
+        StatusInfoDTO statusInfoDTO = getStatusById(organizationId, issue.getStatusId());
+        issue.setStatusCode(statusInfoDTO.getType());
+        issue.setStatusName(statusInfoDTO.getName());
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
@@ -1588,7 +1593,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueSubDTO transformedSubTask(Long projectId, IssueTransformSubTask issueTransformSubTask) {
+    public IssueSubDTO transformedSubTask(Long projectId, Long organizationId, IssueTransformSubTask issueTransformSubTask) {
         IssueE issueE = ConvertHelper.convert(queryIssueByIssueIdAndProjectId(projectId, issueTransformSubTask.getIssueId()), IssueE.class);
         if (issueE != null) {
             if (!issueE.getTypeCode().equals(SUB_TASK)) {
@@ -1606,7 +1611,7 @@ public class IssueServiceImpl implements IssueService {
                 //删除链接
                 issueLinkRepository.deleteByIssueId(issueE.getIssueId());
                 issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, RANK_FIELD, STATUS_ID, PARENT_ISSUE_ID, EPIC_SEQUENCE, STORY_POINTS_FIELD});
-                return queryIssueSub(projectId, issueE.getIssueId());
+                return queryIssueSub(projectId, organizationId, issueE.getIssueId());
             } else {
                 throw new CommonException("error.IssueRule.subTaskError");
             }
