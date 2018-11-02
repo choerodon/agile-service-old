@@ -9,6 +9,7 @@ public class IssueNumDTO {
     private Long projectId;
     private String summary;
     private String typeCode;
+    private IssueTypeDTO issueTypeDTO;
 
     public Long getIssueId() {
         return issueId;
@@ -50,4 +51,11 @@ public class IssueNumDTO {
         this.typeCode = typeCode;
     }
 
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
 }

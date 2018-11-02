@@ -1,14 +1,13 @@
 package io.choerodon.agile.app.assembler;
 
 import com.google.common.collect.Lists;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.LookupValueMapper;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.agile.api.dto.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -293,5 +292,19 @@ public class IssueAssembler extends AbstractAssembler {
             issueListTestDTOS.add(issueListTestDTO);
         });
         return issueListTestDTOS;
+    }
+
+    public List<IssueNumDTO> issueNumDoToDto(List<IssueNumDO> issueNumDOList,Long projectId) {
+        List<IssueNumDTO> issueNumDTOS = new ArrayList<>(issueNumDOList.size());
+        if(!issueNumDOList.isEmpty()){
+            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
+            issueNumDOList.forEach(issueDO -> {
+                IssueNumDTO issueNumDTO = new IssueNumDTO();
+                BeanUtils.copyProperties(issueDO, issueNumDTO);
+                issueNumDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
+                issueNumDTOS.add(issueNumDTO);
+            });
+        }
+        return issueNumDTOS;
     }
 }

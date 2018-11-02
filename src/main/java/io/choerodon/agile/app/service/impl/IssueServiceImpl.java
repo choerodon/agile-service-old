@@ -1714,7 +1714,7 @@ public class IssueServiceImpl implements IssueService {
         issueListDTOPage.setSize(issueDOPage.getSize());
         issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
         issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
-        issueListDTOPage.setContent(issueAssembler.toTargetList(issueDOPage.getContent(), IssueNumDTO.class));
+        issueListDTOPage.setContent(issueAssembler.issueNumDoToDto(issueDOPage.getContent(),projectId));
         return issueListDTOPage;
     }
 

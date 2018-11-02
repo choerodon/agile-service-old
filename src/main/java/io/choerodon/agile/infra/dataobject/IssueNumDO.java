@@ -5,6 +5,7 @@ package io.choerodon.agile.infra.dataobject;
  */
 public class IssueNumDO {
     private Long issueId;
+    private Long issueTypeId;
     private String issueNum;
     private Long projectId;
     private String summary;
@@ -50,4 +51,11 @@ public class IssueNumDO {
         this.typeCode = typeCode;
     }
 
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
 }
