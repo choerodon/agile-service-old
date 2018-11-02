@@ -121,7 +121,6 @@
                 ailt1.in_ward                                    AS ward,
                 CONCAT_WS('-', api1.project_code, ai1.issue_num) AS issue_num,
                 ai1.summary,
-                ai1.priority_code,
                 ai1.priority_id,
                 ai1.status_id,
                 ai1.issue_type_id,
