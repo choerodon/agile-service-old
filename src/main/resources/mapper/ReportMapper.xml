@@ -1648,7 +1648,7 @@
         SELECT
         <choose>
             <when test="own">
-                ai.${fieldName} AS type_name
+                ai.${fieldName} AS type_name,
             </when>
             <otherwise>
                 <if test="fieldName == 'resolution'">
@@ -3099,13 +3099,12 @@
             ai.status_id,
             count( * ) AS count
         FROM
-            (select * from agile_issue ai3
-            LEFT JOIN agile_issue ai2 ON ai3.parent_issue_id = ai2.issue_id
-            AND ai3.type_code != 'issue_test'
-            AND ( ai2.type_code != 'issue_test' OR ai2.type_code IS NULL )
-            )ai
+            agile_issue ai
+            LEFT JOIN agile_issue ai2 ON ai.parent_issue_id = ai2.issue_id
         WHERE
             ai.project_id = #{projectId}
+             AND ai.type_code != 'issue_test'
+            AND ( ai2.type_code != 'issue_test' OR ai2.type_code IS NULL )
         GROUP BY
             ai.issue_type_id,
             ai.status_id
@@ -3119,12 +3118,8 @@
             count( * ) AS count
         FROM
             agile_version_issue_rel avir
-            LEFT JOIN
-            (select * from agile_issue ai3
-            LEFT JOIN agile_issue ai2 ON ai3.parent_issue_id = ai2.issue_id
-            AND ai3.type_code != 'issue_test'
-            AND ( ai2.type_code != 'issue_test' OR ai2.type_code IS NULL )
-            )ai ON avir.issue_id = ai.issue_id
+             LEFT JOIN agile_issue ai ON avir.issue_id = ai.issue_id
+            LEFT JOIN agile_issue ai2 ON ai.parent_issue_id = ai2.issue_id
             LEFT JOIN (
                 SELECT
                     apv1.sequence,
@@ -3139,6 +3134,8 @@
                 ) apv ON avir.version_id = apv.version_id
         WHERE
             avir.project_id = #{projectId}
+            AND ai.type_code != 'issue_test'
+            AND ( ai2.type_code != 'issue_test' OR ai2.type_code IS NULL )
             AND apv.NAME IS NOT NULL
         GROUP BY
             apv.NAME,
@@ -3157,14 +3154,13 @@
             ais.is_completed,
             count( * ) AS count
         FROM
-            (select * from agile_issue ai3
-            LEFT JOIN agile_issue ai2 ON ai3.parent_issue_id = ai2.issue_id
-            AND ai3.type_code != 'issue_test'
-            AND ( ai2.type_code != 'issue_test' OR ai2.type_code IS NULL )
-            )ai
+            agile_issue ai
+            LEFT JOIN agile_issue ai2 ON ai.parent_issue_id = ai2.issue_id
             LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
             ai.project_id = #{projectId}
+            AND ai.type_code != 'issue_test'
+            AND ( ai2.type_code != 'issue_test' OR ai2.type_code IS NULL )
         GROUP BY
             ai.priority_id,
             ais.is_completed

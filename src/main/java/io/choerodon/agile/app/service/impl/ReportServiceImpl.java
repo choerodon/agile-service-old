@@ -1024,7 +1024,7 @@ public class ReportServiceImpl implements ReportService {
 
     private List<PieChartDTO> handlePieChartByTypeCode(Long projectId) {
         Integer total = reportMapper.queryIssueCountByFieldName(projectId, "type_code");
-        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "type_code", true, total);
+        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "issue_type_id", true, total);
         if (pieChartDOS != null && !pieChartDOS.isEmpty()) {
             List<PieChartDTO> pieChartDTOS = reportAssembler.toTargetList(pieChartDOS, PieChartDTO.class);
             Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
