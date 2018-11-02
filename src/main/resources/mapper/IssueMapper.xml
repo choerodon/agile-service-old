@@ -1222,16 +1222,12 @@
         ai.type_code,
         ai.summary,
         ai.status_id,
-        ai.priority_code,
+        ai.priority_id,
         ai.assignee_id,
         ai.project_id,
-        alv.name AS priority_name,
-        ais.category_code AS status_code,
-        ais.name AS status_name,
+        ai.issue_type_id,
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
-        LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
-        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         WHERE ai.project_id = #{projectId}
         and ai.issue_id in
@@ -1256,18 +1252,17 @@
                     #{typeCode}
                 </foreach>
             </if>
-            <if test='advancedSearchArgs.priorityCode != null and advancedSearchArgs.priorityCode.size > 0'>
-                AND ai.priority_code IN
-                <foreach collection="advancedSearchArgs.priorityCode" item="priorityCode" open="(" separator=","
+            <if test='advancedSearchArgs.priorityIds != null and advancedSearchArgs.priorityIds.size > 0'>
+                AND ai.priority_id IN
+                <foreach collection="advancedSearchArgs.priorityIds" item="priorityId" open="(" separator=","
                          close=")">
-                    #{priorityCode}
+                    #{priorityId}
                 </foreach>
             </if>
             <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
-                AND ais.category_code IN
-                <foreach collection="advancedSearchArgs.statusCode" item="statusCode" open="(" separator=","
-                         close=")">
-                    #{statusCode}
+                and ai.status_id in
+                <foreach collection="filterStatusIds" item="filterStatusId" open="(" separator="," close=")">
+                    #{filterStatusId}
                 </foreach>
             </if>
         </if>
@@ -1343,15 +1338,12 @@
         ai.type_code,
         ai.summary,
         ai.status_id,
-        ai.priority_code,
+        ai.priority_id,
         ai.assignee_id,
         ai.project_id,
-        alv.name AS priority_name,
-        ais.category_code AS status_code,
-        ais.name AS status_name,
+        ai.issue_type_id,
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
-        FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
-        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
+        FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task'
         <if test='searchArgs != null'>
@@ -1369,18 +1361,17 @@
                     #{typeCode}
                 </foreach>
             </if>
-            <if test='advancedSearchArgs.priorityCode != null and advancedSearchArgs.priorityCode.size > 0'>
-                AND ai.priority_code IN
-                <foreach collection="advancedSearchArgs.priorityCode" item="priorityCode" open="(" separator=","
+            <if test='advancedSearchArgs.priorityIds != null and advancedSearchArgs.priorityIds.size > 0'>
+                AND ai.priority_id IN
+                <foreach collection="advancedSearchArgs.priorityIds" item="priorityId" open="(" separator=","
                          close=")">
-                    #{priorityCode}
+                    #{priorityId}
                 </foreach>
             </if>
             <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
-                AND ais.category_code IN
-                <foreach collection="advancedSearchArgs.statusCode" item="statusCode" open="(" separator=","
-                         close=")">
-                    #{statusCode}
+                and ai.status_id in
+                <foreach collection="filterStatusIds" item="filterStatusId" open="(" separator="," close=")">
+                    #{filterStatusId}
                 </foreach>
             </if>
         </if>
@@ -1487,11 +1478,11 @@
                     #{typeCode}
                 </foreach>
             </if>
-            <if test='advancedSearchArgs.priorityCode != null and advancedSearchArgs.priorityCode.size > 0'>
-                AND ai.priority_code IN
-                <foreach collection="advancedSearchArgs.priorityCode" item="priorityCode" open="(" separator=","
+            <if test='advancedSearchArgs.priorityIds != null and advancedSearchArgs.priorityIds.size > 0'>
+                AND ai.priority_id IN
+                <foreach collection="advancedSearchArgs.priorityIds" item="priorityId" open="(" separator=","
                          close=")">
-                    #{priorityCode}
+                    #{priorityId}
                 </foreach>
             </if>
             <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
@@ -1995,16 +1986,13 @@
     <select id="queryIssueIdsByOptions" resultType="java.lang.Long">
         select ai.issue_id
         from agile_issue ai
-        <if test='advancedSearchArgs != null and advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
-            , agile_issue_status ais
-        </if>
         where 1=1
         <if test='advancedSearchArgs != null'>
-            <if test='advancedSearchArgs.priorityCode != null and advancedSearchArgs.priorityCode.size > 0'>
-                AND ai.priority_code IN
-                <foreach collection="advancedSearchArgs.priorityCode" item="priorityCode" open="(" separator=","
+            <if test='advancedSearchArgs.priorityIds != null and advancedSearchArgs.priorityIds.size > 0'>
+                AND ai.priority_id IN
+                <foreach collection="advancedSearchArgs.priorityIds" item="priorityId" open="(" separator=","
                          close=")">
-                    #{priorityCode}
+                    #{priorityId}
                 </foreach>
             </if>
             <if test='advancedSearchArgs.typeCode != null and advancedSearchArgs.typeCode.size > 0'>
@@ -2014,10 +2002,9 @@
                 </foreach>
             </if>
             <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
-                and ai.status_id = ais.id AND ais.category_code IN
-                <foreach collection="advancedSearchArgs.statusCode" item="statusCode" open="(" separator=","
-                         close=")">
-                    #{statusCode}
+                and ai.status_id in
+                <foreach collection="filterStatusIds" item="filterStatusId" open="(" separator="," close=")">
+                    #{filterStatusId}
                 </foreach>
             </if>
         </if>

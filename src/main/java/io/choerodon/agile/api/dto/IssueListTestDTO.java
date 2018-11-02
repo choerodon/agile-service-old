@@ -5,12 +5,12 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author dinghuang123@gmail.com
+ * @since 2018/11/2
  */
-public class IssueListDTO implements Serializable {
+public class IssueListTestDTO implements Serializable {
 
     private Long issueId;
 
@@ -22,17 +22,11 @@ public class IssueListDTO implements Serializable {
 
     private Long assigneeId;
 
-    private Long reporterId;
-
     private Long projectId;
 
     private Long issueTypeId;
 
     private String assigneeName;
-
-    private String reporterName;
-
-    private String reporterImageUrl;
 
     private String assigneeImageUrl;
 
@@ -52,8 +46,6 @@ public class IssueListDTO implements Serializable {
 
     private Date lastUpdateDate;
 
-    private List<VersionIssueRelDTO> versionIssueRelDTOS;
-
     public Long getIssueTypeId() {
         return issueTypeId;
     }
@@ -69,30 +61,6 @@ public class IssueListDTO implements Serializable {
 
     public void setLastUpdateDate(Date lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
-    }
-
-    public Long getReporterId() {
-        return reporterId;
-    }
-
-    public void setReporterId(Long reporterId) {
-        this.reporterId = reporterId;
-    }
-
-    public String getReporterName() {
-        return reporterName;
-    }
-
-    public void setReporterName(String reporterName) {
-        this.reporterName = reporterName;
-    }
-
-    public List<VersionIssueRelDTO> getVersionIssueRelDTOS() {
-        return versionIssueRelDTOS;
-    }
-
-    public void setVersionIssueRelDTOS(List<VersionIssueRelDTO> versionIssueRelDTOS) {
-        this.versionIssueRelDTOS = versionIssueRelDTOS;
     }
 
     public Long getIssueId() {
@@ -149,14 +117,6 @@ public class IssueListDTO implements Serializable {
 
     public void setAssigneeName(String assigneeName) {
         this.assigneeName = assigneeName;
-    }
-
-    public String getReporterImageUrl() {
-        return reporterImageUrl;
-    }
-
-    public void setReporterImageUrl(String reporterImageUrl) {
-        this.reporterImageUrl = reporterImageUrl;
     }
 
     public String getAssigneeImageUrl() {

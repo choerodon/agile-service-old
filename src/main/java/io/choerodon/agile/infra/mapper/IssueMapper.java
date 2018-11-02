@@ -172,13 +172,15 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                                      @Param("searchArgs") Map<String, Object> searchArgs,
                                                      @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
                                                      @Param("otherArgs") Map<String, Object> otherArgs,
-                                                     @Param("content") String content);
+                                                     @Param("content") String content,
+                                                     @Param("filterStatusIds") List<Long> filterStatusIds);
 
     List<IssueDO> listIssueWithLinkedIssues(@Param("projectId") Long projectId,
                                             @Param("searchArgs") Map<String, Object> searchArgs,
                                             @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
                                             @Param("otherArgs") Map<String, Object> otherArgs,
-                                            @Param("content") String content);
+                                            @Param("content") String content,
+                                            @Param("filterStatusIds") List<Long> filterStatusIds);
 
     List<IssueCreationNumDO> queryIssueNumByTimeSlot(@Param("projectId") Long projectId,
                                                      @Param("typeCode") String typeCode,
@@ -299,7 +301,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<Long> queryIssueIdsByOptions(@Param("projectId") Long projectId,
                                       @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
-                                      @Param("otherArgs") Map<String, Object> otherArgs);
+                                      @Param("otherArgs") Map<String, Object> otherArgs,
+                                      @Param("filterStatusIds") List<Long> filterStatusIds);
 
     List<UndistributedIssueDO> queryUnDistributedIssues(Long projectId);
 
@@ -392,11 +395,12 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     void batchUpdateIssueType(@Param("issueDOForTypeList") List<IssueDO> issueDOForTypeList);
 
     List<Long> queryIssueIdsListWithSub(@Param("projectId") Long projectId,
-                                           @Param("searchArgs") Map<String, Object> searchArgs,
-                                           @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
-                                           @Param("otherArgs") Map<String, Object> otherArgs,
-                                           @Param("content") String content,
-                                           @Param("filterSql") String filterSql, @Param("filterStatusIds") List<Long> filterStatusIds);
+                                        @Param("searchArgs") Map<String, Object> searchArgs,
+                                        @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
+                                        @Param("otherArgs") Map<String, Object> otherArgs,
+                                        @Param("content") String content,
+                                        @Param("filterSql") String filterSql,
+                                        @Param("filterStatusIds") List<Long> filterStatusIds);
 
     List<IssueDO> queryIssueListWithSubByIssueIds(@Param("issueIds") List<Long> issueIds);
 }

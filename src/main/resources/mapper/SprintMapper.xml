@@ -107,13 +107,18 @@
 
     <select id="queryStoryPoint" resultType="java.lang.Integer">
         SELECT IFNULL(SUM(ai.story_points), 0)
-        FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
+        FROM agile_issue ai,agile_issue_sprint_rel aisr
         WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
-        AND ai.type_code = 'story' AND ai.status_id = ais.id AND ais.category_code = #{categoryCode}
+        AND ai.type_code = 'story'
         AND ai.issue_id IN
         <foreach collection="issueIds" item="issueId" index="index"
                  open="(" close=")" separator=",">
             #{issueId}
+        </foreach>
+        and ai.status_id in
+        <foreach collection="statusIds" item="statusId" index="index"
+                 open="(" close=")" separator=",">
+            #{statusId}
         </foreach>
     </select>
 
@@ -152,7 +157,7 @@
         aisr.sprint_id,
         case when ai.assignee_id is null then 0 else ai.assignee_id end AS assignee_id,
         ai.story_points, ai.remaining_time
-        FROM agile_issue ai,  agile_issue_sprint_rel aisr
+        FROM agile_issue ai, agile_issue_sprint_rel aisr
         WHERE aisr.issue_id = ai.issue_id
         and ai.issue_id in
         <foreach collection="issueIds" item="issueId" open="("
@@ -167,7 +172,7 @@
         SELECT
         ai2.issue_id,
         IF(ai2.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai2.issue_num)) AS issue_num,
---         ai2.type_code,
+        -- ai2.type_code,
         ai2.summary,
         ai2.rank,
         ai2.reporter_id, ai2.description,
@@ -176,10 +181,10 @@
         ai2.story_points, ai2.status_id,
         ai2.issue_type_id,
         ai2.priority_id,
---         ais.category_code,
---         ais.name AS status_name,
+        -- ais.category_code,
+        -- ais.name AS status_name,
         ai2.object_version_number as is_object_version_number, ai2.priority_code,
---         alv.name AS priority_name,
+        -- alv.name AS priority_name,
         ai1.epic_name AS issue_epic_name,
         alv2.name AS color,
         apv1.version_id AS version_id,
@@ -191,9 +196,9 @@
                  separator="," close=")">
             #{issueId}
         </foreach>)ai2
---         LEFT JOIN agile_issue_status ais ON ai2.status_id = ais.id
+        -- LEFT JOIN agile_issue_status ais ON ai2.status_id = ais.id
         LEFT JOIN agile_project_info api ON ai2.project_id = api.project_id
---         LEFT JOIN agile_lookup_value alv ON ai2.priority_code = alv.value_code
+        -- LEFT JOIN agile_lookup_value alv ON ai2.priority_code = alv.value_code
         LEFT JOIN agile_issue ai1 ON ai2.epic_id = ai1.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
         left join agile_issue_sprint_rel aisr2 on aisr2.issue_id = ai2.issue_id
@@ -277,22 +282,22 @@
 
     <select id="queryNotPlanSprintByProjectId" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
         SELECT
-            asp.sprint_name,
-            asp.sprint_id,
-            asp.start_date,
-            asp.end_date,
-            asp.status_code,
-            asp.actual_end_date
+        asp.sprint_name,
+        asp.sprint_id,
+        asp.start_date,
+        asp.end_date,
+        asp.status_code,
+        asp.actual_end_date
         FROM
-            agile_sprint asp
+        agile_sprint asp
         WHERE
-            asp.project_id = #{projectId}
-            and asp.status_code != 'sprint_planning'
-            and asp.start_date &gt;= #{startDate}
-            <if test="endDate != null">
-                and asp.start_date &lt;= #{endDate}
-            </if>
-            order by asp.start_date asc
+        asp.project_id = #{projectId}
+        and asp.status_code != 'sprint_planning'
+        and asp.start_date &gt;= #{startDate}
+        <if test="endDate != null">
+            and asp.start_date &lt;= #{endDate}
+        </if>
+        order by asp.start_date asc
     </select>
 
     <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
@@ -389,7 +394,7 @@
     </select>
 
     <select id="queryMaxRank" resultType="java.lang.String">
-        select MAX(ai.rank)	from agile_issue ai
+        select MAX(ai.rank) from agile_issue ai
         where ai.project_id = #{projectId} AND ai.type_code NOT IN ( 'sub_task', 'issue_test', 'issue_epic' )
         and ai.issue_id
         <choose>

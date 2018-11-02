@@ -276,4 +276,22 @@ public class IssueAssembler extends AbstractAssembler {
         }
         return issueComponentDetailDTOS;
     }
+
+    public List<IssueListTestDTO> issueDoToIssueTestListDto(List<IssueDO> issueDOList, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+        List<IssueListTestDTO> issueListTestDTOS = new ArrayList<>(issueDOList.size());
+        Set<Long> userIds = issueDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDO::getAssigneeId).collect(Collectors.toSet());
+        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(Lists.newArrayList(userIds), true);
+        issueDOList.forEach(issueDO -> {
+            String assigneeName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getName() : null;
+            String assigneeImageUrl = assigneeName != null ? usersMap.get(issueDO.getAssigneeId()).getImageUrl() : null;
+            IssueListTestDTO issueListTestDTO = toTarget(issueDO, IssueListTestDTO.class);
+            issueListTestDTO.setAssigneeName(assigneeName);
+            issueListTestDTO.setPriorityDTO(priorityMap.get(issueDO.getPriorityId()));
+            issueListTestDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
+            issueListTestDTO.setStatusMapDTO(statusMapDTOMap.get(issueDO.getStatusId()));
+            issueListTestDTO.setAssigneeImageUrl(assigneeImageUrl);
+            issueListTestDTOS.add(issueListTestDTO);
+        });
+        return issueListTestDTOS;
+    }
 }

@@ -415,7 +415,7 @@ public class IssueController {
     @ApiOperation("分页过滤查询issue列表提供给测试模块用")
     @CustomPageRequest
     @PostMapping(value = "/test_component/no_sub")
-    public ResponseEntity<Page<IssueListDTO>> listIssueWithoutSubToTestComponent(@ApiIgnore
+    public ResponseEntity<Page<IssueListTestDTO>> listIssueWithoutSubToTestComponent(@ApiIgnore
                                                                                  @ApiParam(value = "分页信息", required = true)
                                                                                  @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
                                                                                          PageRequest pageRequest,
@@ -435,7 +435,7 @@ public class IssueController {
     @ApiOperation("分页过滤查询issue列表, 测试项目接口，过滤linked issue")
     @CustomPageRequest
     @PostMapping(value = "/test_component/filter_linked")
-    public ResponseEntity<Page<IssueListDTO>> listIssueWithLinkedIssues(@ApiIgnore
+    public ResponseEntity<Page<IssueListTestDTO>> listIssueWithLinkedIssues(@ApiIgnore
                                                                         @ApiParam(value = "分页信息", required = true)
                                                                         @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
                                                                                 PageRequest pageRequest,
