@@ -281,10 +281,19 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         List<IssueStatusDO> statuses = issueStatusMapper.selectAll();
         Collections.sort(statuses, Comparator.comparing(IssueStatusDO::getId));
         Map<Long, Long> proWithOrg = new HashMap<>();
+        Map<Long, ProjectDTO> projectDTOMap = new HashMap<>();
         for (IssueStatusDO issueStatusDO : statuses) {
-            ProjectDTO projectDTO = userRepository.queryProject(issueStatusDO.getProjectId());
-            if (projectDTO.getOrganizationId()!= null && projectDTO.getId() != null) {
-                proWithOrg.put(projectDTO.getId(), projectDTO.getOrganizationId());
+            ProjectDTO projectDTO = null;
+            if (projectDTOMap.get(issueStatusDO.getProjectId()) != null) {
+                projectDTO = projectDTOMap.get(issueStatusDO.getProjectId());
+            } else {
+                projectDTO = userRepository.queryProject(issueStatusDO.getProjectId());
+                projectDTOMap.put(issueStatusDO.getProjectId(), projectDTO);
+            }
+            if (projectDTO != null) {
+                if (projectDTO.getOrganizationId()!= null && projectDTO.getId() != null) {
+                    proWithOrg.put(projectDTO.getId(), projectDTO.getOrganizationId());
+                }
             }
         }
 
