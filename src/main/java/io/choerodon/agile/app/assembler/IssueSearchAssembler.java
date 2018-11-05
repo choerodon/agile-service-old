@@ -22,16 +22,8 @@ import java.util.stream.Collectors;
 @Component
 public class IssueSearchAssembler extends AbstractAssembler {
 
-    @Autowired
-    private LookupValueMapper lookupValueMapper;
-
-    private static final String ISSUE_STATUS_COLOR = "issue_status_color";
-
     public List<IssueSearchDTO> doListToDTO(List<IssueSearchDO> issueSearchDOList, Map<Long, UserMessageDO> usersMap, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
         List<IssueSearchDTO> issueSearchDTOList = new ArrayList<>(issueSearchDOList.size());
-        LookupValueDO lookupValueDO = new LookupValueDO();
-        lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
-        Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
         issueSearchDOList.forEach(issueSearch -> {
             String assigneeName = usersMap.get(issueSearch.getAssigneeId()) != null ? usersMap.get(issueSearch.getAssigneeId()).getName() : null;
             String imageUrl = assigneeName != null ? usersMap.get(issueSearch.getAssigneeId()).getImageUrl() : null;
@@ -40,7 +32,6 @@ public class IssueSearchAssembler extends AbstractAssembler {
             issueSearch.setPriorityDTO(priorityMap.get(issueSearch.getPriorityId()));
             issueSearch.setStatusMapDTO(statusMapDTOMap.get(issueSearch.getStatusId()));
             issueSearch.setIssueTypeDTO(issueTypeDTOMap.get(issueSearch.getIssueTypeId()));
-//            issueSearch.setStatusColor(ColorUtil.initializationStatusColor(issueSearch.getCategoryCode(), lookupValueMap));
             issueSearchDTOList.add(toTarget(issueSearch, IssueSearchDTO.class));
         });
         return issueSearchDTOList;

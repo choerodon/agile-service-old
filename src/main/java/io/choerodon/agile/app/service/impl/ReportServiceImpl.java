@@ -1027,7 +1027,7 @@ public class ReportServiceImpl implements ReportService {
         List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "issue_type_id", true, total);
         if (pieChartDOS != null && !pieChartDOS.isEmpty()) {
             List<PieChartDTO> pieChartDTOS = reportAssembler.toTargetList(pieChartDOS, PieChartDTO.class);
-            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
+            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, null);
             pieChartDTOS.forEach(pieChartDTO -> {
                 IssueTypeDTO issueTypeDTO = issueTypeDTOMap.get(Long.parseLong(pieChartDTO.getTypeName()));
                 JSONObject jsonObject = new JSONObject();
@@ -1311,7 +1311,7 @@ public class ReportServiceImpl implements ReportService {
         if (issueDOList != null && !issueDOList.isEmpty()) {
             Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
             Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
+            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, null);
             List<IssueBurnDownReportDO> incompleteIssues = issueDOList.stream().filter(issueDO -> !issueDO.getCompleted()).collect(Collectors.toList());
             burnDownReportDTO.setIncompleteIssues(reportAssembler.issueBurnDownReportDoToDto(incompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
             JSONObject jsonObject = handleSprintListAndStartDate(id, projectId, type);

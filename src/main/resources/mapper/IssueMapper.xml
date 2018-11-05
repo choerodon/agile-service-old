@@ -1994,7 +1994,7 @@
             <if test='advancedSearchArgs.issueTypeId != null and advancedSearchArgs.issueTypeId.size > 0'>
                 AND ai.issue_type_id IN
                 <foreach collection="advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator="," close=")">
-                    #{typeCode}
+                    #{issueTypeId}
                 </foreach>
             </if>
             <if test='advancedSearchArgs.statusId != null and advancedSearchArgs.statusId.size > 0'>

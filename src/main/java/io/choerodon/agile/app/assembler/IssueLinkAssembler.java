@@ -20,10 +20,10 @@ import java.util.Map;
 @Component
 public class IssueLinkAssembler extends AbstractAssembler {
 
-    public List<IssueLinkDTO> issueLinkDoToDto(Long projectId, List<IssueLinkDO> issueLinkDOList) {
+    public List<IssueLinkDTO> issueLinkDoToDto(Long projectId, List<IssueLinkDO> issueLinkDOList,String typeCode) {
         List<IssueLinkDTO> issueLinkDTOList = new ArrayList<>(issueLinkDOList.size());
         if (!issueLinkDOList.isEmpty()) {
-            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
+            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId,typeCode);
             Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
             Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
             issueLinkDOList.forEach(issueLinkDO -> {
