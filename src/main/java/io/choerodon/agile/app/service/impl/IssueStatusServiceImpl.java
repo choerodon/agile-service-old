@@ -3,6 +3,7 @@ package io.choerodon.agile.app.service.impl;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueStatusValidator;
 import io.choerodon.agile.app.service.IssueStatusService;
+import io.choerodon.agile.app.service.QuickFilterService;
 import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
 import io.choerodon.agile.domain.agile.entity.IssueStatusE;
 import io.choerodon.agile.domain.agile.repository.ColumnStatusRelRepository;
@@ -11,15 +12,13 @@ import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
-import io.choerodon.agile.infra.mapper.BoardColumnMapper;
-import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper;
-import io.choerodon.agile.infra.mapper.IssueMapper;
-import io.choerodon.agile.infra.mapper.IssueStatusMapper;
+import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +64,9 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 
     @Autowired
     private IssueFeignClient issueFeignClient;
+
+    @Autowired
+    private QuickFilterMapper quickFilterMapper;
 
     @Override
     public IssueStatusDTO create(Long projectId, IssueStatusDTO issueStatusDTO) {
@@ -337,6 +339,72 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         }
         issueMapper.batchUpdateIssueType(issueDOForTypeList);
         logger.info("步骤2执行完成");
+
+        // 修复快速搜索数据
+        List<QuickFilterDO> quickFilterDOList = quickFilterMapper.selectAll();
+        List<QuickFilterDO> updateDate = new ArrayList<>();
+        for (QuickFilterDO quick : quickFilterDOList) {
+            String sqlQuery = quick.getSqlQuery();
+            if (sqlQuery.contains("status_id")) {
+                String[] sqls = sqlQuery.split("and");
+                String result = "";
+                int ind = 0;
+                for (String s : sqls) {
+                    if (s.contains("status_id")) {
+                        String[] sqls2 = s.split("or");
+                        String filter2 = "";
+                        int index = 0;
+                        for (String s2 : sqls2) {
+                            if (s2.contains("status_id")) {
+                                String statusIdStr = getStatusNumber(s2);
+                                s2 = s2.replace(statusIdStr, "123");
+                            }
+                            if (index == 0) {
+                                filter2 += s2;
+                            } else {
+                                filter2 += " or " + s2;
+                            }
+                            index ++;
+                        }
+                        if (ind == 0) {
+                            result += filter2;
+                        } else {
+                            result += " and " + filter2;
+                        }
+                        ind ++;
+                    } else {
+                        if (ind == 0) {
+                            result += s;
+                        } else {
+                            result += " and " + s;
+                        }
+                        ind ++;
+                    }
+                }
+                QuickFilterDO q = new QuickFilterDO();
+                q.setFilterId(quick.getFilterId());
+                q.setObjectVersionNumber(quick.getObjectVersionNumber());
+                q.setSqlQuery(result);
+                updateDate.add(q);
+            }
+        }
+        for (QuickFilterDO quick :  updateDate) {
+            if (quickFilterMapper.updateByPrimaryKeySelective(quick) != 1) {
+                throw new CommonException("error.quickFilter.update");
+            }
+        }
+    }
+
+    private String getStatusNumber(String str) {
+        String str2 = "";
+        if(str != null && !"".equals(str)) {
+            for (int i = 0; i < str.length(); i++) {
+                if (str.charAt(i) >= 48 && str.charAt(i) <= 57) {
+                    str2 += str.charAt(i);
+                }
+            }
+        }
+        return str2;
     }
 
 }
