@@ -172,15 +172,13 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                                      @Param("searchArgs") Map<String, Object> searchArgs,
                                                      @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
                                                      @Param("otherArgs") Map<String, Object> otherArgs,
-                                                     @Param("content") String content,
-                                                     @Param("filterStatusIds") List<Long> filterStatusIds);
+                                                     @Param("content") String content);
 
     List<IssueDO> listIssueWithLinkedIssues(@Param("projectId") Long projectId,
                                             @Param("searchArgs") Map<String, Object> searchArgs,
                                             @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
                                             @Param("otherArgs") Map<String, Object> otherArgs,
-                                            @Param("content") String content,
-                                            @Param("filterStatusIds") List<Long> filterStatusIds);
+                                            @Param("content") String content);
 
     List<IssueCreationNumDO> queryIssueNumByTimeSlot(@Param("projectId") Long projectId,
                                                      @Param("typeCode") String typeCode,
@@ -246,8 +244,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      */
     List<IssueComponentDetailDO> listIssueWithoutSubDetail(@Param("projectId") Long projectId, @Param("searchArgs") Map<String, Object> searchArgs,
                                                            @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
-                                                           @Param("otherArgs") Map<String, Object> otherArgs, @Param("content") String content,
-                                                           @Param("filterStatusIds") List<Long> filterStatusIds);
+                                                           @Param("otherArgs") Map<String, Object> otherArgs, @Param("content") String content);
 
     /**
      * 待办事项查询相关issue的issueIds
@@ -301,8 +298,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<Long> queryIssueIdsByOptions(@Param("projectId") Long projectId,
                                       @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
-                                      @Param("otherArgs") Map<String, Object> otherArgs,
-                                      @Param("filterStatusIds") List<Long> filterStatusIds);
+                                      @Param("otherArgs") Map<String, Object> otherArgs);
 
     List<UndistributedIssueDO> queryUnDistributedIssues(Long projectId);
 

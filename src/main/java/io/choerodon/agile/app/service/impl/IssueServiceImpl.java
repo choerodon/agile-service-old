@@ -1649,16 +1649,13 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public Page<IssueListTestDTO> listIssueWithoutSubToTestComponent(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
         //连表查询需要设置主表别名
-        List<Long> filterStatusIds = new ArrayList<>();
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        getAdvacedSearchStatusIds(searchDTO, filterStatusIds, statusMapDTOMap);
         pageRequest.resetOrder(SEARCH, new HashMap<>());
         Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () -> issueMapper.listIssueWithoutSubToTestComponent(projectId, searchDTO.getSearchArgs(),
-                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent(), filterStatusIds));
-        return handleIssueListTestDoToDto(issueDOPage, statusMapDTOMap, organizationId);
+                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
+        return handleIssueListTestDoToDto(issueDOPage, organizationId);
     }
 
-    private Page<IssueListTestDTO> handleIssueListTestDoToDto(Page<IssueDO> issueDOPage, Map<Long, StatusMapDTO> statusMapDTOMap, Long organizationId) {
+    private Page<IssueListTestDTO> handleIssueListTestDoToDto(Page<IssueDO> issueDOPage, Long organizationId) {
         Page<IssueListTestDTO> issueListTestDTOSPage = new Page<>();
         issueListTestDTOSPage.setNumber(issueDOPage.getNumber());
         issueListTestDTOSPage.setNumberOfElements(issueDOPage.getNumberOfElements());
@@ -1666,6 +1663,7 @@ public class IssueServiceImpl implements IssueService {
         issueListTestDTOSPage.setTotalElements(issueDOPage.getTotalElements());
         issueListTestDTOSPage.setTotalPages(issueDOPage.getTotalPages());
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         issueListTestDTOSPage.setContent(issueAssembler.issueDoToIssueTestListDto(issueDOPage.getContent(), priorityMap, statusMapDTOMap, issueTypeDTOMap));
         return issueListTestDTOSPage;
@@ -1673,14 +1671,11 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public Page<IssueListTestDTO> listIssueWithLinkedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
-        List<Long> filterStatusIds = new ArrayList<>();
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        getAdvacedSearchStatusIds(searchDTO, filterStatusIds, statusMapDTOMap);
         pageRequest.resetOrder(SEARCH, new HashMap<>());
         Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
                 issueMapper.listIssueWithLinkedIssues(projectId, searchDTO.getSearchArgs(),
-                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent(), filterStatusIds));
-        return handleIssueListTestDoToDto(issueDOPage, statusMapDTOMap, organizationId);
+                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
+        return handleIssueListTestDoToDto(issueDOPage, organizationId);
     }
 
     @Override
@@ -1712,7 +1707,7 @@ public class IssueServiceImpl implements IssueService {
         issueListDTOPage.setSize(issueDOPage.getSize());
         issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
         issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
-        issueListDTOPage.setContent(issueAssembler.issueNumDoToDto(issueDOPage.getContent(),projectId));
+        issueListDTOPage.setContent(issueAssembler.issueNumDoToDto(issueDOPage.getContent(), projectId));
         return issueListDTOPage;
     }
 
@@ -1748,13 +1743,10 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public Page<IssueComponentDetailDTO> listIssueWithoutSubDetail(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
         //连表查询需要设置主表别名
-        List<Long> filterStatusIds = new ArrayList<>();
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(ConvertUtil.getOrganizationId(projectId)).getBody();
-        getAdvacedSearchStatusIds(searchDTO, filterStatusIds, statusMapDTOMap);
         pageRequest.resetOrder(SEARCH, new HashMap<>());
         Page<IssueComponentDetailDO> issueComponentDetailDOPage = PageHelper.doPageAndSort(pageRequest, () ->
                 issueMapper.listIssueWithoutSubDetail(projectId, searchDTO.getSearchArgs(),
-                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent(), filterStatusIds));
+                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
         return handleIssueComponentDetailPageDoToDto(projectId, issueComponentDetailDOPage);
     }
 
@@ -1911,10 +1903,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<Long> queryIssueIdsByOptions(Long projectId, SearchDTO searchDTO) {
-        List<Long> filterStatusIds = new ArrayList<>();
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(ConvertUtil.getOrganizationId(projectId)).getBody();
-        getAdvacedSearchStatusIds(searchDTO, filterStatusIds, statusMapDTOMap);
-        return issueMapper.queryIssueIdsByOptions(projectId, searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), filterStatusIds);
+        return issueMapper.queryIssueIdsByOptions(projectId, searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs());
     }
 
     @Override
