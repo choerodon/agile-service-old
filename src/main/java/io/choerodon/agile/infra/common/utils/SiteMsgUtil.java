@@ -1,11 +1,14 @@
 package io.choerodon.agile.infra.common.utils;
 
+import io.choerodon.agile.api.dto.NoticeSendDTO;
 import io.choerodon.agile.api.dto.WsSendDTO;
 import io.choerodon.agile.infra.feign.NotifyFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,43 +25,58 @@ public class SiteMsgUtil {
     @Autowired
     private NotifyFeignClient notifyFeignClient;
 
-    public void issueCreate(Long userId,String userName, String summary, String url) {
-        WsSendDTO wsSendDTO = new WsSendDTO();
-        wsSendDTO.setId(userId);
-        wsSendDTO.setCode("issueCreate");
-        wsSendDTO.setTemplateCode("issueCreate-preset");
+    public void issueCreate(List<Long> userIds,String userName, String summary, String url) {
+        NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
+        noticeSendDTO.setCode("issueCreate");
         Map<String, Object> params = new HashMap<>();
         params.put(USERNAME, userName);
         params.put(SUMMARY, summary);
         params.put(URL, url);
-        wsSendDTO.setParams(params);
-        notifyFeignClient.postPm(wsSendDTO);
+        noticeSendDTO.setParams(params);
+        List<NoticeSendDTO.User> userList = new ArrayList<>();
+        for (Long id : userIds) {
+            NoticeSendDTO.User user = new NoticeSendDTO.User();
+            user.setId(id);
+            userList.add(user);
+        }
+        noticeSendDTO.setTargetUsers(userList);
+        notifyFeignClient.postNotice(noticeSendDTO);
     }
 
-    public void issueAssignee(Long userId, String userName, String summary, String url) {
-        WsSendDTO wsSendDTO = new WsSendDTO();
-        wsSendDTO.setId(userId);
-        wsSendDTO.setCode("issueAssignee");
-        wsSendDTO.setTemplateCode("issueAssignee-preset");
+    public void issueAssignee(List<Long> userIds, String userName, String summary, String url) {
+        NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
+        noticeSendDTO.setCode("issueAssignee");
         Map<String, Object> params = new HashMap<>();
         params.put(USERNAME, userName);
         params.put(SUMMARY, summary);
         params.put(URL, url);
-        wsSendDTO.setParams(params);
-        notifyFeignClient.postPm(wsSendDTO);
+        noticeSendDTO.setParams(params);
+        List<NoticeSendDTO.User> userList = new ArrayList<>();
+        for (Long id : userIds) {
+            NoticeSendDTO.User user = new NoticeSendDTO.User();
+            user.setId(id);
+            userList.add(user);
+        }
+        noticeSendDTO.setTargetUsers(userList);
+        notifyFeignClient.postNotice(noticeSendDTO);
     }
 
-    public void issueSolve(Long userId, String userName, String summary, String url) {
-        WsSendDTO wsSendDTO = new WsSendDTO();
-        wsSendDTO.setId(userId);
-        wsSendDTO.setCode("issueSolve");
-        wsSendDTO.setTemplateCode("issueSolve-preset");
+    public void issueSolve(List<Long> userIds, String userName, String summary, String url) {
+        NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
+        noticeSendDTO.setCode("issueSolve");
         Map<String, Object> params = new HashMap<>();
         params.put(USERNAME, userName);
         params.put(SUMMARY, summary);
         params.put(URL, url);
-        wsSendDTO.setParams(params);
-        notifyFeignClient.postPm(wsSendDTO);
+        noticeSendDTO.setParams(params);
+        List<NoticeSendDTO.User> userList = new ArrayList<>();
+        for (Long id : userIds) {
+            NoticeSendDTO.User user = new NoticeSendDTO.User();
+            user.setId(id);
+            userList.add(user);
+        }
+        noticeSendDTO.setTargetUsers(userList);
+        notifyFeignClient.postNotice(noticeSendDTO);
     }
 
 }
