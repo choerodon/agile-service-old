@@ -493,22 +493,23 @@ public class IssueServiceImpl implements IssueService {
             filterSql = getQuickFilter(searchDTO.getQuickFilterIds());
         }
         final String searchSql = filterSql;
-        //连表查询需要设置主表别名
-        List<Long> filterStatusIds = new ArrayList<>();
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        getAdvacedSearchStatusIds(searchDTO, filterStatusIds, statusMapDTOMap);
         pageRequest.resetOrder(SEARCH, order);
         Page<Long> issueIdPage = PageHelper.doPageAndSort(pageRequest, () -> issueMapper.queryIssueIdsListWithSub
-                (projectId, searchDTO.getSearchArgs(), searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent(), searchSql, filterStatusIds));
+                (projectId, searchDTO.getSearchArgs(), searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent(), searchSql));
         Page<IssueListDTO> issueListDTOPage = new Page<>();
         if (issueIdPage.getContent() != null && !issueIdPage.getContent().isEmpty()) {
             List<IssueDO> issueDOList = issueMapper.queryIssueListWithSubByIssueIds(issueIdPage.getContent());
             Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
             Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+            Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
             issueListDTOPage.setContent(issueAssembler.issueDoToIssueListDto(issueDOList, priorityMap, statusMapDTOMap, issueTypeDTOMap));
         } else {
             issueListDTOPage.setContent(new ArrayList<>());
         }
+        issueListDTOPage.setSize(issueIdPage.getSize());
+        issueListDTOPage.setNumber(issueIdPage.getNumber());
+        issueListDTOPage.setTotalElements(issueIdPage.getTotalElements());
+        issueListDTOPage.setTotalPages(issueIdPage.getTotalPages());
         return issueListDTOPage;
     }
 
@@ -1462,16 +1463,13 @@ public class IssueServiceImpl implements IssueService {
         }
         project.setCode(projectInfoDO.getProjectCode());
         handleSearchUser(searchDTO, projectId);
-        List<Long> filterStatusIds = new ArrayList<>();
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        getAdvacedSearchStatusIds(searchDTO, filterStatusIds, statusMapDTOMap);
         String filterSql = null;
         if (searchDTO.getQuickFilterIds() != null && !searchDTO.getQuickFilterIds().isEmpty()) {
             filterSql = getQuickFilter(searchDTO.getQuickFilterIds());
         }
         final String searchSql = filterSql;
         //连表查询需要设置主表别名
-        List<Long> issueIds = issueMapper.queryIssueIdsListWithSub(projectId, searchDTO.getSearchArgs(), searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent(), searchSql, filterStatusIds);
+        List<Long> issueIds = issueMapper.queryIssueIdsListWithSub(projectId, searchDTO.getSearchArgs(), searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent(), searchSql);
         List<ExportIssuesDTO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId, issueIds, projectCode));
         if (!issueIds.isEmpty()) {
             Map<Long, List<SprintNameDO>> closeSprintNames = issueMapper.querySprintNameByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(SprintNameDO::getIssueId));

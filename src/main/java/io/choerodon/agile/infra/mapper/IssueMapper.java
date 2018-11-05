@@ -399,8 +399,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                         @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
                                         @Param("otherArgs") Map<String, Object> otherArgs,
                                         @Param("content") String content,
-                                        @Param("filterSql") String filterSql,
-                                        @Param("filterStatusIds") List<Long> filterStatusIds);
+                                        @Param("filterSql") String filterSql);
 
     List<IssueDO> queryIssueListWithSubByIssueIds(@Param("issueIds") List<Long> issueIds);
 }
