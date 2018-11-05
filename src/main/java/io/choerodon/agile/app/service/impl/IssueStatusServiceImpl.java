@@ -27,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/16.
@@ -338,7 +340,6 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             }
         }
         issueMapper.batchUpdateIssueType(issueDOForTypeList);
-        logger.info("步骤2执行完成");
 
         // 修复快速搜索数据,状态
         List<QuickFilterDO> quickFilterDOList = quickFilterMapper.selectAll();
@@ -346,18 +347,30 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         for (QuickFilterDO quick : quickFilterDOList) {
             String sqlQuery = quick.getSqlQuery();
             if (sqlQuery.contains("status_id")) {
-                String[] sqls = sqlQuery.split("and");
+                String[] sqls = sqlQuery.split("and ");
                 String result = "";
                 int ind = 0;
                 for (String s : sqls) {
                     if (s.contains("status_id")) {
-                        String[] sqls2 = s.split("or");
+                        String[] sqls2 = s.split("or ");
                         String filter2 = "";
                         int index = 0;
                         for (String s2 : sqls2) {
                             if (s2.contains("status_id")) {
                                 String statusIdStr = getStatusNumber(s2);
-                                s2 = s2.replace(statusIdStr, "123");
+                                String requirement = "";
+                                String[] lists = statusIdStr.split(",");
+                                int w = 0;
+                                for (String ll : lists) {
+                                    Long sId = issueStatusMapper.selectByPrimaryKey(Long.parseLong(ll)).getStatusId();
+                                    if (w == 0) {
+                                        requirement += sId;
+                                    } else {
+                                        requirement += "," +sId;
+                                    }
+                                    w++;
+                                }
+                                s2 = s2.replace(statusIdStr, requirement);
                             }
                             if (index == 0) {
                                 filter2 += s2;
@@ -400,34 +413,30 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         for (QuickFilterDO qf : quickFilterPrioritys) {
             String qfStr = qf.getSqlQuery();
             if (qfStr.contains("priority_code")) {
-                String[] splits = qfStr.split("and");
+                String[] splits = qfStr.split("and ");
                 int b = 0;
                 String res = "";
                 for (String sp : splits) {
                     if (sp.contains("priority_code")) {
-                        String[] splits2 = sp.split("or");
+                        String[] splits2 = sp.split("or ");
                         String reStr = "";
                         int a = 0;
                         for (String sp2 : splits2) {
                             if (sp2.contains("priority_code")) {
                                 if (sp2.contains("low")) {
-                                    if (a == 0) {
-                                        reStr += " priority_id = " + getPriorityId(prioritys, proWithOrg, qf, "low");
-                                    } else {
-                                        reStr += " or priority_id = " + getPriorityId(prioritys, proWithOrg, qf, "low");
-                                    }
-                                } else if (sp2.contains("medium")) {
-                                    if (a == 0) {
-                                        reStr += " priority_id = " + getPriorityId(prioritys, proWithOrg, qf, "medium");
-                                    } else {
-                                        reStr += " or priority_id = " + getPriorityId(prioritys, proWithOrg, qf, "medium");
-                                    }
-                                } else if (sp2.contains("high")) {
-                                    if (a == 0) {
-                                        reStr += " priority_id = " + getPriorityId(prioritys, proWithOrg, qf, "high");
-                                    } else {
-                                        reStr += " or priority_id = " + getPriorityId(prioritys, proWithOrg, qf, "high");
-                                    }
+                                    sp2 = sp2.replaceAll("'low'", getPriorityId(prioritys, proWithOrg, qf, "low").toString());
+                                }
+                                if (sp2.contains("medium")) {
+                                    sp2 = sp2.replaceAll("'medium'", getPriorityId(prioritys, proWithOrg, qf, "medium").toString());
+                                }
+                                if (sp2.contains("high")) {
+                                    sp2 = sp2.replaceAll("'high'", getPriorityId(prioritys, proWithOrg, qf, "high").toString());
+                                }
+                                sp2 = sp2.replaceAll("priority_code", "priority_id");
+                                if (a == 0) {
+                                    reStr += sp2;
+                                } else {
+                                    reStr += " or " + sp2;
                                 }
                                 a++;
                             }
@@ -459,6 +468,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 throw new CommonException("error.quickFilterPriority.update");
             }
         }
+        logger.info("步骤2执行完成");
     }
 
     private Long getPriorityId(Map<Long, Map<String, Long>> prioritys, Map<Long, Long> proWithOrg, QuickFilterDO quickFilterDO, String priorityStr) {
@@ -467,15 +477,10 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     }
 
     private String getStatusNumber(String str) {
-        String str2 = "";
-        if(str != null && !"".equals(str)) {
-            for (int i = 0; i < str.length(); i++) {
-                if (str.charAt(i) >= 48 && str.charAt(i) <= 57) {
-                    str2 += str.charAt(i);
-                }
-            }
-        }
-        return str2;
+        String regEx="[^0-9]";
+        Pattern p = Pattern.compile(regEx);
+        Matcher m = p.matcher(str);
+        return m.replaceAll(" ").trim().replaceAll(" ", ",");
     }
 
 }
