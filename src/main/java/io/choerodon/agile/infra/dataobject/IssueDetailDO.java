@@ -2,6 +2,7 @@ package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
+import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
 import java.math.BigDecimal;
@@ -23,11 +24,7 @@ public class IssueDetailDO {
 
     private String summary;
 
-    private String priorityCode;
-
     private Long reporterId;
-
-    private String statusCode;
 
     private String description;
 
@@ -69,10 +66,6 @@ public class IssueDetailDO {
 
     private Date lastUpdateDate;
 
-//    private String priorityName;
-
-    private String statusName;
-
     private BigDecimal estimateTime;
 
     private BigDecimal remainingTime;
@@ -90,6 +83,16 @@ public class IssueDetailDO {
     private PriorityDTO priorityDTO;
 
     private IssueTypeDTO issueTypeDTO;
+
+    private StatusMapDTO statusMapDTO;
+
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
+    }
 
     public Long getIssueId() {
         return issueId;
@@ -129,14 +132,6 @@ public class IssueDetailDO {
 
     public void setSummary(String summary) {
         this.summary = summary;
-    }
-
-    public String getPriorityCode() {
-        return priorityCode;
-    }
-
-    public void setPriorityCode(String priorityCode) {
-        this.priorityCode = priorityCode;
     }
 
     public Long getReporterId() {
@@ -251,14 +246,6 @@ public class IssueDetailDO {
         this.issueAttachmentDOList = issueAttachmentDOList;
     }
 
-    public String getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
-    }
-
     public List<IssueDO> getSubIssueDOList() {
         return subIssueDOList;
     }
@@ -281,22 +268,6 @@ public class IssueDetailDO {
 
     public void setLastUpdateDate(Date lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
-    }
-
-//    public String getPriorityName() {
-//        return priorityName;
-//    }
-//
-//    public void setPriorityName(String priorityName) {
-//        this.priorityName = priorityName;
-//    }
-
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
     }
 
     public BigDecimal getEstimateTime() {

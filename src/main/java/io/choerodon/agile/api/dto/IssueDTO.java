@@ -24,13 +24,9 @@ public class IssueDTO {
 
     private String summary;
 
-    private String priorityCode;
-
     private Long reporterId;
 
     private String reporterName;
-
-    private String statusCode;
 
     private String description;
 
@@ -68,10 +64,6 @@ public class IssueDTO {
 
     private Date lastUpdateDate;
 
-//    private String priorityName;
-
-    private String statusName;
-
     private BigDecimal estimateTime;
 
     private BigDecimal remainingTime;
@@ -86,17 +78,35 @@ public class IssueDTO {
 
     private String parentIssueNum;
 
-    private String statusColor;
-
     private String assigneeImageUrl;
 
     private String reporterImageUrl;
 
     private Long priorityId;
 
+    private Long issueTypeId;
+
     private PriorityDTO priorityDTO;
 
     private IssueTypeDTO issueTypeDTO;
+
+    private StatusMapDTO statusMapDTO;
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
+    }
 
     public Long getIssueId() {
         return issueId;
@@ -136,14 +146,6 @@ public class IssueDTO {
 
     public void setSummary(String summary) {
         this.summary = summary;
-    }
-
-    public String getPriorityCode() {
-        return priorityCode;
-    }
-
-    public void setPriorityCode(String priorityCode) {
-        this.priorityCode = priorityCode;
     }
 
     public Long getReporterId() {
@@ -250,14 +252,6 @@ public class IssueDTO {
         this.issueAttachmentDTOList = issueAttachmentDTOList;
     }
 
-    public String getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
-    }
-
     public List<IssueSubListDTO> getSubIssueDTOList() {
         return subIssueDTOList;
     }
@@ -280,22 +274,6 @@ public class IssueDTO {
 
     public void setLastUpdateDate(Date lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
-    }
-
-//    public String getPriorityName() {
-//        return priorityName;
-//    }
-//
-//    public void setPriorityName(String priorityName) {
-//        this.priorityName = priorityName;
-//    }
-
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
     }
 
     public String getReporterName() {
@@ -368,14 +346,6 @@ public class IssueDTO {
 
     public void setParentIssueNum(String parentIssueNum) {
         this.parentIssueNum = parentIssueNum;
-    }
-
-    public String getStatusColor() {
-        return statusColor;
-    }
-
-    public void setStatusColor(String statusColor) {
-        this.statusColor = statusColor;
     }
 
     public SprintNameDTO getActiveSprint() {

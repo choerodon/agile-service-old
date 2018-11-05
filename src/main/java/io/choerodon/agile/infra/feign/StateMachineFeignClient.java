@@ -28,7 +28,7 @@ public interface StateMachineFeignClient {
     ResponseEntity<Map<Long, StatusMapDTO>> queryAllStatusMap(@PathVariable("organization_id") Long organizationId);
 
     @GetMapping(value = "/v1/organizations/{organization_id}/status/{status_id}")
-    ResponseEntity<StatusInfoDTO> queryStatusById(@PathVariable("organization_id") Long organizationId,
+    ResponseEntity<StatusMapDTO> queryStatusById(@PathVariable("organization_id") Long organizationId,
                                                   @PathVariable("status_id") Long statusId);
 
     @GetMapping(value = "/v1/fix_data/query_status")

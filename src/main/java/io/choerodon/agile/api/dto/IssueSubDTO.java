@@ -22,13 +22,9 @@ public class IssueSubDTO {
 
     private String summary;
 
-    private String priorityCode;
-
     private Long reporterId;
 
     private String reporterName;
-
-    private String statusCode;
 
     private String description;
 
@@ -58,10 +54,6 @@ public class IssueSubDTO {
 
     private Date lastUpdateDate;
 
-    private String priorityName;
-
-    private String statusName;
-
     private BigDecimal estimateTime;
 
     private BigDecimal remainingTime;
@@ -72,11 +64,59 @@ public class IssueSubDTO {
 
     private String parentIssueNum;
 
-    private String statusColor;
-
     private String assigneeImageUrl;
 
     private String reporterImageUrl;
+
+    private PriorityDTO priorityDTO;
+
+    private IssueTypeDTO issueTypeDTO;
+
+    private StatusMapDTO statusMapDTO;
+
+    private Long issueTypeId;
+
+    private Long priorityId;
+
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
+    }
+
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
 
     public Long getIssueId() {
         return issueId;
@@ -118,14 +158,6 @@ public class IssueSubDTO {
         this.summary = summary;
     }
 
-    public String getPriorityCode() {
-        return priorityCode;
-    }
-
-    public void setPriorityCode(String priorityCode) {
-        this.priorityCode = priorityCode;
-    }
-
     public Long getReporterId() {
         return reporterId;
     }
@@ -140,14 +172,6 @@ public class IssueSubDTO {
 
     public void setReporterName(String reporterName) {
         this.reporterName = reporterName;
-    }
-
-    public String getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
     }
 
     public String getDescription() {
@@ -254,22 +278,6 @@ public class IssueSubDTO {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public String getPriorityName() {
-        return priorityName;
-    }
-
-    public void setPriorityName(String priorityName) {
-        this.priorityName = priorityName;
-    }
-
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
-    }
-
     public BigDecimal getEstimateTime() {
         return estimateTime;
     }
@@ -308,14 +316,6 @@ public class IssueSubDTO {
 
     public void setParentIssueNum(String parentIssueNum) {
         this.parentIssueNum = parentIssueNum;
-    }
-
-    public String getStatusColor() {
-        return statusColor;
-    }
-
-    public void setStatusColor(String statusColor) {
-        this.statusColor = statusColor;
     }
 
     public List<ComponentIssueRelDTO> getComponentIssueRelDTOList() {
