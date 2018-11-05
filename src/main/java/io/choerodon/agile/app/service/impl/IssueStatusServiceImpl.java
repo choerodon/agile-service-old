@@ -340,7 +340,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         issueMapper.batchUpdateIssueType(issueDOForTypeList);
         logger.info("步骤2执行完成");
 
-        // 修复快速搜索数据
+        // 修复快速搜索数据,状态
         List<QuickFilterDO> quickFilterDOList = quickFilterMapper.selectAll();
         List<QuickFilterDO> updateDate = new ArrayList<>();
         for (QuickFilterDO quick : quickFilterDOList) {
@@ -393,6 +393,77 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 throw new CommonException("error.quickFilter.update");
             }
         }
+
+        // 修复快速搜索数据,优先级
+        List<QuickFilterDO> quickFilterPrioritys = quickFilterMapper.selectAll();
+        List<QuickFilterDO> priorityResult = new ArrayList<>();
+        for (QuickFilterDO qf : quickFilterPrioritys) {
+            String qfStr = qf.getSqlQuery();
+            if (qfStr.contains("priority_code")) {
+                String[] splits = qfStr.split("and");
+                int b = 0;
+                String res = "";
+                for (String sp : splits) {
+                    if (sp.contains("priority_code")) {
+                        String[] splits2 = sp.split("or");
+                        String reStr = "";
+                        int a = 0;
+                        for (String sp2 : splits2) {
+                            if (sp2.contains("priority_code")) {
+                                if (sp2.contains("low")) {
+                                    if (a == 0) {
+                                        reStr += " priority_id = " + getPriorityId(prioritys, proWithOrg, qf, "low");
+                                    } else {
+                                        reStr += " or priority_id = " + getPriorityId(prioritys, proWithOrg, qf, "low");
+                                    }
+                                } else if (sp2.contains("medium")) {
+                                    if (a == 0) {
+                                        reStr += " priority_id = " + getPriorityId(prioritys, proWithOrg, qf, "medium");
+                                    } else {
+                                        reStr += " or priority_id = " + getPriorityId(prioritys, proWithOrg, qf, "medium");
+                                    }
+                                } else if (sp2.contains("high")) {
+                                    if (a == 0) {
+                                        reStr += " priority_id = " + getPriorityId(prioritys, proWithOrg, qf, "high");
+                                    } else {
+                                        reStr += " or priority_id = " + getPriorityId(prioritys, proWithOrg, qf, "high");
+                                    }
+                                }
+                                a++;
+                            }
+                        }
+                        if (b == 0) {
+                            res += reStr;
+                        } else {
+                            res += " and " + reStr;
+                        }
+                        b++;
+                    } else {
+                        if (b == 0) {
+                            res += sp;
+                        } else {
+                            res += " and " + sp;
+                        }
+                        b++;
+                    }
+                }
+                QuickFilterDO updatePriority = new QuickFilterDO();
+                updatePriority.setFilterId(qf.getFilterId());
+                updatePriority.setObjectVersionNumber(qf.getObjectVersionNumber());
+                updatePriority.setSqlQuery(res);
+                priorityResult.add(updatePriority);
+            }
+        }
+        for (QuickFilterDO qq : priorityResult) {
+            if (quickFilterMapper.updateByPrimaryKeySelective(qq) != 1) {
+                throw new CommonException("error.quickFilterPriority.update");
+            }
+        }
+    }
+
+    private Long getPriorityId(Map<Long, Map<String, Long>> prioritys, Map<Long, Long> proWithOrg, QuickFilterDO quickFilterDO, String priorityStr) {
+        Map<String, Long> ps = prioritys.get(proWithOrg.get(quickFilterDO.getProjectId()));
+        return ps.get(priorityStr);
     }
 
     private String getStatusNumber(String str) {
