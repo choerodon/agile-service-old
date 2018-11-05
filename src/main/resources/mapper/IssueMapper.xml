@@ -1248,23 +1248,23 @@
             </if>
         </if>
         <if test='advancedSearchArgs != null'>
-            <if test='advancedSearchArgs.typeCode != null and advancedSearchArgs.typeCode.size > 0'>
-                AND ai.type_code IN
-                <foreach collection="advancedSearchArgs.typeCode" item="typeCode" open="(" separator="," close=")">
-                    #{typeCode}
+            <if test='advancedSearchArgs.issueTypeId != null and advancedSearchArgs.issueTypeId.size > 0'>
+                AND ai.issue_type_id IN
+                <foreach collection="advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator="," close=")">
+                    #{issueTypeId}
                 </foreach>
             </if>
-            <if test='advancedSearchArgs.priorityIds != null and advancedSearchArgs.priorityIds.size > 0'>
+            <if test='advancedSearchArgs.priorityId != null and advancedSearchArgs.priorityId.size > 0'>
                 AND ai.priority_id IN
-                <foreach collection="advancedSearchArgs.priorityIds" item="priorityId" open="(" separator=","
+                <foreach collection="advancedSearchArgs.priorityId" item="priorityId" open="(" separator=","
                          close=")">
                     #{priorityId}
                 </foreach>
             </if>
-            <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
+            <if test='advancedSearchArgs.statusId != null and advancedSearchArgs.statusId.size > 0'>
                 and ai.status_id in
-                <foreach collection="filterStatusIds" item="filterStatusId" open="(" separator="," close=")">
-                    #{filterStatusId}
+                <foreach collection="advancedSearchArgs.statusId" item="statusId" open="(" separator="," close=")">
+                    #{statusId}
                 </foreach>
             </if>
         </if>
@@ -1357,23 +1357,23 @@
             </if>
         </if>
         <if test='advancedSearchArgs != null'>
-            <if test='advancedSearchArgs.typeCode != null and advancedSearchArgs.typeCode.size > 0'>
-                AND ai.type_code IN
-                <foreach collection="advancedSearchArgs.typeCode" item="typeCode" open="(" separator="," close=")">
-                    #{typeCode}
+            <if test='advancedSearchArgs.issueTypeId != null and advancedSearchArgs.issueTypeId.size > 0'>
+                AND ai.issue_type_id IN
+                <foreach collection="advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator="," close=")">
+                    #{issueTypeId}
                 </foreach>
             </if>
-            <if test='advancedSearchArgs.priorityIds != null and advancedSearchArgs.priorityIds.size > 0'>
+            <if test='advancedSearchArgs.priorityId != null and advancedSearchArgs.priorityId.size > 0'>
                 AND ai.priority_id IN
-                <foreach collection="advancedSearchArgs.priorityIds" item="priorityId" open="(" separator=","
+                <foreach collection="advancedSearchArgs.priorityId" item="priorityId" open="(" separator=","
                          close=")">
                     #{priorityId}
                 </foreach>
             </if>
-            <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
+            <if test='advancedSearchArgs.statusId != null and advancedSearchArgs.statusId.size > 0'>
                 and ai.status_id in
-                <foreach collection="filterStatusIds" item="filterStatusId" open="(" separator="," close=")">
-                    #{filterStatusId}
+                <foreach collection="advancedSearchArgs.statusId" item="statusId" open="(" separator="," close=")">
+                    #{statusId}
                 </foreach>
             </if>
         </if>
@@ -1474,23 +1474,23 @@
             </if>
         </if>
         <if test='advancedSearchArgs != null'>
-            <if test='advancedSearchArgs.typeCode != null and advancedSearchArgs.typeCode.size > 0'>
-                AND ai.type_code IN
-                <foreach collection="advancedSearchArgs.typeCode" item="typeCode" open="(" separator="," close=")">
-                    #{typeCode}
+            <if test='advancedSearchArgs.issueTypeId != null and advancedSearchArgs.issueTypeId.size > 0'>
+                AND ai.issue_type_id IN
+                <foreach collection="advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator="," close=")">
+                    #{issueTypeId}
                 </foreach>
             </if>
-            <if test='advancedSearchArgs.priorityIds != null and advancedSearchArgs.priorityIds.size > 0'>
+            <if test='advancedSearchArgs.priorityId != null and advancedSearchArgs.priorityId.size > 0'>
                 AND ai.priority_id IN
-                <foreach collection="advancedSearchArgs.priorityIds" item="priorityId" open="(" separator=","
+                <foreach collection="advancedSearchArgs.priorityId" item="priorityId" open="(" separator=","
                          close=")">
                     #{priorityId}
                 </foreach>
             </if>
-            <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
+            <if test='advancedSearchArgs.statusId != null and advancedSearchArgs.statusId.size > 0'>
                 and ai.status_id in
-                <foreach collection="filterStatusIds" item="filterStatusId" open="(" separator="," close=")">
-                    #{filterStatusId}
+                <foreach collection="advancedSearchArgs.statusId" item="statusId" open="(" separator="," close=")">
+                    #{statusId}
                 </foreach>
             </if>
         </if>
@@ -1990,23 +1990,23 @@
         from agile_issue ai
         where 1=1
         <if test='advancedSearchArgs != null'>
-            <if test='advancedSearchArgs.priorityIds != null and advancedSearchArgs.priorityIds.size > 0'>
+            <if test='advancedSearchArgs.priorityId != null and advancedSearchArgs.priorityId.size > 0'>
                 AND ai.priority_id IN
-                <foreach collection="advancedSearchArgs.priorityIds" item="priorityId" open="(" separator=","
+                <foreach collection="advancedSearchArgs.priorityId" item="priorityId" open="(" separator=","
                          close=")">
                     #{priorityId}
                 </foreach>
             </if>
-            <if test='advancedSearchArgs.typeCode != null and advancedSearchArgs.typeCode.size > 0'>
-                AND ai.type_code IN
-                <foreach collection="advancedSearchArgs.typeCode" item="typeCode" open="(" separator="," close=")">
+            <if test='advancedSearchArgs.issueTypeId != null and advancedSearchArgs.issueTypeId.size > 0'>
+                AND ai.issue_type_id IN
+                <foreach collection="advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator="," close=")">
                     #{typeCode}
                 </foreach>
             </if>
-            <if test='advancedSearchArgs.statusCode != null and advancedSearchArgs.statusCode.size > 0'>
+            <if test='advancedSearchArgs.statusId != null and advancedSearchArgs.statusId.size > 0'>
                 and ai.status_id in
-                <foreach collection="filterStatusIds" item="filterStatusId" open="(" separator="," close=")">
-                    #{filterStatusId}
+                <foreach collection="advancedSearchArgs.statusId" item="statusId" open="(" separator="," close=")">
+                    #{statusId}
                 </foreach>
             </if>
         </if>
