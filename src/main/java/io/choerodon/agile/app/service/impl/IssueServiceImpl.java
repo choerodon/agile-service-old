@@ -216,6 +216,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String URL_TEMPLATE6 = "&organizationId=";
     private static final String ISSUE_TEST = "issue_test";
     private static final String AGILE = "agile";
+    private static final String TEST = "test";
     private static final String AGILE_SERVICE = "agile-service";
 
     @Value("${services.attachment.url}")
@@ -361,7 +362,8 @@ public class IssueServiceImpl implements IssueService {
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
-        Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
+        String typeCode = issue.getTypeCode().equals(ISSUE_TEST) ? TEST : null;
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, typeCode);
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         IssueDTO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
@@ -414,7 +416,8 @@ public class IssueServiceImpl implements IssueService {
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
-        Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
+        String typeCode = issue.getTypeCode().equals(ISSUE_TEST) ? TEST : null;
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, typeCode);
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         return issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
@@ -428,7 +431,7 @@ public class IssueServiceImpl implements IssueService {
         if (resultStatusId != null) {
             issue.setStatusId(resultStatusId);
         }
-        Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, null);
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         IssueDTO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
@@ -809,7 +812,13 @@ public class IssueServiceImpl implements IssueService {
         } else {
             issueRepository.batchRemoveVersion(projectId, issueIds);
         }
-        return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
+        Long organizationId = ConvertUtil.getOrganizationId(projectId);
+        Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        //todo 判断issue类型
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds),
+                new HashMap<>(), priorityMap, statusMapDTOMap, issueTypeDTOMap);
     }
 
     @Override
@@ -1654,10 +1663,10 @@ public class IssueServiceImpl implements IssueService {
         pageRequest.resetOrder(SEARCH, new HashMap<>());
         Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () -> issueMapper.listIssueWithoutSubToTestComponent(projectId, searchDTO.getSearchArgs(),
                 searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
-        return handleIssueListTestDoToDto(issueDOPage, organizationId);
+        return handleIssueListTestDoToDto(issueDOPage, organizationId, projectId);
     }
 
-    private Page<IssueListTestDTO> handleIssueListTestDoToDto(Page<IssueDO> issueDOPage, Long organizationId) {
+    private Page<IssueListTestDTO> handleIssueListTestDoToDto(Page<IssueDO> issueDOPage, Long organizationId, Long projectId) {
         Page<IssueListTestDTO> issueListTestDTOSPage = new Page<>();
         issueListTestDTOSPage.setNumber(issueDOPage.getNumber());
         issueListTestDTOSPage.setNumberOfElements(issueDOPage.getNumberOfElements());
@@ -1666,7 +1675,7 @@ public class IssueServiceImpl implements IssueService {
         issueListTestDTOSPage.setTotalPages(issueDOPage.getTotalPages());
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, TEST);
         issueListTestDTOSPage.setContent(issueAssembler.issueDoToIssueTestListDto(issueDOPage.getContent(), priorityMap, statusMapDTOMap, issueTypeDTOMap));
         return issueListTestDTOSPage;
     }
@@ -1677,7 +1686,7 @@ public class IssueServiceImpl implements IssueService {
         Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
                 issueMapper.listIssueWithLinkedIssues(projectId, searchDTO.getSearchArgs(),
                         searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
-        return handleIssueListTestDoToDto(issueDOPage, organizationId);
+        return handleIssueListTestDoToDto(issueDOPage, organizationId, projectId);
     }
 
     @Override

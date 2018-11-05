@@ -28,7 +28,7 @@ public class IssueAssembler extends AbstractAssembler {
     @Autowired
     private SprintNameAssembler sprintNameAssembler;
 
-    private static final String ISSUE_STATUS_COLOR = "issue_status_color";
+    private static final String TEST = "test";
 
     /**
      * issueDetailDO转换到IssueDTO
@@ -247,7 +247,7 @@ public class IssueAssembler extends AbstractAssembler {
             userIds.addAll(issueComponentDetailDOS.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).
                     map(IssueComponentDetailDO::getReporterId).collect(Collectors.toList()));
             Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(userIds.stream().distinct().collect(Collectors.toList()), true);
-            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
+            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, TEST);
             Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
             Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
             issueComponentDetailDOS.parallelStream().forEachOrdered(issueDO -> {
@@ -294,7 +294,7 @@ public class IssueAssembler extends AbstractAssembler {
     public List<IssueNumDTO> issueNumDoToDto(List<IssueNumDO> issueNumDOList, Long projectId) {
         List<IssueNumDTO> issueNumDTOS = new ArrayList<>(issueNumDOList.size());
         if (!issueNumDOList.isEmpty()) {
-            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
+            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, null);
             issueNumDOList.forEach(issueDO -> {
                 IssueNumDTO issueNumDTO = new IssueNumDTO();
                 BeanUtils.copyProperties(issueDO, issueNumDTO);

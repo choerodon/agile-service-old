@@ -31,8 +31,11 @@ public class ConvertUtil {
      * @param projectId projectId
      * @return IssueTypeMap
      */
-    public static Map<Long, IssueTypeDTO> getIssueTypeMap(Long projectId) {
-        List<IssueTypeDTO> issueTypeDTOS = SpringBeanUtil.getBean(IssueFeignClient.class).queryIssueTypesByProjectId(projectId, AGILE).getBody();
+    public static Map<Long, IssueTypeDTO> getIssueTypeMap(Long projectId, String serviceCode) {
+        if (serviceCode == null) {
+            serviceCode = AGILE;
+        }
+        List<IssueTypeDTO> issueTypeDTOS = SpringBeanUtil.getBean(IssueFeignClient.class).queryIssueTypesByProjectId(projectId, serviceCode).getBody();
         return issueTypeDTOS.stream().collect(Collectors.toMap(IssueTypeDTO::getId, Function.identity()));
     }
 

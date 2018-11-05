@@ -7,7 +7,9 @@ import io.choerodon.agile.app.service.IssueLinkService;
 import io.choerodon.agile.domain.agile.entity.IssueLinkE;
 import io.choerodon.agile.domain.agile.repository.IssueLinkRepository;
 import io.choerodon.agile.domain.agile.rule.IssueLinkRule;
+import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.mapper.IssueLinkMapper;
+import io.choerodon.agile.infra.mapper.IssueMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,11 +27,16 @@ public class IssueLinkServiceImpl implements IssueLinkService {
     @Autowired
     private IssueLinkMapper issueLinkMapper;
     @Autowired
+    private IssueMapper issueMapper;
+    @Autowired
     private IssueLinkRepository issueLinkRepository;
     @Autowired
     private IssueLinkRule issueLinkRule;
     @Autowired
     private IssueLinkAssembler issueLinkAssembler;
+
+    private static final String ISSUE_TEST = "issue_test";
+    private static final String TEST = "test";
 
     @Override
     public List<IssueLinkDTO> createIssueLinkList(List<IssueLinkCreateDTO> issueLinkCreateDTOList, Long issueId, Long projectId) {
@@ -51,12 +58,17 @@ public class IssueLinkServiceImpl implements IssueLinkService {
 
     @Override
     public List<IssueLinkDTO> listIssueLinkByIssueId(Long issueId, Long projectId, Boolean noIssueTest) {
-        return issueLinkAssembler.issueLinkDoToDto(projectId,issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId, noIssueTest));
+        IssueDO query = new IssueDO();
+        query.setProjectId(projectId);
+        query.setIssueId(issueId);
+        query = issueMapper.selectOne(query);
+        String typeCode = ISSUE_TEST.equals(query.getTypeCode()) ? TEST : null;
+        return issueLinkAssembler.issueLinkDoToDto(projectId, issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId, noIssueTest), typeCode);
     }
 
     @Override
     public List<IssueLinkDTO> listIssueLinkByBatch(Long projectId, List<Long> issueIds) {
-        return issueLinkAssembler.issueLinkDoToDto(projectId,issueLinkMapper.listIssueLinkByBatch(projectId, issueIds));
+        return issueLinkAssembler.issueLinkDoToDto(projectId, issueLinkMapper.listIssueLinkByBatch(projectId, issueIds), TEST);
     }
 
 }
