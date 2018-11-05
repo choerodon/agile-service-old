@@ -411,18 +411,17 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                         for (String v : valSplit) {
                             Long vId = issueStatusMapper.selectByPrimaryKey(Long.parseLong(v)).getStatusId();
                             if (vw == 0) {
-                                valReal += "\"" + vId;
+                                valReal += vId;
                             } else {
                                 valReal += "," +vId;
                             }
-                            valReal += "\"";
                             vw++;
 
                         }
                         object.put("value", valReal);
                     }
                     if ("priority".equals(object.get("fieldCode"))) {
-                        String val = getStatusNumber(object.get("value").toString());
+                        String val = object.get("value").toString();
                         if (val.contains("high")) {
                             val = val.replaceAll("'high'", getPriorityId(prioritys, proWithOrg, quick, "high").toString());
                         }
