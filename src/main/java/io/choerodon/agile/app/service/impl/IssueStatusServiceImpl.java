@@ -468,6 +468,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 throw new CommonException("error.quickFilterPriority.update");
             }
         }
+
         logger.info("步骤2执行完成");
     }
 
