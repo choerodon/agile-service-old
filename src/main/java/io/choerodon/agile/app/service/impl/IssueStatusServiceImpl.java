@@ -3,6 +3,7 @@ package io.choerodon.agile.app.service.impl;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueStatusValidator;
 import io.choerodon.agile.app.service.IssueStatusService;
+import io.choerodon.agile.app.service.QuickFilterService;
 import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
 import io.choerodon.agile.domain.agile.entity.IssueStatusE;
 import io.choerodon.agile.domain.agile.repository.ColumnStatusRelRepository;
@@ -11,15 +12,13 @@ import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
-import io.choerodon.agile.infra.mapper.BoardColumnMapper;
-import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper;
-import io.choerodon.agile.infra.mapper.IssueMapper;
-import io.choerodon.agile.infra.mapper.IssueStatusMapper;
+import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/16.
@@ -65,6 +66,9 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 
     @Autowired
     private IssueFeignClient issueFeignClient;
+
+    @Autowired
+    private QuickFilterMapper quickFilterMapper;
 
     @Override
     public IssueStatusDTO create(Long projectId, IssueStatusDTO issueStatusDTO) {
@@ -336,7 +340,148 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             }
         }
         issueMapper.batchUpdateIssueType(issueDOForTypeList);
+
+        // 修复快速搜索数据,状态
+        List<QuickFilterDO> quickFilterDOList = quickFilterMapper.selectAll();
+        List<QuickFilterDO> updateDate = new ArrayList<>();
+        for (QuickFilterDO quick : quickFilterDOList) {
+            String sqlQuery = quick.getSqlQuery();
+            if (sqlQuery.contains("status_id")) {
+                String[] sqls = sqlQuery.split("and ");
+                String result = "";
+                int ind = 0;
+                for (String s : sqls) {
+                    if (s.contains("status_id")) {
+                        String[] sqls2 = s.split("or ");
+                        String filter2 = "";
+                        int index = 0;
+                        for (String s2 : sqls2) {
+                            if (s2.contains("status_id")) {
+                                String statusIdStr = getStatusNumber(s2);
+                                String requirement = "";
+                                String[] lists = statusIdStr.split(",");
+                                int w = 0;
+                                for (String ll : lists) {
+                                    Long sId = issueStatusMapper.selectByPrimaryKey(Long.parseLong(ll)).getStatusId();
+                                    if (w == 0) {
+                                        requirement += sId;
+                                    } else {
+                                        requirement += "," +sId;
+                                    }
+                                    w++;
+                                }
+                                s2 = s2.replace(statusIdStr, requirement);
+                            }
+                            if (index == 0) {
+                                filter2 += s2;
+                            } else {
+                                filter2 += " or " + s2;
+                            }
+                            index ++;
+                        }
+                        if (ind == 0) {
+                            result += filter2;
+                        } else {
+                            result += " and " + filter2;
+                        }
+                        ind ++;
+                    } else {
+                        if (ind == 0) {
+                            result += s;
+                        } else {
+                            result += " and " + s;
+                        }
+                        ind ++;
+                    }
+                }
+                QuickFilterDO q = new QuickFilterDO();
+                q.setFilterId(quick.getFilterId());
+                q.setObjectVersionNumber(quick.getObjectVersionNumber());
+                q.setSqlQuery(result);
+                updateDate.add(q);
+            }
+        }
+        for (QuickFilterDO quick :  updateDate) {
+            if (quickFilterMapper.updateByPrimaryKeySelective(quick) != 1) {
+                throw new CommonException("error.quickFilter.update");
+            }
+        }
+
+        // 修复快速搜索数据,优先级
+        List<QuickFilterDO> quickFilterPrioritys = quickFilterMapper.selectAll();
+        List<QuickFilterDO> priorityResult = new ArrayList<>();
+        for (QuickFilterDO qf : quickFilterPrioritys) {
+            String qfStr = qf.getSqlQuery();
+            if (qfStr.contains("priority_code")) {
+                String[] splits = qfStr.split("and ");
+                int b = 0;
+                String res = "";
+                for (String sp : splits) {
+                    if (sp.contains("priority_code")) {
+                        String[] splits2 = sp.split("or ");
+                        String reStr = "";
+                        int a = 0;
+                        for (String sp2 : splits2) {
+                            if (sp2.contains("priority_code")) {
+                                if (sp2.contains("low")) {
+                                    sp2 = sp2.replaceAll("'low'", getPriorityId(prioritys, proWithOrg, qf, "low").toString());
+                                }
+                                if (sp2.contains("medium")) {
+                                    sp2 = sp2.replaceAll("'medium'", getPriorityId(prioritys, proWithOrg, qf, "medium").toString());
+                                }
+                                if (sp2.contains("high")) {
+                                    sp2 = sp2.replaceAll("'high'", getPriorityId(prioritys, proWithOrg, qf, "high").toString());
+                                }
+                                sp2 = sp2.replaceAll("priority_code", "priority_id");
+                                if (a == 0) {
+                                    reStr += sp2;
+                                } else {
+                                    reStr += " or " + sp2;
+                                }
+                                a++;
+                            }
+                        }
+                        if (b == 0) {
+                            res += reStr;
+                        } else {
+                            res += " and " + reStr;
+                        }
+                        b++;
+                    } else {
+                        if (b == 0) {
+                            res += sp;
+                        } else {
+                            res += " and " + sp;
+                        }
+                        b++;
+                    }
+                }
+                QuickFilterDO updatePriority = new QuickFilterDO();
+                updatePriority.setFilterId(qf.getFilterId());
+                updatePriority.setObjectVersionNumber(qf.getObjectVersionNumber());
+                updatePriority.setSqlQuery(res);
+                priorityResult.add(updatePriority);
+            }
+        }
+        for (QuickFilterDO qq : priorityResult) {
+            if (quickFilterMapper.updateByPrimaryKeySelective(qq) != 1) {
+                throw new CommonException("error.quickFilterPriority.update");
+            }
+        }
+
         logger.info("步骤2执行完成");
+    }
+
+    private Long getPriorityId(Map<Long, Map<String, Long>> prioritys, Map<Long, Long> proWithOrg, QuickFilterDO quickFilterDO, String priorityStr) {
+        Map<String, Long> ps = prioritys.get(proWithOrg.get(quickFilterDO.getProjectId()));
+        return ps.get(priorityStr);
+    }
+
+    private String getStatusNumber(String str) {
+        String regEx="[^0-9]";
+        Pattern p = Pattern.compile(regEx);
+        Matcher m = p.matcher(str);
+        return m.replaceAll(" ").trim().replaceAll(" ", ",");
     }
 
 }
