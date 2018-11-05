@@ -1615,15 +1615,17 @@ public class IssueServiceImpl implements IssueService {
                 if (subIssueIds != null && !subIssueIds.isEmpty()) {
                     throw new CommonException("error.transformedSubTask.issueHaveSubIssue");
                 }
-                issueE.setTypeCode(SUB_TASK);
                 issueE.setRank(null);
                 issueE.setEpicSequence(null);
                 issueE.setStoryPoints(null);
+                issueE.setStatusId(issueTransformSubTask.getStatusId());
+                issueE.setTypeCode(SUB_TASK);
+                issueE.setIssueTypeId(issueTransformSubTask.getIssueTypeId());
                 issueE.setParentIssueId(issueTransformSubTask.getParentIssueId());
                 issueRule.verifySubTask(issueTransformSubTask.getParentIssueId());
                 //删除链接
                 issueLinkRepository.deleteByIssueId(issueE.getIssueId());
-                issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, RANK_FIELD, STATUS_ID, PARENT_ISSUE_ID, EPIC_SEQUENCE, STORY_POINTS_FIELD});
+                issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, ISSUE_TYPE_ID, RANK_FIELD, STATUS_ID, PARENT_ISSUE_ID, EPIC_SEQUENCE, STORY_POINTS_FIELD});
                 return queryIssueSub(projectId, organizationId, issueE.getIssueId());
             } else {
                 throw new CommonException("error.IssueRule.subTaskError");

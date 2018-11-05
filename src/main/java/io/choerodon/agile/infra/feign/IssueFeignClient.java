@@ -52,17 +52,17 @@ public interface IssueFeignClient {
 
     @GetMapping(value = "/v1/projects/{project_id}/schemes/query_state_machine_id")
     ResponseEntity<Long> queryStateMachineId(@PathVariable("project_id") Long projectId,
-                                             @RequestParam("scheme_type") String schemeType,
+                                             @RequestParam("apply_type") String applyType,
                                              @RequestParam("issue_type_id") Long issueTypeId);
 
     @GetMapping(value = "/v1/projects/{project_id}/schemes/query_issue_types")
-    ResponseEntity<List<IssueTypeDTO>> queryIssueTypesByProjectId(@PathVariable("project_id") Long projectId, @RequestParam("scheme_type") String schemeType);
+    ResponseEntity<List<IssueTypeDTO>> queryIssueTypesByProjectId(@PathVariable("project_id") Long projectId, @RequestParam("apply_type") String applyType);
 
     @PostMapping(value = "/v1/projects/{project_id}/schemes/create_status_for_agile")
     ResponseEntity<StatusInfoDTO> createStatusForAgile(@PathVariable("project_id") Long projectId,
                                                        @RequestBody StatusInfoDTO statusInfoDTO);
 
-    @GetMapping(value = "/query_status")
+    @GetMapping(value = "/v1/projects/{project_id}/schemes/query_status_by_project_id")
     ResponseEntity<List<StatusMapDTO>> queryStatusByProjectId(@PathVariable("project_id") Long projectId,
-                                                              @RequestParam("scheme_type") String schemeType);
+                                                              @RequestParam("apply_type") String applyType);
 }

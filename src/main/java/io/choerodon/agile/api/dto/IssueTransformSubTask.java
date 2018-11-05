@@ -16,6 +16,8 @@ public class IssueTransformSubTask {
 
     private Long objectVersionNumber;
 
+    private Long issueTypeId;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -46,6 +48,14 @@ public class IssueTransformSubTask {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
     }
 
     @Override
