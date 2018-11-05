@@ -361,7 +361,10 @@ public class IssueServiceImpl implements IssueService {
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
-        IssueDTO result = issueAssembler.issueDetailDoToDto(issue);
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
+        Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
+        IssueDTO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
         // 发送消息
         if (ISSUE_TEST.equals(result.getTypeCode())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", result);
@@ -397,8 +400,8 @@ public class IssueServiceImpl implements IssueService {
         return issueTypeDTOResponseEntity.getBody();
     }
 
-    private StatusInfoDTO getStatusById(Long organizationId, Long statusId) {
-        ResponseEntity<StatusInfoDTO> statusInfoDTOResponseEntity = stateMachineFeignClient.queryStatusById(organizationId, statusId);
+    private StatusMapDTO getStatusById(Long organizationId, Long statusId) {
+        ResponseEntity<StatusMapDTO> statusInfoDTOResponseEntity = stateMachineFeignClient.queryStatusById(organizationId, statusId);
         if (statusInfoDTOResponseEntity == null) {
             throw new CommonException("error.status.get");
         }
@@ -408,15 +411,13 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
-        issue.setPriorityDTO(getPriorityById(organizationId, issue.getPriorityId()));
-        issue.setIssueTypeDTO(getIssueTypeById(organizationId, issue.getIssueTypeId()));
-        StatusInfoDTO statusInfoDTO = getStatusById(organizationId, issue.getStatusId());
-        issue.setStatusCode(statusInfoDTO.getType());
-        issue.setStatusName(statusInfoDTO.getName());
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
-        return issueAssembler.issueDetailDoToDto(issue);
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
+        Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
+        return issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
     }
 
     public IssueDTO queryIssueByUpdate(Long projectId, Long issueId, Long resultStatusId, List<String> fieldList) {
@@ -427,7 +428,10 @@ public class IssueServiceImpl implements IssueService {
         if (resultStatusId != null) {
             issue.setStatusId(resultStatusId);
         }
-        IssueDTO result = issueAssembler.issueDetailDoToDto(issue);
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
+        Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
+        IssueDTO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
         if (fieldList.contains("assigneeId") && result.getAssigneeId() != null && !ISSUE_TEST.equals(result.getTypeCode())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_assigneed", result);
             String summary = result.getIssueNum() + "-" + result.getSummary();
@@ -1111,9 +1115,7 @@ public class IssueServiceImpl implements IssueService {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         issue.setPriorityDTO(getPriorityById(organizationId, issue.getPriorityId()));
         issue.setIssueTypeDTO(getIssueTypeById(organizationId, issue.getIssueTypeId()));
-        StatusInfoDTO statusInfoDTO = getStatusById(organizationId, issue.getStatusId());
-        issue.setStatusCode(statusInfoDTO.getType());
-        issue.setStatusName(statusInfoDTO.getName());
+        issue.setStatusMapDTO(getStatusById(organizationId, issue.getStatusId()));
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
@@ -1447,7 +1449,7 @@ public class IssueServiceImpl implements IssueService {
         issueListDTOPage.setSize(issueDOPage.getSize());
         issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
         issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
-        issueListDTOPage.setContent(issueAssembler.toTargetList(issueDOPage.getContent(), IssueNumDTO.class));
+        issueListDTOPage.setContent(issueAssembler.issueNumDoToDto(issueDOPage.getContent(), projectId));
         return issueListDTOPage;
     }
 

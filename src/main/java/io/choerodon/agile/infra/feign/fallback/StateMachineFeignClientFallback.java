@@ -32,7 +32,7 @@ public class StateMachineFeignClientFallback implements StateMachineFeignClient 
     }
 
     @Override
-    public ResponseEntity<StatusInfoDTO> queryStatusById(Long organizationId, Long statusId) {
+    public ResponseEntity<StatusMapDTO> queryStatusById(Long organizationId, Long statusId) {
         throw new CommonException("error.status.get");
     }
 

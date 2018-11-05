@@ -14,10 +14,6 @@ public class IssueSubListDTO {
 
     private Long statusId;
 
-    private String priorityCode;
-
-    private String statusCode;
-
     private Long assigneeId;
 
     private Long projectId;
@@ -26,15 +22,19 @@ public class IssueSubListDTO {
 
     private String assigneeName;
 
-    private String priorityName;
-
-    private String statusName;
-
     private String summary;
 
     private String imageUrl;
 
-    private String statusColor;
+    private Long issueTypeId;
+
+    private Long priorityId;
+
+    private PriorityDTO priorityDTO;
+
+    private IssueTypeDTO issueTypeDTO;
+
+    private StatusMapDTO statusMapDTO;
 
     public Long getIssueId() {
         return issueId;
@@ -60,21 +60,6 @@ public class IssueSubListDTO {
         this.statusId = statusId;
     }
 
-    public String getPriorityCode() {
-        return priorityCode;
-    }
-
-    public void setPriorityCode(String priorityCode) {
-        this.priorityCode = priorityCode;
-    }
-
-    public String getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
-    }
 
     public Long getAssigneeId() {
         return assigneeId;
@@ -108,21 +93,6 @@ public class IssueSubListDTO {
         this.assigneeName = assigneeName;
     }
 
-    public String getPriorityName() {
-        return priorityName;
-    }
-
-    public void setPriorityName(String priorityName) {
-        this.priorityName = priorityName;
-    }
-
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
-    }
 
     public String getSummary() {
         return summary;
@@ -140,12 +110,44 @@ public class IssueSubListDTO {
         this.imageUrl = imageUrl;
     }
 
-    public String getStatusColor() {
-        return statusColor;
+    public Long getIssueTypeId() {
+        return issueTypeId;
     }
 
-    public void setStatusColor(String statusColor) {
-        this.statusColor = statusColor;
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
+    }
+
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
     }
 
     @Override

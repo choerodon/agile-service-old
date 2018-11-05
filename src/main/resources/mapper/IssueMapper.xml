@@ -5,12 +5,9 @@
     <resultMap type="io.choerodon.agile.infra.dataobject.IssueDetailDO" id="issueDetail">
         <id column="issue_id" property="issueId"/>
         <id column="issue_num_splicing" property="issueNum"/>
-        <!--<id column="type_code" property="typeCode"/>-->
         <id column="status_id" property="statusId"/>
-        <id column="status_code" property="statusCode"/>
+        <id column="type_code" property="typeCode"/>
         <id column="summary" property="summary"/>
-        <id column="priority_code" property="priorityCode"/>
-        <!--<id column="priority_name" property="priorityName"/>-->
         <id column="reporter_id" property="reporterId"/>
         <id column="description" property="description"/>
         <id column="assignee_id" property="assigneeId"/>
@@ -115,16 +112,12 @@
     <select id="queryIssueDetail" resultMap="issueDetail">
         SELECT
             ai.*,
-            ais.category_code                                                                AS status_code,
-            ais.name                                                                         AS status_name,
---             alv.name                                                                         AS priority_name,
             ai2.epic_name                                                                    AS issue_epic_name,
             alv2.name                                                                        AS epic_color,
             alv3.name                                                                        AS color_value,
             IF(ai3.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai3.issue_num)) AS parent_issue_num,
             CONCAT_WS('-', api.project_code, ai.issue_num)                                   AS issue_num_splicing
-        FROM agile_issue ai LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id AND ais.project_id = ai.project_id
---             LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
+        FROM agile_issue ai
             LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
             LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code
             LEFT JOIN agile_lookup_value alv3 ON ai.color_code = alv3.value_code
@@ -537,6 +530,7 @@
         SELECT
         ai.issue_id, ai.summary,
         ai.project_id, ai.type_code,
+        ai.issue_type_id,
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id

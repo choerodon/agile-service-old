@@ -36,10 +36,7 @@ public class IssueAssembler extends AbstractAssembler {
      * @param issueDetailDO issueDetailDO
      * @return IssueDTO
      */
-    public IssueDTO issueDetailDoToDto(IssueDetailDO issueDetailDO) {
-        LookupValueDO lookupValueDO = new LookupValueDO();
-        lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
-        Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
+    public IssueDTO issueDetailDoToDto(IssueDetailDO issueDetailDO, Map<Long, IssueTypeDTO> issueTypeDTOMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, PriorityDTO> priorityDTOMap) {
         IssueDTO issueDTO = new IssueDTO();
         BeanUtils.copyProperties(issueDetailDO, issueDTO);
         issueDTO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
@@ -49,8 +46,10 @@ public class IssueAssembler extends AbstractAssembler {
         issueDTO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
         issueDTO.setIssueAttachmentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueAttachmentDOList(), IssueAttachmentDTO.class));
         issueDTO.setIssueCommentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueCommentDOList(), IssueCommentDTO.class));
-        issueDTO.setStatusColor(ColorUtil.initializationStatusColor(issueDTO.getStatusCode(), lookupValueMap));
-        issueDTO.setSubIssueDTOList(issueDoToSubIssueDto(issueDetailDO.getSubIssueDOList(), lookupValueMap));
+        issueDTO.setSubIssueDTOList(issueDoToSubIssueDto(issueDetailDO.getSubIssueDOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
+        issueDTO.setPriorityDTO(priorityDTOMap.get(issueDTO.getPriorityId()));
+        issueDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueDTO.getIssueTypeId()));
+        issueDTO.setStatusMapDTO(statusMapDTOMap.get(issueDTO.getStatusId()));
         List<Long> assigneeIdList = new ArrayList<>();
         assigneeIdList.add(issueDetailDO.getAssigneeId());
         assigneeIdList.add(issueDetailDO.getReporterId());
@@ -114,7 +113,7 @@ public class IssueAssembler extends AbstractAssembler {
      * @param issueDOList issueDOList
      * @return SubIssueDTO
      */
-    private List<IssueSubListDTO> issueDoToSubIssueDto(List<IssueDO> issueDOList, Map<String, String> lookupValueMap) {
+    private List<IssueSubListDTO> issueDoToSubIssueDto(List<IssueDO> issueDOList, Map<Long, IssueTypeDTO> issueTypeDTOMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, PriorityDTO> priorityDTOMap) {
         List<IssueSubListDTO> subIssueDTOList = new ArrayList<>(issueDOList.size());
         List<Long> assigneeIds = issueDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
@@ -125,7 +124,9 @@ public class IssueAssembler extends AbstractAssembler {
             BeanUtils.copyProperties(issueDO, subIssueDTO);
             subIssueDTO.setAssigneeName(assigneeName);
             subIssueDTO.setImageUrl(imageUrl);
-            subIssueDTO.setStatusColor(ColorUtil.initializationStatusColor(subIssueDTO.getStatusCode(), lookupValueMap));
+            subIssueDTO.setPriorityDTO(priorityDTOMap.get(issueDO.getPriorityId()));
+            subIssueDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
+            subIssueDTO.setStatusMapDTO(statusMapDTOMap.get(issueDO.getStatusId()));
             subIssueDTOList.add(subIssueDTO);
         });
         return subIssueDTOList;
@@ -138,9 +139,6 @@ public class IssueAssembler extends AbstractAssembler {
      * @return IssueSubDTO
      */
     public IssueSubDTO issueDetailDoToIssueSubDto(IssueDetailDO issueDetailDO) {
-        LookupValueDO lookupValueDO = new LookupValueDO();
-        lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
-        Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
         IssueSubDTO issueSubDTO = new IssueSubDTO();
         BeanUtils.copyProperties(issueDetailDO, issueSubDTO);
         issueSubDTO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
@@ -159,7 +157,6 @@ public class IssueAssembler extends AbstractAssembler {
         issueSubDTO.setAssigneeImageUrl(assigneeName != null ? userMessageDOMap.get(issueSubDTO.getAssigneeId()).getImageUrl() : null);
         issueSubDTO.setReporterName(reporterName);
         issueSubDTO.setReporterImageUrl(reporterName != null ? userMessageDOMap.get(issueSubDTO.getReporterId()).getImageUrl() : null);
-        issueSubDTO.setStatusColor(ColorUtil.initializationStatusColor(issueSubDTO.getStatusCode(), lookupValueMap));
         return issueSubDTO;
     }
 
@@ -294,9 +291,9 @@ public class IssueAssembler extends AbstractAssembler {
         return issueListTestDTOS;
     }
 
-    public List<IssueNumDTO> issueNumDoToDto(List<IssueNumDO> issueNumDOList,Long projectId) {
+    public List<IssueNumDTO> issueNumDoToDto(List<IssueNumDO> issueNumDOList, Long projectId) {
         List<IssueNumDTO> issueNumDTOS = new ArrayList<>(issueNumDOList.size());
-        if(!issueNumDOList.isEmpty()){
+        if (!issueNumDOList.isEmpty()) {
             Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId);
             issueNumDOList.forEach(issueDO -> {
                 IssueNumDTO issueNumDTO = new IssueNumDTO();
