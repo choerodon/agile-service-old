@@ -404,6 +404,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 List<JSONObject> arrs = JSONObject.parseArray(jsonObject.get("arr").toString(), JSONObject.class);
                 for (JSONObject object : arrs) {
                     if ("status".equals(object.get("fieldCode"))) {
+                        String finalResult = object.get("value").toString();
                         String val = getStatusNumber(object.get("value").toString());
                         String[] valSplit = val.split(",");
                         String valReal = "";
@@ -416,22 +417,9 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                                 valReal += "," +vId;
                             }
                             vw++;
-
                         }
-                        object.put("value", valReal);
-                    }
-                    if ("priority".equals(object.get("fieldCode"))) {
-                        String val = object.get("value").toString();
-                        if (val.contains("high")) {
-                            val = val.replaceAll("'high'", getPriorityId(prioritys, proWithOrg, quick, "high").toString());
-                        }
-                        if (val.contains("medium")) {
-                            val = val.replaceAll("'medium'", getPriorityId(prioritys, proWithOrg, quick, "medium").toString());
-                        }
-                        if (val.contains("low")) {
-                            val = val.replaceAll("'low'", getPriorityId(prioritys, proWithOrg, quick, "low").toString());
-                        }
-                        object.put("value", val);
+                        finalResult = finalResult.replace(val, valReal);
+                        object.put("value", finalResult);
                     }
                 }
 
@@ -498,10 +486,32 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                         b++;
                     }
                 }
+                // 处理description
+                String description = qf.getDescription();
+                String[] desStrs = description.split("\\+\\+\\+");
+                JSONObject jsonObject = JSONObject.parseObject(desStrs[1]);
+                List<JSONObject> arrs = JSONObject.parseArray(jsonObject.get("arr").toString(), JSONObject.class);
+                for (JSONObject object : arrs) {
+                    if ("priority".equals(object.get("fieldCode"))) {
+                        String val = object.get("value").toString();
+                        if (val.contains("high")) {
+                            val = val.replaceAll("'high'", getPriorityId(prioritys, proWithOrg, qf, "high").toString());
+                        }
+                        if (val.contains("medium")) {
+                            val = val.replaceAll("'medium'", getPriorityId(prioritys, proWithOrg, qf, "medium").toString());
+                        }
+                        if (val.contains("low")) {
+                            val = val.replaceAll("'low'", getPriorityId(prioritys, proWithOrg, qf, "low").toString());
+                        }
+                        object.put("value", val);
+                    }
+                }
+
                 QuickFilterDO updatePriority = new QuickFilterDO();
                 updatePriority.setFilterId(qf.getFilterId());
                 updatePriority.setObjectVersionNumber(qf.getObjectVersionNumber());
                 updatePriority.setSqlQuery(res);
+                updatePriority.setDescription(desStrs[0] + "+++" + arrs.toString());
                 priorityResult.add(updatePriority);
             }
         }
