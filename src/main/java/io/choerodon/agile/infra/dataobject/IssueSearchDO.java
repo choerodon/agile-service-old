@@ -229,5 +229,4 @@ public class IssueSearchDO {
     public IssueTypeDTO getIssueTypeDTO() {
         return issueTypeDTO;
     }
-
 }

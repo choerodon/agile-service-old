@@ -4,6 +4,7 @@ import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.ProjectDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
@@ -23,8 +24,6 @@ public class ConvertUtil {
 
     private static final Map<Long, ProjectDTO> ORGANIZATION_MAP = new ConcurrentHashMap<>();
 
-    private static final String AGILE = "agile";
-
     /**
      * 根据projectId获取issue类型Map
      *
@@ -33,7 +32,7 @@ public class ConvertUtil {
      */
     public static Map<Long, IssueTypeDTO> getIssueTypeMap(Long projectId, String serviceCode) {
         if (serviceCode == null) {
-            serviceCode = AGILE;
+            serviceCode = SchemeApplyType.AGILE;
         }
         List<IssueTypeDTO> issueTypeDTOS = SpringBeanUtil.getBean(IssueFeignClient.class).queryIssueTypesByProjectId(projectId, serviceCode).getBody();
         return issueTypeDTOS.stream().collect(Collectors.toMap(IssueTypeDTO::getId, Function.identity()));

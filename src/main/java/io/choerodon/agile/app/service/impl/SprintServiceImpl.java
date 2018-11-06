@@ -7,6 +7,7 @@ import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.domain.agile.repository.SprintWorkCalendarRefRepository;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
+import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
@@ -101,7 +102,6 @@ public class SprintServiceImpl implements SprintService {
     private static final String SPRINT_REPORT_ERROR = "error.sprint.report";
     private static final String SPRINT_PLANNING_CODE = "sprint_planning";
     private static final String STATUS_SPRINT_PLANNING_CODE = "sprint_planning";
-    private static final String AGILE = "agile";
 
     @Override
     public synchronized SprintDetailDTO createSprint(Long projectId) {
@@ -224,7 +224,7 @@ public class SprintServiceImpl implements SprintService {
         if (sprintSearchDO != null) {
             SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDO, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap);
             activeSprint.setIssueCount(activeSprint.getIssueSearchDTOList().size());
-            Map<String, List<Long>> statusMap = issueFeignClient.queryStatusByProjectId(projectId, AGILE).getBody()
+            Map<String, List<Long>> statusMap = issueFeignClient.queryStatusByProjectId(projectId, SchemeApplyType.AGILE).getBody()
                     .stream().collect(Collectors.groupingBy(StatusMapDTO::getType, Collectors.mapping(StatusMapDTO::getId, Collectors.toList())));
             activeSprint.setTodoStoryPoint(sprintMapper.queryStoryPoint(statusMap.get(CATEGORY_TODO_CODE), issueIds, projectId, activeSprint.getSprintId()));
             activeSprint.setDoingStoryPoint(sprintMapper.queryStoryPoint(statusMap.get(CATEGORY_DOING_CODE), issueIds, projectId, activeSprint.getSprintId()));

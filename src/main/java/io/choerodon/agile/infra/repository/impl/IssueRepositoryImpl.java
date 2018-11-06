@@ -57,6 +57,8 @@ public class IssueRepositoryImpl implements IssueRepository {
     @Override
     @DataLog(type = "issueCreate")
     public IssueE create(IssueE issueE) {
+        //临时存个优先级code
+        issueE.setPriorityCode("priority-"+issueE.getPriorityId());
         IssueDO issueDO = ConvertHelper.convert(issueE, IssueDO.class);
         if (issueMapper.insert(issueDO) != 1) {
             throw new CommonException(INSERT_ERROR);

@@ -7,6 +7,8 @@ import io.choerodon.agile.api.dto.IssueTransformSubTask;
 import io.choerodon.agile.api.dto.IssueUpdateTypeDTO;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.domain.agile.entity.*;
+import io.choerodon.agile.infra.common.enums.SchemeApplyType;
+import io.choerodon.agile.infra.common.utils.EnumUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.exception.CommonException;
@@ -42,7 +44,7 @@ public class IssueRule {
     private static final String STATUS_ID = "status_id";
     private static final String ERROR_ISSUE_ID_NOT_FOUND = "error.IssueRule.issueId";
 
-    public void verifyCreateData(IssueCreateDTO issueCreateDTO, Long projectId) {
+    public void verifyCreateData(IssueCreateDTO issueCreateDTO, Long projectId, String applyType) {
         issueCreateDTO.setProjectId(projectId);
         if (issueCreateDTO.getTypeCode() == null) {
             throw new CommonException("error.IssueRule.typeCode");
@@ -64,6 +66,9 @@ public class IssueRule {
         }
         if (issueCreateDTO.getIssueTypeId() == null) {
             throw new CommonException("error.issueTypeId.isNull");
+        }
+        if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
+            throw new CommonException("error.applyType.illegal");
         }
     }
 

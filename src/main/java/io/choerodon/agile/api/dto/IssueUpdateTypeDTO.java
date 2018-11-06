@@ -20,6 +20,8 @@ public class IssueUpdateTypeDTO {
 
     private Long issueTypeId;
 
+    private Long statusId;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -66,6 +68,14 @@ public class IssueUpdateTypeDTO {
 
     public Long getIssueTypeId() {
         return issueTypeId;
+    }
+
+    public Long getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
     }
 
     @Override
