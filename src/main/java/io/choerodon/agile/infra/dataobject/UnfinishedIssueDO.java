@@ -9,15 +9,13 @@ public class UnfinishedIssueDO {
 
     private String issueNum;
 
-    private String typeCode;
+    private Long issueTypeId;
+
+    private Long statusId;
+
+    private Long priorityId;
 
     private String summary;
-
-    private String priorityCode;
-
-    private String statusName;
-
-    private String statusColor;
 
     public String getIssueNum() {
         return issueNum;
@@ -25,14 +23,6 @@ public class UnfinishedIssueDO {
 
     public void setIssueNum(String issueNum) {
         this.issueNum = issueNum;
-    }
-
-    public String getTypeCode() {
-        return typeCode;
-    }
-
-    public void setTypeCode(String typeCode) {
-        this.typeCode = typeCode;
     }
 
     public String getSummary() {
@@ -43,27 +33,27 @@ public class UnfinishedIssueDO {
         this.summary = summary;
     }
 
-    public String getPriorityCode() {
-        return priorityCode;
+    public Long getIssueTypeId() {
+        return issueTypeId;
     }
 
-    public void setPriorityCode(String priorityCode) {
-        this.priorityCode = priorityCode;
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
     }
 
-    public String getStatusName() {
-        return statusName;
+    public Long getStatusId() {
+        return statusId;
     }
 
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
     }
 
-    public String getStatusColor() {
-        return statusColor;
+    public Long getPriorityId() {
+        return priorityId;
     }
 
-    public void setStatusColor(String statusColor) {
-        this.statusColor = statusColor;
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
     }
 }

@@ -14,12 +14,11 @@ public class UndistributedIssueDTO {
 
     private String summary;
 
-    private String priorityCode;
+    private PriorityDTO priorityDTO;
 
-    private String statusName;
+    private IssueTypeDTO issueTypeDTO;
 
-    private String statusColor;
-
+    private StatusMapDTO statusMapDTO;
 
     public String getIssueNum() {
         return issueNum;
@@ -45,27 +44,27 @@ public class UndistributedIssueDTO {
         this.summary = summary;
     }
 
-    public String getPriorityCode() {
-        return priorityCode;
+    public PriorityDTO getPriorityDTO() {
+        return priorityDTO;
     }
 
-    public void setPriorityCode(String priorityCode) {
-        this.priorityCode = priorityCode;
+    public void setPriorityDTO(PriorityDTO priorityDTO) {
+        this.priorityDTO = priorityDTO;
     }
 
-    public String getStatusName() {
-        return statusName;
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
     }
 
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
     }
 
-    public String getStatusColor() {
-        return statusColor;
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
     }
 
-    public void setStatusColor(String statusColor) {
-        this.statusColor = statusColor;
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
     }
 }
