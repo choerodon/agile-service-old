@@ -29,7 +29,7 @@ public interface IssueService {
      * @param issueCreateDTO issueCreateDTO
      * @return IssueDTO
      */
-    IssueDTO createIssue(IssueCreateDTO issueCreateDTO);
+    IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType);
 
     /**
      * 查询单个issue
@@ -72,7 +72,7 @@ public interface IssueService {
      * @param transformId
      * @return
      */
-    IssueDTO updateIssueStatus(Long projectId, Long issueId, Long transformId, Long objectVersionNumber);
+    IssueDTO updateIssueStatus(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType);
 
     /**
      * 更新issue自己的字段
@@ -164,7 +164,7 @@ public interface IssueService {
      * @param copyConditionDTO copyConditionDTO
      * @return IssueDTO
      */
-    IssueDTO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO, Long organizationId);
+    IssueDTO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO, Long organizationId, String applyType);
 
     /**
      * 根据issueId转换为子任务

@@ -4,7 +4,9 @@ import io.choerodon.agile.api.dto.IssueUpdateDTO;
 import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
+import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
+import io.choerodon.agile.infra.common.utils.EnumUtil;
 import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
@@ -35,7 +37,6 @@ import java.util.Collections;
 public class StateMachineServiceImpl implements StateMachineService {
 
     private static final Logger logger = LoggerFactory.getLogger(StateMachineServiceImpl.class);
-    private static final String AGILE = "agile";
     private static final String AGILE_SERVICE = "agile-service";
     private static final String ERROR_ISSUE_STATE_MACHINE_NOT_FOUND = "error.issueStateMachine.notFound";
     private static final String ERROR_ISSUE_NOT_FOUND = "error.issue.notFound";
@@ -54,8 +55,11 @@ public class StateMachineServiceImpl implements StateMachineService {
     private IssueFeignClient issueFeignClient;
 
     @Override
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public ExecuteResult executeTransform(Long projectId, Long issueId, Long transformId, Long objectVersionNumber) {
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED, rollbackFor = Exception.class)
+    public ExecuteResult executeTransform(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType) {
+        if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
+            throw new CommonException("error.applyType.illegal");
+        }
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
         IssueDO issue = issueMapper.selectByPrimaryKey(issueId);
         if (issue == null) {
@@ -65,7 +69,7 @@ public class StateMachineServiceImpl implements StateMachineService {
             throw new CommonException(ERROR_ISSUE_VERSION);
         }
         //获取状态机id
-        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issue.getIssueTypeId()).getBody();
+        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, applyType, issue.getIssueTypeId()).getBody();
         if (stateMachineId == null) {
             throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
         }

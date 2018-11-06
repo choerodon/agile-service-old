@@ -14,5 +14,5 @@ public interface StateMachineService {
      * @param transformId
      * @return
      */
-    ExecuteResult executeTransform(Long projectId, Long issueId, Long transformId, Long objectVersionNumber);
+    ExecuteResult executeTransform(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType);
 }

@@ -28,6 +28,8 @@ public class IssueSubCreateDTO {
 
     private Long parentIssueId;
 
+    private Long issueTypeId;
+
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
@@ -138,6 +140,15 @@ public class IssueSubCreateDTO {
 
     public void setReporterId(Long reporterId) {
         this.reporterId = reporterId;
+    }
+
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
     }
 
     @Override

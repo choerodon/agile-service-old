@@ -10,6 +10,7 @@ import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.UserSettingE;
 import io.choerodon.agile.domain.agile.event.StatusPayload;
 import io.choerodon.agile.domain.agile.repository.*;
+import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil;
 import io.choerodon.agile.infra.dataobject.*;
@@ -430,7 +431,7 @@ public class BoardServiceImpl implements BoardService {
 
     private String convertProjectName(ProjectDTO projectDTO) {
         String projectName = projectDTO.getName();
-        String result = projectName.replaceAll(" ","%20");
+        String result = projectName.replaceAll(" ", "%20");
         return result;
     }
 
@@ -443,7 +444,7 @@ public class BoardServiceImpl implements BoardService {
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
 //        IssueMoveDTO result = ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);
         //执行状态机转换
-        Long resultStatusId = stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber()).getResultStatusId();
+        Long resultStatusId = stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber(), SchemeApplyType.AGILE).getResultStatusId();
         IssueMoveDTO result = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueMoveDTO.class);
         result.setStatusId(resultStatusId);
 
