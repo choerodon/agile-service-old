@@ -31,16 +31,12 @@
         <id property="assigneeId" column="assignee_id"/>
         <id property="projectId" column="project_id"/>
         <id property="epicId" column="epic_id"/>
-        <id property="sprintId" column="is_sprint_id"/>
+        <id property="sprintId" column="sprint_id"/>
         <id property="storyPoints" column="story_points"/>
         <id property="statusId" column="status_id"/>
-        <id property="categoryCode" column="category_code"/>
-        <id property="statusName" column="status_name"/>
-        <id property="priorityCode" column="priority_code"/>
-        <id property="priorityName" column="priority_name"/>
-        <id property="priorityId" column="priority_id"/>
         <id property="issueTypeId" column="issue_type_id"/>
-        <id property="objectVersionNumber" column="is_object_version_number"/>
+        <id property="priorityId" column="priority_id"/>
+        <id property="objectVersionNumber" column="object_version_number"/>
         <id property="epicName" column="issue_epic_name"/>
         <id property="color" column="color"/>
         <collection property="versionIds" autoMapping="true" ofType="java.lang.Long">
