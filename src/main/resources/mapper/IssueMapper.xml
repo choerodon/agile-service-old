@@ -304,7 +304,6 @@
         ai.status_id
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        left join agile_issue_status ais on ais.status_id = ai.status_id and ais.project_id = ai.project_id
         WHERE ai.project_id = #{projectId} AND ai.type_code != 'issue_test'
         <if test='searchDTO.searchArgs != null'>
             <if test='searchDTO.searchArgs.summary != null and searchDTO.searchArgs.summary != "" '>
@@ -325,6 +324,12 @@
                 AND ai.assignee_id IN
                 <foreach collection="searchDTO.advancedSearchArgs.assigneeIds" item="assigneeId" open="(" separator="," close=")">
                     #{assigneeId}
+                </foreach>
+            </if>
+            <if test='searchDTO.advancedSearchArgs.reporterIds != null and searchDTO.advancedSearchArgs.reporterIds.size > 0'>
+                AND ai.reporter_id IN
+                <foreach collection="searchDTO.advancedSearchArgs.reporterIds" item="reporterId" open="(" separator="," close=")">
+                    #{reporterId}
                 </foreach>
             </if>
             <if test='searchDTO.advancedSearchArgs.priorityId != null and searchDTO.advancedSearchArgs.priorityId.size > 0'>
@@ -393,7 +398,10 @@
                     </foreach>
                 </if>
                 <if test='searchDTO.otherArgs.resolution'>
-                    and ais.is_completed = 1
+                    AND ai.status_id in (
+                        select ais.status_id from agile_issue_status ais where ais.status_id = ai.status_id and ais.project_id = ai.project_id
+                        and ais.is_completed = 1
+                    )
                 </if>
                 <if test='searchDTO.otherArgs.type == "component"'>
                     <choose>
@@ -1033,14 +1041,6 @@
         </choose>
     </select>
 
-    <update id="subTaskToDestination">
-        UPDATE agile_issue ai, agile_issue_status ais, agile_issue ai2
-        SET ai2.sprint_id = #{targetSprintId}
-        WHERE ai.project_id = #{projectId} AND ai.sprint_id = #{sprintId}
-              AND ai.status_id = ais.id AND ais.category_code != 'done'
-              AND ai2.parent_issue_id = ai.issue_id
-    </update>
-
     <select id="selectLabelNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueLabelDO">
         SELECT ail.*
         FROM
@@ -1073,7 +1073,7 @@
         SELECT ai2.issue_id
         FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr, agile_issue ai2
         WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
-              AND ai.status_id = ais.id AND ais.category_code != 'done'
+              AND ai.status_id = ais.status_id AND ai.project_id = ais.project_id and ais.is_completed != 1
               AND ai2.parent_issue_id = ai.issue_id
     </select>
 
@@ -2242,7 +2242,7 @@
                 LEFT JOIN agile_lookup_value alv1 ON ai.type_code = alv1.value_code
                 LEFT JOIN agile_version_issue_rel avir ON avir.issue_id = ai.issue_id
                 left join agile_product_version apv on apv.version_id = avir.version_id
-                LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+                LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id and ais.project_id = ai.project_id
             WHERE
                 avir.version_id = #{versionId}
                 AND ai.project_id =  #{projectId}
@@ -2381,7 +2381,7 @@
             FROM
                 agile_issue ai
                 LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-                LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+                LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id and ais.project_id = ai.project_id
             WHERE
                 ai.issue_id = #{issueId}
                 AND ai.project_id = #{projectId}
@@ -2409,7 +2409,7 @@
             ) as done_date
         FROM
             agile_issue ai
-            LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+            LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id and ais.project_id = ai.project_id
         WHERE
             ai.issue_id = #{issueId}
             AND ai.project_id = #{projectId}

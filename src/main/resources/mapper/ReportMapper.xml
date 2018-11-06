@@ -737,7 +737,7 @@
         FROM agile_issue_sprint_rel aisr1, agile_data_log adl1, agile_issue_status ais1
         WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = #{sprintId}
         AND aisr1.issue_id = adl1.issue_id AND adl1.field = 'status'
-        AND ais1.id = adl1.new_value AND ais1.is_completed IS NOT NULL
+        AND ais1.status_id = adl1.new_value and ais1.project_id = #{projectId} AND ais1.is_completed IS NOT NULL
         AND adl1.creation_date > #{startDate}
         <if test="actualEndDate != null">
             AND adl1.creation_date &lt; #{actualEndDate}
@@ -790,7 +790,6 @@
         ai.assignee_id, ai.project_id
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
         , agile_issue_status ais
         WHERE ai.project_id = #{projectId} AND ai.status_id = ais.status_id and ais.project_id = #{projectId}
         AND ai.issue_id IN
@@ -1112,7 +1111,7 @@
         SELECT adl1.issue_id, ais.is_completed AS completed,
         a.change_date AS change_date
         FROM agile_data_log adl1
-        LEFT JOIN agile_issue_status ais ON ais.id = adl1.new_value,
+        LEFT JOIN agile_issue_status ais ON ais.status_id = adl1.new_value and ais.project_id = #{projectId},
         (
         <foreach collection="versionIssues" item="versionIssue"
                  open="" close="" separator=" UNION ALL  ">
@@ -1152,11 +1151,12 @@
         FROM agile_data_log adl
         LEFT JOIN agile_issue_status ais ON
         <if test="completed == true">
-            ais.id = adl.new_value
+            ais.status_id = adl.new_value
         </if>
         <if test="completed == false">
-            ais.id = adl.old_value
+            ais.status_id = adl.old_value
         </if>
+        and ais.project_id = #{projectId}
         WHERE adl.project_id = #{projectId} AND adl.field = 'resolution'
         AND ais.is_completed = TRUE
         AND (
@@ -1206,7 +1206,7 @@
         SELECT adl1.issue_id, ais.is_completed AS completed,
         a.change_date AS change_date
         FROM agile_data_log adl1
-        LEFT JOIN agile_issue_status ais ON ais.id = adl1.new_value,
+        LEFT JOIN agile_issue_status ais ON ais.status_id = adl1.new_value and ais.project_id = #{projectId},
         (
         <foreach collection="changeIssues" item="changeIssue"
                  open="" close="" separator=" UNION ALL  ">
@@ -1264,7 +1264,7 @@
     <select id="queryCompleteField" resultType="java.lang.Integer">
         SELECT IFNULL(SUM(ai.${field}),0)
         FROM agile_issue ai
-        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+        LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id and ais.project_id = #{projectId}
         WHERE ai.project_id = #{projectId} AND ais.is_completed = TRUE
         <if test='field == "story_points"'>
             AND ai.type_code = 'story'
@@ -1282,7 +1282,7 @@
     <select id="queryUnEstimateCount" resultType="java.lang.Integer">
         SELECT COUNT(1)
         FROM agile_issue ai
-        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+        LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id and ais.project_id = #{projectId}
         WHERE ai.project_id = #{projectId} AND ais.is_completed = FALSE
         <if test='field == "story_points"'>
             AND ai.type_code = 'story' AND ai.story_points IS NULL
@@ -1300,7 +1300,7 @@
     <select id="queryCompletedIssueCount" resultType="java.lang.Integer">
         SELECT COUNT(1)
         FROM agile_issue ai
-        LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
+        LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id and ais.project_id = #{projectId}
         WHERE ai.project_id = #{projectId} AND ais.is_completed = TRUE
         AND ai.type_code IN ('task', 'bug', 'issue_epic', 'story') AND ai.issue_id IN
         <foreach collection="issueIds" item="issueId"
@@ -1674,7 +1674,7 @@
         agile_issue ai
         <if test="!own">
             <if test="fieldName == 'resolution'">
-                LEFT JOIN agile_issue_status other on ai.status_id = other.id
+                LEFT JOIN agile_issue_status other on ai.status_id = other.status_id and other.project_id = ai.project_id
             </if>
             <if test="fieldName == 'component_id'">
                 LEFT JOIN agile_component_issue_rel other on ai.issue_id = other.issue_id
@@ -3156,7 +3156,7 @@
         FROM
             agile_issue ai
             LEFT JOIN agile_issue ai2 ON ai.parent_issue_id = ai2.issue_id
-            LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+            LEFT JOIN agile_issue_status ais ON ai.status_id = ais.status_id and ais.project_id = ai.project_id
         WHERE
             ai.project_id = #{projectId}
             AND ai.type_code != 'issue_test'
