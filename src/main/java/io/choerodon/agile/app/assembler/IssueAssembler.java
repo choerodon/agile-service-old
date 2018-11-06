@@ -309,4 +309,40 @@ public class IssueAssembler extends AbstractAssembler {
         }
         return issueNumDTOS;
     }
+
+    public List<UnfinishedIssueDTO> unfinishedIssueDoToDto(List<UnfinishedIssueDO> unfinishedIssueDOS, Long projectId) {
+        List<UnfinishedIssueDTO> unfinishedIssueDTOS = new ArrayList<>(unfinishedIssueDOS.size());
+        if(!unfinishedIssueDOS.isEmpty()){
+            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, null);
+            Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+            Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
+            unfinishedIssueDOS.forEach(unfinishedIssueDO -> {
+                UnfinishedIssueDTO unfinishedIssueDTO = toTarget(unfinishedIssueDO,UnfinishedIssueDTO.class);
+                unfinishedIssueDTO.setIssueTypeDTO(issueTypeDTOMap.get(unfinishedIssueDO.getIssueTypeId()));
+                unfinishedIssueDTO.setStatusMapDTO(statusMapDTOMap.get(unfinishedIssueDO.getStatusId()));
+                unfinishedIssueDTO.setPriorityDTO(priorityDTOMap.get(unfinishedIssueDO.getPriorityId()));
+                unfinishedIssueDTOS.add(unfinishedIssueDTO);
+            });
+
+        }
+        return unfinishedIssueDTOS;
+    }
+
+    public List<UndistributedIssueDTO> undistributedIssueDOToDto(List<UndistributedIssueDO> undistributedIssueDOS, Long projectId) {
+        List<UndistributedIssueDTO> undistributedIssueDTOS = new ArrayList<>(undistributedIssueDOS.size());
+        if(!undistributedIssueDOS.isEmpty()){
+            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, null);
+            Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+            Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
+            undistributedIssueDOS.forEach(undistributedIssueDO -> {
+                UndistributedIssueDTO undistributedIssueDTO = toTarget(undistributedIssueDO,UndistributedIssueDTO.class);
+                undistributedIssueDTO.setIssueTypeDTO(issueTypeDTOMap.get(undistributedIssueDO.getIssueTypeId()));
+                undistributedIssueDTO.setStatusMapDTO(statusMapDTOMap.get(undistributedIssueDO.getStatusId()));
+                undistributedIssueDTO.setPriorityDTO(priorityDTOMap.get(undistributedIssueDO.getPriorityId()));
+                undistributedIssueDTOS.add(undistributedIssueDTO);
+            });
+
+        }
+        return undistributedIssueDTOS;
+    }
 }

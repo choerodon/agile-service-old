@@ -797,13 +797,8 @@ public class IssueServiceImpl implements IssueService {
         } else {
             issueRepository.batchRemoveVersion(projectId, issueIds);
         }
-        Long organizationId = ConvertUtil.getOrganizationId(projectId);
-        Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        //todo 判断issue类型
-        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds),
-                new HashMap<>(), priorityMap, statusMapDTOMap, issueTypeDTOMap);
+                new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
     @Override
@@ -1901,7 +1896,6 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public JSONObject countUnResolveByProjectId(Long projectId) {
-        //todo sql修改
         JSONObject result = new JSONObject();
         result.put("all", issueMapper.countIssueByProjectId(projectId));
         result.put("unresolved", issueMapper.countUnResolveByProjectId(projectId));
@@ -1915,14 +1909,12 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId) {
-        //todo sql修改
-        return ConvertHelper.convertList(issueMapper.queryUnDistributedIssues(projectId), UndistributedIssueDTO.class);
+        return issueAssembler.undistributedIssueDOToDto(issueMapper.queryUnDistributedIssues(projectId), projectId);
     }
 
     @Override
     public List<UnfinishedIssueDTO> queryUnfinishedIssues(Long projectId, Long assigneeId) {
-        //todo sql修改
-        return ConvertHelper.convertList(issueMapper.queryUnfinishedIssues(projectId, assigneeId), UnfinishedIssueDTO.class);
+        return issueAssembler.unfinishedIssueDoToDto(issueMapper.queryUnfinishedIssues(projectId, assigneeId), projectId);
     }
 
     @Override

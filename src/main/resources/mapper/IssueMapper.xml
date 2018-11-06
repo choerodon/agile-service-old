@@ -1955,7 +1955,7 @@
         from agile_issue ai, agile_issue_status ais
         where ai.project_id = #{projectId}
         and ai.type_code in ('story', 'task', 'bug')
-        and ai.status_id = ais.id and ais.category_code != 'done'
+        and ai.status_id = ais.status_id and ais.is_completed != 1
     </select>
 
     <select id="queryIssueIdsByOptions" resultType="java.lang.Long">
@@ -2017,22 +2017,12 @@
           CONCAT_WS('-',api.project_code,ai.issue_num) AS issue_num,
           ai.type_code,
           ai.summary,
-          ai.priority_code,
-          ais.name as status_name,
-          alv.name as status_color
+          ai.priority_id,
+          ai.issue_type_id,
+          ai.status_id
         from agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        left join agile_issue_status ais on ai.status_id = ais.id and ais.category_code != 'done'
-        LEFT JOIN agile_lookup_value alv ON alv.value_code = CASE ais.category_code
-                WHEN 'todo' THEN
-                    'issue_status_color_todo'
-                WHEN 'doing' THEN
-                    'issue_status_color_doing'
-                WHEN 'done' THEN
-                    'issue_status_color_done'
-                ELSE
-                    'issue_status_color_todo'
-                END
+        left join agile_issue_status ais on ai.status_id = ais.status_id and ais.is_completed != 1 and ai.project_id = ais.project_id
         where ai.project_id = #{projectId}
         and ai.type_code in ('story','task','bug')
         and (ai.assignee_id is null or ai.assignee_id = 0)
@@ -2046,22 +2036,12 @@
           CONCAT_WS('-',api.project_code,ai.issue_num) AS issue_num,
           ai.type_code,
           ai.summary,
-          ai.priority_code,
-          ais.name as status_name,
-          alv.name as status_color
+          ai.priority_id,
+          ai.issue_type_id,
+          ai.status_id
         from agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        right join agile_issue_status ais on ai.status_id = ais.id and ais.category_code != 'done'
-        LEFT JOIN agile_lookup_value alv ON alv.value_code = CASE ais.category_code
-                WHEN 'todo' THEN
-                    'issue_status_color_todo'
-                WHEN 'doing' THEN
-                    'issue_status_color_doing'
-                WHEN 'done' THEN
-                    'issue_status_color_done'
-                ELSE
-                    'issue_status_color_todo'
-                END
+        right join agile_issue_status ais on ai.status_id = ais.status_id and ais.is_complete != 1 and ai.project_id = ais.project_id
         where ai.project_id = #{projectId}
         and ai.type_code in ('story','task','bug')
         and ai.assignee_id= #{assigneeId}

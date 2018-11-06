@@ -415,7 +415,7 @@ public class DataLogAspect {
             IssueDO query = new IssueDO();
             query.setStatusId(issueStatusE.getStatusId());
             query.setProjectId(projectId);
-            StatusMapDTO statusMapDTO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId),issueStatusE.getStatusId()).getBody();
+            StatusMapDTO statusMapDTO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), issueStatusE.getStatusId()).getBody();
             List<IssueDO> issueDOS = issueMapper.select(query);
             if (issueDOS != null && !issueDOS.isEmpty()) {
                 if (issueStatusE.getCompleted()) {
@@ -1082,10 +1082,12 @@ public class DataLogAspect {
             if (originIssueDO.getStatusId().equals(issueE.getStatusId())) {
                 return;
             }
+            StatusMapDTO originStatusMapDTO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(originIssueDO.getProjectId()), originIssueDO.getStatusId()).getBody();
+            StatusMapDTO currentStatusMapDTO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(originIssueDO.getProjectId()), issueE.getStatusId()).getBody();
             IssueStatusDO originStatus = issueStatusMapper.selectByStatusId(originIssueDO.getProjectId(), originIssueDO.getStatusId());
             IssueStatusDO currentStatus = issueStatusMapper.selectByStatusId(originIssueDO.getProjectId(), issueE.getStatusId());
             createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
-                    FIELD_STATUS, originStatus.getName(), currentStatus.getName(),
+                    FIELD_STATUS, originStatusMapDTO.getName(), currentStatusMapDTO.getName(),
                     originIssueDO.getStatusId().toString(),
                     issueE.getStatusId().toString());
             //删除缓存
@@ -1100,7 +1102,7 @@ public class DataLogAspect {
                 });
                 deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), "*");
                 //生成解决问题日志
-                dataLogResolution(originIssueDO.getProjectId(), originIssueDO.getIssueId(), originStatus, currentStatus);
+                dataLogResolution(originIssueDO.getProjectId(), originIssueDO.getIssueId(), originStatus, currentStatus, originStatusMapDTO, currentStatusMapDTO);
             }
         }
     }
@@ -1286,7 +1288,7 @@ public class DataLogAspect {
         }
     }
 
-    private void dataLogResolution(Long projectId, Long issueId, IssueStatusDO originStatus, IssueStatusDO currentStatus) {
+    private void dataLogResolution(Long projectId, Long issueId, IssueStatusDO originStatus, IssueStatusDO currentStatus, StatusMapDTO originStatusMapDTO, StatusMapDTO currentStatusMapDTO) {
         Boolean condition = (originStatus.getCompleted() == null || !originStatus.getCompleted()) || (currentStatus.getCompleted() == null || !currentStatus.getCompleted());
         if (condition) {
             String oldValue = null;
@@ -1295,10 +1297,10 @@ public class DataLogAspect {
             String newString = null;
             if (originStatus.getCompleted() != null && originStatus.getCompleted()) {
                 oldValue = originStatus.getId().toString();
-                oldString = originStatus.getName();
+                oldString = originStatusMapDTO.getName();
             } else if (currentStatus.getCompleted()) {
                 newValue = currentStatus.getId().toString();
-                newString = currentStatus.getName();
+                newString = currentStatusMapDTO.getName();
             }
             createDataLog(projectId, issueId, FIELD_RESOLUTION, oldString, newString, oldValue, newValue);
             redisUtil.deleteRedisCache(new String[]{PIECHART + projectId + ':' + FIELD_RESOLUTION});

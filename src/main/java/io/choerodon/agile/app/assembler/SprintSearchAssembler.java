@@ -18,7 +18,7 @@ import java.util.Map;
  * Created by jian_zhang02@163.com on 2018/5/14.
  */
 @Component
-public class SprintSearchAssembler extends AbstractAssembler{
+public class SprintSearchAssembler extends AbstractAssembler {
 
     @Autowired
     private IssueSearchAssembler issueSearchAssembler;
