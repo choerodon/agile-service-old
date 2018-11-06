@@ -427,7 +427,8 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 q.setFilterId(quick.getFilterId());
                 q.setObjectVersionNumber(quick.getObjectVersionNumber());
                 q.setSqlQuery(result);
-                q.setDescription(desStrs[0] + "+++" + arrs.toString());
+                jsonObject.put("arr", arrs.toString());
+                q.setDescription(desStrs[0] + "+++" + jsonObject.toString());
                 updateDate.add(q);
             }
         }
@@ -511,7 +512,8 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 updatePriority.setFilterId(qf.getFilterId());
                 updatePriority.setObjectVersionNumber(qf.getObjectVersionNumber());
                 updatePriority.setSqlQuery(res);
-                updatePriority.setDescription(desStrs[0] + "+++" + arrs.toString());
+                jsonObject.put("arr", arrs.toString());
+                updatePriority.setDescription(desStrs[0] + "+++" + jsonObject.toString());
                 priorityResult.add(updatePriority);
             }
         }
