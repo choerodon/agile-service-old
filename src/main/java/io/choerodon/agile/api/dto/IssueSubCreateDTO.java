@@ -14,6 +14,8 @@ public class IssueSubCreateDTO {
 
     private String summary;
 
+    private Long priorityId;
+
     private String priorityCode;
 
     private String description;
@@ -149,6 +151,14 @@ public class IssueSubCreateDTO {
 
     public void setIssueTypeId(Long issueTypeId) {
         this.issueTypeId = issueTypeId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
     }
 
     @Override
