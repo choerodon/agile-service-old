@@ -10,25 +10,49 @@ public class ExportIssuesDO {
     private Long issueId;
     private String issueNum;
     private String summary;
-    private String typeName;
     private String projectCode;
     private Long assigneeId;
+    private Long issueTypeId;
+    private Long priorityId;
+    private Long statusId;
     private Long reporterId;
-    private String statusName;
     private String description;
     private String sprintName;
     private Date creationDate;
     private Date lastUpdateDate;
-    private String priorityName;
     private String subTask;
     private BigDecimal estimateTime;
     private BigDecimal remainingTime;
 
-    private String solution;
+    private String resolution;
     private BigDecimal sumEstimateTime;
     private BigDecimal sumRemainingTime;
     private String epicName;
     private Integer storyPoints;
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getPriorityId() {
+        return priorityId;
+    }
+
+    public void setPriorityId(Long priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    public Long getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
 
     public Long getIssueId() {
         return issueId;
@@ -54,14 +78,6 @@ public class ExportIssuesDO {
         this.summary = summary;
     }
 
-    public String getTypeName() {
-        return typeName;
-    }
-
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
-    }
-
     public String getProjectCode() {
         return projectCode;
     }
@@ -84,14 +100,6 @@ public class ExportIssuesDO {
 
     public void setReporterId(Long reporterId) {
         this.reporterId = reporterId;
-    }
-
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
     }
 
     public String getDescription() {
@@ -126,14 +134,6 @@ public class ExportIssuesDO {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public String getPriorityName() {
-        return priorityName;
-    }
-
-    public void setPriorityName(String priorityName) {
-        this.priorityName = priorityName;
-    }
-
     public String getSubTask() {
         return subTask;
     }
@@ -158,12 +158,12 @@ public class ExportIssuesDO {
         this.remainingTime = remainingTime;
     }
 
-    public String getSolution() {
-        return solution;
+    public String getResolution() {
+        return resolution;
     }
 
-    public void setSolution(String solution) {
-        this.solution = solution;
+    public void setResolution(String resolution) {
+        this.resolution = resolution;
     }
 
     public BigDecimal getSumEstimateTime() {

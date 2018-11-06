@@ -5,6 +5,9 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.infra.common.utils.ConvertUtil;
+import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -154,6 +157,8 @@ public class DataLogAspect {
     private IssueCommentMapper issueCommentMapper;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private StateMachineFeignClient stateMachineFeignClient;
 
     /**
      * 定义拦截规则：拦截Spring管理的后缀为RepositoryImpl的bean中带有@DataLog注解的方法。
@@ -407,12 +412,16 @@ public class DataLogAspect {
         }
         if (issueStatusE != null && issueStatusE.getCompleted() != null) {
             Long projectId = issueStatusE.getProjectId();
-            List<IssueDO> issueDOS = issueMapper.queryIssuesByStatusId(issueStatusE.getId());
+            IssueDO query = new IssueDO();
+            query.setStatusId(issueStatusE.getStatusId());
+            query.setProjectId(projectId);
+            StatusMapDTO statusMapDTO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId),issueStatusE.getStatusId()).getBody();
+            List<IssueDO> issueDOS = issueMapper.select(query);
             if (issueDOS != null && !issueDOS.isEmpty()) {
                 if (issueStatusE.getCompleted()) {
                     issueDOS.forEach(issueDO -> {
                         createDataLog(projectId, issueDO.getIssueId(),
-                                FIELD_RESOLUTION, null, issueDO.getStatusName(), null, issueDO.getStatusId().toString());
+                                FIELD_RESOLUTION, null, statusMapDTO.getName(), null, issueDO.getStatusId().toString());
                         deleteBurnDownCache(issueDO.getSprintId(), projectId, issueDO.getIssueId(), "*");
                         deleteEpicChartCache(issueDO.getEpicId(), projectId, issueDO.getIssueId(), "*");
                         deleteVersionCache(projectId, issueDO.getIssueId(), "*");
@@ -420,7 +429,7 @@ public class DataLogAspect {
                 } else {
                     issueDOS.forEach(issueDO -> {
                         createDataLog(projectId, issueDO.getIssueId(),
-                                FIELD_RESOLUTION, issueDO.getStatusName(), null, issueDO.getStatusId().toString(), null);
+                                FIELD_RESOLUTION, statusMapDTO.getName(), null, issueDO.getStatusId().toString(), null);
                         deleteEpicChartCache(issueDO.getEpicId(), projectId, issueDO.getIssueId(), "*");
                         deleteBurnDownCache(issueDO.getSprintId(), projectId, issueDO.getIssueId(), "*");
                         deleteVersionCache(projectId, issueDO.getIssueId(), "*");

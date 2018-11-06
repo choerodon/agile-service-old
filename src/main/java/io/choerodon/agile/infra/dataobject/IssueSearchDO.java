@@ -14,8 +14,6 @@ public class IssueSearchDO {
     private String issueNum;
     private String typeCode;
     private Long statusId;
-    private String categoryCode;
-    private String statusName;
     private String summary;
     private Long reporterId;
     private String description;
@@ -25,14 +23,11 @@ public class IssueSearchDO {
     private Long projectId;
     private Long epicId;
     private String epicName;
-    private String priorityCode;
-    private String priorityName;
     private List<Long> versionIds;
     private List<String> versionNames;
     private Long sprintId;
     private Integer storyPoints;
     private String color;
-    private String statusColor;
     private Long objectVersionNumber;
 
     private PriorityDTO priorityDTO;
@@ -155,38 +150,6 @@ public class IssueSearchDO {
         this.statusId = statusId;
     }
 
-    public String getPriorityCode() {
-        return priorityCode;
-    }
-
-    public void setPriorityCode(String priorityCode) {
-        this.priorityCode = priorityCode;
-    }
-
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
-    }
-
-    public String getPriorityName() {
-        return priorityName;
-    }
-
-    public String getCategoryCode() {
-        return categoryCode;
-    }
-
-    public void setCategoryCode(String categoryCode) {
-        this.categoryCode = categoryCode;
-    }
-
-    public void setPriorityName(String priorityName) {
-        this.priorityName = priorityName;
-    }
-
     public Integer getStoryPoints() {
         return storyPoints;
     }
@@ -217,14 +180,6 @@ public class IssueSearchDO {
 
     public void setColor(String color) {
         this.color = color;
-    }
-
-    public String getStatusColor() {
-        return statusColor;
-    }
-
-    public void setStatusColor(String statusColor) {
-        this.statusColor = statusColor;
     }
 
     public Long getObjectVersionNumber() {
@@ -274,4 +229,5 @@ public class IssueSearchDO {
     public IssueTypeDTO getIssueTypeDTO() {
         return issueTypeDTO;
     }
+
 }

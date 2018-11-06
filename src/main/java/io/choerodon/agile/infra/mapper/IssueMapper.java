@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import io.choerodon.agile.api.dto.SearchDTO;
 import org.apache.ibatis.annotations.Param;
 
 import io.choerodon.agile.infra.dataobject.*;
@@ -257,14 +258,6 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      */
     List<Long> querySprintIssueIdsByCondition(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql);
 
-    /**
-     * 根据状态id查询状态下的所有issue
-     *
-     * @param statusId statusId
-     * @return IssueDO
-     */
-    List<IssueDO> queryIssuesByStatusId(@Param("statusId") Long statusId);
-
     List<StoryMapIssueDO> listIssuesByProjectIdSprint(@Param("projectId") Long projectId,
                                                       @Param("pageType") String pageType,
                                                       @Param("assigneeId") Long assigneeId,
@@ -391,10 +384,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     void batchUpdateIssueType(@Param("issueDOForTypeList") List<IssueDO> issueDOForTypeList);
 
     List<Long> queryIssueIdsListWithSub(@Param("projectId") Long projectId,
-                                        @Param("searchArgs") Map<String, Object> searchArgs,
-                                        @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
-                                        @Param("otherArgs") Map<String, Object> otherArgs,
-                                        @Param("content") String content,
+                                        @Param("searchDTO") SearchDTO searchDTO,
                                         @Param("filterSql") String filterSql);
 
     List<IssueDO> queryIssueListWithSubByIssueIds(@Param("issueIds") List<Long> issueIds);
