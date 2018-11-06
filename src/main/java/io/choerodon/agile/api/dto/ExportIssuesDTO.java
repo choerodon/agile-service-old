@@ -38,6 +38,15 @@ public class ExportIssuesDTO {
     private Integer storyPoints;
     private String componentName;
     private String labelName;
+    private String resolution;
+
+    public String getResolution() {
+        return resolution;
+    }
+
+    public void setResolution(String resolution) {
+        this.resolution = resolution;
+    }
 
     public String getProjectName() {
         return projectName;

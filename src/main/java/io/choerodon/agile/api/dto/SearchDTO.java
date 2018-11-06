@@ -28,10 +28,20 @@ public class SearchDTO {
 
     private List<Long> quickFilterIds;
 
+    private Boolean onlyStory;
+
     /**
      * issueNum+summary模糊搜索
      */
     private String content;
+
+    public Boolean getOnlyStory() {
+        return onlyStory;
+    }
+
+    public void setOnlyStory(Boolean onlyStory) {
+        this.onlyStory = onlyStory;
+    }
 
     public List<Long> getQuickFilterIds() {
         return quickFilterIds;

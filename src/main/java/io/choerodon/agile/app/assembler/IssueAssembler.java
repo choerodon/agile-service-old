@@ -160,18 +160,23 @@ public class IssueAssembler extends AbstractAssembler {
         return issueSubDTO;
     }
 
-    public List<ExportIssuesDTO> exportIssuesDOListToExportIssuesDTO(List<ExportIssuesDO> exportIssues) {
+    public List<ExportIssuesDTO> exportIssuesDOListToExportIssuesDTO(List<ExportIssuesDO> exportIssues, Long projectId) {
         List<ExportIssuesDTO> exportIssuesDTOS = new ArrayList<>(exportIssues.size());
-        List<Long> userIds = exportIssues.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(ExportIssuesDO::getAssigneeId).distinct().collect(Collectors.toList());
-        userIds.addAll(exportIssues.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(ExportIssuesDO::getReporterId).distinct().collect(Collectors.toList()));
-        userIds = userIds.stream().distinct().collect(Collectors.toList());
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(userIds, true);
+        Set<Long> userIds = exportIssues.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(ExportIssuesDO::getAssigneeId).collect(Collectors.toSet());
+        userIds.addAll(exportIssues.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(ExportIssuesDO::getReporterId).collect(Collectors.toSet()));
+        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(new ArrayList<>(userIds), true);
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, null);
+        Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         exportIssues.forEach(issueDO -> {
             String assigneeName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getName() : null;
             String reportName = usersMap.get(issueDO.getReporterId()) != null ? usersMap.get(issueDO.getReporterId()).getName() : null;
             ExportIssuesDTO exportIssuesDTO = new ExportIssuesDTO();
             BeanUtils.copyProperties(issueDO, exportIssuesDTO);
             exportIssuesDTO.setAssigneeName(assigneeName);
+            exportIssuesDTO.setPriorityName(priorityDTOMap.get(issueDO.getPriorityId()).getName());
+            exportIssuesDTO.setStatusName(statusMapDTOMap.get(issueDO.getStatusId()).getName());
+            exportIssuesDTO.setTypeName(issueTypeDTOMap.get(issueDO.getIssueTypeId()).getName());
             exportIssuesDTO.setReporterName(reportName);
             exportIssuesDTOS.add(exportIssuesDTO);
         });
