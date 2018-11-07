@@ -30,6 +30,9 @@ public interface IssueService {
      * @return IssueDTO
      */
     IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType);
+
+//    void afterCreateIssue();
+
     IssueDTO createIssue2(IssueCreateDTO issueCreateDTO, String applyType);
 
     /**

@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.dto.IssueUpdateDTO;
 import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
@@ -13,10 +13,7 @@ import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
-import io.choerodon.statemachine.annotation.Condition;
-import io.choerodon.statemachine.annotation.PostAction;
-import io.choerodon.statemachine.annotation.UpdateStatus;
-import io.choerodon.statemachine.annotation.Validator;
+import io.choerodon.statemachine.annotation.*;
 import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.statemachine.dto.StateMachineConfigDTO;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
@@ -29,10 +26,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author shinan.chen
@@ -60,14 +54,14 @@ public class StateMachineServiceImpl implements StateMachineService {
     private IssueFeignClient issueFeignClient;
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW,isolation = Isolation.READ_UNCOMMITTED,rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_UNCOMMITTED, rollbackFor = Exception.class)
     public IssueDetailDO queryIssueDetailWithUncommitted(Long projectId, Long issueId) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         return issue;
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW,isolation = Isolation.READ_UNCOMMITTED,rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_UNCOMMITTED, rollbackFor = Exception.class)
     public IssueDO queryIssueDOWithUncommitted(Long issueId) {
         IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
         return issueDO;
@@ -133,6 +127,10 @@ public class StateMachineServiceImpl implements StateMachineService {
     @PostAction(code = "create_change_log", name = "创建日志", description = "创建日志")
     public void createChangeLog(Long instanceId, StateMachineConfigDTO configDTO) {
         //todo
+    }
+
+    @StartInstance
+    public void startInstance(Long instanceId, Long targetStatusId) {
     }
 
     @UpdateStatus
