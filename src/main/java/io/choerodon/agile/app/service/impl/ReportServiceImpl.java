@@ -583,8 +583,10 @@ public class ReportServiceImpl implements ReportService {
         List<ColumnChangeDTO> addIssueDuringDate = reportAssembler.toTargetList
                 (reportMapper.queryAddIssueDuringDate(startDate, endDate, allIssueIds, columnIds), ColumnChangeDTO.class);
         if (addIssueDuringDate != null && !addIssueDuringDate.isEmpty()) {
+            //新创建的issue没有生成列变更日志，所以StatusTo字段为空，说明是新创建的issue，要进行处理
             List<Long> statusToNullIssueIds = addIssueDuringDate.stream().filter(columnChangeDTO -> columnChangeDTO.getStatusTo() == null).map(ColumnChangeDTO::getIssueId).collect(Collectors.toList());
             if (statusToNullIssueIds != null && !statusToNullIssueIds.isEmpty()) {
+                //查询issue当前的状态
                 Map<Long, ColumnStatusRelDO> columnStatusRelMap = columnStatusRelMapper.queryByIssueIdAndColumnIds(statusToNullIssueIds, columnIds)
                         .stream().collect(Collectors.toMap(ColumnStatusRelDO::getIssueId, Function.identity()));
                 addIssueDuringDate.parallelStream().forEach(columnChangeDTO -> {
@@ -855,7 +857,7 @@ public class ReportServiceImpl implements ReportService {
         handleCumulativeFlowChangeDuringDate(startDate, endDate, columnIds, allIssueIds, result);
         //过滤并排序
         List<ColumnChangeDTO> columnChangeDTOList = result.stream().filter(columnChangeDTO ->
-                columnChangeDTO.getColumnTo() != null && !columnChangeDTO.getColumnFrom().equals(columnChangeDTO.getColumnTo()))
+                columnChangeDTO.getColumnTo() != null && columnChangeDTO.getColumnFrom() != null && !columnChangeDTO.getColumnFrom().equals(columnChangeDTO.getColumnTo()))
                 .sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList());
         //对传入时间点的数据给与坐标
         List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(columnIds));

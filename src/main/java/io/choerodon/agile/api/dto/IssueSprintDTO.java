@@ -1,12 +1,12 @@
-package io.choerodon.agile.infra.dataobject;
+package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
 /**
  * @author dinghuang123@gmail.com
- * @since 2018/8/20
+ * @since 2018/11/7
  */
-public class IssueSprintDO {
+public class IssueSprintDTO {
 
     private String sprintName;
 

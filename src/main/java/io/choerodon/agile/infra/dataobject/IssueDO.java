@@ -130,6 +130,12 @@ public class IssueDO extends AuditDomain {
     @Transient
     private List<VersionIssueRelDO> versionIssueRelDOS;
 
+    @Transient
+    private List<IssueSprintDO> issueSprintDOS;
+
+    @Transient
+    private List<IssueComponentBriefDO> issueComponentBriefDOS;
+
     private BigDecimal estimateTime;
 
     private BigDecimal remainingTime;
@@ -143,6 +149,22 @@ public class IssueDO extends AuditDomain {
     private Long priorityId;
 
     private Long issueTypeId;
+
+    public List<IssueComponentBriefDO> getIssueComponentBriefDOS() {
+        return issueComponentBriefDOS;
+    }
+
+    public void setIssueComponentBriefDOS(List<IssueComponentBriefDO> issueComponentBriefDOS) {
+        this.issueComponentBriefDOS = issueComponentBriefDOS;
+    }
+
+    public List<IssueSprintDO> getIssueSprintDOS() {
+        return issueSprintDOS;
+    }
+
+    public void setIssueSprintDOS(List<IssueSprintDO> issueSprintDOS) {
+        this.issueSprintDOS = issueSprintDOS;
+    }
 
     public List<VersionIssueRelDO> getVersionIssueRelDOS() {
         return versionIssueRelDOS;

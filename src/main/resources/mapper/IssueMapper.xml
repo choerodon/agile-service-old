@@ -236,6 +236,8 @@
         <id property="priorityId" column="priority_id"/>
         <id property="issueTypeId" column="issue_type_id"/>
         <id property="assigneeId" column="assignee_id"/>
+        <id property="epicName" column="epicName"/>
+        <id property="epicId" column="epicId"/>
         <id property="reporterId" column="reporter_id"/>
         <id property="projectId" column="issue_project_id"/>
         <id property="statusId" column="status_id"/>
@@ -248,6 +250,15 @@
             <id property="issueId" column="version_issue_id"/>
             <id property="projectId" column="version_project_id"/>
             <id property="name" column="version_name"/>
+        </collection>
+        <collection property="issueSprintDOS" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.IssueSprintDO">
+            <id property="sprintId" column="sprint_id"/>
+            <id property="sprintName" column="sprint_name"/>
+            <id property="statusCode" column="sp_status_code"/>
+        </collection>
+        <collection property="issueComponentBriefDOS" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.IssueComponentBriefDO">
+            <id property="componentId" column="component_id"/>
+            <id property="name" column="component_name"/>
         </collection>
     </resultMap>
 
@@ -263,6 +274,8 @@
         ai.status_id,
         ai.priority_id,
         ai.issue_type_id,
+        IF((ai.parent_issue_id IS NULL or ai.parent_issue_id = 0), ai3.epic_name, ai4.epic_name) AS epic_name,
+        IF((ai.parent_issue_id IS NULL or ai.parent_issue_id = 0), ai.epic_id, ai2.epic_id) AS epic_id,
         ai.last_update_date as issue_last_update_date,
         apv.version_id,
         apv.status_code as version_status_code,
@@ -270,11 +283,23 @@
         avir.relation_type,
         avir.project_id as version_project_id,
         avir.issue_id as version_issue_id,
-        CONCAT(api.project_code,'-', ai.issue_num) as issue_num
+        CONCAT(api.project_code,'-', ai.issue_num) as issue_num,
+        aisr.sprint_id,
+        asp.status_code as sp_status_code,
+        asp.sprint_name,
+        aic.name as component_name,
+        acir.component_id
         FROM agile_issue ai
+        left join agile_issue ai2 on ai2.issue_id = ai.parent_issue_id
+        left join agile_issue ai3 on ai.epic_id = ai3.issue_id
+        left join agile_issue ai4 on ai2.epic_id = ai4.issue_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_version_issue_rel avir on avir.issue_id = ai.issue_id
         left join agile_product_version apv on avir.version_id = apv.version_id
+        left join agile_issue_sprint_rel aisr on aisr.issue_id = ai.issue_id
+        left join agile_sprint asp on aisr.sprint_id = asp.sprint_id
+        left join agile_component_issue_rel acir on acir.issue_id = ai.issue_id
+        left join agile_issue_component aic on aic.component_id = acir.component_id
         WHERE
         ai.issue_id IN
         <foreach collection="issueIds" item="issueId" open="(" separator=","
