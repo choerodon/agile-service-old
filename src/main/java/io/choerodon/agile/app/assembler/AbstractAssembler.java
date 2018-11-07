@@ -24,7 +24,9 @@ abstract class AbstractAssembler {
      */
     @SuppressWarnings("unchecked")
     public <T, V> V toTarget(T source, Class<V> tClass) {
-        if (source != null) {
+        if (source == null) {
+            return null;
+        } else {
             try {
                 V target = tClass.newInstance();
                 if (target != null) {
@@ -35,7 +37,6 @@ abstract class AbstractAssembler {
                 throw new CommonException(ERROR_CONVERT, e);
             }
         }
-        return null;
     }
 
     /**
@@ -46,14 +47,18 @@ abstract class AbstractAssembler {
      */
     @SuppressWarnings("unchecked")
     public <T extends List, V> List<V> toTargetList(T source, Class<V> tClass) {
-        List<V> targetList = new ArrayList<>(source.size());
-        if (!source.isEmpty()) {
-            source.forEach(s -> {
-                V target = toTarget(s, tClass);
-                targetList.add(target);
-            });
+        if (source == null) {
+            return null;
+        } else {
+            List<V> targetList = new ArrayList<>(source.size());
+            if (!source.isEmpty()) {
+                source.forEach(s -> {
+                    V target = toTarget(s, tClass);
+                    targetList.add(target);
+                });
+            }
+            return targetList;
         }
-        return targetList;
     }
 
 
