@@ -729,69 +729,61 @@
     <select id="queryReportIssueIds" resultType="java.lang.Long">
         SELECT
         ai.issue_id
-        FROM agile_issue_sprint_rel aisr
+        FROM
+        agile_issue_sprint_rel aisr
         LEFT JOIN (
-        SELECT adl.issue_id, adl.new_value, ais.is_completed
-        FROM agile_data_log adl, agile_issue_status ais, (
-        SELECT MAX(adl1.log_id) AS log_id
-        FROM agile_issue_sprint_rel aisr1, agile_data_log adl1, agile_issue_status ais1
-        WHERE aisr1.project_id = #{projectId} AND aisr1.sprint_id = #{sprintId}
-        AND aisr1.issue_id = adl1.issue_id AND adl1.field = 'status'
-        AND ais1.status_id = adl1.new_value and ais1.project_id = #{projectId} AND ais1.is_completed IS NOT NULL
+        SELECT
+        adl.issue_id,
+        adl.new_value
+        FROM
+        agile_data_log adl,
+        (
+        SELECT
+        MAX( adl1.log_id ) AS log_id
+        FROM
+        agile_issue_sprint_rel aisr1,
+        agile_data_log adl1
+        WHERE
+        aisr1.project_id = #{projectId}
+        AND aisr1.sprint_id = #{sprintId}
+        AND aisr1.issue_id = adl1.issue_id
+        AND adl1.field = 'resolution'
         AND adl1.creation_date > #{startDate}
         <if test="actualEndDate != null">
             AND adl1.creation_date &lt; #{actualEndDate}
         </if>
-        GROUP BY adl1.issue_id
+        GROUP BY
+        adl1.issue_id
         ) a
-        WHERE adl.log_id = a.log_id AND ais.status_id = adl.new_value and ais.project_id = #{projectId}
-        ) adl2 ON adl2.issue_id = aisr.issue_id
-        LEFT JOIN (
-        SELECT adl.issue_id, adl.old_value, ais.is_completed
-        from agile_data_log adl, agile_issue_status ais, (
-        SELECT MIN(adl3.log_id) AS log_id
-        FROM agile_issue_sprint_rel aisr2, agile_data_log adl3
-        WHERE aisr2.project_id = #{projectId} AND aisr2.sprint_id = #{sprintId}
-        AND aisr2.issue_id = adl3.issue_id AND adl3.field = 'status'
-        <if test="actualEndDate != null">
-            AND adl3.creation_date > #{actualEndDate}
-        </if>
-        GROUP BY adl3.issue_id
-        ) a
-        WHERE adl.log_id = a.log_id AND ais.status_id = adl.old_value and ais.project_id = #{projectId}
-        ) adl4 ON adl4.issue_id = aisr.issue_id,
-        agile_issue ai,agile_issue_status ais
-        WHERE aisr.project_id = #{projectId} AND aisr.sprint_id = #{sprintId}
-        AND aisr.issue_id = ai.issue_id AND ai.status_id = ais.status_id and ais.project_id = #{projectId}
+        WHERE
+        adl.log_id = a.log_id
+        ) adl2 ON adl2.issue_id = aisr.issue_id,
+        agile_issue ai
+        WHERE
+        aisr.project_id = #{projectId}
+        AND aisr.sprint_id = #{sprintId}
+        AND aisr.issue_id = ai.issue_id
         AND ai.type_code != 'sub_task'
-        AND (adl2.new_value IS NOT null AND adl2.new_value != '' AND adl2.is_completed = ${status}
-        OR (
-        (adl2.new_value IS null OR adl2.new_value = '') AND adl4.old_value IS NOT null
-        AND adl4.old_value != '' AND adl4.is_completed = ${status}
-        )
-        OR (
-        (adl2.new_value IS null OR adl2.new_value = '') AND (adl4.old_value IS null OR adl4.old_value = '')
-        AND ais.is_completed = ${status}
-        )
-        )
+        <if test="status">
+            and adl2.new_value is not null
+        </if>
+        <if test="!status">
+            and adl2.new_value is null
+        </if>
     </select>
 
     <select id="queryIssueByIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
         SELECT
         ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
---         ai.type_code,
+        ai.type_code,
         ai.issue_type_id,
         ai.status_id,
---         ais.name AS status_name,
---         ais.category_code AS status_code,
---         ai.summary, ai.priority_code,
---         alv.name AS priority_name,
         ai.priority_id,
         ai.assignee_id, ai.project_id
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        , agile_issue_status ais
-        WHERE ai.project_id = #{projectId} AND ai.status_id = ais.status_id and ais.project_id = #{projectId}
+        LEFT JOIN agile_issue_status ais on ai.status_id = ais.status_id and ai.project_id = ais.project_id
+        WHERE ai.project_id = #{projectId} AND ais.id is not null
         AND ai.issue_id IN
         <foreach collection="issueIds" item="issueId"
                  open="(" close=")" separator=",">
