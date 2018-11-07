@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.dataobject.IssueComponentBriefDO;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -38,6 +39,8 @@ public class IssueListDTO implements Serializable {
 
     private String epicName;
 
+    private Long epicId;
+
     private Integer storyPoints;
 
     private Boolean addIssue;
@@ -53,6 +56,34 @@ public class IssueListDTO implements Serializable {
     private Date lastUpdateDate;
 
     private List<VersionIssueRelDTO> versionIssueRelDTOS;
+
+    private List<IssueSprintDTO> issueSprintDTOS;
+
+    private List<IssueComponentBriefDTO> issueComponentBriefDTOS;
+
+    public List<IssueSprintDTO> getIssueSprintDTOS() {
+        return issueSprintDTOS;
+    }
+
+    public void setIssueSprintDTOS(List<IssueSprintDTO> issueSprintDTOS) {
+        this.issueSprintDTOS = issueSprintDTOS;
+    }
+
+    public List<IssueComponentBriefDTO> getIssueComponentBriefDTOS() {
+        return issueComponentBriefDTOS;
+    }
+
+    public void setIssueComponentBriefDTOS(List<IssueComponentBriefDTO> issueComponentBriefDTOS) {
+        this.issueComponentBriefDTOS = issueComponentBriefDTOS;
+    }
+
+    public Long getEpicId() {
+        return epicId;
+    }
+
+    public void setEpicId(Long epicId) {
+        this.epicId = epicId;
+    }
 
     public Long getIssueTypeId() {
         return issueTypeId;
