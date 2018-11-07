@@ -292,7 +292,9 @@ public class IssueServiceImpl implements IssueService {
                 handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
                 handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId, projectInfoE);
                 handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
+                IssueDTO issueDTO = queryIssueCreate(issueCreateDTO.getProjectId(), issueId);
                 transactionManager.commit(statusData);
+                return issueDTO;
             } catch (Exception e) {
                 transactionManager.rollback(statusData);
                 //手动回滚数据
@@ -300,7 +302,6 @@ public class IssueServiceImpl implements IssueService {
                 LOGGER.error(executeResult.getBody().getErrorMessage());
                 return null;
             }
-            return queryIssueCreate(issueCreateDTO.getProjectId(), issueId);
         }
     }
 
@@ -361,7 +362,8 @@ public class IssueServiceImpl implements IssueService {
     }
 
     public IssueDTO queryIssueCreate(Long projectId, Long issueId) {
-        IssueDetailDO issue = stateMachineService.queryIssueDetailWithUncommitted(projectId, issueId);
+//        IssueDetailDO issue = stateMachineService.queryIssueDetailWithUncommitted(projectId, issueId);
+        IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }

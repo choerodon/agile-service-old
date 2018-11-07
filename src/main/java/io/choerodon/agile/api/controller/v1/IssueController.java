@@ -69,7 +69,7 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("创建issue2")
+    @ApiOperation("陈士男测试")
     @PostMapping("/2")
     public ResponseEntity<IssueDTO> createIssue2(@ApiParam(value = "项目id", required = true)
                                                 @PathVariable(name = "project_id") Long projectId,
