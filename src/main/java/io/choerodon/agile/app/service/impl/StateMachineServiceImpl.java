@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.IssueUpdateDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
@@ -8,6 +8,7 @@ import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.common.utils.EnumUtil;
 import io.choerodon.agile.infra.dataobject.IssueDO;
+import io.choerodon.agile.infra.dataobject.IssueDetailDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.exception.CommonException;
@@ -25,9 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author shinan.chen
@@ -55,7 +60,20 @@ public class StateMachineServiceImpl implements StateMachineService {
     private IssueFeignClient issueFeignClient;
 
     @Override
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED, rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.REQUIRES_NEW,isolation = Isolation.READ_UNCOMMITTED,rollbackFor = Exception.class)
+    public IssueDetailDO queryIssueDetailWithUncommitted(Long projectId, Long issueId) {
+        IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
+        return issue;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW,isolation = Isolation.READ_UNCOMMITTED,rollbackFor = Exception.class)
+    public IssueDO queryIssueDOWithUncommitted(Long issueId) {
+        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
+        return issueDO;
+    }
+
+    @Override
     public ExecuteResult executeTransform(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType) {
         if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
             throw new CommonException("error.applyType.illegal");

@@ -69,6 +69,21 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("创建issue2")
+    @PostMapping("/2")
+    public ResponseEntity<IssueDTO> createIssue2(@ApiParam(value = "项目id", required = true)
+                                                @PathVariable(name = "project_id") Long projectId,
+                                                @ApiParam(value = "应用类型", required = true)
+                                                @RequestParam(value = "applyType") String applyType,
+                                                @ApiParam(value = "创建issue对象", required = true)
+                                                @RequestBody IssueCreateDTO issueCreateDTO) {
+        issueRule.verifyCreateData(issueCreateDTO, projectId, applyType);
+        return Optional.ofNullable(issueService.createIssue2(issueCreateDTO, applyType))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.Issue.createIssue"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建issue子任务")
     @PostMapping(value = "/sub_issue")
     public ResponseEntity<IssueSubDTO> createSubIssue(@ApiParam(value = "项目id", required = true)
@@ -123,7 +138,7 @@ public class IssueController {
                                                @PathVariable Long issueId,
                                                @ApiParam(value = "组织id", required = true)
                                                @RequestParam Long organizationId) {
-        return Optional.ofNullable(issueService.queryIssue(projectId, issueId, organizationId))
+        return Optional.ofNullable(issueService.queryIssue(projectId, issueId, organizationId, false))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssue"));
     }
