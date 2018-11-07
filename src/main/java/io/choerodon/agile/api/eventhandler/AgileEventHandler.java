@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.eventhandler;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.DeployStatusPayload;
+import io.choerodon.agile.domain.agile.event.DeployStatusPayload;
 import io.choerodon.agile.api.dto.IssueStatusDTO;
 import io.choerodon.agile.app.service.BoardService;
 import io.choerodon.agile.app.service.IssueLinkTypeService;

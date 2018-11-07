@@ -1,6 +1,4 @@
-package io.choerodon.agile.api.dto;
-
-import io.choerodon.agile.domain.agile.event.StatusPayload;
+package io.choerodon.agile.domain.agile.event;
 
 import java.util.List;
 

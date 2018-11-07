@@ -31,6 +31,10 @@ public interface IssueService {
      */
     IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType);
 
+//    void afterCreateIssue();
+
+    IssueDTO createIssue2(IssueCreateDTO issueCreateDTO, String applyType);
+
     /**
      * 查询单个issue
      *
@@ -38,7 +42,7 @@ public interface IssueService {
      * @param issueId   issueId
      * @return IssueDTO
      */
-    IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId);
+    IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId, Boolean isReadUnCommitted);
 
     /**
      * 分页过滤查询issueList（包含子任务）

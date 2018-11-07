@@ -444,9 +444,9 @@ public class BoardServiceImpl implements BoardService {
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
 //        IssueMoveDTO result = ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);
         //执行状态机转换
-        Long resultStatusId = stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber(), SchemeApplyType.AGILE).getResultStatusId();
-        IssueMoveDTO result = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueMoveDTO.class);
-        result.setStatusId(resultStatusId);
+        stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber(), SchemeApplyType.AGILE);
+        issueDO = stateMachineService.queryIssueDOWithUncommitted(issueId);
+        IssueMoveDTO result = ConvertHelper.convert(issueDO, IssueMoveDTO.class);
 
         // 发送消息
         Boolean completed = issueStatusMapper.selectByStatusId(projectId, issueE.getStatusId()).getCompleted();

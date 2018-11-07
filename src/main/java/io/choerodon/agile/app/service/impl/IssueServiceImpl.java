@@ -292,7 +292,9 @@ public class IssueServiceImpl implements IssueService {
                 handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
                 handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId, projectInfoE);
                 handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
+                IssueDTO issueDTO = queryIssueCreate(issueCreateDTO.getProjectId(), issueId);
                 transactionManager.commit(statusData);
+                return issueDTO;
             } catch (Exception e) {
                 transactionManager.rollback(statusData);
                 //手动回滚数据
@@ -300,8 +302,18 @@ public class IssueServiceImpl implements IssueService {
                 LOGGER.error(executeResult.getBody().getErrorMessage());
                 return null;
             }
-            return queryIssueCreate(issueCreateDTO.getProjectId(), issueId);
         }
+    }
+
+    @Override
+    public IssueDTO createIssue2(IssueCreateDTO issueCreateDTO2, String applyType) {
+        if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
+            throw new CommonException("error.applyType.illegal");
+        }
+        IssueDetailDO issueDetailDO = issueMapper.queryIssueDetail(28L, 17376L);
+        IssueCreateDTO issueCreateDTO = issueAssembler.issueDtoToIssueCreateDto(issueDetailDO);
+        IssueDTO newIssue = createIssue(issueCreateDTO2, applyType);
+        return newIssue;
     }
 
     private void handleInitIssue(IssueE issueE, Long statusId, ProjectInfoE projectInfoE) {
@@ -350,6 +362,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     public IssueDTO queryIssueCreate(Long projectId, Long issueId) {
+//        IssueDetailDO issue = stateMachineService.queryIssueDetailWithUncommitted(projectId, issueId);
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
@@ -405,8 +418,13 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId) {
-        IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
+    public IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId, Boolean isReadUnCommitted) {
+        IssueDetailDO issue;
+        if (isReadUnCommitted) {
+            issue = stateMachineService.queryIssueDetailWithUncommitted(projectId, issueId);
+        } else {
+            issue = issueMapper.queryIssueDetail(projectId, issueId);
+        }
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
@@ -417,13 +435,15 @@ public class IssueServiceImpl implements IssueService {
         return issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
     }
 
-    public IssueDTO queryIssueByUpdate(Long projectId, Long issueId, Long resultStatusId, List<String> fieldList) {
-        IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
+    public IssueDTO queryIssueByUpdate(Long projectId, Long issueId, List<String> fieldList, Boolean isReadUnCommitted) {
+        IssueDetailDO issue;
+        if (isReadUnCommitted) {
+            issue = stateMachineService.queryIssueDetailWithUncommitted(projectId, issueId);
+        } else {
+            issue = issueMapper.queryIssueDetail(projectId, issueId);
+        }
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
-        }
-        if (resultStatusId != null) {
-            issue.setStatusId(resultStatusId);
         }
         Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, null);
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
@@ -535,13 +555,13 @@ public class IssueServiceImpl implements IssueService {
         handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId, projectId);
         handleUpdateComponentIssueRel(issueUpdateDTO.getComponentIssueRelDTOList(), projectId, issueId);
         handleUpdateVersionIssueRel(issueUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId, issueUpdateDTO.getVersionType());
-        return queryIssueByUpdate(projectId, issueId, null, fieldList);
+        return queryIssueByUpdate(projectId, issueId, fieldList, false);
     }
 
     @Override
     public IssueDTO updateIssueStatus(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType) {
-        Long resultStatusId = stateMachineService.executeTransform(projectId, issueId, transformId, objectVersionNumber, applyType).getResultStatusId();
-        return queryIssueByUpdate(projectId, issueId, resultStatusId, Collections.singletonList("statusId"));
+        stateMachineService.executeTransform(projectId, issueId, transformId, objectVersionNumber, applyType);
+        return queryIssueByUpdate(projectId, issueId, Collections.singletonList("statusId"), true);
     }
 
     @Override
@@ -1177,7 +1197,7 @@ public class IssueServiceImpl implements IssueService {
         }
         issueE.setIssueTypeId(issueUpdateTypeDTO.getIssueTypeId());
         issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, REMAIN_TIME_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, STORY_POINTS_FIELD, RANK_FIELD, EPIC_SEQUENCE, ISSUE_TYPE_ID, STATUS_ID});
-        return queryIssue(issueE.getProjectId(), issueE.getIssueId(), organizationId);
+        return queryIssue(issueE.getProjectId(), issueE.getIssueId(), organizationId, false);
     }
 
     @Override
@@ -1511,7 +1531,7 @@ public class IssueServiceImpl implements IssueService {
                     subIssueDOList.forEach(issueDO -> copySubIssue(issueDO, newIssue.getIssueId(), projectId));
                 }
             }
-            return queryIssue(projectId, newIssue.getIssueId(), organizationId);
+            return queryIssue(projectId, newIssue.getIssueId(), organizationId, true);
         } else {
             throw new CommonException("error.issue.copyIssueByIssueId");
         }
