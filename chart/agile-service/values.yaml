@@ -54,6 +54,7 @@ env:
     WORKH_APIKEY: dc135fefba469b4e48d07f7100af31e2
     WORKH_ENABLED: true
     WORKH_CRON: 59 59 23 15 12 *
+    JAVA_OPTS: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
 
 metrics:
   path: /prometheus
