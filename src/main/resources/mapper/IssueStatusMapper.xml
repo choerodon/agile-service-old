@@ -127,9 +127,10 @@
     </update>
 
     <update id="updateDataLogStatusId">
-        update agile_data_log adl set adl.old_value = (select ais.status_id from agile_issue_status ais where adl.old_value = ais.id ) where field = 'status';
-        update agile_data_log adl set adl.new_value = (select ais.status_id from agile_issue_status ais where adl.new_value = ais.id ) where field = 'status';
-        update agile_data_log adl set adl.new_value = (select ais.status_id from agile_issue_status ais where adl.new_value = ais.id ) where field = 'resolution';
+        update agile_data_log adl set adl.old_value = IFNULL((select ais.status_id from agile_issue_status ais where adl.old_value = ais.id ),0) where adl.field = 'status' and adl.old_value is not null;
+        update agile_data_log adl set adl.new_value = IFNULL((select ais.status_id from agile_issue_status ais where adl.new_value = ais.id ),0) where adl.field = 'status' and adl.new_value is not null;
+        update agile_data_log adl set adl.old_value = IFNULL((select ais.status_id from agile_issue_status ais where adl.old_value = ais.id ),0) where adl.field = 'resolution' and adl.old_value is not null;
+        update agile_data_log adl set adl.new_value = IFNULL((select ais.status_id from agile_issue_status ais where adl.new_value = ais.id ),0) where adl.field = 'resolution' and adl.new_value is not null;
     </update>
 
     <select id="selectByStatusId" resultType="io.choerodon.agile.infra.dataobject.IssueStatusDO">
