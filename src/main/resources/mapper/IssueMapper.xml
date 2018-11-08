@@ -2174,15 +2174,11 @@
             aaa.issue_id,
             aaa.issue_num,
             aaa.type_code,
-            aaa.type_name,
             aaa.status_id,
-            aaa.status_name,
-            aaa.status_code,
             aaa.completed,
             aaa.summary,
---             aaa.priority_code,
---             aaa.priority_name,
             aaa.priority_id,
+            aaa.issue_type_id,
             aaa.assignee_id,
             aaa.project_id,
             aaa.name,
@@ -2198,14 +2194,10 @@
                 ai.issue_id,
                 CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,
                 ai.type_code,
-                alv1.NAME AS type_name,
                 ai.status_id,
-                ais.NAME AS status_name,
-                ais.category_code AS status_code,
                 ais.is_completed AS completed,
                 ai.summary,
---                 ai.priority_code,
---                 alv.NAME AS priority_name,
+                ai.issue_type_id,
                 ai.priority_id,
                 ai.assignee_id,
                 ai.project_id,
@@ -2243,8 +2235,6 @@
             FROM
                 agile_issue ai
                 LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
---                 LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
-                LEFT JOIN agile_lookup_value alv1 ON ai.type_code = alv1.value_code
                 LEFT JOIN agile_version_issue_rel avir ON avir.issue_id = ai.issue_id
                 left join agile_product_version apv on apv.version_id = avir.version_id
                 LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id and ais.project_id = ai.project_id

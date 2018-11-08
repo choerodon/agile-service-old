@@ -21,8 +21,6 @@ public class IssueBurnDownReportDO {
 
     private String summary;
 
-//    private String priorityCode;
-
     private Long assigneeId;
 
     private Long projectId;
@@ -30,10 +28,6 @@ public class IssueBurnDownReportDO {
     private Long id;
 
     private Integer storyPoints;
-
-//    private String priorityName;
-
-    private String statusCode;
 
     private Date addDate;
 
@@ -97,14 +91,6 @@ public class IssueBurnDownReportDO {
         this.summary = summary;
     }
 
-//    public String getPriorityCode() {
-//        return priorityCode;
-//    }
-//
-//    public void setPriorityCode(String priorityCode) {
-//        this.priorityCode = priorityCode;
-//    }
-
     public Long getAssigneeId() {
         return assigneeId;
     }
@@ -135,22 +121,6 @@ public class IssueBurnDownReportDO {
 
     public void setStoryPoints(Integer storyPoints) {
         this.storyPoints = storyPoints;
-    }
-
-//    public String getPriorityName() {
-//        return priorityName;
-//    }
-//
-//    public void setPriorityName(String priorityName) {
-//        this.priorityName = priorityName;
-//    }
-
-    public String getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
     }
 
     public Date getAddDate() {
