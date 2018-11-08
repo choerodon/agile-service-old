@@ -38,8 +38,6 @@ public class IssueSubCreateDTO {
 
     private List<ComponentIssueRelDTO> componentIssueRelDTOList;
 
-    private List<IssueLinkCreateDTO> issueLinkCreateDTOList;
-
     public String getIssueNum() {
         return issueNum;
     }
@@ -110,14 +108,6 @@ public class IssueSubCreateDTO {
 
     public void setLabelIssueRelDTOList(List<LabelIssueRelDTO> labelIssueRelDTOList) {
         this.labelIssueRelDTOList = labelIssueRelDTOList;
-    }
-
-    public List<IssueLinkCreateDTO> getIssueLinkCreateDTOList() {
-        return issueLinkCreateDTOList;
-    }
-
-    public void setIssueLinkCreateDTOList(List<IssueLinkCreateDTO> issueLinkCreateDTOList) {
-        this.issueLinkCreateDTOList = issueLinkCreateDTOList;
     }
 
     public Long getSprintId() {

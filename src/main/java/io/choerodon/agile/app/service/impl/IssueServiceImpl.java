@@ -8,6 +8,8 @@ import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.domain.agile.entity.*;
+import io.choerodon.agile.domain.agile.event.CreateIssuePayload;
+import io.choerodon.agile.domain.agile.event.CreateSubIssuePayload;
 import io.choerodon.agile.domain.agile.event.IssuePayload;
 import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
@@ -31,6 +33,7 @@ import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.statemachine.dto.ExecuteResult;
+import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -275,34 +278,35 @@ public class IssueServiceImpl implements IssueService {
             throw new CommonException(ERROR_CREATE_ISSUE_CREATE);
         }
 
-        ResponseEntity<ExecuteResult> executeResult = instanceFeignClient.startInstance(organizationId, AGILE_SERVICE, stateMachineId, issueId);
+        CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE);
+        InputDTO inputDTO = new InputDTO(issueId, "createIssue", JSON.toJSONString(createIssuePayload));
+        ResponseEntity<ExecuteResult> executeResult = instanceFeignClient.startInstance(organizationId, AGILE_SERVICE, stateMachineId, inputDTO);
         //feign调用执行失败，抛出异常回滚
         if (!executeResult.getBody().getSuccess()) {
             //手动回滚数据
             issueMapper.batchDeleteIssues(issueE.getProjectId(), Collections.singletonList(issueId));
             LOGGER.error(executeResult.getBody().getErrorMessage());
             return null;
-        } else {
-            DefaultTransactionDefinition defData = new DefaultTransactionDefinition();
-            defData.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-            TransactionStatus statusData = transactionManager.getTransaction(defData);
-            try {
-                //处理冲刺
-                handleCreateSprintRel(issueE.getSprintId(), issueE.getProjectId(), issueId);
-                handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
-                handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId, projectInfoE);
-                handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
-                IssueDTO issueDTO = queryIssueCreate(issueCreateDTO.getProjectId(), issueId);
-                transactionManager.commit(statusData);
-                return issueDTO;
-            } catch (Exception e) {
-                transactionManager.rollback(statusData);
-                //手动回滚数据
-                issueMapper.batchDeleteIssues(issueE.getProjectId(), Collections.singletonList(issueId));
-                LOGGER.error(executeResult.getBody().getErrorMessage());
-                return null;
-            }
         }
+        return queryIssueCreate(issueCreateDTO.getProjectId(), issueId);
+    }
+
+    @Override
+    public void afterCreateIssue(Long issueId, IssueE issueE, IssueCreateDTO issueCreateDTO, ProjectInfoE projectInfoE) {
+        //处理冲刺
+        handleCreateSprintRel(issueE.getSprintId(), issueE.getProjectId(), issueId);
+        handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
+        handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId, projectInfoE);
+        handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
+    }
+
+    @Override
+    public void afterCreateSubIssue(Long issueId, IssueE subIssueE, IssueSubCreateDTO issueSubCreateDTO, ProjectInfoE projectInfoE) {
+        //处理冲刺
+        handleCreateSprintRel(subIssueE.getSprintId(), subIssueE.getProjectId(), issueId);
+        handleCreateLabelIssue(issueSubCreateDTO.getLabelIssueRelDTOList(), issueId);
+        handleCreateComponentIssueRel(issueSubCreateDTO.getComponentIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId, projectInfoE);
+        handleCreateVersionIssueRel(issueSubCreateDTO.getVersionIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
     }
 
     @Override
@@ -316,7 +320,8 @@ public class IssueServiceImpl implements IssueService {
         return newIssue;
     }
 
-    private void handleInitIssue(IssueE issueE, Long statusId, ProjectInfoE projectInfoE) {
+    @Override
+    public void handleInitIssue(IssueE issueE, Long statusId, ProjectInfoE projectInfoE) {
         //如果是epic，初始化颜色
         if (ISSUE_EPIC.equals(issueE.getTypeCode())) {
             List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
@@ -362,8 +367,8 @@ public class IssueServiceImpl implements IssueService {
     }
 
     public IssueDTO queryIssueCreate(Long projectId, Long issueId) {
-//        IssueDetailDO issue = stateMachineService.queryIssueDetailWithUncommitted(projectId, issueId);
-        IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
+        IssueDetailDO issue = stateMachineService.queryIssueDetailWithUncommitted(projectId, issueId);
+//        IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
@@ -435,13 +440,8 @@ public class IssueServiceImpl implements IssueService {
         return issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
     }
 
-    public IssueDTO queryIssueByUpdate(Long projectId, Long issueId, List<String> fieldList, Boolean isReadUnCommitted) {
-        IssueDetailDO issue;
-        if (isReadUnCommitted) {
-            issue = stateMachineService.queryIssueDetailWithUncommitted(projectId, issueId);
-        } else {
-            issue = issueMapper.queryIssueDetail(projectId, issueId);
-        }
+    public IssueDTO queryIssueByUpdate(Long projectId, Long issueId, List<String> fieldList) {
+        IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
@@ -555,13 +555,13 @@ public class IssueServiceImpl implements IssueService {
         handleUpdateLabelIssue(issueUpdateDTO.getLabelIssueRelDTOList(), issueId, projectId);
         handleUpdateComponentIssueRel(issueUpdateDTO.getComponentIssueRelDTOList(), projectId, issueId);
         handleUpdateVersionIssueRel(issueUpdateDTO.getVersionIssueRelDTOList(), projectId, issueId, issueUpdateDTO.getVersionType());
-        return queryIssueByUpdate(projectId, issueId, fieldList, false);
+        return queryIssueByUpdate(projectId, issueId, fieldList);
     }
 
     @Override
     public IssueDTO updateIssueStatus(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType) {
         stateMachineService.executeTransform(projectId, issueId, transformId, objectVersionNumber, applyType);
-        return queryIssueByUpdate(projectId, issueId, Collections.singletonList("statusId"), true);
+        return queryIssueByUpdate(projectId, issueId, Collections.singletonList("statusId"));
     }
 
     @Override
@@ -758,30 +758,11 @@ public class IssueServiceImpl implements IssueService {
             throw new CommonException(ERROR_CREATE_ISSUE_CREATE);
         }
 
-        ResponseEntity<ExecuteResult> executeResult = instanceFeignClient.startInstance(organizationId, AGILE_SERVICE, stateMachineId, issueId);
+        CreateSubIssuePayload createSubIssuePayload = new CreateSubIssuePayload(issueSubCreateDTO, subIssueE, projectInfoE);
+        InputDTO inputDTO = new InputDTO(issueId, "createSubIssue", JSON.toJSONString(createSubIssuePayload));
+        ResponseEntity<ExecuteResult> executeResult = instanceFeignClient.startInstance(organizationId, AGILE_SERVICE, stateMachineId, inputDTO);
         //feign调用执行失败，抛出异常回滚
         if (!executeResult.getBody().getSuccess()) {
-            //手动回滚数据
-            issueMapper.batchDeleteIssues(subIssueE.getProjectId(), Collections.singletonList(issueId));
-            LOGGER.error(executeResult.getBody().getErrorMessage());
-            return null;
-        }
-
-        DefaultTransactionDefinition def2 = new DefaultTransactionDefinition();
-        def2.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        TransactionStatus status2 = transactionManager.getTransaction(def2);
-        try {
-            //处理冲刺
-            handleCreateSprintRel(subIssueE.getSprintId(), subIssueE.getProjectId(), issueId);
-            if (issueSubCreateDTO.getIssueLinkCreateDTOList() != null && !issueSubCreateDTO.getIssueLinkCreateDTOList().isEmpty()) {
-                issueLinkService.createIssueLinkList(issueSubCreateDTO.getIssueLinkCreateDTOList(), issueId, issueSubCreateDTO.getProjectId());
-            }
-            handleCreateLabelIssue(issueSubCreateDTO.getLabelIssueRelDTOList(), issueId);
-            handleCreateComponentIssueRel(issueSubCreateDTO.getComponentIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId, projectInfoE);
-            handleCreateVersionIssueRel(issueSubCreateDTO.getVersionIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
-            transactionManager.commit(status2);
-        } catch (Exception e) {
-            transactionManager.rollback(status2);
             //手动回滚数据
             issueMapper.batchDeleteIssues(subIssueE.getProjectId(), Collections.singletonList(issueId));
             LOGGER.error(executeResult.getBody().getErrorMessage());

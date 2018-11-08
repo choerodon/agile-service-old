@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.event;
 
-import io.choerodon.agile.api.dto.IssueCreateDTO;
+import io.choerodon.agile.api.dto.IssueSubCreateDTO;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 
@@ -8,23 +8,23 @@ import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
  * @author shinan.chen
  * @date 2018/11/7
  */
-public class CreateIssuePayload {
-    IssueCreateDTO issueCreateDTO;
+public class CreateSubIssuePayload {
+    IssueSubCreateDTO issueSubCreateDTO;
     IssueE issueE;
     ProjectInfoE projectInfoE;
 
-    public CreateIssuePayload(IssueCreateDTO issueCreateDTO, IssueE issueE, ProjectInfoE projectInfoE) {
-        this.issueCreateDTO = issueCreateDTO;
+    public CreateSubIssuePayload(IssueSubCreateDTO issueSubCreateDTO, IssueE issueE, ProjectInfoE projectInfoE) {
+        this.issueSubCreateDTO = issueSubCreateDTO;
         this.issueE = issueE;
         this.projectInfoE = projectInfoE;
     }
 
-    public IssueCreateDTO getIssueCreateDTO() {
-        return issueCreateDTO;
+    public IssueSubCreateDTO getIssueSubCreateDTO() {
+        return issueSubCreateDTO;
     }
 
-    public void setIssueCreateDTO(IssueCreateDTO issueCreateDTO) {
-        this.issueCreateDTO = issueCreateDTO;
+    public void setIssueSubCreateDTO(IssueSubCreateDTO issueSubCreateDTO) {
+        this.issueSubCreateDTO = issueSubCreateDTO;
     }
 
     public IssueE getIssueE() {

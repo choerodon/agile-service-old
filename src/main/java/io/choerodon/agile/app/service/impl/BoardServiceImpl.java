@@ -445,7 +445,7 @@ public class BoardServiceImpl implements BoardService {
 //        IssueMoveDTO result = ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);
         //执行状态机转换
         stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber(), SchemeApplyType.AGILE);
-        issueDO = stateMachineService.queryIssueDOWithUncommitted(issueId);
+        issueDO = issueMapper.selectByPrimaryKey(issueId);
         IssueMoveDTO result = ConvertHelper.convert(issueDO, IssueMoveDTO.class);
 
         // 发送消息
