@@ -235,11 +235,9 @@
     <select id="queryColumnStatusRelByProjectId" resultType="io.choerodon.agile.infra.dataobject.ColumnWithStatusRelDO">
         SELECT
             DISTINCT
-            (abcsr.status_id),
-            ais.category_code
+            (abcsr.status_id)
         FROM
             agile_board_column_status_rel abcsr
-            LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.id
         WHERE
             abcsr.project_id = #{projectId}
     </select>
