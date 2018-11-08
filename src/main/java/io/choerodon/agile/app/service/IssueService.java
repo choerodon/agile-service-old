@@ -33,7 +33,7 @@ public interface IssueService {
 
 //    void afterCreateIssue();
 
-    IssueDTO createIssue2(IssueCreateDTO issueCreateDTO, String applyType);
+    IssueDTO createIssueCsnTest(IssueCreateDTO issueCreateDTO, String applyType);
 
     /**
      * 查询单个issue
