@@ -88,8 +88,8 @@ public class ReportServiceImpl implements ReportService {
     private static final String COMPONENT = "component";
     private static final String ISSUE_TYPE = "typeCode";
     private static final String VERSION = "version";
-    private static final String PRIORITY = "priorityCode";
-    private static final String STATUS = "statusCode";
+    private static final String PRIORITY = "priority";
+    private static final String STATUS = "status";
     private static final String SPRINT = "sprint";
     private static final String EPIC = "epic";
     private static final String RESOLUTION = "resolution";
