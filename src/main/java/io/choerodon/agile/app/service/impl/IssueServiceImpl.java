@@ -306,7 +306,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueDTO createIssue2(IssueCreateDTO issueCreateDTO2, String applyType) {
+    public IssueDTO createIssueCsnTest(IssueCreateDTO issueCreateDTO2, String applyType) {
         if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
             throw new CommonException("error.applyType.illegal");
         }

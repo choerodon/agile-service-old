@@ -39,7 +39,6 @@ public class StateMachineServiceImpl implements StateMachineService {
     private static final String AGILE_SERVICE = "agile-service";
     private static final String ERROR_ISSUE_STATE_MACHINE_NOT_FOUND = "error.issueStateMachine.notFound";
     private static final String ERROR_ISSUE_NOT_FOUND = "error.issue.notFound";
-    private static final String ERROR_ISSUE_VERSION = "error.issue.version";
     private static final String ERROR_INSTANCE_FEGIN_CLIENT_EXECUTE_TRANSFORM = "error.instanceFeignClient.executeTransform";
 
     @Autowired
@@ -76,9 +75,6 @@ public class StateMachineServiceImpl implements StateMachineService {
         IssueDO issue = issueMapper.selectByPrimaryKey(issueId);
         if (issue == null) {
             throw new CommonException(ERROR_ISSUE_NOT_FOUND);
-        }
-        if (!objectVersionNumber.equals(issue.getObjectVersionNumber())) {
-            throw new CommonException(ERROR_ISSUE_VERSION);
         }
         //获取状态机id
         Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, applyType, issue.getIssueTypeId()).getBody();
@@ -131,6 +127,7 @@ public class StateMachineServiceImpl implements StateMachineService {
 
     @StartInstance
     public void startInstance(Long instanceId, Long targetStatusId) {
+
     }
 
     @UpdateStatus
