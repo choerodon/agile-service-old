@@ -1,11 +1,10 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.ColumnSortDTO;
-import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
-import io.choerodon.agile.api.dto.StatusInfoDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.BoardColumnValidator;
 import io.choerodon.agile.domain.agile.entity.BoardE;
 import io.choerodon.agile.domain.agile.event.StatusPayload;
+import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.BoardColumnDO;
 import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO;
 import io.choerodon.agile.infra.dataobject.ColumnWithStatusRelDO;
@@ -14,7 +13,6 @@ import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper;
 import io.choerodon.agile.infra.mapper.IssueStatusMapper;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.agile.api.dto.BoardColumnDTO;
 import io.choerodon.agile.app.service.BoardColumnService;
 import io.choerodon.agile.domain.agile.entity.BoardColumnE;
 import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
@@ -29,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
@@ -328,6 +327,10 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         List<ColumnWithStatusRelDO> columnWithStatusRelDOList = boardColumnMapper.queryColumnStatusRelByProjectId(boardResult.getProjectId());
         Long projectId = boardResult.getProjectId();
         Long boardId = boardResult.getBoardId();
+        Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        for (ColumnWithStatusRelDO columnWithStatusRelDO : columnWithStatusRelDOList) {
+            columnWithStatusRelDO.setCategoryCode(statusMapDTOMap.get(columnWithStatusRelDO.getStatusId()).getType());
+        }
         relate(projectId, boardId, TODO, TODO_CODE, SEQUENCE_ONE, columnWithStatusRelDOList, COLUMN_COLOR_TODO);
         relate(projectId, boardId, DOING, DOING_CODE, SEQUENCE_TWO, columnWithStatusRelDOList, COLUMN_COLOR_DOING);
         relate(projectId, boardId, DONE, DONE_CODE, SEQUENCE_THREE, columnWithStatusRelDOList, COLUMN_COLOR_DONE);
