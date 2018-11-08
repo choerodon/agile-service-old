@@ -1,20 +1,30 @@
 package io.choerodon.agile.app.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import io.choerodon.agile.api.dto.IssueCreateDTO;
 import io.choerodon.agile.api.dto.IssueUpdateDTO;
 import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
+import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
+import io.choerodon.agile.domain.agile.event.CreateIssuePayload;
+import io.choerodon.agile.domain.agile.event.CreateSubIssuePayload;
+import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.common.utils.EnumUtil;
 import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.dataobject.IssueDetailDO;
+import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
+import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.statemachine.annotation.*;
 import io.choerodon.statemachine.dto.ExecuteResult;
+import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.dto.StateMachineConfigDTO;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
 import org.slf4j.Logger;
@@ -41,6 +51,10 @@ public class StateMachineServiceImpl implements StateMachineService {
     private static final String ERROR_ISSUE_NOT_FOUND = "error.issue.notFound";
     private static final String ERROR_INSTANCE_FEGIN_CLIENT_EXECUTE_TRANSFORM = "error.instanceFeignClient.executeTransform";
 
+    private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
+    private static final String ERROR_ISSUE_STATUS_NOT_FOUND = "error.createIssue.issueStatusNotFound";
+    private static final String ERROR_CREATE_ISSUE_CREATE = "error.createIssue.create";
+    private static final String ERROR_CREATE_ISSUE_HANDLE_DATA = "error.createIssue.handleData";
     @Autowired
     private IssueMapper issueMapper;
     @Autowired
@@ -51,6 +65,8 @@ public class StateMachineServiceImpl implements StateMachineService {
     private InstanceFeignClient instanceFeignClient;
     @Autowired
     private IssueFeignClient issueFeignClient;
+    @Autowired
+    private IssueRepository issueRepository;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_UNCOMMITTED, rollbackFor = Exception.class)
@@ -59,14 +75,11 @@ public class StateMachineServiceImpl implements StateMachineService {
         return issue;
     }
 
+    /**
+     * 执行转换要开启新事务，否则转换后查询不到最新的数据
+     */
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_UNCOMMITTED, rollbackFor = Exception.class)
-    public IssueDO queryIssueDOWithUncommitted(Long issueId) {
-        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
-        return issueDO;
-    }
-
-    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public ExecuteResult executeTransform(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType) {
         if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
             throw new CommonException("error.applyType.illegal");
@@ -83,7 +96,8 @@ public class StateMachineServiceImpl implements StateMachineService {
         }
         Long currentStatusId = issue.getStatusId();
         //执行状态转换
-        ResponseEntity<ExecuteResult> responseEntity = instanceFeignClient.executeTransform(organizationId, AGILE_SERVICE, stateMachineId, issueId, currentStatusId, transformId);
+        InputDTO inputDTO = new InputDTO(issueId, "updateStatus", null);
+        ResponseEntity<ExecuteResult> responseEntity = instanceFeignClient.executeTransform(organizationId, AGILE_SERVICE, stateMachineId, currentStatusId, transformId, inputDTO);
         if (!responseEntity.getBody().getSuccess()) {
             throw new CommonException(ERROR_INSTANCE_FEGIN_CLIENT_EXECUTE_TRANSFORM);
         }
@@ -125,13 +139,20 @@ public class StateMachineServiceImpl implements StateMachineService {
         //todo
     }
 
-    @StartInstance
-    public void startInstance(Long instanceId, Long targetStatusId) {
-
+    @StartInstance(code = "createIssue")
+    public void createIssue(Long instanceId, Long targetStatusId, String input) {
+        CreateIssuePayload createIssuePayload = JSONObject.parseObject(input, CreateIssuePayload.class);
+        issueService.afterCreateIssue(instanceId, createIssuePayload.getIssueE(), createIssuePayload.getIssueCreateDTO(), createIssuePayload.getProjectInfoE());
     }
 
-    @UpdateStatus
-    public void updateStatus(Long instanceId, Long targetStatusId) {
+    @StartInstance(code = "createSubIssue")
+    public void createSubIssue(Long instanceId, Long targetStatusId, String input) {
+        CreateSubIssuePayload createSubIssuePayload = JSONObject.parseObject(input, CreateSubIssuePayload.class);
+        issueService.afterCreateSubIssue(instanceId, createSubIssuePayload.getIssueE(), createSubIssuePayload.getIssueSubCreateDTO(), createSubIssuePayload.getProjectInfoE());
+    }
+
+    @UpdateStatus(code = "updateStatus")
+    public void updateStatus(Long instanceId, Long targetStatusId, String input) {
         IssueDO issue = issueMapper.selectByPrimaryKey(instanceId);
         if (issue == null) {
             throw new CommonException("error.updateStatus.instanceId.notFound");

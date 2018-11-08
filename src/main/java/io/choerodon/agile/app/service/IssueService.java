@@ -3,6 +3,7 @@ package io.choerodon.agile.app.service;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
 import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
@@ -31,7 +32,11 @@ public interface IssueService {
      */
     IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType);
 
-//    void afterCreateIssue();
+    void handleInitIssue(IssueE issueE, Long statusId, ProjectInfoE projectInfoE);
+
+    void afterCreateIssue(Long issueId, IssueE issueE, IssueCreateDTO issueCreateDTO, ProjectInfoE projectInfoE);
+
+    void afterCreateSubIssue(Long issueId, IssueE subIssueE, IssueSubCreateDTO issueSubCreateDTO, ProjectInfoE projectInfoE);
 
     IssueDTO createIssueCsnTest(IssueCreateDTO issueCreateDTO, String applyType);
 
