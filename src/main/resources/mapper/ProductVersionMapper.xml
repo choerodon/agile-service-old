@@ -164,31 +164,31 @@
             apv.release_date,
             apv.status_code,
             alv.name AS status_name,
-            apv.project_id,
-            (
-                SELECT COUNT(1)
-                FROM agile_version_issue_rel avir, agile_issue ai
-                WHERE avir.version_id = #{versionId} AND avir.relation_type = 'fix' AND ai.issue_id = avir.issue_id
-                      AND ai.type_code != 'issue_test'
-            )        AS issue_count,
-            (
-                SELECT COUNT(1)
-                FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
-                WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix'
-                      AND ai.status_id = ais.id AND ais.category_code = 'done' AND ai.type_code != 'issue_test'
-            )        AS done_issue_count,
-            (
-                SELECT COUNT(1)
-                FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
-                WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix'
-                      AND ai.status_id = ais.id AND ais.category_code = 'doing' AND ai.type_code != 'issue_test'
-            )        AS doing_issue_count,
-            (
-                SELECT COUNT(1)
-                FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
-                WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix'
-                      AND ai.status_id = ais.id AND ais.category_code = 'todo' AND ai.type_code != 'issue_test'
-            )        AS todo_issue_count
+            apv.project_id
+--             (
+--                 SELECT COUNT(1)
+--                 FROM agile_version_issue_rel avir, agile_issue ai
+--                 WHERE avir.version_id = #{versionId} AND avir.relation_type = 'fix' AND ai.issue_id = avir.issue_id
+--                       AND ai.type_code != 'issue_test'
+--             )        AS issue_count
+--             (
+--                 SELECT COUNT(1)
+--                 FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
+--                 WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix'
+--                       AND ai.status_id = ais.id AND ais.category_code = 'done' AND ai.type_code != 'issue_test'
+--             )        AS done_issue_count,
+--             (
+--                 SELECT COUNT(1)
+--                 FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
+--                 WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix'
+--                       AND ai.status_id = ais.id AND ais.category_code = 'doing' AND ai.type_code != 'issue_test'
+--             )        AS doing_issue_count,
+--             (
+--                 SELECT COUNT(1)
+--                 FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
+--                 WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix'
+--                       AND ai.status_id = ais.id AND ais.category_code = 'todo' AND ai.type_code != 'issue_test'
+--             )        AS todo_issue_count
         FROM agile_product_version apv
             LEFT JOIN agile_lookup_value alv ON alv.value_code = apv.status_code
         WHERE apv.project_id = #{projectId} AND apv.version_id = #{versionId}
