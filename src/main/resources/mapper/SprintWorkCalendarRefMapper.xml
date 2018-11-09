@@ -13,4 +13,10 @@
         select work_day from agile_sprint_work_calendar_ref where sprint_id = #{sprintId} and project_id = #{projectId}
         and status = 0
     </select>
+
+    <select id="queryWithNextYearByYear" resultType="io.choerodon.agile.infra.dataobject.SprintWorkCalendarRefDO">
+        select * from agile_sprint_work_calendar_ref where sprint_id = #{sprintId} and project_id = #{projectId}
+        and (year = #{year} or year = (#{year}+1))
+    </select>
+
 </mapper>

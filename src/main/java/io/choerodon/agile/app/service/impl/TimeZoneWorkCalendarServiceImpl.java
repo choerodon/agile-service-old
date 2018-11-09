@@ -95,11 +95,7 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
 
     @Override
     public List<TimeZoneWorkCalendarRefDTO> queryTimeZoneWorkCalendarRefByTimeZoneId(Long organizationId, Long timeZoneId, Integer year) {
-        TimeZoneWorkCalendarRefDO timeZoneWorkCalendarRefDO = new TimeZoneWorkCalendarRefDO();
-        timeZoneWorkCalendarRefDO.setOrganizationId(organizationId);
-        timeZoneWorkCalendarRefDO.setTimeZoneId(timeZoneId);
-        timeZoneWorkCalendarRefDO.setYear(year);
-        return ConvertHelper.convertList(timeZoneWorkCalendarRefMapper.select(timeZoneWorkCalendarRefDO), TimeZoneWorkCalendarRefDTO.class);
+        return ConvertHelper.convertList(timeZoneWorkCalendarRefMapper.queryWithNextYearByYear(organizationId,timeZoneId,year), TimeZoneWorkCalendarRefDTO.class);
     }
 
     @Override
@@ -125,12 +121,8 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
     }
 
     private TimeZoneWorkCalendarRefDetailDTO initTimeZoneWorkCalendarRefDetailDTO(TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Long organizationId, Integer year) {
-        TimeZoneWorkCalendarRefDO timeZoneWorkCalendarRefDO = new TimeZoneWorkCalendarRefDO();
-        timeZoneWorkCalendarRefDO.setOrganizationId(organizationId);
-        timeZoneWorkCalendarRefDO.setYear(year);
-        timeZoneWorkCalendarRefDO.setTimeZoneId(timeZoneWorkCalendarDO.getTimeZoneId());
         TimeZoneWorkCalendarRefDetailDTO timeZoneWorkCalendarRefDetailDTO = timeZoneWorkCalendarAssembler.toTarget(timeZoneWorkCalendarDO, TimeZoneWorkCalendarRefDetailDTO.class);
-        timeZoneWorkCalendarRefDetailDTO.setTimeZoneWorkCalendarDTOS(timeZoneWorkCalendarRefMapper.select(timeZoneWorkCalendarRefDO)
+        timeZoneWorkCalendarRefDetailDTO.setTimeZoneWorkCalendarDTOS(timeZoneWorkCalendarRefMapper.queryWithNextYearByYear(organizationId,timeZoneWorkCalendarDO.getTimeZoneId(),year)
                 .stream().map(d -> {
                     TimeZoneWorkCalendarRefCreateDTO timeZoneWorkCalendarRefCreateDTO = new TimeZoneWorkCalendarRefCreateDTO();
                     timeZoneWorkCalendarRefCreateDTO.setWorkDay(d.getWorkDay());
@@ -138,7 +130,7 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
                     return timeZoneWorkCalendarRefCreateDTO;
                 }).collect(Collectors.toSet()));
         if (timeZoneWorkCalendarDO.getUseHoliday()) {
-            timeZoneWorkCalendarRefDetailDTO.setWorkHolidayCalendarDTOS(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(year).stream().map(d -> {
+            timeZoneWorkCalendarRefDetailDTO.setWorkHolidayCalendarDTOS(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelWithNextYearByYear(year).stream().map(d -> {
                 TimeZoneWorkCalendarHolidayRefDTO timeZoneWorkCalendarHolidayRefDTO = new TimeZoneWorkCalendarHolidayRefDTO();
                 timeZoneWorkCalendarHolidayRefDTO.setStatus(d.getStatus());
                 timeZoneWorkCalendarHolidayRefDTO.setHoliday(d.getHoliday());
