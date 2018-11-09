@@ -1,19 +1,17 @@
 package io.choerodon.agile.api.eventhandler;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.domain.agile.event.DeployStatusPayload;
 import io.choerodon.agile.api.dto.IssueStatusDTO;
 import io.choerodon.agile.app.service.BoardService;
 import io.choerodon.agile.app.service.IssueLinkTypeService;
 import io.choerodon.agile.app.service.IssueStatusService;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarE;
-import io.choerodon.agile.domain.agile.event.OrganizationCreateEventPayload;
-import io.choerodon.agile.domain.agile.event.ProjectCreateAgilePayload;
-import io.choerodon.agile.domain.agile.event.ProjectEvent;
-import io.choerodon.agile.domain.agile.event.StatusPayload;
+import io.choerodon.agile.domain.agile.event.*;
 import io.choerodon.agile.domain.agile.repository.TimeZoneWorkCalendarRepository;
+import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
+import io.choerodon.agile.infra.mapper.IssueStatusMapper;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
 import io.choerodon.asgard.saga.annotation.SagaTask;
 import org.slf4j.Logger;
@@ -21,7 +19,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/22.
@@ -44,9 +45,12 @@ public class AgileEventHandler {
     private TimeZoneWorkCalendarRepository timeZoneWorkCalendarRepository;
     @Autowired
     private IssueStatusService issueStatusService;
+    @Autowired
+    private IssueStatusMapper issueStatusMapper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgileEventHandler.class);
 
+    private static final String AGILE_ADD_STATUS = "agile_add_status";
     private static final String AGILE_INIT_TIMEZONE = "agile-init-timezone";
     private static final String AGILE_INIT_PROJECT = "agile-init-project";
     private static final String STATE_MACHINE_INIT_PROJECT = "state-machine-init-project";
@@ -89,15 +93,21 @@ public class AgileEventHandler {
         return message;
     }
 
-    @SagaTask(code = STATUS_CREATE_CONSUME_ORG,
-            description = "agile消费组织层创建状态",
+    @SagaTask(code = AGILE_ADD_STATUS,
+            description = "agile消费组织层添加状态到状态机中",
             sagaCode = DEPLOY_STATEMACHINE_ADD_STATUS,
             seq = 4)
-    public void dealStatusCreateOrg(String message) {
+    public void dealDeployStateMachineAddStatus(String message) {
         DeployStatusPayload deployStatusPayload = JSONObject.parseObject(message, DeployStatusPayload.class);
-        List<Long> projectIds = deployStatusPayload.getProjectIds();
+        Map<String, List<Long>> projectIdsMap = deployStatusPayload.getProjectIdsMap();
         List<StatusPayload> statusPayloads = deployStatusPayload.getStatusPayloads();
-        for (Long projectId: projectIds) {
+        //只取敏捷和测试影响到的项目
+        List<Long> agileProjectIds = projectIdsMap.get(SchemeApplyType.AGILE) != null ? projectIdsMap.get(SchemeApplyType.AGILE) : Collections.EMPTY_LIST;
+        List<Long> testProjectIds = projectIdsMap.get(SchemeApplyType.TEST) != null ? projectIdsMap.get(SchemeApplyType.TEST) : Collections.EMPTY_LIST;
+        agileProjectIds.addAll(testProjectIds);
+        List<Long> projectIds = agileProjectIds.stream().distinct().collect(Collectors.toList());
+        LOGGER.info("sagaTask agile_add_status projectIdsMap: {}", projectIdsMap);
+        for (Long projectId : projectIds) {
             for (StatusPayload statusPayload : statusPayloads) {
                 IssueStatusDTO issueStatusDTO = new IssueStatusDTO();
                 issueStatusDTO.setStatusId(statusPayload.getStatusId());

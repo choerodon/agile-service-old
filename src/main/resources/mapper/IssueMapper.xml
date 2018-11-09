@@ -2066,7 +2066,7 @@
           ai.status_id
         from agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        right join agile_issue_status ais on ai.status_id = ais.status_id and ais.is_complete != 1 and ai.project_id = ais.project_id
+        right join agile_issue_status ais on ai.status_id = ais.status_id and ais.is_completed != 1 and ai.project_id = ais.project_id
         where ai.project_id = #{projectId}
         and ai.type_code in ('story','task','bug')
         and ai.assignee_id= #{assigneeId}

@@ -1,11 +1,9 @@
 package io.choerodon.agile.app.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueStatusValidator;
 import io.choerodon.agile.app.service.IssueStatusService;
-import io.choerodon.agile.app.service.QuickFilterService;
 import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
 import io.choerodon.agile.domain.agile.entity.IssueStatusE;
 import io.choerodon.agile.domain.agile.repository.ColumnStatusRelRepository;
@@ -16,11 +14,7 @@ import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.mybatis.pagehelper.PageHelper;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,12 +89,13 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 
     @Override
     public IssueStatusDTO createStatusByStateMachine(Long projectId, IssueStatusDTO issueStatusDTO) {
-        if (issueStatusMapper.selectByStatusId(projectId, issueStatusDTO.getStatusId()) != null) {
-            throw new CommonException("error.status.exist");
+        IssueStatusDO issueStatusDO = issueStatusMapper.selectByStatusId(projectId, issueStatusDTO.getStatusId());
+        if (issueStatusDO == null) {
+            issueStatusDTO.setCompleted(false);
+            issueStatusDTO.setEnable(false);
+            return ConvertHelper.convert(issueStatusRepository.create(ConvertHelper.convert(issueStatusDTO, IssueStatusE.class)), IssueStatusDTO.class);
         }
-        issueStatusDTO.setCompleted(false);
-        issueStatusDTO.setEnable(false);
-        return ConvertHelper.convert(issueStatusRepository.create(ConvertHelper.convert(issueStatusDTO, IssueStatusE.class)), IssueStatusDTO.class);
+        return ConvertHelper.convert(issueStatusDO, IssueStatusDTO.class);
     }
 
 //    public IssueStatusE updateStatus(Long projectId, Long id, StatusMoveDTO statusMoveDTO) {
@@ -187,7 +182,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             for (StatusAndIssuesDO statusAndIssuesDO : statusAndIssuesDOList) {
                 ids.add(statusAndIssuesDO.getStatusId());
             }
-            Map<Long, Status> map =  stateMachineFeignClient.batchStatusGet(ids).getBody();
+            Map<Long, Status> map = stateMachineFeignClient.batchStatusGet(ids).getBody();
             for (StatusAndIssuesDO statusAndIssuesDO : statusAndIssuesDOList) {
                 Status status = map.get(statusAndIssuesDO.getStatusId());
                 statusAndIssuesDO.setCategoryCode(status.getType());
@@ -302,7 +297,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 projectDTOMap.put(issueStatusDO.getProjectId(), projectDTO);
             }
             if (projectDTO != null) {
-                if (projectDTO.getOrganizationId()!= null && projectDTO.getId() != null) {
+                if (projectDTO.getOrganizationId() != null && projectDTO.getId() != null) {
                     proWithOrg.put(projectDTO.getId(), projectDTO.getOrganizationId());
                 }
             }
@@ -373,7 +368,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                                     if (w == 0) {
                                         requirement += sId;
                                     } else {
-                                        requirement += "," +sId;
+                                        requirement += "," + sId;
                                     }
                                     w++;
                                 }
@@ -384,21 +379,21 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                             } else {
                                 filter2 += " or " + s2;
                             }
-                            index ++;
+                            index++;
                         }
                         if (ind == 0) {
                             result += filter2;
                         } else {
                             result += " and " + filter2;
                         }
-                        ind ++;
+                        ind++;
                     } else {
                         if (ind == 0) {
                             result += s;
                         } else {
                             result += " and " + s;
                         }
-                        ind ++;
+                        ind++;
                     }
                 }
 
@@ -419,7 +414,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                             if (vw == 0) {
                                 valReal += vId;
                             } else {
-                                valReal += "," +vId;
+                                valReal += "," + vId;
                             }
                             vw++;
                         }
@@ -437,7 +432,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 updateDate.add(q);
             }
         }
-        for (QuickFilterDO quick :  updateDate) {
+        for (QuickFilterDO quick : updateDate) {
             if (quickFilterMapper.updateByPrimaryKeySelective(quick) != 1) {
                 throw new CommonException("error.quickFilter.update");
             }
@@ -537,7 +532,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     }
 
     private String getStatusNumber(String str) {
-        String regEx="[^0-9]";
+        String regEx = "[^0-9]";
         Pattern p = Pattern.compile(regEx);
         Matcher m = p.matcher(str);
         return m.replaceAll(" ").trim().replaceAll(" ", ",");
