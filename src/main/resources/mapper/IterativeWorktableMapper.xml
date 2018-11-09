@@ -13,15 +13,13 @@
 
     <select id="queryPriorityDistribute" resultType="io.choerodon.agile.infra.dataobject.PriorityDistributeDO">
         SELECT ai.issue_id,
---         ai.priority_code,
         ai.priority_id,
-        ais.category_code
-        from agile_issue_sprint_rel aisr, agile_issue ai, agile_issue_status ais
+        ai.status_id
+        from agile_issue_sprint_rel aisr, agile_issue ai
         where aisr.project_id = #{projectId}
             and aisr.sprint_id = #{sprintId}
             and aisr.issue_id = ai.issue_id
             and ai.type_code in ('story','task','bug','sub_task')
-            and ai.status_id = ais.id
     </select>
 
     <select id="queryStatusCategoryDistribute" resultType="io.choerodon.agile.infra.dataobject.StatusCategoryDO">
