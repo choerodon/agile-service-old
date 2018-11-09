@@ -218,12 +218,12 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     public ProductVersionStatisticsDTO queryVersionStatisticsByVersionId(Long projectId, Long versionId) {
         ProductVersionStatisticsDTO productVersionStatistics = versionStatisticsAssembler.
                 toTarget(productVersionMapper.queryVersionStatisticsByVersionId(projectId, versionId), ProductVersionStatisticsDTO.class);
-        productVersionStatistics.setTodoCategoryIssueCount(versionStatisticsAssembler.
-                toTargetList(productVersionMapper.queryIssueCountByVersionId(projectId, versionId, CATEGORY_TODO_CODE), IssueCountDTO.class));
-        productVersionStatistics.setDoingCategoryIssueCount(versionStatisticsAssembler.
-                toTargetList(productVersionMapper.queryIssueCountByVersionId(projectId, versionId, CATEGORY_DOING_CODE), IssueCountDTO.class));
-        productVersionStatistics.setDoneCategoryIssueCount(versionStatisticsAssembler.
-                toTargetList(productVersionMapper.queryIssueCountByVersionId(projectId, versionId, CATEGORY_DONE_CODE), IssueCountDTO.class));
+//        productVersionStatistics.setTodoCategoryIssueCount(versionStatisticsAssembler.
+//                toTargetList(productVersionMapper.queryIssueCountByVersionId(projectId, versionId, CATEGORY_TODO_CODE), IssueCountDTO.class));
+//        productVersionStatistics.setDoingCategoryIssueCount(versionStatisticsAssembler.
+//                toTargetList(productVersionMapper.queryIssueCountByVersionId(projectId, versionId, CATEGORY_DOING_CODE), IssueCountDTO.class));
+//        productVersionStatistics.setDoneCategoryIssueCount(versionStatisticsAssembler.
+//                toTargetList(productVersionMapper.queryIssueCountByVersionId(projectId, versionId, CATEGORY_DONE_CODE), IssueCountDTO.class));
         return productVersionStatistics;
     }
 
