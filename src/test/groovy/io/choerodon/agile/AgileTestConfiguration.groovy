@@ -10,8 +10,11 @@ import io.choerodon.agile.app.service.ProductVersionService
 import io.choerodon.agile.app.service.impl.IssueAttachmentServiceImpl
 import io.choerodon.agile.app.service.impl.IssueServiceImpl
 import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl
+import io.choerodon.agile.domain.agile.event.DeployStatusPayload
 import io.choerodon.agile.domain.agile.event.OrganizationCreateEventPayload
+import io.choerodon.agile.domain.agile.event.ProjectCreateAgilePayload
 import io.choerodon.agile.domain.agile.event.ProjectEvent
+import io.choerodon.agile.domain.agile.event.StatusPayload
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.*
@@ -120,23 +123,14 @@ class AgileTestConfiguration {
     @Autowired
     private ProductVersionMapper productVersionMapper
 
-    @Bean("mockUserRepository")
-    @Primary
-    UserRepository userRepository() {
-        detachedMockFactory.Mock(UserRepository)
-    }
+    @MockBean
+    private UserRepository userRepository
 
-    @Bean("mockSiteMsgUtil")
-    @Primary
-    SiteMsgUtil siteMsgUtil() {
-        detachedMockFactory.Mock(SiteMsgUtil)
-    }
+    @MockBean
+    private SiteMsgUtil siteMsgUtil
 
-    @Bean("issueService")
-    @Primary
-    IssueService issueService() {
-        new IssueServiceImpl(detachedMockFactory.Mock(SagaClient))
-    }
+    @MockBean(name = "sagaClient")
+    private SagaClient sagaClient
 
     @MockBean(name = "fileFeignClient")
     private FileFeignClient fileFeignClient
@@ -257,12 +251,26 @@ class AgileTestConfiguration {
         projectEvent.setProjectId(1L)
         projectEvent.setProjectCode("AGILE")
         projectEvent.setProjectName("agile")
+
         String data = JSON.toJSONString(projectEvent)
         agileEventHandler.handleProjectInitByConsumeSagaTask(data)
+        ProjectCreateAgilePayload projectCreateAgilePayload = new ProjectCreateAgilePayload()
+        projectCreateAgilePayload.projectEvent = projectEvent
+        List<StatusPayload> statusPayloads = new ArrayList<>()
+        StatusPayload statusPayload = new StatusPayload()
+        statusPayload.type = "todo"
+        statusPayload.statusName = "待办"
+        statusPayload.projectId = 1L
+        statusPayload.statusId = 1L
+        statusPayloads.add(statusPayload)
+        projectCreateAgilePayload.statusPayloads = statusPayloads
+        agileEventHandler.dealStateMachineInitProject(JSON.toJSONString(projectCreateAgilePayload))
+        DeployStatusPayload deployStatusPayload = new DeployStatusPayload()
+        deployStatusPayload.projectIds = [1]
         OrganizationCreateEventPayload organizationCreateEventPayload = new OrganizationCreateEventPayload()
         organizationCreateEventPayload.setId(1L)
         String message = JSON.toJSONString(organizationCreateEventPayload)
-        agileEventHandler.handleOrganizationInitTimeZoneSagaTask(message)
+        agileEventHandler.handleOrgaizationRegisterByConsumeSagaTask(message)
     }
 
     private void initIssues() {
@@ -271,6 +279,7 @@ class AgileTestConfiguration {
         epicIssue.issueNum = '1'
         epicIssue.projectId = 1L
         epicIssue.priorityCode = 'high'
+        epicIssue.issueTypeId = 1L
         epicIssue.reporterId = 1L
         epicIssue.statusId = 1L
         epicIssue.typeCode = 'issue_epic'
@@ -283,6 +292,7 @@ class AgileTestConfiguration {
         story.typeCode = 'story'
         story.statusId = 1L
         story.reporterId = 1L
+        epicIssue.issueTypeId = 2L
         story.priorityCode = 'high'
         story.issueNum = '2'
         story.issueId = 2L

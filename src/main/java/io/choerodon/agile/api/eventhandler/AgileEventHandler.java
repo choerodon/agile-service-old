@@ -92,8 +92,8 @@ public class AgileEventHandler {
         return message;
     }
 
-    @SagaTask(code = AGILE_ADD_STATUS,
-            description = "agile消费组织层添加状态到状态机中",
+    @SagaTask(code = STATUS_CREATE_CONSUME_ORG,
+            description = "agile消费发布状态机中增加状态",
             sagaCode = DEPLOY_STATEMACHINE_ADD_STATUS,
             seq = 4)
     public void dealDeployStateMachineAddStatus(String message) {
