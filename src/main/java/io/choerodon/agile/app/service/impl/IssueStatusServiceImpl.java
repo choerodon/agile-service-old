@@ -176,7 +176,12 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 
     @Override
     public List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId) {
-        List<StatusAndIssuesDO> statusAndIssuesDOList = issueStatusMapper.queryUnCorrespondStatus(projectId, boardId);
+        List<StatusMapDTO> statusMapDTOList = issueFeignClient.queryStatusByProjectId(projectId, "agile").getBody();
+        List<Long> realStatusIds = new ArrayList<>();
+        for (StatusMapDTO statusMapDTO : statusMapDTOList)  {
+            realStatusIds.add(statusMapDTO.getId());
+        }
+        List<StatusAndIssuesDO> statusAndIssuesDOList = issueStatusMapper.queryUnCorrespondStatus(projectId, boardId, realStatusIds);
         if (statusAndIssuesDOList != null && !statusAndIssuesDOList.isEmpty()) {
             List<Long> ids = new ArrayList<>();
             for (StatusAndIssuesDO statusAndIssuesDO : statusAndIssuesDOList) {

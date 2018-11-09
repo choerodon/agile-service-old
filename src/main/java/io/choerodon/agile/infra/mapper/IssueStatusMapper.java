@@ -15,7 +15,7 @@ import java.util.List;
 public interface IssueStatusMapper extends BaseMapper<IssueStatusDO> {
 
 //    List queryUnCorrespondStatus(@Param("projectId") Long projectId, @Param("boardId") Long boardId);
-    List queryUnCorrespondStatus(@Param("projectId") Long projectId, @Param("boardId") Long boardId);
+    List queryUnCorrespondStatus(@Param("projectId") Long projectId, @Param("boardId") Long boardId, @Param("realStatusIds") List<Long> realStatusIds);
 
     /**
      * 根据项目id查询第一列的第一个状态
