@@ -56,6 +56,11 @@
             LEFT JOIN agile_issue ai ON ai.status_id = ais.status_id and ai.project_id = #{projectId}
         WHERE
             ais.project_id = #{projectId}
+            and ais.status_id in
+            <foreach collection="realStatusIds" item="id" open="(" separator=","
+                     close=")">
+                #{id}
+            </foreach>
             AND (
                     SELECT COUNT(1) AS num
                     FROM
