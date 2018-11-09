@@ -500,7 +500,11 @@ public class SprintServiceImpl implements SprintService {
         if (activeSprint != null) {
             result = ConvertHelper.convert(activeSprint, ActiveSprintDTO.class);
             if (result.getEndDate() != null) {
-                result.setDayRemain(dateUtil.getDaysBetweenDifferentDate(new Date(), activeSprint.getEndDate(),
+                Date startDate = new Date();
+                if (result.getStartDate().after(startDate)) {
+                    startDate = result.getStartDate();
+                }
+                result.setDayRemain(dateUtil.getDaysBetweenDifferentDate(startDate, activeSprint.getEndDate(),
                         sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()),
                         sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()), organizationId));
             }
@@ -527,11 +531,7 @@ public class SprintServiceImpl implements SprintService {
         SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
         if (sprintSearchDO != null) {
             SprintWorkCalendarDTO sprintWorkCalendarDTO = sprintSearchAssembler.toTarget(sprintSearchDO, SprintWorkCalendarDTO.class);
-            SprintWorkCalendarRefDO sprintWorkCalendarRefDO = new SprintWorkCalendarRefDO();
-            sprintWorkCalendarRefDO.setProjectId(projectId);
-            sprintWorkCalendarRefDO.setSprintId(sprintWorkCalendarDTO.getSprintId());
-            sprintWorkCalendarRefDO.setYear(year);
-            sprintWorkCalendarDTO.setSprintWorkCalendarRefDTOS(sprintCreateAssembler.toTargetList(sprintWorkCalendarRefMapper.select(sprintWorkCalendarRefDO), SprintWorkCalendarRefDTO.class));
+            sprintWorkCalendarDTO.setSprintWorkCalendarRefDTOS(sprintCreateAssembler.toTargetList(sprintWorkCalendarRefMapper.queryWithNextYearByYear(projectId, sprintWorkCalendarDTO.getSprintId(), year), SprintWorkCalendarRefDTO.class));
             return sprintWorkCalendarDTO;
         } else {
             return new SprintWorkCalendarDTO();

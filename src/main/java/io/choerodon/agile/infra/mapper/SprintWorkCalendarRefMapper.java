@@ -30,4 +30,14 @@ public interface SprintWorkCalendarRefMapper extends BaseMapper<SprintWorkCalend
      * @return Date
      */
     List<Date> queryHolidayBySprintIdAndProjectId(@Param("sprintId") Long sprintId, @Param("projectId") Long projectId);
+
+    /**
+     * 查询今年包括下一年的数据
+     *
+     * @param projectId projectId
+     * @param sprintId  sprintId
+     * @param year      year
+     * @return SprintWorkCalendarRefDO
+     */
+    List<SprintWorkCalendarRefDO> queryWithNextYearByYear(@Param("projectId")Long projectId, @Param("sprintId")Long sprintId, @Param("year")Integer year);
 }

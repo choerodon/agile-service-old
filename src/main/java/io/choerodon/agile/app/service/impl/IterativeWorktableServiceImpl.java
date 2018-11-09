@@ -117,7 +117,11 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
         List<AssigneeIssueDO> assigneeIssueDOList = iterativeWorktableMapper.queryAssigneeInfoBySprintId(projectId, sprintId);
         result.setAssigneeIssueDTOList(iterativeWorktableAssembler.assigneeIssueDOToDTO(assigneeIssueDOList));
         if (actualEndDate == null && result.getEndDate() != null) {
-            result.setDayRemain(dateUtil.getDaysBetweenDifferentDate(new Date(), result.getEndDate(),
+            Date startDate = new Date();
+            if (result.getStartDate().after(startDate)) {
+                startDate = result.getStartDate();
+            }
+            result.setDayRemain(dateUtil.getDaysBetweenDifferentDate(startDate, result.getEndDate(),
                     sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(sprintId, projectId),
                     sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(sprintId, projectId), organizationId));
         } else {

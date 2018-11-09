@@ -44,7 +44,7 @@ public class WorkCalendarHolidayRefController {
     @GetMapping
     public ResponseEntity<List<WorkCalendarHolidayRefDTO>> queryWorkCalendarHolidayRelByYear(@ApiParam(value = "项目id", required = true)
                                                                                              @PathVariable(name = "organization_id") Long organizationId,
-                                                                                             @ApiParam(value = "要更新的年份", required = true)
+                                                                                             @ApiParam(value = "要查询的年份", required = true)
                                                                                              @RequestParam Integer year) {
         return Optional.ofNullable(workCalendarHolidayRefService.queryWorkCalendarHolidayRelByYear(year))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

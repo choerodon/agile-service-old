@@ -81,9 +81,8 @@ public class DateUtil {
             if (dayOne.after(dayTwo)) {
                 return 0;
             }
-            Integer i = 0;
             TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = timeZoneWorkCalendarMapper.queryTimeZoneDetailByOrganizationId(organizationId);
-            i = getWorkDaysInterval(i, timeZoneWorkCalendarDO, dayOne, dayTwo, dates, year);
+            Integer i = getWorkDaysInterval(timeZoneWorkCalendarDO, dayOne, dayTwo, dates, year);
             handleHolidays(dates, year, dayOne, dayTwo, timeZoneWorkCalendarDO);
             handleTimeZoneWorkCalendarRefRemoveAndAdd(dates, timeZoneWorkCalendarDO, dayOne, dayTwo);
             handleExcludedDate(workday, dates);
@@ -92,7 +91,8 @@ public class DateUtil {
         }
     }
 
-    private Integer getWorkDaysInterval(Integer i, TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Date startDate, Date endDate, Set<Date> dates, Set<Integer> year) {
+    private Integer getWorkDaysInterval(TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Date startDate, Date endDate, Set<Date> dates, Set<Integer> year) {
+        Integer i = 0;
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startDate);
         if (timeZoneWorkCalendarDO != null) {
