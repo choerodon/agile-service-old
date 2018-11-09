@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +46,6 @@ public class AgileEventHandler {
     private TimeZoneWorkCalendarRepository timeZoneWorkCalendarRepository;
     @Autowired
     private IssueStatusService issueStatusService;
-    @Autowired
-    private IssueStatusMapper issueStatusMapper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgileEventHandler.class);
 
@@ -102,8 +101,8 @@ public class AgileEventHandler {
         Map<String, List<Long>> projectIdsMap = deployStatusPayload.getProjectIdsMap();
         List<StatusPayload> statusPayloads = deployStatusPayload.getStatusPayloads();
         //只取敏捷和测试影响到的项目
-        List<Long> agileProjectIds = projectIdsMap.get(SchemeApplyType.AGILE) != null ? projectIdsMap.get(SchemeApplyType.AGILE) : Collections.EMPTY_LIST;
-        List<Long> testProjectIds = projectIdsMap.get(SchemeApplyType.TEST) != null ? projectIdsMap.get(SchemeApplyType.TEST) : Collections.EMPTY_LIST;
+        List<Long> agileProjectIds = projectIdsMap.get(SchemeApplyType.AGILE) != null ? projectIdsMap.get(SchemeApplyType.AGILE) : new ArrayList<>();
+        List<Long> testProjectIds = projectIdsMap.get(SchemeApplyType.TEST) != null ? projectIdsMap.get(SchemeApplyType.TEST) : new ArrayList<>();
         agileProjectIds.addAll(testProjectIds);
         List<Long> projectIds = agileProjectIds.stream().distinct().collect(Collectors.toList());
         LOGGER.info("sagaTask agile_add_status projectIdsMap: {}", projectIdsMap);
