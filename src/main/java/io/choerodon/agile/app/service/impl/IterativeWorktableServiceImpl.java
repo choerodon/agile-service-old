@@ -62,8 +62,10 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
         IterativeWorktableValidator.checkSprintExist(sprintDO);
         List<PriorityDistributeDO> priorityDistributeDTOList = iterativeWorktableMapper.queryPriorityDistribute(projectId, sprintId);
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         for (PriorityDistributeDO priorityDistributeDO : priorityDistributeDTOList) {
             priorityDistributeDO.setPriorityDTO(priorityMap.get(priorityDistributeDO.getPriorityId()));
+            priorityDistributeDO.setCategoryCode(statusMapDTOMap.get(priorityDistributeDO.getStatusId()).getType());
         }
         Map<Long, PriorityDistributeDTO> result = new HashMap<>();
         for (PriorityDistributeDO priorityDistributeDO : priorityDistributeDTOList) {

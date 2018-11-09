@@ -11,11 +11,11 @@ public class PriorityDistributeDO {
 
     private Long issueId;
 
-//    private String priorityCode;
-
     private String categoryCode;
 
     private Long priorityId;
+
+    private Long statusId;
 
     private PriorityDTO priorityDTO;
 
@@ -26,15 +26,6 @@ public class PriorityDistributeDO {
     public void setIssueId(Long issueId) {
         this.issueId = issueId;
     }
-
-//    public String getPriorityCode() {
-//        return priorityCode;
-//    }
-//
-//    public void setPriorityCode(String priorityCode) {
-//        this.priorityCode = priorityCode;
-//    }
-
 
     public void setPriorityId(Long priorityId) {
         this.priorityId = priorityId;
@@ -58,5 +49,13 @@ public class PriorityDistributeDO {
 
     public void setCategoryCode(String categoryCode) {
         this.categoryCode = categoryCode;
+    }
+
+    public void setStatusId(Long statusId) {
+        this.statusId = statusId;
+    }
+
+    public Long getStatusId() {
+        return statusId;
     }
 }
