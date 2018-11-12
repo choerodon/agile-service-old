@@ -30,6 +30,7 @@ public class FeignConfigure {
         UserFeignClient userFeignClient = Mockito.mock(UserFeignClientFallback.class);
         ProjectDTO projectDTO = new ProjectDTO();
         projectDTO.setId(1L);
+        projectDTO.setOrganizationId(1L);
         Mockito.when(userFeignClient.queryProject(1L)).thenReturn(new ResponseEntity<>(projectDTO, HttpStatus.OK));
         return userFeignClient;
     }
