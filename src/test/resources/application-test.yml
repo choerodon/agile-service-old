@@ -5,6 +5,8 @@ spring:
   sleuth:
     stream:
       enabled: false
+    feign:
+      enabled: false
   datasource:
     password: sa
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=Mysql;TRACE_LEVEL_SYSTEM_OUT=2;
@@ -53,3 +55,5 @@ workh:
   enabled: false
   #执行调度任务的时间间隔 每年12月15号的23点59分59秒维护一次，也可以手动调接口维护
   cron: "59 59 23 15 12 *"
+testScanIgnore:
+  enabled: true

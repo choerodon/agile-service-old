@@ -81,12 +81,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @TestConfiguration
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(LiquibaseConfig)
-@EnableAutoConfiguration
-@ComponentScan(excludeFilters = [@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = AgileServiceApplication.class),
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = FeignConfig.class),
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = UserFeignClient.class)
-        , @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = UserFeignClientFallback.class)]
-)
 class AgileTestConfiguration {
 
     @Bean
@@ -95,7 +89,7 @@ class AgileTestConfiguration {
         UserFeignClient userFeignClient = Mockito.mock(UserFeignClientFallback.class)
         ProjectDTO projectDTO = new ProjectDTO()
         projectDTO.id = 1L
-        Mockito.when(userFeignClient.queryProject(1L)).thenReturn(new ResponseEntity<ProjectDTO>(projectDTO,HttpStatus.OK))
+        Mockito.when(userFeignClient.queryProject(1L)).thenReturn(new ResponseEntity<ProjectDTO>(projectDTO, HttpStatus.OK))
         return userFeignClient
     }
 
@@ -105,11 +99,11 @@ class AgileTestConfiguration {
         return Mockito.mock(InstanceFeignClientFallback.class)
     }
 
-//    @Bean
+    @Bean
 //    @Primary
-//    IssueFeignClient issueFeignClient() {
-//        return Mockito.mock(IssueFeignClientFallback.class)
-//    }
+    IssueFeignClient issueFeignClient() {
+        return Mockito.mock(IssueFeignClientFallback.class)
+    }
 
     private final detachedMockFactory = new DetachedMockFactory()
 
@@ -310,7 +304,9 @@ class AgileTestConfiguration {
         projectCreateAgilePayload.statusPayloads = statusPayloads
         agileEventHandler.dealStateMachineInitProject(JSON.toJSONString(projectCreateAgilePayload))
         DeployStatusPayload deployStatusPayload = new DeployStatusPayload()
-        deployStatusPayload.projectIds = [1]
+        Map<String, List<Long>> map = new HashMap<>(1)
+        map.put("test", [1])
+        deployStatusPayload.projectIdsMap = map
         OrganizationCreateEventPayload organizationCreateEventPayload = new OrganizationCreateEventPayload()
         organizationCreateEventPayload.setId(1L)
         String message = JSON.toJSONString(organizationCreateEventPayload)
