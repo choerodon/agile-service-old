@@ -1,4 +1,4 @@
-package io.choerodon.agile
+package io.choerodon.agile.configure
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean

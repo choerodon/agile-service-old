@@ -10,6 +10,7 @@ import io.choerodon.agile.infra.common.enums.SchemeApplyType
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.feign.UserFeignClient
+import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback
 import io.choerodon.agile.infra.mapper.*
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.domain.Page
@@ -87,16 +88,12 @@ class IssueControllerSpec extends Specification {
     @Autowired
     private UserRepository userRepository
 
-
     @Autowired
     private SiteMsgUtil siteMsgUtil
 
 //    @Autowired
 //    @Qualifier("mockEventProducerTemplate")
 //    private EventProducerTemplate eventProducerTemplate
-
-    @MockBean(name = "userFeignClient")
-    UserFeignClient userFeignClient
 
     @Shared
     def projectId = 1

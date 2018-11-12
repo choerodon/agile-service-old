@@ -2,6 +2,8 @@ package io.choerodon.agile
 
 import com.alibaba.fastjson.JSON
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.inject.Inject
+import io.choerodon.agile.api.dto.ProjectDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueAttachmentService
 import io.choerodon.agile.app.service.IssueService
@@ -17,8 +19,13 @@ import io.choerodon.agile.domain.agile.event.ProjectEvent
 import io.choerodon.agile.domain.agile.event.StatusPayload
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
+import io.choerodon.agile.infra.config.FeignConfig
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.feign.FileFeignClient
+import io.choerodon.agile.infra.feign.IssueFeignClient
+import io.choerodon.agile.infra.feign.UserFeignClient
+import io.choerodon.agile.infra.feign.fallback.IssueFeignClientFallback
+import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback
 import io.choerodon.agile.infra.mapper.*
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.convertor.ApplicationContextHelper
@@ -26,17 +33,26 @@ import io.choerodon.core.oauth.CustomUserDetails
 //import io.choerodon.event.producer.execute.EventProducerTemplate
 import io.choerodon.liquibase.LiquibaseConfig
 import io.choerodon.liquibase.LiquibaseExecutor
+import io.choerodon.statemachine.feign.InstanceFeignClient
+import io.choerodon.statemachine.feign.InstanceFeignClientFallback
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.FilterType
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Primary
 import org.springframework.http.HttpRequest
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
@@ -65,7 +81,35 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @TestConfiguration
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(LiquibaseConfig)
+@EnableAutoConfiguration
+@ComponentScan(excludeFilters = [@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = AgileServiceApplication.class),
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = FeignConfig.class),
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = UserFeignClient.class)
+        , @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = UserFeignClientFallback.class)]
+)
 class AgileTestConfiguration {
+
+    @Bean
+    @Primary
+    UserFeignClient userFeignClient() {
+        UserFeignClient userFeignClient = Mockito.mock(UserFeignClientFallback.class)
+        ProjectDTO projectDTO = new ProjectDTO()
+        projectDTO.id = 1L
+        Mockito.when(userFeignClient.queryProject(1L)).thenReturn(new ResponseEntity<ProjectDTO>(projectDTO,HttpStatus.OK))
+        return userFeignClient
+    }
+
+    @Bean
+    @Primary
+    InstanceFeignClient instanceFeignClient() {
+        return Mockito.mock(InstanceFeignClientFallback.class)
+    }
+
+//    @Bean
+//    @Primary
+//    IssueFeignClient issueFeignClient() {
+//        return Mockito.mock(IssueFeignClientFallback.class)
+//    }
 
     private final detachedMockFactory = new DetachedMockFactory()
 

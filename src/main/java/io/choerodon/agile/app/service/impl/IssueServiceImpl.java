@@ -244,6 +244,7 @@ public class IssueServiceImpl implements IssueService {
         //事物隔离级别：开启新事务
         def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         //获得事务状态
+        Long a = userFeignClient.queryProject(1L).getBody().getId();
         TransactionStatus status = transactionManager.getTransaction(def);
         IssueE issueE = issueAssembler.toTarget(issueCreateDTO, IssueE.class);
         Long projectId = issueE.getProjectId();
