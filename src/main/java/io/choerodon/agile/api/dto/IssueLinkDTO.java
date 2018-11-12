@@ -29,7 +29,11 @@ public class IssueLinkDTO {
 
     private Long linkId;
 
+    private Long assigneeId;
+
     private String assigneeName;
+
+    private String imageUrl;
 
     private IssueTypeDTO issueTypeDTO;
 
@@ -139,6 +143,22 @@ public class IssueLinkDTO {
 
     public String getAssigneeName() {
         return assigneeName;
+    }
+
+    public void setAssigneeId(Long assigneeId) {
+        this.assigneeId = assigneeId;
+    }
+
+    public Long getAssigneeId() {
+        return assigneeId;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     @Override
