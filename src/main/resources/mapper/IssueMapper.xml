@@ -236,8 +236,8 @@
         <id property="priorityId" column="priority_id"/>
         <id property="issueTypeId" column="issue_type_id"/>
         <id property="assigneeId" column="assignee_id"/>
-        <id property="epicName" column="epicName"/>
-        <id property="epicId" column="epicId"/>
+        <id property="epicName" column="epic_name"/>
+        <id property="epicId" column="epic_id"/>
         <id property="reporterId" column="reporter_id"/>
         <id property="projectId" column="issue_project_id"/>
         <id property="statusId" column="status_id"/>
@@ -274,8 +274,10 @@
         ai.status_id,
         ai.priority_id,
         ai.issue_type_id,
-        IF((ai.parent_issue_id IS NULL or ai.parent_issue_id = 0), ai3.epic_name, ai4.epic_name) AS epic_name,
-        IF((ai.parent_issue_id IS NULL or ai.parent_issue_id = 0), ai.epic_id, ai2.epic_id) AS epic_id,
+--         IF((ai.parent_issue_id IS NULL or ai.parent_issue_id = 0), ai3.epic_name, ai4.epic_name) AS epic_name,
+--         IF((ai.parent_issue_id IS NULL or ai.parent_issue_id = 0), ai.epic_id, ai2.epic_id) AS epic_id,
+        ai3.epic_name,
+        ai.epic_id,
         ai.last_update_date as issue_last_update_date,
         apv.version_id,
         apv.status_code as version_status_code,
@@ -290,9 +292,9 @@
         aic.name as component_name,
         acir.component_id
         FROM agile_issue ai
-        left join agile_issue ai2 on ai2.issue_id = ai.parent_issue_id
+--         left join agile_issue ai2 on ai2.issue_id = ai.parent_issue_id
         left join agile_issue ai3 on ai.epic_id = ai3.issue_id
-        left join agile_issue ai4 on ai2.epic_id = ai4.issue_id
+--         left join agile_issue ai4 on ai2.epic_id = ai4.issue_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_version_issue_rel avir on avir.issue_id = ai.issue_id
         left join agile_product_version apv on avir.version_id = apv.version_id
