@@ -39,12 +39,14 @@ public class IssueLinkAssembler extends AbstractAssembler {
             Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
             issueLinkDOList.forEach(issueLinkDO -> {
                 String assigneeName = usersMap.get(issueLinkDO.getAssigneeId()) != null ? usersMap.get(issueLinkDO.getAssigneeId()).getName() : null;
+                String imageUrl = assigneeName != null ? usersMap.get(issueLinkDO.getAssigneeId()).getImageUrl() : null;
                 IssueLinkDTO issueLinkDTO = new IssueLinkDTO();
                 BeanUtils.copyProperties(issueLinkDO, issueLinkDTO);
                 issueLinkDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
                 issueLinkDTO.setStatusMapDTO(statusMapDTOMap.get(issueLinkDO.getStatusId()));
                 issueLinkDTO.setPriorityDTO(priorityDTOMap.get(issueLinkDO.getPriorityId()));
                 issueLinkDTO.setAssigneeName(assigneeName);
+                issueLinkDTO.setImageUrl(imageUrl);
                 issueLinkDTOList.add(issueLinkDTO);
             });
         }
