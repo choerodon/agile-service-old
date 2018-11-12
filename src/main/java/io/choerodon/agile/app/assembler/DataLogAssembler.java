@@ -40,7 +40,8 @@ public class DataLogAssembler {
             dataLogDTO.setImageUrl(imageUrl);
             dataLogDTO.setEmail(email);
             if ("status".equals(dataLogDO.getField())) {
-                dataLogDTO.setCategoryCode(statusMapDTOMap.get(Long.parseLong(dataLogDO.getNewValue())).getType());
+                StatusMapDTO statusMapDTO = statusMapDTOMap.get(Long.parseLong(dataLogDO.getNewValue()));
+                dataLogDTO.setCategoryCode(statusMapDTO != null ? statusMapDTO.getType() : null);
             }
             dataLogDTOList.add(dataLogDTO);
         }
