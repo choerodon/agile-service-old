@@ -377,8 +377,8 @@ public class IssueServiceImpl implements IssueService {
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         IssueDTO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
-        // 发送消息
-        if (ISSUE_TEST.equals(result.getTypeCode())) {
+        //发送消息
+        if (!ISSUE_TEST.equals(result.getTypeCode())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", result);
             String summary = result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getReporterName();
@@ -1119,7 +1119,7 @@ public class IssueServiceImpl implements IssueService {
         }
         IssueSubDTO result = issueAssembler.issueDetailDoToIssueSubDto(issue);
         // 发送消息
-        if (ISSUE_TEST.equals(result.getTypeCode())) {
+        if (!ISSUE_TEST.equals(result.getTypeCode())) {
             IssueDTO issueDTO = new IssueDTO();
             issueDTO.setReporterId(result.getReporterId());
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", issueDTO);
