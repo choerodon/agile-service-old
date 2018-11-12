@@ -72,11 +72,11 @@ public class IssueController {
     @ApiOperation("陈士男测试")
     @PostMapping("/2")
     public ResponseEntity<IssueDTO> createIssueCsnTest(@ApiParam(value = "项目id", required = true)
-                                                @PathVariable(name = "project_id") Long projectId,
-                                                @ApiParam(value = "应用类型", required = true)
-                                                @RequestParam(value = "applyType") String applyType,
-                                                @ApiParam(value = "创建issue对象", required = true)
-                                                @RequestBody IssueCreateDTO issueCreateDTO) {
+                                                       @PathVariable(name = "project_id") Long projectId,
+                                                       @ApiParam(value = "应用类型", required = true)
+                                                       @RequestParam(value = "applyType") String applyType,
+                                                       @ApiParam(value = "创建issue对象", required = true)
+                                                       @RequestBody IssueCreateDTO issueCreateDTO) {
         issueRule.verifyCreateData(issueCreateDTO, projectId, applyType);
         return Optional.ofNullable(issueService.createIssueCsnTest(issueCreateDTO, applyType))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
@@ -161,7 +161,8 @@ public class IssueController {
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("分页查询问题列表，包含子任务")
     @PostMapping(value = "/include_sub")
-    public ResponseEntity<Page<IssueListDTO>> listIssueWithSub(@ApiParam(value = "分页信息", required = true)
+    public ResponseEntity<Page<IssueListDTO>> listIssueWithSub(@ApiIgnore
+                                                               @ApiParam(value = "分页信息", required = true)
                                                                @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
                                                                        PageRequest pageRequest,
                                                                @ApiParam(value = "项目id", required = true)
