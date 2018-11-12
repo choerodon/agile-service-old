@@ -75,12 +75,10 @@ public class ReportAssembler extends AbstractAssembler {
     }
 
     public List<IssueTypeDistributionChartDTO> toIssueTypeVersionDistributionChartDTO(Long projectId, List<IssueTypeDistributionChartDO> issueTypeDistributionChartDOS) {
-        Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId,null);
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOS = new ArrayList<>(issueTypeDistributionChartDOS.size());
         issueTypeDistributionChartDOS.forEach(issueTypeDistributionChartDO -> {
             IssueTypeDistributionChartDTO issueTypeDistributionChartDTO = toTarget(issueTypeDistributionChartDO, IssueTypeDistributionChartDTO.class);
-            issueTypeDistributionChartDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueTypeDistributionChartDO.getIssueTypeId()));
             issueTypeDistributionChartDTO.setStatusMapDTO(statusMapDTOMap.get(issueTypeDistributionChartDO.getStatusId()));
             issueTypeDistributionChartDTOS.add(issueTypeDistributionChartDTO);
         });

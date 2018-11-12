@@ -3106,7 +3106,6 @@
     <select id="queryVersionProgressChart" resultType="io.choerodon.agile.infra.dataobject.IssueTypeDistributionChartDO">
        SELECT
             apv.name,
-            ai.issue_type_id,
             ai.status_id,
             count( * ) AS count
         FROM
