@@ -99,6 +99,9 @@ public class IssueDO extends AuditDomain {
     private String priorityName;
 
     @Transient
+    private String epicColor;
+
+    @Transient
     private Long sprintId;
 
     @Transient
@@ -149,6 +152,14 @@ public class IssueDO extends AuditDomain {
     private Long priorityId;
 
     private Long issueTypeId;
+
+    public String getEpicColor() {
+        return epicColor;
+    }
+
+    public void setEpicColor(String epicColor) {
+        this.epicColor = epicColor;
+    }
 
     public List<IssueComponentBriefDO> getIssueComponentBriefDOS() {
         return issueComponentBriefDOS;
