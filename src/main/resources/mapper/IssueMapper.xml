@@ -431,15 +431,15 @@
                 <if test='searchDTO.otherArgs.type == "component"'>
                     <choose>
                         <when test="searchDTO.otherArgs.id.size == 1 and searchDTO.otherArgs.id[0] == 0">
-                            and ai.issue_id in (SELECT ai5.issue_id from agile_issue ai5 left join
-                            agile_component_issue_rel oa
-                            on ai5.issue_id = oa.issue_id WHERE
-                            oa.component_id is null )
+                            and ai.issue_id in (SELECT ai12.issue_id from agile_issue ai12 left join
+                            agile_component_issue_rel acir2
+                            on ai12.issue_id = acir2.issue_id WHERE
+                            acir2.component_id is null )
                         </when>
                         <otherwise>
                             and ai.issue_id in
-                            (SELECT oaa.issue_id FROM agile_component_issue_rel oaa WHERE
-                            oaa.component_id in
+                            (SELECT acir2.issue_id FROM agile_component_issue_rel acir2 WHERE
+                            acir2.component_id in
                             <foreach collection="searchDTO.otherArgs.id" item="id" open="(" separator=","
                                      close=")">
                                 #{id}
@@ -451,15 +451,15 @@
                 <if test='searchDTO.otherArgs.type == "fixVersion"'>
                     <choose>
                         <when test="searchDTO.otherArgs.id.size == 1 and searchDTO.otherArgs.id[0] == 0">
-                            and ai.issue_id in (SELECT ai5.issue_id from agile_issue ai5 left join
-                            agile_version_issue_rel oa
-                            on ai5.issue_id = oa.issue_id and oa.relation_type = 'fix' WHERE
-                            oa.version_id is null )
+                            and ai.issue_id in (SELECT ai11.issue_id from agile_issue ai11 left join
+                            agile_version_issue_rel avir4
+                            on ai11.issue_id = avir4.issue_id and oa.relation_type = 'fix' WHERE
+                            avir4.version_id is null )
                         </when>
                         <otherwise>
                             and ai.issue_id in
-                            (SELECT oa.issue_id FROM agile_version_issue_rel oa WHERE oa.relation_type = 'fix' and
-                            oa.version_id in
+                            (SELECT avir4.issue_id FROM agile_version_issue_rel avir4 WHERE avir4.relation_type = 'fix' and
+                            avir4.version_id in
                             <foreach collection="searchDTO.otherArgs.id" item="id" open="(" separator=","
                                      close=")">
                                 #{id}
@@ -471,15 +471,15 @@
                 <if test='searchDTO.otherArgs.type == "sprint"'>
                     <choose>
                         <when test="searchDTO.otherArgs.id.size == 1 and searchDTO.otherArgs.id[0] == 0">
-                            and ai.issue_id in (SELECT ai5.issue_id from agile_issue ai5 left join
-                            agile_issue_sprint_rel oa
-                            on ai5.issue_id = oa.issue_id WHERE
-                            oa.sprint_id is null )
+                            and ai.issue_id in (SELECT ai10.issue_id from agile_issue ai10 left join
+                            agile_issue_sprint_rel aisr2
+                            on ai10.issue_id = aisr2.issue_id WHERE
+                            aisr2.sprint_id is null )
                         </when>
                         <otherwise>
                             and ai.issue_id in
-                            (SELECT oa.issue_id FROM agile_issue_sprint_rel oa WHERE
-                            oa.sprint_id in
+                            (SELECT aisr2.issue_id FROM agile_issue_sprint_rel aisr2 WHERE
+                            aisr2.sprint_id in
                             <foreach collection="searchDTO.otherArgs.id" item="id" open="(" separator=","
                                      close=")">
                                 #{id}
@@ -510,20 +510,30 @@
                     </choose>
                 </if>
                 <if test='searchDTO.otherArgs.type == "version"'>
-                    AND ai.issue_id in ( SELECT oa.issue_id FROM
-                    agile_version_issue_rel oa WHERE oa.version_id in
+                    AND ai.issue_id in ( SELECT avir3.issue_id FROM
+                    agile_version_issue_rel avir3 WHERE avir3.version_id in
                     <foreach collection="searchDTO.otherArgs.id" item="id" open="(" separator=","
                              close=")">
                         #{id}
                     </foreach>)
                 </if>
                 <if test='searchDTO.otherArgs.type == "label"'>
-                    AND ai.issue_id in ( SELECT oa.issue_id FROM
-                    agile_label_issue_rel oa WHERE oa.version_id in
-                    <foreach collection="searchDTO.otherArgs.id" item="id" open="(" separator=","
-                             close=")">
-                        #{id}
-                    </foreach>)
+                    <choose>
+                        <when test="searchDTO.otherArgs.id.size == 1 and searchDTO.otherArgs.id[0] == 0">
+                            and ai.issue_id in (SELECT ai13.issue_id from agile_issue ai13 left join
+                            agile_label_issue_rel alir2
+                            on ai13.issue_id = alir2.issue_id WHERE
+                            alir2.label_id is null )
+                        </when>
+                        <otherwise>
+                            AND ai.issue_id in ( SELECT alir2.issue_id FROM
+                            agile_label_issue_rel alir2 WHERE alir2.label_id in
+                            <foreach collection="searchDTO.otherArgs.id" item="id" open="(" separator=","
+                                     close=")">
+                                #{id}
+                            </foreach>)
+                        </otherwise>
+                    </choose>
                 </if>
             </if>
             <if test='searchDTO.otherArgs.issueIds != null and searchDTO.otherArgs.issueIds.size > 0'>
@@ -1469,7 +1479,7 @@
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
         LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code
-        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task'
+        WHERE ai.project_id = #{projectId} and ai.type_code = 'issue_test'
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
                 AND position(#{searchArgs.summary} IN ai.summary)
@@ -1479,12 +1489,12 @@
             </if>
         </if>
         <if test='advancedSearchArgs != null'>
-            <if test='advancedSearchArgs.issueTypeId != null and advancedSearchArgs.issueTypeId.size > 0'>
-                AND ai.issue_type_id IN
-                <foreach collection="advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator="," close=")">
-                    #{issueTypeId}
-                </foreach>
-            </if>
+            <!--<if test='advancedSearchArgs.issueTypeId != null and advancedSearchArgs.issueTypeId.size > 0'>-->
+                <!--AND ai.issue_type_id IN-->
+                <!--<foreach collection="advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator="," close=")">-->
+                    <!--#{issueTypeId}-->
+                <!--</foreach>-->
+            <!--</if>-->
             <if test='advancedSearchArgs.priorityId != null and advancedSearchArgs.priorityId.size > 0'>
                 AND ai.priority_id IN
                 <foreach collection="advancedSearchArgs.priorityId" item="priorityId" open="(" separator=","
@@ -1986,7 +1996,7 @@
     <select id="queryIssueIdsByOptions" resultType="java.lang.Long">
         select ai.issue_id
         from agile_issue ai
-        where 1=1
+        where ai.type_code = 'issue_test'
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.priorityId != null and advancedSearchArgs.priorityId.size > 0'>
                 AND ai.priority_id IN
@@ -1995,12 +2005,12 @@
                     #{priorityId}
                 </foreach>
             </if>
-            <if test='advancedSearchArgs.issueTypeId != null and advancedSearchArgs.issueTypeId.size > 0'>
-                AND ai.issue_type_id IN
-                <foreach collection="advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator="," close=")">
-                    #{issueTypeId}
-                </foreach>
-            </if>
+            <!--<if test='advancedSearchArgs.issueTypeId != null and advancedSearchArgs.issueTypeId.size > 0'>-->
+                <!--AND ai.issue_type_id IN-->
+                <!--<foreach collection="advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator="," close=")">-->
+                    <!--#{issueTypeId}-->
+                <!--</foreach>-->
+            <!--</if>-->
             <if test='advancedSearchArgs.statusId != null and advancedSearchArgs.statusId.size > 0'>
                 and ai.status_id in
                 <foreach collection="advancedSearchArgs.statusId" item="statusId" open="(" separator="," close=")">
