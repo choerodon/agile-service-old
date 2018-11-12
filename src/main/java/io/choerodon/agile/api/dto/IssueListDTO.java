@@ -41,6 +41,8 @@ public class IssueListDTO implements Serializable {
 
     private Long epicId;
 
+    private String epicColor;
+
     private Integer storyPoints;
 
     private Boolean addIssue;
@@ -92,6 +94,14 @@ public class IssueListDTO implements Serializable {
     public void setIssueTypeId(Long issueTypeId) {
         this.issueTypeId = issueTypeId;
 
+    }
+
+    public String getEpicColor() {
+        return epicColor;
+    }
+
+    public void setEpicColor(String epicColor) {
+        this.epicColor = epicColor;
     }
 
     public Date getLastUpdateDate() {
