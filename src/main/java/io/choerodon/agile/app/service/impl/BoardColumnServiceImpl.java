@@ -267,6 +267,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO();
         columnStatusRelDO.setColumnId(columnE.getColumnId());
         columnStatusRelDO.setStatusId(statusId);
+        columnStatusRelDO.setProjectId(projectId);
         if (columnStatusRelMapper.select(columnStatusRelDO).isEmpty()) {
             ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
             columnStatusRelE.setColumnId(columnE.getColumnId());
@@ -310,6 +311,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
                 ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO();
                 columnStatusRelDO.setColumnId(columnE.getColumnId());
                 columnStatusRelDO.setStatusId(columnWithStatusRelDO.getStatusId());
+                columnStatusRelDO.setProjectId(projectId);
                 if (columnStatusRelMapper.select(columnStatusRelDO).isEmpty()) {
                     ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
                     columnStatusRelE.setColumnId(columnE.getColumnId());
