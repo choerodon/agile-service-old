@@ -29,6 +29,8 @@ public class IssueLinkDTO {
 
     private Long linkId;
 
+    private String assigneeName;
+
     private IssueTypeDTO issueTypeDTO;
 
     private StatusMapDTO statusMapDTO;
@@ -129,6 +131,14 @@ public class IssueLinkDTO {
 
     public void setLinkId(Long linkId) {
         this.linkId = linkId;
+    }
+
+    public void setAssigneeName(String assigneeName) {
+        this.assigneeName = assigneeName;
+    }
+
+    public String getAssigneeName() {
+        return assigneeName;
     }
 
     @Override
