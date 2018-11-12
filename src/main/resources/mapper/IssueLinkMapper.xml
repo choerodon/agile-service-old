@@ -43,6 +43,7 @@
                     ai.priority_id,
                     ai.status_id,
                     ai.issue_type_id,
+                    ai.assignee_id,
                     ai.type_code
                 FROM
                     agile_issue_link ail
@@ -65,6 +66,7 @@
                     ai1.priority_id,
                     ai1.status_id,
                     ai1.issue_type_id,
+                    ai1.assignee_id,
                     ai1.type_code
                 FROM
                     agile_issue_link ail1

@@ -64,6 +64,9 @@ public class IssueLinkDO extends AuditDomain {
     @Transient
     private String typeCode;
 
+    @Transient
+    private Long assigneeId;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -158,6 +161,14 @@ public class IssueLinkDO extends AuditDomain {
 
     public void setTypeCode(String typeCode) {
         this.typeCode = typeCode;
+    }
+
+    public void setAssigneeId(Long assigneeId) {
+        this.assigneeId = assigneeId;
+    }
+
+    public Long getAssigneeId() {
+        return assigneeId;
     }
 
     @Override
