@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.dto.DataLogDTO;
+import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.DataLogDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
@@ -24,7 +25,7 @@ public class DataLogAssembler {
     @Autowired
     private UserRepository userRepository;
 
-    public List<DataLogDTO> dataLogDOToDTO(List<DataLogDO> dataLogDOList) {
+    public List<DataLogDTO> dataLogDOToDTO(List<DataLogDO> dataLogDOList, Map<Long, StatusMapDTO> statusMapDTOMap) {
         List<DataLogDTO> dataLogDTOList = new ArrayList<>(dataLogDOList.size());
         List<Long> lastUpdatedByIds = dataLogDOList.stream().filter(dataLogDO -> dataLogDO.getLastUpdatedBy() != null && !Objects.equals(dataLogDO.getLastUpdatedBy(), 0L)).map(DataLogDO::getLastUpdatedBy).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(lastUpdatedByIds, true);
@@ -38,6 +39,9 @@ public class DataLogAssembler {
             dataLogDTO.setName(name);
             dataLogDTO.setImageUrl(imageUrl);
             dataLogDTO.setEmail(email);
+            if ("status".equals(dataLogDO.getField())) {
+                dataLogDTO.setCategoryCode(statusMapDTOMap.get(Long.parseLong(dataLogDO.getNewValue())).getType());
+            }
             dataLogDTOList.add(dataLogDTO);
         }
         return dataLogDTOList;

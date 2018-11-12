@@ -4,12 +4,9 @@
 
     <select id="selectByIssueId" resultType="io.choerodon.agile.infra.dataobject.DataLogDO">
         SELECT
-            adl.*,
-            ais.category_code
+            adl.*
         FROM
             agile_data_log adl
-        LEFT JOIN agile_issue_status ais ON adl.field = 'status'
-        AND adl.new_value = ais.id
         WHERE
             adl.project_id = #{projectId}
         AND adl.issue_id = #{issueId}
