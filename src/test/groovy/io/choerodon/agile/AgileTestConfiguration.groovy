@@ -83,28 +83,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @Import(LiquibaseConfig)
 class AgileTestConfiguration {
 
-    @Bean
-    @Primary
-    UserFeignClient userFeignClient() {
-        UserFeignClient userFeignClient = Mockito.mock(UserFeignClientFallback.class)
-        ProjectDTO projectDTO = new ProjectDTO()
-        projectDTO.id = 1L
-        Mockito.when(userFeignClient.queryProject(1L)).thenReturn(new ResponseEntity<ProjectDTO>(projectDTO, HttpStatus.OK))
-        return userFeignClient
-    }
-
-    @Bean
-    @Primary
-    InstanceFeignClient instanceFeignClient() {
-        return Mockito.mock(InstanceFeignClientFallback.class)
-    }
-
-    @Bean
-//    @Primary
-    IssueFeignClient issueFeignClient() {
-        return Mockito.mock(IssueFeignClientFallback.class)
-    }
-
     private final detachedMockFactory = new DetachedMockFactory()
 
     @Autowired

@@ -9,8 +9,7 @@ import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.enums.SchemeApplyType
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.*
-import io.choerodon.agile.infra.feign.UserFeignClient
-import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback
+import io.choerodon.agile.infra.feign.IssueFeignClient
 import io.choerodon.agile.infra.mapper.*
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.domain.Page
@@ -18,13 +17,11 @@ import io.choerodon.core.domain.Page
 import io.choerodon.mybatis.pagehelper.domain.PageRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
-import org.springframework.context.annotation.Primary
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
@@ -94,6 +91,8 @@ class IssueControllerSpec extends Specification {
 //    @Autowired
 //    @Qualifier("mockEventProducerTemplate")
 //    private EventProducerTemplate eventProducerTemplate
+    @Autowired
+    private IssueFeignClient issueFeignClient
 
     @Shared
     def projectId = 1
@@ -149,6 +148,8 @@ class IssueControllerSpec extends Specification {
         userRepository.queryProject(*_) >> projectDTO
 
         and: 'mock静态方法'
+        issueFeignClient
+        issueFeignClient.queryStateMachineId(*_) >> new ResponseEntity<Long>(1, HttpStatus.OK)
 //        GroovyMock(ConvertUtil, global: true)
 //        ConvertUtil.getOrganizationId(1L) >> 1L
 //        mockStatic(ConvertUtil.class)
