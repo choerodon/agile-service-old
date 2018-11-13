@@ -33,7 +33,7 @@ import io.choerodon.agile.infra.mapper.ProjectInfoMapper
 import io.choerodon.agile.infra.mapper.SprintMapper
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.domain.Page
-import io.choerodon.event.producer.execute.EventProducerTemplate
+//import io.choerodon.event.producer.execute.EventProducerTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
@@ -94,9 +94,9 @@ class SprintControllerSpec extends Specification {
     @Qualifier("mockUserRepository")
     private UserRepository userRepository
 
-    @Autowired
-    @Qualifier("mockEventProducerTemplate")
-    private EventProducerTemplate eventProducerTemplate
+//    @Autowired
+//    @Qualifier("mockEventProducerTemplate")
+//    private EventProducerTemplate eventProducerTemplate
 
 
     @Autowired

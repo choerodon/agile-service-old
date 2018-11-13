@@ -12,7 +12,7 @@ import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.mapper.*
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.domain.Page
-import io.choerodon.event.producer.execute.EventProducerTemplate
+//import io.choerodon.event.producer.execute.EventProducerTemplate
 import io.choerodon.mybatis.pagehelper.domain.PageRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -91,9 +91,9 @@ class IssueControllerSpec extends Specification {
     @Qualifier("mockSiteMsgUtil")
     private SiteMsgUtil siteMsgUtil
 
-    @Autowired
-    @Qualifier("mockEventProducerTemplate")
-    private EventProducerTemplate eventProducerTemplate
+//    @Autowired
+//    @Qualifier("mockEventProducerTemplate")
+//    private EventProducerTemplate eventProducerTemplate
 
     @Shared
     def projectId = 1
