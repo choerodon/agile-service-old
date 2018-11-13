@@ -131,6 +131,9 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
                     sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(sprintId, projectId),
                     sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(sprintId, projectId), organizationId));
         }
+        result.setDayTotal(dateUtil.getDaysBetweenDifferentDate(result.getStartDate(), result.getEndDate(),
+                sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(sprintId, projectId),
+                sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(sprintId, projectId), organizationId));
         result.setIssueCount(sprintMapper.queryIssueCountInActiveBoard(projectId, sprintId));
         return result;
     }
