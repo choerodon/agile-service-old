@@ -91,6 +91,7 @@ public interface IssueService {
      * @param projectId
      */
     void handleUpdateIssue(IssueUpdateDTO issueUpdateDTO, List<String> fieldList, Long projectId);
+
     /**
      * 删除issue
      *
@@ -283,5 +284,14 @@ public interface IssueService {
      * @return IssueProjectDTO
      */
     List<IssueProjectDTO> queryIssueTestGroupByProject();
+
+    /**
+     * 批量把issue根据冲刺判断更新为初始状态
+     *
+     * @param projectId    projectId
+     * @param moveIssueIds moveIssueIds
+     * @param sprintId     sprintId
+     */
+    void batchHandleIssueStatus(Long projectId, List<Long> moveIssueIds, Long sprintId);
 
 }

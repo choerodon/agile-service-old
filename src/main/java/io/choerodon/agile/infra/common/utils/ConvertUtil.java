@@ -1,9 +1,6 @@
 package io.choerodon.agile.infra.common.utils;
 
-import io.choerodon.agile.api.dto.IssueTypeDTO;
-import io.choerodon.agile.api.dto.PriorityDTO;
-import io.choerodon.agile.api.dto.ProjectDTO;
-import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
@@ -81,6 +78,15 @@ public class ConvertUtil {
                 throw new CommonException("error.queryProject.notFound");
             }
         }
+    }
+
+    public static Map<Long, IssueTypeWithStateMachineIdDTO> queryIssueTypesWithStateMachineIdByProjectId(Long projectId, String applyType) {
+        List<IssueTypeWithStateMachineIdDTO> issueTypeWithStateMachineIdDTOS = SpringBeanUtil.getBean(IssueFeignClient.class).queryIssueTypesWithStateMachineIdByProjectId(projectId, applyType)
+                .getBody();
+        Map<Long, Long> statusIdMap = SpringBeanUtil.getBean(StateMachineFeignClient.class).queryInitStatusIds(getOrganizationId(projectId), issueTypeWithStateMachineIdDTOS
+                .stream().map(IssueTypeWithStateMachineIdDTO::getStateMachineId).collect(Collectors.toList())).getBody();
+        issueTypeWithStateMachineIdDTOS.forEach(issueTypeWithStateMachineIdDTO -> issueTypeWithStateMachineIdDTO.setInitStatusId(statusIdMap.get(issueTypeWithStateMachineIdDTO.getStateMachineId())));
+        return issueTypeWithStateMachineIdDTOS.stream().collect(Collectors.toMap(IssueTypeWithStateMachineIdDTO::getId, Function.identity()));
     }
 
 

@@ -1,4 +1,4 @@
-package io.choerodon.agile
+package io.choerodon.agile.configure
 
 import io.choerodon.core.oauth.CustomUserDetails
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken

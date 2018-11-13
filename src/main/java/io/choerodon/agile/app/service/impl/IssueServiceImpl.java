@@ -222,6 +222,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String ISSUE_TEST = "issue_test";
     private static final String TEST = "test";
     private static final String AGILE_SERVICE = "agile-service";
+    private static final String AGILE = "agile";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -581,6 +582,8 @@ public class IssueServiceImpl implements IssueService {
             if (condition) {
                 BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, issueE.getSprintId(), issueIds);
                 issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+                //不是活跃冲刺，修改冲刺状态回到第一个状态
+                handleIssueStatus(projectId, oldIssue, issueE, fieldList, issueIds);
             }
             if (exitSprint) {
                 if (oldIssue.getSprintId() == null || oldIssue.getSprintId() == 0) {
@@ -595,6 +598,34 @@ public class IssueServiceImpl implements IssueService {
             }
         }
         issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
+    }
+
+    private void handleIssueStatus(Long projectId, IssueE oldIssue, IssueE issueE, List<String> fieldList, List<Long> issueIds) {
+        SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
+        if (!oldIssue.getTypeCode().equals(ISSUE_TEST)) {
+            if (sprintSearchDO == null || !Objects.equals(issueE.getSprintId(), sprintSearchDO.getSprintId())) {
+                Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, oldIssue.getIssueTypeId()).getBody();
+                if (stateMachineId == null) {
+                    throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
+                }
+                Long initStatusId = instanceFeignClient.queryInitStatusId(ConvertUtil.getOrganizationId(projectId), stateMachineId).getBody();
+                if (issueE.getStatusId() == null && !oldIssue.getStatusId().equals(initStatusId)) {
+                    issueE.setStatusId(initStatusId);
+                    fieldList.add(STATUS_ID);
+                }
+                //子任务的处理
+                if (issueIds != null && !issueIds.isEmpty()) {
+                    List<IssueE> issueDOList = issueAssembler.toTargetList(issueMapper.queryIssueSubList(projectId, oldIssue.getIssueId()), IssueE.class);
+                    String[] field = {STATUS_ID};
+                    issueDOList.forEach(issue -> {
+                        if (!issue.getStatusId().equals(initStatusId)) {
+                            issue.setStatusId(initStatusId);
+                            issueRepository.update(issue, field);
+                        }
+                    });
+                }
+            }
+        }
     }
 
 
@@ -886,10 +917,28 @@ public class IssueServiceImpl implements IssueService {
         if (sprintId != null && !Objects.equals(sprintId, 0L)) {
             issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
         }
+        //如果移动冲刺不是活跃冲刺，则状态回到默认状态
+        batchHandleIssueStatus(projectId, moveIssueIds, sprintId);
         List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds());
         List<Long> assigneeIds = issueSearchDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         return issueSearchAssembler.doListToDTO(issueSearchDOList, usersMap, new HashMap<>(), new HashMap<>(), new HashMap<>());
+    }
+
+    @Override
+    public void batchHandleIssueStatus(Long projectId, List<Long> moveIssueIds, Long sprintId) {
+        SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
+        if (sprintSearchDO == null || !Objects.equals(sprintId, sprintSearchDO.getSprintId())) {
+            List<IssueE> issueEList = issueAssembler.toTargetList(issueMapper.queryIssueByIssueIdsAndSubIssueIds(moveIssueIds), IssueE.class);
+            Map<Long, IssueTypeWithStateMachineIdDTO> issueTypeWithStateMachineIdDTOMap = ConvertUtil.queryIssueTypesWithStateMachineIdByProjectId(projectId, AGILE);
+            issueEList.forEach(issueE -> {
+                Long initStatusId = issueTypeWithStateMachineIdDTOMap.get(issueE.getIssueTypeId()).getInitStatusId();
+                if (!issueE.getStatusId().equals(initStatusId)) {
+                    issueE.setStatusId(initStatusId);
+                    issueRepository.update(issueE, new String[]{STATUS_ID});
+                }
+            });
+        }
     }
 
     private void dealBoundBeforeRank(Long projectId, StoryMapMoveDTO storyMapMoveDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {

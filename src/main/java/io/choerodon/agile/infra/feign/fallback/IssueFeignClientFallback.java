@@ -1,9 +1,6 @@
 package io.choerodon.agile.infra.feign.fallback;
 
-import io.choerodon.agile.api.dto.IssueTypeDTO;
-import io.choerodon.agile.api.dto.PriorityDTO;
-import io.choerodon.agile.api.dto.StatusInfoDTO;
-import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.infra.dataobject.StatusForMoveDataDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.core.exception.CommonException;
@@ -75,5 +72,10 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     @Override
     public ResponseEntity<List<StatusMapDTO>> queryStatusByProjectId(Long projectId, String applyType) {
         throw new CommonException("error.status.queryStatusByProjectId");
+    }
+
+    @Override
+    public ResponseEntity<List<IssueTypeWithStateMachineIdDTO>> queryIssueTypesWithStateMachineIdByProjectId(Long projectId, String applyType) {
+        throw new CommonException("error.status.queryIssueTypesWithStateMachineIdByProjectId");
     }
 }

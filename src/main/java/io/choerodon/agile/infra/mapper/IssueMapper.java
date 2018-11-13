@@ -388,4 +388,12 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                         @Param("filterSql") String filterSql);
 
     List<IssueDO> queryIssueListWithSubByIssueIds(@Param("issueIds") List<Long> issueIds);
+
+    /**
+     * 查询issueIds对应的issueDo
+     *
+     * @param issueIds issueIds
+     * @return IssueDO
+     */
+    List<IssueDO> queryIssueByIssueIdsAndSubIssueIds(@Param("issueIds") List<Long> issueIds);
 }

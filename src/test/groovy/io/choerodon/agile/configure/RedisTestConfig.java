@@ -1,4 +1,4 @@
-package io.choerodon.agile;
+package io.choerodon.agile.configure;
 
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +25,6 @@ public class RedisTestConfig {
         RedisConnectionFactory factory = Mockito.mock(RedisConnectionFactory.class);
         RedisConnection connection = Mockito.mock(RedisConnection.class);
         Mockito.when(factory.getConnection()).thenReturn(connection);
-
         return factory;
     }
 }

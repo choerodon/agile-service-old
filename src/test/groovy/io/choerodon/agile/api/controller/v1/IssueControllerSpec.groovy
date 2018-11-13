@@ -5,22 +5,23 @@ import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.*
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
-import io.choerodon.agile.app.service.NoticeService
 import io.choerodon.agile.domain.agile.repository.UserRepository
+import io.choerodon.agile.infra.common.enums.SchemeApplyType
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.*
+import io.choerodon.agile.infra.feign.IssueFeignClient
 import io.choerodon.agile.infra.mapper.*
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.domain.Page
 //import io.choerodon.event.producer.execute.EventProducerTemplate
 import io.choerodon.mybatis.pagehelper.domain.PageRequest
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
@@ -58,7 +59,6 @@ class IssueControllerSpec extends Specification {
     AgileEventHandler agileEventHandler
 
     @Autowired
-    @Qualifier("issueService")
     IssueService issueService
 
     @Autowired
@@ -83,17 +83,16 @@ class IssueControllerSpec extends Specification {
     private DataLogMapper dataLogMapper
 
     @Autowired
-    @Qualifier("mockUserRepository")
     private UserRepository userRepository
 
-
     @Autowired
-    @Qualifier("mockSiteMsgUtil")
     private SiteMsgUtil siteMsgUtil
 
 //    @Autowired
 //    @Qualifier("mockEventProducerTemplate")
 //    private EventProducerTemplate eventProducerTemplate
+    @Autowired
+    private IssueFeignClient issueFeignClient
 
     @Shared
     def projectId = 1
@@ -147,6 +146,17 @@ class IssueControllerSpec extends Specification {
         projectDTO.setCode("AG")
         projectDTO.setName("AG")
         userRepository.queryProject(*_) >> projectDTO
+
+        and: 'mock静态方法'
+        issueFeignClient
+        issueFeignClient.queryStateMachineId(*_) >> new ResponseEntity<Long>(1, HttpStatus.OK)
+//        GroovyMock(ConvertUtil, global: true)
+//        ConvertUtil.getOrganizationId(1L) >> 1L
+//        mockStatic(ConvertUtil.class)
+//        def converUtilMock = Mock(ConvertUtil)
+//        converUtilMock.getOrganizationId(1L) >> 1L
+//        when(ConvertUtil.getOrganizationId(1L)).thenReturn(1L)
+//        ConvertUtil.getOrganizationId(1L) == 1L
     }
 
     def 'createIssue'() {
@@ -161,6 +171,8 @@ class IssueControllerSpec extends Specification {
         issueCreateDTO.priorityCode = "hight"
         issueCreateDTO.assigneeId = 1
         issueCreateDTO.sprintId = sprintId
+        issueCreateDTO.priorityId = 1
+        issueCreateDTO.issueTypeId = typeId
 
         and: '设置模块'
         List<ComponentIssueRelDTO> componentIssueRelDTOList = new ArrayList<>()
@@ -205,7 +217,7 @@ class IssueControllerSpec extends Specification {
         issueCreateDTO.versionIssueRelDTOList = versionIssueRelDTOList
 
         when: '向开始创建issue的接口发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues', issueCreateDTO, IssueDTO, projectId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues?applyType={applyType}', issueCreateDTO, IssueDTO, projectId, SchemeApplyType.AGILE)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -219,10 +231,10 @@ class IssueControllerSpec extends Specification {
         entity.body.typeCode == expectedTypeCode
 
         where: '不同issue类型返回值与期望值对比'
-        typeCode     | expectedTypeCode
-        "story"      | "story"
-        "task"       | "task"
-        "issue_epic" | "issue_epic"
+        typeCode     | typeId || expectedTypeCode
+        "story"      | 2      || "story"
+        "task"       | 3      || "task"
+        "issue_epic" | 1      || "issue_epic"
     }
 
     def 'createSubIssue'() {

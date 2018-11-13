@@ -59,12 +59,22 @@ public class IssueListDTO implements Serializable {
 
     private List<VersionIssueRelDTO> versionIssueRelDTOS;
 
+    private List<LabelIssueRelDTO> labelIssueRelDTOS;
+
     private List<IssueSprintDTO> issueSprintDTOS;
 
     private List<IssueComponentBriefDTO> issueComponentBriefDTOS;
 
     public List<IssueSprintDTO> getIssueSprintDTOS() {
         return issueSprintDTOS;
+    }
+
+    public List<LabelIssueRelDTO> getLabelIssueRelDTOS() {
+        return labelIssueRelDTOS;
+    }
+
+    public void setLabelIssueRelDTOS(List<LabelIssueRelDTO> labelIssueRelDTOS) {
+        this.labelIssueRelDTOS = labelIssueRelDTOS;
     }
 
     public void setIssueSprintDTOS(List<IssueSprintDTO> issueSprintDTOS) {

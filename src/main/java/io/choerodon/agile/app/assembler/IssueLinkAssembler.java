@@ -26,13 +26,17 @@ import java.util.stream.Collectors;
 @Component
 public class IssueLinkAssembler extends AbstractAssembler {
 
+    private static final String TEST = "test";
+    private static final String ISSUE_TEST = "issue_test";
+
     @Autowired
     private UserRepository userRepository;
 
-    public List<IssueLinkDTO> issueLinkDoToDto(Long projectId, List<IssueLinkDO> issueLinkDOList,String typeCode) {
+    public List<IssueLinkDTO> issueLinkDoToDto(Long projectId, List<IssueLinkDO> issueLinkDOList) {
         List<IssueLinkDTO> issueLinkDTOList = new ArrayList<>(issueLinkDOList.size());
         if (!issueLinkDOList.isEmpty()) {
-            Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId,typeCode);
+            Map<Long, IssueTypeDTO> testIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, TEST);
+            Map<Long, IssueTypeDTO> agileIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, null);
             Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
             Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
             List<Long> assigneeIds = issueLinkDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueLinkDO::getAssigneeId).distinct().collect(Collectors.toList());
@@ -42,7 +46,11 @@ public class IssueLinkAssembler extends AbstractAssembler {
                 String imageUrl = assigneeName != null ? usersMap.get(issueLinkDO.getAssigneeId()).getImageUrl() : null;
                 IssueLinkDTO issueLinkDTO = new IssueLinkDTO();
                 BeanUtils.copyProperties(issueLinkDO, issueLinkDTO);
-                issueLinkDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
+                if (issueLinkDO.getTypeCode().equals(ISSUE_TEST)) {
+                    issueLinkDTO.setIssueTypeDTO(testIssueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
+                } else {
+                    issueLinkDTO.setIssueTypeDTO(agileIssueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
+                }
                 issueLinkDTO.setStatusMapDTO(statusMapDTOMap.get(issueLinkDO.getStatusId()));
                 issueLinkDTO.setPriorityDTO(priorityDTOMap.get(issueLinkDO.getPriorityId()));
                 issueLinkDTO.setAssigneeName(assigneeName);
