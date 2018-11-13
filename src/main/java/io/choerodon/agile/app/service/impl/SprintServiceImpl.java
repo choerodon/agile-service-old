@@ -4,6 +4,7 @@ import com.google.common.collect.Ordering;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.WorkCalendarValidator;
 import io.choerodon.agile.app.assembler.*;
+import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.domain.agile.repository.SprintWorkCalendarRefRepository;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
@@ -85,6 +86,8 @@ public class SprintServiceImpl implements SprintService {
 
     @Autowired
     private StateMachineFeignClient stateMachineFeignClient;
+    @Autowired
+    private IssueService issueService;
 
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String SPRINT_DATA = "sprintData";
@@ -310,6 +313,8 @@ public class SprintServiceImpl implements SprintService {
         if (targetSprintId != null && !Objects.equals(targetSprintId, 0L)) {
             issueRepository.issueToDestinationByIdsCloseSprint(projectId, targetSprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
         }
+        //状态更新为初始状态
+        issueService.batchHandleIssueStatus(projectId, moveIssueIds, sprintCompleteDTO.getSprintId());
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
     }
 

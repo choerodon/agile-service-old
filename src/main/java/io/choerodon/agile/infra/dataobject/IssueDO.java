@@ -139,6 +139,9 @@ public class IssueDO extends AuditDomain {
     @Transient
     private List<IssueComponentBriefDO> issueComponentBriefDOS;
 
+    @Transient
+    private List<LabelIssueRelDO> labelIssueRelDOS;
+
     private BigDecimal estimateTime;
 
     private BigDecimal remainingTime;
@@ -152,6 +155,14 @@ public class IssueDO extends AuditDomain {
     private Long priorityId;
 
     private Long issueTypeId;
+
+    public List<LabelIssueRelDO> getLabelIssueRelDOS() {
+        return labelIssueRelDOS;
+    }
+
+    public void setLabelIssueRelDOS(List<LabelIssueRelDO> labelIssueRelDOS) {
+        this.labelIssueRelDOS = labelIssueRelDOS;
+    }
 
     public String getEpicColor() {
         return epicColor;

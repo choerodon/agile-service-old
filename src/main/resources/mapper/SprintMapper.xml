@@ -68,10 +68,7 @@
         ai.story_points, ai.status_id,
         ai.priority_id,
         ai.issue_type_id,
-        ais.category_code,
-        ais.name AS status_name,
         ai.object_version_number as is_object_version_number, ai.priority_code,
-        alv.name AS priority_name,
         ai1.epic_name AS issue_epic_name,
         alv2.name AS color,
         apv1.version_id AS version_id,
@@ -82,9 +79,8 @@
             #{issueId}
         </foreach>
         )ai
-        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
+        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.status_id and ai.project_id = ais.project_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
         LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
         LEFT JOIN (SELECT aisr.issue_id, asp.sprint_id
@@ -95,7 +91,7 @@
         FROM agile_version_issue_rel avir, agile_product_version apv
         WHERE avir.version_id = apv.version_id AND avir.relation_type = 'fix'
         ) apv1 ON apv1.issue_id = ai.issue_id
-        WHERE asp1.sprint_id is null and ais.category_code != 'done'
+        WHERE asp1.sprint_id is null and ais.is_completed != 1
         and ai.type_code != 'sub_task' and ai.type_code != 'issue_test'
         and ai.type_code != 'issue_epic' and ai.project_id = #{projectId}
         ORDER BY ai.rank asc

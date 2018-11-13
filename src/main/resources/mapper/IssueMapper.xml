@@ -261,7 +261,22 @@
             <id property="componentId" column="component_id"/>
             <id property="name" column="component_name"/>
         </collection>
+        <collection property="labelIssueRelDOS" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.LabelIssueRelDO">
+            <id property="labelId" column="label_id"/>
+            <id property="labelName" column="label_name"/>
+        </collection>
     </resultMap>
+
+    <select id="queryIssueByIssueIdsAndSubIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        select
+          *
+        from agile_issue
+        where issue_id in
+        <foreach collection="issueIds" item="issueId" open="(" separator=","
+                 close=")">
+            #{issueId}
+        </foreach>
+    </select>
 
     <select id="queryIssueListWithSubByIssueIds" resultMap="IssueWithSub">
         SELECT
@@ -292,7 +307,9 @@
         asp.status_code as sp_status_code,
         asp.sprint_name,
         aic.name as component_name,
-        acir.component_id
+        acir.component_id,
+        ail.label_name,
+        ail.label_id
         FROM agile_issue ai
 --         left join agile_issue ai2 on ai2.issue_id = ai.parent_issue_id
         left join agile_issue ai3 on ai.epic_id = ai3.issue_id
@@ -305,6 +322,8 @@
         left join agile_sprint asp on aisr.sprint_id = asp.sprint_id
         left join agile_component_issue_rel acir on acir.issue_id = ai.issue_id
         left join agile_issue_component aic on aic.component_id = acir.component_id
+        left join agile_label_issue_rel alir on alir.issue_id = ai.issue_id
+        left join agile_issue_label ail on ail.label_id = alir.label_id
         WHERE
         ai.issue_id IN
         <foreach collection="issueIds" item="issueId" open="(" separator=","
@@ -389,12 +408,12 @@
                 where acir.component_id = aic.component_id and position(#{searchDTO.searchArgs.component} IN aic.name) )
             </if>
             <if test='searchDTO.searchArgs.epic != null and searchDTO.searchArgs.epic != "" '>
-                AND ((ai.issue_id in (
+                AND ai.issue_id in (
                 SELECT ai3.issue_id FROM agile_issue ai3 ,agile_issue ai4
-                where ai3.epic_id = ai4.issue_id and position(#{searchDTO.searchArgs.epic} IN ai4.epic_name) ))
-                or (ai.parent_issue_id in (
-                SELECT ai5.issue_id FROM agile_issue ai5 ,agile_issue ai6
-                where ai5.epic_id = ai6.issue_id and position(#{searchDTO.searchArgs.epic} IN ai6.epic_name) )))
+                where ai3.epic_id = ai4.issue_id and position(#{searchDTO.searchArgs.epic} IN ai4.epic_name) )
+--                 or (ai.parent_issue_id in (
+--                 SELECT ai5.issue_id FROM agile_issue ai5 ,agile_issue ai6
+--                 where ai5.epic_id = ai6.issue_id and position(#{searchDTO.searchArgs.epic} IN ai6.epic_name) )))
             </if>
             <if test='searchDTO.searchArgs.version != null and searchDTO.searchArgs.version != "" '>
                 AND ai.issue_id in (
@@ -497,18 +516,18 @@
                             and (ai.epic_id is null or ai.epic_id = 0) and ai.type_code != 'issue_epic'
                         </when>
                         <otherwise>
-                            and ((ai.epic_id in
-                            <foreach collection="searchDTO.otherArgs.epic" item="id" open="(" separator=","
-                                     close=")">
-                                #{id}
-                            </foreach>)
-                            or (ai.issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id = ai.parent_issue_id and
-                            ai7.epic_id in
+                            and ai.epic_id in
                             <foreach collection="searchDTO.otherArgs.epic" item="id" open="(" separator=","
                                      close=")">
                                 #{id}
                             </foreach>
-                            )))
+                            <!--or (ai.issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id = ai.parent_issue_id and-->
+                            <!--ai7.epic_id in-->
+                            <!--<foreach collection="searchDTO.otherArgs.epic" item="id" open="(" separator=","-->
+                                     <!--close=")">-->
+                                <!--#{id}-->
+                            <!--</foreach>-->
+                            <!--)))-->
                         </otherwise>
                     </choose>
                 </if>
@@ -1596,6 +1615,8 @@
         SELECT
             ai.issue_id,
             ai.type_code,
+            ai.issue_type_id,
+            ai.status_id,
             sprint.sprint_id
         FROM
             agile_issue ai
