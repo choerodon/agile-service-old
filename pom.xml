@@ -94,17 +94,6 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-sleuth</artifactId>
         </dependency>
-        <!-- 事件工具依赖 -->
-        <dependency>
-            <groupId>io.choerodon</groupId>
-            <artifactId>choerodon-starter-event-producer</artifactId>
-            <version>${choerodon.starters.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.choerodon</groupId>
-            <artifactId>choerodon-starter-event-consumer</artifactId>
-            <version>${choerodon.starters.version}</version>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
