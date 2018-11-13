@@ -23,7 +23,7 @@ public class FixDataController {
     @Autowired
     private IssueStatusService issueStatusService;
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER, InitRoleCode.SITE_ADMINISTRATOR})
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR, InitRoleCode.SITE_DEVELOPER})
     @ApiOperation("迁移数据，查询所有状态，执行1")
     @GetMapping(value = "/move_status")
     public ResponseEntity moveStatus(Boolean isFixStatus) {
@@ -31,7 +31,7 @@ public class FixDataController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER, InitRoleCode.SITE_ADMINISTRATOR})
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR, InitRoleCode.SITE_DEVELOPER})
     @ApiOperation("迁移数据，查询所有状态，执行2")
     @GetMapping(value = "/update_all_data")
     public ResponseEntity updateAllData() {
