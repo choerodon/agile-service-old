@@ -154,23 +154,23 @@ public class IssueStatusController {
 //                .orElseThrow(() -> new CommonException("error.statusList.get"));
 //    }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
-    @ApiOperation("迁移数据，查询所有状态，执行1")
-    @GetMapping(value = "/move_status")
-    public ResponseEntity moveStatus(@ApiParam(value = "项目id", required = true)
-                                     @PathVariable(name = "project_id") Long projectId,
-                                     Boolean isFixStatus) {
-        issueStatusService.moveStatus(projectId, isFixStatus);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
-    @ApiOperation("迁移数据，查询所有状态，执行2")
-    @GetMapping(value = "/update_all_data")
-    public ResponseEntity updateAllData(@ApiParam(value = "项目id", required = true)
-                                        @PathVariable(name = "project_id") Long projectId) {
-        issueStatusService.updateAllData(projectId);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
+//    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+//    @ApiOperation("迁移数据，查询所有状态，执行1")
+//    @GetMapping(value = "/move_status")
+//    public ResponseEntity moveStatus(@ApiParam(value = "项目id", required = true)
+//                                     @PathVariable(name = "project_id") Long projectId,
+//                                     Boolean isFixStatus) {
+//        issueStatusService.moveStatus(projectId, isFixStatus);
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
+//
+//    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+//    @ApiOperation("迁移数据，查询所有状态，执行2")
+//    @GetMapping(value = "/update_all_data")
+//    public ResponseEntity updateAllData(@ApiParam(value = "项目id", required = true)
+//                                        @PathVariable(name = "project_id") Long projectId) {
+//        issueStatusService.updateAllData(projectId);
+//        return new ResponseEntity<>(HttpStatus.CREATED);
+//    }
 
 }

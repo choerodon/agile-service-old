@@ -247,7 +247,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 //    }
 
     @Override
-    public void moveStatus(Long projectId, Boolean isFixStatus) {
+    public void moveStatus(Boolean isFixStatus) {
         logger.info("步骤1开始执行");
         List<StatusForMoveDataDO> result = new ArrayList<>();
         List<IssueStatusDO> statuses = issueStatusMapper.selectAll();
@@ -284,7 +284,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 
 
     @Override
-    public void updateAllData(Long projectId) {
+    public void updateAllData() {
         logger.info("步骤2开始执行");
         List<IssueStatusDO> statuses = issueStatusMapper.selectAll();
         Collections.sort(statuses, Comparator.comparing(IssueStatusDO::getId));
