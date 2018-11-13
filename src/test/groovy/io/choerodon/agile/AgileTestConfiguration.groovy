@@ -20,7 +20,7 @@ import io.choerodon.agile.infra.mapper.*
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.convertor.ApplicationContextHelper
 import io.choerodon.core.oauth.CustomUserDetails
-import io.choerodon.event.producer.execute.EventProducerTemplate
+//import io.choerodon.event.producer.execute.EventProducerTemplate
 import io.choerodon.liquibase.LiquibaseConfig
 import io.choerodon.liquibase.LiquibaseExecutor
 import org.springframework.beans.factory.annotation.Autowired
@@ -153,11 +153,11 @@ class AgileTestConfiguration {
         new ProductVersionServiceImpl(detachedMockFactory.Mock(SagaClient))
     }
 
-    @Bean("mockEventProducerTemplate")
-    @Primary
-    EventProducerTemplate eventProducerTemplate() {
-        detachedMockFactory.Mock(EventProducerTemplate)
-    }
+//    @Bean("mockEventProducerTemplate")
+//    @Primary
+//    EventProducerTemplate eventProducerTemplate() {
+//        detachedMockFactory.Mock(EventProducerTemplate)
+//    }
 
     final ObjectMapper objectMapper = new ObjectMapper()
 
