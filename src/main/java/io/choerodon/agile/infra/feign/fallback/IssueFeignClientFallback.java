@@ -39,7 +39,7 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity fixStateMachineScheme(List<StatusForMoveDataDO> statusForMoveDataDOList, Boolean isFixStatus) {
+    public ResponseEntity fixStateMachineScheme(List<StatusForMoveDataDO> statusForMoveDataDOList) {
         throw new CommonException("error.status.init");
     }
 

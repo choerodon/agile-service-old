@@ -44,7 +44,7 @@ public interface IssueStatusService {
 
 //    Page<StatusDTO> listByProjectId(Long projectId, PageRequest pageRequest);
 
-    void moveStatus(Boolean isFixStatus);
+    void moveStatus();
 
     void updateAllData();
 }

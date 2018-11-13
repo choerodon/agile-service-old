@@ -247,7 +247,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 //    }
 
     @Override
-    public void moveStatus(Boolean isFixStatus) {
+    public void moveStatus() {
         logger.info("步骤1开始执行");
         List<StatusForMoveDataDO> result = new ArrayList<>();
         List<IssueStatusDO> statuses = issueStatusMapper.selectAll();
@@ -278,7 +278,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             }
         }
 
-        issueFeignClient.fixStateMachineScheme(result, isFixStatus);
+        issueFeignClient.fixStateMachineScheme(result);
         logger.info("步骤1执行完成");
     }
 

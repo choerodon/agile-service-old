@@ -26,8 +26,8 @@ public class FixDataController {
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR, InitRoleCode.SITE_DEVELOPER})
     @ApiOperation("迁移数据，查询所有状态，执行1")
     @GetMapping(value = "/move_status")
-    public ResponseEntity moveStatus(Boolean isFixStatus) {
-        issueStatusService.moveStatus(isFixStatus);
+    public ResponseEntity moveStatus() {
+        issueStatusService.moveStatus();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
