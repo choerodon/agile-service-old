@@ -17,7 +17,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <choerodon.starters.version>0.6.4.RELEASE</choerodon.starters.version>
+        <choerodon.starters.version>0.7.0.RELEASE</choerodon.starters.version>
     </properties>
 
     <dependencies>
@@ -84,17 +84,6 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bus-kafka</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.cloud</groupId>
-                    <artifactId>spring-cloud-bus</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>io.choerodon</groupId>
-            <artifactId>choerodon-starter-bus</artifactId>
-            <version>${choerodon.starters.version}</version>
         </dependency>
         <dependency>
             <groupId>io.choerodon</groupId>
