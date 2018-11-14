@@ -424,7 +424,9 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 // 处理description
                 String description = quick.getDescription();
                 String[] desStrs = description.split("\\+\\+\\+");
-                JSONObject jsonObject = JSONObject.parseObject(desStrs[1]);
+                String lastDesStr2 = desStrs[desStrs.length - 1];
+                lastDesStr2 = lastDesStr2.replaceAll("\\+", "");
+                JSONObject jsonObject = JSONObject.parseObject(lastDesStr2);
                 List<JSONObject> arrs = JSONObject.parseArray(jsonObject.get("arr").toString(), JSONObject.class);
                 for (JSONObject object : arrs) {
                     if ("status".equals(object.get("fieldCode"))) {
@@ -458,7 +460,12 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 q.setObjectVersionNumber(quick.getObjectVersionNumber());
                 q.setSqlQuery(result);
                 jsonObject.put("arr", arrs);
-                q.setDescription(desStrs[0] + "+++" + jsonObject.toString());
+                String description1 = "";
+                for (int t1 = 0; t1 < desStrs.length - 1; t1++) {
+                    description1 = description1 + desStrs[t1] + "+++";
+                }
+                description1 += jsonObject.toString();
+                q.setDescription(description1);
                 updateDate.add(q);
             }
         }
@@ -522,7 +529,9 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 // 处理description
                 String description = qf.getDescription();
                 String[] desStrs = description.split("\\+\\+\\+");
-                JSONObject jsonObject = JSONObject.parseObject(desStrs[1]);
+                String lastDesStr = desStrs[desStrs.length - 1];
+                lastDesStr = lastDesStr.replaceAll("\\+", "");
+                JSONObject jsonObject = JSONObject.parseObject(lastDesStr);
                 List<JSONObject> arrs = JSONObject.parseArray(jsonObject.get("arr").toString(), JSONObject.class);
                 for (JSONObject object : arrs) {
                     if ("priority".equals(object.get("fieldCode"))) {
@@ -545,7 +554,12 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 updatePriority.setObjectVersionNumber(qf.getObjectVersionNumber());
                 updatePriority.setSqlQuery(res);
                 jsonObject.put("arr", arrs);
-                updatePriority.setDescription(desStrs[0] + "+++" + jsonObject.toString());
+                String description2 = "";
+                for (int t2 = 0; t2 < desStrs.length - 1; t2++) {
+                    description2 = description2 + desStrs[t2] + "+++";
+                }
+                description2 += jsonObject.toString();
+                updatePriority.setDescription(description2);
                 priorityResult.add(updatePriority);
             }
         }
