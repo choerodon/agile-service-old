@@ -117,6 +117,10 @@
             <!--ais.id-->
     <!--</select>-->
 
+    <select id="selectStatusIdIsNotNull" resultType="io.choerodon.agile.infra.dataobject.IssueStatusDO">
+        select * from agile_issue_status ais where ais.status_id is not null
+    </select>
+
     <update id="batchUpdateStatus">
         <foreach collection="statuses" item="sta" open="" close="" separator=";">
             update agile_issue_status set status_id = #{sta.statusId} where id = #{sta.id}
