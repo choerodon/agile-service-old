@@ -1500,7 +1500,7 @@
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
         LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code
-        WHERE ai.project_id = #{projectId} and ai.type_code = 'issue_test'
+        WHERE ai.project_id = #{projectId} and ai.type_code != 'sub_task'
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
                 AND position(#{searchArgs.summary} IN ai.summary)
@@ -1510,12 +1510,12 @@
             </if>
         </if>
         <if test='advancedSearchArgs != null'>
-            <!--<if test='advancedSearchArgs.issueTypeId != null and advancedSearchArgs.issueTypeId.size > 0'>-->
-                <!--AND ai.issue_type_id IN-->
-                <!--<foreach collection="advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator="," close=")">-->
-                    <!--#{issueTypeId}-->
-                <!--</foreach>-->
-            <!--</if>-->
+            <if test='advancedSearchArgs.issueTypeId != null and advancedSearchArgs.issueTypeId.size > 0'>
+                AND ai.issue_type_id IN
+                <foreach collection="advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator="," close=")">
+                    #{issueTypeId}
+                </foreach>
+            </if>
             <if test='advancedSearchArgs.priorityId != null and advancedSearchArgs.priorityId.size > 0'>
                 AND ai.priority_id IN
                 <foreach collection="advancedSearchArgs.priorityId" item="priorityId" open="(" separator=","

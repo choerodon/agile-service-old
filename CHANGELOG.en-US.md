@@ -1,5 +1,36 @@
 # Changelog
-All notable changes about agile service will be documented in this file.
+All notable changes about agile-service will be documented in this file.
+
+## [0.11.0] - 2018-11-16
+
+### Added
+
+- Issue type customization functionality.new issue-service, issue-service support custom issue type, support issue type icon customization, custom issue type will be applied in agile-service.
+- Issue priority Customization functionality.The issue-service supports custom problem prioritization, and the custom issue priority will be applied in the agile service.
+- Issue state machine functionality.new state-machine-service, issue status update, creation, and deletion are controlled by state-machine-service.
+
+### Changed
+
+- Issue management adds new field display, field search, field sorting.
+- Issue management supports custom filtering.
+- The Issue management view subtask is also displayed in the list.
+- When the Issue in the active sprint is dragged to another location then the problem and its subtasks are all restored to the state machine initial state.
+- Issue details form page optimization.
+- Product global illustration optimization.
+- Active sprint view display optimization.
+- Backlog epic count details optimization.
+- Calendar style and operation optimization.
+- Calendar workdays and holidays return the current year and next year data by year.
+- The issue link list shows the assigner message.
+- The iteration speed graph is not counted the not start sprint.
+
+### Fixed
+
+- The data after the work log time registration in the issue management is not updated.
+- The version, epic sorting error in backlog view.
+- Active sprint and iteration work bench remaining time calculation error.
+- The version report cache was not updated in a timely manner.
+- Drag the issue in multiple states will show white screen in the active sprint.
 
 ## [0.10.5] - 2018-10-22
 
