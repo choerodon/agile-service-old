@@ -127,7 +127,7 @@ public class AgileEventHandler {
     @SagaTask(code = AGILE_INIT_TIMEZONE,
             description = "issue消费注册组织初始化数据",
             sagaCode = ORG_REGISTER,
-            seq = 3)
+            seq = 1)
     public String handleOrgaizationRegisterByConsumeSagaTask(String data) {
         handleOrganizationInitTimeZoneSagaTask(data);
         return data;
