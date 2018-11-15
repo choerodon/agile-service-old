@@ -68,6 +68,14 @@ public class StateMachineServiceImpl implements StateMachineService {
     @Autowired
     private IssueRepository issueRepository;
 
+    /**
+     * 复制任务时，因为调用了createIssue和createSubIssue（其中执行的手动事务相当于未提交）导致查不到手动事务提交的issue，
+     * 因此需要开放一个新事务设置隔离级别未读取未提交的数据即可取到数据
+     *
+     * @param projectId
+     * @param issueId
+     * @return
+     */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_UNCOMMITTED, rollbackFor = Exception.class)
     public IssueDetailDO queryIssueDetailWithUncommitted(Long projectId, Long issueId) {

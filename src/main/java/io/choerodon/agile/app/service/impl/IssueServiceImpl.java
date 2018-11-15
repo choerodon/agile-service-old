@@ -1162,7 +1162,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     public IssueSubDTO queryIssueSubByCreate(Long projectId, Long issueId) {
-        IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
+        IssueDetailDO issue = stateMachineService.queryIssueDetailWithUncommitted(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
