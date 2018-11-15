@@ -18,7 +18,7 @@
         <id column="estimate_time" property="estimateTime"/>
         <id column="remaining_time" property="remainingTime"/>
         <id column="issue_epic_name" property="epicName"/>
-        <id column="color" property="color"/>
+        <id column="color_value" property="color"/>
         <id column="epic_color" property="epicColor"/>
         <id column="parent_issue_num" property="parentIssueNum"/>
         <id column="object_version_number" property="objectVersionNumber"/>

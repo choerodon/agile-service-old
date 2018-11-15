@@ -68,7 +68,7 @@ public class ProductVersionController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("更新version")
-    @PutMapping(value = "/{versionId}")
+    @PutMapping(value = "/update/{versionId}")
     public ResponseEntity<ProductVersionDetailDTO> updateVersion(@ApiParam(value = "项目id", required = true)
                                                                  @PathVariable(name = "project_id") Long projectId,
                                                                  @ApiParam(value = "versionId", required = true)
