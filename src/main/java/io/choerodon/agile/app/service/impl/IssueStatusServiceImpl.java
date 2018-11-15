@@ -281,7 +281,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         logger.info("v0.11.0迁移数据步骤1: 已获取所有状态，开始调用issue-service迁移状态");
 
         issueFeignClient.fixStateMachineScheme(result);
-        logger.info("v0.11.0迁移数据步骤1: 执行完成!");
+        logger.info("v0.11.0迁移数据步骤1: 执行完成! Success!");
     }
 
 
@@ -571,7 +571,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 
         logger.info("步骤2：快速搜索数据的优先级修复完成");
 
-        logger.info("v0.11.0迁移数据步骤2: 执行完成!");
+        logger.info("v0.11.0迁移数据步骤2: 执行完成! Success!");
     }
 
     private Long getPriorityId(Map<Long, Map<String, Long>> prioritys, Map<Long, Long> proWithOrg, QuickFilterDO quickFilterDO, String priorityStr) {

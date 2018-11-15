@@ -444,10 +444,17 @@
                         #{id}
                     </foreach>
                 </if>
-                <if test='searchDTO.otherArgs.resolution'>
+                <if test='searchDTO.otherArgs.resolution !=null'>
                     AND ai.status_id in (
                         select ais.status_id from agile_issue_status ais where ais.status_id = ai.status_id and ais.project_id = ai.project_id
-                        and ais.is_completed = 1
+                    <choose>
+                        <when test="searchDTO.otherArgs.resolution == 'true'">
+                            and ais.is_completed = 1
+                        </when>
+                        <otherwise>
+                            and ais.is_completed = 0
+                        </otherwise>
+                    </choose>
                     )
                 </if>
                 <if test='searchDTO.otherArgs.component != null and searchDTO.otherArgs.component.size > 0'>
