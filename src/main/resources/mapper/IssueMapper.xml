@@ -18,7 +18,7 @@
         <id column="estimate_time" property="estimateTime"/>
         <id column="remaining_time" property="remainingTime"/>
         <id column="issue_epic_name" property="epicName"/>
-        <id column="color" property="color"/>
+        <id column="color_value" property="color"/>
         <id column="epic_color" property="epicColor"/>
         <id column="parent_issue_num" property="parentIssueNum"/>
         <id column="object_version_number" property="objectVersionNumber"/>
@@ -411,9 +411,6 @@
                 AND ai.issue_id in (
                 SELECT ai3.issue_id FROM agile_issue ai3 ,agile_issue ai4
                 where ai3.epic_id = ai4.issue_id and position(#{searchDTO.searchArgs.epic} IN ai4.epic_name) )
---                 or (ai.parent_issue_id in (
---                 SELECT ai5.issue_id FROM agile_issue ai5 ,agile_issue ai6
---                 where ai5.epic_id = ai6.issue_id and position(#{searchDTO.searchArgs.epic} IN ai6.epic_name) )))
             </if>
             <if test='searchDTO.searchArgs.version != null and searchDTO.searchArgs.version != "" '>
                 AND ai.issue_id in (

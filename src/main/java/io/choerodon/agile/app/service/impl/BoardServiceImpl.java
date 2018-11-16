@@ -477,7 +477,7 @@ public class BoardServiceImpl implements BoardService {
             ids[0] = issueDO.getAssigneeId();
             List<UserDO> userDOList = userRepository.listUsersByIds(ids);
             String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName() + userDOList.get(0).getRealName() : "";
-            siteMsgUtil.issueSolve(userIds, userName, summary, url.toString());
+            siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), issueDO.getAssigneeId());
         }
         return result;
     }
