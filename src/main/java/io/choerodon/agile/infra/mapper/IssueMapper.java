@@ -396,4 +396,13 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @return IssueDO
      */
     List<IssueDO> queryIssueByIssueIdsAndSubIssueIds(@Param("issueIds") List<Long> issueIds);
+
+    /**
+     * 查询issueIds对应的带当前冲刺的issueDO列表
+     *
+     * @param projectId projectId
+     * @param issueIds  issueIds
+     * @return IssueDO
+     */
+    List<IssueDO> queryIssueSprintNotClosedByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 }
