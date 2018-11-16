@@ -252,18 +252,24 @@ public class BoardColumnServiceImpl implements BoardColumnService {
                 break;
         }
         BoardColumnE columnE = boardColumnRepository.create(column);
-        IssueStatusE issueStatusE = new IssueStatusE();
-        issueStatusE.setName(name);
-        issueStatusE.setEnable(false);
-        issueStatusE.setCategoryCode(categoryCode);
-        issueStatusE.setProjectId(projectId);
-        issueStatusE.setStatusId(statusId);
-        if (categoryCode.equals(DONE_CODE)) {
-            issueStatusE.setCompleted(true);
-        } else {
-            issueStatusE.setCompleted(false);
+        IssueStatusDO issueStatusDO = new IssueStatusDO();
+        issueStatusDO.setProjectId(projectId);
+        issueStatusDO.setStatusId(statusId);
+        IssueStatusDO res = issueStatusMapper.selectOne(issueStatusDO);
+        if (res == null) {
+            IssueStatusE issueStatusE = new IssueStatusE();
+            issueStatusE.setProjectId(projectId);
+            issueStatusE.setStatusId(statusId);
+            issueStatusE.setName(name);
+            issueStatusE.setEnable(false);
+            issueStatusE.setCategoryCode(categoryCode);
+            if (categoryCode.equals(DONE_CODE)) {
+                issueStatusE.setCompleted(true);
+            } else {
+                issueStatusE.setCompleted(false);
+            }
+            issueStatusRepository.create(issueStatusE);
         }
-        issueStatusRepository.create(issueStatusE);
         ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO();
         columnStatusRelDO.setColumnId(columnE.getColumnId());
         columnStatusRelDO.setStatusId(statusId);
