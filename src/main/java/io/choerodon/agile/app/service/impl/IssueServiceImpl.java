@@ -389,11 +389,11 @@ public class IssueServiceImpl implements IssueService {
             }
             String projectName = convertProjectName(projectDTO);
             String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId();
-            siteMsgUtil.issueCreate(userIds, userName, summary, url);
+            siteMsgUtil.issueCreate(userIds, userName, summary, url, result.getReporterId());
             if (result.getAssigneeId() != null) {
                 List<Long> assigneeIds = new ArrayList<>();
                 assigneeIds.add(result.getAssigneeId());
-                siteMsgUtil.issueAssignee(assigneeIds, result.getAssigneeName(), summary, url);
+                siteMsgUtil.issueAssignee(assigneeIds, result.getAssigneeName(), summary, url, result.getAssigneeId());
             }
         }
         return result;
@@ -465,7 +465,7 @@ public class IssueServiceImpl implements IssueService {
             } else {
                 url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId());
             }
-            siteMsgUtil.issueAssignee(userIds, userName, summary, url.toString());
+            siteMsgUtil.issueAssignee(userIds, userName, summary, url.toString(), result.getAssigneeId());
         }
         Boolean completed = issueStatusMapper.selectByStatusId(projectId, result.getStatusId()).getCompleted();
         if (fieldList.contains(STATUS_ID) && completed != null && completed && result.getAssigneeId() != null && !ISSUE_TEST.equals(result.getTypeCode())) {
@@ -486,7 +486,7 @@ public class IssueServiceImpl implements IssueService {
             List<UserDO> userDOList = userFeignClient.listUsersByIds(ids).getBody();
             String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName() + userDOList.get(0).getRealName() : "";
             String summary = projectDTO.getCode() + "-" + result.getIssueNum() + "-" + result.getSummary();
-            siteMsgUtil.issueSolve(userIds, userName, summary, url.toString());
+            siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), result.getAssigneeId());
         }
         return result;
     }
@@ -1180,11 +1180,11 @@ public class IssueServiceImpl implements IssueService {
             }
             String projectName = convertProjectName(projectDTO);
             String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getParentIssueNum() + URL_TEMPLATE4 + result.getParentIssueId() + URL_TEMPLATE5 + result.getIssueId();
-            siteMsgUtil.issueCreate(userIds, userName, summary, url);
+            siteMsgUtil.issueCreate(userIds, userName, summary, url, result.getReporterId());
             if (result.getAssigneeId() != null) {
                 List<Long> assigneeIds = new ArrayList<>();
                 assigneeIds.add(result.getAssigneeId());
-                siteMsgUtil.issueAssignee(assigneeIds, result.getAssigneeName(), summary, url);
+                siteMsgUtil.issueAssignee(assigneeIds, result.getAssigneeName(), summary, url, result.getAssigneeId());
             }
         }
         return result;
