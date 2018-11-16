@@ -78,7 +78,6 @@ public class StateMachineServiceImpl implements StateMachineService {
     private ProjectInfoMapper projectInfoMapper;
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public synchronized IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType) {
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
         //事物隔离级别：开启新事务
@@ -132,7 +131,6 @@ public class StateMachineServiceImpl implements StateMachineService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO) {
         IssueE subIssueE = issueAssembler.toTarget(issueSubCreateDTO, IssueE.class);
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();

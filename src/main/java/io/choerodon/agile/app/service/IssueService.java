@@ -41,7 +41,7 @@ public interface IssueService {
      * @param issueId   issueId
      * @return IssueDTO
      */
-    IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId, Boolean isReadUnCommitted);
+    IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId);
 
     /**
      * 分页过滤查询issueList（包含子任务）

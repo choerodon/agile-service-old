@@ -141,7 +141,7 @@ public class IssueController {
                                                @PathVariable Long issueId,
                                                @ApiParam(value = "组织id", required = true)
                                                @RequestParam Long organizationId) {
-        return Optional.ofNullable(issueService.queryIssue(projectId, issueId, organizationId, false))
+        return Optional.ofNullable(issueService.queryIssue(projectId, issueId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssue"));
     }

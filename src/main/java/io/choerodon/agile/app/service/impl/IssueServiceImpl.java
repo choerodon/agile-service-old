@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -252,11 +253,12 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public IssueDTO createIssueCsnTest(IssueCreateDTO issueCreateDTO2, String applyType) {
         if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
             throw new CommonException("error.applyType.illegal");
         }
-        IssueDetailDO issueDetailDO = issueMapper.queryIssueDetail(28L, 17376L);
+        IssueDetailDO issueDetailDO = issueMapper.queryIssueDetail(28L, 21221L);
         IssueCreateDTO issueCreateDTO = issueAssembler.issueDtoToIssueCreateDto(issueDetailDO);
         IssueDTO newIssue = stateMachineService.createIssue(issueCreateDTO2, applyType);
         return newIssue;
@@ -366,13 +368,8 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId, Boolean isReadUnCommitted) {
-        IssueDetailDO issue;
-        if (isReadUnCommitted) {
-            issue = stateMachineService.queryIssueDetailWithUncommitted(projectId, issueId);
-        } else {
-            issue = issueMapper.queryIssueDetail(projectId, issueId);
-        }
+    public IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId) {
+        IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
@@ -1051,7 +1048,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueSubDTO queryIssueSubByCreate(Long projectId, Long issueId) {
-        IssueDetailDO issue = stateMachineService.queryIssueDetailWithUncommitted(projectId, issueId);
+        IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
@@ -1116,7 +1113,7 @@ public class IssueServiceImpl implements IssueService {
         }
         issueE.setIssueTypeId(issueUpdateTypeDTO.getIssueTypeId());
         issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, REMAIN_TIME_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, STORY_POINTS_FIELD, RANK_FIELD, EPIC_SEQUENCE, ISSUE_TYPE_ID, STATUS_ID});
-        return queryIssue(issueE.getProjectId(), issueE.getIssueId(), organizationId, false);
+        return queryIssue(issueE.getProjectId(), issueE.getIssueId(), organizationId);
     }
 
     @Override
@@ -1426,7 +1423,18 @@ public class IssueServiceImpl implements IssueService {
         ExcelUtil.export(exportIssues, ExportIssuesDTO.class, FIELDS_NAME, FIELDS, project.getName(), response);
     }
 
+    /**
+     * 复制issue的接口调用了createIssue和createSubIssue导致手动事务失效，因此需要设置事务隔离级别为：READ_UNCOMMITTED
+     *
+     * @param projectId        projectId
+     * @param issueId          issueId
+     * @param copyConditionDTO copyConditionDTO
+     * @param organizationId
+     * @param applyType
+     * @return
+     */
     @Override
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public IssueDTO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO, Long organizationId, String applyType) {
         if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
             throw new CommonException("error.applyType.illegal");
@@ -1450,7 +1458,7 @@ public class IssueServiceImpl implements IssueService {
                     subIssueDOList.forEach(issueDO -> copySubIssue(issueDO, newIssue.getIssueId(), projectId));
                 }
             }
-            return queryIssue(projectId, newIssue.getIssueId(), organizationId, true);
+            return queryIssue(projectId, newIssue.getIssueId(), organizationId);
         } else {
             throw new CommonException("error.issue.copyIssueByIssueId");
         }
