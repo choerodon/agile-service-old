@@ -1,7 +1,6 @@
 package io.choerodon.agile.configure;
 
 import io.choerodon.agile.api.dto.IssueTypeDTO;
-import io.choerodon.agile.api.dto.NoticeSendDTO;
 import io.choerodon.agile.api.dto.ProjectDTO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.NotifyFeignClient;
