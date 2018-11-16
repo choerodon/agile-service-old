@@ -20,6 +20,7 @@ import io.choerodon.agile.api.dto.TimeZoneWorkCalendarRefDetailDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.NoticeService
+import io.choerodon.agile.app.service.StateMachineService
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
@@ -71,6 +72,9 @@ class SprintControllerSpec extends Specification {
     @Autowired
     @Qualifier("issueService")
     IssueService issueService
+
+    @Autowired
+    StateMachineService stateMachineService;
 
     @Autowired
     IssueMapper issueMapper

@@ -1,8 +1,8 @@
 package io.choerodon.agile.app.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.IssueCreateDTO;
-import io.choerodon.agile.api.dto.IssueUpdateDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
@@ -19,6 +19,7 @@ import io.choerodon.agile.infra.dataobject.IssueDetailDO;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
+import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
@@ -32,9 +33,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.Collections;
 
@@ -67,6 +72,121 @@ public class StateMachineServiceImpl implements StateMachineService {
     private IssueFeignClient issueFeignClient;
     @Autowired
     private IssueRepository issueRepository;
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+    @Autowired
+    private ProjectInfoMapper projectInfoMapper;
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+    public synchronized IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType) {
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        //事物隔离级别：开启新事务
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        //获得事务状态
+        TransactionStatus status = transactionManager.getTransaction(def);
+        IssueE issueE = issueAssembler.toTarget(issueCreateDTO, IssueE.class);
+        Long projectId = issueE.getProjectId();
+        Long organizationId = ConvertUtil.getOrganizationId(projectId);
+        Long issueId;
+        ProjectInfoE projectInfoE;
+        Long stateMachineId;
+        try {
+            //获取状态机id
+            stateMachineId = issueFeignClient.queryStateMachineId(projectId, applyType, issueE.getIssueTypeId()).getBody();
+            if (stateMachineId == null) {
+                throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
+            }
+            Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
+            if (initStatusId == null) {
+                throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
+            }
+            //处理编号
+            ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+            projectInfoDO.setProjectId(projectId);
+            projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
+            if (projectInfoE == null) {
+                throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
+            }
+            issueService.handleInitIssue(issueE, initStatusId, projectInfoE);
+            //创建issue
+            issueId = issueRepository.create(issueE).getIssueId();
+            transactionManager.commit(status);
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            e.printStackTrace();
+            throw new CommonException(ERROR_CREATE_ISSUE_CREATE);
+        }
+
+        CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE);
+        InputDTO inputDTO = new InputDTO(issueId, "createIssue", JSON.toJSONString(createIssuePayload));
+        ResponseEntity<ExecuteResult> executeResult = instanceFeignClient.startInstance(organizationId, AGILE_SERVICE, stateMachineId, inputDTO);
+        //feign调用执行失败，抛出异常回滚
+        if (!executeResult.getBody().getSuccess()) {
+            //手动回滚数据
+            issueMapper.batchDeleteIssues(issueE.getProjectId(), Collections.singletonList(issueId));
+            logger.error(executeResult.getBody().getErrorMessage());
+            return null;
+        }
+        return issueService.queryIssueCreate(issueCreateDTO.getProjectId(), issueId);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+    public IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO) {
+        IssueE subIssueE = issueAssembler.toTarget(issueSubCreateDTO, IssueE.class);
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        //事物隔离级别，开启新事务，这样会比较安全些
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        //获得事务状态
+        TransactionStatus status = transactionManager.getTransaction(def);
+        Long projectId = subIssueE.getProjectId();
+        Long organizationId = ConvertUtil.getOrganizationId(projectId);
+        Long issueId;
+        ProjectInfoE projectInfoE;
+        Long stateMachineId;
+        try {
+            //获取状态机id
+            stateMachineId = issueFeignClient.queryStateMachineId(projectId, SchemeApplyType.AGILE, subIssueE.getIssueTypeId()).getBody();
+            if (stateMachineId == null) {
+                throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
+            }
+            Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
+            if (initStatusId == null) {
+                throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
+            }
+            //处理编号
+            ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+            projectInfoDO.setProjectId(subIssueE.getProjectId());
+            projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
+            if (projectInfoE == null) {
+                throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
+            }
+            //初始化subIssue
+            issueService.handleInitSubIssue(subIssueE, initStatusId, projectInfoE);
+
+            //创建issue
+            issueId = issueRepository.create(subIssueE).getIssueId();
+
+            transactionManager.commit(status);
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            e.printStackTrace();
+            throw new CommonException(ERROR_CREATE_ISSUE_CREATE);
+        }
+
+        CreateSubIssuePayload createSubIssuePayload = new CreateSubIssuePayload(issueSubCreateDTO, subIssueE, projectInfoE);
+        InputDTO inputDTO = new InputDTO(issueId, "createSubIssue", JSON.toJSONString(createSubIssuePayload));
+        ResponseEntity<ExecuteResult> executeResult = instanceFeignClient.startInstance(organizationId, AGILE_SERVICE, stateMachineId, inputDTO);
+        //feign调用执行失败，抛出异常回滚
+        if (!executeResult.getBody().getSuccess()) {
+            //手动回滚数据
+            issueMapper.batchDeleteIssues(subIssueE.getProjectId(), Collections.singletonList(issueId));
+            logger.error(executeResult.getBody().getErrorMessage());
+            return null;
+        }
+        return issueService.queryIssueSubByCreate(subIssueE.getProjectId(), issueId);
+    }
 
     /**
      * 复制任务时，因为调用了createIssue和createSubIssue（其中执行的手动事务相当于未提交）导致查不到手动事务提交的issue，

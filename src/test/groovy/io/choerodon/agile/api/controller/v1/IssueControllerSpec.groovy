@@ -5,6 +5,7 @@ import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.*
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
+import io.choerodon.agile.app.service.StateMachineService
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.enums.SchemeApplyType
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
@@ -60,6 +61,9 @@ class IssueControllerSpec extends Specification {
 
     @Autowired
     IssueService issueService
+
+    @Autowired
+    StateMachineService stateMachineService
 
     @Autowired
     IssueController issueController
@@ -869,7 +873,7 @@ class IssueControllerSpec extends Specification {
         issueCreateDTO.reporterId = 1L
         issueCreateDTO.typeCode = 'issue_test'
         issueCreateDTO.summary = 'issue-test'
-        IssueDTO issueDTO = issueService.createIssue(issueCreateDTO)
+        IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO)
         issues.add(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()))
         issueIdList.add(issueDTO.getIssueId())
         issueTestId = issueDTO.getIssueId()

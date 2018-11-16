@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.service.IssueService;
+import io.choerodon.agile.app.service.StateMachineService;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
@@ -48,6 +49,8 @@ public class IssueController {
     private VerifyUpdateUtil verifyUpdateUtil;
     @Autowired
     private IssueValidator issueValidator;
+    @Autowired
+    private StateMachineService stateMachineService;
 
     public IssueController(IssueService issueService) {
         this.issueService = issueService;
@@ -63,7 +66,7 @@ public class IssueController {
                                                 @ApiParam(value = "创建issue对象", required = true)
                                                 @RequestBody IssueCreateDTO issueCreateDTO) {
         issueRule.verifyCreateData(issueCreateDTO, projectId, applyType);
-        return Optional.ofNullable(issueService.createIssue(issueCreateDTO, applyType))
+        return Optional.ofNullable(stateMachineService.createIssue(issueCreateDTO, applyType))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.Issue.createIssue"));
     }
@@ -91,7 +94,7 @@ public class IssueController {
                                                       @ApiParam(value = "创建issue子任务对象", required = true)
                                                       @RequestBody IssueSubCreateDTO issueSubCreateDTO) {
         issueRule.verifySubCreateData(issueSubCreateDTO, projectId);
-        return Optional.ofNullable(issueService.createSubIssue(issueSubCreateDTO))
+        return Optional.ofNullable(stateMachineService.createSubIssue(issueSubCreateDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.Issue.createSubIssue"));
     }
