@@ -800,13 +800,16 @@ public class IssueServiceImpl implements IssueService {
         List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
         //处理子任务
         moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
-        BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, moveIssueIds);
+        //把与现在冲刺与要移动的冲刺相同的issue排除掉
+        List<IssueDO> issueDOList = issueMapper.queryIssueSprintNotClosedByIssueIds(projectId, moveIssueIds);
+        List<Long> moveIssueIdsFilter = issueDOList.stream().filter(issueDO -> !issueDO.getSprintId().equals(sprintId)).map(IssueDO::getIssueId).collect(Collectors.toList());
+        BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, moveIssueIdsFilter);
         issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
         if (sprintId != null && !Objects.equals(sprintId, 0L)) {
-            issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
+            issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIdsFilter, new Date(), customUserDetails.getUserId());
         }
         //如果移动冲刺不是活跃冲刺，则状态回到默认状态
-        batchHandleIssueStatus(projectId, moveIssueIds, sprintId);
+        batchHandleIssueStatus(projectId, moveIssueIdsFilter, sprintId);
         List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds());
         List<Long> assigneeIds = issueSearchDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);

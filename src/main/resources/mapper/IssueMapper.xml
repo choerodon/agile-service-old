@@ -2487,4 +2487,24 @@
             update agile_issue set issue_type_id = #{issueDO.issueTypeId} where issue_id = #{issueDO.issueId}
         </foreach>
     </update>
+
+    <select id="queryIssueSprintNotClosedByIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT
+            ai.issue_id,
+            IFNULL(asp1.sprint_id, 0) AS sprint_id,
+            ai.status_id
+        FROM agile_issue ai
+            LEFT JOIN (SELECT
+                           aisr.issue_id,
+                           asp.sprint_id
+                       FROM agile_issue_sprint_rel aisr, agile_sprint asp
+                       WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
+                             AND aisr.issue_id = #{issueId}
+                      ) asp1 ON asp1.issue_id = ai.issue_id
+        WHERE ai.project_id = #{projectId} AND ai.issue_id in
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+</select>
 </mapper>
