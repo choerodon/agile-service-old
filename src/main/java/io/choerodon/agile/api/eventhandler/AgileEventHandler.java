@@ -80,7 +80,7 @@ public class AgileEventHandler {
 
 
     @SagaTask(code = STATE_MACHINE_INIT_PROJECT,
-            description = "agile消费创建项目事件初始化看板",
+            description = "状态机服务初始化状态后，敏捷消费事件",
             sagaCode = PROJECT_CREATE_STATE_MACHINE,
             seq = 3)
     public String dealStateMachineInitProject(String message) {

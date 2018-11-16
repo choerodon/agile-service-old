@@ -2297,7 +2297,8 @@
         ai.description,
         ai.assignee_id,
         ai.project_id,
-        ai.issue_type_id
+        ai.issue_type_id,
+        ai.priority_id
         FROM
         agile_issue ai
         WHERE

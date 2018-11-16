@@ -77,6 +77,13 @@ public class StateMachineServiceImpl implements StateMachineService {
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
 
+    /**
+     * 创建issue，由于状态机需要回调，采用手动提交事务
+     *
+     * @param issueCreateDTO
+     * @param applyType
+     * @return
+     */
     @Override
     public synchronized IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType) {
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -130,6 +137,12 @@ public class StateMachineServiceImpl implements StateMachineService {
         return issueService.queryIssueCreate(issueCreateDTO.getProjectId(), issueId);
     }
 
+    /**
+     * 创建subIssue，由于状态机需要回调，采用手动提交事务
+     *
+     * @param issueSubCreateDTO
+     * @return
+     */
     @Override
     public IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO) {
         IssueE subIssueE = issueAssembler.toTarget(issueSubCreateDTO, IssueE.class);
