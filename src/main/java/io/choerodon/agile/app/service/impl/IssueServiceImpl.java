@@ -798,19 +798,23 @@ public class IssueServiceImpl implements IssueService {
         //处理子任务
         moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
         //把与现在冲刺与要移动的冲刺相同的issue排除掉
-        List<IssueDO> issueDOList = issueMapper.queryIssueSprintNotClosedByIssueIds(projectId, moveIssueIds);
-        List<Long> moveIssueIdsFilter = issueDOList.stream().filter(issueDO -> !issueDO.getSprintId().equals(sprintId)).map(IssueDO::getIssueId).collect(Collectors.toList());
-        BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, moveIssueIdsFilter);
-        issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
-        if (sprintId != null && !Objects.equals(sprintId, 0L)) {
-            issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIdsFilter, new Date(), customUserDetails.getUserId());
+        List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds()).stream().filter(issueDO -> !issueDO.getSprintId().equals(sprintId)).collect(Collectors.toList());
+        if (issueSearchDOList != null && !issueSearchDOList.isEmpty()) {
+            List<Long> moveIssueIdsFilter = issueSearchDOList.stream().map(IssueSearchDO::getIssueId).collect(Collectors.toList());
+            BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, moveIssueIdsFilter);
+            issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+            if (sprintId != null && !Objects.equals(sprintId, 0L)) {
+                issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIdsFilter, new Date(), customUserDetails.getUserId());
+            }
+            //如果移动冲刺不是活跃冲刺，则状态回到默认状态
+            batchHandleIssueStatus(projectId, moveIssueIdsFilter, sprintId);
+            List<Long> assigneeIds = issueSearchDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDO::getAssigneeId).distinct().collect(Collectors.toList());
+            Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+            return issueSearchAssembler.doListToDTO(issueSearchDOList, usersMap, new HashMap<>(), new HashMap<>(), new HashMap<>());
+        } else {
+            return new ArrayList<>();
         }
-        //如果移动冲刺不是活跃冲刺，则状态回到默认状态
-        batchHandleIssueStatus(projectId, moveIssueIdsFilter, sprintId);
-        List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds());
-        List<Long> assigneeIds = issueSearchDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDO::getAssigneeId).distinct().collect(Collectors.toList());
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
-        return issueSearchAssembler.doListToDTO(issueSearchDOList, usersMap, new HashMap<>(), new HashMap<>(), new HashMap<>());
+
     }
 
     @Override
