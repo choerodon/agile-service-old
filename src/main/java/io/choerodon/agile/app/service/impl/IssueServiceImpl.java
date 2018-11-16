@@ -798,7 +798,8 @@ public class IssueServiceImpl implements IssueService {
         //处理子任务
         moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
         //把与现在冲刺与要移动的冲刺相同的issue排除掉
-        List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds()).stream().filter(issueDO -> !issueDO.getSprintId().equals(sprintId)).collect(Collectors.toList());
+        List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds()).stream()
+                .filter(issueDO -> issueDO.getSprintId() == null ? sprintId != 0 : !issueDO.getSprintId().equals(sprintId)).collect(Collectors.toList());
         if (issueSearchDOList != null && !issueSearchDOList.isEmpty()) {
             List<Long> moveIssueIdsFilter = issueSearchDOList.stream().map(IssueSearchDO::getIssueId).collect(Collectors.toList());
             BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, moveIssueIdsFilter);
