@@ -50,7 +50,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     Integer batchRemoveFromVersionTest(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-    String queryRank(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("outsetIssueId") Long outsetIssueId);
+    String queryRank(@Param("projectId") Long projectId,  @Param("outsetIssueId") Long outsetIssueId);
 
     List<Long> queryIssueIdOrderByRankDesc(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 

@@ -987,14 +987,8 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void outsetBeforeRank(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
-        long c = System.currentTimeMillis();
-        String rightRank = issueMapper.queryRank(projectId, sprintId, moveIssueDTO.getOutsetIssueId());
-        long a = System.currentTimeMillis();
-        System.out.println(a - c);
-        //todo sql执行速度过慢
+        String rightRank = issueMapper.queryRank(projectId, moveIssueDTO.getOutsetIssueId());
         String leftRank = issueMapper.queryLeftRank(projectId, sprintId, rightRank);
-        long b = System.currentTimeMillis();
-        System.out.println(b - a);
         if (leftRank == null) {
             for (Long issueId : moveIssueDTO.getIssueIds()) {
                 rightRank = RankUtil.genPre(rightRank);
@@ -1026,7 +1020,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void afterRank(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
         moveIssueDTO.setIssueIds(issueMapper.queryIssueIdOrderByRankAsc(projectId, moveIssueDTO.getIssueIds()));
-        String leftRank = issueMapper.queryRank(projectId, sprintId, moveIssueDTO.getOutsetIssueId());
+        String leftRank = issueMapper.queryRank(projectId, moveIssueDTO.getOutsetIssueId());
         String rightRank = issueMapper.queryRightRank(projectId, sprintId, leftRank);
         if (rightRank == null) {
             for (Long issueId : moveIssueDTO.getIssueIds()) {
