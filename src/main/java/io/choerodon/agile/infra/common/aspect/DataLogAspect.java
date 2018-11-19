@@ -5,8 +5,10 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
+import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -159,6 +161,8 @@ public class DataLogAspect {
     private RedisUtil redisUtil;
     @Autowired
     private StateMachineFeignClient stateMachineFeignClient;
+    @Autowired
+    private IssueFeignClient issueFeignClient;
 
     /**
      * 定义拦截规则：拦截Spring管理的后缀为RepositoryImpl的bean中带有@DataLog注解的方法。
@@ -958,8 +962,9 @@ public class DataLogAspect {
                     deleteBurnDownCoordinateByTypeAll(issueE.getProjectId());
                     redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + issueE.getProjectId() + ':' + "*"});
                     deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), "*");
+                    StatusMapDTO statusMapDTO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(issueE.getProjectId()), issueE.getStatusId()).getBody();
                     createDataLog(issueE.getProjectId(), issueE.getIssueId(), FIELD_RESOLUTION, null,
-                            issueStatusDO.getName(), null, issueStatusDO.getId().toString());
+                            statusMapDTO.getName(), null, issueStatusDO.getStatusId().toString());
                 }
                 if (issueE.getEpicId() != null && !issueE.getEpicId().equals(0L)) {
                     //选择EPIC要生成日志
@@ -1027,15 +1032,10 @@ public class DataLogAspect {
 
     private void handleType(List<String> field, IssueDO originIssueDO, IssueE issueE) {
         if (field.contains(TYPE_CODE) && !Objects.equals(originIssueDO.getTypeCode(), issueE.getTypeCode())) {
-            String originTypeName = lookupValueMapper.selectNameByValueCode(originIssueDO.getTypeCode());
-            String currentTypeName = lookupValueMapper.selectNameByValueCode(issueE.getTypeCode());
-            DataLogE dataLogE = new DataLogE();
-            dataLogE.setField(FIELD_ISSUETYPE);
-            dataLogE.setIssueId(originIssueDO.getIssueId());
-            dataLogE.setProjectId(originIssueDO.getProjectId());
-            dataLogE.setOldString(originTypeName);
-            dataLogE.setNewString(currentTypeName);
-            dataLogRepository.create(dataLogE);
+            String originTypeName = issueFeignClient.queryIssueTypeById(ConvertUtil.getOrganizationId(originIssueDO.getProjectId()), originIssueDO.getIssueTypeId()).getBody().getName();
+            String currentTypeName = issueFeignClient.queryIssueTypeById(ConvertUtil.getOrganizationId(originIssueDO.getProjectId()), issueE.getIssueTypeId()).getBody().getName();
+            createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(), FIELD_ISSUETYPE, originTypeName, currentTypeName,
+                    originIssueDO.getIssueTypeId().toString(), issueE.getIssueTypeId().toString());
             deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
             deleteEpicChartCache(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
             deleteBurnDownCoordinateByTypeEpic(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId());
@@ -1296,10 +1296,10 @@ public class DataLogAspect {
             String oldString = null;
             String newString = null;
             if (originStatus.getCompleted() != null && originStatus.getCompleted()) {
-                oldValue = originStatus.getId().toString();
+                oldValue = originStatus.getStatusId().toString();
                 oldString = originStatusMapDTO.getName();
             } else if (currentStatus.getCompleted()) {
-                newValue = currentStatus.getId().toString();
+                newValue = currentStatus.getStatusId().toString();
                 newString = currentStatusMapDTO.getName();
             }
             createDataLog(projectId, issueId, FIELD_RESOLUTION, oldString, newString, oldValue, newValue);

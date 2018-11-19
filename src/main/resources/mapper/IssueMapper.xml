@@ -18,7 +18,7 @@
         <id column="estimate_time" property="estimateTime"/>
         <id column="remaining_time" property="remainingTime"/>
         <id column="issue_epic_name" property="epicName"/>
-        <id column="color" property="color"/>
+        <id column="color_value" property="color"/>
         <id column="epic_color" property="epicColor"/>
         <id column="parent_issue_num" property="parentIssueNum"/>
         <id column="object_version_number" property="objectVersionNumber"/>
@@ -411,9 +411,6 @@
                 AND ai.issue_id in (
                 SELECT ai3.issue_id FROM agile_issue ai3 ,agile_issue ai4
                 where ai3.epic_id = ai4.issue_id and position(#{searchDTO.searchArgs.epic} IN ai4.epic_name) )
---                 or (ai.parent_issue_id in (
---                 SELECT ai5.issue_id FROM agile_issue ai5 ,agile_issue ai6
---                 where ai5.epic_id = ai6.issue_id and position(#{searchDTO.searchArgs.epic} IN ai6.epic_name) )))
             </if>
             <if test='searchDTO.searchArgs.version != null and searchDTO.searchArgs.version != "" '>
                 AND ai.issue_id in (
@@ -444,10 +441,17 @@
                         #{id}
                     </foreach>
                 </if>
-                <if test='searchDTO.otherArgs.resolution'>
+                <if test='searchDTO.otherArgs.resolution !=null'>
                     AND ai.status_id in (
                         select ais.status_id from agile_issue_status ais where ais.status_id = ai.status_id and ais.project_id = ai.project_id
-                        and ais.is_completed = 1
+                    <choose>
+                        <when test="searchDTO.otherArgs.resolution == 'true'">
+                            and ais.is_completed = 1
+                        </when>
+                        <otherwise>
+                            and ais.is_completed = 0
+                        </otherwise>
+                    </choose>
                     )
                 </if>
                 <if test='searchDTO.otherArgs.component != null and searchDTO.otherArgs.component.size > 0'>
@@ -1500,7 +1504,7 @@
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
         LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code
-        WHERE ai.project_id = #{projectId} and ai.type_code = 'issue_test'
+        WHERE ai.project_id = #{projectId} and ai.type_code != 'sub_task'
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
                 AND position(#{searchArgs.summary} IN ai.summary)
@@ -1510,12 +1514,12 @@
             </if>
         </if>
         <if test='advancedSearchArgs != null'>
-            <!--<if test='advancedSearchArgs.issueTypeId != null and advancedSearchArgs.issueTypeId.size > 0'>-->
-                <!--AND ai.issue_type_id IN-->
-                <!--<foreach collection="advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator="," close=")">-->
-                    <!--#{issueTypeId}-->
-                <!--</foreach>-->
-            <!--</if>-->
+            <if test='advancedSearchArgs.issueTypeId != null and advancedSearchArgs.issueTypeId.size > 0'>
+                AND ai.issue_type_id IN
+                <foreach collection="advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator="," close=")">
+                    #{issueTypeId}
+                </foreach>
+            </if>
             <if test='advancedSearchArgs.priorityId != null and advancedSearchArgs.priorityId.size > 0'>
                 AND ai.priority_id IN
                 <foreach collection="advancedSearchArgs.priorityId" item="priorityId" open="(" separator=","
@@ -2292,7 +2296,9 @@
         ai.reporter_id,
         ai.description,
         ai.assignee_id,
-        ai.project_id
+        ai.project_id,
+        ai.issue_type_id,
+        ai.priority_id
         FROM
         agile_issue ai
         WHERE
@@ -2482,4 +2488,24 @@
             update agile_issue set issue_type_id = #{issueDO.issueTypeId} where issue_id = #{issueDO.issueId}
         </foreach>
     </update>
+
+    <select id="queryIssueSprintNotClosedByIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT
+            ai.issue_id,
+            IFNULL(asp1.sprint_id, 0) AS sprint_id,
+            ai.status_id
+        FROM agile_issue ai
+            LEFT JOIN (SELECT
+                           aisr.issue_id,
+                           asp.sprint_id
+                       FROM agile_issue_sprint_rel aisr, agile_sprint asp
+                       WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
+                             AND aisr.issue_id = #{issueId}
+                      ) asp1 ON asp1.issue_id = ai.issue_id
+        WHERE ai.project_id = #{projectId} AND ai.issue_id in
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+</select>
 </mapper>

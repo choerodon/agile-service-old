@@ -472,12 +472,20 @@ public class BoardServiceImpl implements BoardService {
             } else {
                 url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
             }
-            String summary = projectDTO.getCode() + "-" + issueDO.getIssueNum() + "-" + issueDO.getSummary();
+            ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+            projectInfoDO.setProjectId(projectId);
+            List<ProjectInfoDO> pioList = projectInfoMapper.select(projectInfoDO);
+            ProjectInfoDO pio = null;
+            if (pioList != null && !pioList.isEmpty()) {
+                pio = pioList.get(0);
+            }
+            String pioCode = (pio == null ? "" : pio.getProjectCode());
+            String summary = pioCode + "-" + issueDO.getIssueNum() + "-" + issueDO.getSummary();
             Long[] ids = new Long[1];
             ids[0] = issueDO.getAssigneeId();
             List<UserDO> userDOList = userRepository.listUsersByIds(ids);
             String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName() + userDOList.get(0).getRealName() : "";
-            siteMsgUtil.issueSolve(userIds, userName, summary, url.toString());
+            siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), issueDO.getAssigneeId(), projectId);
         }
         return result;
     }

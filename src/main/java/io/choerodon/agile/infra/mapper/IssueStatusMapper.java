@@ -29,6 +29,8 @@ public interface IssueStatusMapper extends BaseMapper<IssueStatusDO> {
 
 //    List<StatusDO> listByProjectId(@Param("projectId") Long projectId);
 
+    List<IssueStatusDO> selectStatusIdIsNotNull();
+
     void batchUpdateStatus(@Param("statuses") List<IssueStatusDO> statuses);
 
     void updateAllStatusId();

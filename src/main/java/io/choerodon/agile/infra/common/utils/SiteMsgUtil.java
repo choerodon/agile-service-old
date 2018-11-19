@@ -1,8 +1,9 @@
 package io.choerodon.agile.infra.common.utils;
 
-import io.choerodon.agile.api.dto.NoticeSendDTO;
+//import io.choerodon.agile.api.dto.NoticeSendDTO;
 import io.choerodon.agile.api.dto.WsSendDTO;
 import io.choerodon.agile.infra.feign.NotifyFeignClient;
+import io.choerodon.core.notify.NoticeSendDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,7 @@ public class SiteMsgUtil {
     @Autowired
     private NotifyFeignClient notifyFeignClient;
 
-    public void issueCreate(List<Long> userIds,String userName, String summary, String url) {
+    public void issueCreate(List<Long> userIds,String userName, String summary, String url, Long reporterId, Long projectId) {
         NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
         noticeSendDTO.setCode("issueCreate");
         Map<String, Object> params = new HashMap<>();
@@ -40,10 +41,14 @@ public class SiteMsgUtil {
             userList.add(user);
         }
         noticeSendDTO.setTargetUsers(userList);
+        NoticeSendDTO.User fromUser = new NoticeSendDTO.User();
+        fromUser.setId(reporterId);
+        noticeSendDTO.setFromUser(fromUser);
+        noticeSendDTO.setSourceId(projectId);
         notifyFeignClient.postNotice(noticeSendDTO);
     }
 
-    public void issueAssignee(List<Long> userIds, String userName, String summary, String url) {
+    public void issueAssignee(List<Long> userIds, String userName, String summary, String url, Long assigneeId, Long projectId) {
         NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
         noticeSendDTO.setCode("issueAssignee");
         Map<String, Object> params = new HashMap<>();
@@ -58,10 +63,14 @@ public class SiteMsgUtil {
             userList.add(user);
         }
         noticeSendDTO.setTargetUsers(userList);
+        NoticeSendDTO.User fromUser = new NoticeSendDTO.User();
+        fromUser.setId(assigneeId);
+        noticeSendDTO.setFromUser(fromUser);
+        noticeSendDTO.setSourceId(projectId);
         notifyFeignClient.postNotice(noticeSendDTO);
     }
 
-    public void issueSolve(List<Long> userIds, String userName, String summary, String url) {
+    public void issueSolve(List<Long> userIds, String userName, String summary, String url, Long assigneeId, Long projectId) {
         NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
         noticeSendDTO.setCode("issueSolve");
         Map<String, Object> params = new HashMap<>();
@@ -76,6 +85,10 @@ public class SiteMsgUtil {
             userList.add(user);
         }
         noticeSendDTO.setTargetUsers(userList);
+        NoticeSendDTO.User fromUser = new NoticeSendDTO.User();
+        fromUser.setId(assigneeId);
+        noticeSendDTO.setFromUser(fromUser);
+        noticeSendDTO.setSourceId(projectId);
         notifyFeignClient.postNotice(noticeSendDTO);
     }
 

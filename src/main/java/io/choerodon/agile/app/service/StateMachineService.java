@@ -1,5 +1,9 @@
 package io.choerodon.agile.app.service;
 
+import io.choerodon.agile.api.dto.IssueCreateDTO;
+import io.choerodon.agile.api.dto.IssueDTO;
+import io.choerodon.agile.api.dto.IssueSubCreateDTO;
+import io.choerodon.agile.api.dto.IssueSubDTO;
 import io.choerodon.agile.infra.dataobject.IssueDetailDO;
 import io.choerodon.statemachine.dto.ExecuteResult;
 
@@ -8,6 +12,10 @@ import io.choerodon.statemachine.dto.ExecuteResult;
  * @date 2018/10/30
  */
 public interface StateMachineService {
+
+    IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType);
+
+    IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO);
 
     IssueDetailDO queryIssueDetailWithUncommitted(Long projectId, Long issueId);
 

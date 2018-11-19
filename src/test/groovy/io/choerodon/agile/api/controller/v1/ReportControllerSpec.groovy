@@ -25,6 +25,7 @@ import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.NoticeService
 import io.choerodon.agile.app.service.ReportService
 import io.choerodon.agile.app.service.SprintService
+import io.choerodon.agile.app.service.StateMachineService
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
@@ -81,6 +82,9 @@ class ReportControllerSpec extends Specification {
 
     @Autowired
     private IssueService issueService
+
+    @Autowired
+    private StateMachineService stateMachineService;
 
     @Autowired
     private BoardColumnMapper boardColumnMapper
@@ -174,7 +178,7 @@ class ReportControllerSpec extends Specification {
         issueCreateDTO.typeCode = 'story'
         issueCreateDTO.priorityCode = 'low'
         issueCreateDTO.reporterId = 1
-        IssueDTO issueDTO = issueService.createIssue(issueCreateDTO)
+        IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO)
         issueIds.add(issueDTO.issueId)
 
         and: '将issue设置为done状态'
@@ -192,7 +196,7 @@ class ReportControllerSpec extends Specification {
         noDone.typeCode = 'story'
         noDone.priorityCode = 'low'
         noDone.reporterId = 1
-        IssueDTO noDoneIssue = issueService.createIssue(issueCreateDTO)
+        IssueDTO noDoneIssue = stateMachineService.createIssue(issueCreateDTO)
         issueIds.add(noDoneIssue.issueId)
 
         and: '设置冲刺开启对象'

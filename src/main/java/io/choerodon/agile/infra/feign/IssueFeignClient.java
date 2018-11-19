@@ -38,8 +38,7 @@ public interface IssueFeignClient {
 
     @PostMapping(value = "/v1/fix_data/state_machine_scheme")
     ResponseEntity fixStateMachineScheme(@ApiParam(value = "敏捷状态数据", required = true)
-                                         @RequestBody List<StatusForMoveDataDO> statusForMoveDataDOList,
-                                         @RequestParam("isFixStatus") Boolean isFixStatus);
+                                         @RequestBody List<StatusForMoveDataDO> statusForMoveDataDOList);
 
     @GetMapping("/v1/fix_data/query_priorities")
     ResponseEntity<Map<Long, Map<String, Long>>> queryPriorities();

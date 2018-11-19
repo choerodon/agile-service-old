@@ -1,9 +1,10 @@
 package io.choerodon.agile.infra.feign.fallback;
 
-import io.choerodon.agile.api.dto.NoticeSendDTO;
+//import io.choerodon.agile.api.dto.NoticeSendDTO;
 import io.choerodon.agile.api.dto.WsSendDTO;
 import io.choerodon.agile.infra.feign.NotifyFeignClient;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.notify.NoticeSendDTO;
 import org.springframework.stereotype.Component;
 
 

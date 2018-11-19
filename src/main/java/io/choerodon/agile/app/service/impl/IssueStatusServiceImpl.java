@@ -247,8 +247,8 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 //    }
 
     @Override
-    public void moveStatus(Long projectId, Boolean isFixStatus) {
-        logger.info("步骤1开始执行");
+    public void moveStatus() {
+        logger.info("v0.11.0迁移数据步骤1: 开始执行!");
         List<StatusForMoveDataDO> result = new ArrayList<>();
         List<IssueStatusDO> statuses = issueStatusMapper.selectAll();
         Collections.sort(statuses, Comparator.comparing(IssueStatusDO::getId));
@@ -269,6 +269,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             }
             if (projectDTO != null) {
                 statusForMoveDataDO.setOrganizationId(projectDTO.getOrganizationId());
+                logger.info("获取到statusForMoveDataDO{}, projectId={}, organizationId={}", statusForMoveDataDO.getName(), statusForMoveDataDO.getProjectId(), statusForMoveDataDO.getOrganizationId());
                 if (!organizationIds.contains(projectDTO.getOrganizationId()) && projectDTO.getOrganizationId() != null) {
                     organizationIds.add(projectDTO.getOrganizationId());
                 }
@@ -277,15 +278,20 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 }
             }
         }
+        logger.info("v0.11.0迁移数据步骤1: 已获取所有状态，开始调用issue-service迁移状态");
 
-        issueFeignClient.fixStateMachineScheme(result, isFixStatus);
-        logger.info("步骤1执行完成");
+        issueFeignClient.fixStateMachineScheme(result);
+        logger.info("v0.11.0迁移数据步骤1: 执行完成! Success!");
     }
 
 
     @Override
-    public void updateAllData(Long projectId) {
-        logger.info("步骤2开始执行");
+    public void updateAllData() {
+        List<IssueStatusDO> selectIsNotNullList = issueStatusMapper.selectStatusIdIsNotNull();
+        if (selectIsNotNullList != null && !selectIsNotNullList.isEmpty() && selectIsNotNullList.size() > 0) {
+            throw new CommonException("v0.11.0迁移数据步骤2已执行过，请不要重复操作!");
+        }
+        logger.info("v0.11.0迁移数据步骤2: 开始执行!");
         List<IssueStatusDO> statuses = issueStatusMapper.selectAll();
         Collections.sort(statuses, Comparator.comparing(IssueStatusDO::getId));
         Map<Long, Long> proWithOrg = new HashMap<>();
@@ -300,6 +306,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             }
             if (projectDTO != null) {
                 if (projectDTO.getOrganizationId() != null && projectDTO.getId() != null) {
+                    logger.info("拿到项目，projectId={}, organizationId={}", projectDTO.getId(), projectDTO.getOrganizationId());
                     proWithOrg.put(projectDTO.getId(), projectDTO.getOrganizationId());
                 }
             }
@@ -307,6 +314,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 
         // 迁移状态
         Map<Long, List<Status>> returnStatus = stateMachineFeignClient.queryAllStatus().getBody();
+        logger.info("get到state-machine-service传过来的状态列表,{}", returnStatus);
         for (IssueStatusDO issueStatusDO : statuses) {
             List<Status> partStatus = returnStatus.get(proWithOrg.get(issueStatusDO.getProjectId()));
             if (partStatus != null) {
@@ -323,8 +331,11 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         issueStatusMapper.updateAllColumnStatusId();
         issueStatusMapper.updateDataLogStatusId();
 
+        logger.info("步骤2：状态迁移完成");
+
         // 迁移优先级
         Map<Long, Map<String, Long>> prioritys = issueFeignClient.queryPriorities().getBody();
+        logger.info("get到issue-service传过来的优先级列表，{}", prioritys);
         List<IssueDO> issueDOList = issueMapper.selectAllPriority();
         for (IssueDO issueDO : issueDOList) {
             if (proWithOrg.get(issueDO.getProjectId()) != null) {
@@ -334,8 +345,11 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         }
         issueMapper.batchUpdatePriority(issueDOList);
 
+        logger.info("步骤2：优先级迁移完成");
+
         // 迁移问题类型
         Map<Long, Map<String, Long>> issueTypes = issueFeignClient.queryIssueTypes().getBody();
+        logger.info("get到issue-service传过来的问题类型列表，{}", issueTypes);
         List<IssueDO> issueDOForTypeList = issueMapper.selectAllType();
         for (IssueDO issueDO : issueDOForTypeList) {
             if (proWithOrg.get(issueDO.getProjectId()) != null) {
@@ -344,6 +358,8 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             }
         }
         issueMapper.batchUpdateIssueType(issueDOForTypeList);
+
+        logger.info("步骤2：问题类型迁移完成");
 
         // 修复快速搜索数据,状态
         List<QuickFilterDO> quickFilterDOList = quickFilterMapper.selectAll();
@@ -366,7 +382,13 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                                 String[] lists = statusIdStr.split(",");
                                 int w = 0;
                                 for (String ll : lists) {
-                                    Long sId = issueStatusMapper.selectByPrimaryKey(Long.parseLong(ll)).getStatusId();
+                                    IssueStatusDO isDO = issueStatusMapper.selectByPrimaryKey(Long.parseLong(ll));
+                                    Long sId = 0L;
+                                    if (isDO != null) {
+                                        if (isDO.getStatusId() != null) {
+                                            sId = isDO.getStatusId();
+                                        }
+                                    }
                                     if (w == 0) {
                                         requirement += sId;
                                     } else {
@@ -402,7 +424,9 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 // 处理description
                 String description = quick.getDescription();
                 String[] desStrs = description.split("\\+\\+\\+");
-                JSONObject jsonObject = JSONObject.parseObject(desStrs[1]);
+                String lastDesStr2 = desStrs[desStrs.length - 1];
+                lastDesStr2 = lastDesStr2.replaceAll("\\+", "");
+                JSONObject jsonObject = JSONObject.parseObject(lastDesStr2);
                 List<JSONObject> arrs = JSONObject.parseArray(jsonObject.get("arr").toString(), JSONObject.class);
                 for (JSONObject object : arrs) {
                     if ("status".equals(object.get("fieldCode"))) {
@@ -412,7 +436,13 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                         String valReal = "";
                         int vw = 0;
                         for (String v : valSplit) {
-                            Long vId = issueStatusMapper.selectByPrimaryKey(Long.parseLong(v)).getStatusId();
+                            IssueStatusDO isDO1 = issueStatusMapper.selectByPrimaryKey(Long.parseLong(v));
+                            Long vId = 0L;
+                            if (isDO1 != null) {
+                                if (isDO1.getStatusId() != null) {
+                                    vId = isDO1.getStatusId();
+                                }
+                            }
                             if (vw == 0) {
                                 valReal += vId;
                             } else {
@@ -430,7 +460,12 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 q.setObjectVersionNumber(quick.getObjectVersionNumber());
                 q.setSqlQuery(result);
                 jsonObject.put("arr", arrs);
-                q.setDescription(desStrs[0] + "+++" + jsonObject.toString());
+                String description1 = "";
+                for (int t1 = 0; t1 < desStrs.length - 1; t1++) {
+                    description1 = description1 + desStrs[t1] + "+++";
+                }
+                description1 += jsonObject.toString();
+                q.setDescription(description1);
                 updateDate.add(q);
             }
         }
@@ -439,6 +474,8 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 throw new CommonException("error.quickFilter.update");
             }
         }
+
+        logger.info("步骤2：快速搜索数据的状态修复完成");
 
         // 修复快速搜索数据,优先级
         List<QuickFilterDO> quickFilterPrioritys = quickFilterMapper.selectAll();
@@ -492,7 +529,9 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 // 处理description
                 String description = qf.getDescription();
                 String[] desStrs = description.split("\\+\\+\\+");
-                JSONObject jsonObject = JSONObject.parseObject(desStrs[1]);
+                String lastDesStr = desStrs[desStrs.length - 1];
+                lastDesStr = lastDesStr.replaceAll("\\+", "");
+                JSONObject jsonObject = JSONObject.parseObject(lastDesStr);
                 List<JSONObject> arrs = JSONObject.parseArray(jsonObject.get("arr").toString(), JSONObject.class);
                 for (JSONObject object : arrs) {
                     if ("priority".equals(object.get("fieldCode"))) {
@@ -515,7 +554,12 @@ public class IssueStatusServiceImpl implements IssueStatusService {
                 updatePriority.setObjectVersionNumber(qf.getObjectVersionNumber());
                 updatePriority.setSqlQuery(res);
                 jsonObject.put("arr", arrs);
-                updatePriority.setDescription(desStrs[0] + "+++" + jsonObject.toString());
+                String description2 = "";
+                for (int t2 = 0; t2 < desStrs.length - 1; t2++) {
+                    description2 = description2 + desStrs[t2] + "+++";
+                }
+                description2 += jsonObject.toString();
+                updatePriority.setDescription(description2);
                 priorityResult.add(updatePriority);
             }
         }
@@ -525,7 +569,9 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             }
         }
 
-        logger.info("步骤2执行完成");
+        logger.info("步骤2：快速搜索数据的优先级修复完成");
+
+        logger.info("v0.11.0迁移数据步骤2: 执行完成! Success!");
     }
 
     private Long getPriorityId(Map<Long, Map<String, Long>> prioritys, Map<Long, Long> proWithOrg, QuickFilterDO quickFilterDO, String priorityStr) {

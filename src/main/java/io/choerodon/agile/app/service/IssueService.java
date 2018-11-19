@@ -24,13 +24,7 @@ public interface IssueService {
 
     void setIssueMapper(IssueMapper issueMapper);
 
-    /**
-     * 创建issue
-     *
-     * @param issueCreateDTO issueCreateDTO
-     * @return IssueDTO
-     */
-    IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType);
+    IssueDTO queryIssueCreate(Long projectId, Long issueId);
 
     void handleInitIssue(IssueE issueE, Long statusId, ProjectInfoE projectInfoE);
 
@@ -47,7 +41,7 @@ public interface IssueService {
      * @param issueId   issueId
      * @return IssueDTO
      */
-    IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId, Boolean isReadUnCommitted);
+    IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId);
 
     /**
      * 分页过滤查询issueList（包含子任务）
@@ -103,13 +97,9 @@ public interface IssueService {
 
     void batchDeleteIssues(Long projectId, List<Long> issueIds);
 
-    /**
-     * 创建issue子任务
-     *
-     * @param issueSubCreateDTO issueSubCreateDTO
-     * @return IssueSubDTO
-     */
-    IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO);
+    void handleInitSubIssue(IssueE subIssueE, Long statusId, ProjectInfoE projectInfoE);
+
+    IssueSubDTO queryIssueSubByCreate(Long projectId, Long issueId);
 
     List<IssueSearchDTO> batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds);
 
