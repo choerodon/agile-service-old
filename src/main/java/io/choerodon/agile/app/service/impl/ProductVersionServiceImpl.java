@@ -6,6 +6,7 @@ import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.domain.agile.converter.ProductVersionConverter;
 import io.choerodon.agile.domain.agile.event.VersionPayload;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
+import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.dataobject.IssueCountDO;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -200,13 +202,17 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         List<ProductVersionDataDTO> productVersions = versionDataAssembler.toTargetList(productVersionMapper.queryVersionByProjectId(projectId), ProductVersionDataDTO.class);
         if (!productVersions.isEmpty()) {
             List<Long> productVersionIds = productVersions.stream().map(ProductVersionDataDTO::getVersionId).collect(toList());
+            Map<String, List<Long>> statusMap = issueFeignClient.queryStatusByProjectId(projectId, SchemeApplyType.AGILE).getBody()
+                    .stream().collect(Collectors.groupingBy(StatusMapDTO::getType, Collectors.mapping(StatusMapDTO::getId, Collectors.toList())));
+            List<Long> done = statusMap.get(CATEGORY_DONE_CODE);
+            Boolean condition = done != null && !done.isEmpty();
+            Map<Long, Integer> doneIssueCountMap = condition ? productVersionMapper.queryIssueCount(projectId, productVersionIds, done).stream().collect(toMap(IssueCountDO::getId, IssueCountDO::getIssueCount)) : null;
             Map<Long, Integer> issueCountMap = productVersionMapper.queryIssueCount(projectId, productVersionIds, null).stream().collect(toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-            Map<Long, Integer> doneIssueCountMap = productVersionMapper.queryIssueCount(projectId, productVersionIds, CATEGORY_DONE_CODE).stream().collect(toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
             Map<Long, Integer> notEstimateMap = productVersionMapper.queryNotEstimate(projectId, productVersionIds).stream().collect(toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
             Map<Long, Integer> totalEstimateMap = productVersionMapper.queryTotalEstimate(projectId, productVersionIds).stream().collect(toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
             productVersions.forEach(productVersion -> {
                 productVersion.setIssueCount(issueCountMap.get(productVersion.getVersionId()));
-                productVersion.setDoneIssueCount(doneIssueCountMap.get(productVersion.getVersionId()));
+                productVersion.setDoneIssueCount(condition ? doneIssueCountMap.get(productVersion.getVersionId()) : null);
                 productVersion.setNotEstimate(notEstimateMap.get(productVersion.getVersionId()));
                 productVersion.setTotalEstimate(totalEstimateMap.get(productVersion.getVersionId()));
             });
@@ -216,15 +222,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
 
     @Override
     public ProductVersionStatisticsDTO queryVersionStatisticsByVersionId(Long projectId, Long versionId) {
-        ProductVersionStatisticsDTO productVersionStatistics = versionStatisticsAssembler.
-                toTarget(productVersionMapper.queryVersionStatisticsByVersionId(projectId, versionId), ProductVersionStatisticsDTO.class);
-//        productVersionStatistics.setTodoCategoryIssueCount(versionStatisticsAssembler.
-//                toTargetList(productVersionMapper.queryIssueCountByVersionId(projectId, versionId, CATEGORY_TODO_CODE), IssueCountDTO.class));
-//        productVersionStatistics.setDoingCategoryIssueCount(versionStatisticsAssembler.
-//                toTargetList(productVersionMapper.queryIssueCountByVersionId(projectId, versionId, CATEGORY_DOING_CODE), IssueCountDTO.class));
-//        productVersionStatistics.setDoneCategoryIssueCount(versionStatisticsAssembler.
-//                toTargetList(productVersionMapper.queryIssueCountByVersionId(projectId, versionId, CATEGORY_DONE_CODE), IssueCountDTO.class));
-        return productVersionStatistics;
+        return versionStatisticsAssembler.toTarget(productVersionMapper.queryVersionStatisticsByVersionId(projectId, versionId), ProductVersionStatisticsDTO.class);;
     }
 
     @Override

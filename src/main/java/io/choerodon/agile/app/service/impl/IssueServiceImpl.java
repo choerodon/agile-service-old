@@ -990,6 +990,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void outsetBeforeRank(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
         String rightRank = issueMapper.queryRank(projectId, sprintId, moveIssueDTO.getOutsetIssueId());
+        //todo sql执行速度过慢
         String leftRank = issueMapper.queryLeftRank(projectId, sprintId, rightRank);
         if (leftRank == null) {
             for (Long issueId : moveIssueDTO.getIssueIds()) {
@@ -1343,6 +1344,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
+    @Deprecated
     public Page<IssueCommonDTO> listByOptions(Long projectId, String typeCode, PageRequest pageRequest) {
         Page<IssueCommonDO> issueCommonDOPage = PageHelper.doPageAndSort(pageRequest, () -> issueMapper.listByOptions(projectId, typeCode));
         Page<IssueCommonDTO> issueCommonDTOPage = new Page<>();

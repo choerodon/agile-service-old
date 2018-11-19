@@ -150,6 +150,16 @@ public interface IssueService {
      */
     IssueE queryIssueByProjectIdAndIssueId(Long projectId, Long issueId);
 
+    /**
+     * 这个借口已弃用
+     *
+     * @param projectId   projectId
+     * @param typeCode    typeCode
+     * @param pageRequest pageRequest
+     * @return IssueCommonDTO
+     * @deprecated
+     */
+    @Deprecated
     Page<IssueCommonDTO> listByOptions(Long projectId, String typeCode, PageRequest pageRequest);
 
     Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Boolean onlyActiveSprint, Boolean self, String content, PageRequest pageRequest);

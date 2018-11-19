@@ -307,7 +307,7 @@
         FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
         WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
         AND ai.type_code NOT IN ('sub_task', 'issue_epic')
-        AND ai.status_id = ais.id AND ais.category_code != 'done'
+        AND ai.status_id = ais.status_id and ai.project_id = ais.project_id AND ais.is_completed != 1
     </select>
 
     <select id="queryDoneIssueCount" resultType="java.lang.Integer">
@@ -315,7 +315,7 @@
         FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
         WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
         AND ai.type_code NOT IN ('sub_task', 'issue_epic')
-        AND ai.status_id = ais.id AND ais.category_code = 'done'
+        AND ai.status_id = ais.status_id and ai.project_id = ais.project_id AND ais.is_completed = 1
     </select>
 
     <select id="queryPlanSprintName" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
@@ -330,7 +330,7 @@
     <select id="queryByProjectIdAndSprintId" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
         SELECT *
         FROM agile_sprint
-        WHERE sprint_id = #{sprintId} AND project_Id = #{projectId}
+        WHERE sprint_id = #{sprintId} AND project_id = #{projectId}
     </select>
 
     <select id="getActiveSprint" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
@@ -453,7 +453,7 @@
         FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
         WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
         AND ai.type_code NOT IN ('sub_task', 'issue_epic')
-        AND ai.status_id = ais.id AND ais.category_code != 'done'
+        AND ai.status_id = ais.status_id and ai.project_id = ais.project_id AND ais.is_completed != 1
         ORDER BY rank DESC
     </select>
 
@@ -471,12 +471,12 @@
               LEFT JOIN agile_project_info api ON ai.project_id = api.project_id,
               agile_issue_status ais, agile_issue_sprint_rel aisr
         WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
-               AND ai.status_id = ais.id AND ais.category_code = 'done'
+               AND ai.status_id = ais.status_id and ai.project_id = ais.project_id AND ais.is_completed = 1
                AND ai.issue_id IN (SELECT ai2.parent_issue_id
                                     FROM agile_issue ai2, agile_issue_status ais2, agile_issue_sprint_rel aisr2
                                     WHERE ai2.project_id = #{projectId} AND aisr2.issue_id = ai2.issue_id AND aisr2.sprint_id = #{sprintId}
 				                    AND ai2.type_code = 'sub_task'
-                                    AND ai2.status_id = ais2.id AND ais2.category_code != 'done'
+                                    AND ai2.status_id = ais2.status_id and ai2.project_id = ais2.project_id AND ais2.is_completed != 1
                                     )
 
     </select>
@@ -485,8 +485,8 @@
         SELECT ai.issue_id
         FROM  agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
         WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
-              AND ai.type_code != 'sub_task' AND ai.status_id = ais.id
-              AND ais.category_code != 'done'
+              AND ai.type_code != 'sub_task' AND ai.status_id = ais.status_id and ai.project_id = ais.project_id
+              AND ais.is_completed != 1
     </select>
 
     <select id="queryUnClosedSprint" resultType="io.choerodon.agile.infra.dataobject.SprintDO">

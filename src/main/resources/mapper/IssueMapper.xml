@@ -779,8 +779,8 @@
         FROM agile_issue ai
         LEFT JOIN (SELECT ai1.epic_id AS epic_id, COUNT(1) AS issue_count
         FROM agile_issue ai1, agile_issue_status ais
-        WHERE ai1.project_id = #{projectId} AND ai1.status_id = ais.id AND
-        ais.category_code = 'done' AND ai1.epic_id IN
+        WHERE ai1.project_id = #{projectId} AND ai1.status_id = ais.status_id and ai1.project_id = ais.project_id AND
+        ais.completed = 1 AND ai1.epic_id IN
         <foreach collection="epicIds" item="epicId" open="("
                  separator="," close=")">
             #{epicId}
@@ -1731,8 +1731,6 @@
         api.project_code,
         ai.issue_num
         ) AS issue_num
---         ais.category_code AS status_code,
---         ais.`name` AS status_name
         FROM
         agile_issue_sprint_rel aisr
         LEFT JOIN agile_sprint asp ON aisr.sprint_id = asp.sprint_id
@@ -1752,7 +1750,6 @@
             AND ai.issue_id IN (${filterSql})
         </if>
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
---         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         aisr.project_id = #{projectId} and aisr.issue_id = ai.issue_id
         and aisr.sprint_id in (select sprint_id from agile_sprint where status_code != 'closed')
@@ -1783,12 +1780,9 @@
         api.project_code,
         ai.issue_num
         ) AS issue_num
---         ais.category_code AS status_code,
---         ais.`name` AS status_name
         FROM
         agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
---         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         ai.project_id = #{projectId}
         AND issue_id NOT IN (
@@ -1804,7 +1798,6 @@
         'sub_task',
         'issue_epic'
         )
---         and ais.category_code != 'done'
         and ai.status_id not in
         <foreach collection="doneIds" item="doneId" open="(" separator=","
                  close=")">
@@ -1849,8 +1842,6 @@
         api.project_code,
         ai.issue_num
         ) AS issue_num
---         ais.category_code AS status_code,
---         ais.`name` AS status_name
         FROM
         agile_version_issue_rel avir
         LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
@@ -1870,7 +1861,6 @@
             AND ai.issue_id IN (${filterSql})
         </if>
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
---         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         avir.project_id = #{projectId} and avir.issue_id = ai.issue_id
         and avir.relation_type = 'fix'
@@ -1905,12 +1895,9 @@
         api.project_code,
         ai.issue_num
         ) AS issue_num
---         ais.category_code AS status_code,
---         ais.`name` AS status_name
         FROM
         agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
---         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         ai.project_id = #{projectId}
         AND issue_id NOT IN (
@@ -1927,7 +1914,6 @@
         'sub_task',
         'issue_epic'
         )
---         and ais.category_code != 'done'
         and ai.status_id not in
         <foreach collection="doneIds" item="doneId" open="(" separator=","
                  close=")">
@@ -1969,12 +1955,9 @@
         api.project_code,
         ai.issue_num
         ) AS issue_num
---         ais.category_code AS status_code,
---         ais.`name` AS status_name
         FROM
         agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
---         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.id
         WHERE
         ai.project_id = #{projectId}
         AND ai.type_code NOT IN (
@@ -1982,7 +1965,6 @@
         'sub_task',
         'issue_epic'
         )
---         and ais.category_code != 'done'
         and ai.status_id not in
         <foreach collection="doneIds" item="doneId" open="(" separator=","
                  close=")">
@@ -2148,8 +2130,6 @@
                 CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,
                 ai.type_code,
                 ai.status_id,
---                 ais.NAME AS status_name,
---                 ais.category_code AS status_code,
                 ais.is_completed as completed,
                 ai.summary,
                 ai.assignee_id,
@@ -2191,8 +2171,6 @@
             FROM
                 agile_issue ai
                 LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
---                 LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
---                 LEFT JOIN agile_lookup_value alv1 ON ai.type_code = alv1.value_code
                 LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
                 LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id and ais.project_id = #{projectId}
             WHERE
