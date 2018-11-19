@@ -89,8 +89,8 @@
         FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
         WHERE ai.project_id = #{projectId} AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix'
         AND ai.type_code != 'sub_task' AND ai.status_id = ais.status_id and ai.project_id = ais.project_id
-        and ai.status_id in
         <if test="statusIds!=null and statusIds.size> 0 ">
+         and ai.status_id in
             <foreach collection="statusIds" item="statusId" index="index"
                      open="(" close=")" separator=",">
                 #{statusId}

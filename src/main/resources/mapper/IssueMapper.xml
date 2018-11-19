@@ -780,7 +780,7 @@
         LEFT JOIN (SELECT ai1.epic_id AS epic_id, COUNT(1) AS issue_count
         FROM agile_issue ai1, agile_issue_status ais
         WHERE ai1.project_id = #{projectId} AND ai1.status_id = ais.status_id and ai1.project_id = ais.project_id AND
-        ais.completed = 1 AND ai1.epic_id IN
+        ais.is_completed = 1 AND ai1.epic_id IN
         <foreach collection="epicIds" item="epicId" open="("
                  separator="," close=")">
             #{epicId}
@@ -1109,24 +1109,6 @@
         WHERE
             ail.label_id = alir.label_id
             AND alir.issue_id = #{issueId}
-    </select>
-
-    <select id="listByOptions" resultType="io.choerodon.agile.infra.dataobject.IssueCommonDO">
-        SELECT
-            ai.issue_id,
-            ai.type_code,
-            ai.summary,
-            ai.priority_code,
-            ai.assignee_id,
-            ai.project_id,
-            alv.name                                       AS priority_name,
-            ais.category_code                              AS status_code,
-            ais.name                                       AS status_name,
-            CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num
-        FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
-            LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id AND ais.project_id = ai.project_id
-            LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE ai.project_id = #{projectId} AND ai.type_code = #{typeCode} AND ai.type_code != 'sub_task'
     </select>
 
     <select id="querySubTaskIds" resultType="java.lang.Long">

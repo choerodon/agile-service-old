@@ -6,7 +6,6 @@ import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
-import io.choerodon.agile.infra.dataobject.IssueCommonDO;
 import io.choerodon.agile.infra.dataobject.IssueLinkDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import org.springframework.beans.BeanUtils;

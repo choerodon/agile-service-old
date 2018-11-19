@@ -92,9 +92,6 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<IssueLabelDO> selectLabelNameByIssueId(@Param("issueId") Long issueId);
 
-    List<IssueCommonDO> listByOptions(@Param("projectId") Long projectId,
-                                      @Param("typeCode") String typeCode);
-
     List<Long> querySubTaskIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
     int issueToDestinationByIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date, @Param("userId") Long userId);

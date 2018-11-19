@@ -360,32 +360,6 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issue.updateIssueTypeCode"));
     }
 
-    /**
-     * 这个借口已弃用
-     *
-     * @param projectId   projectId
-     * @param typeCode    typeCode
-     * @param pageRequest pageRequest
-     * @return IssueCommonDTO
-     * @deprecated
-     */
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("根据issue类型(type_code)查询issue列表(分页)")
-    @CustomPageRequest
-    @PostMapping(value = "/type_code/{typeCode}")
-    @Deprecated
-    public ResponseEntity<Page<IssueCommonDTO>> listByOptions(@ApiParam(value = "项目id", required = true)
-                                                              @PathVariable(name = "project_id") Long projectId,
-                                                              @ApiParam(value = "typeCode", required = true)
-                                                              @PathVariable String typeCode,
-                                                              @ApiIgnore
-                                                              @ApiParam(value = "分页信息", required = true)
-                                                              @SortDefault(value = "issueId", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-        return Optional.ofNullable(issueService.listByOptions(projectId, typeCode, pageRequest))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.IssueList.listByOptions"));
-    }
-
     @ResponseBody
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("导出issue列表")
