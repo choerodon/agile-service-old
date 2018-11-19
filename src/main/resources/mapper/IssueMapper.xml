@@ -2017,7 +2017,7 @@
         from agile_issue ai, agile_issue_status ais
         where ai.project_id = #{projectId}
         and ai.type_code in ('story', 'task', 'bug')
-        and ai.status_id = ais.status_id and ais.is_completed != 1
+        and ai.status_id = ais.status_id and ai.project_id = ais.project_id and ais.is_completed != 1
     </select>
 
     <select id="queryIssueIdsByOptions" resultType="java.lang.Long">
