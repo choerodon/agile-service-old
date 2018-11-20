@@ -297,7 +297,7 @@ public class SprintServiceImpl implements SprintService {
         if (!Objects.equals(projectId, sprintCompleteDTO.getProjectId())) {
             throw new CommonException(NOT_EQUAL_ERROR);
         }
-        sprintRule.judgeCompleteSprint(projectId, sprintCompleteDTO.getSprintId(), sprintCompleteDTO.getIncompleteIssuesDestination());
+//        sprintRule.judgeCompleteSprint(projectId, sprintCompleteDTO.getSprintId(), sprintCompleteDTO.getIncompleteIssuesDestination());
         SprintDO sprintDO = new SprintDO();
         sprintDO.setProjectId(projectId);
         sprintDO.setSprintId(sprintCompleteDTO.getSprintId());
@@ -319,6 +319,7 @@ public class SprintServiceImpl implements SprintService {
         }
         List<Long> moveIssueIds = sprintMapper.queryIssueIds(projectId, sprintCompleteDTO.getSprintId());
         moveIssueIds.addAll(issueMapper.querySubTaskIds(projectId, sprintCompleteDTO.getSprintId()));
+        moveIssueIds.addAll(sprintMapper.queryParentsDoneSubtaskUnDoneIds(projectId, sprintCompleteDTO.getSprintId()));
         if (targetSprintId != null && !Objects.equals(targetSprintId, 0L)) {
             issueRepository.issueToDestinationByIdsCloseSprint(projectId, targetSprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
         }
