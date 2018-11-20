@@ -67,9 +67,9 @@
         </if>
         <if test='userIds != null'>
             AND ai1.assignee_id IN
-            <foreach collection="userIds" item="userId"
+            <foreach collection="assigneeFilterIds" item="assigneeFilterId"
                      open="(" close=")" separator=",">
-                #{userId}
+                #{assigneeFilterId}
             </foreach>
         </if>
         ) ai ON ai.status_id = ais.status_id

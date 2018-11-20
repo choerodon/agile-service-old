@@ -24,7 +24,7 @@ public interface BoardService {
 
 //    JSONObject queryAllData(Long projectId, Long boardId, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds,Long organizationId);
 
-    JSONObject queryAllData(Long projectId, Long boardId, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds,Long organizationId, List<Long> userIds);
+    JSONObject queryAllData(Long projectId, Long boardId, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds,Long organizationId, List<Long> assigneeFilterIds);
 
     void initBoard(Long projectId, String boardName, List<StatusPayload> statusPayloads);
 
