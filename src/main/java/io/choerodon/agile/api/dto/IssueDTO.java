@@ -92,6 +92,8 @@ public class IssueDTO {
 
     private StatusMapDTO statusMapDTO;
 
+    private Long createdBy;
+
     public Long getIssueTypeId() {
         return issueTypeId;
     }
@@ -402,6 +404,14 @@ public class IssueDTO {
 
     public IssueTypeDTO getIssueTypeDTO() {
         return issueTypeDTO;
+    }
+
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Long getCreatedBy() {
+        return createdBy;
     }
 
     @Override
