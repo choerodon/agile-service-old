@@ -65,6 +65,13 @@
         <if test='filterSql != null'>
             AND ai1.issue_id IN (${filterSql})
         </if>
+        <if test='userIds != null'>
+            AND ai1.assignee_id IN
+            <foreach collection="userIds" item="userId"
+                     open="(" close=")" separator=",">
+                #{userId}
+            </foreach>
+        </if>
         ) ai ON ai.status_id = ais.status_id
         LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
         LEFT JOIN agile_lookup_value alv1 ON abc.color_code = alv1.value_code

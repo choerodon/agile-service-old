@@ -332,7 +332,7 @@ public class BoardServiceImpl implements BoardService {
 //    }
 
     @Override
-    public JSONObject queryAllData(Long projectId, Long boardId, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId) {
+    public JSONObject queryAllData(Long projectId, Long boardId, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId, List<Long> userIds) {
         JSONObject jsonObject = new JSONObject(true);
         SprintDO activeSprint = getActiveSprint(projectId);
         Long activeSprintId = null;
@@ -346,7 +346,7 @@ public class BoardServiceImpl implements BoardService {
         List<Long> assigneeIds = new ArrayList<>();
         List<Long> parentIds = new ArrayList<>();
         List<Long> epicIds = new ArrayList<>();
-        List<ColumnAndIssueDO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory, filterSql);
+        List<ColumnAndIssueDO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory, filterSql, userIds);
         Boolean condition = assigneeId != null && onlyStory;
         putDatasAndSort(columns, parentIds, assigneeIds, boardId, epicIds, condition, organizationId);
         jsonObject.put("parentIds", parentIds);
