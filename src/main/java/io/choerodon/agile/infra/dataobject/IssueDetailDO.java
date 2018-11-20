@@ -86,6 +86,8 @@ public class IssueDetailDO {
 
     private StatusMapDTO statusMapDTO;
 
+    private Long createdBy;
+
     public StatusMapDTO getStatusMapDTO() {
         return statusMapDTO;
     }
@@ -372,6 +374,14 @@ public class IssueDetailDO {
 
     public IssueTypeDTO getIssueTypeDTO() {
         return issueTypeDTO;
+    }
+
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Long getCreatedBy() {
+        return createdBy;
     }
 
     @Override
