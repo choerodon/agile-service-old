@@ -2,27 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.choerodon.agile.infra.mapper.BoardColumnMapper">
 
-    <!--<resultMap id="BoardColumnAndIssues" type="io.choerodon.agile.infra.dataobject.ColumnAndIssueDO">-->
-        <!--<id property="columnId" column="abc_column_id"/>-->
-        <!--<id property="categoryCode" column="abc_category_code"/>-->
-        <!--<id property="boardId" column="abc_board_id"/>-->
-        <!--<id property="minNum" column="abc_min_num"/>-->
-        <!--<id property="maxNum" column="abc_max_num"/>-->
-        <!--<id property="name" column="abc_name"/>-->
-        <!--<id property="sequence" column="abc_sequence"/>-->
-        <!--<id property="color" column="abc_color"/>-->
-        <!--<id property="objectVersionNumber" column="abc_object_version_number"/>-->
-        <!--<collection property="subStatuses" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.SubStatus">-->
-            <!--<id property="id" column="ais_id"/>-->
-            <!--<id property="name" column="ais_name"/>-->
-            <!--<id property="categoryCode" column="ais_category_code"/>-->
-            <!--<id property="completed" column="ais_completed"/>-->
-            <!--<id property="objectVersionNumber" column="ais_object_version_number"/>-->
-            <!--<collection property="issues" autoMapping="true" columnPrefix="ai_"-->
-                        <!--ofType="io.choerodon.agile.infra.dataobject.IssueForBoardDO"/>-->
-        <!--</collection>-->
-    <!--</resultMap>-->
-
     <resultMap id="BoardColumnAndIssues" type="io.choerodon.agile.infra.dataobject.ColumnAndIssueDO">
         <id property="columnId" column="abc_column_id"/>
         <id property="categoryCode" column="abc_category_code"/>
@@ -35,8 +14,6 @@
         <id property="objectVersionNumber" column="abc_object_version_number"/>
         <collection property="subStatuses" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.SubStatus">
             <id property="id" column="ais_id"/>
-            <!--<id property="name" column="ais_name"/>-->
-            <!--<id property="categoryCode" column="ais_category_code"/>-->
             <id property="completed" column="ais_completed"/>
             <id property="statusId" column="ais_status_id"/>
             <id property="objectVersionNumber" column="ais_object_version_number"/>
@@ -44,58 +21,6 @@
                         ofType="io.choerodon.agile.infra.dataobject.IssueForBoardDO"/>
         </collection>
     </resultMap>
-
-    <!--<select id="selectColumnsByBoardId" resultMap="BoardColumnAndIssues">-->
-        <!--SELECT-->
-        <!--abc.column_id AS abc_column_id,-->
-        <!--abc.category_code AS abc_category_code,-->
-        <!--abc.board_id AS abc_board_id,-->
-        <!--abc.min_num AS abc_min_num,-->
-        <!--abc.max_num AS abc_max_num,-->
-        <!--abc.name AS abc_name,-->
-        <!--abc.sequence AS abc_sequence,-->
-        <!--alv1.name AS abc_color,-->
-        <!--abc.object_version_number AS abc_object_version_number,-->
-        <!--ais.id AS ais_id,-->
-        <!--ais.name AS ais_name,-->
-        <!--ais.category_code AS ais_category_code,-->
-        <!--ais.is_completed AS ais_completed,-->
-        <!--ais.object_version_number AS ais_object_version_number,-->
-        <!--ai.issue_id AS ai_issue_id,-->
-        <!--IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) AS ai_issue_num,-->
-        <!--ai.summary AS ai_summary,-->
-        <!--ai.assignee_id AS ai_assignee_id,-->
-        <!--alv.name AS ai_priority_name,-->
-        <!--ai.parent_issue_id AS ai_parent_issue_id,-->
-        <!--ai.type_code AS ai_type_code,-->
-        <!--ai.rank AS ai_rank,-->
-        <!--ai.epic_id AS ai_epic_id,-->
-        <!--ai.object_version_number AS ai_object_version_number-->
-        <!--FROM-->
-        <!--agile_board_column abc-->
-        <!--LEFT JOIN agile_board_column_status_rel abcsr ON abc.column_id = abcsr.column_id-->
-        <!--LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.id-->
-        <!--LEFT JOIN (SELECT ai1.*-->
-        <!--from agile_issue ai1, agile_issue_sprint_rel aisr-->
-        <!--WHERE aisr.sprint_id = #{activeSprintId} AND ai1.issue_id = aisr.issue_id-->
-        <!--AND ai1.type_code != 'issue_epic'-->
-        <!--<if test='onlyStory != null and onlyStory == true'>-->
-            <!--AND ai1.type_code = 'story'-->
-        <!--</if>-->
-        <!--<if test='assigneeId != null'>-->
-            <!--AND ai1.assignee_id = #{assigneeId}-->
-        <!--</if>-->
-        <!--<if test='filterSql != null'>-->
-            <!--AND ai1.issue_id IN (${filterSql})-->
-        <!--</if>-->
-        <!--) ai ON ai.status_id = ais.id-->
-        <!--LEFT JOIN agile_project_info api ON api.project_id = ai.project_id-->
-        <!--LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code-->
-        <!--LEFT JOIN agile_lookup_value alv1 ON abc.color_code = alv1.value_code-->
-        <!--WHERE-->
-        <!--abc.project_id = #{projectId} AND abc.board_id = #{boardId}-->
-        <!--ORDER BY abc.sequence-->
-    <!--</select>-->
 
     <select id="selectColumnsByBoardId" resultMap="BoardColumnAndIssues">
         SELECT

@@ -88,9 +88,13 @@
         avir.version_id AS version_id, COUNT(1) AS issue_count
         FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
         WHERE ai.project_id = #{projectId} AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix'
-        AND ai.type_code != 'sub_task' AND ai.status_id = ais.id
-        <if test='categoryCode != null and categoryCode != ""'>
-            AND ais.category_code = #{categoryCode}
+        AND ai.type_code != 'sub_task' AND ai.status_id = ais.status_id and ai.project_id = ais.project_id
+        <if test="statusIds!=null and statusIds.size> 0 ">
+         and ai.status_id in
+            <foreach collection="statusIds" item="statusId" index="index"
+                     open="(" close=")" separator=",">
+                #{statusId}
+            </foreach>
         </if>
         AND avir.version_id IN
         <foreach collection="versionIds" item="versionId" index="index"
@@ -199,24 +203,12 @@
         WHERE apv.project_id = #{projectId} AND apv.name = #{name} and apv.status_code != 'archived'
     </select>
 
-    <select id="queryIssueCountByVersionId" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
-        SELECT
-            ais.id   AS id,
-            ais.name AS name,
-            COUNT(1) AS issueCount
-        FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
-        WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix'
-              AND ai.status_id = ais.id AND ai.project_id = #{projectId} AND ais.category_code = #{categoryCode}
-              AND ai.type_code != 'issue_test'
-        GROUP BY ais.id
-    </select>
-
     <select id="queryNotDoneIssueCount" resultType="java.lang.Integer">
         SELECT COUNT(1)
         FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
         WHERE avir.version_id = #{versionId} AND ai.project_id = #{projectId}
-              AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix' AND ai.status_id = ais.id
-              AND ais.category_code != 'done'
+              AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix' AND ai.status_id = ais.status_id and ai.project_id = ais.project_id
+              AND ais.is_completed != 1
               AND ai.type_code NOT IN ('issue_test')
     </select>
 
@@ -246,8 +238,8 @@
             avir.relation_type
         FROM agile_version_issue_rel avir, agile_issue ai, agile_issue_status ais
         WHERE avir.version_id = #{versionId} AND ai.project_id = #{projectId}
-              AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix' AND ai.status_id = ais.id
-              AND ais.category_code != 'done'
+              AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix' AND ai.status_id = ais.status_id and ai.project_id = ais.project_id
+              AND ais.is_completed != 1
     </select>
 
     <select id="queryIssuesByRelationType" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
@@ -290,9 +282,10 @@
     <select id="queryInCompleteIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
         SELECT avir.issue_id, avir.relation_type,apv.name,avir.version_id
         FROM agile_version_issue_rel avir left join agile_product_version apv on apv.version_id = avir.version_id
-        left join agile_issue ai on avir.issue_id = ai.issue_id left join agile_issue_status ais on ai.status_id = ais.id
+        left join agile_issue ai on avir.issue_id = ai.issue_id left join agile_issue_status ais on ai.status_id = ais.status_id
+        and ais.project_id = ai.project_id
         WHERE avir.project_id = #{projectId}
-        AND avir.version_id = #{versionId} and ais.category_code != 'done'
+        AND avir.version_id = #{versionId} and ais.is_completed != 1
     </select>
 
     <select id="queryVersionIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">

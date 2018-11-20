@@ -150,8 +150,6 @@ public interface IssueService {
      */
     IssueE queryIssueByProjectIdAndIssueId(Long projectId, Long issueId);
 
-    Page<IssueCommonDTO> listByOptions(Long projectId, String typeCode, PageRequest pageRequest);
-
     Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Boolean onlyActiveSprint, Boolean self, String content, PageRequest pageRequest);
 
     void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response, Long organizationId);

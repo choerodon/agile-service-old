@@ -123,8 +123,6 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private ComponentIssueRelMapper componentIssueRelMapper;
     @Autowired
-    private IssueCommonAssembler issueCommonAssembler;
-    @Autowired
     private SprintNameAssembler sprintNameAssembler;
     @Autowired
     private IssueLinkTypeMapper issueLinkTypeMapper;
@@ -989,7 +987,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void outsetBeforeRank(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
-        String rightRank = issueMapper.queryRank(projectId, sprintId, moveIssueDTO.getOutsetIssueId());
+        String rightRank = issueMapper.queryRank(projectId, moveIssueDTO.getOutsetIssueId());
         String leftRank = issueMapper.queryLeftRank(projectId, sprintId, rightRank);
         if (leftRank == null) {
             for (Long issueId : moveIssueDTO.getIssueIds()) {
@@ -1022,7 +1020,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void afterRank(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
         moveIssueDTO.setIssueIds(issueMapper.queryIssueIdOrderByRankAsc(projectId, moveIssueDTO.getIssueIds()));
-        String leftRank = issueMapper.queryRank(projectId, sprintId, moveIssueDTO.getOutsetIssueId());
+        String leftRank = issueMapper.queryRank(projectId, moveIssueDTO.getOutsetIssueId());
         String rightRank = issueMapper.queryRightRank(projectId, sprintId, leftRank);
         if (rightRank == null) {
             for (Long issueId : moveIssueDTO.getIssueIds()) {
@@ -1340,19 +1338,6 @@ public class IssueServiceImpl implements IssueService {
         if (issueRule.existLabelIssue(labelIssueRelE)) {
             labelIssueRelRepository.create(labelIssueRelE);
         }
-    }
-
-    @Override
-    public Page<IssueCommonDTO> listByOptions(Long projectId, String typeCode, PageRequest pageRequest) {
-        Page<IssueCommonDO> issueCommonDOPage = PageHelper.doPageAndSort(pageRequest, () -> issueMapper.listByOptions(projectId, typeCode));
-        Page<IssueCommonDTO> issueCommonDTOPage = new Page<>();
-        issueCommonDTOPage.setTotalPages(issueCommonDOPage.getTotalPages());
-        issueCommonDTOPage.setSize(issueCommonDOPage.getSize());
-        issueCommonDTOPage.setTotalElements(issueCommonDOPage.getTotalElements());
-        issueCommonDTOPage.setNumberOfElements(issueCommonDOPage.getNumberOfElements());
-        issueCommonDTOPage.setNumber(issueCommonDOPage.getNumber());
-        issueCommonDTOPage.setContent(issueCommonAssembler.issueCommonToIssueCommonDto(issueCommonDOPage.getContent()));
-        return issueCommonDTOPage;
     }
 
     private Long getActiveSprintId(Long projectId) {

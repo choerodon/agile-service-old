@@ -28,3 +28,4 @@ application-default.yml
 .DS_Store
 
 init-local-database-csn.sh
+init-local-database.sh

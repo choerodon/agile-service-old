@@ -6,9 +6,9 @@
         DELETE FROM agile_version_issue_rel
         WHERE EXISTS
         (
-        SELECT 0 FROM agile_issue ai left join agile_issue_status ais on ai.status_id = ais.id
+        SELECT 0 FROM agile_issue ai left join agile_issue_status ais on ai.status_id = ais.status_id and ai.project_id = ais.project_id
         WHERE agile_version_issue_rel.issue_id = ai.issue_id
-        AND ais.category_code != 'done'
+        AND ais.is_completed != 1
         )
         AND agile_version_issue_rel.relation_type = 'fix' and
         agile_version_issue_rel.version_id = #{versionId} AND agile_version_issue_rel.project_id = #{projectId}

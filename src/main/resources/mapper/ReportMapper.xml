@@ -779,6 +779,8 @@
         ai.issue_type_id,
         ai.status_id,
         ai.summary,
+        ai.estimate_time,
+        ai.remaining_time,
         ai.priority_id,
         ai.assignee_id, ai.project_id
         FROM agile_issue ai
@@ -1775,11 +1777,8 @@
                 ai.issue_num
             ) AS issue_num,
             ai.summary,
---             ai.type_code,
             ai.issue_type_id,
             ai.priority_id,
---             ais.`name` AS status_name,
---             alv.name AS status_color,
             ai.status_id,
             ai.story_points,
             ai.remaining_time + IFNULL(aw.work_times,0) AS remain_time,
@@ -1787,11 +1786,6 @@
         FROM
             agile_issue ai
         LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
---         LEFT JOIN agile_issue_status ais ON ais.id = ai.status_id
---         LEFT JOIN agile_lookup_value alv ON alv.value_code = CASE ais.category_code WHEN 'todo' THEN 'issue_status_color_todo'
---                                                                                       WHEN 'doing' THEN 'issue_status_color_doing'
---                                                                                       WHEN 'done' THEN 'issue_status_color_done'
---                                                                                       ELSE 'issue_status_color_todo' END
         LEFT JOIN (
             SELECT
                 awl.issue_id,

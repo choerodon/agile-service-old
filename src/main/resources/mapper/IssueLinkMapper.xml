@@ -6,30 +6,6 @@
         WHERE issue_id = #{issueId} OR linked_issue_id = #{issueId}
     </delete>
 
-    <select id="queryInIssueLinkByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueLinkDO">
-        SELECT
-            ail.*,
-            ailt.link_name                                 AS linkTypeName,
-            ailt.in_ward                                   AS ward,
-            CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
-            ai.summary,
-            ai.priority_code,
-            ais.NAME,
-            abc.color_code
-        FROM
-            agile_issue_link ail
-            LEFT JOIN agile_issue_link_type ailt ON ailt.link_type_id = ail.link_type_id
-            LEFT JOIN agile_issue ai ON ail.issue_id = ai.issue_id
-            LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
-            LEFT JOIN agile_issue_status ais ON ais.id = ai.issue_id
-            LEFT JOIN agile_board_column abc ON abc.category_code = ais.category_code
-        WHERE
-            ail.issue_id = #{issueId}
-            AND ai.project_id = #{projectId}
-            AND ai.type_code != 'sub_task'
-        ORDER BY ailt.link_name
-    </select>
-
     <select id="queryIssueLinkByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueLinkDO">
         SELECT a.*
         FROM

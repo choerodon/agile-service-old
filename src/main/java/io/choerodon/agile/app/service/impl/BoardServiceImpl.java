@@ -221,6 +221,7 @@ public class BoardServiceImpl implements BoardService {
             StatusMapDTO status = map.get(subStatus.getStatusId());
             subStatus.setCategoryCode(status.getType());
             subStatus.setName(status.getName());
+            Collections.sort(subStatus.getIssues(), Comparator.comparing(IssueForBoardDO::getIssueId));
         }
     }
 

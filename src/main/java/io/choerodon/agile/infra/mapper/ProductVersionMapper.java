@@ -38,13 +38,11 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
      */
     Long queryVersionIdByNameAndProjectId(@Param("name") String name, @Param("projectId") Long projectId);
 
-    List<IssueCountDO> queryIssueCount(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds, @Param("categoryCode") String categoryCode);
+    List<IssueCountDO> queryIssueCount(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds, @Param("statusIds") List<Long> statusIds);
 
     List<IssueCountDO> queryNotEstimate(@Param("projectId") Long projectId, @Param("versionIds") List<Long> productVersionIds);
 
     List<IssueCountDO> queryTotalEstimate(@Param("projectId") Long projectId, @Param("versionIds") List<Long> productVersionIds);
-
-    List<IssueCountDO> queryIssueCountByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("categoryCode") String categoryCode);
 
     int queryNotDoneIssueCount(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 

@@ -43,8 +43,9 @@
             WHERE aisr.project_id = #{projectId}
                 and aisr.sprint_id = #{sprintId}
                 and aisr.issue_id = ai.issue_id
-                AND ai.status_id = ais.id
-                AND ais.category_code != 'done'
+                AND ai.status_id = ais.status_id
+                and ai.project_id = ais.project_id
+                AND ais.is_completed != 1
                 and ai.type_code in ('story','task','bug')
                 GROUP BY ai.assignee_id
 

@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import io.choerodon.agile.api.dto.IssueTypeDTO;
+import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
@@ -80,7 +81,7 @@ public class DataLogAspect {
     private static final String DESCRIPTION = "description";
     private static final String FIELD_DESCRIPTION_NULL = "[{\"insert\":\"\n\"}]";
     private static final String FIELD_PRIORITY = "priority";
-    private static final String PRIORITY_CODE_FIELD = "priorityCode";
+    private static final String PRIORITY_CODE_FIELD = "priorityId";
     private static final String FIELD_ASSIGNEE = "assignee";
     private static final String ASSIGNEE_ID_FIELD = "assigneeId";
     private static final String REPORTER_ID_FIELD = "reporterId";
@@ -1234,10 +1235,12 @@ public class DataLogAspect {
     }
 
     private void handlePriority(List<String> field, IssueDO originIssueDO, IssueE issueE) {
-        if (field.contains(PRIORITY_CODE_FIELD) && !Objects.equals(originIssueDO.getPriorityCode(), issueE.getPriorityCode())) {
+        if (field.contains(PRIORITY_CODE_FIELD) && !Objects.equals(originIssueDO.getPriorityId(), issueE.getPriorityId())) {
+            PriorityDTO originPriorityDTO = issueFeignClient.queryById(ConvertUtil.getOrganizationId(originIssueDO.getProjectId()), originIssueDO.getPriorityId()).getBody();
+            PriorityDTO currentPriorityDTO = issueFeignClient.queryById(ConvertUtil.getOrganizationId(originIssueDO.getProjectId()), issueE.getPriorityId()).getBody();
             createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
-                    FIELD_PRIORITY, lookupValueMapper.selectNameByValueCode(originIssueDO.getPriorityCode())
-                    , lookupValueMapper.selectNameByValueCode(issueE.getPriorityCode()), null, null);
+                    FIELD_PRIORITY, originPriorityDTO.getName()
+                    , currentPriorityDTO.getName(), originIssueDO.getProjectId().toString(), issueE.getPriorityId().toString());
             redisUtil.deleteRedisCache(new String[]{PIECHART + originIssueDO.getProjectId() + ':' + FIELD_PRIORITY});
         }
     }
