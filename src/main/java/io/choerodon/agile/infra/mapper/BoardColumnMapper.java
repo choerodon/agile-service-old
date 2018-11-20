@@ -26,7 +26,7 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
                                 @Param("assigneeId") Long assigneeId,
                                 @Param("onlyStory") Boolean onlyStory,
                                 @Param("filterSql") String filterSql,
-                                @Param("userIds") List<Long> assigneeFilterIds);
+                                @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
 
     void columnSort(@Param("boardId") Long boardId,
                     @Param("sequence") Integer sequence,
