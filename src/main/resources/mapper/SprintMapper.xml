@@ -306,7 +306,7 @@
         SELECT COUNT(1)
         FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
         WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
-        AND ai.type_code NOT IN ('sub_task', 'issue_epic')
+        AND ai.type_code NOT IN ('issue_epic')
         AND ai.status_id = ais.status_id and ai.project_id = ais.project_id AND ais.is_completed != 1
     </select>
 
@@ -314,7 +314,7 @@
         SELECT COUNT(1)
         FROM agile_issue ai, agile_issue_status ais, agile_issue_sprint_rel aisr
         WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
-        AND ai.type_code NOT IN ('sub_task', 'issue_epic')
+        AND ai.type_code NOT IN ('issue_epic')
         AND ai.status_id = ais.status_id and ai.project_id = ais.project_id AND ais.is_completed = 1
     </select>
 
