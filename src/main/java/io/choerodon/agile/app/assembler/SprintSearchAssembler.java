@@ -37,9 +37,6 @@ public class SprintSearchAssembler extends AbstractAssembler {
     }
 
     public List<SprintSearchDTO> doListToDTO(List<SprintSearchDO> sprintSearchDOS, Map<Long, UserMessageDO> usersMap, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
-        if (sprintSearchDOS == null) {
-            return new ArrayList<>();
-        }
         List<SprintSearchDTO> sprintSearchList = new ArrayList<>(sprintSearchDOS.size());
         sprintSearchDOS.forEach(sprintSearchDO -> sprintSearchList.add(doToDTO(sprintSearchDO, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap)));
         return sprintSearchList;

@@ -32,8 +32,6 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     String queryMinRank(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    SprintSearchDO queryActiveSprint(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
-
     List<SprintSearchDO> queryPlanSprint(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     int queryIssueCount(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
@@ -86,4 +84,22 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
     Integer queryIssueCountInActiveBoard(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
     List<Long> queryParentsDoneSubtaskUnDoneIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+
+    /**
+     * 活跃冲刺的经办人统计信息
+     *
+     * @param projectId projectId
+     * @param sprintId  sprintId
+     * @return AssigneeIssueDO
+     */
+    List<AssigneeIssueDO> queryAssigneeIssueByActiveSprintId(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+
+    /**
+     * 查询活跃冲刺的issue列表
+     *
+     * @param sprintId sprintId
+     * @param issueIds issueIds
+     * @return IssueSearchDO
+     */
+    List<IssueSearchDO> queryActiveSprintIssueSearchByIssueIds(@Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds);
 }
