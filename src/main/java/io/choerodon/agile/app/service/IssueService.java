@@ -282,4 +282,12 @@ public interface IssueService {
      */
     void batchHandleIssueStatus(Long projectId, List<Long> moveIssueIds, Long sprintId);
 
+    /**
+     * 处理高级搜索中的用户搜索
+     *
+     * @param searchDTO searchDTO
+     * @param projectId projectId
+     */
+    void handleSearchUser(SearchDTO searchDTO, Long projectId);
+
 }

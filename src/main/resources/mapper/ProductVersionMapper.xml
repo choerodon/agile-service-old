@@ -295,6 +295,23 @@
         AND avir.version_id = #{versionId}
     </select>
 
+    <select id="queryStatusIssueCount" resultType="java.lang.Integer">
+      SELECT
+            count(1)
+        FROM
+            agile_version_issue_rel avir
+        WHERE
+        avir.project_id = #{projectId} and avir.version_id = #{versionId}
+        and
+            avir.issue_id in (select ai.issue_id from agile_issue ai where ai.status_id in
+        <foreach collection="statusIds" item="statusId" index="index"
+                 open="(" close=")" separator=",">
+            #{statusId}
+        </foreach>
+             )
+    </select>
+
+
     <delete id="deleteByVersionIds">
         DELETE
         FROM agile_product_version

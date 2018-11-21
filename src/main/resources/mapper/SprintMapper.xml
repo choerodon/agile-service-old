@@ -122,9 +122,10 @@
 
     <select id="queryStoryPoint" resultType="java.lang.Integer">
         SELECT IFNULL(SUM(ai.story_points), 0)
-        FROM agile_issue ai,agile_issue_sprint_rel aisr
-        WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
+        FROM agile_issue ai
+        WHERE ai.project_id = #{projectId}
         AND ai.type_code = 'story'
+        AND ai.issue_id in (select aisr.issue_id from agile_issue_sprint_rel aisr where aisr.sprint_id = #{sprintId})
         AND ai.issue_id IN
         <foreach collection="issueIds" item="issueId" index="index"
                  open="(" close=")" separator=",">
