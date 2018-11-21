@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by jian_zhang02@163.com on 2018/5/15.
@@ -54,7 +55,7 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     List<Long> queryAllRankIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    List<Long> queryAssigneeIdsByIssueIds(@Param("issueIds") List<Long> issueIds);
+    Set<Long> queryAssigneeIdsByIssueIds(@Param("issueIds") List<Long> issueIds);
 
     List<IssueSearchDO> queryBacklogIssues(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
@@ -102,4 +103,12 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
      * @return IssueSearchDO
      */
     List<IssueSearchDO> queryActiveSprintIssueSearchByIssueIds(@Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds);
+
+    /**
+     * 查询待办事项的所有冲刺中的所有用户
+     *
+     * @param projectId projectId
+     * @return assigneeId
+     */
+    Set<Long> queryBacklogSprintAssigneeIds(@Param("projectId")Long projectId);
 }

@@ -13,6 +13,9 @@ public class AssigneeIssueDTO {
     private BigDecimal totalRemainingTime;
     private Integer totalStoryPoints;
     private Integer issueCount;
+    private Integer remainingStoryPoints;
+    private Integer remainingIssueCount;
+    private BigDecimal remainingTime;
 
     public Long getSprintId() {
         return sprintId;
@@ -68,5 +71,29 @@ public class AssigneeIssueDTO {
 
     public void setIssueCount(Integer issueCount) {
         this.issueCount = issueCount;
+    }
+
+    public Integer getRemainingStoryPoints() {
+        return remainingStoryPoints;
+    }
+
+    public void setRemainingStoryPoints(Integer remainingStoryPoints) {
+        this.remainingStoryPoints = remainingStoryPoints;
+    }
+
+    public Integer getRemainingIssueCount() {
+        return remainingIssueCount;
+    }
+
+    public void setRemainingIssueCount(Integer remainingIssueCount) {
+        this.remainingIssueCount = remainingIssueCount;
+    }
+
+    public BigDecimal getRemainingTime() {
+        return remainingTime;
+    }
+
+    public void setRemainingTime(BigDecimal remainingTime) {
+        this.remainingTime = remainingTime;
     }
 }

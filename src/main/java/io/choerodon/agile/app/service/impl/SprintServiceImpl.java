@@ -209,26 +209,33 @@ public class SprintServiceImpl implements SprintService {
 
     private void handleSprintNoIssue(List<SprintSearchDTO> sprintSearches, Long projectId) {
         SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
-        SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDO, null, null, null, null);
-        List<SprintSearchDO> sprintSearchDTOS = sprintMapper.queryPlanSprintNoIssueIds(projectId);
-        List<SprintSearchDTO> planSprints = sprintSearchAssembler.doListToDTO(sprintSearchDTOS, null, null, null, null);
-        if (activeSprint != null) {
+        Set<Long> assigneeIds = sprintMapper.queryBacklogSprintAssigneeIds(projectId);
+        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(new ArrayList<>(assigneeIds), true);
+        if (sprintSearchDO != null) {
+            List<AssigneeIssueDO> assigneeIssueDOS = sprintMapper.queryAssigneeIssueByActiveSprintId(projectId, sprintSearchDO.getSprintId());
+            if (assigneeIssueDOS != null && !assigneeIssueDOS.isEmpty()) {
+                sprintSearchDO.setAssigneeIssueDOList(assigneeIssueDOS);
+            }
+            SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDO, usersMap, null, null, null);
             sprintSearches.add(activeSprint);
         }
+        List<SprintSearchDO> sprintSearchDTOS = sprintMapper.queryPlanSprintNoIssueIds(projectId);
+        List<SprintSearchDTO> planSprints = sprintSearchAssembler.doListToDTO(sprintSearchDTOS, usersMap, null, null, null);
         if (planSprints != null && !planSprints.isEmpty()) {
             sprintSearches.addAll(planSprints);
         }
     }
 
     private void handleSprintIssueData(List<Long> issueIds, List<SprintSearchDTO> sprintSearches, BackLogIssueDTO backLogIssueDTO, Long projectId, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
-        List<Long> assigneeIds = sprintMapper.queryAssigneeIdsByIssueIds(issueIds);
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+        Set<Long> assigneeIds = sprintMapper.queryAssigneeIdsByIssueIds(issueIds);
+        assigneeIds.addAll(sprintMapper.queryBacklogSprintAssigneeIds(projectId));
+        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(new ArrayList<>(assigneeIds), true);
         SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
         if (sprintSearchDO != null) {
-            sprintSearchDO.setIssueSearchDOList(sprintMapper.queryActiveSprintIssueSearchByIssueIds(sprintSearchDO.getSprintId(),issueIds));
+            sprintSearchDO.setIssueSearchDOList(sprintMapper.queryActiveSprintIssueSearchByIssueIds(sprintSearchDO.getSprintId(), issueIds));
             sprintSearchDO.setAssigneeIssueDOList(sprintMapper.queryAssigneeIssueByActiveSprintId(projectId, sprintSearchDO.getSprintId()));
             SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDO, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap);
-            activeSprint.setIssueCount(activeSprint.getIssueSearchDTOList().size());
+            activeSprint.setIssueCount(activeSprint.getIssueSearchDTOList() == null ? 0 : activeSprint.getIssueSearchDTOList().size());
             Map<String, List<Long>> statusMap = issueFeignClient.queryStatusByProjectId(projectId, SchemeApplyType.AGILE).getBody()
                     .stream().collect(Collectors.groupingBy(StatusMapDTO::getType, Collectors.mapping(StatusMapDTO::getId, Collectors.toList())));
             List<Long> todo = statusMap.get(CATEGORY_TODO_CODE);
@@ -248,7 +255,7 @@ public class SprintServiceImpl implements SprintService {
         List<SprintSearchDO> sprintSearchDTOS = sprintMapper.queryPlanSprint(projectId, issueIds);
         if (sprintSearchDTOS != null && !sprintSearchDTOS.isEmpty()) {
             List<SprintSearchDTO> planSprints = sprintSearchAssembler.doListToDTO(sprintSearchDTOS, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap);
-            planSprints.parallelStream().forEachOrdered(planSprint -> planSprint.setIssueCount(planSprint.getIssueSearchDTOList().size()));
+            planSprints.parallelStream().forEachOrdered(planSprint -> planSprint.setIssueCount(planSprint.getIssueSearchDTOList() == null ? 0 : planSprint.getIssueSearchDTOList().size()));
             sprintSearches.addAll(planSprints);
         }
         List<IssueSearchDO> backLogIssue = sprintMapper.queryBacklogIssues(projectId, issueIds);
