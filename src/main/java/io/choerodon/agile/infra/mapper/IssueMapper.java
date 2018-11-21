@@ -253,28 +253,31 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @param filterSql          filterSql
      * @return issueIds
      */
-    List<Long> querySprintIssueIdsByCondition(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql);
+    List<Long> querySprintIssueIdsByCondition(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql, @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
 
     List<StoryMapIssueDO> listIssuesByProjectIdSprint(@Param("projectId") Long projectId,
                                                       @Param("pageType") String pageType,
                                                       @Param("assigneeId") Long assigneeId,
                                                       @Param("onlyStory") Boolean onlyStory,
                                                       @Param("filterSql") String filterSql,
-                                                      @Param("doneIds") List<Long> doneIds);
+                                                      @Param("doneIds") List<Long> doneIds,
+                                                      @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
 
     List<StoryMapIssueDO> listIssuesByProjectIdVersion(@Param("projectId") Long projectId,
                                                        @Param("pageType") String pageType,
                                                        @Param("assigneeId") Long assigneeId,
                                                        @Param("onlyStory") Boolean onlyStory,
                                                        @Param("filterSql") String filterSql,
-                                                       @Param("doneIds") List<Long> doneIds);
+                                                       @Param("doneIds") List<Long> doneIds,
+                                                       @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
 
     List<StoryMapIssueDO> listIssuesByProjectIdNone(@Param("projectId") Long projectId,
                                                     @Param("pageType") String pageType,
                                                     @Param("assigneeId") Long assigneeId,
                                                     @Param("onlyStory") Boolean onlyStory,
                                                     @Param("filterSql") String filterSql,
-                                                    @Param("doneIds") List<Long> doneIds);
+                                                    @Param("doneIds") List<Long> doneIds,
+                                                    @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
 
     List<StoryMapEpicDO> queryStoryMapEpicList(@Param("projectId") Long projectId,
                                                @Param("showDoneEpic") Boolean showDoneEpic,
@@ -382,7 +385,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<Long> queryIssueIdsListWithSub(@Param("projectId") Long projectId,
                                         @Param("searchDTO") SearchDTO searchDTO,
-                                        @Param("filterSql") String filterSql);
+                                        @Param("filterSql") String filterSql,
+                                        @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
 
     List<IssueDO> queryIssueListWithSubByIssueIds(@Param("issueIds") List<Long> issueIds);
 
