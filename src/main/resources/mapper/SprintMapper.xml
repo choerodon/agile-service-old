@@ -24,6 +24,26 @@
         </collection>
     </resultMap>
 
+    <resultMap type="io.choerodon.agile.infra.dataobject.SprintSearchDO" id="SprintSearchNoIssueDO">
+        <id column="sprint_id" property="sprintId"/>
+        <id column="sprint_name" property="sprintName"/>
+        <id column="sprint_goal" property="sprintGoal"/>
+        <id column="start_date" property="startDate"/>
+        <id column="end_date" property="endDate"/>
+        <id column="status_code" property="statusCode"/>
+        <id column="object_version_number" property="objectVersionNumber"/>
+        <collection property="assigneeIssueDOList" ofType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
+            <result property="sprintId" column="asi_sprint_id"/>
+            <result property="assigneeId" column="asi_assignee_id"/>
+            <result property="totalStoryPoints" column="total_story_points"/>
+            <result property="totalRemainingTime" column="total_remaining_time"/>
+            <result property="issueCount" column="issue_count"/>
+            <result property="remainingStoryPoints" column="remaining_story_points"/>
+            <result property="remainingTime" column="remaining_time"/>
+            <result property="remainingIssueCount" column="remaining_issue_count"/>
+        </collection>
+    </resultMap>
+
     <resultMap id="issueSearch" type="io.choerodon.agile.infra.dataobject.IssueSearchDO">
         <id property="issueId" column="issue_id"/>
         <id property="issueNum" column="issue_num"/>
@@ -336,6 +356,24 @@
         FROM agile_sprint asp2 WHERE aisr2.sprint_id = asp2.sprint_id AND asp2.status_code != 'closed')
     </sql>
 
+    <select id="queryBacklogSprintAssigneeIds" resultType="java.lang.Long">
+        SELECT DISTINCT
+            ai.assignee_id
+        FROM
+            agile_issue ai
+        WHERE
+            ai.project_id = #{projectId}
+            AND ai.issue_id IN (
+        SELECT
+            aisr.issue_id
+        FROM
+            agile_issue_sprint_rel aisr
+        WHERE
+            aisr.sprint_id IN ( SELECT asp.sprint_id FROM agile_sprint asp WHERE asp.project_id = #{projectId} AND asp.status_code != 'closed' )
+            )
+            AND ai.assignee_id IS NOT NULL
+    </select>
+
     <select id="queryActiveSprintIssueSearchByIssueIds" resultMap="issueSearch">
         SELECT
         ai2.issue_id,
@@ -390,24 +428,41 @@
     <select id="queryPlanSprint" resultMap="SprintSearchDO">
         select
         spa.*,
+        qais.asi_sprint_id,
         qais.asi_assignee_id,
         qais.total_story_points,
-        qais.asi_sprint_id,
         qais.total_remaining_time,
         qais.issue_count,
+        qais.remaining_story_points,
+        qais.remaining_time,
+        qais.remaining_issue_count,
         qsii.*
         from
         (<include refid="queryPlanSprintSql"/>)spa
         left join(<include refid="querySprintIssueByIssueIds"/>)qsii on qsii.is_sprint_id = spa.sprint_id
-        left join (<include refid="queryAssigneeIssueByPlanSprintId"/>)qais
-        on spa.sprint_id = qais.asi_sprint_id order by spa.sprint_id desc,qsii.rank ASC
+        left join (<include refid="queryAssigneeIssueByPlanSprintId"/>)qais on spa.sprint_id = qais.asi_sprint_id order by spa.sprint_id desc,qsii.rank ASC
     </select>
 
-    <select id="queryPlanSprintNoIssueIds" resultType="io.choerodon.agile.infra.dataobject.SprintSearchDO">
+    <select id="queryPlanSprintNoIssueIds" resultMap="SprintSearchNoIssueDO">
         select
-        spa.*
+        spa.sprint_id,
+        spa.sprint_name,
+        spa.sprint_goal,
+        spa.start_date,
+        spa.end_date,
+        spa.status_code,
+        spa.object_version_number,
+        qais.asi_sprint_id,
+        qais.asi_assignee_id,
+        qais.total_story_points,
+        qais.total_remaining_time,
+        qais.issue_count,
+        qais.remaining_story_points,
+        qais.remaining_time,
+        qais.remaining_issue_count
         from
         (<include refid="queryPlanSprintSql"/>)spa
+        left join (<include refid="queryAssigneeIssueByPlanSprintId"/>)qais on spa.sprint_id = qais.asi_sprint_id order by spa.sprint_id desc
     </select>
 
     <select id="queryNotCloseSprintIdByIssueId" resultType="java.lang.Long">

@@ -23,32 +23,41 @@ import java.util.stream.Collectors;
 public class IssueSearchAssembler extends AbstractAssembler {
 
     public List<IssueSearchDTO> doListToDTO(List<IssueSearchDO> issueSearchDOList, Map<Long, UserMessageDO> usersMap, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
-        List<IssueSearchDTO> issueSearchDTOList = new ArrayList<>(issueSearchDOList.size());
-        issueSearchDOList.forEach(issueSearch -> {
-            String assigneeName = usersMap.get(issueSearch.getAssigneeId()) != null ? usersMap.get(issueSearch.getAssigneeId()).getName() : null;
-            String imageUrl = assigneeName != null ? usersMap.get(issueSearch.getAssigneeId()).getImageUrl() : null;
-            issueSearch.setAssigneeName(assigneeName);
-            issueSearch.setImageUrl(imageUrl);
-            issueSearch.setPriorityDTO(priorityMap.get(issueSearch.getPriorityId()));
-            issueSearch.setStatusMapDTO(statusMapDTOMap.get(issueSearch.getStatusId()));
-            issueSearch.setIssueTypeDTO(issueTypeDTOMap.get(issueSearch.getIssueTypeId()));
-            issueSearchDTOList.add(toTarget(issueSearch, IssueSearchDTO.class));
-        });
-        return issueSearchDTOList;
+        if (issueSearchDOList != null && !issueSearchDOList.isEmpty()) {
+            List<IssueSearchDTO> issueSearchDTOList = new ArrayList<>(issueSearchDOList.size());
+            issueSearchDOList.forEach(issueSearch -> {
+                String assigneeName = usersMap.get(issueSearch.getAssigneeId()) != null ? usersMap.get(issueSearch.getAssigneeId()).getName() : null;
+                String imageUrl = assigneeName != null ? usersMap.get(issueSearch.getAssigneeId()).getImageUrl() : null;
+                issueSearch.setAssigneeName(assigneeName);
+                issueSearch.setImageUrl(imageUrl);
+                issueSearch.setPriorityDTO(priorityMap.get(issueSearch.getPriorityId()));
+                issueSearch.setStatusMapDTO(statusMapDTOMap.get(issueSearch.getStatusId()));
+                issueSearch.setIssueTypeDTO(issueTypeDTOMap.get(issueSearch.getIssueTypeId()));
+                issueSearchDTOList.add(toTarget(issueSearch, IssueSearchDTO.class));
+            });
+            return issueSearchDTOList;
+        } else {
+            return null;
+        }
     }
 
     public List<AssigneeIssueDTO> doListToAssigneeIssueDTO(List<AssigneeIssueDO> assigneeIssueDOList, Map<Long, UserMessageDO> usersMap) {
-        List<AssigneeIssueDTO> assigneeIssues = new ArrayList<>(assigneeIssueDOList.size());
-        assigneeIssueDOList.forEach(assigneeIssueDO -> {
-            String assigneeName = usersMap.get(assigneeIssueDO.getAssigneeId()) != null ? usersMap.get(assigneeIssueDO.getAssigneeId()).getName() : null;
-            String imageUrl = assigneeName != null ? usersMap.get(assigneeIssueDO.getAssigneeId()).getImageUrl() : null;
-            AssigneeIssueDTO assigneeIssueDTO = new AssigneeIssueDTO();
-            BeanUtils.copyProperties(assigneeIssueDO, assigneeIssueDTO);
-            assigneeIssueDTO.setAssigneeName(assigneeName);
-            assigneeIssueDTO.setImageUrl(imageUrl);
-            assigneeIssues.add(assigneeIssueDTO);
-        });
-        return assigneeIssues;
+        if (assigneeIssueDOList != null && !assigneeIssueDOList.isEmpty()) {
+            List<AssigneeIssueDTO> assigneeIssues = new ArrayList<>(assigneeIssueDOList.size());
+            assigneeIssueDOList.forEach(assigneeIssueDO -> {
+                String assigneeName = usersMap.get(assigneeIssueDO.getAssigneeId()) != null ? usersMap.get(assigneeIssueDO.getAssigneeId()).getName() : null;
+                String imageUrl = assigneeName != null ? usersMap.get(assigneeIssueDO.getAssigneeId()).getImageUrl() : null;
+                AssigneeIssueDTO assigneeIssueDTO = new AssigneeIssueDTO();
+                BeanUtils.copyProperties(assigneeIssueDO, assigneeIssueDTO);
+                assigneeIssueDTO.setAssigneeName(assigneeName);
+                assigneeIssueDTO.setImageUrl(imageUrl);
+                assigneeIssues.add(assigneeIssueDTO);
+            });
+            return assigneeIssues;
+        } else {
+            return null;
+        }
+
     }
 
 }
