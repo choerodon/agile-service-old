@@ -93,8 +93,10 @@ public class SprintController {
                                                                 @ApiParam(value = "查询参数", required = false)
                                                                 @RequestBody(required = false) Map<String, Object> searchParamMap,
                                                                 @ApiParam(value = "quick filter")
-                                                                @RequestParam(required = false) List<Long> quickFilterIds) {
-        return Optional.ofNullable(sprintService.queryByProjectId(projectId, searchParamMap, quickFilterIds, organizationId))
+                                                                @RequestParam(required = false) List<Long> quickFilterIds,
+                                                                @ApiParam(value = "经办人搜索", required = false)
+                                                                @RequestParam(required = false) List<Long> assigneeFilterIds) {
+        return Optional.ofNullable(sprintService.queryByProjectId(projectId, searchParamMap, quickFilterIds, organizationId, assigneeFilterIds))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_ERROR));
     }

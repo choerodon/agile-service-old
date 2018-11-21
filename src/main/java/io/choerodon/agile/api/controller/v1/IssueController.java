@@ -532,8 +532,10 @@ public class IssueController {
                                                                         @ApiParam(value = "search item，only story", required = false)
                                                                         @RequestParam(required = false) Boolean onlyStory,
                                                                         @ApiParam(value = "quick filter", required = false)
-                                                                        @RequestParam(required = false) List<Long> quickFilterIds) {
-        return Optional.ofNullable(issueService.listIssuesByProjectId(projectId, type, pageType, assigneeId, onlyStory, quickFilterIds, organizationId))
+                                                                        @RequestParam(required = false) List<Long> quickFilterIds,
+                                                                        @ApiParam(value = "经办人搜索", required = false)
+                                                                        @RequestParam(required = false) List<Long> assigneeFilterIds) {
+        return Optional.ofNullable(issueService.listIssuesByProjectId(projectId, type, pageType, assigneeId, onlyStory, quickFilterIds, organizationId, assigneeFilterIds))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.listIssuesByProjectId"));
     }

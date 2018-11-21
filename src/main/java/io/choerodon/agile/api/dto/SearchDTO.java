@@ -28,6 +28,8 @@ public class SearchDTO {
 
     private List<Long> quickFilterIds;
 
+    private List<Long> assigneeFilterIds;
+
     private Boolean onlyStory;
 
     /**
@@ -81,6 +83,14 @@ public class SearchDTO {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void setAssigneeFilterIds(List<Long> assigneeFilterIds) {
+        this.assigneeFilterIds = assigneeFilterIds;
+    }
+
+    public List<Long> getAssigneeFilterIds() {
+        return assigneeFilterIds;
     }
 
     @Override

@@ -443,7 +443,7 @@ public class IssueServiceImpl implements IssueService {
         final String searchSql = filterSql;
         pageRequest.resetOrder(SEARCH, order);
         Page<Long> issueIdPage = PageHelper.doPageAndSort(pageRequest, () -> issueMapper.queryIssueIdsListWithSub
-                (projectId, searchDTO, searchSql));
+                (projectId, searchDTO, searchSql, searchDTO.getAssigneeFilterIds()));
         Page<IssueListDTO> issueListDTOPage = new Page<>();
         if (issueIdPage.getContent() != null && !issueIdPage.getContent().isEmpty()) {
             List<IssueDO> issueDOList = issueMapper.queryIssueListWithSubByIssueIds(issueIdPage.getContent());
@@ -1394,7 +1394,7 @@ public class IssueServiceImpl implements IssueService {
         }
         final String searchSql = filterSql;
         //连表查询需要设置主表别名
-        List<Long> issueIds = issueMapper.queryIssueIdsListWithSub(projectId, searchDTO, searchSql);
+        List<Long> issueIds = issueMapper.queryIssueIdsListWithSub(projectId, searchDTO, searchSql, searchDTO.getAssigneeFilterIds());
         List<ExportIssuesDTO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId, issueIds, projectCode), projectId);
         if (!issueIds.isEmpty()) {
             Map<Long, List<SprintNameDO>> closeSprintNames = issueMapper.querySprintNameByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(SprintNameDO::getIssueId));
@@ -1755,7 +1755,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public List<StoryMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId) {
+    public List<StoryMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId, List<Long> assigneeFilterIds) {
         List<StoryMapIssueDTO> storyMapIssueDTOList = null;
         String filterSql = null;
         if (quickFilterIds != null && !quickFilterIds.isEmpty()) {
@@ -1770,13 +1770,13 @@ public class IssueServiceImpl implements IssueService {
         getDoneIds(statusMapDTOMap, doneIds);
         switch (type) {
             case STORYMAP_TYPE_SPRINT:
-                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId, pageType, assigneeId, onlyStory, filterSql, doneIds), priorityMap, statusMapDTOMap, issueTypeDTOMap);
+                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId, pageType, assigneeId, onlyStory, filterSql, doneIds, assigneeFilterIds), priorityMap, statusMapDTOMap, issueTypeDTOMap);
                 break;
             case STORYMAP_TYPE_VERSION:
-                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdVersion(projectId, pageType, assigneeId, onlyStory, filterSql, doneIds), priorityMap, statusMapDTOMap, issueTypeDTOMap);
+                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdVersion(projectId, pageType, assigneeId, onlyStory, filterSql, doneIds, assigneeFilterIds), priorityMap, statusMapDTOMap, issueTypeDTOMap);
                 break;
             case STORYMAP_TYPE_NONE:
-                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdNone(projectId, pageType, assigneeId, onlyStory, filterSql, doneIds), priorityMap, statusMapDTOMap, issueTypeDTOMap);
+                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdNone(projectId, pageType, assigneeId, onlyStory, filterSql, doneIds, assigneeFilterIds), priorityMap, statusMapDTOMap, issueTypeDTOMap);
                 break;
             default:
                 break;

@@ -183,7 +183,7 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
-    public Map<String, Object> queryByProjectId(Long projectId, Map<String, Object> searchParamMap, List<Long> quickFilterIds, Long organizationId) {
+    public Map<String, Object> queryByProjectId(Long projectId, Map<String, Object> searchParamMap, List<Long> quickFilterIds, Long organizationId, List<Long> assigneeFilterIds) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         Map<String, Object> backlog = new HashMap<>();
         String filterSql = null;
@@ -191,7 +191,7 @@ public class SprintServiceImpl implements SprintService {
             filterSql = getQuickFilter(quickFilterIds);
         }
         List<Long> issueIds = issueMapper.querySprintIssueIdsByCondition(projectId, customUserDetails.getUserId(),
-                StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)), filterSql);
+                StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)), filterSql, assigneeFilterIds);
         List<SprintSearchDTO> sprintSearches = new ArrayList<>();
         BackLogIssueDTO backLogIssueDTO = new BackLogIssueDTO();
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
