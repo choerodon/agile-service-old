@@ -296,7 +296,7 @@ public class SprintServiceImpl implements SprintService {
         if (!Objects.equals(projectId, sprintCompleteDTO.getProjectId())) {
             throw new CommonException(NOT_EQUAL_ERROR);
         }
-//        sprintRule.judgeCompleteSprint(projectId, sprintCompleteDTO.getSprintId(), sprintCompleteDTO.getIncompleteIssuesDestination());
+        sprintRule.judgeCompleteSprint(projectId, sprintCompleteDTO.getIncompleteIssuesDestination());
         SprintDO sprintDO = new SprintDO();
         sprintDO.setProjectId(projectId);
         sprintDO.setSprintId(sprintCompleteDTO.getSprintId());

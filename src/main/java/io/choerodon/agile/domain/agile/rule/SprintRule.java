@@ -40,11 +40,11 @@ public class SprintRule {
         return sprintMapper.hasIssue(projectId, sprintId);
     }
 
-    public void judgeCompleteSprint(Long projectId, Long sprintId, Long targetSprintId) {
+    public void judgeCompleteSprint(Long projectId, Long targetSprintId) {
         judgePlanningExist(projectId, targetSprintId);
-        if (!sprintMapper.queryParentsDoneUnfinishedSubtasks(projectId, sprintId).isEmpty()) {
-            throw new CommonException(ERROR_COMPLETE_SPRINT);
-        }
+//        if (!sprintMapper.queryParentsDoneUnfinishedSubtasks(projectId, sprintId).isEmpty()) {
+//            throw new CommonException(ERROR_COMPLETE_SPRINT);
+//        }
     }
 
     private void judgePlanningExist(Long projectId, Long sprintId) {
