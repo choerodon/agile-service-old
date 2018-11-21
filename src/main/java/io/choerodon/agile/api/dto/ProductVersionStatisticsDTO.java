@@ -15,13 +15,69 @@ public class ProductVersionStatisticsDTO {
     private String statusCode;
     private String statusName;
     private Long projectId;
-//    private Integer issueCount;
-//    private Integer doneIssueCount;
-//    private Integer doingIssueCount;
-//    private Integer todoIssueCount;
-//    private List<IssueCountDTO> todoCategoryIssueCount;
-//    private List<IssueCountDTO> doingCategoryIssueCount;
-//    private List<IssueCountDTO> doneCategoryIssueCount;
+    private Integer issueCount;
+    private Integer doneIssueCount;
+    private List<Long> doneStatusIds;
+    private List<Long> doingStatusIds;
+    private List<Long> todoStatusIds;
+    private Integer doingIssueCount;
+    private Integer todoIssueCount;
+
+    public List<Long> getDoneStatusIds() {
+        return doneStatusIds;
+    }
+
+    public void setDoneStatusIds(List<Long> doneStatusIds) {
+        this.doneStatusIds = doneStatusIds;
+    }
+
+    public List<Long> getDoingStatusIds() {
+        return doingStatusIds;
+    }
+
+    public void setDoingStatusIds(List<Long> doingStatusIds) {
+        this.doingStatusIds = doingStatusIds;
+    }
+
+    public List<Long> getTodoStatusIds() {
+        return todoStatusIds;
+    }
+
+    public void setTodoStatusIds(List<Long> todoStatusIds) {
+        this.todoStatusIds = todoStatusIds;
+    }
+
+    public Integer getIssueCount() {
+        return issueCount;
+    }
+
+    public void setIssueCount(Integer issueCount) {
+        this.issueCount = issueCount;
+    }
+
+    public Integer getDoneIssueCount() {
+        return doneIssueCount;
+    }
+
+    public void setDoneIssueCount(Integer doneIssueCount) {
+        this.doneIssueCount = doneIssueCount;
+    }
+
+    public Integer getDoingIssueCount() {
+        return doingIssueCount;
+    }
+
+    public void setDoingIssueCount(Integer doingIssueCount) {
+        this.doingIssueCount = doingIssueCount;
+    }
+
+    public Integer getTodoIssueCount() {
+        return todoIssueCount;
+    }
+
+    public void setTodoIssueCount(Integer todoIssueCount) {
+        this.todoIssueCount = todoIssueCount;
+    }
 
     public Long getVersionId() {
         return versionId;

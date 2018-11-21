@@ -238,18 +238,9 @@ public class SprintServiceImpl implements SprintService {
             activeSprint.setIssueCount(activeSprint.getIssueSearchDTOList() == null ? 0 : activeSprint.getIssueSearchDTOList().size());
             Map<String, List<Long>> statusMap = issueFeignClient.queryStatusByProjectId(projectId, SchemeApplyType.AGILE).getBody()
                     .stream().collect(Collectors.groupingBy(StatusMapDTO::getType, Collectors.mapping(StatusMapDTO::getId, Collectors.toList())));
-            List<Long> todo = statusMap.get(CATEGORY_TODO_CODE);
-            if (todo != null && !todo.isEmpty()) {
-                activeSprint.setTodoStoryPoint(sprintMapper.queryStoryPoint(todo, issueIds, projectId, activeSprint.getSprintId()));
-            }
-            List<Long> doing = statusMap.get(CATEGORY_DOING_CODE);
-            if (doing != null && !doing.isEmpty()) {
-                activeSprint.setDoingStoryPoint(sprintMapper.queryStoryPoint(doing, issueIds, projectId, activeSprint.getSprintId()));
-            }
-            List<Long> done = statusMap.get(CATEGORY_DONE_CODE);
-            if (done != null && !done.isEmpty()) {
-                activeSprint.setDoneStoryPoint(sprintMapper.queryStoryPoint(done, issueIds, projectId, activeSprint.getSprintId()));
-            }
+            activeSprint.setTodoStoryPoint(statusMap.get(CATEGORY_TODO_CODE) != null && !statusMap.get(CATEGORY_TODO_CODE).isEmpty() ? sprintMapper.queryStoryPoint(statusMap.get(CATEGORY_TODO_CODE), issueIds, projectId, activeSprint.getSprintId()) : 0);
+            activeSprint.setDoingStoryPoint(statusMap.get(CATEGORY_DOING_CODE) != null && !statusMap.get(CATEGORY_DOING_CODE).isEmpty() ? sprintMapper.queryStoryPoint(statusMap.get(CATEGORY_DOING_CODE), issueIds, projectId, activeSprint.getSprintId()) : 0);
+            activeSprint.setDoneStoryPoint(statusMap.get(CATEGORY_DONE_CODE) != null && !statusMap.get(CATEGORY_DONE_CODE).isEmpty() ? sprintMapper.queryStoryPoint(statusMap.get(CATEGORY_DONE_CODE), issueIds, projectId, activeSprint.getSprintId()) : 0);
             sprintSearches.add(activeSprint);
         }
         List<SprintSearchDO> sprintSearchDTOS = sprintMapper.queryPlanSprint(projectId, issueIds);

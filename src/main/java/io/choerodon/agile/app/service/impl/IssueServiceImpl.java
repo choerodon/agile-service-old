@@ -461,7 +461,8 @@ public class IssueServiceImpl implements IssueService {
         return issueListDTOPage;
     }
 
-    private void handleSearchUser(SearchDTO searchDTO, Long projectId) {
+    @Override
+    public void handleSearchUser(SearchDTO searchDTO, Long projectId) {
         if (searchDTO.getSearchArgs() != null && searchDTO.getSearchArgs().get(ASSIGNEE) != null) {
             String userName = (String) searchDTO.getSearchArgs().get(ASSIGNEE);
             if (userName != null && !"".equals(userName)) {

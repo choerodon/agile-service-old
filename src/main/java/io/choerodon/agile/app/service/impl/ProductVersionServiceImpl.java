@@ -3,6 +3,7 @@ package io.choerodon.agile.app.service.impl;
 import com.alibaba.fastjson.JSON;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
+import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.domain.agile.converter.ProductVersionConverter;
 import io.choerodon.agile.domain.agile.event.VersionPayload;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
@@ -71,6 +72,9 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private IssueFeignClient issueFeignClient;
 
     @Autowired
+    private IssueService issueService;
+
+    @Autowired
     private StateMachineFeignClient stateMachineFeignClient;
 
     private static final String VERSION_PLANNING = "version_planning";
@@ -87,6 +91,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private static final String SOURCE_VERSION_ERROR = "error.sourceVersionIds.notNull";
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
+    private static final String SEARCH = "search";
 
     private final SagaClient sagaClient;
 
@@ -222,7 +227,17 @@ public class ProductVersionServiceImpl implements ProductVersionService {
 
     @Override
     public ProductVersionStatisticsDTO queryVersionStatisticsByVersionId(Long projectId, Long versionId) {
-        return versionStatisticsAssembler.toTarget(productVersionMapper.queryVersionStatisticsByVersionId(projectId, versionId), ProductVersionStatisticsDTO.class);
+        ProductVersionStatisticsDTO productVersionStatisticsDTO = versionStatisticsAssembler.toTarget(productVersionMapper.queryVersionStatisticsByVersionId(projectId, versionId), ProductVersionStatisticsDTO.class);
+        Map<String, List<Long>> statusMap = issueFeignClient.queryStatusByProjectId(projectId, SchemeApplyType.AGILE).getBody()
+                .stream().collect(Collectors.groupingBy(StatusMapDTO::getType, Collectors.mapping(StatusMapDTO::getId, Collectors.toList())));
+        productVersionStatisticsDTO.setTodoIssueCount(statusMap.get(CATEGORY_TODO_CODE) != null && !statusMap.get(CATEGORY_TODO_CODE).isEmpty() ? productVersionMapper.queryStatusIssueCount(statusMap.get(CATEGORY_TODO_CODE), projectId, versionId) : 0);
+        productVersionStatisticsDTO.setDoingIssueCount(statusMap.get(CATEGORY_DOING_CODE) != null && !statusMap.get(CATEGORY_DOING_CODE).isEmpty() ? productVersionMapper.queryStatusIssueCount(statusMap.get(CATEGORY_DOING_CODE), projectId, versionId) : 0);
+        productVersionStatisticsDTO.setDoneIssueCount(statusMap.get(CATEGORY_DONE_CODE) != null && !statusMap.get(CATEGORY_DONE_CODE).isEmpty() ? productVersionMapper.queryStatusIssueCount(statusMap.get(CATEGORY_DONE_CODE), projectId, versionId) : 0);
+        productVersionStatisticsDTO.setIssueCount(productVersionStatisticsDTO.getTodoIssueCount() + productVersionStatisticsDTO.getDoingIssueCount() + productVersionStatisticsDTO.getDoneIssueCount());
+        productVersionStatisticsDTO.setTodoStatusIds(statusMap.get(CATEGORY_TODO_CODE));
+        productVersionStatisticsDTO.setDoingStatusIds(statusMap.get(CATEGORY_DOING_CODE));
+        productVersionStatisticsDTO.setDoneStatusIds(statusMap.get(CATEGORY_TODO_CODE));
+        return productVersionStatisticsDTO;
     }
 
     @Override

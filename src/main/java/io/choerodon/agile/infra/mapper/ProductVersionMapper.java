@@ -145,4 +145,14 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
      * @return VersionIssueDO
      */
     List<VersionIssueDO> queryVersionIssueByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+
+    /**
+     * 查询版本中的issue中的状态统计
+     *
+     * @param statusIds statusIds
+     * @param projectId projectId
+     * @param versionId versionId
+     * @return Integer
+     */
+    Integer queryStatusIssueCount(@Param("statusIds") List<Long> statusIds, @Param("projectId") Long projectId, @Param("versionId") Long versionId);
 }
