@@ -16,6 +16,9 @@
             <result property="totalStoryPoints" column="total_story_points"/>
             <result property="totalRemainingTime" column="total_remaining_time"/>
             <result property="issueCount" column="issue_count"/>
+            <result property="remainingStoryPoints" column="remaining_story_points"/>
+            <result property="remainingTime" column="remaining_time"/>
+            <result property="remainingIssueCount" column="remaining_issue_count"/>
         </collection>
         <collection property="issueSearchDOList" resultMap="issueSearch">
         </collection>
@@ -138,27 +141,155 @@
         (<include refid="queryActiveSprintSql"/>)spa
     </select>
 
-    <sql id="queryAssigneeIssueBySprintId">
-        SELECT a.sprint_id as asi_sprint_id,
-        a.assignee_id as asi_assignee_id,
-        SUM(a.story_points) AS total_story_points,
-        SUM(a.remaining_time) AS total_remaining_time,
-        COUNT(1) AS issue_count
-        FROM (
+    <sql id="queryAssigneeIssueByPlanSprintId">
+        SELECT
+        cc.asi_sprint_id,
+        cc.asi_assignee_id,
+        cc.total_story_points,
+        cc.total_remaining_time,
+        cc.issue_count,
+        bb.remaining_story_points,
+        bb.remaining_time,
+        bb.remaining_issue_count
+        FROM
+        (
+        SELECT
+        a.sprint_id AS asi_sprint_id,
+        a.assignee_id AS asi_assignee_id,
+        SUM( a.story_points ) AS total_story_points,
+        SUM( a.remaining_time ) AS total_remaining_time,
+        COUNT( 1 ) AS issue_count
+        FROM
+        (
         SELECT
         aisr.sprint_id,
-        case when ai.assignee_id is null then 0 else ai.assignee_id end AS assignee_id,
-        ai.story_points, ai.remaining_time
-        FROM agile_issue ai, agile_issue_sprint_rel aisr
-        WHERE aisr.issue_id = ai.issue_id
-        and ai.issue_id in
-        <foreach collection="issueIds" item="issueId" open="("
-                 separator="," close=")">
-            #{issueId}
-        </foreach>
+        CASE WHEN
+        ai.assignee_id IS NULL THEN 0 ELSE ai.assignee_id
+        END AS assignee_id,
+        ai.story_points,
+        ai.remaining_time
+        FROM
+        agile_issue ai,
+        agile_issue_sprint_rel aisr
+        WHERE
+        aisr.issue_id = ai.issue_id
+        AND aisr.sprint_id in (
+                SELECT
+            asp.sprint_id
+        FROM
+            agile_sprint asp
+        WHERE
+            asp.project_id = #{projectId}
+            AND asp.status_code = 'sprint_planning')
         ) a
-        GROUP BY a.sprint_id, a.assignee_id
+        GROUP BY
+        a.sprint_id,
+        a.assignee_id
+        ) cc
+        LEFT JOIN (
+        SELECT
+        a2.sprint_id AS asi_sprint_id,
+        a2.assignee_id AS asi_assignee_id,
+        SUM( a2.story_points ) AS remaining_story_points,
+        SUM( a2.remaining_time ) AS remaining_time,
+        COUNT( 1 ) AS remaining_issue_count
+        FROM
+        (
+        SELECT
+        aisr.sprint_id,
+        CASE WHEN
+        ai2.assignee_id IS NULL THEN 0 ELSE ai2.assignee_id
+        END AS assignee_id,
+        ai2.story_points,
+        ai2.remaining_time
+        FROM
+        agile_issue ai2,
+        agile_issue_sprint_rel aisr
+        WHERE
+        aisr.issue_id = ai2.issue_id
+        AND aisr.sprint_id in (
+                SELECT
+            asp.sprint_id
+        FROM
+            agile_sprint asp
+        WHERE
+            asp.project_id = #{projectId}
+            AND asp.status_code = 'sprint_planning')
+        AND ai2.status_id IN ( SELECT ais.status_id FROM agile_issue_status ais WHERE ais.project_id = #{projectId} AND ais.is_completed != 1 )
+        ) a2
+        GROUP BY
+        a2.sprint_id,
+        a2.assignee_id
+        ) bb ON cc.asi_assignee_id = bb.asi_assignee_id order by cc.asi_assignee_id
     </sql>
+
+    <select id="queryAssigneeIssueByActiveSprintId" resultType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
+      SELECT
+        cc.sprint_id,
+        cc.assignee_id,
+        cc.total_story_points,
+        cc.total_remaining_time,
+        cc.issue_count,
+        bb.remaining_story_points,
+        bb.remaining_time,
+        bb.remaining_issue_count
+    FROM
+        (
+        SELECT
+            a.sprint_id,
+            a.assignee_id,
+            SUM( a.story_points ) AS total_story_points,
+            SUM( a.remaining_time ) AS total_remaining_time,
+            COUNT( 1 ) AS issue_count
+        FROM
+            (
+            SELECT
+                aisr.sprint_id,
+                CASE WHEN
+                  ai.assignee_id IS NULL THEN 0 ELSE ai.assignee_id
+                END AS assignee_id,
+                ai.story_points,
+                ai.remaining_time
+            FROM
+                agile_issue ai,
+                agile_issue_sprint_rel aisr
+            WHERE
+                aisr.issue_id = ai.issue_id
+                AND aisr.sprint_id = #{sprintId}
+                AND aisr.project_id = #{projectId}
+            ) a
+        GROUP BY
+            a.assignee_id
+        ) cc
+        LEFT JOIN (
+        SELECT
+            a2.sprint_id,
+            a2.assignee_id,
+            SUM( a2.story_points ) AS remaining_story_points,
+            SUM( a2.remaining_time ) AS remaining_time,
+            COUNT( 1 ) AS remaining_issue_count
+        FROM
+            (
+            SELECT
+                aisr.sprint_id,
+                CASE WHEN
+                  ai2.assignee_id IS NULL THEN 0 ELSE ai2.assignee_id
+                END AS assignee_id,
+                ai2.story_points,
+                ai2.remaining_time
+            FROM
+                agile_issue ai2,
+                agile_issue_sprint_rel aisr
+            WHERE
+                aisr.issue_id = ai2.issue_id
+                AND aisr.sprint_id = #{sprintId}
+                AND aisr.project_id = #{projectId}
+                AND ai2.status_id IN ( SELECT ais.status_id FROM agile_issue_status ais WHERE ais.project_id = #{projectId} AND ais.is_completed != 1 )
+            ) a2
+        GROUP BY
+        a2.assignee_id
+        ) bb ON cc.assignee_id = bb.assignee_id order by cc.assignee_id
+    </select>
 
     <sql id="querySprintIssueByIssueIds">
         SELECT
@@ -168,7 +299,8 @@
         ai2.rank,
         ai2.reporter_id, ai2.description,
         ai2.assignee_id, ai2.project_id,
-        ai2.epic_id, asp1.sprint_id as is_sprint_id,
+        ai2.epic_id,
+        aisr2.sprint_id as is_sprint_id,
         ai2.story_points, ai2.status_id,
         ai2.issue_type_id,
         ai2.priority_id,
@@ -188,10 +320,6 @@
         LEFT JOIN agile_issue ai1 ON ai2.epic_id = ai1.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
         left join agile_issue_sprint_rel aisr2 on aisr2.issue_id = ai2.issue_id
-        LEFT JOIN (SELECT aisr2.issue_id, asp2.sprint_id
-        FROM agile_issue_sprint_rel aisr2, agile_sprint asp2
-        WHERE aisr2.sprint_id = asp2.sprint_id AND asp2.status_code != 'closed'
-        ) asp1 ON asp1.issue_id = ai2.issue_id
         LEFT JOIN
         (
         SELECT
@@ -204,22 +332,49 @@
         where avir.relation_type = 'fix'
         ) apv1
         ON apv1.issue_id = ai2.issue_id
+        where aisr2.sprint_id in (SELECT asp2.sprint_id
+        FROM agile_sprint asp2 WHERE aisr2.sprint_id = asp2.sprint_id AND asp2.status_code != 'closed')
     </sql>
 
-    <select id="queryActiveSprint" resultMap="SprintSearchDO">
-        select
-        spa.*,
-        qais.asi_assignee_id,
-        qais.asi_sprint_id,
-        qais.total_story_points,
-        qais.total_remaining_time,
-        qais.issue_count,
-        qsii.*
-        from
-        (<include refid="queryActiveSprintSql"/>)spa left join
-        (<include refid="querySprintIssueByIssueIds"/>)qsii on qsii.is_sprint_id = spa.sprint_id left join
-        (<include refid="queryAssigneeIssueBySprintId"/>)qais
-        on spa.sprint_id = qais.asi_sprint_id order by qsii.rank ASC
+    <select id="queryActiveSprintIssueSearchByIssueIds" resultMap="issueSearch">
+        SELECT
+        ai2.issue_id,
+        IF(ai2.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai2.issue_num)) AS issue_num,
+        ai2.summary,
+        ai2.rank,
+        ai2.reporter_id, ai2.description,
+        ai2.assignee_id, ai2.project_id,
+        ai2.epic_id, #{sprintId} as is_sprint_id,
+        ai2.story_points, ai2.status_id,
+        ai2.issue_type_id,
+        ai2.priority_id,
+        ai2.object_version_number as is_object_version_number, ai2.priority_code,
+        ai1.epic_name AS issue_epic_name,
+        alv2.name AS color,
+        apv1.version_id AS version_id,
+        apv1.name AS version_name
+        FROM
+        (select * from agile_issue ai4 WHERE
+        ai4.issue_id in
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>)ai2
+        LEFT JOIN agile_project_info api ON ai2.project_id = api.project_id
+        LEFT JOIN agile_issue ai1 ON ai2.epic_id = ai1.issue_id
+        LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
+        LEFT JOIN (
+            SELECT
+            avir.version_id,
+            avir.issue_id,
+            apv.NAME
+            FROM
+            agile_version_issue_rel avir
+            LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
+            where avir.relation_type = 'fix') apv1
+        ON apv1.issue_id = ai2.issue_id
+        where ai2.issue_id in (select aisr2.issue_id from  agile_issue_sprint_rel aisr2 where aisr2.sprint_id = #{sprintId})
+        order by ai2.rank asc
     </select>
 
     <sql id="queryPlanSprintSql">
@@ -244,7 +399,7 @@
         from
         (<include refid="queryPlanSprintSql"/>)spa
         left join(<include refid="querySprintIssueByIssueIds"/>)qsii on qsii.is_sprint_id = spa.sprint_id
-        left join (<include refid="queryAssigneeIssueBySprintId"/>)qais
+        left join (<include refid="queryAssigneeIssueByPlanSprintId"/>)qais
         on spa.sprint_id = qais.asi_sprint_id order by spa.sprint_id desc,qsii.rank ASC
     </select>
 

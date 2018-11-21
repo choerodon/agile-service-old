@@ -1,16 +1,46 @@
 package io.choerodon.agile.infra.dataobject;
 
+import io.choerodon.agile.infra.common.utils.StringUtil;
+
 import java.math.BigDecimal;
 
 /**
  * Created by jian_zhang02@163.com on 2018/6/2.
  */
 public class AssigneeIssueDO {
+
     private Long sprintId;
     private Long assigneeId;
     private BigDecimal totalRemainingTime;
     private Integer totalStoryPoints;
+    private Integer remainingStoryPoints;
     private Integer issueCount;
+    private Integer remainingIssueCount;
+    private BigDecimal remainingTime;
+
+    public Integer getRemainingStoryPoints() {
+        return remainingStoryPoints;
+    }
+
+    public void setRemainingStoryPoints(Integer remainingStoryPoints) {
+        this.remainingStoryPoints = remainingStoryPoints;
+    }
+
+    public Integer getRemainingIssueCount() {
+        return remainingIssueCount;
+    }
+
+    public void setRemainingIssueCount(Integer remainingIssueCount) {
+        this.remainingIssueCount = remainingIssueCount;
+    }
+
+    public BigDecimal getRemainingTime() {
+        return remainingTime;
+    }
+
+    public void setRemainingTime(BigDecimal remainingTime) {
+        this.remainingTime = remainingTime;
+    }
 
     public Long getSprintId() {
         return sprintId;
@@ -50,5 +80,10 @@ public class AssigneeIssueDO {
 
     public void setIssueCount(Integer issueCount) {
         this.issueCount = issueCount;
+    }
+
+    @Override
+    public String toString() {
+        return StringUtil.getToString(this);
     }
 }
