@@ -175,6 +175,7 @@
     </select>
 
     <select id="queryIssueByVersionIdAndStatusCode" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        select search.* from (
         SELECT
         ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         ai.type_code, ai.status_id,
@@ -194,6 +195,49 @@
                      open="(" close=")" separator=",">
                 #{filterStatusId}
             </foreach>
+        </if>
+        <if test='searchDTO.searchArgs != null'>
+            <if test='searchDTO.searchArgs.summary != null and searchDTO.searchArgs.summary != "" '>
+                AND position(#{searchDTO.searchArgs.summary} IN ai.summary)
+            </if>
+        </if>
+        <if test='searchDTO.advancedSearchArgs != null'>
+            <if test='searchDTO.advancedSearchArgs.issueTypeId != null and searchDTO.advancedSearchArgs.issueTypeId.size > 0'>
+                AND ai.issue_type_id IN
+                <foreach collection="searchDTO.advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator="," close=")">
+                    #{issueTypeId}
+                </foreach>
+            </if>
+            <if test='searchDTO.advancedSearchArgs.assigneeIds != null and searchDTO.advancedSearchArgs.assigneeIds.size > 0'>
+                AND ai.assignee_id IN
+                <foreach collection="searchDTO.advancedSearchArgs.assigneeIds" item="assigneeId" open="(" separator="," close=")">
+                    #{assigneeId}
+                </foreach>
+            </if>
+            <if test='searchDTO.advancedSearchArgs.priorityId != null and searchDTO.advancedSearchArgs.priorityId.size > 0'>
+                AND ai.priority_id IN
+                <foreach collection="searchDTO.advancedSearchArgs.priorityId" item="priorityId" open="(" separator=","
+                         close=")">
+                    #{priorityId}
+                </foreach>
+            </if>
+            <if test='searchDTO.advancedSearchArgs.statusId != null and searchDTO.advancedSearchArgs.statusId.size > 0'>
+                and ai.status_id in
+                <foreach collection="searchDTO.advancedSearchArgs.statusId" item="statusId" open="(" separator="," close=")">
+                    #{statusId}
+                </foreach>
+            </if>
+        </if>
+        )search
+        where 1=1
+        <if test='searchDTO.searchArgs != null'>
+            <if test='searchDTO.searchArgs.issueNum != null and searchDTO.searchArgs.issueNum != ""'>
+                AND position(#{searchDTO.searchArgs.issueNum} IN search.issue_num)
+            </if>
+        </if>
+        <if test='searchDTO.content != null and searchDTO.content != ""'>
+            AND (search.issue_num LIKE CONCAT(CONCAT('%', #{searchDTO.content}), '%') OR search.summary LIKE CONCAT(CONCAT('%',
+            #{searchDTO.content}), '%'))
         </if>
     </select>
 
@@ -296,19 +340,22 @@
     </select>
 
     <select id="queryStatusIssueCount" resultType="java.lang.Integer">
-      SELECT
-            count(1)
+        SELECT
+        count(1)
         FROM
-            agile_version_issue_rel avir
+        agile_version_issue_rel avir,
+        agile_issue ai
         WHERE
-        avir.project_id = #{projectId} and avir.version_id = #{versionId}
-        and
-            avir.issue_id in (select ai.issue_id from agile_issue ai where ai.status_id in
+        avir.project_id = #{projectId}
+        AND avir.issue_id = ai.issue_id
+        AND avir.version_id =  #{versionId}
+        AND ai.status_id IN
         <foreach collection="statusIds" item="statusId" index="index"
                  open="(" close=")" separator=",">
             #{statusId}
         </foreach>
-             )
+        AND avir.relation_type = 'fix'
+        AND ai.type_code != 'issue_test'
     </select>
 
 

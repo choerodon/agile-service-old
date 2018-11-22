@@ -241,7 +241,9 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     }
 
     @Override
-    public List<IssueListDTO> queryIssueByVersionIdAndStatusCode(Long projectId, Long versionId, String statusCode, Long organizationId) {
+    public List<IssueListDTO> queryIssueByVersionIdAndStatusCode(Long projectId, Long versionId, String statusCode, Long organizationId, SearchDTO searchDTO) {
+        //处理用户搜索
+        issueService.handleSearchUser(searchDTO, projectId);
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
@@ -253,7 +255,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
                 }
             }
         }
-        return issueAssembler.issueDoToIssueListDto(productVersionMapper.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, filterStatusIds), priorityMap, statusMapDTOMap, issueTypeDTOMap);
+        return issueAssembler.issueDoToIssueListDto(productVersionMapper.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, filterStatusIds, searchDTO), priorityMap, statusMapDTOMap, issueTypeDTOMap);
     }
 
     @Override

@@ -162,16 +162,17 @@ public class ProductVersionController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "获取版本下指定状态的issue")
-    @GetMapping(value = "/{versionId}/issues")
+    @PostMapping(value = "/{versionId}/issues")
     public ResponseEntity<List<IssueListDTO>> queryByVersionIdAndStatusCode(@ApiParam(value = "项目id", required = true)
                                                                             @PathVariable(name = "project_id") Long projectId,
                                                                             @ApiParam(value = "versionId", required = true)
                                                                             @PathVariable Long versionId,
                                                                             @ApiParam(value = "组织id", required = true)
                                                                             @RequestParam Long organizationId,
+                                                                            @RequestBody SearchDTO searchDTO,
                                                                             @ApiParam(value = "issue状态码", required = false)
                                                                             @RequestParam(required = false) String statusCode) {
-        return Optional.ofNullable(productVersionService.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, organizationId))
+        return Optional.ofNullable(productVersionService.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, organizationId, searchDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_ISSUE_ERROR));
     }

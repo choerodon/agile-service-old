@@ -1097,11 +1097,11 @@ class IssueControllerSpec extends Specification {
 
     def 'listStoryMapEpic'() {
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/storymap/epics",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/storymap/epics?organizationId={organizationId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 List.class,
-                projectId)
+                projectId,organizationId)
         def entityWithParams = restTemplate.exchange("/v1/projects/{project_id}/issues/storymap/epics?showDoneEpic={showDoneEpic}&assigneeId={assigneeId}&onlyStory={onlyStory}&&organizationId={organizationId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
