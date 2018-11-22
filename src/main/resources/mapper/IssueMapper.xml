@@ -290,8 +290,6 @@
         ai.status_id,
         ai.priority_id,
         ai.issue_type_id,
---         IF((ai.parent_issue_id IS NULL or ai.parent_issue_id = 0), ai3.epic_name, ai4.epic_name) AS epic_name,
---         IF((ai.parent_issue_id IS NULL or ai.parent_issue_id = 0), ai.epic_id, ai2.epic_id) AS epic_id,
         ai3.epic_name,
         alv2.name as epic_color,
         ai.epic_id,
@@ -311,9 +309,7 @@
         ail.label_name,
         ail.label_id
         FROM agile_issue ai
---         left join agile_issue ai2 on ai2.issue_id = ai.parent_issue_id
         left join agile_issue ai3 on ai.epic_id = ai3.issue_id
---         left join agile_issue ai4 on ai2.epic_id = ai4.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai3.color_code = alv2.value_code
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_version_issue_rel avir on avir.issue_id = ai.issue_id
@@ -330,13 +326,19 @@
                  close=")">
             #{issueId}
         </foreach>
-        order by
-        field(
-        ai.issue_id,
-        <foreach collection="issueIds" index="index" item="issueId" separator=",">
-            #{issueId}
+        <!-- mysql的按照顺序排序在h2会报错，所以用下面的 -->
+        <!--order by-->
+        <!--field(-->
+        <!--ai.issue_id,-->
+        <!--<foreach collection="issueIds" index="index" item="issueId" separator=",">-->
+            <!--#{issueId}-->
+        <!--</foreach>-->
+        <!--)-->
+        order by CASE ai.issue_id
+        <foreach collection="issueIds" item="issueId" index="index">
+            when #{issueId} then #{index}
         </foreach>
-        )
+        END
     </select>
 
     <select id="queryIssueIdsListWithSub" resultType="java.lang.Long">
