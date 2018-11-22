@@ -44,12 +44,12 @@
                 ) = 0
     </select>
 
-    <select id="checkSameStatus" resultType="java.lang.Integer">
-        SELECT COUNT(id)
-        FROM
-            agile_issue_status
-        WHERE project_id = #{projectId} AND LOWER(`name`) = LOWER(#{statusName})
-    </select>
+    <!--<select id="checkSameStatus" resultType="java.lang.Integer">-->
+        <!--SELECT COUNT(id)-->
+        <!--FROM-->
+            <!--agile_issue_status-->
+        <!--WHERE project_id = #{projectId} AND LOWER(`name`) = LOWER(#{statusName})-->
+    <!--</select>-->
 
     <select id="selectStatusIdIsNotNull" resultType="io.choerodon.agile.infra.dataobject.IssueStatusDO">
         select * from agile_issue_status ais where ais.status_id is not null

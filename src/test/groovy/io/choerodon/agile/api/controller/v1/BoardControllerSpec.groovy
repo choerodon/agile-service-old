@@ -69,9 +69,11 @@ class BoardControllerSpec extends Specification {
     @Autowired
     private NoticeService noticeService
 
-    @Autowired
-    @Qualifier("mockUserRepository")
-    private UserRepository userRepository
+//    @Autowired
+//    @Qualifier("mockUserRepository")
+//    private UserRepository userRepository
+
+
 
     @Shared
     def projectId = 2L
@@ -81,35 +83,35 @@ class BoardControllerSpec extends Specification {
     @Shared
     def boardId
 
-    def setup() {
-        given:
-        ProjectDTO projectDTO = new ProjectDTO()
-        projectDTO.code = "AG"
-        projectDTO.name = "AG"
-        projectDTO.organizationId = 1L
-        userRepository.queryProject(*_) >> projectDTO
+//    def setup() {
+//        given:
+//        ProjectDTO projectDTO = new ProjectDTO()
+//        projectDTO.code = "AG"
+//        projectDTO.name = "AG"
+//        projectDTO.organizationId = 1L
+//        userRepository.queryProject(*_) >> projectDTO
 
-        and:
-        UserDO userDO = new UserDO()
-        userDO.loginName = "1"
-        userDO.realName = "admin"
-        List<UserDO> userDOList = new ArrayList<>()
-        userDOList.add(userDO)
-        userRepository.listUsersByIds(*_) >> userDOList
-        List<RoleDTO> roles = new ArrayList<>()
-        RoleDTO roleDTO = new RoleDTO()
-        roleDTO.setCode("role/project/default/project-owner")
-        roleDTO.setId(1L)
-        roles.add(roleDTO)
-        userRepository.listRolesWithUserCountOnProjectLevel(*_) >> roles
-        Page<UserDTO> users = new Page<>()
-        List<UserDTO> userDOList1 = new ArrayList<>()
-        UserDTO u = new UserDTO()
-        u.setId(6L)
-        userDOList1.add(u)
-        users.setContent(userDOList1)
-        userRepository.pagingQueryUsersByRoleIdOnProjectLevel(*_) >> users
-    }
+//        and:
+//        UserDO userDO = new UserDO()
+//        userDO.loginName = "1"
+//        userDO.realName = "admin"
+//        List<UserDO> userDOList = new ArrayList<>()
+//        userDOList.add(userDO)
+//        userRepository.listUsersByIds(*_) >> userDOList
+//        List<RoleDTO> roles = new ArrayList<>()
+//        RoleDTO roleDTO = new RoleDTO()
+//        roleDTO.setCode("role/project/default/project-owner")
+//        roleDTO.setId(1L)
+//        roles.add(roleDTO)
+//        userRepository.listRolesWithUserCountOnProjectLevel(*_) >> roles
+//        Page<UserDTO> users = new Page<>()
+//        List<UserDTO> userDOList1 = new ArrayList<>()
+//        UserDTO u = new UserDTO()
+//        u.setId(6L)
+//        userDOList1.add(u)
+//        users.setContent(userDOList1)
+//        userRepository.pagingQueryUsersByRoleIdOnProjectLevel(*_) >> users
+//    }
 
 
     def 'createScrumBoard'() {
@@ -168,10 +170,10 @@ class BoardControllerSpec extends Specification {
         IssueMoveDTO issueMoveDTO = new IssueMoveDTO()
         IssueDO issue = issueMapper.selectByPrimaryKey(1L)
         issueMoveDTO.issueId = issue.getIssueId()
-        issueMoveDTO.statusId = 3L
+        issueMoveDTO.statusId = 2L
         issueMoveDTO.boardId = boardId
         issueMoveDTO.originColumnId = 1L
-        issueMoveDTO.columnId = 3L
+        issueMoveDTO.columnId = 2L
         issueMoveDTO.objectVersionNumber = 1L
 
         and:
@@ -194,16 +196,17 @@ class BoardControllerSpec extends Specification {
 
         when:
         HttpEntity<IssueMoveDTO> issueMoveDTOHttpEntity = new HttpEntity<>(issueMoveDTO)
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/board/issue/{issueId}/move",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/board/issue/{issueId}/move?transformId={transformId}",
                 HttpMethod.POST,
                 issueMoveDTOHttpEntity,
                 IssueMoveDTO.class,
-                projectId,
-                1L)
+                1L,
+                1L,
+                2L)
         then:
         entity.statusCode.is2xxSuccessful()
         IssueDO issueDO = issueMapper.selectByPrimaryKey(1L)
-        issueDO.statusId == 3L
+        issueDO.statusId == 1L
     }
 
     def 'queryByProjectId'() {

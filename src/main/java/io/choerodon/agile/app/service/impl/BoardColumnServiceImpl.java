@@ -113,10 +113,10 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         }
     }
 
-    @Override
-    public Boolean checkSameStatusName(Long projectId, String statusName) {
-        return issueStatusRepository.checkSameStatus(projectId, statusName);
-    }
+//    @Override
+//    public Boolean checkSameStatusName(Long projectId, String statusName) {
+//        return issueStatusRepository.checkSameStatus(projectId, statusName);
+//    }
 
     private void setColumnColor(BoardColumnDTO boardColumnDTO, Boolean checkStatus) {
         if (!checkStatus) {
@@ -343,6 +343,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         relate(projectId, boardId, DOING, DOING_CODE, SEQUENCE_TWO, columnWithStatusRelDOList, COLUMN_COLOR_DOING);
         relate(projectId, boardId, DONE, DONE_CODE, SEQUENCE_THREE, columnWithStatusRelDOList, COLUMN_COLOR_DONE);
     }
+
     @Override
     public BoardColumnDTO updateColumnContraint(Long projectId, Long columnId, ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO) {
         BoardColumnValidator.checkUpdateColumnContraint(projectId, columnId, columnWithMaxMinNumDTO);

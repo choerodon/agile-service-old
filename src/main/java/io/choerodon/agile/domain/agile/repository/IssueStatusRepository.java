@@ -14,6 +14,6 @@ public interface IssueStatusRepository {
 
     void delete(IssueStatusE issueStatusE);
 
-    Boolean checkSameStatus(Long projectId, String statusName);
+//    Boolean checkSameStatus(Long projectId, String statusName);
 
 }

@@ -251,26 +251,26 @@ class BoardColumnControllerSpec extends Specification {
         exceptionInfo.get("code").toString() == "error.column.isNull"
     }
 
-    def 'checkStatusName'() {
-        given:
-        def statusName = name
-
-        when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/board_column/check?statusName={statusName}",
-                HttpMethod.GET,
-                new HttpEntity<>(),
-                Boolean.class,
-                projectId,
-                statusName)
-        then:
-        entity.statusCode.is2xxSuccessful()
-
-        expect:
-        entity.body.booleanValue() == expectResult
-
-        where:
-        name         | expectResult
-        "待处理" | true
-        "columnName" | false
-    }
+//    def 'checkStatusName'() {
+//        given:
+//        def statusName = name
+//
+//        when:
+//        def entity = restTemplate.exchange("/v1/projects/{project_id}/board_column/check?statusName={statusName}",
+//                HttpMethod.GET,
+//                new HttpEntity<>(),
+//                Boolean.class,
+//                projectId,
+//                statusName)
+//        then:
+//        entity.statusCode.is2xxSuccessful()
+//
+//        expect:
+//        entity.body.booleanValue() == expectResult
+//
+//        where:
+//        name         | expectResult
+//        "待处理" | true
+//        "columnName" | false
+//    }
 }

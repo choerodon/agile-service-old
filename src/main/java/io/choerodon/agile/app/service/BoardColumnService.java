@@ -30,5 +30,5 @@ public interface BoardColumnService {
 
     BoardColumnDTO updateColumnContraint(Long projectId, Long columnId, ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO);
 
-    Boolean checkSameStatusName(Long projectId, String statusName);
+//    Boolean checkSameStatusName(Long projectId, String statusName);
 }
