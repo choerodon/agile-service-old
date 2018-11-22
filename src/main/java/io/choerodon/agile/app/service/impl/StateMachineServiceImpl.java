@@ -42,6 +42,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author shinan.chen
@@ -241,6 +244,24 @@ public class StateMachineServiceImpl implements StateMachineService {
             throw new CommonException(ERROR_INSTANCE_FEGIN_CLIENT_EXECUTE_TRANSFORM);
         }
         return responseEntity.getBody();
+    }
+
+    @Override
+    public Map<String, Object> checkDeleteNode(Long organizationId, Long statusId, Map<Long, List<Long>> issueTypeIdsMap) {
+        Map<String, Object> result = new HashMap<>(2);
+        Long count = 0L;
+        for (Map.Entry<Long, List<Long>> entry : issueTypeIdsMap.entrySet()) {
+            Long projectId = entry.getKey();
+            List<Long> issueTypeIds = entry.getValue();
+            count = count + issueMapper.querySizeByParmas(projectId, statusId, issueTypeIds);
+        }
+        if(count.equals(0L)){
+            result.put("canDelete", true);
+        }else{
+            result.put("canDelete", false);
+            result.put("count", count);
+        }
+        return result;
     }
 
     @Condition(code = "just_reporter", name = "仅允许报告人", description = "只有该报告人才能执行转换")
