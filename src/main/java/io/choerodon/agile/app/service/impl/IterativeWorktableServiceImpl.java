@@ -113,8 +113,8 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
     @Override
     public SprintInfoDTO querySprintInfo(Long projectId, Long sprintId, Long organizationId) {
         SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
-        Date actualEndDate = sprintDO.getActualEndDate();
         IterativeWorktableValidator.checkSprintExist(sprintDO);
+        Date actualEndDate = sprintDO.getActualEndDate();
         SprintInfoDTO result = ConvertHelper.convert(sprintDO, SprintInfoDTO.class);
         List<AssigneeIssueDO> assigneeIssueDOList = iterativeWorktableMapper.queryAssigneeInfoBySprintId(projectId, sprintId);
         result.setAssigneeIssueDTOList(iterativeWorktableAssembler.assigneeIssueDOToDTO(assigneeIssueDOList));

@@ -71,6 +71,7 @@ import javax.annotation.PostConstruct
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.Statement
+import java.text.SimpleDateFormat
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
@@ -330,6 +331,7 @@ class AgileTestConfiguration {
         story.summary = 'story-test'
         story.epicId = 1L
         story.storyPoints = 6
+        story.priorityId = 1L
         //设置rank值
         story.rank = '0|c00000:'
         issueMapper.insert(story)
@@ -345,6 +347,10 @@ class AgileTestConfiguration {
         sprintDO.projectId = 1L
         sprintDO.sprintName = 'sprint-test'
         sprintDO.statusCode = 'sprint_planning'
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        sprintDO.startDate = sdf.parse("2018-06-01 00:00:00")
+        sprintDO.endDate = sdf.parse("2018-06-06 00:00:00")
+        sprintDO.actualEndDate = sdf.parse("2018-06-06 00:00:00")
         sprintMapper.insert(sprintDO)
         IssueSprintRelDO issueSprintRelDO = new IssueSprintRelDO()
         issueSprintRelDO.sprintId = 1L

@@ -34,6 +34,9 @@ import io.choerodon.agile.infra.mapper.ProjectInfoMapper
 import io.choerodon.agile.infra.mapper.SprintMapper
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.domain.Page
+import org.mockito.Matchers
+import org.mockito.Mockito
+
 //import io.choerodon.event.producer.execute.EventProducerTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -69,12 +72,12 @@ class SprintControllerSpec extends Specification {
     @Autowired
     AgileEventHandler agileEventHandler
 
-    @Autowired
-    @Qualifier("issueService")
-    IssueService issueService
+//    @Autowired
+//    @Qualifier("issueService")
+//    IssueService issueService
 
     @Autowired
-    StateMachineService stateMachineService;
+    StateMachineService stateMachineService
 
     @Autowired
     IssueMapper issueMapper
@@ -95,7 +98,7 @@ class SprintControllerSpec extends Specification {
     private DataLogMapper dataLogMapper
 
     @Autowired
-    @Qualifier("mockUserRepository")
+    @Qualifier("userRepository")
     private UserRepository userRepository
 
 //    @Autowired
@@ -103,9 +106,9 @@ class SprintControllerSpec extends Specification {
 //    private EventProducerTemplate eventProducerTemplate
 
 
-    @Autowired
-    @Qualifier("mockSiteMsgUtil")
-    private SiteMsgUtil siteMsgUtil
+//    @Autowired
+//    @Qualifier("mockSiteMsgUtil")
+//    private SiteMsgUtil siteMsgUtil
 
     @Shared
     def projectId = 1
@@ -115,27 +118,27 @@ class SprintControllerSpec extends Specification {
 
     def setup() {
         given: '设置feign调用mockito'
-        // *_表示任何长度的参数（这里表示只要执行了queryUsersMap这个方法，就让它返回一个空的Map
-        Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
-        UserMessageDO userMessageDO = new UserMessageDO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
-        userMessageDOMap.put(1, userMessageDO)
-        userRepository.queryUsersMap(*_) >> userMessageDOMap
-        UserDO userDO = new UserDO()
-        userDO.setRealName("管理员")
-        userRepository.queryUserNameByOption(*_) >> userDO
-
-        and: 'mockSagaClient'
-        sagaClient.startSaga(_, _) >> null
-
-
-        and:
-        siteMsgUtil.issueCreate(*_) >> null
-        siteMsgUtil.issueAssignee(*_) >> null
-        siteMsgUtil.issueSolve(*_) >> null
+//        // *_表示任何长度的参数（这里表示只要执行了queryUsersMap这个方法，就让它返回一个空的Map
+//        Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
+//        UserMessageDO userMessageDO = new UserMessageDO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
+//        userMessageDOMap.put(1, userMessageDO)
+//        userRepository.queryUsersMap(*_) >> userMessageDOMap
+//        UserDO userDO = new UserDO()
+//        userDO.setRealName("管理员")
+//        userRepository.queryUserNameByOption(*_) >> userDO
+//
+//        and: 'mockSagaClient'
+//        sagaClient.startSaga(_, _) >> null
+//
+//
+//        and:
+//        siteMsgUtil.issueCreate(*_) >> null
+//        siteMsgUtil.issueAssignee(*_) >> null
+//        siteMsgUtil.issueSolve(*_) >> null
         ProjectDTO projectDTO = new ProjectDTO()
         projectDTO.setCode("AG")
         projectDTO.setName("AG")
-        userRepository.queryProject(*_) >> projectDTO
+        Mockito.when(userRepository.queryProject(Matchers.anyLong())).thenReturn(projectDTO)
 
     }
 
@@ -167,15 +170,13 @@ class SprintControllerSpec extends Specification {
         issueCreateDTO.reporterId = 1
 
         when: '更新issue'
-        IssueDTO issueDTO = issueService.createIssue(issueCreateDTO)
+        IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
 
         then: '判断issue是否成功生成'
         issueDTO.objectVersionNumber == 1
         issueDTO.projectId == 1
-        issueDTO.activeSprint.sprintId == sprintIds[0]
         issueDTO.summary == '加入冲刺issue'
         issueDTO.typeCode == 'story'
-        issueDTO.priorityCode == 'low'
         issueDTO.reporterId == 1
 
     }
@@ -217,7 +218,7 @@ class SprintControllerSpec extends Specification {
         searchParamMap.put("advancedSearchArgs", null)
 
         when: '发送请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/sprint/issues', searchParamMap, Map, projectId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/sprint/issues?organizationId={organizationId}', searchParamMap, Map, projectId, 1L)
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
