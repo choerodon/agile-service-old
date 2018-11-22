@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.app.service.StateMachineService;
+import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
@@ -28,11 +29,21 @@ public class StateMachineController {
     @ApiOperation("【内部调用】校验是否可以删除状态机的节点")
     @PostMapping("/check_delete_node")
     public ResponseEntity<Map<String, Object>> checkDeleteNode(@ApiParam(value = "组织id", required = true)
-                                                   @PathVariable(name = "organization_id") Long organizationId,
-                                                   @ApiParam(value = "状态id", required = true)
-                                                   @RequestParam(value = "status_id") Long statusId,
-                                                   @RequestBody Map<Long, List<Long>> issueTypeIdsMap) {
+                                                               @PathVariable(name = "organization_id") Long organizationId,
+                                                               @ApiParam(value = "状态id", required = true)
+                                                               @RequestParam(value = "status_id") Long statusId,
+                                                               @RequestBody Map<Long, List<Long>> issueTypeIdsMap) {
 
         return new ResponseEntity<>(stateMachineService.checkDeleteNode(organizationId, statusId, issueTypeIdsMap), HttpStatus.CREATED);
+    }
+
+    @Permission(level = ResourceLevel.ORGANIZATION)
+    @ApiOperation("【内部调用】查询状态机方案变更后对issue的影响")
+    @PostMapping("/check_state_machine_scheme_change")
+    public ResponseEntity<Map<Long, Long>> checkStateMachineSchemeChange(@ApiParam(value = "组织id", required = true)
+                                                                         @PathVariable(name = "organization_id") Long organizationId,
+                                                                         @RequestBody StateMachineSchemeDeployCheckIssue deployCheckIssue) {
+
+        return new ResponseEntity<>(stateMachineService.checkStateMachineSchemeChange(organizationId, deployCheckIssue), HttpStatus.CREATED);
     }
 }

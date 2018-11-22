@@ -2559,12 +2559,24 @@
         </foreach>
     </select>
 
-    <select id="querySizeByParmas" resultType="java.lang.Long">
+    <select id="querySizeByIssueTypeIdsAndStatus" resultType="java.lang.Long">
         SELECT
         count(ai.*)
         FROM agile_issue ai
         WHERE ai.project_id = #{projectId}
         AND ai.status_id = #{statusId}
+        AND ai.issue_type_id IN
+        <foreach collection="issueTypeIds" item="index" open="(" separator="," close=")">
+            #{index}
+        </foreach>
+    </select>
+
+    <select id="queryByIssueTypeIdsAndApplyType" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT
+        ai.*
+        FROM agile_issue ai
+        WHERE ai.project_id = #{projectId}
+        AND ai.apply_type = #{applyType}
         AND ai.issue_type_id IN
         <foreach collection="issueTypeIds" item="index" open="(" separator="," close=")">
             #{index}

@@ -10,6 +10,8 @@ import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.domain.agile.event.CreateIssuePayload;
 import io.choerodon.agile.domain.agile.event.CreateSubIssuePayload;
+import io.choerodon.agile.domain.agile.event.ProjectConfig;
+import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue;
 import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
@@ -45,6 +47,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author shinan.chen
@@ -255,14 +258,39 @@ public class StateMachineServiceImpl implements StateMachineService {
         for (Map.Entry<Long, List<Long>> entry : issueTypeIdsMap.entrySet()) {
             Long projectId = entry.getKey();
             List<Long> issueTypeIds = entry.getValue();
-            count = count + issueMapper.querySizeByParmas(projectId, statusId, issueTypeIds);
+            count = count + issueMapper.querySizeByIssueTypeIdsAndStatus(projectId, statusId, issueTypeIds);
         }
-        if(count.equals(0L)){
+        if (count.equals(0L)) {
             result.put("canDelete", true);
-        }else{
+        } else {
             result.put("canDelete", false);
             result.put("count", count);
         }
+        return result;
+    }
+
+    @Override
+    public Map<Long, Long> checkStateMachineSchemeChange(Long organizationId, StateMachineSchemeDeployCheckIssue deployCheckIssue) {
+        List<ProjectConfig> projectConfigs = deployCheckIssue.getProjectConfigs();
+        List<Long> issueTypeIds = deployCheckIssue.getIssueTypeIds();
+        Map<Long, Long> result = new HashMap<>(issueTypeIds.size());
+        if (!issueTypeIds.isEmpty()) {
+            issueTypeIds.forEach(issueTypeId -> {
+                result.put(issueTypeId, Long.valueOf(0L));
+            });
+            //计算出所有有影响的issue数量，根据issueTypeId分类
+
+            projectConfigs.forEach(projectConfig -> {
+                List<IssueDO> issueDOs = issueMapper.queryByIssueTypeIdsAndApplyType(projectConfig.getProjectId(), projectConfig.getApplyType(), issueTypeIds);
+                Map<Long, Long> issueCounts = issueDOs.stream().collect(Collectors.groupingBy(IssueDO::getIssueTypeId, Collectors.counting()));
+                for (Map.Entry<Long, Long> entry : issueCounts.entrySet()) {
+                    Long issueTypeId = entry.getKey();
+                    Long count = entry.getValue();
+                    result.put(issueTypeId, Long.valueOf(result.get(issueTypeId) + count));
+                }
+            });
+        }
+
         return result;
     }
 

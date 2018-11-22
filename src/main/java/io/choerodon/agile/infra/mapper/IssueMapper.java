@@ -414,5 +414,15 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @param issueTypeIds
      * @return
      */
-    Long querySizeByParmas(@Param("projectId") Long projectId, @Param("statusId") Long statusId, @Param("issueTypeIds") List<Long> issueTypeIds);
+    Long querySizeByIssueTypeIdsAndStatus(@Param("projectId") Long projectId, @Param("statusId") Long statusId, @Param("issueTypeIds") List<Long> issueTypeIds);
+
+    /**
+     * 【内部接口】查询某个项目下某些问题类型下某应用类型的issue有几个
+     *
+     * @param projectId
+     * @param applyType
+     * @param issueTypeIds
+     * @return
+     */
+    List<IssueDO> queryByIssueTypeIdsAndApplyType(@Param("projectId") Long projectId, @Param("applyType") String applyType, @Param("issueTypeIds") List<Long> issueTypeIds);
 }
