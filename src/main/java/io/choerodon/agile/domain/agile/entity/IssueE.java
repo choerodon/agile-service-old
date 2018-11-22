@@ -74,6 +74,8 @@ public class IssueE {
 
     private Long issueTypeId;
 
+    private String applyType;
+
     public Integer getEpicSequence() {
         return epicSequence;
     }
@@ -272,6 +274,14 @@ public class IssueE {
 
     public Long getIssueTypeId() {
         return issueTypeId;
+    }
+
+    public String getApplyType() {
+        return applyType;
+    }
+
+    public void setApplyType(String applyType) {
+        this.applyType = applyType;
     }
 
     @Override

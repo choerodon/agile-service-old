@@ -134,4 +134,13 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue.groovy') {
             column(name: 'issue_type_id', type: 'BIGINT UNSIGNED', remarks: 'issue type id')
         }
     }
+
+    changeSet(id: '2018-11-22-add-column-apply-type', author: 'shinan.chenX@gmail.com') {
+        addColumn(tableName: 'agile_issue') {
+            column(name: 'apply_type', type: 'VARCHAR(30)', remarks: '应用类型')
+        }
+        sql(stripComments: true, splitStatements: false, endDelimiter: ';') {
+            "update agile_issue set apply_type = (case when type_code IN ('task','bug','sub_task','story','issue_epic') then 'agile' else 'test' end );"
+        }
+    }
 }

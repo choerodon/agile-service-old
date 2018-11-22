@@ -10,6 +10,8 @@ import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.domain.agile.event.CreateIssuePayload;
 import io.choerodon.agile.domain.agile.event.CreateSubIssuePayload;
+import io.choerodon.agile.domain.agile.event.ProjectConfig;
+import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue;
 import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
@@ -42,6 +44,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author shinan.chen
@@ -116,6 +122,7 @@ public class StateMachineServiceImpl implements StateMachineService {
             }
             issueService.handleInitIssue(issueE, initStatusId, projectInfoE);
             //创建issue
+            issueE.setApplyType(applyType);
             issueId = issueRepository.create(issueE).getIssueId();
             transactionManager.commit(status);
         } catch (Exception e) {
@@ -177,6 +184,7 @@ public class StateMachineServiceImpl implements StateMachineService {
             issueService.handleInitSubIssue(subIssueE, initStatusId, projectInfoE);
 
             //创建issue
+            subIssueE.setApplyType(SchemeApplyType.AGILE);
             issueId = issueRepository.create(subIssueE).getIssueId();
 
             transactionManager.commit(status);
@@ -241,6 +249,49 @@ public class StateMachineServiceImpl implements StateMachineService {
             throw new CommonException(ERROR_INSTANCE_FEGIN_CLIENT_EXECUTE_TRANSFORM);
         }
         return responseEntity.getBody();
+    }
+
+    @Override
+    public Map<String, Object> checkDeleteNode(Long organizationId, Long statusId, Map<Long, List<Long>> issueTypeIdsMap) {
+        Map<String, Object> result = new HashMap<>(2);
+        Long count = 0L;
+        for (Map.Entry<Long, List<Long>> entry : issueTypeIdsMap.entrySet()) {
+            Long projectId = entry.getKey();
+            List<Long> issueTypeIds = entry.getValue();
+            count = count + issueMapper.querySizeByIssueTypeIdsAndStatus(projectId, statusId, issueTypeIds);
+        }
+        if (count.equals(0L)) {
+            result.put("canDelete", true);
+        } else {
+            result.put("canDelete", false);
+            result.put("count", count);
+        }
+        return result;
+    }
+
+    @Override
+    public Map<Long, Long> checkStateMachineSchemeChange(Long organizationId, StateMachineSchemeDeployCheckIssue deployCheckIssue) {
+        List<ProjectConfig> projectConfigs = deployCheckIssue.getProjectConfigs();
+        List<Long> issueTypeIds = deployCheckIssue.getIssueTypeIds();
+        Map<Long, Long> result = new HashMap<>(issueTypeIds.size());
+        if (!issueTypeIds.isEmpty()) {
+            issueTypeIds.forEach(issueTypeId -> {
+                result.put(issueTypeId, Long.valueOf(0L));
+            });
+            //计算出所有有影响的issue数量，根据issueTypeId分类
+
+            projectConfigs.forEach(projectConfig -> {
+                List<IssueDO> issueDOs = issueMapper.queryByIssueTypeIdsAndApplyType(projectConfig.getProjectId(), projectConfig.getApplyType(), issueTypeIds);
+                Map<Long, Long> issueCounts = issueDOs.stream().collect(Collectors.groupingBy(IssueDO::getIssueTypeId, Collectors.counting()));
+                for (Map.Entry<Long, Long> entry : issueCounts.entrySet()) {
+                    Long issueTypeId = entry.getKey();
+                    Long count = entry.getValue();
+                    result.put(issueTypeId, Long.valueOf(result.get(issueTypeId) + count));
+                }
+            });
+        }
+
+        return result;
     }
 
     @Condition(code = "just_reporter", name = "仅允许报告人", description = "只有该报告人才能执行转换")
