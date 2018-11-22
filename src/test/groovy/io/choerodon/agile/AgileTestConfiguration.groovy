@@ -276,10 +276,22 @@ class AgileTestConfiguration {
         List<StatusPayload> statusPayloads = new ArrayList<>()
         StatusPayload statusPayload = new StatusPayload()
         statusPayload.type = "todo"
-        statusPayload.statusName = "待办"
+        statusPayload.statusName = "待处理"
         statusPayload.projectId = 1L
         statusPayload.statusId = 1L
+        StatusPayload statusPayload2 = new StatusPayload()
+        statusPayload2.type = "doing"
+        statusPayload2.statusName = "处理中"
+        statusPayload2.projectId = 1L
+        statusPayload2.statusId = 2L
+        StatusPayload statusPayload3 = new StatusPayload()
+        statusPayload3.type = "done"
+        statusPayload3.statusName = "已完成"
+        statusPayload3.projectId = 1L
+        statusPayload3.statusId = 3L
         statusPayloads.add(statusPayload)
+        statusPayloads.add(statusPayload2)
+        statusPayloads.add(statusPayload3)
         projectCreateAgilePayload.statusPayloads = statusPayloads
         agileEventHandler.dealStateMachineInitProject(JSON.toJSONString(projectCreateAgilePayload))
         DeployStatusPayload deployStatusPayload = new DeployStatusPayload()

@@ -62,8 +62,8 @@ public class FeignConfigure {
         Map<Long, StatusMapDTO> statusMapDTOMap = new HashMap<>(3);
         StatusMapDTO todoStatus = new StatusMapDTO();
         todoStatus.setId(1L);
-        todoStatus.setName("待办");
-        todoStatus.setDescription("待办");
+        todoStatus.setName("待处理");
+        todoStatus.setDescription("待处理");
         todoStatus.setOrganizationId(1L);
         todoStatus.setType("todo");
         todoStatus.setCode("todo");

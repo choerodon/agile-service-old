@@ -25,7 +25,7 @@ public interface IssueStatusMapper extends BaseMapper<IssueStatusDO> {
      */
 //    List<IssueStatusCreateDO> queryIssueStatus(@Param("projectId") Long projectId);
 
-    Integer checkSameStatus(@Param("projectId") Long projectId, @Param("statusName") String statusName);
+//    Integer checkSameStatus(@Param("projectId") Long projectId, @Param("statusName") String statusName);
 
 //    List<StatusDO> listByProjectId(@Param("projectId") Long projectId);
 

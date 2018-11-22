@@ -78,8 +78,8 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
         });
     }
 
-    @Override
-    public Boolean checkSameStatus(Long projectId, String statusName) {
-        return issueStatusMapper.checkSameStatus(projectId, statusName) != 0;
-    }
+//    @Override
+//    public Boolean checkSameStatus(Long projectId, String statusName) {
+//        return issueStatusMapper.checkSameStatus(projectId, statusName) != 0;
+//    }
 }
