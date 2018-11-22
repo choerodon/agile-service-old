@@ -36,52 +36,55 @@ class IterativeWorktableControllerSpec extends Specification {
     IssueMapper issueMapper
 
     @Shared
+    def organizationId = 1L
+
+    @Shared
     def projectId = 1L
 
     @Shared
     def sprintId = 1L
 
-    @Autowired
-    @Qualifier("mockUserRepository")
-    private UserRepository userRepository
+//    @Autowired
+//    @Qualifier("mockUserRepository")
+//    private UserRepository userRepository
 
-    def setup() {
-        given:
-        Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
-        UserMessageDO userMessageDO = new UserMessageDO("admin", "http://XXX.png", "admin@gmail.com")
-        userMessageDOMap.put(1, userMessageDO)
-        userRepository.queryUsersMap(*_) >> userMessageDOMap
-        UserDO userDO = new UserDO()
-        userDO.setRealName("admin")
-        userRepository.queryUserNameByOption(*_) >> userDO
-    }
+//    def setup() {
+//        given:
+//        Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
+//        UserMessageDO userMessageDO = new UserMessageDO("admin", "http://XXX.png", "admin@gmail.com")
+//        userMessageDOMap.put(1, userMessageDO)
+//        userRepository.queryUsersMap(*_) >> userMessageDOMap
+//        UserDO userDO = new UserDO()
+//        userDO.setRealName("admin")
+//        userRepository.queryUserNameByOption(*_) >> userDO
+//    }
 
     def 'queryPriorityDistribute'() {
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/priority?sprintId={sprintId}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/priority?sprintId={sprintId}&organizationId={organizationId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 List.class,
                 projectId,
-                sprintId)
+                sprintId,
+                organizationId)
 
         then:
         entity.statusCode.is2xxSuccessful()
         List<PriorityDistributeDTO> result = entity.body
-        result.size() == 3
-        result.get(0).priorityCode.equals("high")
-        result.get(1).priorityCode.equals("medium")
-        result.get(2).priorityCode.equals("low")
+        result.size() == 1
+        result.get(0).priorityDTO.name.equals("高")
     }
 
     def 'queryPriorityDistribute fail'() {
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/priority?sprintId={sprintId}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/priority?sprintId={sprintId}&organizationId={organizationId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 String.class,
                 projectId,
-                0L)
+                0L,
+                organizationId)
 
         then:
         entity.statusCode.is2xxSuccessful()
@@ -92,12 +95,13 @@ class IterativeWorktableControllerSpec extends Specification {
 
     def 'queryStatusCategoryDistribute'() {
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/status?sprintId={sprintId}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/status?sprintId={sprintId}&organizationId={organizationId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 List.class,
                 projectId,
-                sprintId)
+                sprintId,
+                organizationId)
 
         then:
         entity.statusCode.is2xxSuccessful()
@@ -106,12 +110,13 @@ class IterativeWorktableControllerSpec extends Specification {
 
     def 'queryStatusCategoryDistribute fail'() {
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/status?sprintId={sprintId}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/status?sprintId={sprintId}&organizationId={organizationId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 String.class,
                 projectId,
-                0L)
+                0L,
+                organizationId)
 
         then:
         entity.statusCode.is2xxSuccessful()
@@ -177,12 +182,13 @@ class IterativeWorktableControllerSpec extends Specification {
 
     def 'queryIssueTypeDistribute'() {
         when: '发请求'
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/issue_type?sprintId={sprintId}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/issue_type?sprintId={sprintId}&organizationId={organizationId}",
                 HttpMethod.GET,
                 null,
                 List.class,
                 projectId,
-                sprintId)
+                sprintId,
+                organizationId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()

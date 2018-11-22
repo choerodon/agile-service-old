@@ -91,6 +91,27 @@ public class FeignConfigure {
         Mockito.when(stateMachineFeignClient.queryStatusById(Matchers.anyLong(), Matchers.eq(3L))).thenReturn(new ResponseEntity<>(doneStatus, HttpStatus.OK));
         Mockito.when(stateMachineFeignClient.queryInitStatusIds(Matchers.anyLong(), Matchers.anyListOf(Long.class)))
                 .thenReturn(new ResponseEntity<>(statusMapDTOMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getKey)), HttpStatus.OK));
+        Map<Long, Status> statusMap = new HashMap<>();
+        Status status1 = new Status();
+        status1.setId(1L);
+        status1.setName("待处理");
+        status1.setOrganizationId(1L);
+        status1.setType("todo");
+        Status status2 = new Status();
+        status2.setId(2L);
+        status2.setName("处理中");
+        status2.setOrganizationId(1L);
+        status2.setType("doing");
+        Status status3 = new Status();
+        status3.setId(3L);
+        status3.setName("已完成");
+        status3.setOrganizationId(1L);
+        status3.setType("done");
+        statusMap.put(1L, status1);
+        statusMap.put(2L, status2);
+        statusMap.put(3L, status3);
+        Mockito.when(stateMachineFeignClient.batchStatusGet(Matchers.any(List.class))).thenReturn(new ResponseEntity(statusMap, HttpStatus.OK));
+        Mockito.when(stateMachineFeignClient.queryStatusById(Matchers.anyLong(), Matchers.anyLong())).thenReturn(new ResponseEntity<>(todoStatus, HttpStatus.OK));
         return stateMachineFeignClient;
     }
 
@@ -146,19 +167,19 @@ public class FeignConfigure {
         Map<Long, PriorityDTO> priorityDTOMap = new HashMap<>(3);
         PriorityDTO low = new PriorityDTO();
         low.setId(1L);
-        low.setName("低");
+        low.setName("高");
         low.setOrganizationId(1L);
         low.setColour("#00000");
         low.setDefault(true);
         PriorityDTO high = new PriorityDTO();
         high.setId(2L);
-        high.setName("高");
+        high.setName("中");
         high.setOrganizationId(1L);
         high.setColour("#00000");
         high.setDefault(true);
         PriorityDTO middle = new PriorityDTO();
         middle.setId(3L);
-        middle.setName("中");
+        middle.setName("低");
         middle.setOrganizationId(1L);
         middle.setColour("#00000");
         middle.setDefault(true);
@@ -187,6 +208,26 @@ public class FeignConfigure {
         StatusInfoDTO statusInfoDTO = new StatusInfoDTO();
         statusInfoDTO.setId(1000L);
         Mockito.when(issueFeignClient.createStatusForAgile(Matchers.anyLong(), Matchers.any(StatusInfoDTO.class))).thenReturn(new ResponseEntity<>(statusInfoDTO, HttpStatus.OK));
+        List<StatusMapDTO> statusMapDTOList = new ArrayList<>();
+        StatusMapDTO statusMapDTO1 = new StatusMapDTO();
+        statusMapDTO1.setOrganizationId(1L);
+        statusMapDTO1.setId(1L);
+        statusMapDTO1.setType("todo");
+        statusMapDTO1.setName("待处理");
+        StatusMapDTO statusMapDTO2 = new StatusMapDTO();
+        statusMapDTO2.setOrganizationId(1L);
+        statusMapDTO2.setId(2L);
+        statusMapDTO2.setType("doing");
+        statusMapDTO2.setName("处理中");
+        StatusMapDTO statusMapDTO3 = new StatusMapDTO();
+        statusMapDTO3.setOrganizationId(1L);
+        statusMapDTO3.setId(3L);
+        statusMapDTO3.setType("done");
+        statusMapDTO3.setName("已完成");
+        statusMapDTOList.add(statusMapDTO1);
+        statusMapDTOList.add(statusMapDTO2);
+        statusMapDTOList.add(statusMapDTO3);
+        Mockito.when(issueFeignClient.queryStatusByProjectId(Mockito.anyLong(), Mockito.anyString())).thenReturn(new ResponseEntity<>(statusMapDTOList, HttpStatus.OK));
         return issueFeignClient;
     }
 

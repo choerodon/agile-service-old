@@ -140,7 +140,7 @@ class ProductVersionControllerSpec extends Specification {
         when:
         jsonObject.put("objectVersionNumber", result.objectVersionNumber)
         HttpEntity<JSONObject> jsonObjectHttpEntity = new HttpEntity<>(jsonObject)
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/update/{versionId}",
                 HttpMethod.PUT,
                 jsonObjectHttpEntity,
                 ProductVersionDetailDTO.class,
@@ -149,7 +149,7 @@ class ProductVersionControllerSpec extends Specification {
 
         jsonObject.put("objectVersionNumber", 0L)
         HttpEntity<JSONObject> changeObject = new HttpEntity<>(jsonObject)
-        def entityException = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}",
+        def entityException = restTemplate.exchange("/v1/projects/{project_id}/product_version/update/{versionId}",
                 HttpMethod.PUT,
                 changeObject,
                 String.class,
@@ -590,24 +590,18 @@ class ProductVersionControllerSpec extends Specification {
         then:
         entity.statusCode.is2xxSuccessful()
 
-        and:
-        VersionIssueCountDTO versionIssueCountDTO = entity.body
-
-        expect: "设置期望值"
-        versionIssueCountDTO.doingIssueCount != null
-        versionIssueCountDTO.todoIssueCount != null
-
     }
 
     def 'queryByVersionIdAndStatusCode'() {
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/issues?statusCode={statusCode}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/issues?organizationId={organizationId}&statusCode={statusCode}",
                 HttpMethod.GET,
                 null,
                 List,
                 projectId,
                 versionId,
-                statusCode)
+                1L,
+                "todo")
 
         then:
         entity.statusCode.is2xxSuccessful()
@@ -620,8 +614,7 @@ class ProductVersionControllerSpec extends Specification {
 
         where: '对比结果'
         versionId | statusCode || expectCount
-        1L        | 'released' || 0
-        1L        | null       || 0
+        1L        | 'todo'     || 1
     }
 
     def 'deleteVersion'() {
@@ -634,7 +627,7 @@ class ProductVersionControllerSpec extends Specification {
         versionIssueRelDO.versionId = result.versionId
 
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/delete/{versionId}",
                 HttpMethod.DELETE,
                 new HttpEntity<>(),
                 Boolean.class,
