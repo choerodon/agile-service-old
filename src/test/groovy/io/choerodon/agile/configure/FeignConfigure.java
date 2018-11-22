@@ -39,7 +39,7 @@ public class FeignConfigure {
         projectDTO.setId(1L);
         projectDTO.setName("test");
         projectDTO.setOrganizationId(1L);
-        Mockito.when(userFeignClient.queryProject(1L)).thenReturn(new ResponseEntity<>(projectDTO, HttpStatus.OK));
+        Mockito.when(userFeignClient.queryProject(Matchers.anyLong())).thenReturn(new ResponseEntity<>(projectDTO, HttpStatus.OK));
         return userFeignClient;
     }
 
@@ -52,6 +52,7 @@ public class FeignConfigure {
         executeResult.setSuccess(true);
         Mockito.when(instanceFeignClient.startInstance(Matchers.anyLong(), Matchers.anyString(), Matchers.anyLong(), Matchers.any(InputDTO.class)))
                 .thenReturn(new ResponseEntity<>(executeResult, HttpStatus.OK));
+        Mockito.when(instanceFeignClient.executeTransform(Matchers.anyLong(), Matchers.anyString(), Matchers.anyLong(), Matchers.anyLong(), Matchers.anyLong(), Matchers.any(InputDTO.class))).thenReturn(new ResponseEntity<>(executeResult, HttpStatus.OK));
         return instanceFeignClient;
     }
 
@@ -183,6 +184,9 @@ public class FeignConfigure {
             issueTypeWithStateMachineIdDTOS.add(issueTypeWithStateMachineIdDTO);
         });
         Mockito.when(issueFeignClient.queryIssueTypesWithStateMachineIdByProjectId(Matchers.anyLong(), Matchers.anyString())).thenReturn(new ResponseEntity<>(issueTypeWithStateMachineIdDTOS, HttpStatus.OK));
+        StatusInfoDTO statusInfoDTO = new StatusInfoDTO();
+        statusInfoDTO.setId(1000L);
+        Mockito.when(issueFeignClient.createStatusForAgile(Matchers.anyLong(), Matchers.any(StatusInfoDTO.class))).thenReturn(new ResponseEntity<>(statusInfoDTO, HttpStatus.OK));
         return issueFeignClient;
     }
 
