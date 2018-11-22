@@ -14,9 +14,13 @@ import io.choerodon.agile.infra.feign.IssueFeignClient
 import io.choerodon.agile.infra.mapper.*
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.domain.Page
+
 //import io.choerodon.event.producer.execute.EventProducerTemplate
 import io.choerodon.mybatis.pagehelper.domain.PageRequest
+import org.mockito.Matchers
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
@@ -78,6 +82,9 @@ class IssueControllerSpec extends Specification {
     private SprintMapper sprintMapper
 
     @Autowired
+    private IssueFeignClient issueFeignClient
+
+    @Autowired
     private IssueSprintRelMapper issueSprintRelMapper
 
     @Autowired
@@ -87,19 +94,16 @@ class IssueControllerSpec extends Specification {
     private DataLogMapper dataLogMapper
 
     @Autowired
+    @Qualifier("userRepository")
     private UserRepository userRepository
 
     @Autowired
     private SiteMsgUtil siteMsgUtil
 
-//    @Autowired
-//    @Qualifier("mockEventProducerTemplate")
-//    private EventProducerTemplate eventProducerTemplate
-    @Autowired
-    private IssueFeignClient issueFeignClient
-
     @Shared
     def projectId = 1
+    @Shared
+    def organizationId = 1
     @Shared
     def componentId = 1
     @Shared
@@ -131,16 +135,11 @@ class IssueControllerSpec extends Specification {
         UserMessageDO userMessageDO = new UserMessageDO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
         userMessageDOMap.put(1, userMessageDO)
         userRepository.queryUsersMap(*_) >> userMessageDOMap
-        UserDO userDO = new UserDO()
-        userDO.setRealName("管理员")
-        userRepository.queryUserNameByOption(*_) >> userDO
-
         issues = issueMapper.selectAll()
         issuesSize = issues.size()
 
         and: 'mockSagaClient'
         sagaClient.startSaga(_, _) >> null
-
 
         and:
         siteMsgUtil.issueCreate(*_) >> null
@@ -149,18 +148,12 @@ class IssueControllerSpec extends Specification {
         ProjectDTO projectDTO = new ProjectDTO()
         projectDTO.setCode("AG")
         projectDTO.setName("AG")
-        userRepository.queryProject(*_) >> projectDTO
-
-        and: 'mock静态方法'
-        issueFeignClient
-        issueFeignClient.queryStateMachineId(*_) >> new ResponseEntity<Long>(1, HttpStatus.OK)
-//        GroovyMock(ConvertUtil, global: true)
-//        ConvertUtil.getOrganizationId(1L) >> 1L
-//        mockStatic(ConvertUtil.class)
-//        def converUtilMock = Mock(ConvertUtil)
-//        converUtilMock.getOrganizationId(1L) >> 1L
-//        when(ConvertUtil.getOrganizationId(1L)).thenReturn(1L)
-//        ConvertUtil.getOrganizationId(1L) == 1L
+        projectDTO.setId(1L)
+        projectDTO.setOrganizationId(1L)
+        Mockito.when(userRepository.queryProject(Matchers.anyLong())).thenReturn(projectDTO)
+        UserDO userDO = new UserDO()
+        userDO.setRealName("管理员")
+        Mockito.when(userRepository.queryUserNameByOption(Matchers.anyLong(), Matchers.anyBoolean())).thenReturn(userDO)
     }
 
     def 'createIssue'() {
@@ -249,7 +242,8 @@ class IssueControllerSpec extends Specification {
         issueSubCreateDTO.projectId = projectId
         issueSubCreateDTO.description = "测试issue描述"
         issueSubCreateDTO.summary = "测试issue概要"
-        issueSubCreateDTO.priorityCode = "hight"
+        issueSubCreateDTO.priorityId = 1
+        issueSubCreateDTO.issueTypeId = 5
         issueSubCreateDTO.assigneeId = 1
         issueSubCreateDTO.parentIssueId = issueIdList[0]
 
@@ -307,7 +301,8 @@ class IssueControllerSpec extends Specification {
         entity.body.parentIssueId == issueIdList[0]
         entity.body.description == "测试issue描述"
         entity.body.summary == "测试issue概要"
-        entity.body.priorityCode == "hight"
+        entity.body.priorityId == 1
+        entity.body.issueTypeId == 5
 
     }
 
@@ -365,7 +360,7 @@ class IssueControllerSpec extends Specification {
 
     def 'queryIssue'() {
         when: '向开始查询单个issue的接口发请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/{issueId}', IssueDTO, projectId, issueId)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/{issueId}?organizationId={organizationId}', IssueDTO, projectId, issueId, organizationId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -383,7 +378,7 @@ class IssueControllerSpec extends Specification {
 
     def 'queryIssueSub'() {
         when: '向开始查询单个issue子任务的接口发请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/sub_issue/{issueId}', IssueSubDTO, projectId, issueIdList[3])
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/sub_issue/{issueId}?organizationId={organizationId}', IssueSubDTO, projectId, issueIdList[3], organizationId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -393,24 +388,15 @@ class IssueControllerSpec extends Specification {
 
     }
 
-    def 'listIssueWithoutSub'() {
+    def 'listIssueWithSub'() {
         given: '查询参数'
         SearchDTO searchDTO = new SearchDTO()
-        Map<String, Object> searchMap = new HashMap<>(6)
-//        searchMap.put("assignee", "admin")
-        searchMap.put("version", "测试版本")
-//        searchMap.put("updateStartDate","2018-10-1")
-//        searchMap.put("updateEndDate","2018-10-26")
-//        searchMap.put("createStartDate","2018-10-1")
-//        searchMap.put("createEndDate","2018-10-26")
-//        searchMap.put("epic","史诗")
-        Map<String, Object> otherMap = new HashMap<>(2)
-//        otherMap.put("type", "epic")
-//        otherMap.put("id", Arrays.asList(1L,2L))
+        Map<String, Object> searchMap = new HashMap<>()
+        Map<String, Object> otherMap = new HashMap<>()
         searchDTO.searchArgs = searchMap
         searchDTO.otherArgs = otherMap
         when: '向开始查询分页过滤查询issue列表的接口发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/include_sub', searchDTO, Page, projectId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/include_sub?organizationId={organizationId}', searchDTO, Page, projectId, organizationId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -526,7 +512,7 @@ class IssueControllerSpec extends Specification {
         where: '对比设置与期望'
         rankIndex | before | outsetIssueId  | issueIds                                    || expectSize
         false     | false  | issueIdList[1] | Arrays.asList(issueIdList[1]) as List<Long> || 1
-        true      | true   | 0              | Arrays.asList(issueIdList[1]) as List<Long> || 1
+        true      | true   | 0              | Arrays.asList(issueIdList[1]) as List<Long> || 0
 
     }
 
@@ -551,12 +537,13 @@ class IssueControllerSpec extends Specification {
         issueUpdateTypeDTO.issueId = issueIdList[0]
         issueUpdateTypeDTO.projectId = projectId
         issueUpdateTypeDTO.typeCode = typeCode
+        issueUpdateTypeDTO.issueTypeId = issueTypeId
         issueUpdateTypeDTO.objectVersionNumber = issueObjectVersionNumberList[0]
         issueUpdateTypeDTO.epicName = "测试epic"
 
         when: '向issue批量加入冲刺接口发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/update_type',
-                issueUpdateTypeDTO, IssueDTO, projectId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/update_type?organizationId={organizationId}',
+                issueUpdateTypeDTO, IssueDTO, projectId, organizationId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -571,24 +558,10 @@ class IssueControllerSpec extends Specification {
         entity.body.typeCode == expectedTypeCode
 
         where: '不同issue类型返回值与期望值对比'
-        typeCode     | expectedTypeCode
-        "task"       | "task"
-        "issue_epic" | "issue_epic"
-        "story"      | "story"
-    }
-
-    def "listByOptions"() {
-        when: '向根据issue类型(type_code)查询issue列表(分页)接口发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/type_code/{typeCode}',
-                null, Page, projectId, "story")
-
-        then: '返回值'
-        entity.statusCode.is2xxSuccessful()
-        print(entity.body.content ? entity.body.content.toString() : null)
-
-        expect: '设置期望值'
-        entity.body.content.size() > 0
-
+        typeCode     | issueTypeId || expectedTypeCode
+        "task"       | 2L          || "task"
+        "issue_epic" | 4L          || "issue_epic"
+        "story"      | 1L          || "story"
     }
 
     /**
@@ -629,7 +602,8 @@ class IssueControllerSpec extends Specification {
         conditionDTO.sprintValues = true
 
         when: '向复制一个issue的接口发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/{issueId}/clone_issue', conditionDTO, IssueDTO, projectId, issueId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/{issueId}/clone_issue?organizationId={organizationId}&&applyType={applyType}',
+                conditionDTO, IssueDTO, projectId, issueId, organizationId, "agile")
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -657,9 +631,11 @@ class IssueControllerSpec extends Specification {
         issueTransformSubTask.objectVersionNumber = issueObjectVersionNumberList[i]
         issueTransformSubTask.parentIssueId = issueIdList[0]
         issueTransformSubTask.statusId = 1L
+        issueTransformSubTask.issueTypeId = 1L
 
         when: '向任务转换为子任务的接口发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/transformed_sub_task', issueTransformSubTask, IssueSubDTO, projectId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/transformed_sub_task?organizationId={organizationId}'
+                , issueTransformSubTask, IssueSubDTO, projectId, organizationId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -701,7 +677,8 @@ class IssueControllerSpec extends Specification {
         SearchDTO searchDTO = new SearchDTO()
 
         when: '分页过滤查询issue列表提供给测试模块用'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/test_component/no_sub', searchDTO, Page, projectId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/test_component/no_sub?organizationId={organizationId}',
+                searchDTO, Page, projectId, organizationId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -813,13 +790,13 @@ class IssueControllerSpec extends Specification {
         def type = 'sprint'
         def pageType = 'storymap'
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/storymap/issues?type={type}&pageType={pageType}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/storymap/issues?type={type}&pageType={pageType}&&organizationId={organizationId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 List.class,
                 projectId,
                 type,
-                pageType)
+                pageType, organizationId)
 
         then:
         entity.statusCode.is2xxSuccessful()
@@ -834,38 +811,7 @@ class IssueControllerSpec extends Specification {
         count > 0
     }
 
-//    def 'storymapMove'() {
-//        given:
-//        StoryMapMoveDTO storyMapMoveDTO = new StoryMapMoveDTO()
-//        storyMapMoveDTO.issueId = issueIdList.get(0)
-//        storyMapMoveDTO.objectVersionNumber = objectVersionNumber
-//        storyMapMoveDTO.originEpicId = originEpicId
-//        storyMapMoveDTO.epicId = epicId
-//
-//        when:
-//        HttpEntity<StoryMapMoveDTO> storyMapMoveDTOHttpEntity = new HttpEntity<>(storyMapMoveDTO)
-//        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/storymap/move",
-//                HttpMethod.POST,
-//                storyMapMoveDTOHttpEntity,
-//                IssueDTO.class,
-//                projectId)
-//
-//        then:
-//        entity.statusCode.is2xxSuccessful()
-//
-//        expect:
-//        entity.body.epicId == result
-//
-//        where:
-//        originEpicId | epicId | objectVersionNumber | result
-//        0L | 5L | 5L | 5L
-//        5L | 0L | 6L | 0L
-//        0L | 5L | 6L | null
-//        0L | 0L | 7L | null
-//    }
-
     def "updateIssueParentId"() {
-
         given:
         IssueCreateDTO issueCreateDTO = new IssueCreateDTO()
         issueCreateDTO.projectId = projectId
@@ -873,7 +819,7 @@ class IssueControllerSpec extends Specification {
         issueCreateDTO.reporterId = 1L
         issueCreateDTO.typeCode = 'issue_test'
         issueCreateDTO.summary = 'issue-test'
-        IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO)
+        IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
         issues.add(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()))
         issueIdList.add(issueDTO.getIssueId())
         issueTestId = issueDTO.getIssueId()
@@ -1006,8 +952,8 @@ class IssueControllerSpec extends Specification {
         searchDTO.advancedSearchArgs = advancedSearchArgsMap
 
         when:
-        def entity = restTemplate.postForEntity("/v1/projects/{project_id}/issues/test_component/filter_linked?pageRequest={pageRequest}",
-                searchDTO, Page.class, projectId, pageRequest)
+        def entity = restTemplate.postForEntity("/v1/projects/{project_id}/issues/test_component/filter_linked?pageRequest={pageRequest}&&organizationId={organizationId}",
+                searchDTO, Page.class, projectId, pageRequest, organizationId)
 
         then:
         entity.statusCode.is2xxSuccessful()
@@ -1026,8 +972,9 @@ class IssueControllerSpec extends Specification {
         issueDetailDO.summary = "XXX"
         issueDetailDO.projectId = projectId
         issueDetailDO.statusId = 1
-        issueDetailDO.statusCode = 'todo'
-        issueDetailDO.priorityCode = 'low'
+        issueDetailDO.typeCode = 'story'
+        issueDetailDO.statusId = 1
+        issueDetailDO.priorityId = 1
         issueDetailDO.componentIssueRelDOList = new ArrayList<>()
         issueDetailDO.labelIssueRelDOList = new ArrayList<>()
         issueDetailDOList.add(issueDetailDO)
@@ -1075,7 +1022,7 @@ class IssueControllerSpec extends Specification {
     def "batchIssueToVersionTest"() {
         given: '准备数据'
         ProductVersionDO productVersionDO = new ProductVersionDO()
-        productVersionDO.name = '测试版本2'
+        productVersionDO.name = 'v1.0.0'
         productVersionId = productVersionMapper.selectOne(productVersionDO).versionId
 
         SprintDO sprintDO = new SprintDO()
@@ -1104,7 +1051,7 @@ class IssueControllerSpec extends Specification {
         issueCreateDTO.versionIssueRelDTOList = null
         restTemplate.postForEntity('/v1/projects/{project_id}/issues', issueCreateDTO, IssueDTO, projectId)
         IssueDO issueDO = new IssueDO()
-        issueDO.summary = "测试issue概要111111"
+        issueDO.summary = "issue-test"
         and: "获取IssueId"
         resultId = issueMapper.selectOne(issueDO).issueId
         issueIdList.add(resultId)
@@ -1155,14 +1102,14 @@ class IssueControllerSpec extends Specification {
                 new HttpEntity<>(),
                 List.class,
                 projectId)
-        def entityWithParams = restTemplate.exchange("/v1/projects/{project_id}/issues/storymap/epics?showDoneEpic={showDoneEpic}&assigneeId={assigneeId}&onlyStory={onlyStory}",
+        def entityWithParams = restTemplate.exchange("/v1/projects/{project_id}/issues/storymap/epics?showDoneEpic={showDoneEpic}&assigneeId={assigneeId}&onlyStory={onlyStory}&&organizationId={organizationId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 List.class,
                 projectId,
                 true,
                 0L,
-                true)
+                true, organizationId)
 
         then:
         entity.statusCode.is2xxSuccessful()

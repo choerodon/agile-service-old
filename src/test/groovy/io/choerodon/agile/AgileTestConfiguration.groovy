@@ -27,6 +27,7 @@ import io.choerodon.agile.infra.feign.UserFeignClient
 import io.choerodon.agile.infra.feign.fallback.IssueFeignClientFallback
 import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback
 import io.choerodon.agile.infra.mapper.*
+import io.choerodon.agile.infra.repository.impl.UserRepositoryImpl
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.convertor.ApplicationContextHelper
 import io.choerodon.core.oauth.CustomUserDetails
@@ -139,7 +140,7 @@ class AgileTestConfiguration {
     @Autowired
     private ProductVersionMapper productVersionMapper
 
-    @MockBean
+    @MockBean(name = "userRepository")
     private UserRepository userRepository
 
     @MockBean
