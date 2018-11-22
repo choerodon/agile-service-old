@@ -31,7 +31,7 @@ public interface ProductVersionService {
 
     ProductVersionStatisticsDTO queryVersionStatisticsByVersionId(Long projectId, Long versionId);
 
-    List<IssueListDTO> queryIssueByVersionIdAndStatusCode( Long projectId, Long versionId, String statusCode, Long organizationId);
+    List<IssueListDTO> queryIssueByVersionIdAndStatusCode(Long projectId, Long versionId, String statusCode, Long organizationId, SearchDTO searchDTO);
 
     VersionMessageDTO queryReleaseMessageByVersionId(Long projectId, Long versionId);
 
