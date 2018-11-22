@@ -119,6 +119,7 @@ public class StateMachineServiceImpl implements StateMachineService {
             }
             issueService.handleInitIssue(issueE, initStatusId, projectInfoE);
             //创建issue
+            issueE.setApplyType(applyType);
             issueId = issueRepository.create(issueE).getIssueId();
             transactionManager.commit(status);
         } catch (Exception e) {
@@ -180,6 +181,7 @@ public class StateMachineServiceImpl implements StateMachineService {
             issueService.handleInitSubIssue(subIssueE, initStatusId, projectInfoE);
 
             //创建issue
+            subIssueE.setApplyType(SchemeApplyType.AGILE);
             issueId = issueRepository.create(subIssueE).getIssueId();
 
             transactionManager.commit(status);

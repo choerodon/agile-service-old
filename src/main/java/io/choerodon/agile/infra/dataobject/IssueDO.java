@@ -91,6 +91,11 @@ public class IssueDO extends AuditDomain {
     private Long parentIssueId;
 
     /**
+     * 应用类型
+     */
+    private Long applyType;
+
+    /**
      * 故事点
      */
     private Integer storyPoints;
@@ -450,6 +455,14 @@ public class IssueDO extends AuditDomain {
 
     public Long getIssueTypeId() {
         return issueTypeId;
+    }
+
+    public Long getApplyType() {
+        return applyType;
+    }
+
+    public void setApplyType(Long applyType) {
+        this.applyType = applyType;
     }
 
     @Override

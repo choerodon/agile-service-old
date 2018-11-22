@@ -72,21 +72,6 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("陈士男测试")
-    @PostMapping("/2")
-    public ResponseEntity<IssueDTO> createIssueCsnTest(@ApiParam(value = "项目id", required = true)
-                                                       @PathVariable(name = "project_id") Long projectId,
-                                                       @ApiParam(value = "应用类型", required = true)
-                                                       @RequestParam(value = "applyType") String applyType,
-                                                       @ApiParam(value = "创建issue对象", required = true)
-                                                       @RequestBody IssueCreateDTO issueCreateDTO) {
-        issueRule.verifyCreateData(issueCreateDTO, projectId, applyType);
-        return Optional.ofNullable(issueService.createIssueCsnTest(issueCreateDTO, applyType))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
-                .orElseThrow(() -> new CommonException("error.Issue.createIssue"));
-    }
-
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建issue子任务")
     @PostMapping(value = "/sub_issue")
     public ResponseEntity<IssueSubDTO> createSubIssue(@ApiParam(value = "项目id", required = true)
@@ -618,7 +603,7 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("测试服务用，批量复制issue并生成版本信息")
+    @ApiOperation("【测试专用】批量复制issue并生成版本信息")
     @PostMapping("/batch_clone_issue/{versionId}")
     public ResponseEntity<List<Long>> cloneIssuesByVersionId(@ApiParam(value = "项目id", required = true)
                                                              @PathVariable(name = "project_id") Long projectId,

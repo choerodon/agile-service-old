@@ -1907,6 +1907,7 @@ public class IssueServiceImpl implements IssueService {
             IssueE issueE = issueAssembler.toTarget(issueDetailDO, IssueE.class);
             //初始化创建issue设置issue编号、项目默认设置
             issueE.initializationIssueByCopy(initStatusId, projectInfoE);
+            issueE.setApplyType(SchemeApplyType.TEST);
             Long issueId = issueRepository.create(issueE).getIssueId();
             handleCreateCopyLabelIssueRel(issueDetailDO.getLabelIssueRelDOList(), issueId);
             handleCreateCopyComponentIssueRel(issueDetailDO.getComponentIssueRelDOList(), issueId);
