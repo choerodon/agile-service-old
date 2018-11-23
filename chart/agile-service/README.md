@@ -76,3 +76,4 @@ env.open.SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS:|kafk地址
 env.open.SPRING_CLOUD_STREAM_KAFKA_BINDER_ZK_NODES: |zookeeper地址
 env.open.SPRING_CLOUD_CONFIG_URI: |配置中心地址
 env.open.SERVICES_ATTACHMENT_URL: |minio地址+bucket
+env.open.SKYWALKING_OPTS | skywalking 代理端配置
