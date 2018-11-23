@@ -311,7 +311,8 @@ class AgileTestConfiguration {
         epicIssue.issueNum = '1'
         epicIssue.projectId = 1L
         epicIssue.priorityCode = 'high'
-        epicIssue.issueTypeId = 1L
+        epicIssue.priorityId = 1L
+        epicIssue.issueTypeId = 4L
         epicIssue.reporterId = 1L
         epicIssue.statusId = 1L
         epicIssue.typeCode = 'issue_epic'
@@ -324,7 +325,7 @@ class AgileTestConfiguration {
         story.typeCode = 'story'
         story.statusId = 1L
         story.reporterId = 1L
-        epicIssue.issueTypeId = 2L
+        epicIssue.issueTypeId = 1L
         story.priorityCode = 'high'
         story.issueNum = '2'
         story.issueId = 2L
@@ -332,6 +333,7 @@ class AgileTestConfiguration {
         story.epicId = 1L
         story.storyPoints = 6
         story.priorityId = 1L
+        story.issueTypeId = 1L
         //设置rank值
         story.rank = '0|c00000:'
         issueMapper.insert(story)

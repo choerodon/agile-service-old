@@ -1003,7 +1003,6 @@
         ai.issue_type_id,
         ai.status_id,
         ai.type_code,
-        ai.issue_type_id,
         ai.summary,
         ai.priority_id,
         ai.assignee_id,

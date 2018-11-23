@@ -129,4 +129,10 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue.groovy') {
         }
     }
 
+    changeSet(id: '2018-11-22-add-column-apply-type', author: 'shinan.chenX@gmail.com') {
+        addColumn(tableName: 'agile_issue') {
+            column(name: 'apply_type', type: 'VARCHAR(30)', remarks: '应用类型')
+        }
+    }
+
 }

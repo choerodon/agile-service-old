@@ -26,6 +26,10 @@ import io.choerodon.agile.app.service.NoticeService
 import io.choerodon.agile.app.service.ReportService
 import io.choerodon.agile.app.service.SprintService
 import io.choerodon.agile.app.service.StateMachineService
+import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
+import io.choerodon.agile.domain.agile.entity.IssueE
+import io.choerodon.agile.domain.agile.entity.ProjectInfoE
+import io.choerodon.agile.domain.agile.event.CreateIssuePayload
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
@@ -42,9 +46,11 @@ import io.choerodon.agile.infra.mapper.ReportMapper
 import io.choerodon.agile.infra.mapper.SprintMapper
 import io.choerodon.agile.infra.mapper.VersionIssueRelMapper
 import io.choerodon.core.domain.Page
+import org.mockito.Matchers
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
+import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 
@@ -71,7 +77,7 @@ import spock.lang.Stepwise
 class ReportControllerSpec extends Specification {
 
     @Autowired
-    @Qualifier("mockUserRepository")
+    @Qualifier("userRepository")
     private UserRepository userRepository
 
     @Autowired
@@ -84,7 +90,7 @@ class ReportControllerSpec extends Specification {
     private IssueService issueService
 
     @Autowired
-    private StateMachineService stateMachineService;
+    private StateMachineServiceImpl stateMachineService
 
     @Autowired
     private BoardColumnMapper boardColumnMapper
@@ -104,13 +110,11 @@ class ReportControllerSpec extends Specification {
     @Autowired
     private ReportMapper reportMapper
 
-
-    @Autowired
-    @Qualifier("mockSiteMsgUtil")
-    private SiteMsgUtil siteMsgUtil
-
     @Shared
     def projectId = 1
+
+    @Shared
+    def organizationId = 1
 
     @Shared
     def epicId = 1
@@ -156,13 +160,17 @@ class ReportControllerSpec extends Specification {
 
 
         and:
-        siteMsgUtil.issueCreate(*_) >> null
-        siteMsgUtil.issueAssignee(*_) >> null
-        siteMsgUtil.issueSolve(*_) >> null
+        Mockito.when(userRepository.queryUsersMap(Matchers.anyListOf(Long.class), Matchers.anyBoolean())).thenReturn(userMessageDOMap)
+        Mockito.when(userRepository.queryUserNameByOption(Matchers.anyLong(), Matchers.anyBoolean())).thenReturn(userDO)
+//        siteMsgUtil.issueCreate(*_) >> null
+//        siteMsgUtil.issueAssignee(*_) >> null
+//        siteMsgUtil.issueSolve(*_) >> null
         ProjectDTO projectDTO = new ProjectDTO()
         projectDTO.setCode("AG")
         projectDTO.setName("AG")
-        userRepository.queryProject(*_) >> projectDTO
+        projectDTO.setId(1L)
+        projectDTO.setOrganizationId(1L)
+        Mockito.when(userRepository.queryProject(Matchers.anyLong())).thenReturn(projectDTO)
     }
 
     def 'createSprintToStart'() {
@@ -177,8 +185,17 @@ class ReportControllerSpec extends Specification {
         issueCreateDTO.summary = '加入冲刺issue'
         issueCreateDTO.typeCode = 'story'
         issueCreateDTO.priorityCode = 'low'
+        issueCreateDTO.priorityId = 1
+        issueCreateDTO.issueTypeId = 1
         issueCreateDTO.reporterId = 1
-        IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO)
+        IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
+        IssueE issueE = new IssueE()
+        BeanUtils.copyProperties(issueDTO, issueE)
+        issueE.setSprintId(sprintId)
+        ProjectInfoE projectInfoE = new ProjectInfoE()
+        projectInfoE.setProjectId(1L)
+        CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE)
+        stateMachineService.createIssue(issueE.getIssueId(), 1, JSONObject.toJSONString(createIssuePayload))
         issueIds.add(issueDTO.issueId)
 
         and: '将issue设置为done状态'
@@ -195,8 +212,15 @@ class ReportControllerSpec extends Specification {
         noDone.summary = '加入冲刺issue'
         noDone.typeCode = 'story'
         noDone.priorityCode = 'low'
+        noDone.priorityId = 1
+        noDone.issueTypeId = 1
         noDone.reporterId = 1
-        IssueDTO noDoneIssue = stateMachineService.createIssue(issueCreateDTO)
+        IssueDTO noDoneIssue = stateMachineService.createIssue(issueCreateDTO, "agile")
+        IssueE noDoneIssueE = new IssueE()
+        BeanUtils.copyProperties(noDoneIssue, noDoneIssueE)
+        noDoneIssueE.setSprintId(sprintId)
+        CreateIssuePayload noDonecreateIssuePayload = new CreateIssuePayload(noDone, noDoneIssueE, projectInfoE)
+        stateMachineService.createIssue(noDoneIssueE.getIssueId(), 1, JSONObject.toJSONString(noDonecreateIssuePayload))
         issueIds.add(noDoneIssue.issueId)
 
         and: '设置冲刺开启对象'
@@ -233,7 +257,6 @@ class ReportControllerSpec extends Specification {
         'storyPoints'            | 2
         'remainingEstimatedTime' | 2
         'issueCount'             | 2
-        'xxx'                    | 2
 
     }
 
@@ -289,7 +312,7 @@ class ReportControllerSpec extends Specification {
     def 'queryIssueByOptions'() {
         when: '向根据状态查版本下issue列表的接口发请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/{versionId}/issues?' +
-                'status={status}&type={type}', Page, projectId, versionId, status, type)
+                'status={status}&type={type}&&organizationId={organizationId}', Page, projectId, versionId, status, type, organizationId)
 
         then: '接口是否请求成功'
         entity.statusCode.is2xxSuccessful()
@@ -428,15 +451,18 @@ class ReportControllerSpec extends Specification {
 
         where: '设置期望值'
         type          || expectSize
-        'issue_count' || 2
-        'story_point' || 2
-        'remain_time' || 2
+        'issue_count' || 1
+        'story_point' || 1
+        'remain_time' || 1
 
     }
 
     def 'queryPieChart'() {
+        given: '给定参数'
+        def field = fieldName
+
         when: '向查询饼图的接口发请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/pie_chart?fieldName={fieldName}', List, projectId, fieldName)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/pie_chart?fieldName={fieldName}&&organizationId={organizationId}', List, projectId, field, organizationId)
 
         then: '接口是否请求成功'
         entity.statusCode.is2xxSuccessful()
@@ -448,16 +474,16 @@ class ReportControllerSpec extends Specification {
         pieChartDTOList.size() == expectSize
 
         where: '设置期望值'
-        fieldName      || expectSize
-        'assignee'     || 2
-        'component'    || 1
-        'typeCode'     || 2
-        'version'      || 2
-        'priorityCode' || 2
-        'statusCode'   || 2
-        'sprint'       || 3
-        'epic'         || 1
-        'resolution'   || 2
+        fieldName    | expectSize
+        'assignee'   | 2
+        'component'  | 1
+        'typeCode'   | 2
+        'version'    | 2
+        'priority'   | 1
+        'status'     | 2
+        'sprint'     | 3
+        'epic'       | 1
+        'resolution' | 2
 
     }
 
@@ -481,9 +507,9 @@ class ReportControllerSpec extends Specification {
         'remain_time' || 1
     }
 
-    def 'epic_issue_list'() {
+    def 'queryEpicChartList'() {
         when: '向史诗图问题列表的接口发请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/epic_issue_list?epicId={epicId}', List, projectId, epicId)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/epic_issue_list?epicId={epicId}&&organizationId={organizationId}', List, projectId, epicId, organizationId)
 
         then: '接口是否请求成功'
         entity.statusCode.is2xxSuccessful()
@@ -495,7 +521,7 @@ class ReportControllerSpec extends Specification {
         groupDataChartListDOList.size() == 2
     }
 
-    def 'version_chart'() {
+    def 'queryVersionChart'() {
         when: '向版本图重构api的接口发请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/version_chart?versionId={versionId}&type={type}', List, projectId, versionId, type)
 
@@ -515,9 +541,9 @@ class ReportControllerSpec extends Specification {
         'remain_time' || 1
     }
 
-    def 'version_issue_list'() {
+    def 'queryVersionChartList'() {
         when: '版本图问题列表重构api'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/version_issue_list?versionId={versionId}', List, projectId, versionId)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/version_issue_list?versionId={versionId}&&organizationId={organizationId}', List, projectId, versionId, organizationId)
 
         then: '接口是否请求成功'
         entity.statusCode.is2xxSuccessful()
@@ -532,7 +558,7 @@ class ReportControllerSpec extends Specification {
 
     def 'queryBurnDownReportByType'() {
         when: 'Epic和版本燃耗图报告信息'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/burn_down_report_type/{id}?type={type}', BurnDownReportDTO, projectId, id, type)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/burn_down_report_type/{id}?type={type}&&organizationId={organizationId}', BurnDownReportDTO, projectId, id, type, organizationId)
 
         then: '接口是否请求成功'
         entity.statusCode.is2xxSuccessful()
@@ -584,7 +610,7 @@ class ReportControllerSpec extends Specification {
 
     def 'queryIssuePriorityDistributionChart'() {
         when: '问题优先级分布图'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/issue_priority_distribution_chart', List, projectId)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/issue_priority_distribution_chart?organizationId={organizationId}', List, projectId, organizationId)
 
         then: '接口是否请求成功'
         entity.statusCode.is2xxSuccessful()
@@ -593,7 +619,7 @@ class ReportControllerSpec extends Specification {
         List<IssuePriorityDistributionChartDTO> issuePriorityDistributionChartDTOList = entity.body
 
         expect: '验证期望值'
-        issuePriorityDistributionChartDTOList.size() == 2
+        issuePriorityDistributionChartDTOList.size() == 1
 
     }
 
