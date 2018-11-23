@@ -10,6 +10,8 @@ import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.IssueComponentMapper
 import io.choerodon.core.domain.Page
+import org.mockito.Matchers
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
@@ -42,7 +44,7 @@ class IssueComponentControllerSpec extends Specification {
     IssueComponentMapper issueComponentMapper
 
     @Autowired
-    @Qualifier("mockUserRepository")
+    @Qualifier("userRepository")
     private UserRepository userRepository
 
     @Shared
@@ -57,10 +59,10 @@ class IssueComponentControllerSpec extends Specification {
         Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
         UserMessageDO userMessageDO = new UserMessageDO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
         userMessageDOMap.put(1, userMessageDO)
-        userRepository.queryUsersMap(*_) >> userMessageDOMap
+        Mockito.when(userRepository.queryUsersMap(Matchers.any(List.class), Matchers.anyBoolean())).thenReturn(userMessageDOMap)
         UserDO userDO = new UserDO()
         userDO.setRealName("管理员")
-        userRepository.queryUserNameByOption(*_) >> userDO
+        Mockito.when(userRepository.queryUserNameByOption(Matchers.anyLong(), Matchers.anyBoolean())).thenReturn(userDO)
 
     }
 
