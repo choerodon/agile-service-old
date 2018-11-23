@@ -1,5 +1,6 @@
 package io.choerodon.agile.api.controller.v1
 
+import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.ActiveSprintDTO
 import io.choerodon.agile.api.dto.BackLogIssueDTO
@@ -21,6 +22,10 @@ import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.NoticeService
 import io.choerodon.agile.app.service.StateMachineService
+import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
+import io.choerodon.agile.domain.agile.entity.IssueE
+import io.choerodon.agile.domain.agile.entity.ProjectInfoE
+import io.choerodon.agile.domain.agile.event.CreateIssuePayload
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
@@ -36,6 +41,7 @@ import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.domain.Page
 import org.mockito.Matchers
 import org.mockito.Mockito
+import org.springframework.beans.BeanUtils
 
 //import io.choerodon.event.producer.execute.EventProducerTemplate
 import org.springframework.beans.factory.annotation.Autowired
@@ -72,12 +78,8 @@ class SprintControllerSpec extends Specification {
     @Autowired
     AgileEventHandler agileEventHandler
 
-//    @Autowired
-//    @Qualifier("issueService")
-//    IssueService issueService
-
     @Autowired
-    StateMachineService stateMachineService
+    StateMachineServiceImpl stateMachineService
 
     @Autowired
     IssueMapper issueMapper
@@ -101,40 +103,17 @@ class SprintControllerSpec extends Specification {
     @Qualifier("userRepository")
     private UserRepository userRepository
 
-//    @Autowired
-//    @Qualifier("mockEventProducerTemplate")
-//    private EventProducerTemplate eventProducerTemplate
-
-
-//    @Autowired
-//    @Qualifier("mockSiteMsgUtil")
-//    private SiteMsgUtil siteMsgUtil
-
     @Shared
     def projectId = 1
+
+    @Shared
+    def organizationId = 1
 
     @Shared
     def sprintIds = []
 
     def setup() {
         given: '设置feign调用mockito'
-//        // *_表示任何长度的参数（这里表示只要执行了queryUsersMap这个方法，就让它返回一个空的Map
-//        Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
-//        UserMessageDO userMessageDO = new UserMessageDO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
-//        userMessageDOMap.put(1, userMessageDO)
-//        userRepository.queryUsersMap(*_) >> userMessageDOMap
-//        UserDO userDO = new UserDO()
-//        userDO.setRealName("管理员")
-//        userRepository.queryUserNameByOption(*_) >> userDO
-//
-//        and: 'mockSagaClient'
-//        sagaClient.startSaga(_, _) >> null
-//
-//
-//        and:
-//        siteMsgUtil.issueCreate(*_) >> null
-//        siteMsgUtil.issueAssignee(*_) >> null
-//        siteMsgUtil.issueSolve(*_) >> null
         ProjectDTO projectDTO = new ProjectDTO()
         projectDTO.setCode("AG")
         projectDTO.setName("AG")
@@ -167,10 +146,19 @@ class SprintControllerSpec extends Specification {
         issueCreateDTO.summary = '加入冲刺issue'
         issueCreateDTO.typeCode = 'story'
         issueCreateDTO.priorityCode = 'low'
+        issueCreateDTO.priorityId = 1
+        issueCreateDTO.issueTypeId = 1
         issueCreateDTO.reporterId = 1
 
         when: '更新issue'
         IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
+        IssueE issueE = new IssueE()
+        BeanUtils.copyProperties(issueDTO, issueE)
+        issueE.setSprintId(sprintIds[0])
+        ProjectInfoE projectInfoE = new ProjectInfoE()
+        projectInfoE.setProjectId(1L)
+        CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE)
+        stateMachineService.createIssue(issueE.getIssueId(), 1, JSONObject.toJSONString(createIssuePayload))
 
         then: '判断issue是否成功生成'
         issueDTO.objectVersionNumber == 1
@@ -237,9 +225,9 @@ class SprintControllerSpec extends Specification {
         searchDTOList.get(0).statusCode == 'sprint_planning'
         searchDTOList.get(0).issueCount == 1
         searchDTOList.get(0).issueSearchDTOList.size() == 1
-        searchDTOList.get(0).issueSearchDTOList.get(0).typeCode == 'story'
+        searchDTOList.get(0).issueSearchDTOList.get(0).issueTypeDTO.typeCode == 'story'
         searchDTOList.get(0).issueSearchDTOList.get(0).summary == '加入冲刺issue'
-        searchDTOList.get(0).assigneeIssues.size() == 1
+        searchDTOList.get(0).assigneeIssues.size() == 2
         searchDTOList.get(0).assigneeIssues.get(0).sprintId == sprintIds[0]
         searchDTOList.get(0).assigneeIssues.get(0).assigneeId == 0
         searchDTOList.get(0).assigneeIssues.get(0).totalStoryPoints == null
@@ -316,8 +304,8 @@ class SprintControllerSpec extends Specification {
         def sprintId = sprintIds[0]
 
         when: '发送请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/{sprintId}/issues?status={status}',
-                Page, projectId, sprintId, "sprint_planning")
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/{sprintId}/issues?status={status}&&organizationId={organizationId}',
+                Page, projectId, sprintId, "sprint_planning", organizationId)
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()

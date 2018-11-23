@@ -37,7 +37,7 @@ public class IssueSearchAssembler extends AbstractAssembler {
             });
             return issueSearchDTOList;
         } else {
-            return null;
+            return new ArrayList<>();
         }
     }
 
