@@ -183,19 +183,19 @@
         FROM
             agile_board_column abc
             LEFT JOIN agile_board_column_status_rel abcsr ON abc.column_id = abcsr.column_id
-            LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.id
+            LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.status_id and ais.project_id = #{projectId}
             LEFT JOIN (SELECT
                            ai1.issue_id,
                            ai1.status_id
                        FROM agile_issue ai1, agile_issue_sprint_rel aisr
                        WHERE aisr.sprint_id = #{activeSprintId} AND ai1.issue_id = aisr.issue_id
-                             AND ai1.type_code != 'issue_epic'
-                      ) ai ON ai.status_id = ais.id
+                             AND ai1.type_code not in ('issue_epic', 'issue_test')
+                      ) ai ON ai.status_id = ais.status_id and ais.project_id = #{projectId}
         WHERE
             abc.column_id = #{columnId}
     </select>
 
-    <select id="selectColumnByColumnIdWithSubIssue" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDO">
+    <select id="selectColumnByColumnIdWithoutSub" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDO">
         SELECT
             abc.min_num,
             abc.max_num,
@@ -203,14 +203,14 @@
         FROM
             agile_board_column abc
             LEFT JOIN agile_board_column_status_rel abcsr ON abc.column_id = abcsr.column_id
-            LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.id
+            LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.status_id and ais.project_id = #{projectId}
             LEFT JOIN (SELECT
                            ai1.issue_id,
                            ai1.status_id
                        FROM agile_issue ai1, agile_issue_sprint_rel aisr
                        WHERE aisr.sprint_id = #{activeSprintId} AND ai1.issue_id = aisr.issue_id
-                             AND ai1.type_code != 'issue_epic'
-                      ) ai ON ai.status_id = ais.id
+                             AND ai1.type_code not in ('issue_epic', 'sub_task', 'issue_test')
+                      ) ai ON ai.status_id = ais.status_id and ais.project_id = #{projectId}
         WHERE
             abc.column_id = #{columnId}
     </select>

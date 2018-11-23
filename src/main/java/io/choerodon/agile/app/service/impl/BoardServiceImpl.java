@@ -377,8 +377,8 @@ public class BoardServiceImpl implements BoardService {
             BoardColumnCheckDO originBoardColumnCheckDO = boardColumnMapper.selectColumnByColumnId(projectId, issueMoveDTO.getOriginColumnId(), activeSprintId);
             checkNumberContraint(boardColumnCheckDO, originBoardColumnCheckDO, statusId, originStatusId);
         } else if (columnContraint.equals(CONTRAINT_ISSUE_WITHOUT_SUBTASK)) {
-            BoardColumnCheckDO boardColumnCheckDO = boardColumnMapper.selectColumnByColumnIdWithSubIssue(projectId, issueMoveDTO.getColumnId(), activeSprintId);
-            BoardColumnCheckDO originBoardColumnCheckDO = boardColumnMapper.selectColumnByColumnIdWithSubIssue(projectId, issueMoveDTO.getOriginColumnId(), activeSprintId);
+            BoardColumnCheckDO boardColumnCheckDO = boardColumnMapper.selectColumnByColumnIdWithoutSub(projectId, issueMoveDTO.getColumnId(), activeSprintId);
+            BoardColumnCheckDO originBoardColumnCheckDO = boardColumnMapper.selectColumnByColumnIdWithoutSub(projectId, issueMoveDTO.getOriginColumnId(), activeSprintId);
             checkNumberContraint(boardColumnCheckDO, originBoardColumnCheckDO, statusId, originStatusId);
         }
     }
