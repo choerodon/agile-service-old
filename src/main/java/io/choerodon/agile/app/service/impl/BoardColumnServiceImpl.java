@@ -286,9 +286,6 @@ public class BoardColumnServiceImpl implements BoardColumnService {
 
     @Override
     public void initBoardColumns(Long projectId, Long boardId, List<StatusPayload> statusPayloads) {
-//        initColumnWithStatus(projectId, boardId, TODO, TODO_CODE, SEQUENCE_ONE, COLUMN_COLOR_TODO);
-//        initColumnWithStatus(projectId, boardId, DOING, DOING_CODE, SEQUENCE_TWO, COLUMN_COLOR_DOING);
-//        initColumnWithStatus(projectId, boardId, DONE, DONE_CODE, SEQUENCE_THREE, COLUMN_COLOR_DONE);
         Integer sequence = 0;
         for (StatusPayload statusPayload : statusPayloads) {
             initColumnWithStatus(projectId, boardId, statusPayload.getStatusName(), statusPayload.getType(), statusPayload.getStatusId(), sequence++);
