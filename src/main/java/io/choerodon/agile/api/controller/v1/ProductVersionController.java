@@ -116,11 +116,11 @@ public class ProductVersionController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "是否重名")
-    @GetMapping(value = "/{name}/check")
+    @GetMapping(value = "/check")
     public ResponseEntity<Boolean> checkName(@ApiParam(value = "项目id", required = true)
                                              @PathVariable(name = "project_id") Long projectId,
                                              @ApiParam(value = "name", required = true)
-                                             @PathVariable String name) {
+                                             @RequestParam String name) {
         return Optional.ofNullable(productVersionService.repeatName(projectId, name))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(CHECK_ERROR));

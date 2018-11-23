@@ -167,7 +167,7 @@ class ProductVersionControllerSpec extends Specification {
 
     def 'checkName'() {
         when:
-        def entityTrue = restTemplate.exchange("/v1/projects/{project_id}/product_version/{name}/check",
+        def entityTrue = restTemplate.exchange("/v1/projects/{project_id}/product_version/check?name={name}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 Boolean.class,

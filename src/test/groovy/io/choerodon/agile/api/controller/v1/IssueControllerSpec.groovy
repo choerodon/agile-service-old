@@ -6,6 +6,10 @@ import io.choerodon.agile.api.dto.*
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.StateMachineService
+import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
+import io.choerodon.agile.domain.agile.entity.IssueE
+import io.choerodon.agile.domain.agile.entity.ProjectInfoE
+import io.choerodon.agile.domain.agile.event.CreateIssuePayload
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.enums.SchemeApplyType
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
@@ -19,6 +23,7 @@ import io.choerodon.core.domain.Page
 import io.choerodon.mybatis.pagehelper.domain.PageRequest
 import org.mockito.Matchers
 import org.mockito.Mockito
+import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
@@ -67,7 +72,7 @@ class IssueControllerSpec extends Specification {
     IssueService issueService
 
     @Autowired
-    StateMachineService stateMachineService
+    StateMachineServiceImpl stateMachineService
 
     @Autowired
     IssueController issueController
@@ -215,7 +220,13 @@ class IssueControllerSpec extends Specification {
 
         when: '向开始创建issue的接口发请求'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues?applyType={applyType}', issueCreateDTO, IssueDTO, projectId, SchemeApplyType.AGILE)
-
+        IssueE issueE = new IssueE()
+        BeanUtils.copyProperties(entity.body, issueE)
+        issueE.setSprintId(sprintId)
+        ProjectInfoE projectInfoE = new ProjectInfoE()
+        projectInfoE.setProjectId(1L)
+        CreateIssuePayload noDonecreateIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE)
+        stateMachineService.createIssue(issueE.getIssueId(), 1, JSONObject.toJSONString(noDonecreateIssuePayload))
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
         print(entity.body ? entity.body.toString() : null)
@@ -511,7 +522,7 @@ class IssueControllerSpec extends Specification {
 
         where: '对比设置与期望'
         rankIndex | before | outsetIssueId  | issueIds                                    || expectSize
-        false     | false  | issueIdList[1] | Arrays.asList(issueIdList[1]) as List<Long> || 1
+        false     | false  | issueIdList[1] | Arrays.asList(issueIdList[1]) as List<Long> || 0
         true      | true   | 0              | Arrays.asList(issueIdList[1]) as List<Long> || 0
 
     }
