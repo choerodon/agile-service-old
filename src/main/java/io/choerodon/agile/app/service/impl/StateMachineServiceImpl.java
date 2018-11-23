@@ -8,10 +8,7 @@ import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
-import io.choerodon.agile.domain.agile.event.CreateIssuePayload;
-import io.choerodon.agile.domain.agile.event.CreateSubIssuePayload;
-import io.choerodon.agile.domain.agile.event.ProjectConfig;
-import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue;
+import io.choerodon.agile.domain.agile.event.*;
 import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
@@ -279,7 +276,6 @@ public class StateMachineServiceImpl implements StateMachineService {
                 result.put(issueTypeId, Long.valueOf(0L));
             });
             //计算出所有有影响的issue数量，根据issueTypeId分类
-
             projectConfigs.forEach(projectConfig -> {
                 List<IssueDO> issueDOs = issueMapper.queryByIssueTypeIdsAndApplyType(projectConfig.getProjectId(), projectConfig.getApplyType(), issueTypeIds);
                 Map<Long, Long> issueCounts = issueDOs.stream().collect(Collectors.groupingBy(IssueDO::getIssueTypeId, Collectors.counting()));
@@ -292,6 +288,27 @@ public class StateMachineServiceImpl implements StateMachineService {
         }
 
         return result;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean updateStateMachineSchemeChange(Long organizationId, StateMachineSchemeDeployUpdateIssue deployUpdateIssue) {
+        List<ProjectConfig> projectConfigs = deployUpdateIssue.getProjectConfigs();
+        List<StateMachineSchemeChangeItem> changeItems = deployUpdateIssue.getChangeItems();
+        projectConfigs.forEach(projectConfig -> {
+            Long projectId = projectConfig.getProjectId();
+            String applyType = projectConfig.getApplyType();
+            changeItems.forEach(changeItem -> {
+                Long issueTypeId = changeItem.getIssueTypeId();
+                List<StateMachineSchemeStatusChangeItem> statusChangeItems = changeItem.getStatusChangeItems();
+                statusChangeItems.forEach(statusChangeItem -> {
+                    Long oldStatusId = statusChangeItem.getOldStatus().getId();
+                    Long newStatusId = statusChangeItem.getNewStatus().getId();
+                    issueMapper.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId);
+                });
+            });
+        });
+        return true;
     }
 
     @Condition(code = "just_reporter", name = "仅允许报告人", description = "只有该报告人才能执行转换")

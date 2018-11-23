@@ -335,7 +335,7 @@
         <!--field(-->
         <!--ai.issue_id,-->
         <!--<foreach collection="issueIds" index="index" item="issueId" separator=",">-->
-            <!--#{issueId}-->
+        <!--#{issueId}-->
         <!--</foreach>-->
         <!--)-->
         order by CASE ai.issue_id
@@ -1116,17 +1116,17 @@
         WHERE
         ai.project_id = #{projectId}
         AND ai.type_code NOT IN ( 'sub_task', 'issue_epic' )
-        AND ai.rank &lt;  #{rightRank}
+        AND ai.rank &lt; #{rightRank}
         AND ai.issue_id
         <choose>
             <when test="sprintId != null and sprintId != 0">
                 IN
             </when>
             <otherwise>
-               NOT IN
+                NOT IN
             </otherwise>
         </choose>
-         (
+        (
         SELECT
         aisr.issue_id
         FROM
@@ -2582,4 +2582,12 @@
             #{index}
         </foreach>
     </select>
+
+    <update id="updateIssueStatusByIssueTypeId">
+        UPDATE agile_issue SET status_id = #{newStatusId}
+        WHERE project_id = #{projectId}
+        AND status_id = #{oldStatusId}
+        AND issue_type_id = #{issueTypeId}
+        AND apply_type = #{applyType}
+    </update>
 </mapper>

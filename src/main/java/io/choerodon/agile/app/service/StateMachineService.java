@@ -5,6 +5,7 @@ import io.choerodon.agile.api.dto.IssueDTO;
 import io.choerodon.agile.api.dto.IssueSubCreateDTO;
 import io.choerodon.agile.api.dto.IssueSubDTO;
 import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue;
+import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployUpdateIssue;
 import io.choerodon.agile.infra.dataobject.IssueDetailDO;
 import io.choerodon.statemachine.dto.ExecuteResult;
 
@@ -44,11 +45,20 @@ public interface StateMachineService {
     Map<String, Object> checkDeleteNode(Long organizationId, Long statusId, Map<Long, List<Long>> issueTypeIdsMap);
 
     /**
-     * 【内部调用】issue服务修改状态机服务时，校验变更的问题类型影响的issue数量
+     * 【内部调用】issue服务修改状态机方案时，校验变更的问题类型影响的issue数量
      *
      * @param organizationId
      * @param deployCheckIssue
      * @return
      */
     Map<Long, Long> checkStateMachineSchemeChange(Long organizationId, StateMachineSchemeDeployCheckIssue deployCheckIssue);
+
+    /**
+     * 【内部调用】issue服务修改状态机方案时，对问题类型的状态进行重新匹配后，对issue的批量更新
+     *
+     * @param organizationId
+     * @param deployUpdateIssue
+     * @return
+     */
+    Boolean updateStateMachineSchemeChange(Long organizationId, StateMachineSchemeDeployUpdateIssue deployUpdateIssue);
 }
