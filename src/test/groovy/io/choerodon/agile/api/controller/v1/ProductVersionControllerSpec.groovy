@@ -173,7 +173,7 @@ class ProductVersionControllerSpec extends Specification {
                 Boolean.class,
                 projectId,
                 versionName)
-        def entityFalse = restTemplate.exchange("/v1/projects/{project_id}/product_version/{name}/check",
+        def entityFalse = restTemplate.exchange("/v1/projects/{project_id}/product_version/check?name={name}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 Boolean.class,
@@ -593,10 +593,14 @@ class ProductVersionControllerSpec extends Specification {
     }
 
     def 'queryByVersionIdAndStatusCode'() {
+        given:
+        SearchDTO searchDTO = new SearchDTO()
+        HttpEntity<SearchDTO> requestEntity = new HttpEntity<>(searchDTO)
+
         when:
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/issues?organizationId={organizationId}&statusCode={statusCode}",
-                HttpMethod.GET,
-                null,
+                HttpMethod.POST,
+                requestEntity,
                 List,
                 projectId,
                 versionId,
