@@ -9,6 +9,8 @@ import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.WorkLogMapper
 import io.choerodon.core.convertor.ConvertHelper
+import org.mockito.Matchers
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
@@ -38,7 +40,7 @@ class WorkLogControllerSpec extends Specification {
     private IssueMapper issueMapper
 
     @Autowired
-    @Qualifier("mockUserRepository")
+    @Qualifier("userRepository")
     private UserRepository userRepository
 
     @Shared
@@ -52,8 +54,8 @@ class WorkLogControllerSpec extends Specification {
         given:
         UserDO userDO = new UserDO()
         userDO.setRealName("管理员")
-        userRepository.queryUserNameByOption(*_) >> userDO
-        userRepository.queryUsersMap(*_) >> new HashMap<Long, UserMessageDO>()
+        Mockito.when(userRepository.queryUserNameByOption(Matchers.anyLong(), Matchers.anyBoolean())).thenReturn(userDO)
+        Mockito.when(userRepository.queryUsersMap(Matchers.any(List.class), Matchers.anyBoolean())).thenReturn(new HashMap<Long, UserMessageDO>())
     }
 
     def "createWorkLog"() {
