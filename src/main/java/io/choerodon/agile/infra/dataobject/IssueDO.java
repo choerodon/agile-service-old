@@ -93,7 +93,7 @@ public class IssueDO extends AuditDomain {
     /**
      * 应用类型
      */
-    private Long applyType;
+    private String applyType;
 
     /**
      * 故事点
@@ -457,11 +457,11 @@ public class IssueDO extends AuditDomain {
         return issueTypeId;
     }
 
-    public Long getApplyType() {
+    public String getApplyType() {
         return applyType;
     }
 
-    public void setApplyType(Long applyType) {
+    public void setApplyType(String applyType) {
         this.applyType = applyType;
     }
 
