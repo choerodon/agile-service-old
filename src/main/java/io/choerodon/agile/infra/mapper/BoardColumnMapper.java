@@ -41,7 +41,7 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
                                               @Param("columnId") Long columnId,
                                               @Param("activeSprintId") Long activeSprintId);
 
-    BoardColumnCheckDO selectColumnByColumnIdWithSubIssue(@Param("projectId") Long projectId,
+    BoardColumnCheckDO selectColumnByColumnIdWithoutSub(@Param("projectId") Long projectId,
                                                           @Param("columnId") Long columnId,
                                                           @Param("activeSprintId") Long activeSprintId);
 
