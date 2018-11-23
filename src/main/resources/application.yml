@@ -26,13 +26,6 @@ spring:
         maxInterval: 2000
       uri: localhost:8010
       enabled: false
-  sleuth:
-    integration:
-      enabled: false
-    scheduled:
-      enabled: false
-    sampler:
-      percentage: 1.0
   cache:
     type: redis
 choerodon:
