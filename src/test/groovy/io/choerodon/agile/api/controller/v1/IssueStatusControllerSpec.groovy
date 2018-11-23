@@ -3,18 +3,25 @@ package io.choerodon.agile.api.controller.v1
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.IssueStatusDTO
 import io.choerodon.agile.api.dto.StatusAndIssuesDTO
+import io.choerodon.agile.api.dto.StatusInfoDTO
 import io.choerodon.agile.api.dto.StatusMoveDTO
 import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO
 import io.choerodon.agile.infra.dataobject.IssueStatusDO
+import io.choerodon.agile.infra.feign.IssueFeignClient
 import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper
 import io.choerodon.agile.infra.mapper.IssueStatusMapper
 import io.choerodon.core.domain.Page
+import org.mockito.Matchers
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
+import org.springframework.context.annotation.Primary
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
@@ -56,8 +63,18 @@ class IssueStatusControllerSpec extends Specification {
     @Shared
     Long statusId
 
+    @Autowired
+    private IssueFeignClient issueFeignClient
+
     @Shared
     Long boardId = 1L
+
+    def setup() {
+        StatusInfoDTO statusInfoDTO = new StatusInfoDTO();
+        statusInfoDTO.setId(10001L);
+        statusInfoDTO.setName(statusName);
+        Mockito.when(issueFeignClient.createStatusForAgile(Matchers.anyLong(), Matchers.any(StatusInfoDTO.class))).thenReturn(new ResponseEntity<>(statusInfoDTO, HttpStatus.OK));
+    }
 
     def 'createStatus'() {
         given:

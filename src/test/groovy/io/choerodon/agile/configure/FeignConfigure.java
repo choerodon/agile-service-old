@@ -206,7 +206,8 @@ public class FeignConfigure {
         });
         Mockito.when(issueFeignClient.queryIssueTypesWithStateMachineIdByProjectId(Matchers.anyLong(), Matchers.anyString())).thenReturn(new ResponseEntity<>(issueTypeWithStateMachineIdDTOS, HttpStatus.OK));
         StatusInfoDTO statusInfoDTO = new StatusInfoDTO();
-        statusInfoDTO.setId(1000L);
+        statusInfoDTO.setId(10000L);
+        statusInfoDTO.setName("statusName");
         Mockito.when(issueFeignClient.createStatusForAgile(Matchers.anyLong(), Matchers.any(StatusInfoDTO.class))).thenReturn(new ResponseEntity<>(statusInfoDTO, HttpStatus.OK));
         List<StatusMapDTO> statusMapDTOList = new ArrayList<>();
         StatusMapDTO statusMapDTO1 = new StatusMapDTO();
