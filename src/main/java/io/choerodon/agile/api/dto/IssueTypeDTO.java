@@ -1,9 +1,5 @@
 package io.choerodon.agile.api.dto;
 
-import com.google.common.base.MoreObjects;
-
-import javax.validation.constraints.NotNull;
-
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/10/27.
  * Email: fuqianghuang01@gmail.com

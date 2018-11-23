@@ -27,9 +27,6 @@ import io.choerodon.core.convertor.ConvertHelper;
 @Service
 public class IterativeWorktableServiceImpl implements IterativeWorktableService {
 
-    private static final String PRIORITY_HIGH = "high";
-    private static final String PRIORITY_MEDIUM = "medium";
-    private static final String PRIORITY_LOW = "low";
     private static final String CATEGORY_DONE = "done";
 
     @Autowired

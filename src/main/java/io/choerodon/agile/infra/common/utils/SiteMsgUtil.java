@@ -1,7 +1,5 @@
 package io.choerodon.agile.infra.common.utils;
 
-//import io.choerodon.agile.api.dto.NoticeSendDTO;
-import io.choerodon.agile.api.dto.WsSendDTO;
 import io.choerodon.agile.infra.feign.NotifyFeignClient;
 import io.choerodon.core.notify.NoticeSendDTO;
 import org.springframework.beans.factory.annotation.Autowired;
