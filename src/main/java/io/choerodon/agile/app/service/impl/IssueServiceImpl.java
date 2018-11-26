@@ -13,6 +13,7 @@ import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
+import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
@@ -115,8 +116,6 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private LookupValueMapper lookupValueMapper;
     @Autowired
-    private IssueLinkService issueLinkService;
-    @Autowired
     private DataLogRepository dataLogRepository;
     @Autowired
     private VersionIssueRelMapper versionIssueRelMapper;
@@ -160,6 +159,8 @@ public class IssueServiceImpl implements IssueService {
     private PlatformTransactionManager transactionManager;
     @Autowired
     private StateMachineService stateMachineService;
+    @Autowired
+    private DataLogRedisUtil dataLogRedisUtil;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IssueServiceImpl.class);
 
@@ -665,12 +666,7 @@ public class IssueServiceImpl implements IssueService {
         issuePayload.setProjectId(projectId);
         sagaClient.startSaga("agile-delete-issue", new StartInstanceDTO(JSON.toJSONString(issuePayload), "", ""));
         //delete cache
-        redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ":" + "*",
-                "Agile:CumulativeFlowDiagram" + projectId + ":" + "*",
-                "Agile:VelocityChart" + projectId + ":" + "*",
-                "Agile:PieChart" + projectId + ':' + "*",
-                "Agile:BurnDownCoordinateByType" + projectId + ':' + "*"
-        });
+        dataLogRedisUtil.handleDeleteRedisByDeleteIssue(projectId);
     }
 
     @Override

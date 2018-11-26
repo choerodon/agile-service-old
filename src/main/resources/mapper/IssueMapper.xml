@@ -2587,4 +2587,14 @@
         AND issue_type_id = #{issueTypeId}
         AND apply_type = #{applyType}
     </update>
+
+    <select id="queryIssueWithCompleteInfoByStatusId" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT
+        ai.*,ais.is_completed as completed
+        FROM agile_issue ai left join agile_issue_status ais on ais.status_id = ai.status_id and ai.project_id = ais.project_id
+        WHERE ai.project_id = #{projectId}
+        AND ai.status_id = #{statusId}
+        AND ai.issue_type_id = #{issueTypeId}
+        AND ai.apply_type = #{applyType}
+    </select>
 </mapper>

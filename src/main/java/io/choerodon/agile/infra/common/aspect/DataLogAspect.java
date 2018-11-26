@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
@@ -20,7 +19,6 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,6 +69,7 @@ public class DataLogAspect {
     private static final String BATCH_REMOVE_SPRINT_BY_SPRINT_ID = "batchRemoveSprintBySprintId";
     private static final String BATCH_DELETE_LABEL = "batchDeleteLabel";
     private static final String BATCH_UPDATE_ISSUE_STATUS = "batchUpdateIssueStatus";
+    private static final String BATCH_UPDATE_ISSUE_STATUS_TO_OTHER = "batchUpdateIssueStatusToOther";
     private static final String CREATE_ATTACHMENT = "createAttachment";
     private static final String DELETE_ATTACHMENT = "deleteAttachment";
     private static final String CREATE_COMMENT = "createComment";
@@ -274,6 +273,9 @@ public class DataLogAspect {
                     case BATCH_UPDATE_ISSUE_STATUS:
                         batchUpdateIssueStatusDataLog(args);
                         break;
+                    case BATCH_UPDATE_ISSUE_STATUS_TO_OTHER:
+                        batchUpdateIssueStatusToOtherDataLog(args);
+                        break;
                     case BATCH_VERSION_DELETE_BY_VERSION_IDS:
                         batchDeleteVersionByVersionIds(args);
                         break;
@@ -302,6 +304,29 @@ public class DataLogAspect {
             throw new CommonException(ERROR_METHOD_EXECUTE, e);
         }
         return result;
+    }
+
+    private void batchUpdateIssueStatusToOtherDataLog(Object[] args) {
+        Long projectId = (Long) args[0];
+        String applyType = (String) args[1];
+        Long issueTypeId = (Long) args[2];
+        Long oldStatusId = (Long) args[3];
+        Long newStatusId = (Long) args[4];
+        if (projectId != null && Objects.nonNull(applyType) && issueTypeId != null && oldStatusId != null && newStatusId != null) {
+            StatusMapDTO oldStatus = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), oldStatusId).getBody();
+            StatusMapDTO newStatus = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), newStatusId).getBody();
+            IssueStatusDO oldStatusDO = issueStatusMapper.selectByStatusId(projectId, oldStatusId);
+            IssueStatusDO newStatusDO = issueStatusMapper.selectByStatusId(projectId, newStatusId);
+            List<IssueDO> issueDOS = issueMapper.queryIssueWithCompleteInfoByStatusId(projectId, applyType, issueTypeId, oldStatusId);
+            if (issueDOS != null && !issueDOS.isEmpty()) {
+                Long userId = DetailsHelper.getUserDetails().getUserId();
+                dataLogMapper.batchCreateChangeStatusLogByIssueDOS(projectId, issueDOS, userId, oldStatus, newStatus);
+                if (!oldStatusDO.getCompleted().equals(newStatusDO.getCompleted())) {
+                    dataLogMapper.batchCreateStatusLogByIssueDOS(projectId, issueDOS, userId, newStatus, newStatusDO.getCompleted());
+                }
+                dataLogRedisUtil.handleBatchDeleteRedisCacheByChangeStatusId(issueDOS, projectId);
+            }
+        }
     }
 
     private void batchUpdateIssueEpicId(Object[] args) {
@@ -657,8 +682,8 @@ public class DataLogAspect {
             List<IssueLabelDO> curLabels = issueMapper.selectLabelNameByIssueId(issueId);
             createDataLog(projectId, issueId, FIELD_LABELS, getOriginLabelNames(originLabels),
                     getOriginLabelNames(curLabels), null, null);
-        } catch (Throwable throwable) {
-            LOGGER.info(EXCEPTION, throwable);
+        } catch (Throwable e) {
+            throw new CommonException(ERROR_METHOD_EXECUTE, e);
         }
         return result;
     }
