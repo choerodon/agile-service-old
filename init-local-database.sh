@@ -7,8 +7,8 @@ fi
 
 # 初始化项目数据库
 java -Dspring.datasource.url="jdbc:mysql://localhost:3306/agile_service?useUnicode=true&characterEncoding=utf-8&useSSL=false" \
-    -Dspring.datasource.username=root \
-    -Dspring.datasource.password=root \
+    -Dspring.datasource.username=choerodon \
+    -Dspring.datasource.password=123456 \
     -Ddata.init=true -Ddata.drop=false \
     -Ddata.dir=src/main/resources \
     -jar target/hap-liquibase-tools.jar

@@ -221,7 +221,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     public void deleteStatus(Long projectId, Long statusId) {
         checkIssueNumOfStatus(projectId, statusId);
         checkStatusExist(projectId, statusId);
-        stateMachineFeignClient.removeStatusForAgile(projectId, statusId);
+        issueFeignClient.removeStatusForAgile(projectId, statusId);
     }
 
     @Override
