@@ -10,6 +10,8 @@ import io.choerodon.agile.infra.mapper.BoardColumnMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
  * Email: fuqianghuang01@gmail.com
@@ -90,5 +92,10 @@ public class BoardColumnRepositoryImpl implements BoardColumnRepository {
         Integer size = boardColumnMapper.select(update).size();
         boardColumnMapper.updateColumnCategory(boardId, size);
         boardColumnMapper.updateColumnColor(boardId, size);
+    }
+
+    @Override
+    public void batchDeleteColumnAndStatusRel(List<Long> statusIds, List<Long> projectIds) {
+        boardColumnMapper.batchDeleteColumnAndStatusRel(statusIds, projectIds);
     }
 }
