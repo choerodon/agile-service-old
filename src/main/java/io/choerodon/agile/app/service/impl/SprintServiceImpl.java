@@ -322,8 +322,8 @@ public class SprintServiceImpl implements SprintService {
         if (targetSprintId != null && !Objects.equals(targetSprintId, 0L)) {
             issueRepository.issueToDestinationByIdsCloseSprint(projectId, targetSprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
         }
-        //状态更新为初始状态
-        issueService.batchHandleIssueStatus(projectId, moveIssueIds, sprintCompleteDTO.getSprintId());
+//        //状态更新为初始状态
+//        issueService.batchHandleIssueStatus(projectId, moveIssueIds, sprintCompleteDTO.getSprintId());
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
     }
 
