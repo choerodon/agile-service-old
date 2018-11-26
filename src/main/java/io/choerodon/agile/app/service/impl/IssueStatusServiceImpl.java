@@ -19,6 +19,7 @@ import io.choerodon.core.exception.CommonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -221,7 +222,11 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     public void deleteStatus(Long projectId, Long statusId) {
         checkIssueNumOfStatus(projectId, statusId);
         checkStatusExist(projectId, statusId);
-        issueFeignClient.removeStatusForAgile(projectId, statusId);
+        try {
+            issueFeignClient.removeStatusForAgile(projectId, statusId);
+        } catch (Exception e) {
+            throw new CommonException("error.status.delete");
+        }
     }
 
     @Override
