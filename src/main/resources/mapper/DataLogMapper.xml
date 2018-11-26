@@ -56,4 +56,13 @@
             #{newStatus.name} ,#{issueDO.issueId},#{userId})
         </foreach>
     </insert>
+
+    <insert id="batchCreateVersionDataLog">
+        INSERT INTO agile_data_log(project_id,field,old_value,old_string,new_value,new_string,issue_id,created_by)
+        values
+        <foreach collection="issueIds" item="issueId" index="index" separator=",">
+            (#{projectId} , 'Fix Version' ,null ,null,#{productVersionDO.versionId} ,
+            #{productVersionDO.name} ,#{issueId},#{userId})
+        </foreach>
+    </insert>
 </mapper>

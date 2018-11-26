@@ -119,7 +119,6 @@ public class DataLogAspect {
     private static final String FIELD_TIMESPENT = "timespent";
     private static final String FIELD_WORKLOGID = "WorklogId";
     private static final String ERROR_UPDATE = "error.LogDataAspect.update";
-    private static final String EXCEPTION = "Exception";
     private static final String AGILE = "Agile:";
     private static final String VELOCITY_CHART = AGILE + "VelocityChart";
     private static final String EPIC_CHART = AGILE + "EpicChart";
@@ -231,7 +230,6 @@ public class DataLogAspect {
                     case CREATE_WORKLOG:
                         result = handleCreateWorkLogDataLog(args, pjp);
                         break;
-
                     default:
                         break;
                 }
@@ -947,12 +945,12 @@ public class DataLogAspect {
             if (productVersionDO == null) {
                 throw new CommonException("error.productVersion.get");
             }
-            redisUtil.deleteRedisCache(new String[]{VERSION_CHART + productVersionDO.getProjectId() + ':' + productVersionDO.getVersionId() + ":" + "*",
-                    BURN_DOWN_COORDINATE_BY_TYPE + productVersionDO.getProjectId() + ":" + VERSION + ":" + productVersionDO.getVersionId()
-            });
-            for (Long issueId : versionIssueRelE.getIssueIds()) {
-                createDataLog(versionIssueRelE.getProjectId(), issueId, FIELD_FIX_VERSION, null,
-                        productVersionDO.getName(), null, productVersionDO.getVersionId().toString());
+            if (versionIssueRelE.getIssueIds() != null && !versionIssueRelE.getIssueIds().isEmpty()) {
+                Long userId = DetailsHelper.getUserDetails().getUserId();
+                dataLogMapper.batchCreateVersionDataLog(versionIssueRelE.getProjectId(), productVersionDO, versionIssueRelE.getIssueIds(), userId);
+                redisUtil.deleteRedisCache(new String[]{VERSION_CHART + productVersionDO.getProjectId() + ':' + productVersionDO.getVersionId() + ":" + "*",
+                        BURN_DOWN_COORDINATE_BY_TYPE + productVersionDO.getProjectId() + ":" + VERSION + ":" + productVersionDO.getVersionId()
+                });
             }
         }
     }
