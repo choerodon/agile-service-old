@@ -274,4 +274,45 @@
         ORDER BY abc.sequence
     </select>
 
+    <select id="queryColumnByStatusIdsAndProjectIds" resultType="io.choerodon.agile.infra.dataobject.BoardColumnDO">
+       SELECT
+          abc.*
+        FROM
+          agile_board_column abc
+
+        and abc.column_id in (
+            select abcsr.column_id from
+            agile_board_column_status_rel abcsr
+            WHERE
+            abcsr.status_id in
+            <foreach collection="statusIds" item="statusId"
+                     open="(" close=")" separator=",">
+                #{statusId}
+            </foreach>
+            and abcsr.project_id in
+            <foreach collection="projectIds" item="projectId"
+                     open="(" close=")" separator=",">
+                #{projectId}
+            </foreach>
+        )
+    </select>
+
+    <delete id="batchDeleteColumnAndStatusRel">
+        DELETE ais,abcsr,abc
+        from agile_issue_status ais
+        left join agile_board_column_status_rel abcsr on ais.status_id = abcsr.status_id and ais.project_id = abcsr.project_id
+        left join agile_board_column abc on abc.column_id = abcsr.column_id and abc.project_id = abcsr.project_id
+        WHERE ais.issue_id IN
+        <foreach collection="statusIds" item="statusId"
+                 open="(" close=")" separator=",">
+            #{statusId}
+        </foreach>
+        and ais.project_id in
+        <foreach collection="projectIds" item="projectId"
+                 open="(" close=")" separator=",">
+            #{projectId}
+        </foreach>
+    </delete>
+
+
 </mapper>

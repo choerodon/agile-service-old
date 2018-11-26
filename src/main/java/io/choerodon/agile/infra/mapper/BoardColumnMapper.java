@@ -42,8 +42,8 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
                                               @Param("activeSprintId") Long activeSprintId);
 
     BoardColumnCheckDO selectColumnByColumnIdWithoutSub(@Param("projectId") Long projectId,
-                                                          @Param("columnId") Long columnId,
-                                                          @Param("activeSprintId") Long activeSprintId);
+                                                        @Param("columnId") Long columnId,
+                                                        @Param("activeSprintId") Long activeSprintId);
 
     void updateMaxAndMinNum(@Param("columnInfo") ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO);
 
@@ -73,9 +73,26 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
     /**
      * 根据看板id和projectId查询列idList
      *
-     * @param boardId boardId
+     * @param boardId   boardId
      * @param projectId projectId
      * @return Long
      */
-    List<Long> queryColumnIdsByBoardId(@Param("boardId") Long boardId,@Param("projectId") Long projectId);
+    List<Long> queryColumnIdsByBoardId(@Param("boardId") Long boardId, @Param("projectId") Long projectId);
+
+    /**
+     * 查询项目下的状态关联的列的面板ids
+     *
+     * @param statusIds  statusIds
+     * @param projectIds projectIds
+     * @return BoardColumnDO
+     */
+    List<BoardColumnDO> queryColumnByStatusIdsAndProjectIds(@Param("statusIds") List<Long> statusIds, @Param("projectIds") List<Long> projectIds);
+
+    /**
+     * 批量删除列和状态
+     *
+     * @param statusIds  statusIds
+     * @param projectIds projectIds
+     */
+    void batchDeleteColumnAndStatusRel(@Param("statusIds") List<Long> statusIds, @Param("projectIds") List<Long> projectIds);
 }

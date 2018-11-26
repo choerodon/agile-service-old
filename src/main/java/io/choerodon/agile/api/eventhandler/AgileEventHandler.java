@@ -2,15 +2,20 @@ package io.choerodon.agile.api.eventhandler;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.IssueStatusDTO;
-import io.choerodon.agile.app.service.BoardService;
-import io.choerodon.agile.app.service.IssueLinkTypeService;
-import io.choerodon.agile.app.service.IssueStatusService;
-import io.choerodon.agile.app.service.ProjectInfoService;
+import io.choerodon.agile.api.validator.BoardColumnValidator;
+import io.choerodon.agile.app.service.*;
+import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
 import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarE;
 import io.choerodon.agile.domain.agile.event.*;
+import io.choerodon.agile.domain.agile.repository.BoardColumnRepository;
+import io.choerodon.agile.domain.agile.repository.ColumnStatusRelRepository;
 import io.choerodon.agile.domain.agile.repository.TimeZoneWorkCalendarRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
+import io.choerodon.agile.infra.dataobject.BoardColumnDO;
+import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO;
+import io.choerodon.agile.infra.dataobject.IssueStatusDO;
 import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
+import io.choerodon.agile.infra.mapper.BoardColumnMapper;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
 import io.choerodon.asgard.saga.annotation.SagaTask;
 import org.slf4j.Logger;
@@ -21,6 +26,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +50,12 @@ public class AgileEventHandler {
     private TimeZoneWorkCalendarRepository timeZoneWorkCalendarRepository;
     @Autowired
     private IssueStatusService issueStatusService;
+    @Autowired
+    private BoardColumnMapper boardColumnMapper;
+    @Autowired
+    private BoardColumnRepository boardColumnRepository;
+    @Autowired
+    private ColumnStatusRelRepository columnStatusRelRepository;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgileEventHandler.class);
 
@@ -132,10 +144,23 @@ public class AgileEventHandler {
         List<Long> agileProjectIds = projectIdsMap.get(SchemeApplyType.AGILE) != null ? projectIdsMap.get(SchemeApplyType.AGILE) : new ArrayList<>();
         List<Long> testProjectIds = projectIdsMap.get(SchemeApplyType.TEST) != null ? projectIdsMap.get(SchemeApplyType.TEST) : new ArrayList<>();
         agileProjectIds.addAll(testProjectIds);
-        List<Long> projectIds = agileProjectIds.stream().distinct().collect(Collectors.toList());
         LOGGER.info("sagaTask agile_delete_status projectIdsMap: {}", projectIdsMap);
-        //删除列【todo】
-        //删除状态【todo】
+        List<Long> statusIds = statusPayloads.stream().map(StatusPayload::getStatusId).collect(Collectors.toList());
+        if (!agileProjectIds.isEmpty() && statusIds != null && !statusIds.isEmpty()) {
+            List<BoardColumnDO> boardColumnDOS = boardColumnMapper.queryColumnByStatusIdsAndProjectIds(statusIds, agileProjectIds);
+            boardColumnRepository.batchDeleteColumnAndStatusRel(statusIds, agileProjectIds);
+            if (boardColumnDOS != null && !boardColumnDOS.isEmpty()) {
+                boardColumnDOS.forEach(boardColumnDO -> boardColumnMapper.updateSequenceWhenDelete(boardColumnDO.getBoardId(), boardColumnDO.getSequence()));
+                Set<Long> boardIds = boardColumnDOS.stream().map(BoardColumnDO::getBoardId).collect(Collectors.toSet());
+                boardIds.forEach(boardId -> {
+                    BoardColumnDO query = new BoardColumnDO();
+                    query.setBoardId(boardId);
+                    Integer size = boardColumnMapper.select(query).size();
+                    boardColumnMapper.updateColumnCategory(boardId, size);
+                    boardColumnMapper.updateColumnColor(boardId, size);
+                });
+            }
+        }
     }
 
     @SagaTask(code = AGILE_INIT_TIMEZONE, sagaCode = ORG_CREATE, seq = 1, description = "接收org服务创建组织事件初始化时区")
