@@ -29,4 +29,24 @@
         LIMIT 1
     </select>
 
+    <insert id="batchCreateStatusLogByIssueDOS">
+        INSERT INTO agile_data_log(project_id,field,old_value,old_string,new_value,new_string,issue_id,created_by)
+        values
+        <choose>
+            <when test="completed !=null and completed">
+                <foreach collection="issueDOS" item="issueDO" index="index" separator=",">
+                    (#{projectId} , 'resolution' ,null ,null,#{statusMapDTO.id} ,
+                    #{statusMapDTO.name} ,#{issueDO.issueId},#{userId})
+                </foreach>
+            </when>
+            <otherwise>
+                <foreach collection="issueDOS" item="issueDO" index="index" separator=",">
+                    (#{projectId} , 'resolution' ,#{statusMapDTO.id} , #{statusMapDTO.name},
+                    null ,null ,#{issueDO.issueId},#{userId})
+                </foreach>
+            </otherwise>
+        </choose>
+    </insert>
+
+
 </mapper>

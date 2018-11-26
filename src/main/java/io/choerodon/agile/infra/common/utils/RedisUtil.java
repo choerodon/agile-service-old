@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.common.utils;
 
+import io.choerodon.agile.infra.dataobject.IssueDO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -91,8 +94,8 @@ public class RedisUtil {
      *
      * @param keys keys
      */
-    @Async
     public void deleteRedisCache(String[] keys) {
+        LOGGER.info("删除缓存中...");
         try {
             for (String key : keys) {
                 Set<String> caches = keys(key);
@@ -106,4 +109,5 @@ public class RedisUtil {
         }
 
     }
+
 }

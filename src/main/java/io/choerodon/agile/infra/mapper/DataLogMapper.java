@@ -1,6 +1,8 @@
 package io.choerodon.agile.infra.mapper;
 
+import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.infra.dataobject.DataLogDO;
+import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,4 +21,16 @@ public interface DataLogMapper extends BaseMapper<DataLogDO> {
     DataLogDO selectLastWorkLogById(@Param("projectId") Long projectId,
                                     @Param("issueId") Long issueId,
                                     @Param("field") String field);
+
+    /**
+     * 批量生成issue是否解决日志
+     *
+     * @param projectId    projectId
+     * @param issueDOS     issueDOS
+     * @param userId       userId
+     * @param statusMapDTO statusMapDTO
+     * @param completed    completed
+     */
+    void batchCreateStatusLogByIssueDOS(@Param("projectId") Long projectId, @Param("issueDOS") List<IssueDO> issueDOS
+            , @Param("userId") Long userId, @Param("statusMapDTO") StatusMapDTO statusMapDTO, @Param("completed") Boolean completed);
 }
