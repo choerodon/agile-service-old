@@ -64,4 +64,8 @@ public interface IssueFeignClient {
 
     @GetMapping(value = "/v1/projects/{project_id}/schemes/query_issue_types_with_sm_id")
     ResponseEntity<List<IssueTypeWithStateMachineIdDTO>> queryIssueTypesWithStateMachineIdByProjectId(@PathVariable("project_id") Long projectId, @RequestParam("apply_type") String applyType);
+
+    @DeleteMapping(value = "/v1/projects/{project_id}/schemes/remove_status_for_agile")
+    ResponseEntity removeStatusForAgile(@PathVariable("project_id") Long projectId,
+                                        @RequestParam("status_id") Long statusId);
 }

@@ -78,4 +78,9 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     public ResponseEntity<List<IssueTypeWithStateMachineIdDTO>> queryIssueTypesWithStateMachineIdByProjectId(Long projectId, String applyType) {
         throw new CommonException("error.status.queryIssueTypesWithStateMachineIdByProjectId");
     }
+
+    @Override
+    public ResponseEntity removeStatusForAgile(Long projectId, Long statusId) {
+        throw new CommonException("error.status.remove");
+    }
 }

@@ -45,9 +45,4 @@ public class StateMachineFeignClientFallback implements StateMachineFeignClient 
     public ResponseEntity<Map<Long,Long>> queryInitStatusIds(Long organizationId, List<Long> stateMachineIds) {
         throw new CommonException("error.statusMap.queryInitStatusIds");
     }
-
-    @Override
-    public ResponseEntity removeStatusForAgile(Long projectId, Long statusId) {
-        throw new CommonException("error.status.remove");
-    }
 }
