@@ -1,14 +1,13 @@
 package io.choerodon.agile.infra.mapper;
 
+import io.choerodon.agile.api.dto.SearchDTO;
+import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.mybatis.common.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import io.choerodon.agile.api.dto.SearchDTO;
-import org.apache.ibatis.annotations.Param;
-
-import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.mybatis.common.BaseMapper;
 
 
 /**
@@ -50,7 +49,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     Integer batchRemoveFromVersionTest(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-    String queryRank(@Param("projectId") Long projectId,  @Param("outsetIssueId") Long outsetIssueId);
+    String queryRank(@Param("projectId") Long projectId, @Param("outsetIssueId") Long outsetIssueId);
 
     List<Long> queryIssueIdOrderByRankDesc(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
@@ -408,13 +407,14 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     List<IssueDO> queryIssueSprintNotClosedByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     /**
-     * 【内部接口】查询某个项目下某些问题类型下处于某状态的issue有几个
+     * 【内部接口】查询某个项目下某些应用类型处于某状态的issue有几个
      *
      * @param projectId
-     * @param issueTypeIds
+     * @param applyType
+     * @param statusId
      * @return
      */
-    Long querySizeByIssueTypeIdsAndStatus(@Param("projectId") Long projectId, @Param("statusId") Long statusId, @Param("issueTypeIds") List<Long> issueTypeIds);
+    Long querySizeByApplyTypeAndStatusId(@Param("projectId") Long projectId, @Param("applyType") String applyType, @Param("statusId") Long statusId);
 
     /**
      * 【内部接口】查询某个项目下某些问题类型下某应用类型的issue有几个
@@ -425,4 +425,15 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @return
      */
     List<IssueDO> queryByIssueTypeIdsAndApplyType(@Param("projectId") Long projectId, @Param("applyType") String applyType, @Param("issueTypeIds") List<Long> issueTypeIds);
+
+    /**
+     * 【内部调用】状态机方案变更后批量更新issue的状态匹配
+     *
+     * @param projectId
+     * @param applyType
+     * @param issueTypeId
+     * @param oldStatusId
+     * @param newStatusId
+     */
+    void updateIssueStatusByIssueTypeId(@Param("projectId") Long projectId, @Param("applyType") String applyType, @Param("issueTypeId") Long issueTypeId, @Param("oldStatusId") Long oldStatusId, @Param("newStatusId") Long newStatusId);
 }

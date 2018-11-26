@@ -335,7 +335,7 @@
         <!--field(-->
         <!--ai.issue_id,-->
         <!--<foreach collection="issueIds" index="index" item="issueId" separator=",">-->
-            <!--#{issueId}-->
+        <!--#{issueId}-->
         <!--</foreach>-->
         <!--)-->
         order by CASE ai.issue_id
@@ -1116,17 +1116,17 @@
         WHERE
         ai.project_id = #{projectId}
         AND ai.type_code NOT IN ( 'sub_task', 'issue_epic' )
-        AND ai.rank &lt;  #{rightRank}
+        AND ai.rank &lt; #{rightRank}
         AND ai.issue_id
         <choose>
             <when test="sprintId != null and sprintId != 0">
                 IN
             </when>
             <otherwise>
-               NOT IN
+                NOT IN
             </otherwise>
         </choose>
-         (
+        (
         SELECT
         aisr.issue_id
         FROM
@@ -2559,16 +2559,13 @@
         </foreach>
     </select>
 
-    <select id="querySizeByIssueTypeIdsAndStatus" resultType="java.lang.Long">
+    <select id="querySizeByApplyTypeAndStatusId" resultType="java.lang.Long">
         SELECT
-        count(ai.*)
+        count(*)
         FROM agile_issue ai
         WHERE ai.project_id = #{projectId}
         AND ai.status_id = #{statusId}
-        AND ai.issue_type_id IN
-        <foreach collection="issueTypeIds" item="index" open="(" separator="," close=")">
-            #{index}
-        </foreach>
+        AND ai.apply_type = #{applyType}
     </select>
 
     <select id="queryByIssueTypeIdsAndApplyType" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
@@ -2582,4 +2579,12 @@
             #{index}
         </foreach>
     </select>
+
+    <update id="updateIssueStatusByIssueTypeId">
+        UPDATE agile_issue SET status_id = #{newStatusId}
+        WHERE project_id = #{projectId}
+        AND status_id = #{oldStatusId}
+        AND issue_type_id = #{issueTypeId}
+        AND apply_type = #{applyType}
+    </update>
 </mapper>
