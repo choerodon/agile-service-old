@@ -249,13 +249,13 @@ public class StateMachineServiceImpl implements StateMachineService {
     }
 
     @Override
-    public Map<String, Object> checkDeleteNode(Long organizationId, Long statusId, Map<Long, List<Long>> issueTypeIdsMap) {
+    public Map<String, Object> checkDeleteNode(Long organizationId, Long statusId, List<ProjectConfig> projectConfigs) {
         Map<String, Object> result = new HashMap<>(2);
         Long count = 0L;
-        for (Map.Entry<Long, List<Long>> entry : issueTypeIdsMap.entrySet()) {
-            Long projectId = entry.getKey();
-            List<Long> issueTypeIds = entry.getValue();
-            count = count + issueMapper.querySizeByIssueTypeIdsAndStatus(projectId, statusId, issueTypeIds);
+        for (ProjectConfig projectConfig : projectConfigs) {
+            Long projectId = projectConfig.getProjectId();
+            String applyType = projectConfig.getApplyType();
+            count = count + issueMapper.querySizeByApplyTypeAndStatusId(projectId, applyType, statusId);
         }
         if (count.equals(0L)) {
             result.put("canDelete", true);

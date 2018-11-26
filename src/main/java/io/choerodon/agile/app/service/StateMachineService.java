@@ -4,6 +4,7 @@ import io.choerodon.agile.api.dto.IssueCreateDTO;
 import io.choerodon.agile.api.dto.IssueDTO;
 import io.choerodon.agile.api.dto.IssueSubCreateDTO;
 import io.choerodon.agile.api.dto.IssueSubDTO;
+import io.choerodon.agile.domain.agile.event.ProjectConfig;
 import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue;
 import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployUpdateIssue;
 import io.choerodon.agile.infra.dataobject.IssueDetailDO;
@@ -39,10 +40,10 @@ public interface StateMachineService {
      *
      * @param organizationId
      * @param statusId
-     * @param issueTypeIdsMap
+     * @param projectConfigs
      * @return
      */
-    Map<String, Object> checkDeleteNode(Long organizationId, Long statusId, Map<Long, List<Long>> issueTypeIdsMap);
+    Map<String, Object> checkDeleteNode(Long organizationId, Long statusId, List<ProjectConfig> projectConfigs);
 
     /**
      * 【内部调用】issue服务修改状态机方案时，校验变更的问题类型影响的issue数量

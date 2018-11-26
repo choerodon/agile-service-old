@@ -407,13 +407,14 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     List<IssueDO> queryIssueSprintNotClosedByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     /**
-     * 【内部接口】查询某个项目下某些问题类型下处于某状态的issue有几个
+     * 【内部接口】查询某个项目下某些应用类型处于某状态的issue有几个
      *
      * @param projectId
-     * @param issueTypeIds
+     * @param applyType
+     * @param statusId
      * @return
      */
-    Long querySizeByIssueTypeIdsAndStatus(@Param("projectId") Long projectId, @Param("statusId") Long statusId, @Param("issueTypeIds") List<Long> issueTypeIds);
+    Long querySizeByApplyTypeAndStatusId(@Param("projectId") Long projectId, @Param("applyType") String applyType, @Param("statusId") Long statusId);
 
     /**
      * 【内部接口】查询某个项目下某些问题类型下某应用类型的issue有几个
