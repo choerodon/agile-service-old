@@ -36,4 +36,8 @@ public interface StateMachineFeignClient {
 
     @GetMapping({"/v1/organizations/{organization_id}/instances/query_init_status_ids"})
     ResponseEntity<Map<Long,Long>> queryInitStatusIds(@PathVariable("organization_id") Long organizationId, @RequestParam("state_machine_id") List<Long> stateMachineIds);
+
+    @DeleteMapping(value = "/v1/projects/{project_id}/schemes/remove_status_for_agile")
+    ResponseEntity removeStatusForAgile(@PathVariable("project_id") Long projectId,
+                                        @RequestParam("status_id") Long statusId);
 }

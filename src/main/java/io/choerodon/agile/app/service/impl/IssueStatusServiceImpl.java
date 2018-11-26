@@ -6,6 +6,7 @@ import io.choerodon.agile.api.validator.IssueStatusValidator;
 import io.choerodon.agile.app.service.IssueStatusService;
 import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
 import io.choerodon.agile.domain.agile.entity.IssueStatusE;
+import io.choerodon.agile.domain.agile.event.StatusPayload;
 import io.choerodon.agile.domain.agile.repository.ColumnStatusRelRepository;
 import io.choerodon.agile.domain.agile.repository.IssueStatusRepository;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
@@ -201,23 +202,38 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         issueDO.setStatusId(statusId);
         issueDO.setProjectId(projectId);
         List<IssueDO> issueDOList = issueMapper.select(issueDO);
-        if (!issueDOList.isEmpty()) {
+        if (issueDOList != null && !issueDOList.isEmpty()) {
             throw new CommonException("error.statusHasIssues.delete");
         }
     }
 
-//    @Override
-//    public void deleteStatus(Long projectId, Long id) {
-//        checkIssueNumOfStatus(projectId, id);
-//        ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
-//        columnStatusRelE.setProjectId(projectId);
-//        columnStatusRelE.setStatusId(id);
-//        columnStatusRelRepository.delete(columnStatusRelE);
-//        IssueStatusE issueStatusE = new IssueStatusE();
-//        issueStatusE.setProjectId(projectId);
-//        issueStatusE.setId(id);
-//        issueStatusRepository.delete(issueStatusE);
-//    }
+    private void checkStatusExist(Long projectId, Long statusId) {
+        IssueStatusDO issueStatusDO = new IssueStatusDO();
+        issueStatusDO.setProjectId(projectId);
+        issueStatusDO.setStatusId(statusId);
+        IssueStatusDO res = issueStatusMapper.selectOne(issueStatusDO);
+        if (res == null) {
+            throw new CommonException("error.checkStatusExist.get");
+        }
+    }
+
+    @Override
+    public void deleteStatus(Long projectId, Long statusId) {
+        checkIssueNumOfStatus(projectId, statusId);
+        checkStatusExist(projectId, statusId);
+        stateMachineFeignClient.removeStatusForAgile(projectId, statusId);
+    }
+
+    @Override
+    public void consumDeleteStatus(StatusPayload statusPayload) {
+        Long projectId = statusPayload.getProjectId();
+        Long statusId = statusPayload.getStatusId();
+        checkStatusExist(projectId, statusId);
+        IssueStatusE issueStatusE = new IssueStatusE();
+        issueStatusE.setProjectId(projectId);
+        issueStatusE.setStatusId(statusId);
+        issueStatusRepository.delete(issueStatusE);
+    }
 
     @Override
     public List<IssueStatusDTO> queryIssueStatusList(Long projectId) {

@@ -107,16 +107,16 @@ public class IssueStatusController {
                 .orElseThrow(() -> new CommonException(ERROR_STATUS_GET));
     }
 
-//    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
-//    @ApiOperation("删除未对应的状态")
-//    @DeleteMapping(value = "/{id}")
-//    public ResponseEntity deleteStatus(@ApiParam(value = "项目id", required = true)
-//                                       @PathVariable(name = "project_id") Long projectId,
-//                                       @ApiParam(value = "状态code", required = true)
-//                                       @PathVariable Long id) {
-//        issueStatusService.deleteStatus(projectId, id);
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+    @ApiOperation("删除未对应的状态")
+    @DeleteMapping(value = "/{statusId}")
+    public ResponseEntity deleteStatus(@ApiParam(value = "项目id", required = true)
+                                       @PathVariable(name = "project_id") Long projectId,
+                                       @ApiParam(value = "status id", required = true)
+                                       @PathVariable Long statusId) {
+        issueStatusService.deleteStatus(projectId, statusId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询项目下的issue状态")
