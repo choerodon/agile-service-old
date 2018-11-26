@@ -4,6 +4,7 @@ import io.choerodon.agile.api.dto.IssueStatusDTO;
 import io.choerodon.agile.api.dto.StatusAndIssuesDTO;
 import io.choerodon.agile.api.dto.StatusDTO;
 import io.choerodon.agile.api.dto.StatusMoveDTO;
+import io.choerodon.agile.domain.agile.event.StatusPayload;
 import io.choerodon.agile.infra.dataobject.StatusForMoveDataDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
@@ -30,7 +31,9 @@ public interface IssueStatusService {
 
     IssueStatusDTO moveStatusToUnCorrespond(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO);
 
-//    void deleteStatus(Long projectId, Long id);
+    void deleteStatus(Long projectId, Long statusId);
+
+    void consumDeleteStatus(StatusPayload statusPayload);
 
     /**
      * 查询issueStatus列表

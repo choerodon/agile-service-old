@@ -59,6 +59,8 @@ public class AgileEventHandler {
     private static final String PROJECT_CREATE_STATE_MACHINE = "project-create-state-machine";
     private static final String ORG_REGISTER = "org-register";
     private static final String DEPLOY_STATEMACHINE_ADD_STATUS = "deploy-statemachine-add-status";
+    private static final String ISSUE_SERVICE_CONSUME_STATUS = "issue-service-consume-status";
+    private static final String AGILE_DELETE_STATUS = "agile-delete-status";
 
     /**
      * 创建项目事件
@@ -122,6 +124,15 @@ public class AgileEventHandler {
     public String handleOrgaizationCreateByConsumeSagaTask(String message) {
         handleOrganizationInitTimeZoneSagaTask(message);
         return message;
+    }
+
+    @SagaTask(code = ISSUE_SERVICE_CONSUME_STATUS,
+            sagaCode = AGILE_DELETE_STATUS,
+            seq = 1,
+            description = "消费删除状态消息")
+    public void issueServiceConSumeStatus(String message) {
+        StatusPayload statusPayload = JSONObject.parseObject(message, StatusPayload.class);
+        issueStatusService.consumDeleteStatus(statusPayload);
     }
 
     @SagaTask(code = AGILE_INIT_TIMEZONE,
