@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -91,7 +90,6 @@ public class RedisUtil {
      *
      * @param keys keys
      */
-    @Async
     public void deleteRedisCache(String[] keys) {
         try {
             for (String key : keys) {
@@ -106,4 +104,5 @@ public class RedisUtil {
         }
 
     }
+
 }

@@ -5,12 +5,12 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
+import io.choerodon.core.oauth.DetailsHelper;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -69,6 +69,7 @@ public class DataLogAspect {
     private static final String BATCH_REMOVE_SPRINT_BY_SPRINT_ID = "batchRemoveSprintBySprintId";
     private static final String BATCH_DELETE_LABEL = "batchDeleteLabel";
     private static final String BATCH_UPDATE_ISSUE_STATUS = "batchUpdateIssueStatus";
+    private static final String BATCH_UPDATE_ISSUE_STATUS_TO_OTHER = "batchUpdateIssueStatusToOther";
     private static final String CREATE_ATTACHMENT = "createAttachment";
     private static final String DELETE_ATTACHMENT = "deleteAttachment";
     private static final String CREATE_COMMENT = "createComment";
@@ -118,7 +119,6 @@ public class DataLogAspect {
     private static final String FIELD_TIMESPENT = "timespent";
     private static final String FIELD_WORKLOGID = "WorklogId";
     private static final String ERROR_UPDATE = "error.LogDataAspect.update";
-    private static final String EXCEPTION = "Exception";
     private static final String AGILE = "Agile:";
     private static final String VELOCITY_CHART = AGILE + "VelocityChart";
     private static final String EPIC_CHART = AGILE + "EpicChart";
@@ -138,8 +138,6 @@ public class DataLogAspect {
     private IssueMapper issueMapper;
     @Autowired
     private DataLogRepository dataLogRepository;
-    @Autowired
-    private LookupValueMapper lookupValueMapper;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -164,6 +162,8 @@ public class DataLogAspect {
     private StateMachineFeignClient stateMachineFeignClient;
     @Autowired
     private IssueFeignClient issueFeignClient;
+    @Autowired
+    private DataLogRedisUtil dataLogRedisUtil;
 
     /**
      * 定义拦截规则：拦截Spring管理的后缀为RepositoryImpl的bean中带有@DataLog注解的方法。
@@ -230,7 +230,6 @@ public class DataLogAspect {
                     case CREATE_WORKLOG:
                         result = handleCreateWorkLogDataLog(args, pjp);
                         break;
-
                     default:
                         break;
                 }
@@ -272,6 +271,9 @@ public class DataLogAspect {
                     case BATCH_UPDATE_ISSUE_STATUS:
                         batchUpdateIssueStatusDataLog(args);
                         break;
+                    case BATCH_UPDATE_ISSUE_STATUS_TO_OTHER:
+                        batchUpdateIssueStatusToOtherDataLog(args);
+                        break;
                     case BATCH_VERSION_DELETE_BY_VERSION_IDS:
                         batchDeleteVersionByVersionIds(args);
                         break;
@@ -302,6 +304,29 @@ public class DataLogAspect {
         return result;
     }
 
+    private void batchUpdateIssueStatusToOtherDataLog(Object[] args) {
+        Long projectId = (Long) args[0];
+        String applyType = (String) args[1];
+        Long issueTypeId = (Long) args[2];
+        Long oldStatusId = (Long) args[3];
+        Long newStatusId = (Long) args[4];
+        if (projectId != null && Objects.nonNull(applyType) && issueTypeId != null && oldStatusId != null && newStatusId != null) {
+            StatusMapDTO oldStatus = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), oldStatusId).getBody();
+            StatusMapDTO newStatus = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), newStatusId).getBody();
+            IssueStatusDO oldStatusDO = issueStatusMapper.selectByStatusId(projectId, oldStatusId);
+            IssueStatusDO newStatusDO = issueStatusMapper.selectByStatusId(projectId, newStatusId);
+            List<IssueDO> issueDOS = issueMapper.queryIssueWithCompleteInfoByStatusId(projectId, applyType, issueTypeId, oldStatusId);
+            if (issueDOS != null && !issueDOS.isEmpty()) {
+                Long userId = DetailsHelper.getUserDetails().getUserId();
+                dataLogMapper.batchCreateChangeStatusLogByIssueDOS(projectId, issueDOS, userId, oldStatus, newStatus);
+                if (!oldStatusDO.getCompleted().equals(newStatusDO.getCompleted())) {
+                    dataLogMapper.batchCreateStatusLogByIssueDOS(projectId, issueDOS, userId, newStatus, newStatusDO.getCompleted());
+                }
+                dataLogRedisUtil.handleBatchDeleteRedisCacheByChangeStatusId(issueDOS, projectId);
+            }
+        }
+    }
+
     private void batchUpdateIssueEpicId(Object[] args) {
         Long projectId = (Long) args[0];
         Long issueId = (Long) args[1];
@@ -325,9 +350,9 @@ public class DataLogAspect {
             sprintNameDO.setSprintId(sprintId);
             sprintNameDO.setSprintName(sprintDO.getSprintName());
             deleteBurnDownCache(sprintId, projectId, null, "*");
-            deleteBurnDownCoordinateByTypeAll(projectId);
             redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + projectId + ':' + "*",
                     PIECHART + projectId + ':' + SPRINT,
+                    BURN_DOWN_COORDINATE_BY_TYPE + projectId + ":" + "*"
             });
             for (Long issueId : issueIds) {
                 StringBuilder newSprintIdStr = new StringBuilder();
@@ -408,7 +433,7 @@ public class DataLogAspect {
         }
     }
 
-    private synchronized void batchUpdateIssueStatusDataLog(Object[] args) {
+    private void batchUpdateIssueStatusDataLog(Object[] args) {
         IssueStatusE issueStatusE = null;
         for (Object arg : args) {
             if (arg instanceof IssueStatusE) {
@@ -423,28 +448,10 @@ public class DataLogAspect {
             StatusMapDTO statusMapDTO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), issueStatusE.getStatusId()).getBody();
             List<IssueDO> issueDOS = issueMapper.select(query);
             if (issueDOS != null && !issueDOS.isEmpty()) {
-                if (issueStatusE.getCompleted()) {
-                    issueDOS.forEach(issueDO -> {
-                        createDataLog(projectId, issueDO.getIssueId(),
-                                FIELD_RESOLUTION, null, statusMapDTO.getName(), null, issueDO.getStatusId().toString());
-                        deleteBurnDownCache(issueDO.getSprintId(), projectId, issueDO.getIssueId(), "*");
-                        deleteEpicChartCache(issueDO.getEpicId(), projectId, issueDO.getIssueId(), "*");
-                        deleteVersionCache(projectId, issueDO.getIssueId(), "*");
-                    });
-                } else {
-                    issueDOS.forEach(issueDO -> {
-                        createDataLog(projectId, issueDO.getIssueId(),
-                                FIELD_RESOLUTION, statusMapDTO.getName(), null, issueDO.getStatusId().toString(), null);
-                        deleteEpicChartCache(issueDO.getEpicId(), projectId, issueDO.getIssueId(), "*");
-                        deleteBurnDownCache(issueDO.getSprintId(), projectId, issueDO.getIssueId(), "*");
-                        deleteVersionCache(projectId, issueDO.getIssueId(), "*");
-                    });
-                }
-                redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + projectId + ':' + "*",
-                        PIECHART + projectId + ':' + FIELD_STATUS,
-                        PIECHART + projectId + ':' + FIELD_RESOLUTION
-                });
-                deleteBurnDownCoordinateByTypeAll(projectId);
+                Long userId = DetailsHelper.getUserDetails().getUserId();
+                //改成批量的sql
+                dataLogMapper.batchCreateStatusLogByIssueDOS(projectId, issueDOS, userId, statusMapDTO, issueStatusE.getCompleted());
+                dataLogRedisUtil.handleBatchDeleteRedisCache(issueDOS, projectId);
             }
 
         }
@@ -673,8 +680,8 @@ public class DataLogAspect {
             List<IssueLabelDO> curLabels = issueMapper.selectLabelNameByIssueId(issueId);
             createDataLog(projectId, issueId, FIELD_LABELS, getOriginLabelNames(originLabels),
                     getOriginLabelNames(curLabels), null, null);
-        } catch (Throwable throwable) {
-            LOGGER.info(EXCEPTION, throwable);
+        } catch (Throwable e) {
+            throw new CommonException(ERROR_METHOD_EXECUTE, e);
         }
         return result;
     }
@@ -744,9 +751,9 @@ public class DataLogAspect {
                 }
             }
             deleteBurnDownCache(sprintId, projectId, null, "*");
-            deleteBurnDownCoordinateByTypeAll(projectId);
             redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + projectId + ':' + "*",
-                    PIECHART + projectId + ':' + SPRINT});
+                    PIECHART + projectId + ':' + SPRINT,
+                    BURN_DOWN_COORDINATE_BY_TYPE + projectId + ":" + "*"});
             StringBuilder newSprintIdStr = new StringBuilder();
             StringBuilder newSprintNameStr = new StringBuilder();
             List<SprintNameDO> sprintNames = issueMapper.querySprintNameByIssueId(issueId);
@@ -938,12 +945,12 @@ public class DataLogAspect {
             if (productVersionDO == null) {
                 throw new CommonException("error.productVersion.get");
             }
-            redisUtil.deleteRedisCache(new String[]{VERSION_CHART + productVersionDO.getProjectId() + ':' + productVersionDO.getVersionId() + ":" + "*",
-                    BURN_DOWN_COORDINATE_BY_TYPE + productVersionDO.getProjectId() + ":" + VERSION + ":" + productVersionDO.getVersionId()
-            });
-            for (Long issueId : versionIssueRelE.getIssueIds()) {
-                createDataLog(versionIssueRelE.getProjectId(), issueId, FIELD_FIX_VERSION, null,
-                        productVersionDO.getName(), null, productVersionDO.getVersionId().toString());
+            if (versionIssueRelE.getIssueIds() != null && !versionIssueRelE.getIssueIds().isEmpty()) {
+                Long userId = DetailsHelper.getUserDetails().getUserId();
+                dataLogMapper.batchCreateVersionDataLog(versionIssueRelE.getProjectId(), productVersionDO, versionIssueRelE.getIssueIds(), userId);
+                redisUtil.deleteRedisCache(new String[]{VERSION_CHART + productVersionDO.getProjectId() + ':' + productVersionDO.getVersionId() + ":" + "*",
+                        BURN_DOWN_COORDINATE_BY_TYPE + productVersionDO.getProjectId() + ":" + VERSION + ":" + productVersionDO.getVersionId()
+                });
             }
         }
     }
@@ -960,8 +967,8 @@ public class DataLogAspect {
                 if ((issueStatusDO.getCompleted() != null && issueStatusDO.getCompleted())) {
                     deleteBurnDownCache(issueE.getSprintId(), issueE.getProjectId(), issueE.getIssueId(), "*");
                     deleteEpicChartCache(issueE.getEpicId(), issueE.getProjectId(), issueE.getIssueId(), "*");
-                    deleteBurnDownCoordinateByTypeAll(issueE.getProjectId());
-                    redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + issueE.getProjectId() + ':' + "*"});
+                    redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + issueE.getProjectId() + ':' + "*",
+                            BURN_DOWN_COORDINATE_BY_TYPE + issueE.getProjectId() + ":" + "*"});
                     deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), "*");
                     StatusMapDTO statusMapDTO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(issueE.getProjectId()), issueE.getStatusId()).getBody();
                     createDataLog(issueE.getProjectId(), issueE.getIssueId(), FIELD_RESOLUTION, null,
@@ -981,7 +988,7 @@ public class DataLogAspect {
         return result;
     }
 
-    private void deleteVersionCache(Long projectId, Long issueId, String type) {
+    public void deleteVersionCache(Long projectId, Long issueId, String type) {
         List<Long> versionId = issueMapper.queryVersionIdsByIssueId(issueId, projectId);
         versionId.forEach(id -> redisUtil.deleteRedisCache(new String[]{VERSION_CHART + projectId + ':' + id + ":" + type}));
     }
@@ -996,9 +1003,9 @@ public class DataLogAspect {
         if (issueSprintRelE != null) {
             SprintDO sprintDO = sprintMapper.selectByPrimaryKey(issueSprintRelE.getSprintId());
             deleteBurnDownCache(sprintDO.getSprintId(), sprintDO.getProjectId(), null, "*");
-            deleteBurnDownCoordinateByTypeAll(sprintDO.getProjectId());
             redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + sprintDO.getProjectId() + ':' + "*",
-                    PIECHART + sprintDO.getProjectId() + ':' + SPRINT});
+                    PIECHART + sprintDO.getProjectId() + ':' + SPRINT,
+                    BURN_DOWN_COORDINATE_BY_TYPE + sprintDO.getProjectId() + ":" + "*"});
             createDataLog(issueSprintRelE.getProjectId(), issueSprintRelE.getIssueId(),
                     FIELD_SPRINT, null, sprintDO.getSprintName(), null, issueSprintRelE.getSprintId().toString());
         }
@@ -1138,7 +1145,7 @@ public class DataLogAspect {
         deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), "*");
     }
 
-    private void deleteBurnDownCache(Long sprintId, Long projectId, Long issueId, String type) {
+    public void deleteBurnDownCache(Long sprintId, Long projectId, Long issueId, String type) {
         if (sprintId == null && issueId != null) {
             sprintId = sprintMapper.queryNotCloseSprintIdByIssueId(issueId, projectId);
         }
@@ -1147,7 +1154,7 @@ public class DataLogAspect {
         }
     }
 
-    private void deleteEpicChartCache(Long epicId, Long projectId, Long issueId, String type) {
+    public void deleteEpicChartCache(Long epicId, Long projectId, Long issueId, String type) {
         if (epicId == null && issueId != null) {
             epicId = issueMapper.selectByPrimaryKey(issueId).getEpicId();
         }
@@ -1168,12 +1175,6 @@ public class DataLogAspect {
         }
     }
 
-    private void deleteBurnDownCoordinateByTypeAll(Long projectId) {
-        redisUtil.deleteRedisCache(new String[]{
-                BURN_DOWN_COORDINATE_BY_TYPE + projectId + ":" + "*"
-        });
-    }
-
     private void handleStoryPoints(List<String> field, IssueDO originIssueDO, IssueE issueE) {
         Boolean condition = field.contains(STORY_POINTS_FIELD) && (!Objects.equals(originIssueDO.getStoryPoints(), issueE.getStoryPoints()));
         if (condition) {
@@ -1188,9 +1189,9 @@ public class DataLogAspect {
             createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
                     FIELD_STORY_POINTS, oldString, newString, null, null);
             deleteEpicChartCache(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId(), STORY_POINT);
-            deleteBurnDownCoordinateByTypeAll(originIssueDO.getProjectId());
             deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), STORY_POINTS_FIELD);
-            redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + originIssueDO.getProjectId() + ':' + STORY_POINT});
+            redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + originIssueDO.getProjectId() + ':' + STORY_POINT,
+                    BURN_DOWN_COORDINATE_BY_TYPE + originIssueDO.getProjectId() + ":" + "*"});
             deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), STORY_POINT);
         }
     }

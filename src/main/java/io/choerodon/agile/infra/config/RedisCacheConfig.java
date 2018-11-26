@@ -12,6 +12,10 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.cache.interceptor.KeyGenerator;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author dinghuang123@gmail.com
@@ -21,12 +25,27 @@ import org.springframework.cache.interceptor.KeyGenerator;
 public class RedisCacheConfig extends CachingConfigurerSupport {
 
     /**
+     * 异步方法删除redis缓存的线程池
+     */
+    @Bean("redisTaskExecutor")
+    public Executor taskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(50);
+        executor.setQueueCapacity(500);
+        executor.setKeepAliveSeconds(60);
+        executor.setThreadNamePrefix("delete-redis-cache-");
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        return executor;
+    }
+
+    /**
      * 配置redisTemplate
-     *
+     * <p>
      * 通过redisConnectionFactory引入redis在配置文件中的连接配置
-     * */
+     */
     @Bean
-    public RedisTemplate<String,Object> redisTemplate(RedisConnectionFactory redisConnectionFactory){
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         initDomainRedisTemplate(redisTemplate, redisConnectionFactory);
         return redisTemplate;
@@ -35,8 +54,8 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
     /**
      * 设置数据存入 redis 的序列化方式
      *
-     * @param  redisTemplate redisTemplate
-     * @param  factory factory
+     * @param redisTemplate redisTemplate
+     * @param factory       factory
      */
     private void initDomainRedisTemplate(RedisTemplate<String, Object> redisTemplate, RedisConnectionFactory factory) {
         redisTemplate.setKeySerializer(new StringRedisSerializer());
@@ -49,7 +68,7 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
     /**
      * 实例化 HashOperations 对象,可以使用 Hash 类型操作
      *
-     * @param  redisTemplate redisTemplate
+     * @param redisTemplate redisTemplate
      * @return HashOperations
      */
     @Bean
@@ -70,7 +89,7 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
 
     @Bean
     public RedisCacheManager cacheManager(RedisTemplate redisTemplate) {
-        RedisCacheManager redisCacheManager =new RedisCacheManager(redisTemplate);
+        RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate);
         redisCacheManager.setTransactionAware(true);
         redisCacheManager.setLoadRemoteCachesOnStartup(true);
         redisCacheManager.setUsePrefix(true);

@@ -87,4 +87,15 @@ public interface IssueRepository {
     IssueE updateSelective(IssueE issueE);
 
     int issueToDestinationByIdsCloseSprint(Long projectId, Long targetSprintId, List<Long> issueIds, Date date, Long userId);
+
+    /**
+     * 【内部调用】状态机方案变更后批量更新issue的状态匹配
+     *
+     * @param projectId   projectId
+     * @param applyType   applyType
+     * @param issueTypeId issueTypeId
+     * @param oldStatusId oldStatusId
+     * @param newStatusId newStatusId
+     */
+    void updateIssueStatusByIssueTypeId(Long projectId, String applyType, Long issueTypeId, Long oldStatusId, Long newStatusId);
 }

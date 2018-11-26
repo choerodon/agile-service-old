@@ -166,4 +166,10 @@ public class IssueRepositoryImpl implements IssueRepository {
     public int issueToDestinationByIdsCloseSprint(Long projectId, Long targetSprintId, List<Long> issueIds, Date date, Long userId) {
         return issueMapper.issueToDestinationByIds(projectId, targetSprintId, issueIds, date, userId);
     }
+
+    @Override
+    @DataLog(type = "batchUpdateIssueStatusToOther", single = false)
+    public void updateIssueStatusByIssueTypeId(Long projectId, String applyType, Long issueTypeId, Long oldStatusId, Long newStatusId) {
+        issueMapper.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId);
+    }
 }

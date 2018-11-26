@@ -304,7 +304,7 @@ public class StateMachineServiceImpl implements StateMachineService {
                 statusChangeItems.forEach(statusChangeItem -> {
                     Long oldStatusId = statusChangeItem.getOldStatus().getId();
                     Long newStatusId = statusChangeItem.getNewStatus().getId();
-                    issueMapper.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId);
+                    issueRepository.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId);
                 });
             });
         });
