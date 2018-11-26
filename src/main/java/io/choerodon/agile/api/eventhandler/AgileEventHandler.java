@@ -59,7 +59,7 @@ public class AgileEventHandler {
     private static final String ORG_REGISTER = "org-register";
     private static final String DEPLOY_STATEMACHINE_ADD_STATUS = "deploy-statemachine-add-status";
     private static final String ISSUE_SERVICE_CONSUME_STATUS = "issue-service-consume-status";
-    private static final String AGILE_DELETE_STATUS = "agile-delete-status";
+    private static final String AGILE_REMOVE_STATUS = "agile-remove-status";
     private static final String DEPLOY_STATEMACHINE_DELETE_STATUS = "deploy-statemachine-delete-status";
 
     /**
@@ -145,7 +145,7 @@ public class AgileEventHandler {
     }
 
     @SagaTask(code = ISSUE_SERVICE_CONSUME_STATUS,
-            sagaCode = AGILE_DELETE_STATUS,
+            sagaCode = AGILE_REMOVE_STATUS,
             seq = 1,
             description = "消费删除状态消息")
     public void issueServiceConSumeStatus(String message) {
