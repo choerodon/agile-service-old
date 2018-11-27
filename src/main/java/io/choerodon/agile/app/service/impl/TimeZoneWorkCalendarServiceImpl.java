@@ -9,7 +9,6 @@ import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarRefE;
 import io.choerodon.agile.domain.agile.repository.TimeZoneWorkCalendarRefRepository;
 import io.choerodon.agile.domain.agile.repository.TimeZoneWorkCalendarRepository;
 import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
-import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarRefDO;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarRefMapper;
 import io.choerodon.agile.infra.mapper.WorkCalendarHolidayRefMapper;

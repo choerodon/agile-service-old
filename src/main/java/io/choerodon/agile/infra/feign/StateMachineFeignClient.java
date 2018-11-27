@@ -1,10 +1,8 @@
 package io.choerodon.agile.infra.feign;
 
 import io.choerodon.agile.api.dto.Status;
-import io.choerodon.agile.api.dto.StatusInfoDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.infra.feign.fallback.StateMachineFeignClientFallback;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.ResponseEntity;

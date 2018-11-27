@@ -1,10 +1,7 @@
 package io.choerodon.agile.infra.feign.fallback;
 
 import io.choerodon.agile.api.dto.Status;
-import io.choerodon.agile.api.dto.StatusDTO;
-import io.choerodon.agile.api.dto.StatusInfoDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
-import io.choerodon.agile.infra.dataobject.StatusForMoveDataDO;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +20,7 @@ public class StateMachineFeignClientFallback implements StateMachineFeignClient 
 
     @Override
     public ResponseEntity<Map<Long, Status>> batchStatusGet(List<Long> ids) {
-        throw new CommonException("error.status.get");
+        throw new CommonException("error.statusBatch.get");
     }
 
     @Override

@@ -1,7 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
 import io.choerodon.agile.api.dto.IssueMoveDTO;
-import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;

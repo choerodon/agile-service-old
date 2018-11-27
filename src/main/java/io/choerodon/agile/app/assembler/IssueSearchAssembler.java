@@ -1,20 +1,15 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.dto.*;
-import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.AssigneeIssueDO;
 import io.choerodon.agile.infra.dataobject.IssueSearchDO;
-import io.choerodon.agile.infra.dataobject.LookupValueDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
-import io.choerodon.agile.infra.mapper.LookupValueMapper;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by jian_zhang02@163.com on 2018/5/16.

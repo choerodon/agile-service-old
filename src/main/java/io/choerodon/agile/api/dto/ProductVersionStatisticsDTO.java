@@ -135,38 +135,6 @@ public class ProductVersionStatisticsDTO {
         this.projectId = projectId;
     }
 
-//    public Integer getIssueCount() {
-//        return issueCount;
-//    }
-//
-//    public void setIssueCount(Integer issueCount) {
-//        this.issueCount = issueCount;
-//    }
-//
-//    public Integer getDoneIssueCount() {
-//        return doneIssueCount;
-//    }
-//
-//    public void setDoneIssueCount(Integer doneIssueCount) {
-//        this.doneIssueCount = doneIssueCount;
-//    }
-//
-//    public Integer getDoingIssueCount() {
-//        return doingIssueCount;
-//    }
-//
-//    public void setDoingIssueCount(Integer doingIssueCount) {
-//        this.doingIssueCount = doingIssueCount;
-//    }
-//
-//    public Integer getTodoIssueCount() {
-//        return todoIssueCount;
-//    }
-//
-//    public void setTodoIssueCount(Integer todoIssueCount) {
-//        this.todoIssueCount = todoIssueCount;
-//    }
-//
     public String getStatusName() {
         return statusName;
     }
@@ -174,28 +142,5 @@ public class ProductVersionStatisticsDTO {
     public void setStatusName(String statusName) {
         this.statusName = statusName;
     }
-//
-//    public List<IssueCountDTO> getTodoCategoryIssueCount() {
-//        return todoCategoryIssueCount;
-//    }
-//
-//    public void setTodoCategoryIssueCount(List<IssueCountDTO> todoCategoryIssueCount) {
-//        this.todoCategoryIssueCount = todoCategoryIssueCount;
-//    }
-//
-//    public List<IssueCountDTO> getDoingCategoryIssueCount() {
-//        return doingCategoryIssueCount;
-//    }
-//
-//    public void setDoingCategoryIssueCount(List<IssueCountDTO> doingCategoryIssueCount) {
-//        this.doingCategoryIssueCount = doingCategoryIssueCount;
-//    }
-//
-//    public List<IssueCountDTO> getDoneCategoryIssueCount() {
-//        return doneCategoryIssueCount;
-//    }
-//
-//    public void setDoneCategoryIssueCount(List<IssueCountDTO> doneCategoryIssueCount) {
-//        this.doneCategoryIssueCount = doneCategoryIssueCount;
-//    }
+
 }
