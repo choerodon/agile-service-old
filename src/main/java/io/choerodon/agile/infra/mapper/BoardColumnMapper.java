@@ -80,16 +80,7 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
     List<Long> queryColumnIdsByBoardId(@Param("boardId") Long boardId, @Param("projectId") Long projectId);
 
     /**
-     * 查询项目下的状态关联的列的面板ids
-     *
-     * @param statusIds  statusIds
-     * @param projectIds projectIds
-     * @return BoardColumnDO
-     */
-    List<BoardColumnDO> queryColumnByStatusIdsAndProjectIds(@Param("statusIds") List<Long> statusIds, @Param("projectIds") List<Long> projectIds);
-
-    /**
-     * 批量删除列和状态
+     * 批量删除列和状态的关系（包含状态）
      *
      * @param statusIds  statusIds
      * @param projectIds projectIds

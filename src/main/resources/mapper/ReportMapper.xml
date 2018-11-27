@@ -103,7 +103,6 @@
         bbb.date as date,
         0 as old_value,
         'addDuringSprint' as type,
-        1 as statistical,
         CONCAT_WS('-', api.project_code, aaa.issue_num) AS issue_num,
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_id,
