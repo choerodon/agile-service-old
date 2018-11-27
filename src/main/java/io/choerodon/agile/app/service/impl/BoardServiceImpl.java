@@ -385,8 +385,7 @@ public class BoardServiceImpl implements BoardService {
 
     private String convertProjectName(ProjectDTO projectDTO) {
         String projectName = projectDTO.getName();
-        String result = projectName.replaceAll(" ", "%20");
-        return result;
+        return projectName.replaceAll(" ", "%20");
     }
 
     @Override

@@ -14,10 +14,6 @@ public class ProductVersionStatisticsDO {
     private String statusCode;
     private String statusName;
     private Long projectId;
-//    private Integer issueCount;
-//    private Integer doneIssueCount;
-//    private Integer doingIssueCount;
-//    private Integer todoIssueCount;
 
     public Long getVersionId() {
         return versionId;
@@ -74,38 +70,6 @@ public class ProductVersionStatisticsDO {
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
-
-//    public Integer getIssueCount() {
-//        return issueCount;
-//    }
-//
-//    public void setIssueCount(Integer issueCount) {
-//        this.issueCount = issueCount;
-//    }
-//
-//    public Integer getDoneIssueCount() {
-//        return doneIssueCount;
-//    }
-//
-//    public void setDoneIssueCount(Integer doneIssueCount) {
-//        this.doneIssueCount = doneIssueCount;
-//    }
-//
-//    public Integer getDoingIssueCount() {
-//        return doingIssueCount;
-//    }
-//
-//    public void setDoingIssueCount(Integer doingIssueCount) {
-//        this.doingIssueCount = doingIssueCount;
-//    }
-//
-//    public Integer getTodoIssueCount() {
-//        return todoIssueCount;
-//    }
-//
-//    public void setTodoIssueCount(Integer todoIssueCount) {
-//        this.todoIssueCount = todoIssueCount;
-//    }
 
     public String getStatusName() {
         return statusName;

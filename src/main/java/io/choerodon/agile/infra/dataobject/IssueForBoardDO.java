@@ -15,8 +15,6 @@ public class IssueForBoardDO {
 
     private String typeCode;
 
-//    private String priorityName;
-
     private String summary;
 
     private Long parentIssueId;
@@ -88,14 +86,6 @@ public class IssueForBoardDO {
     public Long getParentIssueId() {
         return parentIssueId;
     }
-
-//    public void setPriorityName(String priorityName) {
-//        this.priorityName = priorityName;
-//    }
-//
-//    public String getPriorityName() {
-//        return priorityName;
-//    }
 
     public Long getObjectVersionNumber() {
         return objectVersionNumber;

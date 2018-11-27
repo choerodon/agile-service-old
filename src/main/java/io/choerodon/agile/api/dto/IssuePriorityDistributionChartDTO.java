@@ -9,9 +9,6 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
 public class IssuePriorityDistributionChartDTO {
 
     private String name;
-//    private String name;
-//
-//    private String priorityCode;
 
     private Integer totalCount;
 
@@ -26,23 +23,6 @@ public class IssuePriorityDistributionChartDTO {
     public void setName(String name) {
         this.name = name;
     }
-
-    //    public String getName() {
-//        return name;
-//    }
-//
-//    public void setName(String name) {
-//        this.name = name;
-//    }
-//
-//    public String getPriorityCode() {
-//        return priorityCode;
-//    }
-//
-//    public void setPriorityCode(String priorityCode) {
-//        this.priorityCode = priorityCode;
-//    }
-
 
     public void setPriorityDTO(PriorityDTO priorityDTO) {
         this.priorityDTO = priorityDTO;
