@@ -147,19 +147,7 @@ public class AgileEventHandler {
         LOGGER.info("sagaTask agile_delete_status projectIdsMap: {}", projectIdsMap);
         List<Long> statusIds = statusPayloads.stream().map(StatusPayload::getStatusId).collect(Collectors.toList());
         if (!agileProjectIds.isEmpty() && statusIds != null && !statusIds.isEmpty()) {
-            List<BoardColumnDO> boardColumnDOS = boardColumnMapper.queryColumnByStatusIdsAndProjectIds(statusIds, agileProjectIds);
             boardColumnRepository.batchDeleteColumnAndStatusRel(statusIds, agileProjectIds);
-            if (boardColumnDOS != null && !boardColumnDOS.isEmpty()) {
-                boardColumnDOS.forEach(boardColumnDO -> boardColumnMapper.updateSequenceWhenDelete(boardColumnDO.getBoardId(), boardColumnDO.getSequence()));
-                Set<Long> boardIds = boardColumnDOS.stream().map(BoardColumnDO::getBoardId).collect(Collectors.toSet());
-                boardIds.forEach(boardId -> {
-                    BoardColumnDO query = new BoardColumnDO();
-                    query.setBoardId(boardId);
-                    Integer size = boardColumnMapper.select(query).size();
-                    boardColumnMapper.updateColumnCategory(boardId, size);
-                    boardColumnMapper.updateColumnColor(boardId, size);
-                });
-            }
         }
     }
 

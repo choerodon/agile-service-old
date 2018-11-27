@@ -25,7 +25,7 @@ public interface BoardColumnRepository {
     void updateSequenceWhenDelete(Long projectId, BoardColumnDO boardColumnDO);
 
     /**
-     * 批量删除列和状态
+     * 批量删除列和状态的关系
      *
      * @param statusIds  statusIds
      * @param projectIds projectIds
