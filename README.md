@@ -15,7 +15,6 @@ The service is responsible for Agile process management and providing users with
 - [File Service](https://github.com/choerodon/file-service.git)
 - [Iam Service](https://github.com/choerodon/iam-service.git)
 - [MySQL](https://www.mysql.com)
-- [Kafka](https://kafka.apache.org)
 
 ## Installation and Getting Started
 1. init database
@@ -36,7 +35,6 @@ The service is responsible for Agile process management and providing users with
 ## Dependencies
 - `go-register-server`: Register server
 - `iam-service`：iam service
-- `kafka`
 - `mysql`: agile_service database
 - `api-gateway`: api gateway server
 - `gateway-helper`: gateway helper server

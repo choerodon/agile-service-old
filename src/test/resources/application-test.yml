@@ -1,10 +1,5 @@
 spring:
   cloud:
-    bus:
-      enabled: false
-  sleuth:
-    stream:
-      enabled: false
     feign:
       enabled: false
   datasource:
@@ -12,7 +7,7 @@ spring:
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=Mysql;TRACE_LEVEL_SYSTEM_OUT=2;
     username: sa
   autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+    exclude: org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
 #开启h2控制台
   h2:
     console:
@@ -21,10 +16,6 @@ spring:
     resources: /h2-console/**
   cache:
     type: redis
-hystrix:
-  stream:
-    queue:
-      enabled: false
 mybatis:
   mapperLocations: classpath*:/mapper/*.xml
   configuration:
