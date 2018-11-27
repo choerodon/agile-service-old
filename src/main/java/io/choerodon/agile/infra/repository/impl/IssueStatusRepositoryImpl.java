@@ -1,5 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.api.dto.StatusDTO;
+import io.choerodon.agile.domain.agile.event.ProjectConfig;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -11,6 +13,7 @@ import io.choerodon.agile.infra.mapper.IssueStatusMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -76,6 +79,11 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
                 PIECHART + issueStatusE.getProjectId() + ':' + STATUS,
                 PIECHART + issueStatusE.getProjectId() + ':' + "resolution"
         });
+    }
+
+    @Override
+    public void batchCreateStatusByProjectIds(List<StatusDTO> statusDTOS, List<Long> projectIds, Long userId) {
+        issueStatusMapper.batchCreateStatusByProjectIds(statusDTOS, projectIds, userId);
     }
 
 //    @Override
