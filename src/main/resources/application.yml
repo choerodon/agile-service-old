@@ -12,12 +12,6 @@ spring:
       max-file-size: 30MB
       max-request-size: 30MB
   cloud:
-    stream:
-        kafka:
-          binder:
-            brokers: 127.0.0.1:9092
-            zkNodes: 127.0.0.1:2181
-        default-binder: kafka
     config:
       failFast: true
       retry:

@@ -2,15 +2,10 @@ package io.choerodon.agile
 
 import com.alibaba.fastjson.JSON
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.inject.Inject
-import io.choerodon.agile.api.dto.ProjectDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueAttachmentService
-import io.choerodon.agile.app.service.IssueService
-import io.choerodon.agile.app.service.NoticeService
 import io.choerodon.agile.app.service.ProductVersionService
 import io.choerodon.agile.app.service.impl.IssueAttachmentServiceImpl
-import io.choerodon.agile.app.service.impl.IssueServiceImpl
 import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl
 import io.choerodon.agile.domain.agile.event.DeployStatusPayload
 import io.choerodon.agile.domain.agile.event.OrganizationCreateEventPayload
@@ -19,46 +14,29 @@ import io.choerodon.agile.domain.agile.event.ProjectEvent
 import io.choerodon.agile.domain.agile.event.StatusPayload
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
-import io.choerodon.agile.infra.config.FeignConfig
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.feign.FileFeignClient
-import io.choerodon.agile.infra.feign.IssueFeignClient
-import io.choerodon.agile.infra.feign.UserFeignClient
-import io.choerodon.agile.infra.feign.fallback.IssueFeignClientFallback
-import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback
 import io.choerodon.agile.infra.mapper.*
-import io.choerodon.agile.infra.repository.impl.UserRepositoryImpl
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.convertor.ApplicationContextHelper
 import io.choerodon.core.oauth.CustomUserDetails
-//import io.choerodon.event.producer.execute.EventProducerTemplate
 import io.choerodon.liquibase.LiquibaseConfig
 import io.choerodon.liquibase.LiquibaseExecutor
-import io.choerodon.statemachine.feign.InstanceFeignClient
-import io.choerodon.statemachine.feign.InstanceFeignClientFallback
-import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.FilterType
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Primary
 import org.springframework.http.HttpRequest
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
-import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
@@ -172,11 +150,6 @@ class AgileTestConfiguration {
 //    }
 
     final ObjectMapper objectMapper = new ObjectMapper()
-
-    @Bean
-    KafkaTemplate kafkaTemplate() {
-        detachedMockFactory.Mock(KafkaTemplate)
-    }
 
     @PostConstruct
     void init() {
