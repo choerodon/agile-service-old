@@ -9,6 +9,7 @@ import io.choerodon.agile.app.service.StateMachineService;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.domain.agile.event.*;
+import io.choerodon.agile.domain.agile.repository.BoardColumnRepository;
 import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
@@ -19,6 +20,7 @@ import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
+import io.choerodon.agile.infra.repository.impl.IssueStatusRepositoryImpl;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
@@ -40,10 +42,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -79,6 +78,10 @@ public class StateMachineServiceImpl implements StateMachineService {
     private PlatformTransactionManager transactionManager;
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
+    @Autowired
+    private BoardColumnRepository boardColumnRepository;
+    @Autowired
+    private IssueStatusRepositoryImpl issueStatusRepository;
 
     /**
      * 创建issue，由于状态机需要回调，采用手动提交事务
@@ -272,9 +275,7 @@ public class StateMachineServiceImpl implements StateMachineService {
         List<Long> issueTypeIds = deployCheckIssue.getIssueTypeIds();
         Map<Long, Long> result = new HashMap<>(issueTypeIds.size());
         if (!issueTypeIds.isEmpty()) {
-            issueTypeIds.forEach(issueTypeId -> {
-                result.put(issueTypeId, Long.valueOf(0L));
-            });
+            issueTypeIds.forEach(issueTypeId -> result.put(issueTypeId, 0L));
             //计算出所有有影响的issue数量，根据issueTypeId分类
             projectConfigs.forEach(projectConfig -> {
                 List<IssueDO> issueDOs = issueMapper.queryByIssueTypeIdsAndApplyType(projectConfig.getProjectId(), projectConfig.getApplyType(), issueTypeIds);
@@ -282,7 +283,7 @@ public class StateMachineServiceImpl implements StateMachineService {
                 for (Map.Entry<Long, Long> entry : issueCounts.entrySet()) {
                     Long issueTypeId = entry.getKey();
                     Long count = entry.getValue();
-                    result.put(issueTypeId, Long.valueOf(result.get(issueTypeId) + count));
+                    result.put(issueTypeId, result.get(issueTypeId) + count);
                 }
             });
         }
@@ -295,6 +296,7 @@ public class StateMachineServiceImpl implements StateMachineService {
     public Boolean updateStateMachineSchemeChange(Long organizationId, StateMachineSchemeDeployUpdateIssue deployUpdateIssue) {
         List<ProjectConfig> projectConfigs = deployUpdateIssue.getProjectConfigs();
         List<StateMachineSchemeChangeItem> changeItems = deployUpdateIssue.getChangeItems();
+        List<Long> projectIds = new ArrayList<>(projectConfigs.size());
         projectConfigs.forEach(projectConfig -> {
             Long projectId = projectConfig.getProjectId();
             String applyType = projectConfig.getApplyType();
@@ -308,6 +310,14 @@ public class StateMachineServiceImpl implements StateMachineService {
                 });
             });
         });
+        List<Long> statusIds = deployUpdateIssue.getDeleteStatuses().stream().map(StatusDTO::getId).collect(Collectors.toList());
+        if (!projectIds.isEmpty() && statusIds != null && !statusIds.isEmpty()) {
+            boardColumnRepository.batchDeleteColumnAndStatusRel(statusIds, projectIds);
+        }
+        List<StatusDTO> addStatus = deployUpdateIssue.getAddStatuses();
+        if (addStatus != null && !addStatus.isEmpty() && !projectIds.isEmpty()) {
+            issueStatusRepository.batchCreateStatusByProjectIds(addStatus, projectIds, DetailsHelper.getUserDetails().getUserId());
+        }
         return true;
     }
 

@@ -1,5 +1,7 @@
 package io.choerodon.agile.infra.mapper;
 
+import io.choerodon.agile.api.dto.StatusDTO;
+import io.choerodon.agile.domain.agile.event.ProjectConfig;
 import io.choerodon.agile.infra.dataobject.IssueStatusCreateDO;
 import io.choerodon.agile.infra.dataobject.StatusDO;
 import io.choerodon.mybatis.common.BaseMapper;
@@ -14,7 +16,7 @@ import java.util.List;
  */
 public interface IssueStatusMapper extends BaseMapper<IssueStatusDO> {
 
-//    List queryUnCorrespondStatus(@Param("projectId") Long projectId, @Param("boardId") Long boardId);
+    //    List queryUnCorrespondStatus(@Param("projectId") Long projectId, @Param("boardId") Long boardId);
     List queryUnCorrespondStatus(@Param("projectId") Long projectId, @Param("boardId") Long boardId, @Param("realStatusIds") List<Long> realStatusIds);
 
     /**
@@ -39,5 +41,14 @@ public interface IssueStatusMapper extends BaseMapper<IssueStatusDO> {
 
     void updateDataLogStatusId();
 
-    IssueStatusDO selectByStatusId(@Param("projectId")Long projectId,@Param("statusId")Long statusId);
+    IssueStatusDO selectByStatusId(@Param("projectId") Long projectId, @Param("statusId") Long statusId);
+
+    /**
+     * 批量创建状态
+     *
+     * @param statusDTOS statusDTOS
+     * @param projectIds projectIds
+     * @param userId     userId
+     */
+    void batchCreateStatusByProjectIds(@Param("statusDTOS") List<StatusDTO> statusDTOS, @Param("projectIds") List<Long> projectIds, @Param("userId") Long userId);
 }
