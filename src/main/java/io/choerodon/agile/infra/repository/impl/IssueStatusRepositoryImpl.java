@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.api.dto.StatusDTO;
+import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.domain.agile.event.ProjectConfig;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
@@ -82,7 +83,7 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
     }
 
     @Override
-    public void batchCreateStatusByProjectIds(List<StatusDTO> statusDTOS, List<Long> projectIds, Long userId) {
+    public void batchCreateStatusByProjectIds(List<StatusMapDTO> statusDTOS, List<Long> projectIds, Long userId) {
         issueStatusMapper.batchCreateStatusByProjectIds(statusDTOS, projectIds, userId);
     }
 

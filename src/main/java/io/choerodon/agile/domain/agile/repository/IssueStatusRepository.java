@@ -1,8 +1,7 @@
 package io.choerodon.agile.domain.agile.repository;
 
-import io.choerodon.agile.api.dto.StatusDTO;
+import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.domain.agile.entity.IssueStatusE;
-import io.choerodon.agile.domain.agile.event.ProjectConfig;
 
 import java.util.List;
 
@@ -25,7 +24,7 @@ public interface IssueStatusRepository {
      * @param projectIds projectIds
      * @param userId     userId
      */
-    void batchCreateStatusByProjectIds(List<StatusDTO> statusDTOS, List<Long> projectIds, Long userId);
+    void batchCreateStatusByProjectIds(List<StatusMapDTO> statusDTOS, List<Long> projectIds, Long userId);
 
 //    Boolean checkSameStatus(Long projectId, String statusName);
 

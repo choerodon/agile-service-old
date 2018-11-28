@@ -90,7 +90,7 @@
             INSERT INTO agile_issue_status(project_id,name,is_enable,category_code,created_by,is_completed,status_id)
             values
             <foreach collection="statusDTOS" item="status" index="index" separator=",">
-                (#{projectId} , #{status.name} ,0 , #{status.categoryCode},#{userId},0, #{status.id})
+                (#{projectId} , #{status.name} ,0 , #{status.type},#{userId},0, #{status.id})
             </foreach>
         </foreach>
     </insert>
