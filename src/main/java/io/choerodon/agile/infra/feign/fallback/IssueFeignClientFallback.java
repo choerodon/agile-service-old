@@ -83,4 +83,9 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     public ResponseEntity removeStatusForAgile(Long projectId, Long statusId) {
         throw new CommonException("error.status.remove");
     }
+
+    @Override
+    public ResponseEntity<Boolean> updateDeployProgress(Long organizationId, Long schemeId, Integer deployProgress) {
+        throw new CommonException("error.issue.updateDeployProgress");
+    }
 }

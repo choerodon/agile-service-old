@@ -291,37 +291,6 @@ public class StateMachineServiceImpl implements StateMachineService {
         return result;
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Boolean updateStateMachineSchemeChange(Long organizationId, StateMachineSchemeDeployUpdateIssue deployUpdateIssue) {
-        List<ProjectConfig> projectConfigs = deployUpdateIssue.getProjectConfigs();
-        List<StateMachineSchemeChangeItem> changeItems = deployUpdateIssue.getChangeItems();
-        List<Long> projectIds = projectConfigs.stream().map(ProjectConfig::getProjectId).collect(Collectors.toList());
-        List<StatusMapDTO> addStatus = deployUpdateIssue.getAddStatuses();
-        if (addStatus != null && !addStatus.isEmpty() && !projectIds.isEmpty()) {
-            issueStatusRepository.batchCreateStatusByProjectIds(addStatus, projectIds, DetailsHelper.getUserDetails().getUserId());
-        }
-
-        projectConfigs.forEach(projectConfig -> {
-            Long projectId = projectConfig.getProjectId();
-            String applyType = projectConfig.getApplyType();
-            changeItems.forEach(changeItem -> {
-                Long issueTypeId = changeItem.getIssueTypeId();
-                List<StateMachineSchemeStatusChangeItem> statusChangeItems = changeItem.getStatusChangeItems();
-                statusChangeItems.forEach(statusChangeItem -> {
-                    Long oldStatusId = statusChangeItem.getOldStatus().getId();
-                    Long newStatusId = statusChangeItem.getNewStatus().getId();
-                    issueRepository.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId);
-                });
-            });
-        });
-        List<Long> statusIds = deployUpdateIssue.getDeleteStatuses().stream().map(StatusMapDTO::getId).collect(Collectors.toList());
-        if (!projectIds.isEmpty() && statusIds != null && !statusIds.isEmpty()) {
-            boardColumnRepository.batchDeleteColumnAndStatusRel(statusIds, projectIds);
-        }
-        return true;
-    }
-
     @Condition(code = "just_reporter", name = "仅允许报告人", description = "只有该报告人才能执行转换")
     public Boolean justReporter(Long instanceId, StateMachineConfigDTO configDTO) {
         IssueDO issue = issueMapper.selectByPrimaryKey(instanceId);

@@ -2,6 +2,7 @@ package io.choerodon.agile.domain.agile.repository;
 
 import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
 import io.choerodon.agile.domain.agile.entity.BoardColumnE;
+import io.choerodon.agile.domain.agile.event.RemoveStatusWithProject;
 import io.choerodon.agile.infra.dataobject.BoardColumnDO;
 
 import java.util.List;
@@ -27,8 +28,7 @@ public interface BoardColumnRepository {
     /**
      * 批量删除列和状态的关系
      *
-     * @param statusIds  statusIds
-     * @param projectIds projectIds
+     * @param removeStatusWithProjects removeStatusWithProjects
      */
-    void batchDeleteColumnAndStatusRel(List<Long> statusIds, List<Long> projectIds);
+    void batchDeleteColumnAndStatusRel(List<RemoveStatusWithProject> removeStatusWithProjects);
 }
