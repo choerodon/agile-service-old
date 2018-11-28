@@ -284,6 +284,7 @@
                      open="(" close=")" separator=",">
                 #{deleteStatusId}
             </foreach>
+            and
             ais.project_id = #{removeStatusWithProject.projectId}
         </foreach>
     </delete>
