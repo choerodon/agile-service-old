@@ -312,6 +312,7 @@ public class SprintServiceImpl implements SprintService {
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
         Long targetSprintId = sprintCompleteDTO.getIncompleteIssuesDestination();
         List<Long> moveIssueRankIds = sprintMapper.queryIssueIdOrderByRankDesc(projectId, sprintCompleteDTO.getSprintId());
+        moveIssueRankIds.addAll(sprintMapper.queryUnDoneSubOfParentIds(projectId, sprintCompleteDTO.getSprintId()));
         beforeRank(projectId, sprintCompleteDTO.getIncompleteIssuesDestination(), moveIssueDOS, moveIssueRankIds);
         if (moveIssueDOS.isEmpty()) {
             return;

@@ -86,6 +86,8 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     List<Long> queryParentsDoneSubtaskUnDoneIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
+    List<Long> queryUnDoneSubOfParentIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+
     /**
      * 活跃冲刺的经办人统计信息
      *
