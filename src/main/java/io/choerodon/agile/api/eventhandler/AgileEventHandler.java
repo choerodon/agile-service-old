@@ -2,19 +2,25 @@ package io.choerodon.agile.api.eventhandler;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.IssueStatusDTO;
+import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarE;
 import io.choerodon.agile.domain.agile.event.*;
 import io.choerodon.agile.domain.agile.repository.BoardColumnRepository;
+import io.choerodon.agile.domain.agile.repository.IssueRepository;
+import io.choerodon.agile.domain.agile.repository.IssueStatusRepository;
 import io.choerodon.agile.domain.agile.repository.TimeZoneWorkCalendarRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
+import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
 import io.choerodon.asgard.saga.annotation.SagaTask;
+import io.choerodon.core.oauth.DetailsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +32,7 @@ import java.util.stream.Collectors;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
+@Transactional(rollbackFor = Exception.class)
 public class AgileEventHandler {
 
     private static final String BOARD = "-board";
@@ -44,16 +51,24 @@ public class AgileEventHandler {
     private IssueStatusService issueStatusService;
     @Autowired
     private BoardColumnRepository boardColumnRepository;
+    @Autowired
+    private IssueStatusRepository issueStatusRepository;
+    @Autowired
+    private IssueRepository issueRepository;
+    @Autowired
+    private IssueFeignClient issueFeignClient;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgileEventHandler.class);
 
     private static final String AGILE_ADD_STATUS = "agile_add_status";
     private static final String AGILE_INIT_TIMEZONE = "agile-init-timezone";
     private static final String AGILE_INIT_PROJECT = "agile-init-project";
+    private static final String AGILE_CONSUME_DEPLOY_STATE_MACHINE_SCHEME = "agile-consume-deploy-statemachine-shceme";
     private static final String STATE_MACHINE_INIT_PROJECT = "state-machine-init-project";
     private static final String STATUS_CREATE_CONSUME_ORG = "status-create-consume-org";
     private static final String STATUS_DELETE_CONSUME_ORG = "status-delete-consume-org";
     private static final String IAM_CREATE_PROJECT = "iam-create-project";
+    private static final String DEPLOY_STATE_MACHINE_SCHEME = "issue-deploy-statemachine-scheme";
     private static final String ORG_CREATE = "org-create-organization";
     private static final String PROJECT_CREATE_STATE_MACHINE = "project-create-state-machine";
     private static final String ORG_REGISTER = "org-register";
@@ -176,6 +191,46 @@ public class AgileEventHandler {
             timeZoneWorkCalendarRepository.create(timeZoneWorkCalendarE);
         }
         LOGGER.info("接受组织创建消息{}", data);
+    }
+
+    /**
+     * 消费发布状态机方案事件
+     *
+     * @param message message
+     */
+    @SagaTask(code = AGILE_CONSUME_DEPLOY_STATE_MACHINE_SCHEME,
+            description = "agile消费发布状态机方案事件",
+            sagaCode = DEPLOY_STATE_MACHINE_SCHEME,
+            seq = 1)
+    public String handleConsumeStateMachineSchemeDeployEven(String message) {
+        LOGGER.info("接受发布状态机方案事件{}", message);
+        StateMachineSchemeDeployUpdateIssue deployUpdateIssue = JSONObject.parseObject(message, StateMachineSchemeDeployUpdateIssue.class);
+        List<ProjectConfig> projectConfigs = deployUpdateIssue.getProjectConfigs();
+        List<StateMachineSchemeChangeItem> changeItems = deployUpdateIssue.getChangeItems();
+        List<Long> projectIds = projectConfigs.stream().map(ProjectConfig::getProjectId).collect(Collectors.toList());
+        List<StatusMapDTO> addStatus = deployUpdateIssue.getAddStatuses();
+        if (addStatus != null && !addStatus.isEmpty() && !projectIds.isEmpty()) {
+            issueStatusRepository.batchCreateStatusByProjectIds(addStatus, projectIds, DetailsHelper.getUserDetails().getUserId());
+        }
+        projectConfigs.forEach(projectConfig -> {
+            Long projectId = projectConfig.getProjectId();
+            String applyType = projectConfig.getApplyType();
+            changeItems.forEach(changeItem -> {
+                Long issueTypeId = changeItem.getIssueTypeId();
+                List<StateMachineSchemeStatusChangeItem> statusChangeItems = changeItem.getStatusChangeItems();
+                statusChangeItems.forEach(statusChangeItem -> {
+                    Long oldStatusId = statusChangeItem.getOldStatus().getId();
+                    Long newStatusId = statusChangeItem.getNewStatus().getId();
+                    issueRepository.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId);
+                });
+            });
+        });
+        List<Long> statusIds = deployUpdateIssue.getDeleteStatuses().stream().map(StatusMapDTO::getId).collect(Collectors.toList());
+        if (!projectIds.isEmpty() && statusIds != null && !statusIds.isEmpty()) {
+            boardColumnRepository.batchDeleteColumnAndStatusRel(statusIds, projectIds);
+        }
+        issueFeignClient.updateDeployProgress(deployUpdateIssue.getOrganizationId(), deployUpdateIssue.getSchemeId(), 100);
+        return message;
     }
 
 }

@@ -49,13 +49,4 @@ public class StateMachineController {
         return new ResponseEntity<>(stateMachineService.checkStateMachineSchemeChange(organizationId, deployCheckIssue), HttpStatus.CREATED);
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
-    @ApiOperation("【内部调用】状态机方案变更后批量更新issue的状态匹配")
-    @PostMapping("/update_state_machine_scheme_change")
-    public ResponseEntity<Boolean> updateStateMachineSchemeChange(@ApiParam(value = "组织id", required = true)
-                                                                  @PathVariable(name = "organization_id") Long organizationId,
-                                                                  @RequestBody StateMachineSchemeDeployUpdateIssue deployUpdateIssue) {
-
-        return new ResponseEntity<>(stateMachineService.updateStateMachineSchemeChange(organizationId, deployUpdateIssue), HttpStatus.CREATED);
-    }
 }

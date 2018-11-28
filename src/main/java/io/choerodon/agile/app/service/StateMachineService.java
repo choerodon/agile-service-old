@@ -54,12 +54,4 @@ public interface StateMachineService {
      */
     Map<Long, Long> checkStateMachineSchemeChange(Long organizationId, StateMachineSchemeDeployCheckIssue deployCheckIssue);
 
-    /**
-     * 【内部调用】issue服务修改状态机方案时，对问题类型的状态进行重新匹配后，对issue的批量更新
-     *
-     * @param organizationId
-     * @param deployUpdateIssue
-     * @return
-     */
-    Boolean updateStateMachineSchemeChange(Long organizationId, StateMachineSchemeDeployUpdateIssue deployUpdateIssue);
 }
