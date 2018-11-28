@@ -310,6 +310,7 @@ public class DataLogAspect {
         Long issueTypeId = (Long) args[2];
         Long oldStatusId = (Long) args[3];
         Long newStatusId = (Long) args[4];
+        Long userId = (Long) args[5];
         if (projectId != null && Objects.nonNull(applyType) && issueTypeId != null && oldStatusId != null && newStatusId != null) {
             StatusMapDTO oldStatus = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), oldStatusId).getBody();
             StatusMapDTO newStatus = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), newStatusId).getBody();
@@ -317,7 +318,6 @@ public class DataLogAspect {
             IssueStatusDO newStatusDO = issueStatusMapper.selectByStatusId(projectId, newStatusId);
             List<IssueDO> issueDOS = issueMapper.queryIssueWithCompleteInfoByStatusId(projectId, applyType, issueTypeId, oldStatusId);
             if (issueDOS != null && !issueDOS.isEmpty()) {
-                Long userId = DetailsHelper.getUserDetails().getUserId();
                 dataLogMapper.batchCreateChangeStatusLogByIssueDOS(projectId, issueDOS, userId, oldStatus, newStatus);
                 if (!oldStatusDO.getCompleted().equals(newStatusDO.getCompleted())) {
                     dataLogMapper.batchCreateStatusLogByIssueDOS(projectId, issueDOS, userId, newStatus, newStatusDO.getCompleted());

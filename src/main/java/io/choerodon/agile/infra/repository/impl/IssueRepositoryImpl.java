@@ -58,7 +58,7 @@ public class IssueRepositoryImpl implements IssueRepository {
     @DataLog(type = "issueCreate")
     public IssueE create(IssueE issueE) {
         //临时存个优先级code
-        issueE.setPriorityCode("priority-"+issueE.getPriorityId());
+        issueE.setPriorityCode("priority-" + issueE.getPriorityId());
         IssueDO issueDO = ConvertHelper.convert(issueE, IssueDO.class);
         if (issueMapper.insert(issueDO) != 1) {
             throw new CommonException(INSERT_ERROR);
@@ -169,7 +169,7 @@ public class IssueRepositoryImpl implements IssueRepository {
 
     @Override
     @DataLog(type = "batchUpdateIssueStatusToOther", single = false)
-    public void updateIssueStatusByIssueTypeId(Long projectId, String applyType, Long issueTypeId, Long oldStatusId, Long newStatusId) {
-        issueMapper.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId);
+    public void updateIssueStatusByIssueTypeId(Long projectId, String applyType, Long issueTypeId, Long oldStatusId, Long newStatusId, Long userId) {
+        issueMapper.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId, userId);
     }
 }

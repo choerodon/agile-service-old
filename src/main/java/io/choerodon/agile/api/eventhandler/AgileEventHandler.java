@@ -63,7 +63,7 @@ public class AgileEventHandler {
     private static final String AGILE_ADD_STATUS = "agile_add_status";
     private static final String AGILE_INIT_TIMEZONE = "agile-init-timezone";
     private static final String AGILE_INIT_PROJECT = "agile-init-project";
-    private static final String AGILE_CONSUME_DEPLOY_STATE_MACHINE_SCHEME = "agile-consume-deploy-statemachine-shceme";
+    private static final String AGILE_CONSUME_DEPLOY_STATE_MACHINE_SCHEME = "agile-consume-deploy-statemachine-scheme";
     private static final String STATE_MACHINE_INIT_PROJECT = "state-machine-init-project";
     private static final String STATUS_CREATE_CONSUME_ORG = "status-create-consume-org";
     private static final String STATUS_DELETE_CONSUME_ORG = "status-delete-consume-org";
@@ -209,7 +209,7 @@ public class AgileEventHandler {
         List<Long> projectIds = projectConfigs.stream().map(ProjectConfig::getProjectId).collect(Collectors.toList());
         List<StatusMapDTO> addStatus = deployUpdateIssue.getAddStatuses();
         if (addStatus != null && !addStatus.isEmpty() && !projectIds.isEmpty()) {
-            issueStatusRepository.batchCreateStatusByProjectIds(addStatus, projectIds, DetailsHelper.getUserDetails().getUserId());
+            issueStatusRepository.batchCreateStatusByProjectIds(addStatus, projectIds, deployUpdateIssue.getUserId());
         }
         projectConfigs.forEach(projectConfig -> {
             Long projectId = projectConfig.getProjectId();
@@ -220,7 +220,7 @@ public class AgileEventHandler {
                 statusChangeItems.forEach(statusChangeItem -> {
                     Long oldStatusId = statusChangeItem.getOldStatus().getId();
                     Long newStatusId = statusChangeItem.getNewStatus().getId();
-                    issueRepository.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId);
+                    issueRepository.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId,deployUpdateIssue.getUserId());
                 });
             });
         });
