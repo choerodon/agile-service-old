@@ -69,7 +69,8 @@ public interface IssueFeignClient {
     ResponseEntity removeStatusForAgile(@PathVariable("project_id") Long projectId,
                                         @RequestParam("status_id") Long statusId);
 
-    @PutMapping(value = "/update_deploy_progress/{scheme_id}")
-    ResponseEntity<Boolean> updateDeployProgress(@PathVariable("organization_id") Long organizationId, @PathVariable("scheme_id") Long schemeId,
-                                                 @RequestParam("deploy_progress") Integer deployProgress);
+    @PutMapping(value = "/v1/organizations/{organization_id}/state_machine_scheme/update_deploy_progress/{scheme_id}")
+    ResponseEntity<Boolean> updateDeployProgress(@PathVariable("organization_id") Long organizationId,
+                                                 @PathVariable("scheme_id") Long schemeId,
+                                                 @RequestParam("deployProgress") Integer deployProgress);
 }

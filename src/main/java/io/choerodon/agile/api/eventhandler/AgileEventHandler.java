@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-@Transactional(rollbackFor = Exception.class)
 public class AgileEventHandler {
 
     private static final String BOARD = "-board";
