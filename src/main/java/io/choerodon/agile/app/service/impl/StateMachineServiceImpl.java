@@ -296,7 +296,12 @@ public class StateMachineServiceImpl implements StateMachineService {
     public Boolean updateStateMachineSchemeChange(Long organizationId, StateMachineSchemeDeployUpdateIssue deployUpdateIssue) {
         List<ProjectConfig> projectConfigs = deployUpdateIssue.getProjectConfigs();
         List<StateMachineSchemeChangeItem> changeItems = deployUpdateIssue.getChangeItems();
-        List<Long> projectIds = new ArrayList<>(projectConfigs.size());
+        List<Long> projectIds = projectConfigs.stream().map(ProjectConfig::getProjectId).collect(Collectors.toList());
+        List<StatusMapDTO> addStatus = deployUpdateIssue.getAddStatuses();
+        if (addStatus != null && !addStatus.isEmpty() && !projectIds.isEmpty()) {
+            issueStatusRepository.batchCreateStatusByProjectIds(addStatus, projectIds, DetailsHelper.getUserDetails().getUserId());
+        }
+
         projectConfigs.forEach(projectConfig -> {
             Long projectId = projectConfig.getProjectId();
             String applyType = projectConfig.getApplyType();
@@ -310,13 +315,9 @@ public class StateMachineServiceImpl implements StateMachineService {
                 });
             });
         });
-        List<Long> statusIds = deployUpdateIssue.getDeleteStatuses().stream().map(StatusDTO::getId).collect(Collectors.toList());
+        List<Long> statusIds = deployUpdateIssue.getDeleteStatuses().stream().map(StatusMapDTO::getId).collect(Collectors.toList());
         if (!projectIds.isEmpty() && statusIds != null && !statusIds.isEmpty()) {
             boardColumnRepository.batchDeleteColumnAndStatusRel(statusIds, projectIds);
-        }
-        List<StatusDTO> addStatus = deployUpdateIssue.getAddStatuses();
-        if (addStatus != null && !addStatus.isEmpty() && !projectIds.isEmpty()) {
-            issueStatusRepository.batchCreateStatusByProjectIds(addStatus, projectIds, DetailsHelper.getUserDetails().getUserId());
         }
         return true;
     }
