@@ -13,16 +13,8 @@ public class StateMachineSchemeDeployUpdateIssue {
     private Long organizationId;
     private List<StateMachineSchemeChangeItem> changeItems;
     private List<ProjectConfig> projectConfigs;
+    private List<RemoveStatusWithProject> removeStatusWithProjects;
     private List<StatusMapDTO> addStatuses;
-    private List<StatusMapDTO> deleteStatuses;
-
-    public Long getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(Long organizationId) {
-        this.organizationId = organizationId;
-    }
 
     public Long getSchemeId() {
         return schemeId;
@@ -30,6 +22,14 @@ public class StateMachineSchemeDeployUpdateIssue {
 
     public void setSchemeId(Long schemeId) {
         this.schemeId = schemeId;
+    }
+
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
     }
 
     public List<ProjectConfig> getProjectConfigs() {
@@ -56,11 +56,11 @@ public class StateMachineSchemeDeployUpdateIssue {
         this.addStatuses = addStatuses;
     }
 
-    public List<StatusMapDTO> getDeleteStatuses() {
-        return deleteStatuses;
+    public List<RemoveStatusWithProject> getRemoveStatusWithProjects() {
+        return removeStatusWithProjects;
     }
 
-    public void setDeleteStatuses(List<StatusMapDTO> deleteStatuses) {
-        this.deleteStatuses = deleteStatuses;
+    public void setRemoveStatusWithProjects(List<RemoveStatusWithProject> removeStatusWithProjects) {
+        this.removeStatusWithProjects = removeStatusWithProjects;
     }
 }

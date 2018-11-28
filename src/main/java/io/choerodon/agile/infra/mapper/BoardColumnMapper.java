@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
+import io.choerodon.agile.domain.agile.event.RemoveStatusWithProject;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -82,8 +83,7 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
     /**
      * 批量删除列和状态的关系（包含状态）
      *
-     * @param statusIds  statusIds
-     * @param projectIds projectIds
+     * @param removeStatusWithProjects removeStatusWithProjects
      */
-    void batchDeleteColumnAndStatusRel(@Param("statusIds") List<Long> statusIds, @Param("projectIds") List<Long> projectIds);
+    void batchDeleteColumnAndStatusRel(@Param("removeStatusWithProjects") List<RemoveStatusWithProject> removeStatusWithProjects);
 }

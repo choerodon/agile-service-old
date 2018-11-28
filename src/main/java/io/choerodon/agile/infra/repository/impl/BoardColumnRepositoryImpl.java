@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
+import io.choerodon.agile.domain.agile.event.RemoveStatusWithProject;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.BoardColumnE;
@@ -95,7 +96,7 @@ public class BoardColumnRepositoryImpl implements BoardColumnRepository {
     }
 
     @Override
-    public void batchDeleteColumnAndStatusRel(List<Long> statusIds, List<Long> projectIds) {
-        boardColumnMapper.batchDeleteColumnAndStatusRel(statusIds, projectIds);
+    public void batchDeleteColumnAndStatusRel(List<RemoveStatusWithProject> removeStatusWithProjects) {
+        boardColumnMapper.batchDeleteColumnAndStatusRel(removeStatusWithProjects);
     }
 }

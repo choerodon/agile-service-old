@@ -142,12 +142,11 @@ public class AgileEventHandler {
     public void dealDeployStateMachineDeleteStatus(String message) {
         DeployStatusPayload deployStatusPayload = JSONObject.parseObject(message, DeployStatusPayload.class);
         List<RemoveStatusWithProject> removeStatusWithProjects = deployStatusPayload.getRemoveStatusWithProjects();
-        //删除状态及与列的关联恭喜【todo】
+        //删除状态及与列的关联恭喜
         LOGGER.info("sagaTask agile_delete_status removeStatusWithProjects: {}", removeStatusWithProjects);
-//        List<Long> statusIds = statusPayloads.stream().map(StatusPayload::getStatusId).collect(Collectors.toList());
-//        if (!agileProjectIds.isEmpty() && statusIds != null && !statusIds.isEmpty()) {
-//            boardColumnRepository.batchDeleteColumnAndStatusRel(statusIds, agileProjectIds);
-//        }
+        if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
+            boardColumnRepository.batchDeleteColumnAndStatusRel(removeStatusWithProjects);
+        }
     }
 
     @SagaTask(code = AGILE_INIT_TIMEZONE, sagaCode = ORG_CREATE, seq = 1, description = "接收org服务创建组织事件初始化时区")
@@ -225,9 +224,8 @@ public class AgileEventHandler {
                 });
             });
         });
-        List<Long> statusIds = deployUpdateIssue.getDeleteStatuses().stream().map(StatusMapDTO::getId).collect(Collectors.toList());
-        if (!projectIds.isEmpty() && statusIds != null && !statusIds.isEmpty()) {
-            boardColumnRepository.batchDeleteColumnAndStatusRel(statusIds, projectIds);
+        if (!deployUpdateIssue.getRemoveStatusWithProjects().isEmpty() && deployUpdateIssue.getRemoveStatusWithProjects() != null) {
+            boardColumnRepository.batchDeleteColumnAndStatusRel(deployUpdateIssue.getRemoveStatusWithProjects());
         }
         issueFeignClient.updateDeployProgress(deployUpdateIssue.getOrganizationId(), deployUpdateIssue.getSchemeId(), 100);
         return message;

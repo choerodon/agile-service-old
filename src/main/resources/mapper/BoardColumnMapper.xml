@@ -275,18 +275,16 @@
     </select>
 
     <delete id="batchDeleteColumnAndStatusRel">
-        DELETE ais,abcsr
-        from agile_issue_status ais
-        left join agile_board_column_status_rel abcsr on ais.status_id = abcsr.status_id and ais.project_id = abcsr.project_id
-        WHERE ais.status_id IN
-        <foreach collection="statusIds" item="statusId"
-                 open="(" close=")" separator=",">
-            #{statusId}
-        </foreach>
-        and ais.project_id in
-        <foreach collection="projectIds" item="projectId"
-                 open="(" close=")" separator=",">
-            #{projectId}
+        <foreach collection="removeStatusWithProjects" item="removeStatusWithProject" separator=";">
+            DELETE ais,abcsr
+            from agile_issue_status ais
+            left join agile_board_column_status_rel abcsr on ais.status_id = abcsr.status_id and ais.project_id = abcsr.project_id
+            WHERE ais.status_id in
+            <foreach collection="removeStatusWithProject.deleteStatusIds" item="deleteStatusId"
+                     open="(" close=")" separator=",">
+                #{deleteStatusId}
+            </foreach>
+            ais.project_id = #{removeStatusWithProject.projectId}
         </foreach>
     </delete>
 
