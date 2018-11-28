@@ -10,6 +10,7 @@ import java.util.Map;
 public class DeployStatusPayload {
     private Map<String, List<Long>> projectIdsMap;
     private List<StatusPayload> statusPayloads;
+    private List<RemoveStatusWithProject> removeStatusWithProjects;
 
     public Map<String, List<Long>> getProjectIdsMap() {
         return projectIdsMap;
@@ -25,5 +26,13 @@ public class DeployStatusPayload {
 
     public void setStatusPayloads(List<StatusPayload> statusPayloads) {
         this.statusPayloads = statusPayloads;
+    }
+
+    public List<RemoveStatusWithProject> getRemoveStatusWithProjects() {
+        return removeStatusWithProjects;
+    }
+
+    public void setRemoveStatusWithProjects(List<RemoveStatusWithProject> removeStatusWithProjects) {
+        this.removeStatusWithProjects = removeStatusWithProjects;
     }
 }

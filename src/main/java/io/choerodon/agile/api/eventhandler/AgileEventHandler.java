@@ -126,17 +126,13 @@ public class AgileEventHandler {
             seq = 4)
     public void dealDeployStateMachineDeleteStatus(String message) {
         DeployStatusPayload deployStatusPayload = JSONObject.parseObject(message, DeployStatusPayload.class);
-        Map<String, List<Long>> projectIdsMap = deployStatusPayload.getProjectIdsMap();
-        List<StatusPayload> statusPayloads = deployStatusPayload.getStatusPayloads();
-        //只取敏捷和测试影响到的项目
-        List<Long> agileProjectIds = projectIdsMap.get(SchemeApplyType.AGILE) != null ? projectIdsMap.get(SchemeApplyType.AGILE) : new ArrayList<>();
-        List<Long> testProjectIds = projectIdsMap.get(SchemeApplyType.TEST) != null ? projectIdsMap.get(SchemeApplyType.TEST) : new ArrayList<>();
-        agileProjectIds.addAll(testProjectIds);
-        LOGGER.info("sagaTask agile_delete_status projectIdsMap: {}", projectIdsMap);
-        List<Long> statusIds = statusPayloads.stream().map(StatusPayload::getStatusId).collect(Collectors.toList());
-        if (!agileProjectIds.isEmpty() && statusIds != null && !statusIds.isEmpty()) {
-            boardColumnRepository.batchDeleteColumnAndStatusRel(statusIds, agileProjectIds);
-        }
+        List<RemoveStatusWithProject> removeStatusWithProjects = deployStatusPayload.getRemoveStatusWithProjects();
+        //删除状态及与列的关联恭喜【todo】
+        LOGGER.info("sagaTask agile_delete_status removeStatusWithProjects: {}", removeStatusWithProjects);
+//        List<Long> statusIds = statusPayloads.stream().map(StatusPayload::getStatusId).collect(Collectors.toList());
+//        if (!agileProjectIds.isEmpty() && statusIds != null && !statusIds.isEmpty()) {
+//            boardColumnRepository.batchDeleteColumnAndStatusRel(statusIds, agileProjectIds);
+//        }
     }
 
     @SagaTask(code = AGILE_INIT_TIMEZONE, sagaCode = ORG_CREATE, seq = 1, description = "接收org服务创建组织事件初始化时区")
