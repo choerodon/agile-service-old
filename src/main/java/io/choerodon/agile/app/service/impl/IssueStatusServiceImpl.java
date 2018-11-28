@@ -178,6 +178,9 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         for (StatusMapDTO statusMapDTO : statusMapDTOList)  {
             realStatusIds.add(statusMapDTO.getId());
         }
+        if (realStatusIds.isEmpty()) {
+            return new ArrayList<>();
+        }
         List<StatusAndIssuesDO> statusAndIssuesDOList = issueStatusMapper.queryUnCorrespondStatus(projectId, boardId, realStatusIds);
         if (statusAndIssuesDOList != null && !statusAndIssuesDOList.isEmpty()) {
             List<Long> ids = new ArrayList<>();
