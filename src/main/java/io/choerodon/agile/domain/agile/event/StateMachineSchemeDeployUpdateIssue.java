@@ -11,10 +11,19 @@ import java.util.List;
 public class StateMachineSchemeDeployUpdateIssue {
     private Long schemeId;
     private Long organizationId;
+    private Long userId;
     private List<StateMachineSchemeChangeItem> changeItems;
     private List<ProjectConfig> projectConfigs;
     private List<RemoveStatusWithProject> removeStatusWithProjects;
     private List<StatusMapDTO> addStatuses;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public Long getSchemeId() {
         return schemeId;

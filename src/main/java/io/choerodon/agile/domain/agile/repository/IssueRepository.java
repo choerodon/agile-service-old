@@ -96,6 +96,7 @@ public interface IssueRepository {
      * @param issueTypeId issueTypeId
      * @param oldStatusId oldStatusId
      * @param newStatusId newStatusId
+     * @param userId userId
      */
-    void updateIssueStatusByIssueTypeId(Long projectId, String applyType, Long issueTypeId, Long oldStatusId, Long newStatusId);
+    void updateIssueStatusByIssueTypeId(Long projectId, String applyType, Long issueTypeId, Long oldStatusId, Long newStatusId,Long userId);
 }

@@ -435,7 +435,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @param oldStatusId
      * @param newStatusId
      */
-    void updateIssueStatusByIssueTypeId(@Param("projectId") Long projectId, @Param("applyType") String applyType, @Param("issueTypeId") Long issueTypeId, @Param("oldStatusId") Long oldStatusId, @Param("newStatusId") Long newStatusId);
+    void updateIssueStatusByIssueTypeId(@Param("projectId") Long projectId, @Param("applyType") String applyType, @Param("issueTypeId") Long issueTypeId, @Param("oldStatusId") Long oldStatusId, @Param("newStatusId") Long newStatusId,@Param("userId")Long userId);
 
     /**
      * 查询某个状态下的issue信息包含是否已完成

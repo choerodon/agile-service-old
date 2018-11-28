@@ -2581,7 +2581,7 @@
     </select>
 
     <update id="updateIssueStatusByIssueTypeId">
-        UPDATE agile_issue SET status_id = #{newStatusId}
+        UPDATE agile_issue SET status_id = #{newStatusId},last_updated_by = #{userId}
         WHERE project_id = #{projectId}
         AND status_id = #{oldStatusId}
         AND issue_type_id = #{issueTypeId}
