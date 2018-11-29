@@ -10,6 +10,7 @@ public class StateMachineSchemeDeployUpdateIssue {
     private Long schemeId;
     private Long organizationId;
     private Long userId;
+    private List<ProjectConfig> projectConfigs;
     private List<StateMachineSchemeChangeItem> changeItems;
     private List<RemoveStatusWithProject> removeStatusWithProjects;
     private List<AddStatusWithProject> addStatusWithProjects;
@@ -36,6 +37,14 @@ public class StateMachineSchemeDeployUpdateIssue {
 
     public void setOrganizationId(Long organizationId) {
         this.organizationId = organizationId;
+    }
+
+    public List<ProjectConfig> getProjectConfigs() {
+        return projectConfigs;
+    }
+
+    public void setProjectConfigs(List<ProjectConfig> projectConfigs) {
+        this.projectConfigs = projectConfigs;
     }
 
     public List<StateMachineSchemeChangeItem> getChangeItems() {
