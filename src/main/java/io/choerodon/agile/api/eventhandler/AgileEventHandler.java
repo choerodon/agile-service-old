@@ -3,14 +3,16 @@ package io.choerodon.agile.api.eventhandler;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.IssueStatusDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
-import io.choerodon.agile.app.service.*;
+import io.choerodon.agile.app.service.BoardService;
+import io.choerodon.agile.app.service.IssueLinkTypeService;
+import io.choerodon.agile.app.service.IssueStatusService;
+import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarE;
 import io.choerodon.agile.domain.agile.event.*;
 import io.choerodon.agile.domain.agile.repository.BoardColumnRepository;
 import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.domain.agile.repository.IssueStatusRepository;
 import io.choerodon.agile.domain.agile.repository.TimeZoneWorkCalendarRepository;
-import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
@@ -20,9 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -57,22 +57,19 @@ public class AgileEventHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgileEventHandler.class);
 
-    private static final String AGILE_ADD_STATUS = "agile_add_status";
     private static final String AGILE_INIT_TIMEZONE = "agile-init-timezone";
     private static final String AGILE_INIT_PROJECT = "agile-init-project";
-    private static final String AGILE_CONSUME_DEPLOY_STATE_MACHINE_SCHEME = "agile-consume-deploy-statemachine-scheme";
     private static final String STATE_MACHINE_INIT_PROJECT = "state-machine-init-project";
-    private static final String STATUS_CREATE_CONSUME_ORG = "status-create-consume-org";
-    private static final String STATUS_DELETE_CONSUME_ORG = "status-delete-consume-org";
     private static final String IAM_CREATE_PROJECT = "iam-create-project";
-    private static final String DEPLOY_STATE_MACHINE_SCHEME = "issue-deploy-statemachine-scheme";
     private static final String ORG_CREATE = "org-create-organization";
     private static final String PROJECT_CREATE_STATE_MACHINE = "project-create-state-machine";
     private static final String ORG_REGISTER = "org-register";
-    private static final String DEPLOY_STATEMACHINE_ADD_STATUS = "deploy-statemachine-add-status";
     private static final String ISSUE_SERVICE_CONSUME_STATUS = "issue-service-consume-status";
     private static final String AGILE_REMOVE_STATUS = "agile-remove-status";
-    private static final String DEPLOY_STATEMACHINE_DELETE_STATUS = "deploy-statemachine-delete-status";
+    private static final String AGILE_CHANGE_STATUS = "agile-change-status";
+    private static final String AGILE_CONSUME_DEPLOY_STATE_MACHINE_SCHEME = "agile-consume-deploy-statemachine-scheme";
+    private static final String DEPLOY_STATE_MACHINE = "deploy-state-machine";
+    private static final String DEPLOY_STATE_MACHINE_SCHEME = "deploy-state-machine-scheme";
 
     /**
      * 创建项目事件
@@ -106,47 +103,10 @@ public class AgileEventHandler {
         return message;
     }
 
-    @SagaTask(code = STATUS_CREATE_CONSUME_ORG,
-            description = "agile消费发布状态机中增加状态",
-            sagaCode = DEPLOY_STATEMACHINE_ADD_STATUS,
-            seq = 4)
-    public void dealDeployStateMachineAddStatus(String message) {
-        DeployStatusPayload deployStatusPayload = JSONObject.parseObject(message, DeployStatusPayload.class);
-        Map<String, List<Long>> projectIdsMap = deployStatusPayload.getProjectIdsMap();
-        List<StatusPayload> statusPayloads = deployStatusPayload.getStatusPayloads();
-        //只取敏捷和测试影响到的项目
-        List<Long> agileProjectIds = projectIdsMap.get(SchemeApplyType.AGILE) != null ? projectIdsMap.get(SchemeApplyType.AGILE) : new ArrayList<>();
-        List<Long> testProjectIds = projectIdsMap.get(SchemeApplyType.TEST) != null ? projectIdsMap.get(SchemeApplyType.TEST) : new ArrayList<>();
-        agileProjectIds.addAll(testProjectIds);
-        List<Long> projectIds = agileProjectIds.stream().distinct().collect(Collectors.toList());
-        LOGGER.info("sagaTask agile_add_status projectIdsMap: {}", projectIdsMap);
-        for (Long projectId : projectIds) {
-            for (StatusPayload statusPayload : statusPayloads) {
-                IssueStatusDTO issueStatusDTO = new IssueStatusDTO();
-                issueStatusDTO.setStatusId(statusPayload.getStatusId());
-                issueStatusDTO.setCategoryCode(statusPayload.getType());
-                issueStatusDTO.setName(statusPayload.getStatusName());
-                issueStatusDTO.setProjectId(projectId);
-                issueStatusService.createStatusByStateMachine(projectId, issueStatusDTO);
-            }
-        }
-    }
-
-    @SagaTask(code = STATUS_DELETE_CONSUME_ORG,
-            description = "agile消费发布状态机中删除状态",
-            sagaCode = DEPLOY_STATEMACHINE_DELETE_STATUS,
-            seq = 4)
-    public void dealDeployStateMachineDeleteStatus(String message) {
-        DeployStatusPayload deployStatusPayload = JSONObject.parseObject(message, DeployStatusPayload.class);
-        List<RemoveStatusWithProject> removeStatusWithProjects = deployStatusPayload.getRemoveStatusWithProjects();
-        //删除状态及与列的关联
-        LOGGER.info("sagaTask agile_delete_status removeStatusWithProjects: {}", removeStatusWithProjects);
-        if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
-            boardColumnRepository.batchDeleteColumnAndStatusRel(removeStatusWithProjects);
-        }
-    }
-
-    @SagaTask(code = AGILE_INIT_TIMEZONE, sagaCode = ORG_CREATE, seq = 1, description = "接收org服务创建组织事件初始化时区")
+    @SagaTask(code = AGILE_INIT_TIMEZONE,
+            description = "接收org服务创建组织事件初始化时区",
+            sagaCode = ORG_CREATE,
+            seq = 1)
     public String handleOrgaizationCreateByConsumeSagaTask(String message) {
         handleOrganizationInitTimeZoneSagaTask(message);
         return message;
@@ -189,25 +149,45 @@ public class AgileEventHandler {
         LOGGER.info("接受组织创建消息{}", data);
     }
 
-    /**
-     * 消费发布状态机方案事件
-     *
-     * @param message message
-     */
+    @SagaTask(code = AGILE_CHANGE_STATUS,
+            description = "agile消费发布状态机事件",
+            sagaCode = DEPLOY_STATE_MACHINE,
+            seq = 1)
+    public void handleDeployStateMachineEvent(String message) {
+        LOGGER.info("sagaTask agile_change_status message: {}", message);
+        DeployStateMachinePayload deployStateMachinePayload = JSONObject.parseObject(message, DeployStateMachinePayload.class);
+        List<RemoveStatusWithProject> removeStatusWithProjects = deployStateMachinePayload.getRemoveStatusWithProjects();
+        List<AddStatusWithProject> addStatusWithProjects = deployStateMachinePayload.getAddStatusWithProjects();
+        //删除项目下的状态及与列的关联
+        if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
+            boardColumnRepository.batchDeleteColumnAndStatusRel(removeStatusWithProjects);
+        }
+        //增加项目下的状态
+        if (addStatusWithProjects != null && !addStatusWithProjects.isEmpty()) {
+            issueStatusRepository.batchCreateStatusByProjectIds(addStatusWithProjects, deployStateMachinePayload.getUserId());
+        }
+    }
+
     @SagaTask(code = AGILE_CONSUME_DEPLOY_STATE_MACHINE_SCHEME,
             description = "agile消费发布状态机方案事件",
             sagaCode = DEPLOY_STATE_MACHINE_SCHEME,
             seq = 1)
-    public String handleConsumeStateMachineSchemeDeployEven(String message) {
-        LOGGER.info("接受发布状态机方案事件{}", message);
+    public String handleConsumeStateMachineSchemeDeployEvent(String message) {
+        LOGGER.info("sagaTask agile-consume-deploy-statemachine-scheme message: {}", message);
         StateMachineSchemeDeployUpdateIssue deployUpdateIssue = JSONObject.parseObject(message, StateMachineSchemeDeployUpdateIssue.class);
-        List<ProjectConfig> projectConfigs = deployUpdateIssue.getProjectConfigs();
         List<StateMachineSchemeChangeItem> changeItems = deployUpdateIssue.getChangeItems();
-        List<Long> projectIds = projectConfigs.stream().map(ProjectConfig::getProjectId).collect(Collectors.toList());
-        List<StatusMapDTO> addStatus = deployUpdateIssue.getAddStatuses();
-        if (addStatus != null && !addStatus.isEmpty() && !projectIds.isEmpty()) {
-            issueStatusRepository.batchCreateStatusByProjectIds(addStatus, projectIds, deployUpdateIssue.getUserId());
+        List<ProjectConfig> projectConfigs = deployUpdateIssue.getProjectConfigs();
+        List<RemoveStatusWithProject> removeStatusWithProjects = deployUpdateIssue.getRemoveStatusWithProjects();
+        List<AddStatusWithProject> addStatusWithProjects = deployUpdateIssue.getAddStatusWithProjects();
+        //删除项目下的状态及与列的关联
+        if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
+            boardColumnRepository.batchDeleteColumnAndStatusRel(deployUpdateIssue.getRemoveStatusWithProjects());
         }
+        //增加项目下的状态
+        if (addStatusWithProjects != null && !addStatusWithProjects.isEmpty()) {
+            issueStatusRepository.batchCreateStatusByProjectIds(addStatusWithProjects, deployUpdateIssue.getUserId());
+        }
+        //批量更新项目对应的issue状态
         projectConfigs.forEach(projectConfig -> {
             Long projectId = projectConfig.getProjectId();
             String applyType = projectConfig.getApplyType();
@@ -217,13 +197,11 @@ public class AgileEventHandler {
                 statusChangeItems.forEach(statusChangeItem -> {
                     Long oldStatusId = statusChangeItem.getOldStatus().getId();
                     Long newStatusId = statusChangeItem.getNewStatus().getId();
-                    issueRepository.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId,deployUpdateIssue.getUserId());
+                    issueRepository.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId, deployUpdateIssue.getUserId());
                 });
             });
         });
-        if (!deployUpdateIssue.getRemoveStatusWithProjects().isEmpty() && deployUpdateIssue.getRemoveStatusWithProjects() != null) {
-            boardColumnRepository.batchDeleteColumnAndStatusRel(deployUpdateIssue.getRemoveStatusWithProjects());
-        }
+
         issueFeignClient.updateDeployProgress(deployUpdateIssue.getOrganizationId(), deployUpdateIssue.getSchemeId(), 100);
         return message;
     }

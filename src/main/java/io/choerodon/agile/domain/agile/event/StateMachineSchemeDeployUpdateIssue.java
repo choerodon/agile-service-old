@@ -1,7 +1,5 @@
 package io.choerodon.agile.domain.agile.event;
 
-import io.choerodon.agile.api.dto.StatusMapDTO;
-
 import java.util.List;
 
 /**
@@ -12,10 +10,10 @@ public class StateMachineSchemeDeployUpdateIssue {
     private Long schemeId;
     private Long organizationId;
     private Long userId;
-    private List<StateMachineSchemeChangeItem> changeItems;
     private List<ProjectConfig> projectConfigs;
+    private List<StateMachineSchemeChangeItem> changeItems;
     private List<RemoveStatusWithProject> removeStatusWithProjects;
-    private List<StatusMapDTO> addStatuses;
+    private List<AddStatusWithProject> addStatusWithProjects;
 
     public Long getUserId() {
         return userId;
@@ -57,12 +55,12 @@ public class StateMachineSchemeDeployUpdateIssue {
         this.changeItems = changeItems;
     }
 
-    public List<StatusMapDTO> getAddStatuses() {
-        return addStatuses;
+    public List<AddStatusWithProject> getAddStatusWithProjects() {
+        return addStatusWithProjects;
     }
 
-    public void setAddStatuses(List<StatusMapDTO> addStatuses) {
-        this.addStatuses = addStatuses;
+    public void setAddStatusWithProjects(List<AddStatusWithProject> addStatusWithProjects) {
+        this.addStatusWithProjects = addStatusWithProjects;
     }
 
     public List<RemoveStatusWithProject> getRemoveStatusWithProjects() {

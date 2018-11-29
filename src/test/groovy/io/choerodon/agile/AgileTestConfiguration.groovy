@@ -7,7 +7,7 @@ import io.choerodon.agile.app.service.IssueAttachmentService
 import io.choerodon.agile.app.service.ProductVersionService
 import io.choerodon.agile.app.service.impl.IssueAttachmentServiceImpl
 import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl
-import io.choerodon.agile.domain.agile.event.DeployStatusPayload
+import io.choerodon.agile.domain.agile.event.DeployStateMachinePayload
 import io.choerodon.agile.domain.agile.event.OrganizationCreateEventPayload
 import io.choerodon.agile.domain.agile.event.ProjectCreateAgilePayload
 import io.choerodon.agile.domain.agile.event.ProjectEvent
@@ -268,10 +268,10 @@ class AgileTestConfiguration {
         statusPayloads.add(statusPayload3)
         projectCreateAgilePayload.statusPayloads = statusPayloads
         agileEventHandler.dealStateMachineInitProject(JSON.toJSONString(projectCreateAgilePayload))
-        DeployStatusPayload deployStatusPayload = new DeployStatusPayload()
-        Map<String, List<Long>> map = new HashMap<>(1)
-        map.put("test", [1])
-        deployStatusPayload.projectIdsMap = map
+//        DeployStateMachinePayload deployStateMachinePayload = new DeployStateMachinePayload()
+//        Map<String, List<Long>> map = new HashMap<>(1)
+//        map.put("test", [1])
+//        deployStatusPayload.projectIdsMap = map
         OrganizationCreateEventPayload organizationCreateEventPayload = new OrganizationCreateEventPayload()
         organizationCreateEventPayload.setId(1L)
         String message = JSON.toJSONString(organizationCreateEventPayload)
