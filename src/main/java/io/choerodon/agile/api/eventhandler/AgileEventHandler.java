@@ -179,10 +179,6 @@ public class AgileEventHandler {
         List<ProjectConfig> projectConfigs = deployUpdateIssue.getProjectConfigs();
         List<RemoveStatusWithProject> removeStatusWithProjects = deployUpdateIssue.getRemoveStatusWithProjects();
         List<AddStatusWithProject> addStatusWithProjects = deployUpdateIssue.getAddStatusWithProjects();
-        //删除项目下的状态及与列的关联
-        if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
-            boardColumnRepository.batchDeleteColumnAndStatusRel(deployUpdateIssue.getRemoveStatusWithProjects());
-        }
         //增加项目下的状态
         if (addStatusWithProjects != null && !addStatusWithProjects.isEmpty()) {
             issueStatusRepository.batchCreateStatusByProjectIds(addStatusWithProjects, deployUpdateIssue.getUserId());
@@ -201,7 +197,10 @@ public class AgileEventHandler {
                 });
             });
         });
-
+        //删除项目下的状态及与列的关联
+        if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
+            boardColumnRepository.batchDeleteColumnAndStatusRel(deployUpdateIssue.getRemoveStatusWithProjects());
+        }
         issueFeignClient.updateDeployProgress(deployUpdateIssue.getOrganizationId(), deployUpdateIssue.getSchemeId(), 100);
         return message;
     }
