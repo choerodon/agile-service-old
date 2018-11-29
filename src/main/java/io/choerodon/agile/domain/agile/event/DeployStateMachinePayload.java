@@ -7,8 +7,17 @@ import java.util.List;
  * @date 2018/10/31
  */
 public class DeployStateMachinePayload {
+    private Long userId;
     private List<RemoveStatusWithProject> removeStatusWithProjects;
     private List<AddStatusWithProject> addStatusWithProjects;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public List<RemoveStatusWithProject> getRemoveStatusWithProjects() {
         return removeStatusWithProjects;

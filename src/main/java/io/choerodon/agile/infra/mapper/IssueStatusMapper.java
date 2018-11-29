@@ -2,6 +2,7 @@ package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.api.dto.StatusDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.domain.agile.event.AddStatusWithProject;
 import io.choerodon.agile.domain.agile.event.ProjectConfig;
 import io.choerodon.agile.infra.dataobject.IssueStatusCreateDO;
 import io.choerodon.agile.infra.dataobject.StatusDO;
@@ -47,9 +48,8 @@ public interface IssueStatusMapper extends BaseMapper<IssueStatusDO> {
     /**
      * 批量创建状态
      *
-     * @param statusDTOS statusDTOS
-     * @param projectIds projectIds
-     * @param userId     userId
+     * @param addStatusWithProjects addStatusWithProjects
+     * @param userId                userId
      */
-    void batchCreateStatusByProjectIds(@Param("statusDTOS") List<StatusMapDTO> statusDTOS, @Param("projectIds") List<Long> projectIds, @Param("userId") Long userId);
+    void batchCreateStatusByProjectIds(@Param("addStatusWithProjects") List<AddStatusWithProject> addStatusWithProjects, @Param("userId") Long userId);
 }

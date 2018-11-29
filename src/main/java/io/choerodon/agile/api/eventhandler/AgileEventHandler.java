@@ -162,18 +162,9 @@ public class AgileEventHandler {
         if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
             boardColumnRepository.batchDeleteColumnAndStatusRel(removeStatusWithProjects);
         }
-        //增加项目下的状态【todo】
-        for (AddStatusWithProject addStatusWithProject : addStatusWithProjects) {
-            Long projectId = addStatusWithProject.getProjectId();
-            List<StatusMapDTO> statusMapDTOS = addStatusWithProject.getAddStatuses();
-            for (StatusMapDTO statusMapDTO : statusMapDTOS) {
-                IssueStatusDTO issueStatusDTO = new IssueStatusDTO();
-                issueStatusDTO.setStatusId(statusMapDTO.getId());
-                issueStatusDTO.setCategoryCode(statusMapDTO.getType());
-                issueStatusDTO.setName(statusMapDTO.getName());
-                issueStatusDTO.setProjectId(projectId);
-                issueStatusService.createStatusByStateMachine(projectId, issueStatusDTO);
-            }
+        //增加项目下的状态
+        if (addStatusWithProjects != null && !addStatusWithProjects.isEmpty()) {
+            issueStatusRepository.batchCreateStatusByProjectIds(addStatusWithProjects, deployStateMachinePayload.getUserId());
         }
     }
 
@@ -189,15 +180,13 @@ public class AgileEventHandler {
         List<RemoveStatusWithProject> removeStatusWithProjects = deployUpdateIssue.getRemoveStatusWithProjects();
         List<AddStatusWithProject> addStatusWithProjects = deployUpdateIssue.getAddStatusWithProjects();
         //删除项目下的状态及与列的关联
-        if (!removeStatusWithProjects.isEmpty() && removeStatusWithProjects != null) {
+        if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
             boardColumnRepository.batchDeleteColumnAndStatusRel(deployUpdateIssue.getRemoveStatusWithProjects());
         }
-        //增加项目下的状态【todo】
-//        List<Long> projectIds = projectConfigs.stream().map(ProjectConfig::getProjectId).collect(Collectors.toList());
-//        List<StatusMapDTO> addStatus = deployUpdateIssue.getAddStatuses();
-//        if (addStatus != null && !addStatus.isEmpty() && !projectIds.isEmpty()) {
-//            issueStatusRepository.batchCreateStatusByProjectIds(addStatus, projectIds, deployUpdateIssue.getUserId());
-//        }
+        //增加项目下的状态
+        if (addStatusWithProjects != null && !addStatusWithProjects.isEmpty()) {
+            issueStatusRepository.batchCreateStatusByProjectIds(addStatusWithProjects, deployUpdateIssue.getUserId());
+        }
         //批量更新项目对应的issue状态
         projectConfigs.forEach(projectConfig -> {
             Long projectId = projectConfig.getProjectId();

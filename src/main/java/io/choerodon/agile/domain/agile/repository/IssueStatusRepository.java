@@ -1,7 +1,7 @@
 package io.choerodon.agile.domain.agile.repository;
 
-import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.domain.agile.entity.IssueStatusE;
+import io.choerodon.agile.domain.agile.event.AddStatusWithProject;
 
 import java.util.List;
 
@@ -20,11 +20,10 @@ public interface IssueStatusRepository {
     /**
      * 批量创建状态
      *
-     * @param statusDTOS statusDTOS
-     * @param projectIds projectIds
-     * @param userId     userId
+     * @param addStatusWithProjects addStatusWithProjects
+     * @param userId                userId
      */
-    void batchCreateStatusByProjectIds(List<StatusMapDTO> statusDTOS, List<Long> projectIds, Long userId);
+    void batchCreateStatusByProjectIds(List<AddStatusWithProject> addStatusWithProjects, Long userId);
 
 //    Boolean checkSameStatus(Long projectId, String statusName);
 
