@@ -162,7 +162,7 @@ public class AgileEventHandler {
         if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
             boardColumnRepository.batchDeleteColumnAndStatusRel(removeStatusWithProjects);
         }
-        //增加项目下的状态
+        //增加项目下的状态【todo】
         for (AddStatusWithProject addStatusWithProject : addStatusWithProjects) {
             Long projectId = addStatusWithProject.getProjectId();
             List<StatusMapDTO> statusMapDTOS = addStatusWithProject.getAddStatuses();
@@ -184,29 +184,33 @@ public class AgileEventHandler {
     public String handleConsumeStateMachineSchemeDeployEvent(String message) {
         LOGGER.info("接受发布状态机方案事件{}", message);
         StateMachineSchemeDeployUpdateIssue deployUpdateIssue = JSONObject.parseObject(message, StateMachineSchemeDeployUpdateIssue.class);
-        List<ProjectConfig> projectConfigs = deployUpdateIssue.getProjectConfigs();
-        List<StateMachineSchemeChangeItem> changeItems = deployUpdateIssue.getChangeItems();
-        List<Long> projectIds = projectConfigs.stream().map(ProjectConfig::getProjectId).collect(Collectors.toList());
-        List<StatusMapDTO> addStatus = deployUpdateIssue.getAddStatuses();
-        if (addStatus != null && !addStatus.isEmpty() && !projectIds.isEmpty()) {
-            issueStatusRepository.batchCreateStatusByProjectIds(addStatus, projectIds, deployUpdateIssue.getUserId());
-        }
-        projectConfigs.forEach(projectConfig -> {
-            Long projectId = projectConfig.getProjectId();
-            String applyType = projectConfig.getApplyType();
-            changeItems.forEach(changeItem -> {
-                Long issueTypeId = changeItem.getIssueTypeId();
-                List<StateMachineSchemeStatusChangeItem> statusChangeItems = changeItem.getStatusChangeItems();
-                statusChangeItems.forEach(statusChangeItem -> {
-                    Long oldStatusId = statusChangeItem.getOldStatus().getId();
-                    Long newStatusId = statusChangeItem.getNewStatus().getId();
-                    issueRepository.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId, deployUpdateIssue.getUserId());
-                });
-            });
-        });
-        if (!deployUpdateIssue.getRemoveStatusWithProjects().isEmpty() && deployUpdateIssue.getRemoveStatusWithProjects() != null) {
+        List<RemoveStatusWithProject> removeStatusWithProjects = deployUpdateIssue.getRemoveStatusWithProjects();
+        List<AddStatusWithProject> addStatusWithProjects = deployUpdateIssue.getAddStatusWithProjects();
+        //删除项目下的状态及与列的关联
+        if (!removeStatusWithProjects.isEmpty() && removeStatusWithProjects != null) {
             boardColumnRepository.batchDeleteColumnAndStatusRel(deployUpdateIssue.getRemoveStatusWithProjects());
         }
+        //增加项目下的状态【todo】
+//        List<StateMachineSchemeChangeItem> changeItems = deployUpdateIssue.getChangeItems();
+//        List<Long> projectIds = projectConfigs.stream().map(ProjectConfig::getProjectId).collect(Collectors.toList());
+//        List<StatusMapDTO> addStatus = deployUpdateIssue.getAddStatuses();
+//        if (addStatus != null && !addStatus.isEmpty() && !projectIds.isEmpty()) {
+//            issueStatusRepository.batchCreateStatusByProjectIds(addStatus, projectIds, deployUpdateIssue.getUserId());
+//        }
+//        projectConfigs.forEach(projectConfig -> {
+//            Long projectId = projectConfig.getProjectId();
+//            String applyType = projectConfig.getApplyType();
+//            changeItems.forEach(changeItem -> {
+//                Long issueTypeId = changeItem.getIssueTypeId();
+//                List<StateMachineSchemeStatusChangeItem> statusChangeItems = changeItem.getStatusChangeItems();
+//                statusChangeItems.forEach(statusChangeItem -> {
+//                    Long oldStatusId = statusChangeItem.getOldStatus().getId();
+//                    Long newStatusId = statusChangeItem.getNewStatus().getId();
+//                    issueRepository.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId, deployUpdateIssue.getUserId());
+//                });
+//            });
+//        });
+
         issueFeignClient.updateDeployProgress(deployUpdateIssue.getOrganizationId(), deployUpdateIssue.getSchemeId(), 100);
         return message;
     }
