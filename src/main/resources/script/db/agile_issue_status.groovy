@@ -52,4 +52,11 @@ databaseChangeLog(logicalFilePath:'agile_issue_status.groovyoovy') {
             column(name: 'status_id', type: 'BIGINT UNSIGNED', remarks: 'status id')
         }
     }
+
+    changeSet(id: '2018-11-29-status-add-index', author: 'dinghuang123@gmail.com') {
+        createIndex(indexName: 'uk_status_id_project_id', tableName: 'agile_issue_status', unique: true) {
+            column(name: 'status_id')
+            column(name: 'project_id')
+        }
+    }
 }
