@@ -53,6 +53,14 @@ databaseChangeLog(logicalFilePath:'agile_issue_status.groovyoovy') {
         }
     }
 
+    changeSet(id: '2018-11-29-status-delete-data', author: 'dinghuang123@gmail.com') {
+        sql(stripComments: true, splitStatements: true, endDelimiter: ';') {
+            "DELETE FROM agile_issue_status WHERE status_id IS NULL;" +
+            "DELETE FROM agile_issue_status WHERE ( status_id, project_id ) IN (SELECT * FROM ( SELECT a2.status_id, a2.project_id FROM agile_issue_status a2 GROUP BY a2.status_id, a2.project_id HAVING count( * ) > 1 ) " +
+                    "a4 ) AND id NOT IN (SELECT * FROM ( SELECT min( a1.id ) FROM agile_issue_status a1 GROUP BY a1.status_id, a1.project_id HAVING count( * ) > 1 ) a3 );"
+        }
+    }
+
     changeSet(id: '2018-11-29-status-add-index', author: 'dinghuang123@gmail.com') {
         createIndex(indexName: 'uk_status_id_project_id', tableName: 'agile_issue_status', unique: true) {
             column(name: 'status_id')
