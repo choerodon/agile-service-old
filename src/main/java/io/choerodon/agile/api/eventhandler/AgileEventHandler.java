@@ -15,12 +15,10 @@ import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
 import io.choerodon.asgard.saga.annotation.SagaTask;
-import io.choerodon.core.oauth.DetailsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,7 +139,7 @@ public class AgileEventHandler {
     public void dealDeployStateMachineDeleteStatus(String message) {
         DeployStatusPayload deployStatusPayload = JSONObject.parseObject(message, DeployStatusPayload.class);
         List<RemoveStatusWithProject> removeStatusWithProjects = deployStatusPayload.getRemoveStatusWithProjects();
-        //删除状态及与列的关联恭喜
+        //删除状态及与列的关联
         LOGGER.info("sagaTask agile_delete_status removeStatusWithProjects: {}", removeStatusWithProjects);
         if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
             boardColumnRepository.batchDeleteColumnAndStatusRel(removeStatusWithProjects);
