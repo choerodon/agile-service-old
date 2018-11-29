@@ -59,17 +59,17 @@ public class AgileEventHandler {
 
     private static final String AGILE_INIT_TIMEZONE = "agile-init-timezone";
     private static final String AGILE_INIT_PROJECT = "agile-init-project";
-    private static final String AGILE_CONSUME_DEPLOY_STATE_MACHINE_SCHEME = "agile-consume-deploy-statemachine-scheme";
     private static final String STATE_MACHINE_INIT_PROJECT = "state-machine-init-project";
-    private static final String AGILE_CHANGE_STATUS = "agile-change-status";
     private static final String IAM_CREATE_PROJECT = "iam-create-project";
-    private static final String DEPLOY_STATE_MACHINE_SCHEME = "issue-deploy-statemachine-scheme";
     private static final String ORG_CREATE = "org-create-organization";
     private static final String PROJECT_CREATE_STATE_MACHINE = "project-create-state-machine";
     private static final String ORG_REGISTER = "org-register";
     private static final String ISSUE_SERVICE_CONSUME_STATUS = "issue-service-consume-status";
     private static final String AGILE_REMOVE_STATUS = "agile-remove-status";
+    private static final String AGILE_CHANGE_STATUS = "agile-change-status";
+    private static final String AGILE_CONSUME_DEPLOY_STATE_MACHINE_SCHEME = "agile-consume-deploy-statemachine-scheme";
     private static final String DEPLOY_STATE_MACHINE = "deploy-state-machine";
+    private static final String DEPLOY_STATE_MACHINE_SCHEME = "deploy-state-machine-scheme";
 
     /**
      * 创建项目事件
@@ -152,13 +152,13 @@ public class AgileEventHandler {
     @SagaTask(code = AGILE_CHANGE_STATUS,
             description = "agile消费发布状态机事件",
             sagaCode = DEPLOY_STATE_MACHINE,
-            seq = 4)
+            seq = 1)
     public void handleDeployStateMachineEvent(String message) {
+        LOGGER.info("sagaTask agile_change_status message: {}", message);
         DeployStateMachinePayload deployStateMachinePayload = JSONObject.parseObject(message, DeployStateMachinePayload.class);
         List<RemoveStatusWithProject> removeStatusWithProjects = deployStateMachinePayload.getRemoveStatusWithProjects();
         List<AddStatusWithProject> addStatusWithProjects = deployStateMachinePayload.getAddStatusWithProjects();
         //删除项目下的状态及与列的关联
-        LOGGER.info("sagaTask agile_delete_status removeStatusWithProjects: {}", removeStatusWithProjects);
         if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
             boardColumnRepository.batchDeleteColumnAndStatusRel(removeStatusWithProjects);
         }
@@ -173,7 +173,7 @@ public class AgileEventHandler {
             sagaCode = DEPLOY_STATE_MACHINE_SCHEME,
             seq = 1)
     public String handleConsumeStateMachineSchemeDeployEvent(String message) {
-        LOGGER.info("接受发布状态机方案事件{}", message);
+        LOGGER.info("sagaTask agile-consume-deploy-statemachine-scheme message: {}", message);
         StateMachineSchemeDeployUpdateIssue deployUpdateIssue = JSONObject.parseObject(message, StateMachineSchemeDeployUpdateIssue.class);
         List<StateMachineSchemeChangeItem> changeItems = deployUpdateIssue.getChangeItems();
         List<ProjectConfig> projectConfigs = deployUpdateIssue.getProjectConfigs();
