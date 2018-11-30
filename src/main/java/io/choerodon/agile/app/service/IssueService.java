@@ -32,8 +32,6 @@ public interface IssueService {
 
     void afterCreateSubIssue(Long issueId, IssueE subIssueE, IssueSubCreateDTO issueSubCreateDTO, ProjectInfoE projectInfoE);
 
-    IssueDTO createIssueCsnTest(IssueCreateDTO issueCreateDTO, String applyType);
-
     /**
      * 查询单个issue
      *
