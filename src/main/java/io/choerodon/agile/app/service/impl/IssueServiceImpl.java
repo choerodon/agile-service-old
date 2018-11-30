@@ -252,18 +252,6 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public IssueDTO createIssueCsnTest(IssueCreateDTO issueCreateDTO2, String applyType) {
-        if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
-            throw new CommonException("error.applyType.illegal");
-        }
-        IssueDetailDO issueDetailDO = issueMapper.queryIssueDetail(28L, 21221L);
-        IssueCreateDTO issueCreateDTO = issueAssembler.issueDtoToIssueCreateDto(issueDetailDO);
-        IssueDTO newIssue = stateMachineService.createIssue(issueCreateDTO2, applyType);
-        return newIssue;
-    }
-
-    @Override
     public void handleInitIssue(IssueE issueE, Long statusId, ProjectInfoE projectInfoE) {
         //如果是epic，初始化颜色
         if (ISSUE_EPIC.equals(issueE.getTypeCode())) {
@@ -1111,11 +1099,8 @@ public class IssueServiceImpl implements IssueService {
         } else {
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
         }
-        if (issueUpdateTypeDTO.getStatusId() != null) {
-            issueE.setStatusId(issueUpdateTypeDTO.getStatusId());
-        }
         issueE.setIssueTypeId(issueUpdateTypeDTO.getIssueTypeId());
-        issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, REMAIN_TIME_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, STORY_POINTS_FIELD, RANK_FIELD, EPIC_SEQUENCE, ISSUE_TYPE_ID, STATUS_ID});
+        issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, REMAIN_TIME_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, STORY_POINTS_FIELD, RANK_FIELD, EPIC_SEQUENCE, ISSUE_TYPE_ID});
         return queryIssue(issueE.getProjectId(), issueE.getIssueId(), organizationId);
     }
 

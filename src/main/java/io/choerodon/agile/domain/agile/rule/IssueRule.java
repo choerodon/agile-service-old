@@ -10,8 +10,11 @@ import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.EnumUtil;
 import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.statemachine.feign.InstanceFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +38,10 @@ public class IssueRule {
     private ComponentIssueRelMapper componentIssueRelMapper;
     @Autowired
     private LabelIssueRelMapper labelIssueRelMapper;
+    @Autowired
+    private IssueFeignClient issueFeignClient;
+    @Autowired
+    private StateMachineFeignClient stateMachineFeignClient;
 
     private static final String ISSUE_ID = "issueId";
     private static final String COLOR = "color";
@@ -43,6 +50,7 @@ public class IssueRule {
     private static final String SUB_TASK = "sub_task";
     private static final String STATUS_ID = "status_id";
     private static final String ERROR_ISSUE_ID_NOT_FOUND = "error.IssueRule.issueId";
+    private static final String AGILE = "agile";
 
     public void verifyCreateData(IssueCreateDTO issueCreateDTO, Long projectId, String applyType) {
         issueCreateDTO.setProjectId(projectId);
@@ -165,6 +173,14 @@ public class IssueRule {
         }
         if (issueUpdateTypeDTO.getTypeCode().equals(issueE.getTypeCode())) {
             throw new CommonException("error.IssueRule.sameTypeCode");
+        }
+        Long originStateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueE.getIssueTypeId()).getBody();
+        Long currentStateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueUpdateTypeDTO.getIssueTypeId()).getBody();
+        if (originStateMachineId == null || currentStateMachineId == null) {
+            throw new CommonException("error.IssueRule.stateMachineId");
+        }
+        if (!originStateMachineId.equals(currentStateMachineId)) {
+            throw new CommonException("error.IssueRule.stateMachineId");
         }
         return issueE;
     }
