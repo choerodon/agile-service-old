@@ -12,4 +12,6 @@ public interface LookupValueService {
 
     LookupTypeWithValuesDTO queryLookupValueByCode(Long projectId, String typeCode);
 
+    LookupTypeWithValuesDTO queryConstraintLookupValue(Long projectId);
+
 }

@@ -29,4 +29,12 @@ public class LookupValueServiceImpl implements LookupValueService {
         result.setLookupValues(ConvertHelper.convertList(typeWithValues.getLookupValues(), LookupValueDTO.class));
         return result;
     }
+
+    @Override
+    public LookupTypeWithValuesDTO queryConstraintLookupValue(Long projectId) {
+        LookupTypeWithValuesDO typeWithValues = lookupValueMapper.queryLookupValueByCode("constraint");
+        LookupTypeWithValuesDTO result = ConvertHelper.convert(typeWithValues, LookupTypeWithValuesDTO.class);
+        result.setLookupValues(ConvertHelper.convertList(typeWithValues.getLookupValues(), LookupValueDTO.class));
+        return result;
+    }
 }

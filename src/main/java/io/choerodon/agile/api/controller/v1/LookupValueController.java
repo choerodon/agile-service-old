@@ -40,4 +40,14 @@ public class LookupValueController {
                 .orElseThrow(() -> new CommonException("error.lookupValueList.get"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("查询列约束下的value值")
+    @GetMapping(value = "/constraint/list")
+    public ResponseEntity<LookupTypeWithValuesDTO> queryConstraintLookupValue(@ApiParam(value = "项目id", required = true)
+                                                                              @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(lookupValueService.queryConstraintLookupValue(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.lookupValueList.get"));
+    }
+
 }
