@@ -81,7 +81,7 @@ class ProductVersionControllerSpec extends Specification {
         productVersionCreateDTO.projectId = projectId
         productVersionCreateDTO.name = name
         productVersionCreateDTO.startDate = startDate
-        productVersionCreateDTO.releaseDate = releaseDate
+        productVersionCreateDTO.expectReleaseDate = expectReleaseDate
 
         when:
         HttpEntity<ProductVersionCreateDTO> productVersionCreateDTOHttpEntity = new HttpEntity<>(productVersionCreateDTO);
@@ -98,7 +98,7 @@ class ProductVersionControllerSpec extends Specification {
         entity.body.name == resultName
 
         where:
-        projectId | startDate                           | releaseDate                         | name             | resultName
+        projectId | startDate                           | expectReleaseDate                         | name             | resultName
         1L        | null                                | null                                | versionName      | versionName
         1L        | null                                | null                                | null             | null
         1L        | StringToDate("2018-08-22 00:00:00") | StringToDate("2018-08-21 00:00:00") | versionName2     | null
