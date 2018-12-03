@@ -54,4 +54,10 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_product_version.groovy') {
             "update agile_product_version set sequence = version_id;"
         }
     }
+
+    changeSet(id: '2018-12-03-version-add-column', author: 'fuqianghuang01@gmail.com') {
+        addColumn(tableName: 'agile_product_version') {
+            column(name: 'expect_release_date', type: 'DATETIME', remarks: 'expect release date')
+        }
+    }
 }

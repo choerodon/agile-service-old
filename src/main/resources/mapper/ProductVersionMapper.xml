@@ -31,6 +31,7 @@
         SELECT
         apv.version_id, apv.name,
         apv.description, apv.start_date,
+        apv.expect_release_date,
         apv.release_date, apv.status_code,
         apv.project_id,
         apv.object_version_number,
@@ -69,6 +70,7 @@
             name,
             description,
             start_date,
+            expect_release_date,
             release_date,
             status_code,
             project_id,
@@ -165,6 +167,7 @@
             apv.name,
             apv.description,
             apv.start_date,
+            apv.expect_release_date,
             apv.release_date,
             apv.status_code,
             alv.name AS status_name,
@@ -394,7 +397,7 @@
     </select>
 
     <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
-        SELECT version_id, name, status_code,release_date
+        SELECT version_id, name, status_code,release_date, expect_release_date
         FROM agile_product_version
         WHERE project_id = #{projectId}
         <if test="statusCodes != null and statusCodes.size > 0">

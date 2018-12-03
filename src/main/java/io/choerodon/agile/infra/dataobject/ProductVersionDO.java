@@ -25,6 +25,7 @@ public class ProductVersionDO extends AuditDomain {
     private String name;
     private String description;
     private Date startDate;
+    private Date expectReleaseDate;
     private Date releaseDate;
     private String statusCode;
     private String oldStatusCode;
@@ -68,6 +69,14 @@ public class ProductVersionDO extends AuditDomain {
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
+    }
+
+    public void setExpectReleaseDate(Date expectReleaseDate) {
+        this.expectReleaseDate = expectReleaseDate;
+    }
+
+    public Date getExpectReleaseDate() {
+        return expectReleaseDate;
     }
 
     public Date getReleaseDate() {

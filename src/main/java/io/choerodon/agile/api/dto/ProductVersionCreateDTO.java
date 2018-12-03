@@ -15,6 +15,7 @@ public class ProductVersionCreateDTO {
     private String name;
     private String description;
     private Date startDate;
+    private Date expectReleaseDate;
     private Date releaseDate;
     @NotNull(message = PROJECT_ID_NULL_ERROR)
     private Long projectId;
@@ -41,6 +42,14 @@ public class ProductVersionCreateDTO {
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
+    }
+
+    public void setExpectReleaseDate(Date expectReleaseDate) {
+        this.expectReleaseDate = expectReleaseDate;
+    }
+
+    public Date getExpectReleaseDate() {
+        return expectReleaseDate;
     }
 
     public Date getReleaseDate() {

@@ -10,6 +10,7 @@ public class ProductVersionStatisticsDO {
     private String name;
     private String description;
     private Date startDate;
+    private Date expectReleaseDate;
     private Date releaseDate;
     private String statusCode;
     private String statusName;
@@ -45,6 +46,14 @@ public class ProductVersionStatisticsDO {
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
+    }
+
+    public void setExpectReleaseDate(Date expectReleaseDate) {
+        this.expectReleaseDate = expectReleaseDate;
+    }
+
+    public Date getExpectReleaseDate() {
+        return expectReleaseDate;
     }
 
     public Date getReleaseDate() {
