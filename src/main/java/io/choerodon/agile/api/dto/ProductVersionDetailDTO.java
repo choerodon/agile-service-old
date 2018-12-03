@@ -11,6 +11,7 @@ public class ProductVersionDetailDTO {
     private String name;
     private String description;
     private Date startDate;
+    private Date expectReleaseDate;
     private Date releaseDate;
     private String statusCode;
     private Long projectId;
@@ -48,12 +49,12 @@ public class ProductVersionDetailDTO {
         this.startDate = startDate;
     }
 
-    public Date getReleaseDate() {
-        return releaseDate;
+    public void setExpectReleaseDate(Date expectReleaseDate) {
+        this.expectReleaseDate = expectReleaseDate;
     }
 
-    public void setReleaseDate(Date releaseDate) {
-        this.releaseDate = releaseDate;
+    public Date getExpectReleaseDate() {
+        return expectReleaseDate;
     }
 
     public String getStatusCode() {

@@ -9,6 +9,7 @@ public class ProductVersionNameDO {
     private Long versionId;
     private String name;
     private String statusCode;
+    private Date expectReleaseDate;
     private Date releaseDate;
 
     public Long getVersionId() {
@@ -33,6 +34,14 @@ public class ProductVersionNameDO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setExpectReleaseDate(Date expectReleaseDate) {
+        this.expectReleaseDate = expectReleaseDate;
+    }
+
+    public Date getExpectReleaseDate() {
+        return expectReleaseDate;
     }
 
     public Date getReleaseDate() {

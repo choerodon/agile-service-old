@@ -13,6 +13,7 @@ public class ProductVersionE {
     private String name;
     private String description;
     private Date startDate;
+    private Date expectReleaseDate;
     private Date releaseDate;
     private String statusCode;
     private String oldStatusCode;
@@ -55,6 +56,14 @@ public class ProductVersionE {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setExpectReleaseDate(Date expectReleaseDate) {
+        this.expectReleaseDate = expectReleaseDate;
+    }
+
+    public Date getExpectReleaseDate() {
+        return expectReleaseDate;
     }
 
     public Date getStartDate() {
@@ -114,7 +123,7 @@ public class ProductVersionE {
     }
 
     public void checkDate() {
-        if (this.startDate != null && this.releaseDate != null && this.startDate.after(this.releaseDate)) {
+        if (this.startDate != null && this.expectReleaseDate != null && this.startDate.after(this.expectReleaseDate)) {
             throw new CommonException(VERSION_DATE_ERROR);
         }
     }
