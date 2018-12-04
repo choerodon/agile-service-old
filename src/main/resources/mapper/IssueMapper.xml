@@ -1094,7 +1094,7 @@
         agile_issue ai
         WHERE
         ai.project_id = #{projectId}
-        AND ai.type_code NOT IN ( 'sub_task', 'issue_epic' )
+        AND ai.type_code != 'issue_epic'
         AND ai.rank > #{leftRank}
         AND ai.issue_id
         <choose>
@@ -1128,7 +1128,7 @@
         agile_issue ai
         WHERE
         ai.project_id = #{projectId}
-        AND ai.type_code NOT IN ( 'sub_task', 'issue_epic' )
+        AND ai.type_code != 'issue_epic'
         AND ai.rank &lt; #{rightRank}
         AND ai.issue_id
         <choose>

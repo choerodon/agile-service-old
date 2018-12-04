@@ -9,6 +9,7 @@ import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue;
 import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployUpdateIssue;
 import io.choerodon.agile.infra.dataobject.IssueDetailDO;
 import io.choerodon.statemachine.dto.ExecuteResult;
+import io.choerodon.statemachine.dto.InputDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -31,9 +32,10 @@ public interface StateMachineService {
      * @param projectId
      * @param issueId
      * @param transformId
+     * @param inputDTO
      * @return
      */
-    ExecuteResult executeTransform(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType);
+    ExecuteResult executeTransform(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType, InputDTO inputDTO);
 
     /**
      * 【内部调用】校验是否可以删除状态机的节点

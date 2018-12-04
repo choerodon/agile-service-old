@@ -10,6 +10,8 @@ public class IssueMoveDTO {
 
     private Long statusId;
 
+    private Long sprintId;
+
     private Long boardId;
 
     private Long columnId;
@@ -17,6 +19,44 @@ public class IssueMoveDTO {
     private Long originColumnId;
 
     private Long objectVersionNumber;
+
+    private Boolean before;
+
+    private Long outsetIssueId;
+
+    private Boolean rankIndex;
+
+    public Boolean getBefore() {
+        return before;
+    }
+
+    public void setBefore(Boolean before) {
+        this.before = before;
+    }
+
+    public Boolean getRankIndex() {
+        return rankIndex;
+    }
+
+    public void setRankIndex(Boolean rankIndex) {
+        this.rankIndex = rankIndex;
+    }
+
+    public Long getSprintId() {
+        return sprintId;
+    }
+
+    public void setSprintId(Long sprintId) {
+        this.sprintId = sprintId;
+    }
+
+    public Long getOutsetIssueId() {
+        return outsetIssueId;
+    }
+
+    public void setOutsetIssueId(Long outsetIssueId) {
+        this.outsetIssueId = outsetIssueId;
+    }
 
     public Long getIssueId() {
         return issueId;

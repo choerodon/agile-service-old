@@ -351,7 +351,7 @@ public class IssueE {
     }
 
     public Boolean isIssueRank() {
-        return !Objects.equals(this.typeCode, ISSUE_TEST) && !Objects.equals(this.typeCode, SUB_TASK) && !Objects.equals(this.typeCode, ISSUE_EPIC);
+        return !Objects.equals(this.typeCode, ISSUE_TEST) && !Objects.equals(this.typeCode, ISSUE_EPIC);
     }
 
     public Boolean isIssueMapRank() {
