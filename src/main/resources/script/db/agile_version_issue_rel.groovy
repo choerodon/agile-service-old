@@ -63,4 +63,10 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_version_issue_rel.groovy') {
                     "where avir.creation_date IS NULL;"
         }
     }
+
+    changeSet(id: '2018-12-05-version-issue-rel-add-index', author: 'fuqianghuang01@gmail.com') {
+        createIndex(tableName: "agile_version_issue_rel", indexName: "idx_issue_id") {
+            column(name: "issue_id")
+        }
+    }
 }

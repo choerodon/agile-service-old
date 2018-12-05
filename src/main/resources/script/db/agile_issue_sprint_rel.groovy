@@ -32,4 +32,10 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue_sprint_rel.groovy') {
             "INSERT IGNORE INTO agile_issue_sprint_rel(issue_id, sprint_id, project_id) SELECT ai.issue_id, ai.sprint_id, ai.project_id FROM agile_issue ai WHERE ai.sprint_id IS NOT NULL AND ai.sprint_id != 0;"
         }
     }
+
+    changeSet(id: '2018-12-05-issue-sprint-rel-add-index', author: 'fuqianghuang01@gmail.com') {
+        createIndex(tableName: "agile_issue_sprint_rel", indexName: "idx_issue_id") {
+            column(name: "issue_id")
+        }
+    }
 }

@@ -28,4 +28,10 @@ databaseChangeLog(logicalFilePath: 'agile_component_issue_rel.groovy') {
     changeSet(id: '2018-06-08-agile-component-issue-rel-drop-index', author: 'dinghuang123@gmail.com') {
         dropIndex(tableName: 'agile_component_issue_rel', indexName: 'uk_component_id_issue_id')
     }
+
+    changeSet(id: '2018-12-05-component-issue-rel-add-index', author: 'fuqianghuang01@gmail.com') {
+        createIndex(tableName: "agile_component_issue_rel", indexName: "idx_issue_id") {
+            column(name: "issue_id")
+        }
+    }
 }
