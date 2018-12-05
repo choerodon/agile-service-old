@@ -26,4 +26,10 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_label_issue_rel.groovy') {
             "UPDATE agile_label_issue_rel alir,(SELECT ai.project_id, alir1.issue_id FROM agile_label_issue_rel alir1 right JOIN agile_issue ai ON alir1.issue_id = ai.issue_id) as res SET alir.project_id = res.project_id where alir.issue_id=res.issue_id"
         }
     }
+
+    changeSet(id: '2018-12-05-label-issue-rel-add-index', author: 'fuqianghuang01@gmail.com') {
+        createIndex(tableName: "agile_label_issue_rel", indexName: "idx_issue_id") {
+            column(name: "issue_id")
+        }
+    }
 }
