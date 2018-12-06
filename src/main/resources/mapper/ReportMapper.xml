@@ -21,9 +21,9 @@
     <select id="queryIssueIdsBeforeSprintStart" resultType="java.lang.Long">
         SELECT adl5.issue_id
         FROM agile_data_log adl5
-        WHERE adl5.log_id IN (SELECT MAX(adl.log_id) AS log_id
+        WHERE adl5.project_id = #{sprintDO.projectId} and adl5.log_id IN (SELECT MAX(adl.log_id) AS log_id
                               FROM agile_data_log adl
-                              WHERE adl.field = 'Sprint' AND adl.creation_date &lt;= #{sprintDO.startDate}
+                              WHERE adl.project_id = #{sprintDO.projectId} and adl.field = 'Sprint' AND adl.creation_date &lt;= #{sprintDO.startDate}
                               GROUP BY
                                   adl.issue_id) AND adl5.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
         UNION
@@ -901,7 +901,7 @@
         SELECT DISTINCT adl2.issue_id
         FROM agile_data_log adl2
         WHERE
-            adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
+            adl2.project_id = #{sprintDO.projectId} and  adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
             adl2.creation_date &lt;= #{sprintDO.actualEndDate}
             AND adl2.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
             AND (adl2.new_value is null or not (adl2.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$' ))
