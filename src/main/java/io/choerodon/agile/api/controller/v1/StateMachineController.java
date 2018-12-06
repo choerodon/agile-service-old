@@ -3,7 +3,6 @@ package io.choerodon.agile.api.controller.v1;
 import io.choerodon.agile.app.service.StateMachineService;
 import io.choerodon.agile.domain.agile.event.ProjectConfig;
 import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue;
-import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployUpdateIssue;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;

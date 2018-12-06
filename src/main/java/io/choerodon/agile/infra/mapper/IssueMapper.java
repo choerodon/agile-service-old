@@ -142,6 +142,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<VersionIssueRelDO> queryVersionNameByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("relationType") String relationType);
 
+    List<LabelIssueRelDO> queryLabelIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
     /**
      * 根据issueIds查询issueEpic信息
      *
