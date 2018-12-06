@@ -12,6 +12,7 @@ import io.choerodon.agile.domain.agile.entity.IssueE
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE
 import io.choerodon.agile.domain.agile.event.CreateIssuePayload
 import io.choerodon.agile.domain.agile.event.ProjectConfig
+import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.UserDO
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.test.context.ActiveProfiles
@@ -47,83 +49,11 @@ class StateMachineControllerSpec extends Specification {
 
     @Autowired
     TestRestTemplate restTemplate
-
-    @Autowired
-    private IssueComponentMapper issueComponentMapper
-
-    @Autowired
-    private ProductVersionMapper productVersionMapper
-
-    @Autowired
-    private VersionIssueRelMapper versionIssueRelMapper
-
-    @Autowired
-    AgileEventHandler agileEventHandler
-
-    @Autowired
-    IssueService issueService
-
     @Autowired
     StateMachineServiceImpl stateMachineService
-
-    @Autowired
-    IssueController issueController
-
-    @Autowired
-    IssueMapper issueMapper
-
-    @Autowired
-    SagaClient sagaClient
-
-    @Autowired
-    private SprintMapper sprintMapper
-
-    @Autowired
-    private IssueFeignClient issueFeignClient
-
-    @Autowired
-    private IssueSprintRelMapper issueSprintRelMapper
-
-    @Autowired
-    private ProjectInfoMapper projectInfoMapper
-
-    @Autowired
-    private DataLogMapper dataLogMapper
-
     @Autowired
     @Qualifier("userRepository")
     private UserRepository userRepository
-
-    @Autowired
-    private SiteMsgUtil siteMsgUtil
-
-    @Shared
-    def projectId = 1
-    @Shared
-    def organizationId = 1
-    @Shared
-    def componentId = 1
-    @Shared
-    List issueIdList = new ArrayList()
-    @Shared
-    def issueTestId = null
-    @Shared
-    def sprintId = 1
-    @Shared
-    def versionId = 1
-    @Shared
-    def issueObjectVersionNumberList = []
-
-    @Shared
-    def issues = []
-    @Shared
-    def issuesSize = 0
-    @Shared
-    def resultId = 0
-    @Shared
-    def productVersionId = 0
-    @Shared
-    def testSprintId = 0
     @Shared
     def baseUrl = '/v1/organizations/{organization_id}/state_machine'
     @Shared
@@ -131,21 +61,6 @@ class StateMachineControllerSpec extends Specification {
 
     def setup() {
         given: '设置feign调用mockito'
-//        // *_表示任何长度的参数（这里表示只要执行了queryUsersMap这个方法，就让它返回一个空的Map
-//        Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
-//        UserMessageDO userMessageDO = new UserMessageDO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
-//        userMessageDOMap.put(1, userMessageDO)
-//        userRepository.queryUsersMap(*_) >> userMessageDOMap
-//        issues = issueMapper.selectAll()
-//        issuesSize = issues.size()
-//
-//        and: 'mockSagaClient'
-//        sagaClient.startSaga(_, _) >> null
-//
-//        and:
-//        siteMsgUtil.issueCreate(*_) >> null
-//        siteMsgUtil.issueAssignee(*_) >> null
-//        siteMsgUtil.issueSolve(*_) >> null
         ProjectDTO projectDTO = new ProjectDTO()
         projectDTO.setCode("AG")
         projectDTO.setName("AG")
@@ -184,14 +99,14 @@ class StateMachineControllerSpec extends Specification {
         IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
         IssueE issueE = new IssueE()
         BeanUtils.copyProperties(issueDTO, issueE)
-        issueE.setSprintId(sprintId)
+        issueE.setSprintId(1L)
         ProjectInfoE projectInfoE = new ProjectInfoE()
         projectInfoE.setProjectId(1L)
         CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE)
         stateMachineService.createIssue(issueE.getIssueId(), 1, JSONObject.toJSONString(createIssuePayload))
         issueIds.add(issueDTO.issueId)
 
-        when: '创建问题类型'
+        when: '校验是否可以删除状态机的节点'
         HttpEntity<List<ProjectConfig>> httpEntity = new HttpEntity<>(projectConfigs)
         def entity = restTemplate.exchange(baseUrl + "/check_delete_node?status_id=" + testStatusId, HttpMethod.POST, httpEntity, Map, testOrganizationId)
 
@@ -204,7 +119,6 @@ class StateMachineControllerSpec extends Specification {
                 if (entity.getBody() != null) {
                     Map<String, Object> map = entity.getBody()
                     actResponse = (Boolean) map.get("canDelete")
-//                    Object count = map.get("count")
                 }
             }
         }
@@ -217,5 +131,74 @@ class StateMachineControllerSpec extends Specification {
         1         | 'agile'   | 2        || true       | true
         1         | 'test'    | 1        || true       | true
         2         | 'agile'   | 1        || true       | true
+    }
+
+    /**
+     * 【内部调用】查询状态机方案变更后对issue的影响
+     * @return
+     */
+    def 'checkStateMachineSchemeChange'() {
+        given: '准备工作'
+        List<ProjectConfig> projectConfigs = new ArrayList<>()
+        ProjectConfig projectConfig = new ProjectConfig()
+        projectConfig.setProjectId(projectId)
+        projectConfig.setApplyType(applyType)
+        projectConfigs.add(projectConfig)
+        List<Long> issueTypeIds = new ArrayList<>()
+        issueTypeIds.add(issueTypeId)
+        StateMachineSchemeDeployCheckIssue deployCheckIssue = new StateMachineSchemeDeployCheckIssue()
+        deployCheckIssue.issueTypeIds = issueTypeIds
+        deployCheckIssue.projectConfigs = projectConfigs
+        Long testOrganizationId = 1L
+
+        and: '插入符合条件的issue'
+        IssueCreateDTO issueCreateDTO = new IssueCreateDTO()
+        issueCreateDTO.projectId = 1L
+        issueCreateDTO.sprintId = 1L
+        issueCreateDTO.summary = 'issue'
+        issueCreateDTO.typeCode = 'story'
+        issueCreateDTO.priorityCode = 'low'
+        issueCreateDTO.priorityId = 1L
+        issueCreateDTO.issueTypeId = 1L
+        issueCreateDTO.reporterId = 1L
+        IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
+        IssueE issueE = new IssueE()
+        BeanUtils.copyProperties(issueDTO, issueE)
+        issueE.setSprintId(1L)
+        ProjectInfoE projectInfoE = new ProjectInfoE()
+        projectInfoE.setProjectId(1L)
+        CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE)
+        stateMachineService.createIssue(issueE.getIssueId(), 1L, JSONObject.toJSONString(createIssuePayload))
+        issueIds.add(issueDTO.issueId)
+
+        when: '查询状态机方案变更后对issue的影响'
+        HttpEntity<StateMachineSchemeDeployCheckIssue> httpEntity = new HttpEntity<>(deployCheckIssue)
+        ParameterizedTypeReference<Map<Long, Long>> typeRef = new ParameterizedTypeReference<Map<Long, Long>>() {
+        }
+        def entity = restTemplate.exchange(baseUrl + "/check_state_machine_scheme_change", HttpMethod.POST, httpEntity, typeRef, testOrganizationId)
+
+        then: '状态码为200，调用成功'
+        def actRequest = false
+        def actResponse = false
+        if (entity != null) {
+            if (entity.getStatusCode().is2xxSuccessful()) {
+                actRequest = true
+                if (entity.getBody() != null) {
+                    Map<Long, Long> map = entity.getBody()
+                    if (map.get(1L) >= 1L) {
+                        actResponse = true
+                    }
+                }
+            }
+        }
+        actRequest == expRequest
+        actResponse == expResponse
+
+        where: '测试用例：'
+        projectId | applyType | issueTypeId || expRequest | expResponse
+        1L        | 'agile'   | 1L          || true       | true
+        1L         | 'agile'   | 2L           || true       | false
+        1L         | 'test'    | 1L           || true       | false
+        2L         | 'agile'   | 1L           || true       | false
     }
 }
