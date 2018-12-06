@@ -1,5 +1,7 @@
 package io.choerodon.agile.app.service;
 
+import com.alibaba.fastjson.JSONObject;
+import io.choerodon.agile.api.dto.WikiMenuDTO;
 import io.choerodon.agile.api.dto.WikiRelationDTO;
 
 import java.util.List;
@@ -15,4 +17,6 @@ public interface WikiRelationService {
     List<WikiRelationDTO> queryByIssueId(Long projectId, Long issueId);
 
     void deleteById(Long projectId, Long id);
+
+    String queryWikiMenus(Long projectId, WikiMenuDTO wikiMenuDTO);
 }

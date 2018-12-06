@@ -1,9 +1,6 @@
 package io.choerodon.agile.infra.feign;
 
-import io.choerodon.agile.api.dto.ProjectDTO;
-import io.choerodon.agile.api.dto.RoleAssignmentSearchDTO;
-import io.choerodon.agile.api.dto.RoleDTO;
-import io.choerodon.agile.api.dto.UserDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback;
 import io.choerodon.core.domain.Page;
@@ -72,5 +69,7 @@ public interface UserFeignClient {
             @PathVariable(name = "project_id") Long sourceId,
             @RequestBody(required = false) @Valid RoleAssignmentSearchDTO roleAssignmentSearchDTO);
 
+    @GetMapping(value = "/v1/organizations/{organization_id}")
+    ResponseEntity<OrganizationDTO> query(@PathVariable(name = "organization_id") Long id);
 }
 
