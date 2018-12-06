@@ -356,6 +356,9 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId) {
+        if(organizationId==null){
+            organizationId = ConvertUtil.getOrganizationId(projectId);
+        }
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
@@ -419,6 +422,9 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public Page<IssueListDTO> listIssueWithSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
+        if(organizationId==null){
+            organizationId = ConvertUtil.getOrganizationId(projectId);
+        }
         //处理用户搜索
         handleSearchUser(searchDTO, projectId);
         //处理表映射

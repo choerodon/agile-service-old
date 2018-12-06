@@ -125,7 +125,7 @@ public class IssueController {
                                                @ApiParam(value = "issueId", required = true)
                                                @PathVariable Long issueId,
                                                @ApiParam(value = "组织id", required = true)
-                                               @RequestParam Long organizationId) {
+                                               @RequestParam(required = false) Long organizationId) {
         return Optional.ofNullable(issueService.queryIssue(projectId, issueId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssue"));
@@ -158,7 +158,7 @@ public class IssueController {
                                                                @ApiParam(value = "查询参数", required = true)
                                                                @RequestBody(required = false) SearchDTO searchDTO,
                                                                @ApiParam(value = "查询参数", required = true)
-                                                               @RequestParam Long organizationId) {
+                                                               @RequestParam(required = false) Long organizationId) {
         return Optional.ofNullable(issueService.listIssueWithSub(projectId, searchDTO, pageRequest, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.listIssueWithSub"));
