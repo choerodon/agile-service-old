@@ -1,6 +1,8 @@
 package io.choerodon.agile.api.controller.v1;
 
+import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.LookupTypeWithValuesDTO;
+import io.choerodon.agile.api.dto.WikiMenuDTO;
 import io.choerodon.agile.api.dto.WikiRelationDTO;
 import io.choerodon.agile.app.service.LookupValueService;
 import io.choerodon.agile.app.service.WikiRelationService;
@@ -10,6 +12,7 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import oracle.jdbc.proxy.annotation.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,5 +64,17 @@ public class WikiRelationController {
                                  @PathVariable Long id) {
         wikiRelationService.deleteById(projectId, id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("查询wiki列表")
+    @PostMapping("/menus")
+    public ResponseEntity<String> queryWikiMenus(@ApiParam(value = "项目id", required = true)
+                                                                @PathVariable(name = "project_id") Long projectId,
+                                                     @ApiParam(value = "wiki menu dto", required = true)
+                                                                @RequestBody WikiMenuDTO wikiMenuDTO) {
+        return Optional.ofNullable(wikiRelationService.queryWikiMenus(projectId, wikiMenuDTO))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.wikiMenus.get"));
     }
 }

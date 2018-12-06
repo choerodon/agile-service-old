@@ -61,6 +61,9 @@ ribbon:
 services:
   attachment:
     url: example.com
+  wiki:
+    host: example.com
+    token: token
 #万历表
 workh:
   #目前只支持聚合数据
