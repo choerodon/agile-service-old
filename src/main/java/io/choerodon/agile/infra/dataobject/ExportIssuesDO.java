@@ -27,8 +27,8 @@ public class ExportIssuesDO {
     private String resolution;
     private BigDecimal sumEstimateTime;
     private BigDecimal sumRemainingTime;
-    private String epicName;
     private Integer storyPoints;
+    private String epicName;
 
     public Long getIssueTypeId() {
         return issueTypeId;
