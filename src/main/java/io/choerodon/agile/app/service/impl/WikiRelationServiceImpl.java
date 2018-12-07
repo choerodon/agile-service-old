@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.OrganizationDTO;
 import io.choerodon.agile.api.dto.WikiMenuDTO;
 import io.choerodon.agile.api.dto.WikiRelationDTO;
@@ -72,11 +73,14 @@ public class WikiRelationServiceImpl implements WikiRelationService {
     }
 
     @Override
-    public List<WikiRelationDTO> queryByIssueId(Long projectId, Long issueId) {
+    public JSONObject queryByIssueId(Long projectId, Long issueId) {
+        JSONObject jsonObject = new JSONObject();
         WikiRelationDO wikiRelationDO = new WikiRelationDO();
         wikiRelationDO.setIssueId(issueId);
         List<WikiRelationDO> wikiRelationDOList = wikiRelationMapper.select(wikiRelationDO);
-        return ConvertHelper.convertList(wikiRelationDOList, WikiRelationDTO.class);
+        jsonObject.put("wikiHost", wikiHost);
+        jsonObject.put("wikiRelationList", ConvertHelper.convertList(wikiRelationDOList, WikiRelationDTO.class));
+        return jsonObject;
     }
 
     @Override
@@ -103,7 +107,7 @@ public class WikiRelationServiceImpl implements WikiRelationService {
                 organizationName = URLEncoder.encode(organizationDTO.getName(), "utf-8");
                 projectName = URLEncoder.encode(wikiMenuDTO.getProjectName(), "utf-8");
             } catch (UnsupportedEncodingException u) {
-                throw new CommonException(u);
+                throw new CommonException(u.getMessage());
             }
             param = param + "document:xwiki:O-" + organizationName + ".P-" + projectName + ".WebHome";
         } else {

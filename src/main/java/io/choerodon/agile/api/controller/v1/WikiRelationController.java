@@ -1,10 +1,8 @@
 package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.LookupTypeWithValuesDTO;
 import io.choerodon.agile.api.dto.WikiMenuDTO;
 import io.choerodon.agile.api.dto.WikiRelationDTO;
-import io.choerodon.agile.app.service.LookupValueService;
 import io.choerodon.agile.app.service.WikiRelationService;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
@@ -12,7 +10,6 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import oracle.jdbc.proxy.annotation.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,9 +43,9 @@ public class WikiRelationController {
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据issue id查询wiki relation")
     @GetMapping("/issue/{issueId}")
-    public ResponseEntity<List<WikiRelationDTO>> create(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<JSONObject> create(@ApiParam(value = "项目id", required = true)
                                                         @PathVariable(name = "project_id") Long projectId,
-                                                        @ApiParam(value = "issue id", required = true)
+                                             @ApiParam(value = "issue id", required = true)
                                                         @PathVariable Long issueId) {
         return Optional.ofNullable(wikiRelationService.queryByIssueId(projectId, issueId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
