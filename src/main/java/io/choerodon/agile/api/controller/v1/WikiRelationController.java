@@ -36,10 +36,10 @@ public class WikiRelationController {
     @ApiOperation("添加wiki relation")
     @PostMapping
     public ResponseEntity create(@ApiParam(value = "项目id", required = true)
-                                                  @PathVariable(name = "project_id") Long projectId,
-                                                  @ApiParam(value = "wiki relation dto", required = true)
-                                                  @RequestBody WikiRelationDTO wikiRelationDTO) {
-        wikiRelationService.create(projectId, wikiRelationDTO);
+                                 @PathVariable(name = "project_id") Long projectId,
+                                 @ApiParam(value = "wiki relation dto list", required = true)
+                                 @RequestBody List<WikiRelationDTO> wikiRelationDTOList) {
+        wikiRelationService.create(projectId, wikiRelationDTOList);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
