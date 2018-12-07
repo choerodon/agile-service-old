@@ -43,10 +43,10 @@ public class WikiRelationController {
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据issue id查询wiki relation")
     @GetMapping("/issue/{issueId}")
-    public ResponseEntity<JSONObject> create(@ApiParam(value = "项目id", required = true)
-                                                        @PathVariable(name = "project_id") Long projectId,
-                                             @ApiParam(value = "issue id", required = true)
-                                                        @PathVariable Long issueId) {
+    public ResponseEntity<JSONObject> queryByIssueId(@ApiParam(value = "项目id", required = true)
+                                                     @PathVariable(name = "project_id") Long projectId,
+                                                     @ApiParam(value = "issue id", required = true)
+                                                     @PathVariable Long issueId) {
         return Optional.ofNullable(wikiRelationService.queryByIssueId(projectId, issueId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.wikiRelationList.get"));
