@@ -55,10 +55,10 @@ public class WikiRelationController {
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据id删除wiki relation")
     @DeleteMapping("/{id}")
-    public ResponseEntity update(@ApiParam(value = "项目id", required = true)
-                                 @PathVariable(name = "project_id") Long projectId,
-                                 @ApiParam(value = "wiki id", required = true)
-                                 @PathVariable Long id) {
+    public ResponseEntity deleteById(@ApiParam(value = "项目id", required = true)
+                                     @PathVariable(name = "project_id") Long projectId,
+                                     @ApiParam(value = "wiki id", required = true)
+                                     @PathVariable Long id) {
         wikiRelationService.deleteById(projectId, id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -67,9 +67,9 @@ public class WikiRelationController {
     @ApiOperation("查询wiki menus列表")
     @PostMapping("/menus")
     public ResponseEntity<String> queryWikiMenus(@ApiParam(value = "项目id", required = true)
-                                                                @PathVariable(name = "project_id") Long projectId,
-                                                     @ApiParam(value = "wiki menu dto", required = true)
-                                                                @RequestBody WikiMenuDTO wikiMenuDTO) {
+                                                 @PathVariable(name = "project_id") Long projectId,
+                                                 @ApiParam(value = "wiki menu dto", required = true)
+                                                 @RequestBody WikiMenuDTO wikiMenuDTO) {
         return Optional.ofNullable(wikiRelationService.queryWikiMenus(projectId, wikiMenuDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.wikiMenus.get"));
