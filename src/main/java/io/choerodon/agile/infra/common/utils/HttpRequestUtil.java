@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.common.utils;
 
+import io.choerodon.core.exception.CommonException;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -7,7 +8,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,12 +43,6 @@ public class HttpRequestUtil {
             }
             // 建立实际的连接
             connection.connect();
-            // 获取所有响应头字段
-            Map<String, List<String>> map = connection.getHeaderFields();
-            // 遍历所有的响应头字段
-            for (String key : map.keySet()) {
-                System.out.println(key + "--->" + map.get(key));
-            }
             // 定义 BufferedReader输入流来读取URL的响应
             in = new BufferedReader(new InputStreamReader(
                     connection.getInputStream()));
@@ -57,8 +51,7 @@ public class HttpRequestUtil {
                 result += line;
             }
         } catch (Exception e) {
-            System.out.println("发送GET请求出现异常！" + e);
-            e.printStackTrace();
+            throw new CommonException(e.getMessage());
         }
         // 使用finally块来关闭输入流
         finally {
@@ -67,7 +60,7 @@ public class HttpRequestUtil {
                     in.close();
                 }
             } catch (Exception e2) {
-                e2.printStackTrace();
+                throw new CommonException(e2.getMessage());
             }
         }
         return result;

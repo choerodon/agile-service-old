@@ -14,7 +14,7 @@ public interface WikiRelationService {
 
     void create(Long projectId, List<WikiRelationDTO> wikiRelationDTOList);
 
-    List<WikiRelationDTO> queryByIssueId(Long projectId, Long issueId);
+    JSONObject queryByIssueId(Long projectId, Long issueId);
 
     void deleteById(Long projectId, Long id);
 
