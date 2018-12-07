@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface WikiRelationService {
 
-    void create(Long projectId, WikiRelationDTO wikiRelationDTO);
+    void create(Long projectId, List<WikiRelationDTO> wikiRelationDTOList);
 
     List<WikiRelationDTO> queryByIssueId(Long projectId, Long issueId);
 

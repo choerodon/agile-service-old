@@ -48,10 +48,27 @@ public class WikiRelationServiceImpl implements WikiRelationService {
     @Value("${services.wiki.token}")
     private String wikiToken;
 
+    private Boolean checkRepeat(WikiRelationE wikiRelationE) {
+        WikiRelationDO wikiRelationDO = new WikiRelationDO();
+        wikiRelationDO.setProjectId(wikiRelationE.getProjectId());
+        wikiRelationDO.setIssueId(wikiRelationE.getIssueId());
+        wikiRelationDO.setWikiUrl(wikiRelationE.getWikiUrl());
+        WikiRelationDO res = wikiRelationMapper.selectOne(wikiRelationDO);
+        if (res == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     @Override
-    public void create(Long projectId, WikiRelationDTO wikiRelationDTO) {
-        WikiRelationE wikiRelationE = ConvertHelper.convert(wikiRelationDTO, WikiRelationE.class);
-        wikiRelationRepository.create(wikiRelationE);
+    public void create(Long projectId, List<WikiRelationDTO> wikiRelationDTOList) {
+        List<WikiRelationE> wikiRelationEList = ConvertHelper.convertList(wikiRelationDTOList, WikiRelationE.class);
+        for (WikiRelationE wikiRelationE : wikiRelationEList) {
+            if (!checkRepeat(wikiRelationE)) {
+                wikiRelationRepository.create(wikiRelationE);
+            }
+        }
     }
 
     @Override
