@@ -64,7 +64,7 @@ public class WikiRelationController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("查询wiki列表")
+    @ApiOperation("查询wiki menus列表")
     @PostMapping("/menus")
     public ResponseEntity<String> queryWikiMenus(@ApiParam(value = "项目id", required = true)
                                                                 @PathVariable(name = "project_id") Long projectId,

@@ -11,10 +11,10 @@ databaseChangeLog(logicalFilePath:'agile_wiki_relation.groovy') {
             column(name: 'issue_id', type: 'BIGINT UNSIGNED', remarks: 'issue id') {
                 constraints(nullable: false)
             }
-            column(name: 'wiki_name', type: 'VARCHAR(30)', remarks: 'wiki name') {
+            column(name: 'wiki_name', type: 'text', remarks: 'wiki name') {
                 constraints(nullable: false)
             }
-            column(name: 'wiki_url', type: 'TINYINT UNSIGNED', remarks: 'wiki url') {
+            column(name: 'wiki_url', type: 'text', remarks: 'wiki url') {
                 constraints(nullable: false)
             }
 
