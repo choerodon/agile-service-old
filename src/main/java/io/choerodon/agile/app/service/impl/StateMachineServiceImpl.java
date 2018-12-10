@@ -6,10 +6,11 @@ import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
+import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.domain.agile.event.*;
-import io.choerodon.agile.domain.agile.repository.BoardColumnRepository;
+import io.choerodon.agile.domain.agile.repository.DataLogRepository;
 import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
@@ -20,7 +21,6 @@ import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
-import io.choerodon.agile.infra.repository.impl.IssueStatusRepositoryImpl;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
@@ -61,7 +61,13 @@ public class StateMachineServiceImpl implements StateMachineService {
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
     private static final String ERROR_ISSUE_STATUS_NOT_FOUND = "error.createIssue.issueStatusNotFound";
     private static final String ERROR_CREATE_ISSUE_CREATE = "error.createIssue.create";
-    private static final String ERROR_CREATE_ISSUE_HANDLE_DATA = "error.createIssue.handleData";
+    private static final String FIELD_RANK = "Rank";
+    private static final String PROJECT_ID = "projectId";
+    private static final String RANK = "rank";
+    private static final String STATUS_ID = "statusId";
+    private static final String RANK_HIGHER = "评级更高";
+    private static final String RANK_LOWER = "评级更低";
+
     @Autowired
     private IssueMapper issueMapper;
     @Autowired
@@ -79,9 +85,7 @@ public class StateMachineServiceImpl implements StateMachineService {
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
     @Autowired
-    private BoardColumnRepository boardColumnRepository;
-    @Autowired
-    private IssueStatusRepositoryImpl issueStatusRepository;
+    private DataLogRepository dataLogRepository;
 
     /**
      * 创建issue，由于状态机需要回调，采用手动提交事务
@@ -227,7 +231,7 @@ public class StateMachineServiceImpl implements StateMachineService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public ExecuteResult executeTransform(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType) {
+    public ExecuteResult executeTransform(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType, InputDTO inputDTO) {
         if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
             throw new CommonException("error.applyType.illegal");
         }
@@ -243,7 +247,6 @@ public class StateMachineServiceImpl implements StateMachineService {
         }
         Long currentStatusId = issue.getStatusId();
         //执行状态转换
-        InputDTO inputDTO = new InputDTO(issueId, "updateStatus", null);
         ResponseEntity<ExecuteResult> responseEntity = instanceFeignClient.executeTransform(organizationId, AGILE_SERVICE, stateMachineId, currentStatusId, transformId, inputDTO);
         if (!responseEntity.getBody().getSuccess()) {
             throw new CommonException(ERROR_INSTANCE_FEGIN_CLIENT_EXECUTE_TRANSFORM);
@@ -350,8 +353,32 @@ public class StateMachineServiceImpl implements StateMachineService {
         if (!issue.getStatusId().equals(targetStatusId)) {
             IssueUpdateDTO issueUpdateDTO = issueAssembler.toTarget(issue, IssueUpdateDTO.class);
             issueUpdateDTO.setStatusId(targetStatusId);
-            issueService.handleUpdateIssue(issueUpdateDTO, Collections.singletonList("statusId"), issue.getProjectId());
+            issueService.handleUpdateIssue(issueUpdateDTO, Collections.singletonList(STATUS_ID), issue.getProjectId());
             logger.info("状态更新成功");
         }
     }
+
+    @UpdateStatus(code = "updateStatusMove")
+    public void updateStatusMove(Long instanceId, Long targetStatusId, String input) {
+        IssueDO issue = issueMapper.selectByPrimaryKey(instanceId);
+        if (issue == null) {
+            throw new CommonException("error.updateStatus.instanceId.notFound");
+        }
+        if (targetStatusId == null) {
+            throw new CommonException("error.updateStatus.targetStateId.null");
+        }
+        IssueUpdateDTO issueUpdateDTO = issueAssembler.toTarget(issue, IssueUpdateDTO.class);
+        if (input != null && !Objects.equals(input, "null")) {
+            JSONObject jsonObject = JSON.parseObject(input, JSONObject.class);
+            issueUpdateDTO.setRank(jsonObject.getString(RANK));
+        }
+        if (!issue.getStatusId().equals(targetStatusId)) {
+            issueUpdateDTO.setStatusId(targetStatusId);
+            issueService.handleUpdateIssue(issueUpdateDTO, Arrays.asList(STATUS_ID, RANK), issue.getProjectId());
+            logger.info("状态更新成功");
+        } else {
+            issueService.handleUpdateIssue(issueUpdateDTO, Collections.singletonList(RANK), issue.getProjectId());
+        }
+    }
+
 }

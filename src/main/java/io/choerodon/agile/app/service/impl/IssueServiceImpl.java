@@ -32,6 +32,7 @@ import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -495,7 +496,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueDTO updateIssueStatus(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType) {
-        stateMachineService.executeTransform(projectId, issueId, transformId, objectVersionNumber, applyType);
+        stateMachineService.executeTransform(projectId, issueId, transformId, objectVersionNumber, applyType, new InputDTO(issueId, "updateStatus", null));
         return queryIssueByUpdate(projectId, issueId, Collections.singletonList("statusId"));
     }
 
@@ -692,6 +693,10 @@ public class IssueServiceImpl implements IssueService {
         //设置初始状态,跟随父类状态
         subIssueE = parentIssueE.initializationSubIssue(subIssueE, statusId, projectInfoE);
         projectInfoRepository.updateIssueMaxNum(subIssueE.getProjectId(), 1);
+        //初始化排序
+        if (subIssueE.isIssueRank()) {
+            calculationRank(subIssueE.getProjectId(), subIssueE);
+        }
     }
 
     @Override
@@ -1531,7 +1536,7 @@ public class IssueServiceImpl implements IssueService {
                 if (subIssueIds != null && !subIssueIds.isEmpty()) {
                     throw new CommonException("error.transformedSubTask.issueHaveSubIssue");
                 }
-                issueE.setRank(null);
+//                issueE.setRank(null);
                 issueE.setEpicSequence(null);
                 issueE.setStoryPoints(null);
                 issueE.setStatusId(issueTransformSubTask.getStatusId());

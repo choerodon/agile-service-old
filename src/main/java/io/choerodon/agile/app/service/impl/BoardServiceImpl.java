@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.BoardValidator;
@@ -12,21 +13,25 @@ import io.choerodon.agile.domain.agile.event.StatusPayload;
 import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.DateUtil;
+import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
-import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
+import io.choerodon.statemachine.dto.InputDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsFirst;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
@@ -48,6 +53,10 @@ public class BoardServiceImpl implements BoardService {
     private static final String URL_TEMPLATE4 = "&paramIssueId=";
     private static final String URL_TEMPLATE5 = "&paramOpenIssueId=";
     private static final String URL_TEMPLATE6 = "&organizationId=";
+    private static final String RANK_INDEX = "rankIndex";
+    private static final String PROJECT_ID = "projectId";
+    private static final String RANK = "rank";
+    private static final String UPDATE_STATUS_MOVE = "updateStatusMove";
 
     @Autowired
     private BoardRepository boardRepository;
@@ -60,9 +69,6 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private BoardColumnMapper boardColumnMapper;
-
-    @Autowired
-    private IssueRepository issueRepository;
 
     @Autowired
     private SprintService sprintService;
@@ -101,9 +107,6 @@ public class BoardServiceImpl implements BoardService {
     private ProjectInfoMapper projectInfoMapper;
 
     @Autowired
-    private UserFeignClient userFeignClient;
-
-    @Autowired
     private DateUtil dateUtil;
 
     @Autowired
@@ -117,6 +120,9 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private StateMachineService stateMachineService;
+
+    @Autowired
+    private SprintMapper sprintMapper;
 
     @Override
     public void create(Long projectId, String boardName) {
@@ -302,12 +308,17 @@ public class BoardServiceImpl implements BoardService {
         jsonObject.put("assigneeIds", assigneeIds);
         jsonObject.put("epicInfo", !epicIds.isEmpty() ? boardColumnMapper.selectEpicBatchByIds(epicIds) : null);
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
-        columns.forEach(columnAndIssueDO -> columnAndIssueDO.getSubStatuses().forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> {
-            String assigneeName = usersMap.get(issueForBoardDO.getAssigneeId()) != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getName() : null;
-            String imageUrl = assigneeName != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getImageUrl() : null;
-            issueForBoardDO.setAssigneeName(assigneeName);
-            issueForBoardDO.setImageUrl(imageUrl);
-        })));
+        Comparator<IssueForBoardDO> comparator = Comparator.comparing(IssueForBoardDO::getRank, nullsFirst(naturalOrder()));
+        columns.forEach(columnAndIssueDO -> columnAndIssueDO.getSubStatuses().forEach(subStatus -> {
+                    subStatus.getIssues().forEach(issueForBoardDO -> {
+                        String assigneeName = usersMap.get(issueForBoardDO.getAssigneeId()) != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getName() : null;
+                        String imageUrl = assigneeName != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getImageUrl() : null;
+                        issueForBoardDO.setAssigneeName(assigneeName);
+                        issueForBoardDO.setImageUrl(imageUrl);
+                    });
+                    subStatus.getIssues().sort(comparator);
+                }
+        ));
         jsonObject.put("columnsData", putColumnData(columns));
         jsonObject.put("currentSprint", putCurrentSprint(activeSprint, organizationId));
         //处理用户默认看板设置，保存最近一次的浏览
@@ -397,7 +408,8 @@ public class BoardServiceImpl implements BoardService {
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
 //        IssueMoveDTO result = ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);
         //执行状态机转换
-        stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber(), SchemeApplyType.AGILE);
+        stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber(),
+                SchemeApplyType.AGILE, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleIssueMoveRank(projectId, issueMoveDTO))));
         issueDO = issueMapper.selectByPrimaryKey(issueId);
         IssueMoveDTO result = ConvertHelper.convert(issueDO, IssueMoveDTO.class);
 
@@ -437,6 +449,58 @@ public class BoardServiceImpl implements BoardService {
             siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), issueDO.getAssigneeId(), projectId);
         }
         return result;
+    }
+
+    private JSONObject handleIssueMoveRank(Long projectId, IssueMoveDTO issueMoveDTO) {
+        JSONObject jsonObject = new JSONObject();
+        if (issueMoveDTO.getRank()) {
+            String rank;
+            if (issueMoveDTO.getBefore()) {
+                if (issueMoveDTO.getOutsetIssueId() == null || Objects.equals(issueMoveDTO.getOutsetIssueId(), 0L)) {
+                    String minRank = sprintMapper.queryMinRank(projectId, issueMoveDTO.getSprintId());
+                    if (minRank == null) {
+                        rank = RankUtil.mid();
+                    } else {
+                        rank = RankUtil.genPre(minRank);
+                    }
+                } else {
+                    String rightRank = issueMapper.queryRank(projectId, issueMoveDTO.getOutsetIssueId());
+                    if (rightRank == null) {
+                        //处理子任务没有rank的旧数据
+                        rightRank = handleSubIssueNotRank(projectId, issueMoveDTO.getOutsetIssueId(), issueMoveDTO.getSprintId());
+                    }
+                    String leftRank = issueMapper.queryLeftRank(projectId, issueMoveDTO.getSprintId(), rightRank);
+                    if (leftRank == null) {
+                        rank = RankUtil.genPre(rightRank);
+                    } else {
+                        rank = RankUtil.between(leftRank, rightRank);
+                    }
+                }
+            } else {
+                String leftRank = issueMapper.queryRank(projectId, issueMoveDTO.getOutsetIssueId());
+                if (leftRank == null) {
+                    leftRank = handleSubIssueNotRank(projectId, issueMoveDTO.getOutsetIssueId(), issueMoveDTO.getSprintId());
+                }
+                String rightRank = issueMapper.queryRightRank(projectId, issueMoveDTO.getSprintId(), leftRank);
+                if (rightRank == null) {
+                    rank = RankUtil.genNext(leftRank);
+                } else {
+                    rank = RankUtil.between(leftRank, rightRank);
+                }
+            }
+            jsonObject.put(RANK, rank);
+            jsonObject.put(PROJECT_ID, projectId);
+            return jsonObject;
+        } else {
+            return null;
+        }
+    }
+
+    private String handleSubIssueNotRank(Long projectId, Long outsetIssueId, Long sprintId) {
+        IssueDO issueDO = issueMapper.selectByPrimaryKey(outsetIssueId);
+        issueDO.setRank(sprintMapper.queryMaxRank(projectId, sprintId));
+        issueMapper.updateByPrimaryKeySelective(issueDO);
+        return issueDO.getRank();
     }
 
     @Override

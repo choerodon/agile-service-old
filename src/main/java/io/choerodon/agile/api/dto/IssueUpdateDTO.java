@@ -36,6 +36,8 @@ public class IssueUpdateDTO {
 
     private Integer storyPoints;
 
+    private String rank;
+
     @Update(temp = true)
     private String versionType;
 
@@ -60,6 +62,14 @@ public class IssueUpdateDTO {
     private String epicName;
 
     private Long priorityId;
+
+    public String getRank() {
+        return rank;
+    }
+
+    public void setRank(String rank) {
+        this.rank = rank;
+    }
 
     public Long getIssueId() {
         return issueId;
