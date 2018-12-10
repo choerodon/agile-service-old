@@ -6,11 +6,12 @@ import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
-import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
-import io.choerodon.agile.domain.agile.event.*;
-import io.choerodon.agile.domain.agile.repository.DataLogRepository;
+import io.choerodon.agile.domain.agile.event.CreateIssuePayload;
+import io.choerodon.agile.domain.agile.event.CreateSubIssuePayload;
+import io.choerodon.agile.domain.agile.event.ProjectConfig;
+import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue;
 import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
@@ -84,8 +85,6 @@ public class StateMachineServiceImpl implements StateMachineService {
     private PlatformTransactionManager transactionManager;
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
-    @Autowired
-    private DataLogRepository dataLogRepository;
 
     /**
      * 创建issue，由于状态机需要回调，采用手动提交事务
@@ -96,6 +95,9 @@ public class StateMachineServiceImpl implements StateMachineService {
      */
     @Override
     public synchronized IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType) {
+        if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
+            throw new CommonException("error.applyType.illegal");
+        }
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
         //事物隔离级别：开启新事务
         def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
