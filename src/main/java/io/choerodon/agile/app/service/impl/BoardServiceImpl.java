@@ -56,6 +56,7 @@ public class BoardServiceImpl implements BoardService {
     private static final String RANK_INDEX = "rankIndex";
     private static final String PROJECT_ID = "projectId";
     private static final String RANK = "rank";
+    private static final String UPDATE_STATUS_MOVE = "updateStatusMove";
 
     @Autowired
     private BoardRepository boardRepository;
@@ -400,19 +401,15 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public IssueMoveDTO move(Long projectId, Long issueId, Long transformId, IssueMoveDTO issueMoveDTO) {
-        String rank = handleIssueMoveRank(projectId, issueMoveDTO);
         Long boardId = issueMoveDTO.getBoardId();
         IssueDO issueDO = issueMapper.selectByPrimaryKey(issueMoveDTO.getIssueId());
         BoardDO boardDO = boardMapper.selectByPrimaryKey(boardId);
         checkColumnContraint(projectId, issueMoveDTO, boardDO.getColumnConstraint(), issueDO.getStatusId());
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
 //        IssueMoveDTO result = ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put(RANK, rank);
-        jsonObject.put(RANK_INDEX, issueMoveDTO.getRankIndex());
-        jsonObject.put(PROJECT_ID, projectId);
         //执行状态机转换
-        stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber(), SchemeApplyType.AGILE, new InputDTO(issueId, "updateStatusMove", JSON.toJSONString(jsonObject)));
+        stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber(),
+                SchemeApplyType.AGILE, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleIssueMoveRank(projectId, issueMoveDTO))));
         issueDO = issueMapper.selectByPrimaryKey(issueId);
         IssueMoveDTO result = ConvertHelper.convert(issueDO, IssueMoveDTO.class);
 
@@ -454,33 +451,56 @@ public class BoardServiceImpl implements BoardService {
         return result;
     }
 
-    private String handleIssueMoveRank(Long projectId, IssueMoveDTO issueMoveDTO) {
-        if (issueMoveDTO.getBefore()) {
-            if (issueMoveDTO.getOutsetIssueId() == null || Objects.equals(issueMoveDTO.getOutsetIssueId(), 0L)) {
-                String minRank = sprintMapper.queryMinRank(projectId, issueMoveDTO.getSprintId());
-                if (minRank == null) {
-                    return RankUtil.mid();
+    private JSONObject handleIssueMoveRank(Long projectId, IssueMoveDTO issueMoveDTO) {
+        JSONObject jsonObject = new JSONObject();
+        if (issueMoveDTO.getRank()) {
+            String rank;
+            if (issueMoveDTO.getBefore()) {
+                if (issueMoveDTO.getOutsetIssueId() == null || Objects.equals(issueMoveDTO.getOutsetIssueId(), 0L)) {
+                    String minRank = sprintMapper.queryMinRank(projectId, issueMoveDTO.getSprintId());
+                    if (minRank == null) {
+                        rank = RankUtil.mid();
+                    } else {
+                        rank = RankUtil.genPre(minRank);
+                    }
                 } else {
-                    return RankUtil.genPre(minRank);
+                    String rightRank = issueMapper.queryRank(projectId, issueMoveDTO.getOutsetIssueId());
+                    if (rightRank == null) {
+                        //处理子任务没有rank的旧数据
+                        rightRank = handleSubIssueNotRank(projectId, issueMoveDTO.getOutsetIssueId(), issueMoveDTO.getSprintId());
+                    }
+                    String leftRank = issueMapper.queryLeftRank(projectId, issueMoveDTO.getSprintId(), rightRank);
+                    if (leftRank == null) {
+                        rank = RankUtil.genPre(rightRank);
+                    } else {
+                        rank = RankUtil.between(leftRank, rightRank);
+                    }
                 }
             } else {
-                String rightRank = issueMapper.queryRank(projectId, issueMoveDTO.getOutsetIssueId());
-                String leftRank = issueMapper.queryLeftRank(projectId, issueMoveDTO.getSprintId(), rightRank);
+                String leftRank = issueMapper.queryRank(projectId, issueMoveDTO.getOutsetIssueId());
                 if (leftRank == null) {
-                    return RankUtil.genPre(rightRank);
+                    leftRank = handleSubIssueNotRank(projectId, issueMoveDTO.getOutsetIssueId(), issueMoveDTO.getSprintId());
+                }
+                String rightRank = issueMapper.queryRightRank(projectId, issueMoveDTO.getSprintId(), leftRank);
+                if (rightRank == null) {
+                    rank = RankUtil.genNext(leftRank);
                 } else {
-                    return RankUtil.between(leftRank, rightRank);
+                    rank = RankUtil.between(leftRank, rightRank);
                 }
             }
+            jsonObject.put(RANK, rank);
+            jsonObject.put(PROJECT_ID, projectId);
+            return jsonObject;
         } else {
-            String leftRank = issueMapper.queryRank(projectId, issueMoveDTO.getOutsetIssueId());
-            String rightRank = issueMapper.queryRightRank(projectId, issueMoveDTO.getSprintId(), leftRank);
-            if (rightRank == null) {
-                return RankUtil.genNext(leftRank);
-            } else {
-                return RankUtil.between(leftRank, rightRank);
-            }
+            return null;
         }
+    }
+
+    private String handleSubIssueNotRank(Long projectId, Long outsetIssueId, Long sprintId) {
+        IssueDO issueDO = issueMapper.selectByPrimaryKey(outsetIssueId);
+        issueDO.setRank(sprintMapper.queryMaxRank(projectId, sprintId));
+        issueMapper.updateByPrimaryKeySelective(issueDO);
+        return issueDO.getRank();
     }
 
     @Override

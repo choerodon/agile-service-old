@@ -24,7 +24,15 @@ public class IssueMoveDTO {
 
     private Long outsetIssueId;
 
-    private Boolean rankIndex;
+    private Boolean rank;
+
+    public Boolean getRank() {
+        return rank;
+    }
+
+    public void setRank(Boolean rank) {
+        this.rank = rank;
+    }
 
     public Boolean getBefore() {
         return before;
@@ -32,14 +40,6 @@ public class IssueMoveDTO {
 
     public void setBefore(Boolean before) {
         this.before = before;
-    }
-
-    public Boolean getRankIndex() {
-        return rankIndex;
-    }
-
-    public void setRankIndex(Boolean rankIndex) {
-        this.rankIndex = rankIndex;
     }
 
     public Long getSprintId() {

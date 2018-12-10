@@ -1057,24 +1057,8 @@ public class DataLogAspect {
     }
 
     private void handleRank(List<String> field, IssueDO originIssueDO, IssueE issueE) {
-        if (field.contains(RANK_FIELD) && !Objects.equals(originIssueDO.getRank(), issueE.getRank())) {
-            SprintNameDO activeSprintName = issueMapper.queryActiveSprintNameByIssueId(originIssueDO.getIssueId());
-            Long sprintId = null;
-            if (field.contains(SPRINT_ID_FIELD)) {
-                sprintId = issueE.getSprintId();
-            } else if (activeSprintName != null) {
-                sprintId = activeSprintName.getSprintId();
-            }
-            if ((issueE.getOriginSprintId() != null && issueE.getSprintId() != null && issueE.getSprintId().equals(issueE.getOriginSprintId()))) {
-                createRankDataLog(sprintId, activeSprintName, originIssueDO, issueE.getRank());
-            }
-        }
-    }
-
-    private void createRankDataLog(Long sprintId, SprintNameDO activeSprintName, IssueDO originIssueDO, String rank) {
-        Boolean condition = (sprintId != null) && ((sprintId == 0 && activeSprintName == null) || (activeSprintName != null && sprintId.equals(activeSprintName.getSprintId())));
-        if (condition && originIssueDO.getRank() != null && rank != null) {
-            if (originIssueDO.getRank().compareTo(rank) < 0) {
+        if (field.contains(RANK_FIELD) && originIssueDO.getRank() != null && issueE.getRank() != null && !Objects.equals(originIssueDO.getRank(), issueE.getRank())) {
+            if (originIssueDO.getRank().compareTo(issueE.getRank()) < 0) {
                 createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
                         FIELD_RANK, null, RANK_HIGHER, null, null);
             } else {
@@ -1083,7 +1067,6 @@ public class DataLogAspect {
             }
         }
     }
-
 
     private void handleStatus(List<String> field, IssueDO originIssueDO, IssueE issueE) {
         if (field.contains(STATUS_ID) && !Objects.equals(originIssueDO.getStatusId(), issueE.getStatusId())) {

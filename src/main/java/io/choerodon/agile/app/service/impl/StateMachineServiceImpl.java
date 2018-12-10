@@ -62,7 +62,6 @@ public class StateMachineServiceImpl implements StateMachineService {
     private static final String ERROR_ISSUE_STATUS_NOT_FOUND = "error.createIssue.issueStatusNotFound";
     private static final String ERROR_CREATE_ISSUE_CREATE = "error.createIssue.create";
     private static final String FIELD_RANK = "Rank";
-    private static final String RANK_INDEX = "rankIndex";
     private static final String PROJECT_ID = "projectId";
     private static final String RANK = "rank";
     private static final String STATUS_ID = "statusId";
@@ -369,22 +368,9 @@ public class StateMachineServiceImpl implements StateMachineService {
             throw new CommonException("error.updateStatus.targetStateId.null");
         }
         IssueUpdateDTO issueUpdateDTO = issueAssembler.toTarget(issue, IssueUpdateDTO.class);
-        JSONObject jsonObject = JSON.parseObject(input, JSONObject.class);
-        Boolean rankIndex = jsonObject.getBoolean(RANK_INDEX);
-        issueUpdateDTO.setRank(jsonObject.getString(RANK));
-        //处理评级日志
-        if (rankIndex != null) {
-            DataLogE dataLogE = new DataLogE();
-            dataLogE.setProjectId(jsonObject.getLong(PROJECT_ID));
-            dataLogE.setField(FIELD_RANK);
-            dataLogE.setIssueId(issueUpdateDTO.getIssueId());
-            if (!rankIndex) {
-                dataLogE.setNewString(RANK_LOWER);
-            } else {
-                dataLogE.setNewString(RANK_HIGHER);
-            }
-            dataLogRepository.create(dataLogE);
-
+        if (input != null && !Objects.equals(input, "null")) {
+            JSONObject jsonObject = JSON.parseObject(input, JSONObject.class);
+            issueUpdateDTO.setRank(jsonObject.getString(RANK));
         }
         if (!issue.getStatusId().equals(targetStatusId)) {
             issueUpdateDTO.setStatusId(targetStatusId);
