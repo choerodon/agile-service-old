@@ -32,7 +32,7 @@ public class IssueStatusController {
     private IssueStatusService issueStatusService;
 
     @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
-    @ApiOperation("status创建")
+    @ApiOperation("新增状态")
     @PostMapping
     public ResponseEntity<IssueStatusDTO> createStatus(@ApiParam(value = "项目id", required = true)
                                                        @PathVariable(name = "project_id") Long projectId,
@@ -41,6 +41,17 @@ public class IssueStatusController {
         return Optional.ofNullable(issueStatusService.create(projectId, issueStatusDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.status.create"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+    @ApiOperation("删除未对应的状态")
+    @DeleteMapping(value = "/{statusId}")
+    public ResponseEntity deleteStatus(@ApiParam(value = "项目id", required = true)
+                                       @PathVariable(name = "project_id") Long projectId,
+                                       @ApiParam(value = "status id", required = true)
+                                       @PathVariable Long statusId) {
+        issueStatusService.deleteStatus(projectId, statusId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
@@ -105,17 +116,6 @@ public class IssueStatusController {
         return Optional.ofNullable(issueStatusService.moveStatusToUnCorrespond(projectId, statusId, statusMoveDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException(ERROR_STATUS_GET));
-    }
-
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
-    @ApiOperation("删除未对应的状态")
-    @DeleteMapping(value = "/{statusId}")
-    public ResponseEntity deleteStatus(@ApiParam(value = "项目id", required = true)
-                                       @PathVariable(name = "project_id") Long projectId,
-                                       @ApiParam(value = "status id", required = true)
-                                       @PathVariable Long statusId) {
-        issueStatusService.deleteStatus(projectId, statusId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})

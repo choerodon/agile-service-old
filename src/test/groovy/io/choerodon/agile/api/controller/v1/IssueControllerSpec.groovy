@@ -5,7 +5,6 @@ import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.*
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
-import io.choerodon.agile.app.service.StateMachineService
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
 import io.choerodon.agile.domain.agile.entity.IssueE
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE
@@ -18,9 +17,10 @@ import io.choerodon.agile.infra.feign.IssueFeignClient
 import io.choerodon.agile.infra.mapper.*
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.domain.Page
+import io.choerodon.mybatis.pagehelper.domain.PageRequest
 
 //import io.choerodon.event.producer.execute.EventProducerTemplate
-import io.choerodon.mybatis.pagehelper.domain.PageRequest
+
 import org.mockito.Matchers
 import org.mockito.Mockito
 import org.springframework.beans.BeanUtils
@@ -31,7 +31,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
@@ -1112,7 +1111,7 @@ class IssueControllerSpec extends Specification {
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 List.class,
-                projectId,organizationId)
+                projectId, organizationId)
         def entityWithParams = restTemplate.exchange("/v1/projects/{project_id}/issues/storymap/epics?showDoneEpic={showDoneEpic}&assigneeId={assigneeId}&onlyStory={onlyStory}&&organizationId={organizationId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),

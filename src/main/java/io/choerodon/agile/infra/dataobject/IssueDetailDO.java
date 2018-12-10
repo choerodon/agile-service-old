@@ -88,6 +88,8 @@ public class IssueDetailDO {
 
     private Long createdBy;
 
+    private String applyType;
+
     public StatusMapDTO getStatusMapDTO() {
         return statusMapDTO;
     }
@@ -382,6 +384,14 @@ public class IssueDetailDO {
 
     public Long getCreatedBy() {
         return createdBy;
+    }
+
+    public String getApplyType() {
+        return applyType;
+    }
+
+    public void setApplyType(String applyType) {
+        this.applyType = applyType;
     }
 
     @Override
