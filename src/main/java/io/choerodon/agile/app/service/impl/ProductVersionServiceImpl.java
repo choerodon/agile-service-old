@@ -18,6 +18,7 @@ import io.choerodon.asgard.saga.feign.SagaClient;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
@@ -121,7 +122,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             VersionPayload versionPayload = new VersionPayload();
             versionPayload.setVersionId(query.getVersionId());
             versionPayload.setProjectId(query.getProjectId());
-            sagaClient.startSaga("agile-create-version", new StartInstanceDTO(JSON.toJSONString(versionPayload), "", ""));
+            sagaClient.startSaga("agile-create-version", new StartInstanceDTO(JSON.toJSONString(versionPayload), "", "", ResourceLevel.PROJECT.value(), projectId));
             return result;
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
@@ -160,7 +161,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             VersionPayload versionPayload = new VersionPayload();
             versionPayload.setVersionId(versionE.getVersionId());
             versionPayload.setProjectId(versionE.getProjectId());
-            sagaClient.startSaga("agile-delete-version", new StartInstanceDTO(JSON.toJSONString(versionPayload), "", ""));
+            sagaClient.startSaga("agile-delete-version", new StartInstanceDTO(JSON.toJSONString(versionPayload), "", "", ResourceLevel.PROJECT.value(), projectId));
             return deleteResult;
         } catch (Exception e) {
             throw new CommonException(e.getMessage());
@@ -363,7 +364,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             VersionPayload versionPayload = new VersionPayload();
             versionPayload.setVersionId(versionId);
             versionPayload.setProjectId(projectId);
-            sagaClient.startSaga("agile-delete-version", new StartInstanceDTO(JSON.toJSONString(versionPayload), "", ""));
+            sagaClient.startSaga("agile-delete-version", new StartInstanceDTO(JSON.toJSONString(versionPayload), "", "", ResourceLevel.PROJECT.value(), projectId));
         });
         return true;
     }

@@ -27,6 +27,7 @@ import io.choerodon.asgard.saga.feign.SagaClient;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
@@ -658,7 +659,7 @@ public class IssueServiceImpl implements IssueService {
         IssuePayload issuePayload = new IssuePayload();
         issuePayload.setIssueId(issueId);
         issuePayload.setProjectId(projectId);
-        sagaClient.startSaga("agile-delete-issue", new StartInstanceDTO(JSON.toJSONString(issuePayload), "", ""));
+        sagaClient.startSaga("agile-delete-issue", new StartInstanceDTO(JSON.toJSONString(issuePayload), "", "", ResourceLevel.PROJECT.value(), projectId));
         //delete cache
         dataLogRedisUtil.handleDeleteRedisByDeleteIssue(projectId);
     }
@@ -1970,7 +1971,7 @@ public class IssueServiceImpl implements IssueService {
         IssuePayload issuePayload = new IssuePayload();
         issuePayload.setIssueId(issueId);
         issuePayload.setProjectId(projectId);
-        sagaClient.startSaga("agile-delete-issue", new StartInstanceDTO(JSON.toJSONString(issuePayload), "", ""));
+        sagaClient.startSaga("agile-delete-issue", new StartInstanceDTO(JSON.toJSONString(issuePayload), "", "", ResourceLevel.PROJECT.value(), projectId));
         //delete cache
         redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ":" + "*",
                 "Agile:CumulativeFlowDiagram" + projectId + ":" + "*",
