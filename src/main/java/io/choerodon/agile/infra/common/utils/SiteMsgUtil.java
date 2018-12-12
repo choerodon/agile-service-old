@@ -17,7 +17,7 @@ import java.util.Map;
 @Component
 public class SiteMsgUtil {
 
-    private static final String USERNAME = "userName";
+    private static final String ASSIGNEENAME = "assigneeName";
     private static final String SUMMARY = "summary";
     private static final String URL = "url";
 
@@ -28,7 +28,7 @@ public class SiteMsgUtil {
         NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
         noticeSendDTO.setCode("issueCreate");
         Map<String, Object> params = new HashMap<>();
-        params.put(USERNAME, userName);
+        params.put(ASSIGNEENAME, userName);
         params.put(SUMMARY, summary);
         params.put(URL, url);
         noticeSendDTO.setParams(params);
@@ -50,7 +50,7 @@ public class SiteMsgUtil {
         NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
         noticeSendDTO.setCode("issueAssignee");
         Map<String, Object> params = new HashMap<>();
-        params.put(USERNAME, userName);
+        params.put(ASSIGNEENAME, userName);
         params.put(SUMMARY, summary);
         params.put(URL, url);
         noticeSendDTO.setParams(params);
@@ -72,7 +72,7 @@ public class SiteMsgUtil {
         NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
         noticeSendDTO.setCode("issueSolve");
         Map<String, Object> params = new HashMap<>();
-        params.put(USERNAME, userName);
+        params.put(ASSIGNEENAME, userName);
         params.put(SUMMARY, summary);
         params.put(URL, url);
         noticeSendDTO.setParams(params);
