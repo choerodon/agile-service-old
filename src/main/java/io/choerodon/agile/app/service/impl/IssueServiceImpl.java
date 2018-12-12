@@ -411,7 +411,7 @@ public class IssueServiceImpl implements IssueService {
             }
             Long[] ids = new Long[1];
             ids[0] = result.getAssigneeId();
-            List<UserDO> userDOList = userFeignClient.listUsersByIds(ids).getBody();
+            List<UserDO> userDOList = userFeignClient.listUsersByIds(ids, false).getBody();
             String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName() + userDOList.get(0).getRealName() : "";
             String summary = result.getIssueNum() + "-" + result.getSummary();
             siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), result.getAssigneeId(), projectId);
