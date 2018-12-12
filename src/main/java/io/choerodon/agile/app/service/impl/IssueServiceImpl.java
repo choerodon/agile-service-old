@@ -193,7 +193,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String RANK_FIELD = "rank";
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
-    private static final String[] FIELDS_NAME = {"编码", "概述", "描述", "类型", "所属项目", "经办人", "报告人", "解决状态", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本", "史诗", "标签"};
+    private static final String[] FIELDS_NAME = {"任务编号", "概要", "描述", "类型", "所属项目", "经办人", "报告人", "解决状态", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本", "史诗", "标签"};
     private static final String[] FIELDS = {"issueNum", "summary", "description", "typeName", "projectName", "assigneeName", "reporterName", "resolution", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", REMAIN_TIME_FIELD, "versionName","epicName","labelName"};
     private static final String PROJECT_ERROR = "error.project.notFound";
     private static final String ERROR_ISSUE_NOT_FOUND = "error.Issue.queryIssue";
