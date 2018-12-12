@@ -35,6 +35,6 @@ public class IssueCreatePmTemplate implements PmTemplate {
 
     @Override
     public String content() {
-        return "<p>${userName} 创建了问题 <a href=${url} target=_blank>${summary}</a ></p>";
+        return "<p>${assigneeName} 创建了问题 <a href=${url} target=_blank>${summary}</a ></p>";
     }
 }
