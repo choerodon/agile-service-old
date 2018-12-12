@@ -81,7 +81,7 @@ class UserRepositorySpec extends Specification {
         Map<Long, UserMessageDO> userMessageDOMap = userRepository.queryUsersMap(assigneeIdList, withLoginName)
 
         then: '判断mock交互并且设置返回值'
-        1 * userFeignClient.listUsersByIds(_) >> responseEntity
+        1 * userFeignClient.listUsersByIds(*_) >> responseEntity
 
         expect: '设置期望值'
         userMessageDOMap.size() == expectSize

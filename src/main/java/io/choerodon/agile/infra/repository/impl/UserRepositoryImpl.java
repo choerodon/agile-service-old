@@ -57,7 +57,7 @@ public class UserRepositoryImpl implements UserRepository {
         if (assigneeIdList != null && !assigneeIdList.isEmpty()) {
             Long[] assigneeIds = new Long[assigneeIdList.size()];
             assigneeIdList.toArray(assigneeIds);
-            List<UserDO> userDOS = userFeignClient.listUsersByIds(assigneeIds).getBody();
+            List<UserDO> userDOS = userFeignClient.listUsersByIds(assigneeIds, false).getBody();
             if (withLoginName) {
                 userDOS.forEach(userDO -> userMessageMap.put(userDO.getId(), new UserMessageDO(userDO.getLoginName() + userDO.getRealName(), userDO.getImageUrl(),userDO.getEmail())));
             } else {
@@ -96,7 +96,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<UserDO> listUsersByIds(Long[] ids) {
-        ResponseEntity<List<UserDO>> users = userFeignClient.listUsersByIds(ids);
+        ResponseEntity<List<UserDO>> users = userFeignClient.listUsersByIds(ids, false);
         return users != null ? users.getBody() : new ArrayList<>();
     }
 

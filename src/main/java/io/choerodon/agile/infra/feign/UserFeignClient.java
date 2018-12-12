@@ -33,7 +33,8 @@ public interface UserFeignClient {
                                  @PathVariable("id") Long id);
 
     @PostMapping(value = "/v1/users/ids")
-    ResponseEntity<List<UserDO>> listUsersByIds(@RequestBody Long[] ids);
+    ResponseEntity<List<UserDO>> listUsersByIds(@RequestBody Long[] ids,
+                                                @RequestParam(name = "onlyEnabled") Boolean onlyEnabled);
 
     /**
      * 按照Id查询项目

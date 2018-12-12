@@ -27,7 +27,7 @@ public class UserFeignClientFallback implements UserFeignClient {
     }
 
     @Override
-    public ResponseEntity<List<UserDO>> listUsersByIds(Long[] ids) {
+    public ResponseEntity<List<UserDO>> listUsersByIds(Long[] ids, Boolean onlyEnabled) {
         throw new CommonException(BATCH_QUERY_ERROR);
     }
 
