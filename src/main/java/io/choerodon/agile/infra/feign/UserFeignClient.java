@@ -34,7 +34,7 @@ public interface UserFeignClient {
 
     @PostMapping(value = "/v1/users/ids")
     ResponseEntity<List<UserDO>> listUsersByIds(@RequestBody Long[] ids,
-                                                @RequestParam(name = "onlyEnabled") Boolean onlyEnabled);
+                                                @RequestParam(name = "only_enabled") Boolean onlyEnabled);
 
     /**
      * 按照Id查询项目
