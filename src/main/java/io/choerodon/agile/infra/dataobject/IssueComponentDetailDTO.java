@@ -44,6 +44,8 @@ public class IssueComponentDetailDTO {
 
     private String epicColor;
 
+    private String description;
+
     private IssueTypeDTO issueTypeDTO;
 
     private StatusMapDTO statusMapDTO;
@@ -232,6 +234,14 @@ public class IssueComponentDetailDTO {
 
     public void setPriorityDTO(PriorityDTO priorityDTO) {
         this.priorityDTO = priorityDTO;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     @Override
