@@ -685,6 +685,7 @@
                                         AND aisr2.sprint_id = #{sprintId}
                                         AND ai2.type_code = 'sub_task'
                                         AND ai2.status_id = ais2.status_id
+                                        AND ais2.project_id = #{projectId}
                                         AND ais2.is_completed != 1)
     </select>
 
