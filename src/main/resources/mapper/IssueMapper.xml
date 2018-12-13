@@ -196,8 +196,8 @@
 
     <select id="queryLabelIssueByIssueIds" resultType="io.choerodon.agile.infra.dataobject.LabelIssueRelDO">
         SELECT
-            ali.*,
-            ail.label_name
+        ali.*,
+        ail.label_name
         FROM agile_label_issue_rel ali LEFT JOIN agile_issue_label ail ON ali.label_id = ail.label_id
         WHERE ali.issue_id IN
         <foreach collection="issueIds" item="issueId" open="("
@@ -1533,28 +1533,14 @@
         </if>
     </select>
 
-    <select id="listIssueWithoutSubDetail" resultMap="issueComponentDetail">
-        SELECT search.* from (
+    <select id="listIssueIdsWithoutSubDetail" resultType="java.lang.Long">
+        SELECT search.issue_id from (
         SELECT
         ai.issue_id,
-        ai.type_code,
         ai.summary,
-        ai.status_id,
-        ai.assignee_id,
-        ai.project_id,
-        ai.last_update_date,
-        ai.creation_date,
-        ai.reporter_id,
-        ai2.epic_name,
-        alv2.name as epic_color,
-        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,
-        ai.description,
-        ai.priority_id,
-        ai.issue_type_id
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
-        LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code
         WHERE ai.project_id = #{projectId} and ai.type_code != 'sub_task'
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
@@ -1649,6 +1635,33 @@
             AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE CONCAT(CONCAT('%',
             #{content}), '%'))
         </if>
+    </select>
+
+    <select id="listIssueWithoutSubDetailByIssueIds" resultMap="issueComponentDetail">
+        SELECT
+        ai.issue_id,
+        ai.type_code,
+        ai.summary,
+        ai.status_id,
+        ai.assignee_id,
+        ai.project_id,
+        ai.last_update_date,
+        ai.creation_date,
+        ai.reporter_id,
+        ai2.epic_name,
+        alv2.name as epic_color,
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,
+        ai.description,
+        ai.priority_id,
+        ai.issue_type_id
+        FROM agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
+        LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code
+        WHERE ai.issue_id in
+        <foreach collection="issueIds" item="issueId" open="(" separator="," close=")">
+            #{issueId}
+        </foreach>
     </select>
 
     <select id="queryIssueNumByTimeSlot" resultType="io.choerodon.agile.infra.dataobject.IssueCreationNumDO">

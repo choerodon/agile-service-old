@@ -194,7 +194,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
     private static final String[] FIELDS_NAME = {"任务编号", "概要", "描述", "类型", "所属项目", "经办人", "报告人", "解决状态", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本", "史诗", "标签"};
-    private static final String[] FIELDS = {"issueNum", "summary", "description", "typeName", "projectName", "assigneeName", "reporterName", "resolution", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", REMAIN_TIME_FIELD, "versionName","epicName","labelName"};
+    private static final String[] FIELDS = {"issueNum", "summary", "description", "typeName", "projectName", "assigneeName", "reporterName", "resolution", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", REMAIN_TIME_FIELD, "versionName", "epicName", "labelName"};
     private static final String PROJECT_ERROR = "error.project.notFound";
     private static final String ERROR_ISSUE_NOT_FOUND = "error.Issue.queryIssue";
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
@@ -356,7 +356,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId) {
-        if(organizationId==null){
+        if (organizationId == null) {
             organizationId = ConvertUtil.getOrganizationId(projectId);
         }
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
@@ -421,7 +421,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public Page<IssueListDTO> listIssueWithSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
-        if(organizationId==null){
+        if (organizationId == null) {
             organizationId = ConvertUtil.getOrganizationId(projectId);
         }
         //处理用户搜索
@@ -1679,22 +1679,22 @@ public class IssueServiceImpl implements IssueService {
     public Page<IssueComponentDetailDTO> listIssueWithoutSubDetail(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
         //连表查询需要设置主表别名
         pageRequest.resetOrder(SEARCH, new HashMap<>());
-        Page<IssueComponentDetailDO> issueComponentDetailDOPage = PageHelper.doPageAndSort(pageRequest, () ->
-                issueMapper.listIssueWithoutSubDetail(projectId, searchDTO.getSearchArgs(),
-                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
-        return handleIssueComponentDetailPageDoToDto(projectId, issueComponentDetailDOPage);
-    }
-
-    private Page<IssueComponentDetailDTO> handleIssueComponentDetailPageDoToDto(Long projectId, Page<IssueComponentDetailDO> issueComponentDetailDOPage) {
+        Page<Long> issueIds = PageHelper.doPageAndSort(pageRequest, () -> issueMapper.listIssueIdsWithoutSubDetail(projectId, searchDTO.getSearchArgs(),
+                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
+        List<IssueComponentDetailDO> issueComponentDetailDOS = new ArrayList<>(issueIds.getContent().size());
+        if (issueIds.getContent() != null && !issueIds.getContent().isEmpty()) {
+            issueComponentDetailDOS.addAll(issueMapper.listIssueWithoutSubDetailByIssueIds(issueIds));
+        }
         Page<IssueComponentDetailDTO> issueComponentDetailDTOPage = new Page<>();
-        issueComponentDetailDTOPage.setNumber(issueComponentDetailDOPage.getNumber());
-        issueComponentDetailDTOPage.setNumberOfElements(issueComponentDetailDOPage.getNumberOfElements());
-        issueComponentDetailDTOPage.setSize(issueComponentDetailDOPage.getSize());
-        issueComponentDetailDTOPage.setTotalElements(issueComponentDetailDOPage.getTotalElements());
-        issueComponentDetailDTOPage.setTotalPages(issueComponentDetailDOPage.getTotalPages());
-        issueComponentDetailDTOPage.setContent(issueAssembler.issueComponentDetailDoToDto(projectId, issueComponentDetailDOPage.getContent()));
+        issueComponentDetailDTOPage.setNumber(issueIds.getNumber());
+        issueComponentDetailDTOPage.setNumberOfElements(issueIds.getNumberOfElements());
+        issueComponentDetailDTOPage.setSize(issueIds.getSize());
+        issueComponentDetailDTOPage.setTotalElements(issueIds.getTotalElements());
+        issueComponentDetailDTOPage.setTotalPages(issueIds.getTotalPages());
+        issueComponentDetailDTOPage.setContent(issueAssembler.issueComponentDetailDoToDto(projectId, issueComponentDetailDOS));
         return issueComponentDetailDTOPage;
     }
+
 
     private void handleSequence(EpicSequenceDTO epicSequenceDTO, Long projectId, IssueE issueE) {
         if (epicSequenceDTO.getBeforeSequence() == null) {
