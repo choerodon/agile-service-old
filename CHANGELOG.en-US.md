@@ -10,6 +10,7 @@ All notable changes about agile-service will be documented in this file.
 - Active sprint support filtering of team members.
 - Work calendar added 2019 statutory holiday data.
 - New issue link for version details.
+- Version add the field of expected release date.
 
 ### Changed
 
@@ -18,6 +19,7 @@ All notable changes about agile-service will be documented in this file.
 - When the sprint is complete, the unfinished subtask moves with the parent task to the next sprint.
 - Create a quick search of the relationship field to display the name changed to Chinese.
 - The workload of the sprints in the backlog list is changed to the total number of issues, the remaining number of issues, the total task hours, and the remaining task hours.
+- The field of end date changes to the field of expected release date when you create new version.
 - User need to enter the actual release time when user release the version.
 - The board sets the column constraint to be modified only by the project owner.
 - User can only select the planning version to merger other version.
