@@ -159,4 +159,16 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         });
         return componentForListDTOList;
     }
+
+    @Override
+    public Boolean componentCheckName(Long projectId, String componentName) {
+        IssueComponentDO issueComponentDO = new IssueComponentDO();
+        issueComponentDO.setProjectId(projectId);
+        issueComponentDO.setName(componentName);
+        List<IssueComponentDO> issueComponentDOList = issueComponentMapper.select(issueComponentDO);
+        if (issueComponentDOList != null && !issueComponentDOList.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
 }

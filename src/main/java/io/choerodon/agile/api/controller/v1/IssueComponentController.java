@@ -134,4 +134,16 @@ public class IssueComponentController {
                 .orElseThrow(() -> new CommonException("error.issues.get"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("模块重名校验")
+    @GetMapping(value = "/check_name")
+    public ResponseEntity<Boolean> componentCheckName(@ApiParam(value = "项目id", required = true)
+                                                      @PathVariable(name = "project_id") Long projectId,
+                                                      @ApiParam(value = "component name", required = true)
+                                                      @RequestParam String componentName) {
+        return Optional.ofNullable(issueComponentService.componentCheckName(projectId, componentName))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.checkName.get"));
+    }
+
 }
