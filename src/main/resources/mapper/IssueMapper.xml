@@ -452,11 +452,15 @@
         <if test='searchDTO.otherArgs != null'>
             <if test='searchDTO.otherArgs.assigneeId != null and searchDTO.otherArgs.assigneeId.size > 0'>
                 <choose>
-                    <when test="searchDTO.otherArgs.assigneeId[0]==0">
-                        AND (ai.assignee_id = #{searchDTO.otherArgs.id[0]} or ai.assignee_id is null)
+                    <when test="searchDTO.otherArgs.assigneeId.size == 1 and searchDTO.otherArgs.assigneeId[0]==0">
+                        AND (ai.assignee_id = #{searchDTO.otherArgs.assigneeId[0]} or ai.assignee_id is null)
                     </when>
                     <otherwise>
-                        AND ai.assignee_id = #{searchDTO.otherArgs.id[0]}
+                        and ai.assignee_id in
+                        <foreach collection="searchDTO.otherArgs.assigneeId" item="aId" open="(" separator=","
+                                 close=")">
+                            #{aId}
+                        </foreach>
                     </otherwise>
                 </choose>
             </if>
