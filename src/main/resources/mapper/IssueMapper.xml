@@ -1241,7 +1241,7 @@
         ai.issue_type_id,
         ai.status_id,
         ai.priority_id,
-        IF((ais.is_completed = 1), '否', '是') AS resolution,
+        IF((ais.is_completed = 1), '是', '否') AS resolution,
         IF ((ai.parent_issue_id IS NULL OR ai.parent_issue_id = 0),
         ai.issue_id,ai.parent_issue_id) as parent_issue_id,
         epic.epic_name
@@ -1261,7 +1261,7 @@
                  close=")">
             #{issueId}
         </foreach>
-        ORDER BY issue_num
+        ORDER BY ai.issue_id
     </select>
 
     <select id="queryIssueEpicInfoByIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
