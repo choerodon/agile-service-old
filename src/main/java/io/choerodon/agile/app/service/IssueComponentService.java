@@ -30,5 +30,5 @@ public interface IssueComponentService {
 
     List<ComponentForListDTO> listByProjectIdForTest(Long projectId, Long componentId, Boolean noIssueTest);
 
-    Boolean componentCheckName(Long projectId, String componentName);
+    Boolean checkComponentName(Long projectId, String componentName);
 }

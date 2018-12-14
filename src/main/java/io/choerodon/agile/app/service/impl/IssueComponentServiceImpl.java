@@ -161,7 +161,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     }
 
     @Override
-    public Boolean componentCheckName(Long projectId, String componentName) {
+    public Boolean checkComponentName(Long projectId, String componentName) {
         IssueComponentDO issueComponentDO = new IssueComponentDO();
         issueComponentDO.setProjectId(projectId);
         issueComponentDO.setName(componentName);
