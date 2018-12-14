@@ -415,7 +415,7 @@ public class BoardServiceImpl implements BoardService {
 
         // 发送消息
         Boolean completed = issueStatusMapper.selectByStatusId(projectId, issueE.getStatusId()).getCompleted();
-        if (completed != null && completed && issueDO.getAssigneeId() != null && !"issue_test".equals(issueDO.getTypeCode())) {
+        if (completed != null && completed && issueDO.getAssigneeId() != null && SchemeApplyType.AGILE.equals(issueDO.getApplyType())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDO, IssueDTO.class));
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
             if (projectDTO == null) {

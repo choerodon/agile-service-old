@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.validator;
 
 import io.choerodon.agile.api.dto.StoryMapMoveDTO;
+import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;
@@ -48,7 +49,7 @@ public class IssueValidator {
         if ("sub_task".equals(typeCode)) {
             throw new CommonException(ERROR_PARENT_ISSUE_ISSUBTASK);
         }
-        if ("issue_test".equals(typeCode)) {
+        if (SchemeApplyType.TEST.equals(issueDO.getApplyType())) {
             throw new CommonException(ERROR_PARENT_ISSUE_ISTEST);
         }
     }

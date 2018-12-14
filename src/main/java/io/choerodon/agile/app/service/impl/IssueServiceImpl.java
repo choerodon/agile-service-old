@@ -166,9 +166,6 @@ public class IssueServiceImpl implements IssueService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IssueServiceImpl.class);
 
-    private static final String STATUS_CODE_TODO = "todo";
-    private static final String STATUS_CODE_DOING = "doing";
-    private static final String STATUS_CODE_DONE = "done";
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
     private static final String ISSUE_MANAGER_TYPE = "模块负责人";
@@ -198,10 +195,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String PROJECT_ERROR = "error.project.notFound";
     private static final String ERROR_ISSUE_NOT_FOUND = "error.Issue.queryIssue";
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
-    private static final String ERROR_ISSUE_STATUS_NOT_FOUND = "error.createIssue.issueStatusNotFound";
     private static final String ERROR_ISSUE_STATE_MACHINE_NOT_FOUND = "error.createIssue.stateMachineNotFound";
-    private static final String ERROR_CREATE_ISSUE_CREATE = "error.createIssue.create";
-    private static final String ERROR_CREATE_ISSUE_HANDLE_DATA = "error.createIssue.handleData";
     private static final String SEARCH = "search";
     private static final String STORYMAP_TYPE_SPRINT = "sprint";
     private static final String STORYMAP_TYPE_VERSION = "version";
@@ -214,9 +208,6 @@ public class IssueServiceImpl implements IssueService {
     private static final String URL_TEMPLATE4 = "&paramIssueId=";
     private static final String URL_TEMPLATE5 = "&paramOpenIssueId=";
     private static final String URL_TEMPLATE6 = "&organizationId=";
-    private static final String ISSUE_TEST = "issue_test";
-    private static final String TEST = "test";
-    private static final String AGILE_SERVICE = "agile-service";
     private static final String AGILE = "agile";
 
     @Value("${services.attachment.url}")
@@ -310,7 +301,7 @@ public class IssueServiceImpl implements IssueService {
         Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         IssueDTO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
         //发送消息
-        if (!ISSUE_TEST.equals(result.getTypeCode())) {
+        if (SchemeApplyType.AGILE.equals(result.getApplyType())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", result);
             String summary = result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getReporterName();
@@ -378,7 +369,7 @@ public class IssueServiceImpl implements IssueService {
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         IssueDTO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
-        if (fieldList.contains("assigneeId") && result.getAssigneeId() != null && !ISSUE_TEST.equals(result.getTypeCode())) {
+        if (fieldList.contains("assigneeId") && result.getAssigneeId() != null && SchemeApplyType.AGILE.equals(result.getApplyType())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_assigneed", result);
             String summary = result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getAssigneeName();
@@ -396,7 +387,7 @@ public class IssueServiceImpl implements IssueService {
             siteMsgUtil.issueAssignee(userIds, userName, summary, url.toString(), result.getAssigneeId(), projectId);
         }
         Boolean completed = issueStatusMapper.selectByStatusId(projectId, result.getStatusId()).getCompleted();
-        if (fieldList.contains(STATUS_ID) && completed != null && completed && result.getAssigneeId() != null && !ISSUE_TEST.equals(result.getTypeCode())) {
+        if (fieldList.contains(STATUS_ID) && completed != null && completed && result.getAssigneeId() != null && SchemeApplyType.AGILE.equals(result.getApplyType())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", result);
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
             if (projectDTO == null) {
@@ -534,7 +525,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleIssueStatus(Long projectId, IssueE oldIssue, IssueE issueE, List<String> fieldList, List<Long> issueIds) {
         SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
-        if (!oldIssue.getTypeCode().equals(ISSUE_TEST)) {
+        if (oldIssue.getApplyType().equals(SchemeApplyType.AGILE)) {
             if (sprintSearchDO == null || !Objects.equals(issueE.getSprintId(), sprintSearchDO.getSprintId())) {
                 Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, oldIssue.getIssueTypeId()).getBody();
                 if (stateMachineId == null) {
@@ -1054,7 +1045,7 @@ public class IssueServiceImpl implements IssueService {
         }
         IssueSubDTO result = issueAssembler.issueDetailDoToIssueSubDto(issue);
         // 发送消息
-        if (!ISSUE_TEST.equals(result.getTypeCode())) {
+        if (SchemeApplyType.AGILE.equals(result.getApplyType())) {
             IssueDTO issueDTO = new IssueDTO();
             issueDTO.setReporterId(result.getReporterId());
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", issueDTO);

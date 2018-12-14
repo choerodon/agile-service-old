@@ -290,6 +290,7 @@ class AgileTestConfiguration {
         epicIssue.statusId = 1L
         epicIssue.typeCode = 'issue_epic'
         epicIssue.summary = 'epic-test'
+        epicIssue.applyType = 'agile'
         epicIssue.assigneeId = 1L
         issueMapper.insert(epicIssue)
 
@@ -303,6 +304,7 @@ class AgileTestConfiguration {
         story.issueNum = '2'
         story.issueId = 2L
         story.summary = 'story-test'
+        story.applyType = 'agile'
         story.epicId = 1L
         story.storyPoints = 6
         story.priorityId = 1L

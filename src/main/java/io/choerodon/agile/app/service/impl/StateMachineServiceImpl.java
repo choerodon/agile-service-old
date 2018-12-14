@@ -126,9 +126,9 @@ public class StateMachineServiceImpl implements StateMachineService {
             if (projectInfoE == null) {
                 throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
             }
-            issueService.handleInitIssue(issueE, initStatusId, projectInfoE);
             //创建issue
             issueE.setApplyType(applyType);
+            issueService.handleInitIssue(issueE, initStatusId, projectInfoE);
             issueId = issueRepository.create(issueE).getIssueId();
             transactionManager.commit(status);
         } catch (Exception e) {
@@ -186,11 +186,10 @@ public class StateMachineServiceImpl implements StateMachineService {
             if (projectInfoE == null) {
                 throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
             }
-            //初始化subIssue
-            issueService.handleInitSubIssue(subIssueE, initStatusId, projectInfoE);
-
             //创建issue
             subIssueE.setApplyType(SchemeApplyType.AGILE);
+            //初始化subIssue
+            issueService.handleInitSubIssue(subIssueE, initStatusId, projectInfoE);
             issueId = issueRepository.create(subIssueE).getIssueId();
 
             transactionManager.commit(status);

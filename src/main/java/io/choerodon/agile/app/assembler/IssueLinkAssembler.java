@@ -9,6 +9,7 @@ import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.IssueLinkDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
+import io.choerodon.agile.infra.mapper.IssueMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,11 +27,11 @@ import java.util.stream.Collectors;
 @Component
 public class IssueLinkAssembler extends AbstractAssembler {
 
-    private static final String TEST = "test";
-    private static final String ISSUE_TEST = "issue_test";
-
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private IssueMapper issueMapper;
 
     public List<IssueLinkDTO> issueLinkDoToDto(Long projectId, List<IssueLinkDO> issueLinkDOList) {
         List<IssueLinkDTO> issueLinkDTOList = new ArrayList<>(issueLinkDOList.size());
@@ -46,7 +47,7 @@ public class IssueLinkAssembler extends AbstractAssembler {
                 String imageUrl = assigneeName != null ? usersMap.get(issueLinkDO.getAssigneeId()).getImageUrl() : null;
                 IssueLinkDTO issueLinkDTO = new IssueLinkDTO();
                 BeanUtils.copyProperties(issueLinkDO, issueLinkDTO);
-                if (issueLinkDO.getTypeCode().equals(ISSUE_TEST)) {
+                if (issueLinkDO.getApplyType().equals(SchemeApplyType.TEST)) {
                     issueLinkDTO.setIssueTypeDTO(testIssueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
                 } else {
                     issueLinkDTO.setIssueTypeDTO(agileIssueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
