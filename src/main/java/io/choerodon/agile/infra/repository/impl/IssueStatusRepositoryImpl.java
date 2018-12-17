@@ -47,7 +47,7 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
         if (issueStatusMapper.insert(issueStatusDO) != 1) {
             throw new CommonException("error.IssueStatus.insert");
         }
-        redisUtil.deleteRedisCache(new String[]{PIECHART + issueStatusE.getProjectId() + ':' + STATUS});
+//        redisUtil.deleteRedisCache(new String[]{PIECHART + issueStatusE.getProjectId() + ':' + STATUS + "*"});
         return ConvertHelper.convert(issueStatusMapper.selectByStatusId(issueStatusDO.getProjectId(), issueStatusDO.getStatusId()), IssueStatusE.class);
     }
 
@@ -61,9 +61,9 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
         redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:CumulativeFlowDiagram" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:VelocityChart" + issueStatusE.getProjectId() + ':' + "*",
-                "Agile:EpicChart" + issueStatusE.getProjectId() + ":" + "*",
-                PIECHART + issueStatusE.getProjectId() + ':' + STATUS,
-                PIECHART + issueStatusE.getProjectId() + ':' + "resolution"
+                "Agile:EpicChart" + issueStatusE.getProjectId() + ":" + "*"
+//                , PIECHART + issueStatusE.getProjectId() + ':' + STATUS + "*",
+//                PIECHART + issueStatusE.getProjectId() + ':' + "resolution" + "*"
         });
         return ConvertHelper.convert(issueStatusMapper.selectByStatusId(issueStatusDO.getProjectId(), issueStatusDO.getStatusId()), IssueStatusE.class);
     }
@@ -77,9 +77,9 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
         redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:CumulativeFlowDiagram" + issueStatusE.getProjectId() + ':' + "*",
                 "Agile:VelocityChart" + issueStatusE.getProjectId() + ':' + "*",
-                "Agile:EpicChart" + issueStatusE.getProjectId() + ":" + "*",
-                PIECHART + issueStatusE.getProjectId() + ':' + STATUS,
-                PIECHART + issueStatusE.getProjectId() + ':' + "resolution"
+                "Agile:EpicChart" + issueStatusE.getProjectId() + ":" + "*"
+//                , PIECHART + issueStatusE.getProjectId() + ':' + STATUS + "*",
+//                PIECHART + issueStatusE.getProjectId() + ':' + "resolution" + "*"
         });
     }
 

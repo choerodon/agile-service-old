@@ -17,11 +17,13 @@ import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -137,8 +139,16 @@ public class ReportController {
                                                                    "version、priorityCode、statusCode、sprint、epic、resolution", required = true)
                                                            @RequestParam String fieldName,
                                                            @ApiParam(value = "组织id", required = true)
-                                                           @RequestParam Long organizationId) {
-        return Optional.ofNullable(reportService.queryPieChart(projectId, fieldName, organizationId))
+                                                           @RequestParam Long organizationId,
+                                                           @ApiParam(value = "开始时间 yyyy-MM-dd")
+                                                           @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                           @ApiParam(value = "结束时间 yyyy-MM-dd")
+                                                           @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+                                                           @ApiParam(value = "冲刺id")
+                                                           @RequestParam(required = false) Long sprintId,
+                                                           @ApiParam(value = "版本id")
+                                                           @RequestParam(required = false) Long versionId) {
+        return Optional.ofNullable(reportService.queryPieChart(projectId, fieldName, organizationId, startDate, endDate, sprintId, versionId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.report.queryPieChart"));
     }

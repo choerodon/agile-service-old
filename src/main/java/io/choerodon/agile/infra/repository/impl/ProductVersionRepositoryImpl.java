@@ -42,7 +42,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
         if (versionMapper.insertSelective(version) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        redisUtil.deleteRedisCache(new String[]{PIECHART + versionE.getProjectId() + ':' + FIX_VERSION});
+//        redisUtil.deleteRedisCache(new String[]{PIECHART + versionE.getProjectId() + ':' + FIX_VERSION + "*"});
         return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(version.getVersionId()));
     }
 
@@ -63,7 +63,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
         if (versionMapper.updateOptional(version) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
-        redisUtil.deleteRedisCache(new String[]{PIECHART + versionE.getProjectId() + ':' + FIX_VERSION});
+//        redisUtil.deleteRedisCache(new String[]{PIECHART + versionE.getProjectId() + ':' + FIX_VERSION + "*"});
         return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(version.getVersionId()));
     }
 
@@ -86,13 +86,13 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
         if (versionMapper.updateByPrimaryKeySelective(version) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
-        redisUtil.deleteRedisCache(new String[]{PIECHART + versionE.getProjectId() + ':' + FIX_VERSION});
+//        redisUtil.deleteRedisCache(new String[]{PIECHART + versionE.getProjectId() + ':' + FIX_VERSION + "*"});
         return versionConverter.doToEntity(versionMapper.selectByPrimaryKey(version.getVersionId()));
     }
 
     @Override
     public int deleteByVersionIds(Long projectId, List<Long> versionIds) {
-        redisUtil.deleteRedisCache(new String[]{PIECHART + projectId + ':' + FIX_VERSION});
+//        redisUtil.deleteRedisCache(new String[]{PIECHART + projectId + ':' + FIX_VERSION + "*"});
         return versionMapper.deleteByVersionIds(projectId, versionIds);
     }
 

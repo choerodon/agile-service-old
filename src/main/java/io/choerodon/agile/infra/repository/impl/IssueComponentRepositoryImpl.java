@@ -32,7 +32,7 @@ public class IssueComponentRepositoryImpl implements IssueComponentRepository {
         if (issueComponentMapper.insert(issueComponentDO) != 1) {
             throw new CommonException("error.scrum_issue_component.insert");
         }
-        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentE.getProjectId() + ':' + CPMPONENT});
+//        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentE.getProjectId() + ':' + CPMPONENT + "*"});
         return ConvertHelper.convert(issueComponentMapper.selectByPrimaryKey(issueComponentDO.getComponentId()), IssueComponentE.class);
     }
 
@@ -42,7 +42,7 @@ public class IssueComponentRepositoryImpl implements IssueComponentRepository {
         if (issueComponentMapper.updateByPrimaryKeySelective(issueComponentDO) != 1) {
             throw new CommonException("error.scrum_issue_component.update");
         }
-        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentE.getProjectId() + ':' + CPMPONENT});
+//        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentE.getProjectId() + ':' + CPMPONENT + "*"});
         return ConvertHelper.convert(issueComponentMapper.selectByPrimaryKey(issueComponentDO.getComponentId()), IssueComponentE.class);
     }
 
@@ -55,6 +55,6 @@ public class IssueComponentRepositoryImpl implements IssueComponentRepository {
         if (issueComponentMapper.delete(issueComponentDO) != 1) {
             throw new CommonException("error.component.delete");
         }
-        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentDO.getProjectId() + ':' + CPMPONENT});
+//        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentDO.getProjectId() + ':' + CPMPONENT + "*"});
     }
 }

@@ -1676,11 +1676,18 @@
                 LEFT JOIN agile_sprint otherName on other.${fieldName} = otherName.${fieldName}
             </if>
         </if>
-        LEFT JOIN agile_issue ai3 on ai.parent_issue_id = ai3.issue_id
         WHERE
         ai.project_id = #{projectId}
         AND ai.apply_type = 'agile'
-        AND (ai3.apply_type = 'agile' or ai3.type_code is null)
+        <if test="startDate != null and endDate!= null">
+            and ai.creation_date &gt;= #{startDate} and ai.creation_date &lt;= #{endDate}
+        </if>
+        <if test="sprintId != null">
+            and ai.issue_id in (select aisr.issue_id from agile_issue_sprint_rel aisr where aisr.sprint_id = #{sprintId})
+        </if>
+        <if test="versionId != null">
+            and ai.issue_id in (select avir.issue_id from agile_version_issue_rel avir where avir.version_id = #{versionId} and avir.relation_type = 'fix')
+        </if>
         GROUP BY
         <choose>
             <when test="own">
@@ -1715,9 +1722,9 @@
                     agile_issue ai
                 WHERE
                     ai.project_id = #{projectId}
-                    AND (ai.type_code = 'bug'
-                    OR ai.type_code = 'task'
-                    OR ai.type_code = 'story' )
+                    AND ai.apply_type = 'agile'
+                    AND ai.type_code != 'sub_task'
+                    AND ai.type_code != 'issue_epic'
                 UNION
                 SELECT
                     ai4.issue_id,
@@ -1732,18 +1739,27 @@
                 ) epica
                 LEFT JOIN agile_issue ai2 ON ai2.issue_id = epica.epic_id
             WHERE
-                ( epica.epic_id IS NOT NULL AND epica.epic_id != 0 AND ai2.epic_name IS NOT NULL )
-                OR epica.epic_id IS NULL
-                OR epica.epic_id = 0 GROUP BY type_name,name
+                1=1
+                <if test="startDate != null and endDate!= null">
+                    and epica.creation_date &gt;= #{startDate} and epica.creation_date &lt;= #{endDate}
+                </if>
+                <if test="sprintId != null">
+                    and epica.issue_id in (select aisr.issue_id from agile_issue_sprint_rel aisr where aisr.sprint_id = #{sprintId})
+                </if>
+                <if test="versionId != null">
+                    and epica.issue_id in (select avir.issue_id from agile_version_issue_rel avir where avir.version_id = #{versionId})
+                    and avir.relation_type = 'fix')
+                </if>
+                GROUP BY type_name,name
         )pieData ORDER BY pieData.value DESC
     </select>
 
     <select id="queryIssueCountByFieldName" resultType="java.lang.Integer">
         SELECT count(ai.issue_id)
         FROM
-        agile_issue ai LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id
+        agile_issue ai
         <if test="fieldName == 'component_id'">
-            left join agile_component_issue_rel other on ai.issue_id = other.issue_id
+            LEFT JOIN agile_component_issue_rel other on ai.issue_id = other.issue_id
         </if>
         <if test="fieldName == 'version_id'">
             LEFT JOIN agile_version_issue_rel other on ai.issue_id = other.issue_id and other.relation_type = 'fix'
@@ -1754,9 +1770,17 @@
         WHERE
         ai.project_id = #{projectId}
         AND ai.apply_type = 'agile'
-        AND (ai2.apply_type = 'agile' or ai2.type_code is null)
         <if test="fieldName == 'epic_id'">
             AND ai.type_code != 'issue_epic'
+        </if>
+        <if test="startDate != null and endDate!= null">
+           and ai.creation_date &gt;= #{startDate} and ai.creation_date &lt;= #{endDate}
+        </if>
+        <if test="sprintId != null">
+           and ai.issue_id in (select aisr.issue_id from agile_issue_sprint_rel aisr where aisr.sprint_id = #{sprintId})
+        </if>
+        <if test="versionId != null">
+           and ai.issue_id in (select avir.issue_id from agile_version_issue_rel avir where avir.version_id = #{versionId} and avir.relation_type = 'fix')
         </if>
     </select>
 
