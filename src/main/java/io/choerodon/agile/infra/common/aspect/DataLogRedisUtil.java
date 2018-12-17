@@ -51,8 +51,8 @@ public class DataLogRedisUtil {
             deleteVersionCache(projectId, issueDO.getIssueId(), POINTER);
         });
         redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + projectId + COLON + POINTER,
-                PIE_CHART + projectId + COLON + FIELD_STATUS,
-                PIE_CHART + projectId + COLON + FIELD_RESOLUTION,
+//                PIE_CHART + projectId + COLON + FIELD_STATUS,
+//                PIE_CHART + projectId + COLON + FIELD_RESOLUTION,
                 BURN_DOWN_COORDINATE_BY_TYPE + projectId + COLON + POINTER
         });
     }
@@ -71,8 +71,9 @@ public class DataLogRedisUtil {
             epicId = issueMapper.selectByPrimaryKey(issueId).getEpicId();
         }
         if (epicId != null && epicId != 0) {
-            redisUtil.deleteRedisCache(new String[]{EPIC_CHART + projectId + COLON + epicId + COLON + type,
-                    PIE_CHART + projectId + COLON + PIE_CHART_EPIC});
+            redisUtil.deleteRedisCache(new String[]{EPIC_CHART + projectId + COLON + epicId + COLON + type
+//                    ,PIE_CHART + projectId + COLON + PIE_CHART_EPIC
+            });
         }
     }
 
@@ -86,7 +87,7 @@ public class DataLogRedisUtil {
         redisUtil.deleteRedisCache(new String[]{BURN_DOWN_COORDINATE + projectId + COLON + POINTER,
                 CUMULATIVE_FLOW_DIAGRAM + projectId + COLON + POINTER,
                 VELOCITY_CHART + projectId + COLON + POINTER,
-                PIE_CHART + projectId + COLON + POINTER,
+//                PIE_CHART + projectId + COLON + POINTER,
                 BURN_DOWN_COORDINATE_BY_TYPE + projectId + COLON + POINTER
         });
     }

@@ -37,7 +37,7 @@ public class SprintRepositoryImpl implements SprintRepository {
         if (sprintMapper.insertSelective(sprintDO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        redisUtil.deleteRedisCache(new String[]{PIECHART + sprintE.getProjectId() + ':' + SPRINT});
+//        redisUtil.deleteRedisCache(new String[]{PIECHART + sprintE.getProjectId() + ':' + SPRINT + "*"});
         return sprintConverter.doToEntity(sprintMapper.selectByPrimaryKey(sprintDO.getSprintId()));
     }
 
@@ -50,9 +50,9 @@ public class SprintRepositoryImpl implements SprintRepository {
         //清除冲刺报表相关缓存
         redisUtil.deleteRedisCache(new String[]{
                 "Agile:BurnDownCoordinate" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*",
-                "Agile:BurnDownCoordinateByType" + sprintE.getProjectId()  + ':' + "*",
-                "Agile:VelocityChart" + sprintE.getProjectId() + ':' + "*",
-                PIECHART + sprintE.getProjectId() + ':' + SPRINT
+                "Agile:BurnDownCoordinateByType" + sprintE.getProjectId() + ':' + "*",
+                "Agile:VelocityChart" + sprintE.getProjectId() + ':' + "*"
+//                ,PIECHART + sprintE.getProjectId() + ':' + SPRINT + "*"
         });
         return sprintConverter.doToEntity(sprintMapper.selectByPrimaryKey(sprintDO.getSprintId()));
     }
@@ -65,9 +65,9 @@ public class SprintRepositoryImpl implements SprintRepository {
         }
         redisUtil.deleteRedisCache(new String[]{
                 "Agile:BurnDownCoordinate" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*",
-                "Agile:BurnDownCoordinateByType" + sprintE.getProjectId()  + ':' + "*",
-                "Agile:VelocityChart" + sprintE.getProjectId() + ':' + "*",
-                PIECHART + sprintE.getProjectId() + ':' + SPRINT
+                "Agile:BurnDownCoordinateByType" + sprintE.getProjectId() + ':' + "*",
+                "Agile:VelocityChart" + sprintE.getProjectId() + ':' + "*"
+//                , PIECHART + sprintE.getProjectId() + ':' + SPRINT + "*"
         });
         return true;
     }

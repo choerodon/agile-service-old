@@ -94,7 +94,9 @@ public class RedisUtil {
         try {
             for (String key : keys) {
                 Set<String> caches = keys(key);
-                LOGGER.debug("查询到缓存{}，匹配值{}", key, caches.size());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("查询到缓存{}，匹配值{}", key, caches.size());
+                }
                 if (!caches.isEmpty()) {
                     deleteByKey(caches);
                 }

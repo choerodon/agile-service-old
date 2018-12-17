@@ -975,35 +975,35 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = AGILE, key = "'PieChart' + #projectId + ':' + #fieldName")
-    public List<PieChartDTO> queryPieChart(Long projectId, String fieldName, Long organizationId) {
+//    @Cacheable(cacheNames = AGILE, key = "'PieChart' + #projectId + ':' + #fieldName + ':' + #startDate+ ':' + #endDate+ ':' + #sprintId+':' + #versionId")
+    public List<PieChartDTO> queryPieChart(Long projectId, String fieldName, Long organizationId, Date startDate, Date endDate, Long sprintId, Long versionId) {
         switch (fieldName) {
             case ASSIGNEE:
-                return handlePieChartByAssignee(projectId);
+                return handlePieChartByAssignee(projectId, startDate, endDate, sprintId, versionId);
             case COMPONENT:
-                return handlePieChartByType(projectId, "component_id", false, false);
+                return handlePieChartByType(projectId, "component_id", false, startDate, endDate, sprintId, versionId);
             case ISSUE_TYPE:
-                return handlePieChartByTypeCode(projectId);
+                return handlePieChartByTypeCode(projectId, startDate, endDate, sprintId, versionId);
             case VERSION:
-                return handlePieChartByType(projectId, "version_id", false, false);
+                return handlePieChartByType(projectId, "version_id", false, startDate, endDate, sprintId, versionId);
             case PRIORITY:
-                return handlePieChartByPriorityType(projectId, organizationId);
+                return handlePieChartByPriorityType(projectId, organizationId, startDate, endDate, sprintId, versionId);
             case STATUS:
-                return handlePieChartByStatusType(projectId);
+                return handlePieChartByStatusType(projectId, startDate, endDate, sprintId, versionId);
             case SPRINT:
-                return handlePieChartByType(projectId, "sprint_id", false, false);
+                return handlePieChartByType(projectId, "sprint_id", false, startDate, endDate, sprintId, versionId);
             case EPIC:
-                return handlePieChartByEpic(projectId);
+                return handlePieChartByEpic(projectId, startDate, endDate, sprintId, versionId);
             case RESOLUTION:
-                return handlePieChartByType(projectId, RESOLUTION, false, false);
+                return handlePieChartByType(projectId, RESOLUTION, false, startDate, endDate, sprintId, versionId);
             default:
                 break;
         }
         return new ArrayList<>();
     }
 
-    private List<PieChartDTO> handlePieChartByPriorityType(Long projectId, Long organizationId) {
-        List<PieChartDTO> pieChartDTOS = handlePieChartByType(projectId, "priority_id", true, false);
+    private List<PieChartDTO> handlePieChartByPriorityType(Long projectId, Long organizationId, Date startDate, Date endDate, Long sprintId, Long versionId) {
+        List<PieChartDTO> pieChartDTOS = handlePieChartByType(projectId, "priority_id", true, startDate, endDate, sprintId, versionId);
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         pieChartDTOS.forEach(pieChartDTO -> {
             pieChartDTO.setPriorityDTO(priorityMap.get(Long.parseLong(pieChartDTO.getTypeName())));
@@ -1012,9 +1012,10 @@ public class ReportServiceImpl implements ReportService {
         return pieChartDTOS;
     }
 
-    private List<PieChartDTO> handlePieChartByStatusType(Long projectId) {
-        Integer total = reportMapper.queryIssueCountByFieldName(projectId, "status_id");
-        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "status_id", false, total);
+    private List<PieChartDTO> handlePieChartByStatusType(Long projectId, Date startDate, Date endDate, Long sprintId, Long versionId) {
+        Integer total = reportMapper.queryIssueCountByFieldName(projectId, "status_id", startDate, endDate, sprintId, versionId);
+        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "status_id", false, total,
+                startDate, endDate, sprintId, versionId);
         if (pieChartDOS != null && !pieChartDOS.isEmpty()) {
             List<PieChartDTO> pieChartDTOS = reportAssembler.toTargetList(pieChartDOS, PieChartDTO.class);
             Map<Long, StatusMapDTO> statusMap = ConvertUtil.getIssueStatusMap(projectId);
@@ -1025,9 +1026,10 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    private List<PieChartDTO> handlePieChartByTypeCode(Long projectId) {
-        Integer total = reportMapper.queryIssueCountByFieldName(projectId, "type_code");
-        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "issue_type_id", true, total);
+    private List<PieChartDTO> handlePieChartByTypeCode(Long projectId, Date startDate, Date endDate, Long sprintId, Long versionId) {
+        Integer total = reportMapper.queryIssueCountByFieldName(projectId, "type_code", startDate, endDate, sprintId, versionId);
+        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "issue_type_id", true, total,
+                startDate, endDate, sprintId, versionId);
         if (pieChartDOS != null && !pieChartDOS.isEmpty()) {
             List<PieChartDTO> pieChartDTOS = reportAssembler.toTargetList(pieChartDOS, PieChartDTO.class);
             Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
@@ -1045,20 +1047,20 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    private List<PieChartDTO> handlePieChartByEpic(Long projectId) {
-        Integer total = reportMapper.queryIssueCountByFieldName(projectId, "epic_id");
-        return reportAssembler.toTargetList(reportMapper.queryPieChartByEpic(projectId, total), PieChartDTO.class);
+    private List<PieChartDTO> handlePieChartByEpic(Long projectId, Date startDate, Date endDate, Long sprintId, Long versionId) {
+        Integer total = reportMapper.queryIssueCountByFieldName(projectId, "epic_id", startDate, endDate, sprintId, versionId);
+        return reportAssembler.toTargetList(reportMapper.queryPieChartByEpic(projectId, total, startDate, endDate, sprintId, versionId), PieChartDTO.class);
     }
 
-    private List<PieChartDTO> handlePieChartByType(Long projectId, String fieldName, Boolean own, Boolean typeCode) {
-        Integer total = reportMapper.queryIssueCountByFieldName(projectId, fieldName);
-        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, own, fieldName, typeCode, total);
+    private List<PieChartDTO> handlePieChartByType(Long projectId, String fieldName, Boolean own, Date startDate, Date endDate, Long sprintId, Long versionId) {
+        Integer total = reportMapper.queryIssueCountByFieldName(projectId, fieldName, startDate, endDate, sprintId, versionId);
+        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, own, fieldName, false, total, startDate, endDate, sprintId, versionId);
         return reportAssembler.toTargetList(pieChartDOS, PieChartDTO.class);
     }
 
-    private List<PieChartDTO> handlePieChartByAssignee(Long projectId) {
-        Integer total = reportMapper.queryIssueCountByFieldName(projectId, "assignee_id");
-        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "assignee_id", false, total);
+    private List<PieChartDTO> handlePieChartByAssignee(Long projectId, Date startDate, Date endDate, Long sprintId, Long versionId) {
+        Integer total = reportMapper.queryIssueCountByFieldName(projectId, "assignee_id", startDate, endDate, sprintId, versionId);
+        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "assignee_id", false, total, startDate, endDate, sprintId, versionId);
         List<PieChartDTO> pieChartDTOList = reportAssembler.toTargetList(pieChartDOS, PieChartDTO.class);
         if (pieChartDTOList != null && !pieChartDTOList.isEmpty()) {
             List<Long> userIds = pieChartDTOList.stream().filter(pieChartDTO ->

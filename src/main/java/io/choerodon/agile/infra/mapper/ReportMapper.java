@@ -296,20 +296,28 @@ public interface ReportMapper {
      * @param fieldName fieldName 字段名
      * @param typeCode  是否关联键值表 是true 不是false
      * @param total     total
+     * @param startDate startDate
+     * @param endDate   endDate
+     * @param sprintId  sprintId
+     * @param versionId versionId
      * @return PieChartDO
      */
     List<PieChartDO> queryPieChartByParam(@Param("projectId") Long projectId, @Param("own") Boolean own,
                                           @Param("fieldName") String fieldName, @Param("typeCode") Boolean typeCode,
-                                          @Param("total") Integer total);
+                                          @Param("total") Integer total, @Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("sprintId") Long sprintId, @Param("versionId") Long versionId);
 
     /**
      * 根据Epic查询统计信息
      *
      * @param projectId projectId
      * @param total     total
+     * @param startDate startDate
+     * @param endDate   endDate
+     * @param sprintId  sprintId
+     * @param versionId versionId
      * @return PieChartDO
      */
-    List<PieChartDO> queryPieChartByEpic(@Param("projectId") Long projectId, @Param("total") Integer total);
+    List<PieChartDO> queryPieChartByEpic(@Param("projectId") Long projectId, @Param("total") Integer total, @Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("sprintId") Long sprintId, @Param("versionId") Long versionId);
 
 
     /**
@@ -317,9 +325,14 @@ public interface ReportMapper {
      *
      * @param projectId projectId
      * @param fieldName fieldName
+     * @param startDate startDate
+     * @param endDate   endDate
+     * @param sprintId  sprintId
+     * @param versionId versionId
      * @return Integer
      */
-    Integer queryIssueCountByFieldName(@Param("projectId") Long projectId, @Param("fieldName") String fieldName);
+    Integer queryIssueCountByFieldName(@Param("projectId") Long projectId, @Param("fieldName") String fieldName,
+                                       @Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("sprintId") Long sprintId, @Param("versionId") Long versionId);
 
     List<GroupDataChartListDO> selectEpicIssueList(@Param("projectId") Long projectId, @Param("epicId") Long epicId);
 

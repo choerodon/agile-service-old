@@ -8,6 +8,7 @@ import io.choerodon.agile.infra.mapper.ReportMapper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -45,11 +46,16 @@ public interface ReportService {
     /**
      * 根据项目id和字段名称查询饼图
      *
-     * @param projectId projectId
-     * @param fieldName fieldName
+     * @param projectId      projectId
+     * @param fieldName      fieldName
+     * @param organizationId organizationId
+     * @param startDate      startDate
+     * @param endDate        endDate
+     * @param sprintId       sprintId
+     * @param versionId      versionId
      * @return PieChartDTO
      */
-    List<PieChartDTO> queryPieChart(Long projectId, String fieldName, Long organizationId);
+    List<PieChartDTO> queryPieChart(Long projectId, String fieldName, Long organizationId, Date startDate, Date endDate, Long sprintId, Long versionId);
 
     List<GroupDataChartDO> queryEpicChart(Long projectId, Long epicId, String type);
 
