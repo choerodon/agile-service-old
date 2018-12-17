@@ -479,7 +479,7 @@ class ReportControllerSpec extends Specification {
         'priority'   | 1
         'status'     | 2
         'sprint'     | 3
-        'epic'       | 1
+        'epic'       | 2
         'resolution' | 2
 
     }
