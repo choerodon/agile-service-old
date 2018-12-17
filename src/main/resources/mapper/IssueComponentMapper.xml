@@ -35,7 +35,7 @@
         LEFT JOIN agile_issue ai ON ai.issue_id = acir.issue_id
         where acir.project_id = #{projectId}
         <if test="noIssueTest">
-            AND ai.type_code != 'issue_test'
+            AND ai.apply_type = 'agile'
         </if>
         GROUP BY
         acir.component_id
@@ -97,7 +97,7 @@
         LEFT JOIN agile_issue ai ON ai.issue_id = acir.issue_id
         where acir.project_id = #{projectId}
         <if test="noIssueTest">
-            AND ai.type_code != 'issue_test'
+            AND ai.apply_type = 'agile'
         </if>
         GROUP BY
         acir.component_id

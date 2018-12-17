@@ -29,4 +29,6 @@ public interface IssueComponentService {
     List<IssueDTO> queryIssuesByComponentId(Long projectId, Long componentId);
 
     List<ComponentForListDTO> listByProjectIdForTest(Long projectId, Long componentId, Boolean noIssueTest);
+
+    Boolean checkComponentName(Long projectId, String componentName);
 }

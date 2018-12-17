@@ -25,11 +25,7 @@ public class IssueAssembler extends AbstractAssembler {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private LookupValueMapper lookupValueMapper;
-    @Autowired
     private SprintNameAssembler sprintNameAssembler;
-
-    private static final String TEST = "test";
 
     /**
      * issueDetailDO转换到IssueDTO

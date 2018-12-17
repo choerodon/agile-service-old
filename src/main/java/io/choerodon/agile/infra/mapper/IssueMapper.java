@@ -234,6 +234,14 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     /**
      * 返回issue的详情列表（测试模块用）
      *
+     * @param issueIds issueIds
+     * @return IssueComponentDetailDO
+     */
+    List<IssueComponentDetailDO> listIssueWithoutSubDetailByIssueIds(@Param("issueIds") List<Long> issueIds);
+
+    /**
+     * 返回issueIds（测试模块用）
+     *
      * @param projectId          projectId
      * @param searchArgs         searchArgs
      * @param advancedSearchArgs advancedSearchArgs
@@ -241,9 +249,9 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @param content            content
      * @return IssueComponentDetailDO
      */
-    List<IssueComponentDetailDO> listIssueWithoutSubDetail(@Param("projectId") Long projectId, @Param("searchArgs") Map<String, Object> searchArgs,
-                                                           @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
-                                                           @Param("otherArgs") Map<String, Object> otherArgs, @Param("content") String content);
+    List<Long> listIssueIdsWithoutSubDetail(@Param("projectId") Long projectId, @Param("searchArgs") Map<String, Object> searchArgs,
+                                                              @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
+                                                              @Param("otherArgs") Map<String, Object> otherArgs, @Param("content") String content);
 
     /**
      * 待办事项查询相关issue的issueIds
@@ -437,7 +445,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @param oldStatusId
      * @param newStatusId
      */
-    void updateIssueStatusByIssueTypeId(@Param("projectId") Long projectId, @Param("applyType") String applyType, @Param("issueTypeId") Long issueTypeId, @Param("oldStatusId") Long oldStatusId, @Param("newStatusId") Long newStatusId,@Param("userId")Long userId);
+    void updateIssueStatusByIssueTypeId(@Param("projectId") Long projectId, @Param("applyType") String applyType, @Param("issueTypeId") Long issueTypeId, @Param("oldStatusId") Long oldStatusId, @Param("newStatusId") Long newStatusId, @Param("userId") Long userId);
 
     /**
      * 查询某个状态下的issue信息包含是否已完成
@@ -445,7 +453,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @param projectId   projectId
      * @param applyType   applyType
      * @param issueTypeId issueTypeId
-     * @param statusId statusId
+     * @param statusId    statusId
      * @return IssueDO
      */
     List<IssueDO> queryIssueWithCompleteInfoByStatusId(@Param("projectId") Long projectId, @Param("applyType") String applyType, @Param("issueTypeId") Long issueTypeId, @Param("statusId") Long statusId);

@@ -1,6 +1,7 @@
 package io.choerodon.agile.domain.agile.entity;
 
 
+import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.LookupValueDO;
 import io.choerodon.core.oauth.DetailsHelper;
@@ -20,7 +21,6 @@ public class IssueE {
 
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
-    private static final String ISSUE_TEST = "issue_test";
     private static final String DEFAULT_ASSIGNEE = "default_assignee";
     private static final String CURRENT_USER = "current_user";
 
@@ -351,11 +351,11 @@ public class IssueE {
     }
 
     public Boolean isIssueRank() {
-        return !Objects.equals(this.typeCode, ISSUE_TEST) && !Objects.equals(this.typeCode, ISSUE_EPIC);
+        return Objects.equals(this.applyType, SchemeApplyType.AGILE) && !Objects.equals(this.typeCode, ISSUE_EPIC);
     }
 
     public Boolean isIssueMapRank() {
-        return !Objects.equals(this.typeCode, ISSUE_TEST) && !Objects.equals(this.typeCode, ISSUE_EPIC) && !Objects.equals(this.typeCode, SUB_TASK);
+        return Objects.equals(this.applyType,  SchemeApplyType.AGILE) && !Objects.equals(this.typeCode, ISSUE_EPIC) && !Objects.equals(this.typeCode, SUB_TASK);
     }
 
     public void initializationIssueUser() {

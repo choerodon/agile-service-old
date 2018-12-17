@@ -20,6 +20,7 @@
                     ai.status_id,
                     ai.issue_type_id,
                     ai.assignee_id,
+                    ai.apply_type,
                     ai.type_code
                 FROM
                     agile_issue_link ail
@@ -30,7 +31,7 @@
                     ail.issue_id = #{issueId}
                     AND ai.project_id = #{projectId}
                     <if test="noIssueTest">
-                        AND ai.type_code != "issue_test"
+                        AND ai.apply_type = 'agile'
                     </if>
                 UNION ALL
                 SELECT
@@ -43,6 +44,7 @@
                     ai1.status_id,
                     ai1.issue_type_id,
                     ai1.assignee_id,
+                    ai1.apply_type,
                     ai1.type_code
                 FROM
                     agile_issue_link ail1
@@ -53,7 +55,7 @@
                     ail1.linked_issue_id = #{issueId}
                     AND ai1.project_id = #{projectId}
                     <if test="noIssueTest">
-                        AND ai1.type_code != "issue_test"
+                        AND ai1.apply_type = 'agile'
                     </if>
             ) a
         ORDER BY
@@ -79,6 +81,7 @@
                 ai.priority_id,
                 ai.status_id,
                 ai.issue_type_id,
+                ai.apply_type,
                 ai.type_code
             FROM
                 agile_issue_link ail
@@ -102,6 +105,7 @@
                 ai1.priority_id,
                 ai1.status_id,
                 ai1.issue_type_id,
+                ai1.apply_type,
                 ai1.type_code
             FROM
                 agile_issue_link ail1

@@ -196,8 +196,8 @@
 
     <select id="queryLabelIssueByIssueIds" resultType="io.choerodon.agile.infra.dataobject.LabelIssueRelDO">
         SELECT
-            ali.*,
-            ail.label_name
+        ali.*,
+        ail.label_name
         FROM agile_label_issue_rel ali LEFT JOIN agile_issue_label ail ON ali.label_id = ail.label_id
         WHERE ali.issue_id IN
         <foreach collection="issueIds" item="issueId" open="("
@@ -373,7 +373,7 @@
         ai.status_id
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE ai.project_id = #{projectId} AND ai.type_code != 'issue_test'
+        WHERE ai.project_id = #{projectId} AND ai.apply_type = 'agile'
         <if test='searchDTO.searchArgs != null'>
             <if test='searchDTO.searchArgs.summary != null and searchDTO.searchArgs.summary != "" '>
                 AND position(#{searchDTO.searchArgs.summary} IN ai.summary)
@@ -452,11 +452,15 @@
         <if test='searchDTO.otherArgs != null'>
             <if test='searchDTO.otherArgs.assigneeId != null and searchDTO.otherArgs.assigneeId.size > 0'>
                 <choose>
-                    <when test="searchDTO.otherArgs.assigneeId[0]==0">
-                        AND (ai.assignee_id = #{searchDTO.otherArgs.id[0]} or ai.assignee_id is null)
+                    <when test="searchDTO.otherArgs.assigneeId.size == 1 and searchDTO.otherArgs.assigneeId[0]==0">
+                        AND (ai.assignee_id = #{searchDTO.otherArgs.assigneeId[0]} or ai.assignee_id is null)
                     </when>
                     <otherwise>
-                        AND ai.assignee_id = #{searchDTO.otherArgs.id[0]}
+                        and ai.assignee_id in
+                        <foreach collection="searchDTO.otherArgs.assigneeId" item="aId" open="(" separator=","
+                                 close=")">
+                            #{aId}
+                        </foreach>
                     </otherwise>
                 </choose>
             </if>
@@ -659,7 +663,7 @@
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         WHERE ai.project_id = #{projectId} AND ai.type_code != 'issue_epic'
-        AND ai.type_code != 'sub_task' AND ai.type_code != 'issue_test'
+        AND ai.type_code != 'sub_task' AND ai.apply_type = 'agile'
         <if test="issueId != null">
             AND ai.issue_id != #{issueId}
         </if>
@@ -836,8 +840,7 @@
         left join agile_issue_status ais on ais.status_id = ai.status_id and ais.project_id = ai.project_id
         WHERE
         (ais.is_completed != 1 or ais.is_completed is null)
-        and ai.project_id = #{projectId} AND ai.type_code !='sub_task' AND ai.type_code != 'issue_epic' AND ai.type_code
-        != 'issue_test'
+        and ai.project_id = #{projectId} AND ai.type_code !='sub_task' AND ai.type_code != 'issue_epic' AND ai.apply_type = 'agile'
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.versionId != null'>
                 AND ai.issue_id IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id =
@@ -1238,7 +1241,7 @@
         ai.issue_type_id,
         ai.status_id,
         ai.priority_id,
-        IF((ais.is_completed = 1), '否', '是') AS resolution,
+        IF((ais.is_completed = 1), '是', '否') AS resolution,
         IF ((ai.parent_issue_id IS NULL OR ai.parent_issue_id = 0),
         ai.issue_id,ai.parent_issue_id) as parent_issue_id,
         epic.epic_name
@@ -1258,7 +1261,7 @@
                  close=")">
             #{issueId}
         </foreach>
-        ORDER BY issue_num
+        ORDER BY ai.issue_id
     </select>
 
     <select id="queryIssueEpicInfoByIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
@@ -1325,7 +1328,7 @@
         (
         select ail.linked_issue_id
         from agile_issue_link ail, agile_issue ai2
-        where ai2.project_id = #{projectId} and ail.issue_id = ai2.issue_id and ai2.type_code = 'issue_test'
+        where ai2.project_id = #{projectId} and ail.issue_id = ai2.issue_id and ai2.apply_type = 'test'
         )
         AND ai.type_code != 'sub_task'
         <if test='searchArgs != null'>
@@ -1533,28 +1536,14 @@
         </if>
     </select>
 
-    <select id="listIssueWithoutSubDetail" resultMap="issueComponentDetail">
-        SELECT search.* from (
+    <select id="listIssueIdsWithoutSubDetail" resultType="java.lang.Long">
+        SELECT search.issue_id from (
         SELECT
         ai.issue_id,
-        ai.type_code,
         ai.summary,
-        ai.status_id,
-        ai.assignee_id,
-        ai.project_id,
-        ai.last_update_date,
-        ai.creation_date,
-        ai.reporter_id,
-        ai2.epic_name,
-        alv2.name as epic_color,
-        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,
-        ai.description,
-        ai.priority_id,
-        ai.issue_type_id
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
-        LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code
         WHERE ai.project_id = #{projectId} and ai.type_code != 'sub_task'
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
@@ -1651,6 +1640,33 @@
         </if>
     </select>
 
+    <select id="listIssueWithoutSubDetailByIssueIds" resultMap="issueComponentDetail">
+        SELECT
+        ai.issue_id,
+        ai.type_code,
+        ai.summary,
+        ai.status_id,
+        ai.assignee_id,
+        ai.project_id,
+        ai.last_update_date,
+        ai.creation_date,
+        ai.reporter_id,
+        ai2.epic_name,
+        alv2.name as epic_color,
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,
+        ai.description,
+        ai.priority_id,
+        ai.issue_type_id
+        FROM agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
+        LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code
+        WHERE ai.issue_id in
+        <foreach collection="issueIds" item="issueId" open="(" separator="," close=")">
+            #{issueId}
+        </foreach>
+    </select>
+
     <select id="queryIssueNumByTimeSlot" resultType="io.choerodon.agile.infra.dataobject.IssueCreationNumDO">
         SELECT
             DATE_FORMAT(creation_date, '%Y-%m-%d') AS creation_day,
@@ -1673,6 +1689,7 @@
             ai.type_code,
             ai.issue_type_id,
             ai.status_id,
+            ai.apply_type,
             sprint.sprint_id
         FROM
             agile_issue ai
@@ -1787,11 +1804,7 @@
         agile_issue_sprint_rel aisr
         LEFT JOIN agile_sprint asp ON aisr.sprint_id = asp.sprint_id
         LEFT JOIN agile_issue ai
-        on ai.type_code NOT IN (
-        'issue_test',
-        'sub_task',
-        'issue_epic'
-        )
+        on ai.apply_type = 'agile' and ai.type_code != 'sub_task' and ai.type_code != 'issue_epic'
         <if test='onlyStory != null and onlyStory == true'>
             AND ai.type_code = 'story'
         </if>
@@ -1852,11 +1865,7 @@
         WHERE
         aisr.project_id = #{projectId} and aisr.sprint_id = asp.sprint_id and asp.status_code != 'closed'
         )
-        AND ai.type_code NOT IN (
-        'issue_test',
-        'sub_task',
-        'issue_epic'
-        )
+        AND ai.apply_type = 'agile' and ai.type_code != 'sub_task' and ai.type_code != 'issue_epic'
         and ai.status_id not in
         <foreach collection="doneIds" item="doneId" open="(" separator=","
                  close=")">
@@ -1911,12 +1920,7 @@
         FROM
         agile_version_issue_rel avir
         LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
-        LEFT JOIN agile_issue ai ON
-        ai.type_code NOT IN (
-        'issue_test',
-        'sub_task',
-        'issue_epic'
-        )
+        LEFT JOIN agile_issue ai ON ai.apply_type = 'agile' and ai.type_code != 'sub_task' and ai.type_code != 'issue_epic'
         <if test='onlyStory != null and onlyStory == true'>
             AND ai.type_code = 'story'
         </if>
@@ -1982,11 +1986,7 @@
         avir.project_id = #{projectId} and avir.version_id = apv.version_id and apv.status_code = 'version_planning'
         and avir.relation_type = 'fix'
         )
-        AND ai.type_code NOT IN (
-        'issue_test',
-        'sub_task',
-        'issue_epic'
-        )
+        AND ai.apply_type = 'agile' and ai.type_code != 'sub_task' and ai.type_code != 'issue_epic'
         and ai.status_id not in
         <foreach collection="doneIds" item="doneId" open="(" separator=","
                  close=")">
@@ -2040,11 +2040,7 @@
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         WHERE
         ai.project_id = #{projectId}
-        AND ai.type_code NOT IN (
-        'issue_test',
-        'sub_task',
-        'issue_epic'
-        )
+        AND ai.apply_type = 'agile' and ai.type_code != 'sub_task' and ai.type_code != 'issue_epic'
         and ai.status_id not in
         <foreach collection="doneIds" item="doneId" open="(" separator=","
                  close=")">
@@ -2265,7 +2261,7 @@
                 ai.epic_id = #{epicId}
                 AND ai.project_id = #{projectId}
                 AND ai.type_code != 'issue_epic'
-                AND ai.type_code != 'issue_test'
+                AND ai.apply_type = 'agile'
                 AND ai.type_code != 'sub_task'
             ) aaa
         WHERE
@@ -2345,7 +2341,7 @@
                 avir.version_id = #{versionId}
                 AND ai.project_id =  #{projectId}
                 AND ai.type_code != 'issue_epic'
-                AND ai.type_code != 'issue_test'
+                AND ai.apply_type = 'agile'
                 AND ai.type_code != 'sub_task'
             ) aaa
         WHERE
@@ -2369,7 +2365,7 @@
         agile_issue ai
         WHERE
         ai.project_id = #{projectId}
-        AND ai.type_code = 'issue_test'
+        AND ai.apply_type = 'test'
         AND ai.issue_id IN
         <foreach collection="issueIds" item="issueId" open="(" separator="," close=")">
             #{issueId}
@@ -2452,7 +2448,7 @@
     <select id="queryIssueIdsIsTest" resultType="java.lang.Integer">
         select count(1)
         from agile_issue ai
-        where ai.type_code='issue_test'
+        where ai.apply_type = 'test'
         AND ai.issue_id IN
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
@@ -2523,7 +2519,7 @@
             agile_project_info api
             LEFT JOIN agile_issue ai ON ai.project_id = api.project_id
         WHERE
-            ai.type_code = 'issue_test'
+            ai.apply_type = 'test'
     </select>
 
     <resultMap id="issueProject" type="io.choerodon.agile.infra.dataobject.IssueProjectDO">

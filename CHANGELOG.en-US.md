@@ -1,6 +1,36 @@
 # Changelog
 All notable changes about agile-service will be documented in this file.
 
+## [0.12.0] - 2018-12-14
+
+### Added
+
+- Version details filtering functionality.Version details support advanced filter.
+- Active sprint issues drag sort functionality.Issues support drag sort in active sprint's board view.
+- Active sprint support filtering of team members.
+- Work calendar added 2019 statutory holiday data.
+- New issue link for version details.
+- Version add the field of expected release date.
+
+### Changed
+
+- Issue creators can delete issues which they created.
+- The state is automatically changed to the default state after the task is converted to a subtask.
+- When the sprint is complete, the unfinished subtask moves with the parent task to the next sprint.
+- Create a quick search of the relationship field to display the name changed to Chinese.
+- The workload of the sprints in the backlog list is changed to the total number of issues, the remaining number of issues, the total task hours, and the remaining task hours.
+- The field of end date changes to the field of expected release date when you create new version.
+- User need to enter the actual release time when user release the version.
+- The board sets the column constraint to be modified only by the project owner.
+- User can only select the planning version to merger other version.
+- Partial views style optimization.
+
+### Fixed
+
+- Statistics incomplete issues count error in version details view.
+- The issue details priority drop-down list is incomplete.
+- Failed to create version name in Chinese.
+
 ## [0.11.0] - 2018-11-16
 
 ### Added

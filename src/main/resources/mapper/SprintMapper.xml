@@ -115,7 +115,7 @@
         WHERE avir.version_id = apv.version_id AND avir.relation_type = 'fix'
         ) apv1 ON apv1.issue_id = ai.issue_id
         WHERE asp1.sprint_id is null and ais.is_completed != 1
-        and ai.type_code != 'sub_task' and ai.type_code != 'issue_test'
+        and ai.type_code != 'sub_task' and ai.apply_type = 'agile'
         and ai.type_code != 'issue_epic' and ai.project_id = #{projectId}
         ORDER BY ai.rank asc
     </select>
@@ -510,7 +510,7 @@
                 #{sprintStatusCode}
             </foreach>
         </if>
-        ORDER BY last_update_date DESC
+        ORDER BY sprint_id DESC
     </select>
 
     <select id="queryNotDoneIssueCount" resultType="java.lang.Integer">
@@ -561,7 +561,7 @@
     <select id="hasIssue" resultType="java.lang.Boolean">
         select CASE COUNT(1) WHEN 0 THEN FALSE ELSE TRUE END
         from agile_issue ai
-        where ai.project_id = #{projectId} AND ai.type_code NOT IN ( 'sub_task', 'issue_test', 'issue_epic' )
+        where ai.project_id = #{projectId} AND ai.type_code != 'sub_task' and ai.type_code != 'issue_epic' and ai.apply_type = 'agile'
         and ai.issue_id
         <choose>
             <when test="sprintId != null and sprintId != 0">
@@ -592,7 +592,7 @@
 
     <select id="queryMaxRank" resultType="java.lang.String">
         select MAX(ai.rank) from agile_issue ai
-        where ai.project_id = #{projectId} AND ai.type_code NOT IN ( 'sub_task', 'issue_test', 'issue_epic' )
+        where ai.project_id = #{projectId} AND ai.type_code != 'sub_task' and ai.type_code != 'issue_epic' and ai.apply_type = 'agile'
         and ai.issue_id
         <choose>
             <when test="sprintId != null and sprintId != 0">
@@ -685,6 +685,7 @@
                                         AND aisr2.sprint_id = #{sprintId}
                                         AND ai2.type_code = 'sub_task'
                                         AND ai2.status_id = ais2.status_id
+                                        AND ais2.project_id = #{projectId}
                                         AND ais2.is_completed != 1)
     </select>
 
@@ -705,6 +706,7 @@
                                         AND aisr2.sprint_id = #{sprintId}
                                         AND ai2.type_code = 'sub_task'
                                         AND ai2.status_id = ais2.status_id
+                                        AND ais2.project_id = #{projectId}
                                         AND ais2.is_completed != 1)
         UNION ALL
         select ai3.issue_id as issue_id
@@ -779,7 +781,7 @@
         SELECT COUNT(1)
         FROM agile_issue ai, agile_issue_sprint_rel aisr
         WHERE ai.project_id = #{projectId} AND aisr.issue_id = ai.issue_id AND aisr.sprint_id = #{sprintId}
-        AND type_code NOT IN ('sub_task', 'issue_epic', 'issue_test')
+        AND ai.type_code != 'sub_task' and ai.type_code != 'issue_epic' and ai.apply_type = 'agile'
     </select>
 
 </mapper>

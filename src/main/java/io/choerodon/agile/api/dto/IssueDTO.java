@@ -94,6 +94,16 @@ public class IssueDTO {
 
     private Long createdBy;
 
+    private String applyType;
+
+    public String getApplyType() {
+        return applyType;
+    }
+
+    public void setApplyType(String applyType) {
+        this.applyType = applyType;
+    }
+
     public Long getIssueTypeId() {
         return issueTypeId;
     }

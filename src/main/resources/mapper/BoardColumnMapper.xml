@@ -189,7 +189,7 @@
                            ai1.status_id
                        FROM agile_issue ai1, agile_issue_sprint_rel aisr
                        WHERE aisr.sprint_id = #{activeSprintId} AND ai1.issue_id = aisr.issue_id
-                             AND ai1.type_code not in ('issue_epic', 'issue_test')
+                             and ai1.type_code != 'issue_epic' and ai1.apply_type = 'agile'
                       ) ai ON ai.status_id = ais.status_id and ais.project_id = #{projectId}
         WHERE
             abc.column_id = #{columnId}
@@ -209,7 +209,7 @@
                            ai1.status_id
                        FROM agile_issue ai1, agile_issue_sprint_rel aisr
                        WHERE aisr.sprint_id = #{activeSprintId} AND ai1.issue_id = aisr.issue_id
-                             AND ai1.type_code not in ('issue_epic', 'sub_task', 'issue_test')
+                             and ai1.type_code != 'issue_epic' and ai1.type_code != 'sub_task' and ai1.apply_type = 'agile'
                       ) ai ON ai.status_id = ais.status_id and ais.project_id = #{projectId}
         WHERE
             abc.column_id = #{columnId}

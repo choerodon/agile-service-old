@@ -191,7 +191,7 @@
         , agile_version_issue_rel avir
         WHERE ai.project_id = #{projectId} AND avir.version_id = #{versionId} AND avir.relation_type = 'fix'
         AND ai.issue_id = avir.issue_id
-        AND ai.type_code != 'issue_test'
+        AND ai.apply_type = 'agile'
         <if test="statusCode != null">
             AND ai.status_id in
             <foreach collection="filterStatusIds" item="filterStatusId" index="index"
@@ -256,7 +256,7 @@
         WHERE avir.version_id = #{versionId} AND ai.project_id = #{projectId}
               AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix' AND ai.status_id = ais.status_id and ai.project_id = ais.project_id
               AND ais.is_completed != 1
-              AND ai.type_code NOT IN ('issue_test')
+              AND ai.apply_type = 'agile'
     </select>
 
     <select id="queryPlanVersionNames" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
@@ -358,7 +358,7 @@
             #{statusId}
         </foreach>
         AND avir.relation_type = 'fix'
-        AND ai.type_code != 'issue_test'
+        AND ai.apply_type = 'agile'
     </select>
 
 
