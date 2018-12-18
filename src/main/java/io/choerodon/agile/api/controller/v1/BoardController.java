@@ -152,4 +152,17 @@ public class BoardController {
                 .orElseThrow(() -> new CommonException("error.board.get"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("校验看板名称重复性")
+    @GetMapping("/check_name")
+    public ResponseEntity<Boolean> checkName(@ApiParam(value = "项目id", required = true)
+                                             @PathVariable(name = "project_id") Long projectId,
+                                             @ApiParam(value = "board name", required = true)
+                                             @RequestParam String boardName) {
+        return Optional.ofNullable(boardService.checkName(projectId, boardName))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.checkName.get"));
+
+    }
+
 }

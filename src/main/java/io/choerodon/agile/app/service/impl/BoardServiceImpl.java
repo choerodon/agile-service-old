@@ -126,12 +126,33 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void create(Long projectId, String boardName) {
+        if (checkName(projectId, boardName)) {
+            throw new CommonException("error.boardName.exist");
+        }
         BoardE boardResult = createBoard(projectId, boardName);
         boardColumnService.createColumnWithRelateStatus(boardResult);
     }
 
+    private Boolean checkNameUpdate(Long projectId, Long boardId, String boardName) {
+        BoardDO boardDO = boardMapper.selectByPrimaryKey(boardId);
+        if (boardName.equals(boardDO.getName())) {
+            return false;
+        }
+        BoardDO check = new BoardDO();
+        check.setProjectId(projectId);
+        check.setName(boardName);
+        List<BoardDO> boardDOList = boardMapper.select(check);
+        if (boardDOList != null && !boardDOList.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public BoardDTO update(Long projectId, Long boardId, BoardDTO boardDTO) {
+        if (boardDTO.getName() != null && checkNameUpdate(projectId, boardId, boardDTO.getName())) {
+            throw new CommonException("error.boardName.exist");
+        }
         BoardValidator.checkUpdateBoard(projectId, boardDTO);
         boardDTO.setBoardId(boardId);
         BoardE boardE = ConvertHelper.convert(boardDTO, BoardE.class);
@@ -554,5 +575,17 @@ public class BoardServiceImpl implements BoardService {
         userSettingDO.setTypeCode(BOARD);
         userSettingDO.setUserId(userId);
         return userSettingMapper.selectOne(userSettingDO);
+    }
+
+    @Override
+    public Boolean checkName(Long projectId, String boardName) {
+        BoardDO boardDO = new BoardDO();
+        boardDO.setProjectId(projectId);
+        boardDO.setName(boardName);
+        List<BoardDO> boardDOList = boardMapper.select(boardDO);
+        if (boardDOList != null && !boardDOList.isEmpty()) {
+            return true;
+        }
+        return false;
     }
 }
