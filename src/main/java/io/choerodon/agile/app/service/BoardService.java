@@ -48,4 +48,6 @@ public interface BoardService {
      * @return UserSettingDTO
      */
     UserSettingDTO updateUserSettingBoard(Long projectId, Long boardId, String swimlaneBasedCode);
+
+    Boolean checkName(Long projectId, String boardName);
 }
