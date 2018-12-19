@@ -72,6 +72,18 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("史诗名称重复校验")
+    @GetMapping
+    public ResponseEntity<Boolean> checkEpicName(@ApiParam(value = "项目id", required = true)
+                                                 @PathVariable(name = "project_id") Long projectId,
+                                                 @ApiParam(value = "应用类型", required = true)
+                                                 @RequestParam String epicName) {
+        return Optional.ofNullable(issueService.checkEpicName(projectId, epicName))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.checkEpicName.get"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建issue子任务")
     @PostMapping(value = "/sub_issue")
     public ResponseEntity<IssueSubDTO> createSubIssue(@ApiParam(value = "项目id", required = true)

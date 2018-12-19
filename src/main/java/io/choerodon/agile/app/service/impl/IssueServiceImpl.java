@@ -468,9 +468,26 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
+    private Boolean checkEpicNameUpdate(Long projectId, Long issueId, String epicName) {
+        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
+        if (epicName.equals(issueDO.getEpicName())) {
+            return false;
+        }
+        IssueDO check = new IssueDO();
+        check.setProjectId(projectId);
+        check.setEpicName(epicName);
+        List<IssueDO> issueDOList = issueMapper.select(check);
+        if (issueDOList != null && !issueDOList.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public IssueDTO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList) {
+        if (fieldList.contains("epicName") && issueUpdateDTO.getEpicName() != null && checkEpicNameUpdate(projectId, issueUpdateDTO.getIssueId(), issueUpdateDTO.getEpicName())) {
+            throw new CommonException("error.epicName.exist");
+        }
         if (fieldList != null && !fieldList.isEmpty()) {
             //处理issue自己字段
             handleUpdateIssue(issueUpdateDTO, fieldList, projectId);
@@ -1972,5 +1989,17 @@ public class IssueServiceImpl implements IssueService {
 //                "Agile:PieChart" + projectId + ':' + "*",
                 "Agile:BurnDownCoordinateByType" + projectId + ':' + "*"
         });
+    }
+
+    @Override
+    public Boolean checkEpicName(Long projectId, String epicName) {
+        IssueDO issueDO = new IssueDO();
+        issueDO.setProjectId(projectId);
+        issueDO.setEpicName(epicName);
+        List<IssueDO> issueDOList = issueMapper.select(issueDO);
+        if (issueDOList != null && !issueDOList.isEmpty()) {
+            return true;
+        }
+        return false;
     }
 }

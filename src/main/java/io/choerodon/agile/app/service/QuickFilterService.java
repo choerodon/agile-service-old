@@ -29,4 +29,6 @@ public interface QuickFilterService {
      * @return QuickFilterDTO
      */
     QuickFilterDTO dragFilter(Long projectId, QuickFilterSequenceDTO quickFilterSequenceDTO);
+
+    Boolean checkName(Long projectId, String quickFilterName);
 }

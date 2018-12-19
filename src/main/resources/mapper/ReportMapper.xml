@@ -3091,7 +3091,7 @@
                 WHERE
                     apv1.project_id = #{projectId}
                 ORDER BY
-                    apv1.sequence LIMIT 5
+                    apv1.sequence desc LIMIT 5
                 ) apv ON avir.version_id = apv.version_id
         WHERE
             avir.project_id = #{projectId}

@@ -115,5 +115,17 @@ public class QuickFilterController {
                 .orElseThrow(() -> new CommonException(DRAG_ERROR));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("快速搜索重名校验")
+    @GetMapping("/check_name")
+    public ResponseEntity<Boolean> checkName(@ApiParam(value = "项目id", required = true)
+                                             @PathVariable(name = "project_id") Long projectId,
+                                             @ApiParam(value = "快速搜索名称" , required = true)
+                                             @RequestParam String quickFilterName) {
+        return Optional.ofNullable(quickFilterService.checkName(projectId, quickFilterName))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.checkName.get"));
+    }
+
 
 }

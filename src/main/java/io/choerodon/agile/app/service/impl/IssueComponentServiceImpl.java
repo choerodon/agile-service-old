@@ -55,13 +55,34 @@ public class IssueComponentServiceImpl implements IssueComponentService {
 
     @Override
     public IssueComponentDTO create(Long projectId, IssueComponentDTO issueComponentDTO) {
+        if (checkComponentName(projectId, issueComponentDTO.getName())) {
+            throw new CommonException("error.componentName.exist");
+        }
         IssueComponentValidator.checkCreateComponent(projectId, issueComponentDTO);
         IssueComponentE issueComponentE = ConvertHelper.convert(issueComponentDTO, IssueComponentE.class);
         return ConvertHelper.convert(issueComponentRepository.create(issueComponentE), IssueComponentDTO.class);
     }
 
+    private Boolean checkNameUpdate(Long projectId, Long componentId, String componentName) {
+        IssueComponentDO issueComponentDO = issueComponentMapper.selectByPrimaryKey(componentId);
+        if (componentName.equals(issueComponentDO.getName())) {
+            return false;
+        }
+        IssueComponentDO check = new IssueComponentDO();
+        check.setProjectId(projectId);
+        check.setName(componentName);
+        List<IssueComponentDO> issueComponentDOList = issueComponentMapper.select(check);
+        if (issueComponentDOList != null && !issueComponentDOList.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public IssueComponentDTO update(Long projectId, Long id, IssueComponentDTO issueComponentDTO) {
+        if (checkNameUpdate(projectId, id, issueComponentDTO.getName())) {
+            throw new CommonException("error.componentName.exist");
+        }
         issueComponentDTO.setComponentId(id);
         IssueComponentE issueComponentE = ConvertHelper.convert(issueComponentDTO, IssueComponentE.class);
         return ConvertHelper.convert(issueComponentRepository.update(issueComponentE), IssueComponentDTO.class);

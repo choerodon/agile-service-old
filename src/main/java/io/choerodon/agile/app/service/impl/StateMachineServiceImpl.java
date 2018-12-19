@@ -98,6 +98,9 @@ public class StateMachineServiceImpl implements StateMachineService {
         if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
             throw new CommonException("error.applyType.illegal");
         }
+        if ("agile".equals(applyType) && issueCreateDTO.getEpicName() != null && issueService.checkEpicName(issueCreateDTO.getProjectId(), issueCreateDTO.getEpicName())) {
+            throw new CommonException("error.epicName.exist");
+        }
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
         //事物隔离级别：开启新事务
         def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);

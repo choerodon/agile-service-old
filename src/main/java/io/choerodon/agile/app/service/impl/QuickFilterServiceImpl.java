@@ -174,6 +174,9 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         if (!projectId.equals(quickFilterDTO.getProjectId())) {
             throw new CommonException("error.projectId.notEqual");
         }
+        if (checkName(projectId, quickFilterDTO.getName())) {
+            throw new CommonException("error.quickFilterName.exist");
+        }
         String sqlQuery = getSqlQuery(quickFilterDTO.getQuickFilterValueDTOList(), quickFilterDTO.getRelationOperations(), quickFilterDTO.getChildIncluded());
         QuickFilterE quickFilterE = ConvertHelper.convert(quickFilterDTO, QuickFilterE.class);
         quickFilterE.setSqlQuery(sqlQuery);
@@ -183,10 +186,28 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         return ConvertHelper.convert(quickFilterRepository.create(quickFilterE), QuickFilterDTO.class);
     }
 
+    private Boolean checkNameUpdate(Long projectId, Long filterId, String quickFilterName) {
+        QuickFilterDO quickFilterDO = quickFilterMapper.selectByPrimaryKey(filterId);
+        if (quickFilterName.equals(quickFilterDO.getName())) {
+            return false;
+        }
+        QuickFilterDO check = new QuickFilterDO();
+        check.setProjectId(projectId);
+        check.setName(quickFilterName);
+        List<QuickFilterDO> quickFilterDOList = quickFilterMapper.select(check);
+        if (quickFilterDOList != null && !quickFilterDOList.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public QuickFilterDTO update(Long projectId, Long filterId, QuickFilterDTO quickFilterDTO) {
         if (!projectId.equals(quickFilterDTO.getProjectId())) {
             throw new CommonException("error.projectId.notEqual");
+        }
+        if (quickFilterDTO.getName() != null && checkNameUpdate(projectId, filterId, quickFilterDTO.getName())) {
+            throw new CommonException("error.quickFilterName.exist");
         }
         String sqlQuery = getSqlQuery(quickFilterDTO.getQuickFilterValueDTOList(), quickFilterDTO.getRelationOperations(), quickFilterDTO.getChildIncluded());
         quickFilterDTO.setFilterId(filterId);
@@ -260,6 +281,18 @@ public class QuickFilterServiceImpl implements QuickFilterService {
                 quickFilterRepository.batchUpdateSequence(quickFilterSequenceDTO.getBeforeSequence(), projectId, update + 1, quickFilterE.getFilterId());
             }
         }
+    }
+
+    @Override
+    public Boolean checkName(Long projectId, String quickFilterName) {
+        QuickFilterDO quickFilterDO = new QuickFilterDO();
+        quickFilterDO.setProjectId(projectId);
+        quickFilterDO.setName(quickFilterName);
+        List<QuickFilterDO> quickFilterDOList = quickFilterMapper.select(quickFilterDO);
+        if (quickFilterDOList != null && !quickFilterDOList.isEmpty()) {
+            return true;
+        }
+        return false;
     }
 
 }

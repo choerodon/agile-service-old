@@ -288,4 +288,6 @@ public interface IssueService {
      */
     void handleSearchUser(SearchDTO searchDTO, Long projectId);
 
+    Boolean checkEpicName(Long projectId, String epicName);
+
 }
