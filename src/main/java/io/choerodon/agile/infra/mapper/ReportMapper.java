@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -106,22 +107,22 @@ public interface ReportMapper {
     /**
      * 获取冲刺期间移动到done状态的字段变更值（包含变更时间）
      *
-     * @param issueIdAddDoneList issueIdAddDoneList
-     * @param sprintDO           sprintDO
-     * @param field              field
+     * @param issueId  issueId
+     * @param sprintDO sprintDO
+     * @param field    field
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryAddIssueDoneValueDuringSprint(@Param("issueIdAddDoneList") List<Long> issueIdAddDoneList, @Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
+    List<ReportIssueDO> queryAddIssueDoneValueDuringSprint(@Param("issueId") Long issueId, @Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
 
     /**
      * 获取冲刺期间done移动到非done状态的字段变更值（包含变更时间）
      *
-     * @param issueIdRemoveDoneList issueIdRemoveDoneList
-     * @param sprintDO              sprintDO
-     * @param field                 field
+     * @param issueId  issueId
+     * @param sprintDO sprintDO
+     * @param field    field
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryRemoveIssueDoneValueDurationSprint(@Param("issueIdRemoveDoneList") List<Long> issueIdRemoveDoneList, @Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
+    List<ReportIssueDO> queryRemoveIssueDoneValueDurationSprint(@Param("issueId") Long issueId, @Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
 
     /**
      * 获取开启冲刺前，issue状态为done的issueId
@@ -385,4 +386,26 @@ public interface ReportMapper {
      * @return IssuePriorityDistributionChartDO
      */
     List<IssuePriorityDistributionChartDO> queryIssuePriorityDistributionChart(@Param("projectId") Long projectId);
+
+    /**
+     * 修复数据
+     *
+     * @param issueId issueId
+     * @return FixCumulativeData
+     */
+    List<FixCumulativeData> queryFixCumulativeData(@Param("issueId") Long issueId);
+
+    /**
+     * 获取需要修复的issue
+     *
+     * @return IssueDO
+     */
+    Set<Long> queryIssueDOByFixCumulativeData();
+
+    /**
+     * 排除有问题数据的issue
+     *
+     * @return IssueDO
+     */
+    Set<Long> queryRemoveIssueIds();
 }

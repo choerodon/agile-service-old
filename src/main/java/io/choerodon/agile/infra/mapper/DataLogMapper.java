@@ -9,6 +9,7 @@ import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/6/14.
@@ -55,7 +56,14 @@ public interface DataLogMapper extends BaseMapper<DataLogDO> {
      * @param projectId        projectId
      * @param productVersionDO productVersionDO
      * @param issueIds         issueIds
-     * @param userId         userId
+     * @param userId           userId
      */
     void batchCreateVersionDataLog(@Param("projectId") Long projectId, @Param("productVersionDO") ProductVersionDO productVersionDO, @Param("issueIds") List<Long> issueIds, @Param("userId") Long userId);
+
+    /**
+     * 批量删除错误数据
+     *
+     * @param dataLogIds dataLogIds
+     */
+    void batchDeleteErrorDataLog(@Param("dataLogIds") Set<Long> dataLogIds);
 }

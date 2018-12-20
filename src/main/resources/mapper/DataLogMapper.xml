@@ -65,4 +65,12 @@
             #{productVersionDO.name} ,#{issueId},#{userId})
         </foreach>
     </insert>
+
+    <delete id="batchDeleteErrorDataLog">
+        delete from agile_data_log where log_id in
+        <foreach collection="dataLogIds" item="logId"
+                 open="(" close=")" separator=",">
+            #{logId}
+        </foreach>
+    </delete>
 </mapper>

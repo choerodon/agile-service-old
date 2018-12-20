@@ -270,4 +270,13 @@ public class ReportController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.report.queryIssuePriorityDistributionChart"));
     }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("修复累积流图")
+    @PostMapping(value = "/fix_cumulative_flow_diagram")
+    public ResponseEntity fixCumulativeFlowDiagram(@ApiParam(value = "项目id", required = true)
+                                                   @PathVariable(name = "project_id") Long projectId) {
+        reportService.fixCumulativeFlowDiagram();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

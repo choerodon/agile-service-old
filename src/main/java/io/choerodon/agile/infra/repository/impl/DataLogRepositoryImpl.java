@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/6/14.
  * Email: fuqianghuang01@gmail.com
@@ -34,6 +36,11 @@ public class DataLogRepositoryImpl implements DataLogRepository {
     public void delete(DataLogE dataLogE) {
         DataLogDO dataLogDO = ConvertHelper.convert(dataLogE, DataLogDO.class);
         dataLogMapper.delete(dataLogDO);
+    }
+
+    @Override
+    public void batchDeleteErrorDataLog(Set<Long> dataLogIds) {
+        dataLogMapper.batchDeleteErrorDataLog(dataLogIds);
     }
 
 }

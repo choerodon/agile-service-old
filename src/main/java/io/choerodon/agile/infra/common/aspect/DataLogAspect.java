@@ -311,7 +311,7 @@ public class DataLogAspect {
         Long oldStatusId = (Long) args[3];
         Long newStatusId = (Long) args[4];
         Long userId = (Long) args[5];
-        if (projectId != null && Objects.nonNull(applyType) && issueTypeId != null && oldStatusId != null && newStatusId != null) {
+        if (projectId != null && Objects.nonNull(applyType) && issueTypeId != null && oldStatusId != null && newStatusId != null && !oldStatusId.equals(newStatusId)) {
             StatusMapDTO oldStatus = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), oldStatusId).getBody();
             StatusMapDTO newStatus = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), newStatusId).getBody();
             IssueStatusDO oldStatusDO = issueStatusMapper.selectByStatusId(projectId, oldStatusId);
@@ -1077,23 +1077,25 @@ public class DataLogAspect {
             StatusMapDTO currentStatusMapDTO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(originIssueDO.getProjectId()), issueE.getStatusId()).getBody();
             IssueStatusDO originStatus = issueStatusMapper.selectByStatusId(originIssueDO.getProjectId(), originIssueDO.getStatusId());
             IssueStatusDO currentStatus = issueStatusMapper.selectByStatusId(originIssueDO.getProjectId(), issueE.getStatusId());
-            createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
-                    FIELD_STATUS, originStatusMapDTO.getName(), currentStatusMapDTO.getName(),
-                    originIssueDO.getStatusId().toString(),
-                    issueE.getStatusId().toString());
-            //删除缓存
-            redisUtil.deleteRedisCache(new String[]{"Agile:CumulativeFlowDiagram" + originIssueDO.getProjectId() + ':' + "*"});
-            Boolean condition = (originStatus.getCompleted() != null && originStatus.getCompleted()) || (currentStatus.getCompleted() != null && currentStatus.getCompleted());
-            if (condition) {
-                deleteEpicChartCache(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
-                deleteBurnDownCoordinateByTypeEpic(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId());
-                deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
-                redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + originIssueDO.getProjectId() + ':' + "*"
+            if (!originIssueDO.getStatusId().equals(issueE.getStatusId())) {
+                createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
+                        FIELD_STATUS, originStatusMapDTO.getName(), currentStatusMapDTO.getName(),
+                        originIssueDO.getStatusId().toString(),
+                        issueE.getStatusId().toString());
+                //删除缓存
+                redisUtil.deleteRedisCache(new String[]{"Agile:CumulativeFlowDiagram" + originIssueDO.getProjectId() + ':' + "*"});
+                Boolean condition = (originStatus.getCompleted() != null && originStatus.getCompleted()) || (currentStatus.getCompleted() != null && currentStatus.getCompleted());
+                if (condition) {
+                    deleteEpicChartCache(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
+                    deleteBurnDownCoordinateByTypeEpic(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId());
+                    deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), "*");
+                    redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + originIssueDO.getProjectId() + ':' + "*"
 //                        , PIECHART + originIssueDO.getProjectId() + ':' + FIELD_STATUS + "*"
-                });
-                deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), "*");
-                //生成解决问题日志
-                dataLogResolution(originIssueDO.getProjectId(), originIssueDO.getIssueId(), originStatus, currentStatus, originStatusMapDTO, currentStatusMapDTO);
+                    });
+                    deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), "*");
+                    //生成解决问题日志
+                    dataLogResolution(originIssueDO.getProjectId(), originIssueDO.getIssueId(), originStatus, currentStatus, originStatusMapDTO, currentStatusMapDTO);
+                }
             }
         }
     }
