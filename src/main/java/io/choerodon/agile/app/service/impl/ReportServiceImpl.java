@@ -255,7 +255,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-//    @Cacheable(cacheNames = AGILE, key = "'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()")
+    @Cacheable(cacheNames = AGILE, key = "'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()")
     public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
         //获取当前符合条件的所有issueIds
         String filterSql = null;
@@ -803,7 +803,13 @@ public class ReportServiceImpl implements ReportService {
     private void handleRemoveDoneIssueValueDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, String field, List<Long> issueAllList) {
         // 获取当前冲刺期间移出done状态的issue
         List<Long> issueIdRemoveDoneList = issueAllList != null && !issueAllList.isEmpty() ? reportMapper.queryRemoveDoneIssueIdsDuringSprint(sprintDO, issueAllList) : null;
-        List<ReportIssueE> issueRemoveDoneList = issueIdRemoveDoneList != null && !issueIdRemoveDoneList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryRemoveIssueDoneValueDurationSprint(issueIdRemoveDoneList, sprintDO, field), ReportIssueE.class) : null;
+        List<ReportIssueDO> reportIssueDOS = Collections.synchronizedList(new ArrayList<>());
+        List<ReportIssueE> issueRemoveDoneList = new ArrayList<>();
+        if (issueIdRemoveDoneList != null && !issueIdRemoveDoneList.isEmpty()) {
+            //todo 还需要优化
+            issueIdRemoveDoneList.parallelStream().forEach(issueIdRemoveDone -> reportIssueDOS.addAll(reportMapper.queryRemoveIssueDoneValueDurationSprint(issueIdRemoveDone, sprintDO, field)));
+            issueRemoveDoneList = !reportIssueDOS.isEmpty() ? ConvertHelper.convertList(reportIssueDOS, ReportIssueE.class) : null;
+        }
         if (issueRemoveDoneList != null && !issueRemoveDoneList.isEmpty()) {
             reportIssueEList.addAll(issueRemoveDoneList);
         }
@@ -812,8 +818,14 @@ public class ReportServiceImpl implements ReportService {
     private void handleAddDoneIssueValueDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, String field, List<Long> issueAllList) {
         // 获取当前冲刺期间移动到done状态的issue
         List<Long> issueIdAddDoneList = issueAllList != null && !issueAllList.isEmpty() ? reportMapper.queryAddDoneIssueIdsDuringSprint(sprintDO, issueAllList) : null;
-        List<ReportIssueE> issueAddDoneList = issueIdAddDoneList != null && !issueIdAddDoneList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueDoneValueDuringSprint(issueIdAddDoneList, sprintDO, field), ReportIssueE.class) : null;
-        if (issueAddDoneList != null && !issueIdAddDoneList.isEmpty()) {
+        List<ReportIssueDO> reportIssueDOS = Collections.synchronizedList(new ArrayList<>());
+        List<ReportIssueE> issueAddDoneList = new ArrayList<>();
+        if (issueIdAddDoneList != null && !issueIdAddDoneList.isEmpty()) {
+            //todo 还需要优化
+            issueIdAddDoneList.parallelStream().forEach(issueIdAddDone -> reportIssueDOS.addAll(reportMapper.queryAddIssueDoneValueDuringSprint(issueIdAddDone, sprintDO, field)));
+            issueAddDoneList = !reportIssueDOS.isEmpty() ? ConvertHelper.convertList(reportIssueDOS, ReportIssueE.class) : null;
+        }
+        if (issueAddDoneList != null && !issueAddDoneList.isEmpty()) {
             reportIssueEList.addAll(issueAddDoneList);
         }
     }
