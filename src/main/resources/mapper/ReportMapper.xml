@@ -3131,4 +3131,56 @@
         order by total_count desc
     </select>
 
+    <select id="queryFixCumulativeData" resultType="io.choerodon.agile.infra.dataobject.FixCumulativeData">
+        SELECT
+            adl.log_id,
+            adl.issue_id,
+            adl.old_value AS oldStatusId,
+            adl.old_string as oldString,
+            adl.new_value AS newStatusId,
+            adl.new_string as oldString,
+            adl.creation_date
+        FROM
+            agile_data_log adl
+        WHERE
+            adl.field = 'status'
+            AND adl.issue_id = #{issueId}
+            and adl.old_value is not null
+            and adl.new_value is not null
+        ORDER BY
+            adl.creation_date ASC
+    </select>
+
+    <select id="queryIssueDOByFixCumulativeData" resultType="java.lang.Long">
+        select a.issue_id from (
+        SELECT
+            issue_id
+        FROM
+            agile_data_log
+        WHERE
+            field = 'status'
+            and issue_id is not null
+            and new_value is not null
+            and old_value is not null
+        GROUP BY
+            issue_id
+        )a order by issue_id
+    </select>
+
+    <select id="queryRemoveIssueIds" resultType="java.lang.Long">
+        select a.issue_id from (
+        SELECT
+            issue_id
+        FROM
+            agile_data_log
+        WHERE
+            field = 'status'
+            and issue_id is not null
+            and (new_value is null or
+             old_value is null)
+        GROUP BY
+            issue_id
+        )a order by a.issue_id
+    </select>
+
 </mapper>

@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -385,4 +386,26 @@ public interface ReportMapper {
      * @return IssuePriorityDistributionChartDO
      */
     List<IssuePriorityDistributionChartDO> queryIssuePriorityDistributionChart(@Param("projectId") Long projectId);
+
+    /**
+     * 修复数据
+     *
+     * @param issueId   issueId
+     * @return FixCumulativeData
+     */
+    List<FixCumulativeData> queryFixCumulativeData(@Param("issueId") Long issueId);
+
+    /**
+     * 获取需要修复的issue
+     *
+     * @return IssueDO
+     */
+    Set<Long> queryIssueDOByFixCumulativeData();
+
+    /**
+     * 排除有问题数据的issue
+     *
+     * @return IssueDO
+     */
+    Set<Long> queryRemoveIssueIds();
 }

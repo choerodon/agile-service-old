@@ -8,6 +8,7 @@ import io.choerodon.agile.app.service.ReportService;
 import io.choerodon.agile.domain.agile.converter.SprintConverter;
 import io.choerodon.agile.domain.agile.entity.ReportIssueE;
 import io.choerodon.agile.domain.agile.entity.SprintE;
+import io.choerodon.agile.domain.agile.repository.DataLogRepository;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
@@ -39,7 +40,6 @@ import java.util.stream.Collectors;
  * @since 2018/6/19
  */
 @Service
-@Transactional(rollbackFor = Exception.class)
 public class ReportServiceImpl implements ReportService {
 
     @Autowired
@@ -70,6 +70,8 @@ public class ReportServiceImpl implements ReportService {
     private IssueFeignClient issueFeignClient;
     @Autowired
     private StateMachineFeignClient stateMachineFeignClient;
+    @Autowired
+    private DataLogRepository dataLogRepository;
 
     private static final String STORY_POINTS = "storyPoints";
     private static final String REMAINING_ESTIMATED_TIME = "remainingEstimatedTime";
@@ -125,6 +127,59 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public List<IssuePriorityDistributionChartDTO> queryIssuePriorityDistributionChart(Long projectId, Long organizationId) {
         return reportAssembler.toIssuePriorityDistributionChartDTO(projectId, reportMapper.queryIssuePriorityDistributionChart(projectId));
+    }
+
+    @Override
+    public void fixCumulativeFlowDiagram() {
+        Set<Long> issueIds = reportMapper.queryIssueDOByFixCumulativeData();
+        Set<Long> removeIssueIdS = reportMapper.queryRemoveIssueIds();
+        issueIds.removeAll(removeIssueIdS);
+        Set<Long> dataLogIds = Collections.synchronizedSet(new HashSet<>());
+        issueIds.parallelStream().forEach(issueId -> {
+            List<FixCumulativeData> fixCumulativeData = reportMapper.queryFixCumulativeData(issueId);
+            if (fixCumulativeData != null && !fixCumulativeData.isEmpty() && fixCumulativeData.size() > 1) {
+                Set<FixCumulativeData> remove = new HashSet<>();
+                List<FixCumulativeData> statusIds = new ArrayList<>();
+                Boolean condition = false;
+                for (int i = 0; i < fixCumulativeData.size() - 1; i++) {
+                    FixCumulativeData preData = fixCumulativeData.get(i);
+                    FixCumulativeData nextData = fixCumulativeData.get(i + 1);
+                    if (!preData.getNewStatusId().equals(nextData.getOldStatusId())) {
+                        remove.add(preData);
+                        remove.add(nextData);
+                        condition = true;
+                    } else {
+                        if (condition) {
+                            FixCumulativeData fixData = new FixCumulativeData();
+                            fixData.setOldStatusId(preData.getOldStatusId());
+                            fixData.setNewStatusId(nextData.getOldStatusId());
+                            statusIds.add(fixData);
+                            condition = false;
+                        }
+                    }
+                }
+                if (!remove.isEmpty()) {
+                    List<FixCumulativeData> removeDataList = new ArrayList<>(remove);
+                    if (!statusIds.isEmpty()) {
+                        statusIds.forEach(statusId -> {
+                            List<FixCumulativeData> fixCumulativeDataList = fixCumulativeData.stream().filter(fixCumulativeData1 -> fixCumulativeData1.getNewStatusId().equals(statusId.getNewStatusId())
+                                    && fixCumulativeData1.getOldStatusId().equals(statusId.getOldStatusId())).collect(Collectors.toList());
+                            remove.remove(fixCumulativeDataList.get(0));
+                            dataLogIds.addAll(remove.stream().map(FixCumulativeData::getLogId).collect(Collectors.toList()));
+                        });
+                    } else {
+                        remove.remove(removeDataList.get(0));
+                        dataLogIds.addAll(remove.stream().map(FixCumulativeData::getLogId).collect(Collectors.toList()));
+                    }
+                }
+            }
+        });
+        handleDeleteErrorDataLog(dataLogIds);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void handleDeleteErrorDataLog(Set<Long> dataLogIds) {
+        dataLogRepository.batchDeleteErrorDataLog(dataLogIds);
     }
 
 
@@ -200,7 +255,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-    @Cacheable(cacheNames = AGILE, key = "'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()")
+//    @Cacheable(cacheNames = AGILE, key = "'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()")
     public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
         //获取当前符合条件的所有issueIds
         String filterSql = null;

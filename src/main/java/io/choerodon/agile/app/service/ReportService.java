@@ -120,4 +120,9 @@ public interface ReportService {
      * @return IssuePriorityDistributionChartDTO
      */
     List<IssuePriorityDistributionChartDTO> queryIssuePriorityDistributionChart(Long projectId, Long organizationId);
+
+    /**
+     * 修复累积流图
+     */
+    void fixCumulativeFlowDiagram();
 }
