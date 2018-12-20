@@ -73,7 +73,7 @@ public class IssueController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("史诗名称重复校验")
-    @GetMapping
+    @GetMapping(value = "/check_epic_name")
     public ResponseEntity<Boolean> checkEpicName(@ApiParam(value = "项目id", required = true)
                                                  @PathVariable(name = "project_id") Long projectId,
                                                  @ApiParam(value = "应用类型", required = true)
