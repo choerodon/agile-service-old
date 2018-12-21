@@ -1983,12 +1983,7 @@ public class IssueServiceImpl implements IssueService {
         issuePayload.setProjectId(projectId);
         sagaClient.startSaga("agile-delete-issue", new StartInstanceDTO(JSON.toJSONString(issuePayload), "", "", ResourceLevel.PROJECT.value(), projectId));
         //delete cache
-        redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + projectId + ":" + "*",
-                "Agile:CumulativeFlowDiagram" + projectId + ":" + "*",
-                "Agile:VelocityChart" + projectId + ":" + "*",
-//                "Agile:PieChart" + projectId + ':' + "*",
-                "Agile:BurnDownCoordinateByType" + projectId + ':' + "*"
-        });
+        dataLogRedisUtil.deleteByDeleteIssueInfo(projectId);
     }
 
     @Override

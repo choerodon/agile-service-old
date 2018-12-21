@@ -1,10 +1,8 @@
 package io.choerodon.agile.infra.repository.impl;
 
-import io.choerodon.agile.api.dto.StatusDTO;
-import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.domain.agile.event.AddStatusWithProject;
-import io.choerodon.agile.domain.agile.event.ProjectConfig;
 import io.choerodon.agile.infra.common.annotation.DataLog;
+import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -29,6 +27,8 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
     private IssueStatusMapper issueStatusMapper;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private DataLogRedisUtil dataLogRedisUtil;
 
     private static final String AGILE = "Agile:";
     private static final String PIECHART = AGILE + "PieChart";
@@ -47,7 +47,7 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
         if (issueStatusMapper.insert(issueStatusDO) != 1) {
             throw new CommonException("error.IssueStatus.insert");
         }
-//        redisUtil.deleteRedisCache(new String[]{PIECHART + issueStatusE.getProjectId() + ':' + STATUS + "*"});
+        redisUtil.deleteRedisCache(new String[]{PIECHART + issueStatusE.getProjectId() + ':' + STATUS + "*"});
         return ConvertHelper.convert(issueStatusMapper.selectByStatusId(issueStatusDO.getProjectId(), issueStatusDO.getStatusId()), IssueStatusE.class);
     }
 
@@ -58,13 +58,7 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
         if (issueStatusMapper.updateByPrimaryKeySelective(issueStatusDO) != 1) {
             throw new CommonException("error.status.update");
         }
-        redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + issueStatusE.getProjectId() + ':' + "*",
-                "Agile:CumulativeFlowDiagram" + issueStatusE.getProjectId() + ':' + "*",
-                "Agile:VelocityChart" + issueStatusE.getProjectId() + ':' + "*",
-                "Agile:EpicChart" + issueStatusE.getProjectId() + ":" + "*"
-//                , PIECHART + issueStatusE.getProjectId() + ':' + STATUS + "*",
-//                PIECHART + issueStatusE.getProjectId() + ':' + "resolution" + "*"
-        });
+        dataLogRedisUtil.deleteByUpdateIssueStatus(issueStatusE);
         return ConvertHelper.convert(issueStatusMapper.selectByStatusId(issueStatusDO.getProjectId(), issueStatusDO.getStatusId()), IssueStatusE.class);
     }
 
@@ -74,13 +68,7 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
         if (issueStatusMapper.delete(issueStatusDO) != 1) {
             throw new CommonException("error.status.delete");
         }
-        redisUtil.deleteRedisCache(new String[]{"Agile:BurnDownCoordinate" + issueStatusE.getProjectId() + ':' + "*",
-                "Agile:CumulativeFlowDiagram" + issueStatusE.getProjectId() + ':' + "*",
-                "Agile:VelocityChart" + issueStatusE.getProjectId() + ':' + "*",
-                "Agile:EpicChart" + issueStatusE.getProjectId() + ":" + "*"
-//                , PIECHART + issueStatusE.getProjectId() + ':' + STATUS + "*",
-//                PIECHART + issueStatusE.getProjectId() + ':' + "resolution" + "*"
-        });
+        dataLogRedisUtil.deleteByUpdateIssueStatus(issueStatusE);
     }
 
     @Override
