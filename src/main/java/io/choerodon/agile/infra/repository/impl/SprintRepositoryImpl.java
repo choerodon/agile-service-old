@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.converter.SprintConverter;
@@ -22,6 +23,8 @@ public class SprintRepositoryImpl implements SprintRepository {
     private SprintConverter sprintConverter;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private DataLogRedisUtil dataLogRedisUtil;
 
     private static final String INSERT_ERROR = "error.sprint.insert";
     private static final String DELETE_ERROR = "error.sprint.delete";
@@ -37,7 +40,7 @@ public class SprintRepositoryImpl implements SprintRepository {
         if (sprintMapper.insertSelective(sprintDO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-//        redisUtil.deleteRedisCache(new String[]{PIECHART + sprintE.getProjectId() + ':' + SPRINT + "*"});
+        redisUtil.deleteRedisCache(new String[]{PIECHART + sprintE.getProjectId() + ':' + SPRINT + "*"});
         return sprintConverter.doToEntity(sprintMapper.selectByPrimaryKey(sprintDO.getSprintId()));
     }
 
@@ -48,12 +51,7 @@ public class SprintRepositoryImpl implements SprintRepository {
             throw new CommonException(UPDATE_ERROR);
         }
         //清除冲刺报表相关缓存
-        redisUtil.deleteRedisCache(new String[]{
-                "Agile:BurnDownCoordinate" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*",
-                "Agile:BurnDownCoordinateByType" + sprintE.getProjectId() + ':' + "*",
-                "Agile:VelocityChart" + sprintE.getProjectId() + ':' + "*"
-//                ,PIECHART + sprintE.getProjectId() + ':' + SPRINT + "*"
-        });
+        dataLogRedisUtil.deleteByUpdateSprint(sprintE);
         return sprintConverter.doToEntity(sprintMapper.selectByPrimaryKey(sprintDO.getSprintId()));
     }
 
@@ -63,12 +61,7 @@ public class SprintRepositoryImpl implements SprintRepository {
         if (sprintMapper.delete(sprintDO) != 1) {
             throw new CommonException(DELETE_ERROR);
         }
-        redisUtil.deleteRedisCache(new String[]{
-                "Agile:BurnDownCoordinate" + sprintE.getProjectId() + ':' + sprintE.getSprintId() + ':' + "*",
-                "Agile:BurnDownCoordinateByType" + sprintE.getProjectId() + ':' + "*",
-                "Agile:VelocityChart" + sprintE.getProjectId() + ':' + "*"
-//                , PIECHART + sprintE.getProjectId() + ':' + SPRINT + "*"
-        });
+        dataLogRedisUtil.deleteByUpdateSprint(sprintE);
         return true;
     }
 }
