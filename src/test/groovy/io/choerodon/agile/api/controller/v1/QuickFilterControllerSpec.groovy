@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
+import io.choerodon.agile.api.dto.BoardDTO
 import io.choerodon.agile.api.dto.QuickFilterDTO
 import io.choerodon.agile.api.dto.QuickFilterFieldDTO
 import io.choerodon.agile.api.dto.QuickFilterSequenceDTO
@@ -121,6 +122,33 @@ class QuickFilterControllerSpec extends Specification {
         result.name == quickFilterDTO.name
         result.childIncluded == quickFilterDTO.childIncluded
         result.expressQuery == quickFilterDTO.expressQuery
+    }
+
+    def 'checkName'() {
+        given:
+        String quickFilterNameTrue = '这是一个name'
+        String quickFilterNameFalse = '这是一个name1'
+
+        when:
+        def entityTrue = restTemplate.exchange("/v1/projects/{project_id}/quick_filter/check_name?quickFilterName={quickFilterName}",
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                Boolean.class,
+                projectId,
+                quickFilterNameTrue)
+
+        def entityFalse = restTemplate.exchange("/v1/projects/{project_id}/quick_filter/check_name?quickFilterName={quickFilterName}",
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                Boolean.class,
+                projectId,
+                quickFilterNameFalse)
+
+        then:
+        entityTrue.statusCode.is2xxSuccessful()
+        entityTrue.body == true
+        entityFalse.statusCode.is2xxSuccessful()
+        entityFalse.body == false
     }
 
     def 'update'() {
