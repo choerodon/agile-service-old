@@ -50,4 +50,19 @@ class LookupValueControllerSpec extends Specification {
         'issue_type'   | 6
     }
 
+    def 'queryConstraintLookupValue'() {
+        when: '向查询列约束下的value值接口发送请求'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/lookup_values/constraint/list', LookupTypeWithValuesDTO,projectId)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        LookupTypeWithValuesDTO lookupTypeWithValuesDTO = entity.body
+
+        expect: '设置期望值'
+        lookupTypeWithValuesDTO.lookupValues.size() == 3
+
+    }
+
 }

@@ -7,6 +7,7 @@ import io.choerodon.agile.api.dto.ColumnSortDTO
 import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO
 import io.choerodon.agile.app.service.BoardColumnService
 import io.choerodon.agile.infra.dataobject.BoardColumnDO
+import io.choerodon.agile.infra.dataobject.IssueStatusDO
 import io.choerodon.agile.infra.mapper.BoardColumnMapper
 import io.choerodon.agile.infra.mapper.BoardMapper
 import io.choerodon.agile.infra.mapper.IssueStatusMapper
@@ -249,6 +250,14 @@ class BoardColumnControllerSpec extends Specification {
         JSONObject exceptionInfo = JSONObject.parse(entity.body)
         exceptionInfo.get("failed").toString() == "true"
         exceptionInfo.get("code").toString() == "error.column.isNull"
+    }
+
+    def 'deleteData'() {
+        given:
+        IssueStatusDO issueStatusDO = new IssueStatusDO()
+        issueStatusDO.setProjectId(projectId)
+        issueStatusDO.setName("column-create")
+        issueStatusMapper.delete(issueStatusDO)
     }
 
 //    def 'checkStatusName'() {

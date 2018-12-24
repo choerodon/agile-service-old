@@ -18,9 +18,6 @@ import io.choerodon.agile.infra.mapper.*
 import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.domain.Page
 import io.choerodon.mybatis.pagehelper.domain.PageRequest
-
-//import io.choerodon.event.producer.execute.EventProducerTemplate
-
 import org.mockito.Matchers
 import org.mockito.Mockito
 import org.springframework.beans.BeanUtils
@@ -166,6 +163,9 @@ class IssueControllerSpec extends Specification {
 
         and: '设置issue属性'
         issueCreateDTO.typeCode = typeCode
+        if (typeCode == "issue_epic") {
+            issueCreateDTO.epicName = "issue_epic"
+        }
         issueCreateDTO.projectId = projectId
         issueCreateDTO.description = "测试issue描述"
         issueCreateDTO.summary = "测试issue概要"
@@ -1212,6 +1212,98 @@ class IssueControllerSpec extends Specification {
 
         and:
         List<IssueProjectDTO> result = entity.body
+
+        expect:
+        result.size() == 1
+    }
+
+    def 'checkEpicName'() {
+        when: '测试服务用，issue按照项目分组借口'
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/check_epic_name?epicName={epicName}", Boolean, projectId, epicName)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+
+        and:
+        result == entity.body
+
+        where:
+        epicName     | result
+        "issue_epic" | true
+        "XXX"        | false
+    }
+
+    def 'updateIssueStatus'() {
+        when: '更新issue的状态'
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/update_status?transformId={transformId}&&issueId={issueId}&&objectVersionNumber={objectVersionNumber}&&applyType={applyType}",
+                HttpMethod.PUT,null,IssueDTO, projectId, 1L, issueIdList.get(0), 1l, "agile")
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+
+        and:
+        IssueDTO result = entity.body
+
+        expect:
+        result.statusId == 1L
+    }
+
+    def 'countUnResolveByProjectId'() {
+        when: '统计当前项目下未完成的任务数，包括故事、任务、缺陷'
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/count", JSONObject, projectId)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+
+        and:
+        JSONObject result = entity.body
+
+        expect:
+        result.getInteger("all") == 5
+        result.getInteger("unresolved") == 5
+    }
+
+    def 'queryIssueIdsByOptions'() {
+        given: "准备条件"
+        SearchDTO searchDTO = new SearchDTO()
+        searchDTO.onlyStory = true
+        HttpEntity<SearchDTO> searchDTOHttpEntity = new HttpEntity<>(searchDTO)
+        when: '根据条件过滤查询返回issueIds，测试项目接口'
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/issue_ids", HttpMethod.POST, searchDTOHttpEntity, List, projectId)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+
+        and:
+        List<Long> result = entity.body
+
+        expect:
+        result.size() == 12
+    }
+
+    def 'queryUnDistributedIssues'() {
+        when: '查询未分配的问题，类型为story,task,bug'
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/undistributed", List, projectId,1L)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+
+        and:
+        List<UnfinishedIssueDTO> result = entity.body
+
+        expect:
+        result.size() == 2
+    }
+
+    def 'queryUnfinishedIssues'() {
+        when: '查询经办人未完成的问题，类型为story,task,bug'
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/unfinished/{assignee_id}", List, projectId,1L)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+
+        and:
+        List<UnfinishedIssueDTO> result = entity.body
 
         expect:
         result.size() == 1

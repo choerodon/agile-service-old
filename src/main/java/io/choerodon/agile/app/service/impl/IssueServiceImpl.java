@@ -168,6 +168,7 @@ public class IssueServiceImpl implements IssueService {
 
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
+    private static final String COPY = "Copy";
     private static final String ISSUE_MANAGER_TYPE = "模块负责人";
     private static final String TYPE_CODE_FIELD = "typeCode";
     private static final String EPIC_NAME_FIELD = "epicName";
@@ -1429,7 +1430,7 @@ public class IssueServiceImpl implements IssueService {
      * @return
      */
     @Override
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED, rollbackFor = Exception.class)
     public IssueDTO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO, Long organizationId, String applyType) {
         if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
             throw new CommonException("error.applyType.illegal");
@@ -1438,6 +1439,7 @@ public class IssueServiceImpl implements IssueService {
         if (issueDetailDO != null) {
             issueDetailDO.setSummary(copyConditionDTO.getSummary());
             IssueCreateDTO issueCreateDTO = issueAssembler.issueDtoToIssueCreateDto(issueDetailDO);
+            issueCreateDTO.setEpicName(issueCreateDTO.getTypeCode().equals(ISSUE_EPIC) ? issueCreateDTO.getEpicName() + COPY : null);
             IssueDTO newIssue = stateMachineService.createIssue(issueCreateDTO, applyType);
             //复制链接
             batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueId, newIssue.getIssueId(), projectId);

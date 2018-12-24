@@ -2,7 +2,6 @@ package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.IssueStatusDTO
-import io.choerodon.agile.api.dto.StatusAndIssuesDTO
 import io.choerodon.agile.api.dto.StatusInfoDTO
 import io.choerodon.agile.api.dto.StatusMoveDTO
 import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO
@@ -10,15 +9,12 @@ import io.choerodon.agile.infra.dataobject.IssueStatusDO
 import io.choerodon.agile.infra.feign.IssueFeignClient
 import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper
 import io.choerodon.agile.infra.mapper.IssueStatusMapper
-import io.choerodon.core.domain.Page
 import org.mockito.Matchers
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
-import org.springframework.context.annotation.Primary
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -70,9 +66,9 @@ class IssueStatusControllerSpec extends Specification {
     Long boardId = 1L
 
     def setup() {
-        StatusInfoDTO statusInfoDTO = new StatusInfoDTO();
-        statusInfoDTO.setId(10001L);
-        statusInfoDTO.setName(statusName);
+        StatusInfoDTO statusInfoDTO = new StatusInfoDTO()
+        statusInfoDTO.setId(10001L)
+        statusInfoDTO.setName(statusName)
         Mockito.when(issueFeignClient.createStatusForAgile(Matchers.anyLong(), Matchers.any(StatusInfoDTO.class))).thenReturn(new ResponseEntity<>(statusInfoDTO, HttpStatus.OK));
     }
 
@@ -200,35 +196,58 @@ class IssueStatusControllerSpec extends Specification {
 
         then:
         entity.statusCode.is2xxSuccessful()
-        entity.body.completed == true
+        entity.body.completed
     }
 
-//    def 'listByProjectId'(){
-//
-//        when:
-//        def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status/statuses?page=0&size=10",
-//                HttpMethod.GET,
-//                new HttpEntity<>(),
-//                Page.class,
-//                projectId)
-//
-//        then:
-//        entity.statusCode.is2xxSuccessful()
-//    }
+    def 'listStatusByProjectId'() {
 
-//    def 'deleteStatus'() {
-//
-//        when:
-//        def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status/{id}",
-//                HttpMethod.DELETE,
-//                new HttpEntity<>(),
-//                ResponseEntity.class,
-//                projectId,
-//                statusId
-//        )
-//
-//        then:
-//        entity.statusCode.is2xxSuccessful()
-//        issueStatusMapper.selectByPrimaryKey(statusId) == null
-//    }
+        when: '查询项目下的issue状态'
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issue_status/list",
+                List,
+                projectId)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+        expect:
+        entity.body.size() == 4
+    }
+
+    def 'createStatusByStateMachine'() {
+        given: '准备数据'
+        IssueStatusDTO issueStatusDTO = new IssueStatusDTO()
+        issueStatusDTO.statusId = statusId
+        issueStatusDTO.projectId = projectId
+        issueStatusDTO.objectVersionNumber = 2L
+        issueStatusDTO.name = "other"
+        HttpEntity<IssueStatusDTO> issueStatusDTOHttpEntity = new HttpEntity<>(issueStatusDTO)
+        when: '状态机服务回写状态信息'
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status/back_update",
+                HttpMethod.POST,
+                issueStatusDTOHttpEntity,
+                IssueStatusDTO.class,
+                projectId)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+        and:
+        IssueStatusDTO result = entity.body
+
+        expect:
+        result.statusId == statusId
+    }
+
+    def 'deleteStatus'() {
+
+        when: '删除未对应的状态'
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status/{id}",
+                HttpMethod.DELETE,
+                new HttpEntity<>(),
+                ResponseEntity.class,
+                projectId,
+                statusId
+        )
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+    }
 }
