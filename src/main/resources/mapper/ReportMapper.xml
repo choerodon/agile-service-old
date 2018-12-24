@@ -3111,6 +3111,7 @@
         GROUP BY
             apv.NAME,
             ai.status_id
+        order by apv.sequence desc
     </select>
 
     <select id="queryIssuePriorityDistributionChart" resultType="io.choerodon.agile.infra.dataobject.IssuePriorityDistributionChartDO">
