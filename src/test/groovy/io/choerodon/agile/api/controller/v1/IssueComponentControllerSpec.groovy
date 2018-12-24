@@ -92,6 +92,33 @@ class IssueComponentControllerSpec extends Specification {
         resultIssueComponentDTO.defaultAssigneeRole == issueComponentDTO.defaultAssigneeRole
     }
 
+    def 'checkComponentName'() {
+        given:
+        String componentNameTrue = 'test_component'
+        String componentNameFalse = 'test_component1'
+
+        when:
+        def entityTrue = restTemplate.exchange("/v1/projects/{project_id}/component/check_name?componentName={componentName}",
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                Boolean.class,
+                projectId,
+                componentNameTrue)
+
+        def entityFalse = restTemplate.exchange("/v1/projects/{project_id}/component/check_name?componentName={componentName}",
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                Boolean.class,
+                projectId,
+                componentNameFalse)
+
+        then:
+        entityTrue.statusCode.is2xxSuccessful()
+        entityTrue.body == true
+        entityFalse.statusCode.is2xxSuccessful()
+        entityFalse.body == false
+    }
+
     def 'updateComponent'() {
         given: '修改component'
         List<IssueComponentDO> list = issueComponentMapper.selectAll()

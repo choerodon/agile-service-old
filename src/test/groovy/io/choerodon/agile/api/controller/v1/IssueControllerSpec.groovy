@@ -244,6 +244,33 @@ class IssueControllerSpec extends Specification {
         "issue_epic" | 1      || "issue_epic"
     }
 
+    def 'checkEpicName'() {
+        given:
+        String epicNameTrue = 'epicNameTest'
+        String epicNameFalse = 'epicNameTest1'
+
+        when:
+        def entityTrue = restTemplate.exchange("/v1/projects/{project_id}/issues/check_epic_name?epicName={epicName}",
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                Boolean.class,
+                projectId,
+                epicNameTrue)
+
+        def entityFalse = restTemplate.exchange("/v1/projects/{project_id}/issues/check_epic_name?epicName={epicName}",
+                HttpMethod.GET,
+                new HttpEntity<>(),
+                Boolean.class,
+                projectId,
+                epicNameFalse)
+
+        then:
+        entityTrue.statusCode.is2xxSuccessful()
+        entityTrue.body == true
+        entityFalse.statusCode.is2xxSuccessful()
+        entityFalse.body == false
+    }
+
     def 'createSubIssue'() {
         given: '给一个创建issue的DTO'
         IssueSubCreateDTO issueSubCreateDTO = new IssueSubCreateDTO()

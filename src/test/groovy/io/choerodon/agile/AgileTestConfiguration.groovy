@@ -292,6 +292,7 @@ class AgileTestConfiguration {
         epicIssue.summary = 'epic-test'
         epicIssue.applyType = 'agile'
         epicIssue.assigneeId = 1L
+        epicIssue.epicName = 'epicNameTest'
         issueMapper.insert(epicIssue)
 
         IssueDO story = new IssueDO()
