@@ -234,6 +234,22 @@ class IssueComponentControllerSpec extends Specification {
         10L          | 0
     }
 
+    def 'checkComponentName'() {
+        when: '模块重名校验'
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/component/check_name?componentName={componentName}', Boolean, projectId, componentName)
+
+        then: '请求结果'
+        entity.statusCode.is2xxSuccessful()
+
+        and: '设置值'
+        result == entity.body
+
+        where: '期望值'
+        componentName    | result
+        "test_component" | true
+        "XXX"            | false
+    }
+
 
     def 'deleteComponent'() {
         given:

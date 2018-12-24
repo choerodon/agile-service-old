@@ -98,7 +98,7 @@ class ProductVersionControllerSpec extends Specification {
         entity.body.name == resultName
 
         where:
-        projectId | startDate                           | expectReleaseDate                         | name             | resultName
+        projectId | startDate                           | expectReleaseDate                   | name             | resultName
         1L        | null                                | null                                | versionName      | versionName
         1L        | null                                | null                                | null             | null
         1L        | StringToDate("2018-08-22 00:00:00") | StringToDate("2018-08-21 00:00:00") | versionName2     | null
@@ -619,6 +619,19 @@ class ProductVersionControllerSpec extends Specification {
         where: '对比结果'
         versionId | statusCode || expectCount
         1L        | 'todo'     || 1
+    }
+
+    def 'queryProjectIdByVersionId'() {
+
+        when: '根据versionId查询projectId,测试项目修数据用，其它勿调用'
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/product_version/{versionId}/project_id", Long, projectId, result3.versionId)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+
+        expect: "设置期望值"
+        entity.body == projectId
+
     }
 
     def 'deleteVersion'() {

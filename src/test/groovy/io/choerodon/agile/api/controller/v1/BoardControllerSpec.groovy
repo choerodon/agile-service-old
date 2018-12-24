@@ -74,10 +74,11 @@ class BoardControllerSpec extends Specification {
 //    private UserRepository userRepository
 
 
-
     @Shared
     def projectId = 2L
+    @Shared
     def changeBoardName = "boardChange-2"
+    @Shared
     def boardNameExtra = "boardExtra-3"
 
     @Shared
@@ -290,6 +291,22 @@ class BoardControllerSpec extends Specification {
 
         then: '检查是否更新成功'
         issueMapper.selectByPrimaryKey(1L).statusId == 1L
+    }
+
+    def 'checkName'() {
+        when: '校验看板名称重复性'
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/board/check_name?boardName={boardName}",
+                Boolean, 1L,  boardName)
+        then:
+        entity.statusCode.is2xxSuccessful()
+
+        and:
+        result == entity.body
+
+        where: '期望值'
+        boardName     | result
+        "agile-board" | true
+        "XXX"         | false
     }
 
 }

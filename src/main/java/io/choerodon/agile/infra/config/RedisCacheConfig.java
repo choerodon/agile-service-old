@@ -32,7 +32,7 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(5);
         executor.setMaxPoolSize(50);
-        executor.setQueueCapacity(500);
+        executor.setQueueCapacity(1000);
         executor.setKeepAliveSeconds(60);
         executor.setThreadNamePrefix("delete-redis-cache-");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());

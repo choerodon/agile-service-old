@@ -36,6 +36,6 @@ public class FixDataController {
     @GetMapping(value = "/update_all_data")
     public ResponseEntity updateAllData() {
         issueStatusService.updateAllData();
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
