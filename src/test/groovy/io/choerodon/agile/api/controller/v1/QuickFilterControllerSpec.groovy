@@ -348,22 +348,6 @@ class QuickFilterControllerSpec extends Specification {
         result1.description == "这是一个更新描述"
     }
 
-    def 'checkName'() {
-        when: '发请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/quick_filter/check_name?quickFilterName={quickFilterName}',
-                Boolean, projectId, quickFilterName)
-
-        then: '返回值'
-        entity.statusCode.is2xxSuccessful()
-
-        expect: '设置期望值'
-        result == entity.body
-        where:
-        quickFilterName | result
-        "这是一个name"      | true
-        "XXX"           | false
-    }
-
     def 'deleteById'() {
         when: '发送请求'
         try {
