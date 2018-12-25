@@ -1217,22 +1217,6 @@ class IssueControllerSpec extends Specification {
         result.size() == 1
     }
 
-    def 'checkEpicName'() {
-        when: '测试服务用，issue按照项目分组借口'
-        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/check_epic_name?epicName={epicName}", Boolean, projectId, epicName)
-
-        then:
-        entity.statusCode.is2xxSuccessful()
-
-        and:
-        result == entity.body
-
-        where:
-        epicName     | result
-        "issue_epic" | true
-        "XXX"        | false
-    }
-
     def 'updateIssueStatus'() {
         when: '更新issue的状态'
         def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/update_status?transformId={transformId}&&issueId={issueId}&&objectVersionNumber={objectVersionNumber}&&applyType={applyType}",

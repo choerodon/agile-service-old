@@ -510,7 +510,7 @@
                     <when test="searchDTO.otherArgs.fixVersion.size == 1 and searchDTO.otherArgs.fixVersion[0] == 0">
                         and ai.issue_id in (SELECT ai11.issue_id from agile_issue ai11 left join
                         agile_version_issue_rel avir4
-                        on ai11.issue_id = avir4.issue_id and oa.relation_type = 'fix' WHERE
+                        on ai11.issue_id = avir4.issue_id and avir4.relation_type = 'fix' WHERE
                         avir4.version_id is null )
                     </when>
                     <otherwise>
@@ -548,21 +548,23 @@
             <if test='searchDTO.otherArgs.epic != null and searchDTO.otherArgs.epic.size > 0'>
                 <choose>
                     <when test="searchDTO.otherArgs.epic.size == 1 and searchDTO.otherArgs.epic[0] == 0">
-                        and (ai.epic_id is null or ai.epic_id = 0) and ai.type_code != 'issue_epic'
+                        and (((ai.epic_id is null or ai.epic_id = 0) and ai.type_code != 'issue_epic' and ai.type_code != 'sub_task')
+                        or (ai.parent_issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id = ai.parent_issue_id and
+                        (ai7.epic_id is null or ai7.epic_id = 0) and ai.type_code = 'sub_task' )))
                     </when>
                     <otherwise>
-                        and ai.epic_id in
+                        and ((ai.epic_id in
+                        <foreach collection="searchDTO.otherArgs.epic" item="id" open="(" separator=","
+                                 close=")">
+                            #{id}
+                        </foreach> and ai.type_code != 'sub_task')
+                        or (ai.parent_issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id = ai.parent_issue_id and
+                        ai7.epic_id in
                         <foreach collection="searchDTO.otherArgs.epic" item="id" open="(" separator=","
                                  close=")">
                             #{id}
                         </foreach>
-                        <!--or (ai.issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id = ai.parent_issue_id and-->
-                        <!--ai7.epic_id in-->
-                        <!--<foreach collection="searchDTO.otherArgs.epic" item="id" open="(" separator=","-->
-                        <!--close=")">-->
-                        <!--#{id}-->
-                        <!--</foreach>-->
-                        <!--)))-->
+                        ) and ai.type_code = 'sub_task'))
                     </otherwise>
                 </choose>
             </if>
