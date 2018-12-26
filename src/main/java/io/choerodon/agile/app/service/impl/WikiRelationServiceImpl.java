@@ -111,7 +111,13 @@ public class WikiRelationServiceImpl implements WikiRelationService {
             }
             param = param + "document:xwiki:O-" + organizationName + ".P-" + projectName + ".WebHome";
         } else {
-            param = param + wikiMenuDTO.getMenuId();
+            String menuIdStr = null;
+            try {
+                menuIdStr = URLEncoder.encode(wikiMenuDTO.getMenuId(), "utf-8");
+            } catch (UnsupportedEncodingException n) {
+                throw new CommonException(n.getMessage());
+            }
+            param = param + menuIdStr;
         }
         Map<String, String> otherHeaders = new HashMap<>();
         otherHeaders.put("username", wikiMenuDTO.getUsername());
