@@ -1245,10 +1245,8 @@ class IssueControllerSpec extends Specification {
 
         and:
         List<Long> result = entity.body
-        List<IssueDO> issueDOList = issueMapper.queryIssueByIssueIdsAndSubIssueIds(result)
 
         expect:
-        issueDOList.size() == 12
         result.size() == 12
     }
 
