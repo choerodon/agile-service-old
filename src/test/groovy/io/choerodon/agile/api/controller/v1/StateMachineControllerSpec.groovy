@@ -52,6 +52,8 @@ class StateMachineControllerSpec extends Specification {
     @Autowired
     StateMachineServiceImpl stateMachineService
     @Autowired
+    IssueMapper issueMapper
+    @Autowired
     @Qualifier("userRepository")
     private UserRepository userRepository
     @Shared
@@ -200,5 +202,21 @@ class StateMachineControllerSpec extends Specification {
         1L         | 'agile'   | 2L           || true       | false
         1L         | 'test'    | 1L           || true       | false
         2L         | 'agile'   | 1L           || true       | false
+    }
+
+    def "deleteIssue"() {
+        when: '执行方法'
+        restTemplate.delete('/v1/projects/{project_id}/issues/{issueId}', 1L, issueId)
+
+        then: '返回值'
+        def result = issueMapper.selectByPrimaryKey(issueId as Long)
+
+        expect: '期望值'
+        result == null
+
+        where: '判断issue是否删除'
+        issueId << issueIds
+
+
     }
 }
