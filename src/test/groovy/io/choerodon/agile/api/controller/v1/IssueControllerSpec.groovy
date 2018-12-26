@@ -1220,7 +1220,7 @@ class IssueControllerSpec extends Specification {
     def 'updateIssueStatus'() {
         when: '更新issue的状态'
         def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/update_status?transformId={transformId}&&issueId={issueId}&&objectVersionNumber={objectVersionNumber}&&applyType={applyType}",
-                HttpMethod.PUT,null,IssueDTO, projectId, 1L, issueIdList.get(0), 1l, "agile")
+                HttpMethod.PUT, null, IssueDTO, projectId, 1L, issueIdList.get(0), 1l, "agile")
 
         then:
         entity.statusCode.is2xxSuccessful()
@@ -1230,21 +1230,6 @@ class IssueControllerSpec extends Specification {
 
         expect:
         result.statusId == 1L
-    }
-
-    def 'countUnResolveByProjectId'() {
-        when: '统计当前项目下未完成的任务数，包括故事、任务、缺陷'
-        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/count", JSONObject, projectId)
-
-        then:
-        entity.statusCode.is2xxSuccessful()
-
-        and:
-        JSONObject result = entity.body
-
-        expect:
-        result.getInteger("all") == 5
-        result.getInteger("unresolved") == 5
     }
 
     def 'queryIssueIdsByOptions'() {
@@ -1267,7 +1252,7 @@ class IssueControllerSpec extends Specification {
 
     def 'queryUnDistributedIssues'() {
         when: '查询未分配的问题，类型为story,task,bug'
-        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/undistributed", List, projectId,1L)
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/undistributed", List, projectId, 1L)
 
         then:
         entity.statusCode.is2xxSuccessful()
@@ -1281,7 +1266,7 @@ class IssueControllerSpec extends Specification {
 
     def 'queryUnfinishedIssues'() {
         when: '查询经办人未完成的问题，类型为story,task,bug'
-        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/unfinished/{assignee_id}", List, projectId,1L)
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/unfinished/{assignee_id}", List, projectId, 1L)
 
         then:
         entity.statusCode.is2xxSuccessful()
@@ -1291,6 +1276,21 @@ class IssueControllerSpec extends Specification {
 
         expect:
         result.size() == 1
+    }
+
+    def 'countUnResolveByProjectId'() {
+        when: '统计当前项目下未完成的任务数，包括故事、任务、缺陷'
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/count", JSONObject, projectId)
+
+        then:
+        entity.statusCode.is2xxSuccessful()
+
+        and:
+        JSONObject result = entity.body
+
+        expect:
+        result.getInteger("all") == 5
+        result.getInteger("unresolved") == 5
     }
 
     def "deleteIssue"() {
