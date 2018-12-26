@@ -112,6 +112,9 @@ class SprintControllerSpec extends Specification {
     @Shared
     def sprintIds = []
 
+    @Shared
+    def issueIds = []
+
     def setup() {
         given: '设置feign调用mockito'
         ProjectDTO projectDTO = new ProjectDTO()
@@ -159,6 +162,7 @@ class SprintControllerSpec extends Specification {
         projectInfoE.setProjectId(1L)
         CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE)
         stateMachineService.createIssue(issueE.getIssueId(), 1, JSONObject.toJSONString(createIssuePayload))
+        issueIds.add(issueE.getIssueId())
 
         then: '判断issue是否成功生成'
         issueDTO.objectVersionNumber == 1
@@ -503,6 +507,22 @@ class SprintControllerSpec extends Specification {
         sprintId     | statusCode
         sprintIds[1] | HttpStatus.NO_CONTENT
         sprintIds[0] | HttpStatus.NO_CONTENT
+    }
+
+    def "deleteIssue"() {
+        when: '执行方法'
+        restTemplate.delete('/v1/projects/{project_id}/issues/{issueId}', projectId, issueId)
+
+        then: '返回值'
+        def result = issueMapper.selectByPrimaryKey(issueId as Long)
+
+        expect: '期望值'
+        result == null
+
+        where: '判断issue是否删除'
+        issueId << issueIds
+
+
     }
 
 }

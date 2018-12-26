@@ -644,7 +644,6 @@ class ReportControllerSpec extends Specification {
         issueMapper.selectByPrimaryKey(issueIds[0]) == null
         issueMapper.selectByPrimaryKey(issueIds[1]) == null
 
-
     }
 
 }
