@@ -157,7 +157,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         // 创建列
         createCheck(boardColumnDTO);
         StatusInfoDTO statusInfoDTO = new StatusInfoDTO();
-        statusInfoDTO.setType(boardColumnDTO.getCategoryCode());
+        statusInfoDTO.setType(categoryCode);
         statusInfoDTO.setName(boardColumnDTO.getName());
         ResponseEntity<StatusInfoDTO> responseEntity = issueFeignClient.createStatusForAgile(projectId, statusInfoDTO);
         if (responseEntity.getStatusCode().value() == 200 && responseEntity.getBody() != null && responseEntity.getBody().getId() != null) {
