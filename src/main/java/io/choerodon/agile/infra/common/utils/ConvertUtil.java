@@ -1,7 +1,6 @@
 package io.choerodon.agile.infra.common.utils;
 
 import io.choerodon.agile.api.dto.*;
-import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
@@ -18,6 +17,10 @@ import java.util.stream.Collectors;
  * @since 2018/10/31
  */
 public class ConvertUtil {
+
+    private ConvertUtil() {
+        throw new IllegalStateException("Utility class");
+    }
 
     private static final Map<Long, ProjectDTO> ORGANIZATION_MAP = new ConcurrentHashMap<>();
 

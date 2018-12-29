@@ -1,11 +1,5 @@
 package io.choerodon.agile.api.dto;
 
-import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.validator.constraints.NotEmpty;
-
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import java.util.List;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/12/06.

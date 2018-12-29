@@ -16,7 +16,6 @@ import java.util.Objects;
 public class SprintRule {
     @Autowired
     private SprintMapper sprintMapper;
-    private static final String ERROR_COMPLETE_SPRINT = "error.sprint.complete";
     private static final String SPRINT_NOT_FOUND = "error.sprint.notFound";
     private static final String SPRINT_ERROR = "error.sprint.notFoundOrIsClosed";
     private static final String SPRINT_START_CODE = "started";
@@ -42,9 +41,6 @@ public class SprintRule {
 
     public void judgeCompleteSprint(Long projectId, Long targetSprintId) {
         judgePlanningExist(projectId, targetSprintId);
-//        if (!sprintMapper.queryParentsDoneUnfinishedSubtasks(projectId, sprintId).isEmpty()) {
-//            throw new CommonException(ERROR_COMPLETE_SPRINT);
-//        }
     }
 
     private void judgePlanningExist(Long projectId, Long sprintId) {

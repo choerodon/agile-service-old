@@ -57,11 +57,7 @@ public class WikiRelationServiceImpl implements WikiRelationService {
         wikiRelationDO.setIssueId(wikiRelationE.getIssueId());
         wikiRelationDO.setWikiUrl(wikiRelationE.getWikiUrl());
         WikiRelationDO res = wikiRelationMapper.selectOne(wikiRelationDO);
-        if (res == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return res != null;
     }
 
     @Override

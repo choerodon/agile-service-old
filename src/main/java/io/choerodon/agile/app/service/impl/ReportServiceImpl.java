@@ -96,6 +96,7 @@ public class ReportServiceImpl implements ReportService {
     private static final String SPRINT = "sprint";
     private static final String EPIC = "epic";
     private static final String RESOLUTION = "resolution";
+    private static final String LABEL = "label";
     private static final String TYPE_ISSUE_COUNT = "issue_count";
     private static final String TYPE_STORY_POINT = "story_point";
     private static final String TYPE_REMAIN_TIME = "remain_time";
@@ -1063,6 +1064,8 @@ public class ReportServiceImpl implements ReportService {
                 return handlePieChartByEpic(projectId, startDate, endDate, sprintId, versionId);
             case RESOLUTION:
                 return handlePieChartByType(projectId, RESOLUTION, false, startDate, endDate, sprintId, versionId);
+            case LABEL:
+                return handlePieChartByType(projectId, "label_id", false, startDate, endDate, sprintId, versionId);
             default:
                 break;
         }

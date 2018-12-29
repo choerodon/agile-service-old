@@ -50,7 +50,7 @@ public class IssueSearchAssembler extends AbstractAssembler {
             });
             return assigneeIssues;
         } else {
-            return null;
+            return new ArrayList<>();
         }
 
     }

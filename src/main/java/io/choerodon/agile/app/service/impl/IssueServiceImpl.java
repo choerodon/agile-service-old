@@ -478,10 +478,7 @@ public class IssueServiceImpl implements IssueService {
         check.setProjectId(projectId);
         check.setEpicName(epicName);
         List<IssueDO> issueDOList = issueMapper.select(check);
-        if (issueDOList != null && !issueDOList.isEmpty()) {
-            return true;
-        }
-        return false;
+        return issueDOList != null && !issueDOList.isEmpty();
     }
 
     @Override
@@ -635,7 +632,7 @@ public class IssueServiceImpl implements IssueService {
         //删除标签关联
         labelIssueRelRepository.deleteByIssueId(issueE.getIssueId());
         //没有issue使用的标签进行垃圾回收
-        issueLabelRepository.labelGarbageCollection();
+        issueLabelRepository.labelGarbageCollection(projectId);
         //删除模块关联
         componentIssueRelRepository.deleteByIssueId(issueE.getIssueId());
         //删除版本关联
@@ -1259,7 +1256,7 @@ public class IssueServiceImpl implements IssueService {
                 labelIssueRelRepository.batchDeleteByIssueId(issueId);
             }
             //没有issue使用的标签进行垃圾回收
-            issueLabelRepository.labelGarbageCollection();
+            issueLabelRepository.labelGarbageCollection(projectId);
         }
 
     }
@@ -1994,9 +1991,6 @@ public class IssueServiceImpl implements IssueService {
         issueDO.setProjectId(projectId);
         issueDO.setEpicName(epicName);
         List<IssueDO> issueDOList = issueMapper.select(issueDO);
-        if (issueDOList != null && !issueDOList.isEmpty()) {
-            return true;
-        }
-        return false;
+        return issueDOList != null && !issueDOList.isEmpty();
     }
 }

@@ -136,8 +136,7 @@ public class StateMachineServiceImpl implements StateMachineService {
             transactionManager.commit(status);
         } catch (Exception e) {
             transactionManager.rollback(status);
-            e.printStackTrace();
-            throw new CommonException(ERROR_CREATE_ISSUE_CREATE);
+            throw new CommonException(ERROR_CREATE_ISSUE_CREATE, e);
         }
 
         CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE);
@@ -198,8 +197,7 @@ public class StateMachineServiceImpl implements StateMachineService {
             transactionManager.commit(status);
         } catch (Exception e) {
             transactionManager.rollback(status);
-            e.printStackTrace();
-            throw new CommonException(ERROR_CREATE_ISSUE_CREATE);
+            throw new CommonException(ERROR_CREATE_ISSUE_CREATE, e);
         }
 
         CreateSubIssuePayload createSubIssuePayload = new CreateSubIssuePayload(issueSubCreateDTO, subIssueE, projectInfoE);

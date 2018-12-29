@@ -195,10 +195,7 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         check.setProjectId(projectId);
         check.setName(quickFilterName);
         List<QuickFilterDO> quickFilterDOList = quickFilterMapper.select(check);
-        if (quickFilterDOList != null && !quickFilterDOList.isEmpty()) {
-            return true;
-        }
-        return false;
+        return quickFilterDOList != null && !quickFilterDOList.isEmpty();
     }
 
     @Override
@@ -289,10 +286,7 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         quickFilterDO.setProjectId(projectId);
         quickFilterDO.setName(quickFilterName);
         List<QuickFilterDO> quickFilterDOList = quickFilterMapper.select(quickFilterDO);
-        if (quickFilterDOList != null && !quickFilterDOList.isEmpty()) {
-            return true;
-        }
-        return false;
+        return quickFilterDOList != null && !quickFilterDOList.isEmpty();
     }
 
 }

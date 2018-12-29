@@ -16,7 +16,7 @@
                             agile_issue_label ail
                             LEFT JOIN agile_label_issue_rel ali ON ali.label_id = ail.label_id
                         WHERE
-                            ali.issue_id IS NULL
+                            ali.issue_id IS NULL and ail.project_id = #{projectId}
                     ) d
             )
     </delete>

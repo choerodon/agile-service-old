@@ -16,9 +16,10 @@ public interface IssueLabelMapper extends BaseMapper<IssueLabelDO> {
     /**
      * 回收没有再用的issue标签
      *
+     * @param projectId projectId
      * @return int
      */
-    int labelGarbageCollection();
+    int labelGarbageCollection(@Param("projectId") Long projectId);
 
     /**
      * 重名校验

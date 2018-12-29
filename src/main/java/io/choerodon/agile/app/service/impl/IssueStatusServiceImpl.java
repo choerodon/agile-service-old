@@ -19,7 +19,6 @@ import io.choerodon.core.exception.CommonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -312,7 +311,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     @Override
     public void updateAllData() {
         List<IssueStatusDO> selectIsNotNullList = issueStatusMapper.selectStatusIdIsNotNull();
-        if (selectIsNotNullList != null && !selectIsNotNullList.isEmpty() && selectIsNotNullList.size() > 0) {
+        if (selectIsNotNullList != null && !selectIsNotNullList.isEmpty()) {
             throw new CommonException("v0.11.0迁移数据步骤2已执行过，请不要重复操作!");
         }
         logger.info("v0.11.0迁移数据步骤2: 开始执行!");

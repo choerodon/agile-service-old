@@ -136,7 +136,7 @@ public class ReportController {
     public ResponseEntity<List<PieChartDTO>> queryPieChart(@ApiParam(value = "项目id", required = true)
                                                            @PathVariable(name = "project_id") Long projectId,
                                                            @ApiParam(value = "字段名称:assignee、component、typeCode、" +
-                                                                   "version、priorityCode、statusCode、sprint、epic、resolution", required = true)
+                                                                   "version、priorityCode、statusCode、sprint、epic、resolution、label", required = true)
                                                            @RequestParam String fieldName,
                                                            @ApiParam(value = "组织id", required = true)
                                                            @RequestParam Long organizationId,

@@ -600,10 +600,8 @@ public class DataLogAspect {
                     versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), versionIssueRelE.getRelationType());
             Long issueId = versionIssueRelE.getIssueId();
             String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
-            productVersionDOS.forEach(productVersionDO -> {
-                createDataLog(productVersionDO.getProjectId(), issueId, field,
-                        productVersionDO.getName(), null, productVersionDO.getVersionId().toString(), null);
-            });
+            productVersionDOS.forEach(productVersionDO -> createDataLog(productVersionDO.getProjectId(), issueId, field,
+                    productVersionDO.getName(), null, productVersionDO.getVersionId().toString(), null));
             dataLogRedisUtil.deleteByBatchDeleteVersionDataLog(versionIssueRelE.getProjectId(), productVersionDOS);
         }
     }

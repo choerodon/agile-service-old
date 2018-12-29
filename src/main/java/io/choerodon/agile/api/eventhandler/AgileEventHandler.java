@@ -1,8 +1,6 @@
 package io.choerodon.agile.api.eventhandler;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.IssueStatusDTO;
-import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.app.service.BoardService;
 import io.choerodon.agile.app.service.IssueLinkTypeService;
 import io.choerodon.agile.app.service.IssueStatusService;
@@ -23,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/22.
