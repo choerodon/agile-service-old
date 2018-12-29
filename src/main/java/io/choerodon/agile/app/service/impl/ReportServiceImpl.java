@@ -130,6 +130,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void fixCumulativeFlowDiagram() {
         Set<Long> issueIds = reportMapper.queryIssueDOByFixCumulativeData();
         Set<Long> removeIssueIdS = reportMapper.queryRemoveIssueIds();
@@ -177,7 +178,6 @@ public class ReportServiceImpl implements ReportService {
         handleDeleteErrorDataLog(dataLogIds);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void handleDeleteErrorDataLog(Set<Long> dataLogIds) {
         dataLogRepository.batchDeleteErrorDataLog(dataLogIds);
     }
