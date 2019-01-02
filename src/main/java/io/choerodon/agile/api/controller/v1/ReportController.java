@@ -140,10 +140,10 @@ public class ReportController {
                                                            @RequestParam String fieldName,
                                                            @ApiParam(value = "组织id", required = true)
                                                            @RequestParam Long organizationId,
-                                                           @ApiParam(value = "开始时间 yyyy-MM-dd")
-                                                           @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-                                                           @ApiParam(value = "结束时间 yyyy-MM-dd")
-                                                           @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+                                                           @ApiParam(value = "开始时间 yyyy-MM-dd HH:mm:ss")
+                                                           @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDate,
+                                                           @ApiParam(value = "结束时间 yyyy-MM-dd HH:mm:ss")
+                                                           @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDate,
                                                            @ApiParam(value = "冲刺id")
                                                            @RequestParam(required = false) Long sprintId,
                                                            @ApiParam(value = "版本id")

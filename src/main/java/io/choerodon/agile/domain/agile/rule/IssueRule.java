@@ -47,6 +47,7 @@ public class IssueRule {
     private static final String EPIC_NAME = "epicName";
     private static final String ISSUE_EPIC = "issue_epic";
     private static final String SUB_TASK = "sub_task";
+    private static final String STORY = "story";
     private static final String STATUS_ID = "status_id";
     private static final String ERROR_ISSUE_ID_NOT_FOUND = "error.IssueRule.issueId";
     private static final String AGILE = "agile";
@@ -226,6 +227,12 @@ public class IssueRule {
             throw new CommonException("error.IssueRule.issueNoFound");
         } else if (query.getTypeCode().equals(SUB_TASK)) {
             throw new CommonException("error.IssueRule.parentIssueId");
+        }
+    }
+
+    public void verifyStoryPoints(IssueE issueE) {
+        if (issueE.getStoryPoints() != null && !issueE.getTypeCode().equals(STORY)) {
+            throw new CommonException("error.IssueRule.onlyStory");
         }
     }
 }

@@ -265,6 +265,7 @@ public class IssueServiceImpl implements IssueService {
         if (issueE.isIssueMapRank()) {
             calculationMapRank(issueE);
         }
+        issueRule.verifyStoryPoints(issueE);
     }
 
     private void calculationMapRank(IssueE issueE) {

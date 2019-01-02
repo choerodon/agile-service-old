@@ -92,7 +92,7 @@ public class WikiRelationServiceImpl implements WikiRelationService {
     @Override
     public String queryWikiMenus(Long projectId, WikiMenuDTO wikiMenuDTO) {
         String url = wikiHost + "/bin/get";
-        String param = "outputSyntax=plain&sheet=XWiki.DocumentTree&showAttachments=false&showTranslations=false&data=children&id=";
+        String param = "outputSyntax=plain&sheet=XWiki.DocumentTree&showAttachments=false&showTranslations=false&data=children&limit=999&id=";
         if (wikiMenuDTO.getMenuId() == null) {
             ResponseEntity<OrganizationDTO> organizationDTOResponseEntity = userFeignClient.query(wikiMenuDTO.getOrganizationId());
             if (organizationDTOResponseEntity == null) {
