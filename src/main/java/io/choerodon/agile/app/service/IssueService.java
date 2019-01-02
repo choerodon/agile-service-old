@@ -5,7 +5,6 @@ import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
-import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;

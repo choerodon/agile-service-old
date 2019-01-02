@@ -1,10 +1,12 @@
 package io.choerodon.agile.api.dto;
 
+import java.io.Serializable;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/10/27.
  * Email: fuqianghuang01@gmail.com
  */
-public class IssueTypeDTO {
+public class IssueTypeDTO implements Serializable {
     private Long id;
     private String name;
     private String icon;

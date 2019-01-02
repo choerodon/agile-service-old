@@ -1,11 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.api.dto.StatusDTO;
-import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.domain.agile.event.AddStatusWithProject;
-import io.choerodon.agile.domain.agile.event.ProjectConfig;
-import io.choerodon.agile.infra.dataobject.IssueStatusCreateDO;
-import io.choerodon.agile.infra.dataobject.StatusDO;
 import io.choerodon.mybatis.common.BaseMapper;
 import io.choerodon.agile.infra.dataobject.IssueStatusDO;
 import org.apache.ibatis.annotations.Param;

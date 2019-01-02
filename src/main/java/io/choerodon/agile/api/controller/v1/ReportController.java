@@ -136,14 +136,14 @@ public class ReportController {
     public ResponseEntity<List<PieChartDTO>> queryPieChart(@ApiParam(value = "项目id", required = true)
                                                            @PathVariable(name = "project_id") Long projectId,
                                                            @ApiParam(value = "字段名称:assignee、component、typeCode、" +
-                                                                   "version、priorityCode、statusCode、sprint、epic、resolution", required = true)
+                                                                   "version、priorityCode、statusCode、sprint、epic、resolution、label", required = true)
                                                            @RequestParam String fieldName,
                                                            @ApiParam(value = "组织id", required = true)
                                                            @RequestParam Long organizationId,
-                                                           @ApiParam(value = "开始时间 yyyy-MM-dd")
-                                                           @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-                                                           @ApiParam(value = "结束时间 yyyy-MM-dd")
-                                                           @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+                                                           @ApiParam(value = "开始时间 yyyy-MM-dd HH:mm:ss")
+                                                           @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDate,
+                                                           @ApiParam(value = "结束时间 yyyy-MM-dd HH:mm:ss")
+                                                           @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDate,
                                                            @ApiParam(value = "冲刺id")
                                                            @RequestParam(required = false) Long sprintId,
                                                            @ApiParam(value = "版本id")

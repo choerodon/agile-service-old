@@ -3,11 +3,13 @@ package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import java.io.Serializable;
+
 /**
  * @author dinghuang123@gmail.com
  * @since 2018-05-15 16:21:18
  */
-public class VersionIssueRelDTO {
+public class VersionIssueRelDTO implements Serializable {
 
     private Long versionId;
 

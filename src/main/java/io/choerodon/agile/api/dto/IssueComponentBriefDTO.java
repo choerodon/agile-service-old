@@ -2,11 +2,13 @@ package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import java.io.Serializable;
+
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/11/7
  */
-public class IssueComponentBriefDTO {
+public class IssueComponentBriefDTO implements Serializable {
 
     private Long componentId;
 

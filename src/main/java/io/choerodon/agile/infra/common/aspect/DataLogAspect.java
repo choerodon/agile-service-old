@@ -18,6 +18,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -600,10 +601,8 @@ public class DataLogAspect {
                     versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), versionIssueRelE.getRelationType());
             Long issueId = versionIssueRelE.getIssueId();
             String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
-            productVersionDOS.forEach(productVersionDO -> {
-                createDataLog(productVersionDO.getProjectId(), issueId, field,
-                        productVersionDO.getName(), null, productVersionDO.getVersionId().toString(), null);
-            });
+            productVersionDOS.forEach(productVersionDO -> createDataLog(productVersionDO.getProjectId(), issueId, field,
+                    productVersionDO.getName(), null, productVersionDO.getVersionId().toString(), null));
             dataLogRedisUtil.deleteByBatchDeleteVersionDataLog(versionIssueRelE.getProjectId(), productVersionDOS);
         }
     }
@@ -937,6 +936,19 @@ public class DataLogAspect {
                     issueE.setEpicId(null);
                     createIssueEpicLog(epicId, ConvertHelper.convert(issueE, IssueDO.class));
                 }
+                Boolean storyCondition = issueE.getStoryPoints() != null && issueE.getStoryPoints() != 0;
+                Boolean remainingTimeCondition = issueE.getRemainingTime() != null && issueE.getRemainingTime().compareTo(new BigDecimal(0)) > 0;
+                if (storyCondition || remainingTimeCondition) {
+                    IssueDO originIssueDO = new IssueDO();
+                    BeanUtils.copyProperties(issueE, originIssueDO);
+                    if (storyCondition) {
+                        originIssueDO.setStoryPoints(0);
+                        handleStoryPointsLog(originIssueDO, issueE);
+                    } else {
+                        originIssueDO.setRemainingTime(null);
+                        handleCalculateRemainData(issueE, originIssueDO);
+                    }
+                }
                 dataLogRedisUtil.deleteByHandleIssueCreateDataLog(issueE, condition);
             }
         } catch (Throwable e) {
@@ -1065,19 +1077,24 @@ public class DataLogAspect {
     private void handleStoryPoints(List<String> field, IssueDO originIssueDO, IssueE issueE) {
         Boolean condition = field.contains(STORY_POINTS_FIELD) && (!Objects.equals(originIssueDO.getStoryPoints(), issueE.getStoryPoints()));
         if (condition) {
-            String oldString = null;
-            String newString = null;
-            if (originIssueDO.getStoryPoints() != null) {
-                oldString = originIssueDO.getStoryPoints().toString();
-            }
-            if (issueE.getStoryPoints() != null) {
-                newString = issueE.getStoryPoints().toString();
-            }
-            createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
-                    FIELD_STORY_POINTS, oldString, newString, null, null);
-            dataLogRedisUtil.deleteByHandleStoryPoints(issueE, originIssueDO);
+            handleStoryPointsLog(originIssueDO, issueE);
         }
     }
+
+    private void handleStoryPointsLog(IssueDO originIssueDO, IssueE issueE) {
+        String oldString = null;
+        String newString = null;
+        if (originIssueDO.getStoryPoints() != null) {
+            oldString = originIssueDO.getStoryPoints().toString();
+        }
+        if (issueE.getStoryPoints() != null) {
+            newString = issueE.getStoryPoints().toString();
+        }
+        createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(),
+                FIELD_STORY_POINTS, oldString, newString, null, null);
+        dataLogRedisUtil.deleteByHandleStoryPoints(issueE, originIssueDO);
+    }
+
 
     private void handleReporter(List<String> field, IssueDO originIssueDO, IssueE issueE) {
         if (field.contains(REPORTER_ID_FIELD) && !Objects.equals(originIssueDO.getReporterId(), issueE.getReporterId())) {

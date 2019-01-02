@@ -3,13 +3,15 @@ package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import java.io.Serializable;
+
 /**
  * 敏捷开发Issue标签关联
  *
  * @author dinghuang123@gmail.com
  * @since 2018-05-14 21:31:22
  */
-public class LabelIssueRelDTO {
+public class LabelIssueRelDTO implements Serializable {
 
     private Long issueId;
 

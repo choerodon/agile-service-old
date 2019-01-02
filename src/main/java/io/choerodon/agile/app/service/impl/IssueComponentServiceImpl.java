@@ -72,10 +72,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         check.setProjectId(projectId);
         check.setName(componentName);
         List<IssueComponentDO> issueComponentDOList = issueComponentMapper.select(check);
-        if (issueComponentDOList != null && !issueComponentDOList.isEmpty()) {
-            return true;
-        }
-        return false;
+        return issueComponentDOList != null && !issueComponentDOList.isEmpty();
     }
 
     @Override
@@ -187,9 +184,6 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         issueComponentDO.setProjectId(projectId);
         issueComponentDO.setName(componentName);
         List<IssueComponentDO> issueComponentDOList = issueComponentMapper.select(issueComponentDO);
-        if (issueComponentDOList != null && !issueComponentDOList.isEmpty()) {
-            return true;
-        }
-        return false;
+        return issueComponentDOList != null && !issueComponentDOList.isEmpty();
     }
 }

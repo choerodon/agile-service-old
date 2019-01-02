@@ -40,7 +40,7 @@ public class WorkCalendarHolidayRefController {
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR, InitRoleCode.ORGANIZATION_MEMBER})
-    @ApiOperation("根据年份查询工作日历假期")
+    @ApiOperation("根据年份查询工作日历假期(包含查询年份和下一年份数据)")
     @GetMapping
     public ResponseEntity<List<WorkCalendarHolidayRefDTO>> queryWorkCalendarHolidayRelByYear(@ApiParam(value = "项目id", required = true)
                                                                                              @PathVariable(name = "organization_id") Long organizationId,

@@ -62,12 +62,8 @@ public class StateMachineServiceImpl implements StateMachineService {
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
     private static final String ERROR_ISSUE_STATUS_NOT_FOUND = "error.createIssue.issueStatusNotFound";
     private static final String ERROR_CREATE_ISSUE_CREATE = "error.createIssue.create";
-    private static final String FIELD_RANK = "Rank";
-    private static final String PROJECT_ID = "projectId";
     private static final String RANK = "rank";
     private static final String STATUS_ID = "statusId";
-    private static final String RANK_HIGHER = "评级更高";
-    private static final String RANK_LOWER = "评级更低";
 
     @Autowired
     private IssueMapper issueMapper;
@@ -136,8 +132,7 @@ public class StateMachineServiceImpl implements StateMachineService {
             transactionManager.commit(status);
         } catch (Exception e) {
             transactionManager.rollback(status);
-            e.printStackTrace();
-            throw new CommonException(ERROR_CREATE_ISSUE_CREATE);
+            throw new CommonException(ERROR_CREATE_ISSUE_CREATE, e);
         }
 
         CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE);
@@ -198,8 +193,7 @@ public class StateMachineServiceImpl implements StateMachineService {
             transactionManager.commit(status);
         } catch (Exception e) {
             transactionManager.rollback(status);
-            e.printStackTrace();
-            throw new CommonException(ERROR_CREATE_ISSUE_CREATE);
+            throw new CommonException(ERROR_CREATE_ISSUE_CREATE, e);
         }
 
         CreateSubIssuePayload createSubIssuePayload = new CreateSubIssuePayload(issueSubCreateDTO, subIssueE, projectInfoE);

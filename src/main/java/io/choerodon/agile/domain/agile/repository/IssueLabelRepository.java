@@ -22,8 +22,9 @@ public interface IssueLabelRepository {
     /**
      * 不是使用中的issue标签垃圾回收
      *
+     * @param projectId projectId
      * @return int
      */
-    int labelGarbageCollection();
+    int labelGarbageCollection(Long projectId);
 
 }

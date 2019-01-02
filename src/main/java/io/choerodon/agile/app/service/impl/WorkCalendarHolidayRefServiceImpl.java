@@ -44,6 +44,6 @@ public class WorkCalendarHolidayRefServiceImpl implements WorkCalendarHolidayRef
     @Override
     public List<WorkCalendarHolidayRefDTO> queryWorkCalendarHolidayRelByYear(Integer year) {
         return workCalendarHolidayRefAssembler.toTargetList(DateUtil.stringDateCompare().
-                sortedCopy(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(year)), WorkCalendarHolidayRefDTO.class);
+                sortedCopy(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelWithNextYearByYear(year)), WorkCalendarHolidayRefDTO.class);
     }
 }

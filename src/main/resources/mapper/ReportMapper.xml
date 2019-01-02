@@ -1664,6 +1664,10 @@
                     other.${fieldName} AS type_name,
                     otherName.sprint_name as name,
                 </if>
+                <if test="fieldName == 'label_id'">
+                    other.${fieldName} AS type_name,
+                    otherName.label_name as name,
+                </if>
             </otherwise>
         </choose>
         count( * ) AS value
@@ -1684,6 +1688,10 @@
             <if test="fieldName == 'sprint_id'">
                 LEFT JOIN agile_issue_sprint_rel other on ai.issue_id = other.issue_id
                 LEFT JOIN agile_sprint otherName on other.${fieldName} = otherName.${fieldName}
+            </if>
+            <if test="fieldName == 'label_id'">
+                LEFT JOIN agile_label_issue_rel other on ai.issue_id = other.issue_id
+                LEFT JOIN agile_issue_label otherName on other.${fieldName} = otherName.${fieldName}
             </if>
         </if>
         WHERE
@@ -1778,6 +1786,9 @@
         </if>
         <if test="fieldName == 'sprint_id'">
             LEFT JOIN agile_issue_sprint_rel other on ai.issue_id = other.issue_id
+        </if>
+        <if test="fieldName == 'label_id'">
+            LEFT JOIN agile_label_issue_rel other on ai.issue_id = other.issue_id
         </if>
         WHERE
         ai.project_id = #{projectId}

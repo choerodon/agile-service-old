@@ -1,6 +1,8 @@
 package io.choerodon.agile.api.dto;
 
-public class StatusMapDTO {
+import java.io.Serializable;
+
+public class StatusMapDTO implements Serializable {
 
     private Long id;
     private String name;

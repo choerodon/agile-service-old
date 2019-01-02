@@ -2,6 +2,7 @@ package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -32,11 +33,21 @@ public class IssueSubCreateDTO {
 
     private Long issueTypeId;
 
+    private BigDecimal remainingTime;
+
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
     private List<ComponentIssueRelDTO> componentIssueRelDTOList;
+
+    public BigDecimal getRemainingTime() {
+        return remainingTime;
+    }
+
+    public void setRemainingTime(BigDecimal remainingTime) {
+        this.remainingTime = remainingTime;
+    }
 
     public String getIssueNum() {
         return issueNum;

@@ -48,7 +48,7 @@ abstract class AbstractAssembler {
     @SuppressWarnings("unchecked")
     public <T extends List, V> List<V> toTargetList(T source, Class<V> tClass) {
         if (source == null) {
-            return null;
+            return new ArrayList<>();
         } else {
             List<V> targetList = new ArrayList<>(source.size());
             if (!source.isEmpty()) {

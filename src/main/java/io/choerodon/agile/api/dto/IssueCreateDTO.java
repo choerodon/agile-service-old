@@ -44,6 +44,16 @@ public class IssueCreateDTO {
 
     private String epicName;
 
+    private Integer storyPoints;
+
+    public Integer getStoryPoints() {
+        return storyPoints;
+    }
+
+    public void setStoryPoints(Integer storyPoints) {
+        this.storyPoints = storyPoints;
+    }
+
     public String getTypeCode() {
         return typeCode;
     }

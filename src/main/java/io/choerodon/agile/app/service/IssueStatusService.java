@@ -2,12 +2,8 @@ package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.IssueStatusDTO;
 import io.choerodon.agile.api.dto.StatusAndIssuesDTO;
-import io.choerodon.agile.api.dto.StatusDTO;
 import io.choerodon.agile.api.dto.StatusMoveDTO;
 import io.choerodon.agile.domain.agile.event.StatusPayload;
-import io.choerodon.agile.infra.dataobject.StatusForMoveDataDO;
-import io.choerodon.core.domain.Page;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
 import java.util.List;
 
