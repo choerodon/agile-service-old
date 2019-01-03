@@ -6,13 +6,18 @@ import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
 import io.choerodon.agile.app.service.WorkCalendarService;
 import io.choerodon.agile.infra.common.properties.WorkCalendarHolidayProperties;
 import io.choerodon.agile.infra.common.utils.DateUtil;
+import io.choerodon.agile.infra.dataobject.WorkCalendarHolidayRefDO;
 import io.choerodon.agile.infra.factory.WorkCalendarFactory;
 import io.choerodon.agile.infra.mapper.WorkCalendarHolidayRefMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -32,6 +37,9 @@ public class WorkCalendarHolidayRefServiceImpl implements WorkCalendarHolidayRef
     private WorkCalendarHolidayRefAssembler workCalendarHolidayRefAssembler;
     @Autowired
     private WorkCalendarFactory workCalendarFactory;
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final Logger LOGGER = LoggerFactory.getLogger(WorkCalendarHolidayRefServiceImpl.class);
+    private static final String PARSE_EXCEPTION = "ParseException{}";
 
     @Override
     public void updateWorkCalendarHolidayRefByYear(Integer year) {
@@ -43,7 +51,16 @@ public class WorkCalendarHolidayRefServiceImpl implements WorkCalendarHolidayRef
 
     @Override
     public List<WorkCalendarHolidayRefDTO> queryWorkCalendarHolidayRelByYear(Integer year) {
+        List<WorkCalendarHolidayRefDO> workCalendarHolidayRefDOS = workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelWithNextYearByYear(year);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT);
+        workCalendarHolidayRefDOS.forEach(workCalendarHolidayRefDO -> {
+            try {
+                workCalendarHolidayRefDO.setHoliday(simpleDateFormat.format(simpleDateFormat.parse(workCalendarHolidayRefDO.getHoliday())));
+            } catch (ParseException e) {
+                LOGGER.warn(PARSE_EXCEPTION, e);
+            }
+        });
         return workCalendarHolidayRefAssembler.toTargetList(DateUtil.stringDateCompare().
-                sortedCopy(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelWithNextYearByYear(year)), WorkCalendarHolidayRefDTO.class);
+                sortedCopy(workCalendarHolidayRefDOS), WorkCalendarHolidayRefDTO.class);
     }
 }

@@ -10,14 +10,19 @@ import io.choerodon.agile.domain.agile.repository.TimeZoneWorkCalendarRefReposit
 import io.choerodon.agile.domain.agile.repository.TimeZoneWorkCalendarRepository;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
+import io.choerodon.agile.infra.dataobject.WorkCalendarHolidayRefDO;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarRefMapper;
 import io.choerodon.agile.infra.mapper.WorkCalendarHolidayRefMapper;
 import io.choerodon.core.convertor.ConvertHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +51,10 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
 
     @Autowired
     private TimeZoneWorkCalendarRefRepository timeZoneWorkCalendarRefRepository;
+
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final Logger LOGGER = LoggerFactory.getLogger(TimeZoneWorkCalendarServiceImpl.class);
+    private static final String PARSE_EXCEPTION = "ParseException{}";
 
     @Override
     public TimeZoneWorkCalendarDTO updateTimeZoneWorkCalendar(Long organizationId, Long timeZoneId, TimeZoneWorkCalendarUpdateDTO timeZoneWorkCalendarUpdateDTO) {
@@ -130,8 +139,17 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
                     return timeZoneWorkCalendarRefCreateDTO;
                 }).collect(Collectors.toSet()));
         if (timeZoneWorkCalendarDO.getUseHoliday()) {
+            List<WorkCalendarHolidayRefDO> workCalendarHolidayRefDOS = workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelWithNextYearByYear(year);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT);
+            workCalendarHolidayRefDOS.forEach(workCalendarHolidayRefDO -> {
+                try {
+                    workCalendarHolidayRefDO.setHoliday(simpleDateFormat.format(simpleDateFormat.parse(workCalendarHolidayRefDO.getHoliday())));
+                } catch (ParseException e) {
+                    LOGGER.warn(PARSE_EXCEPTION, e);
+                }
+            });
             timeZoneWorkCalendarRefDetailDTO.setWorkHolidayCalendarDTOS(DateUtil.stringDateCompare().
-                    sortedCopy(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelWithNextYearByYear(year)).stream().map(d -> {
+                    sortedCopy(workCalendarHolidayRefDOS).stream().map(d -> {
                 TimeZoneWorkCalendarHolidayRefDTO timeZoneWorkCalendarHolidayRefDTO = new TimeZoneWorkCalendarHolidayRefDTO();
                 timeZoneWorkCalendarHolidayRefDTO.setStatus(d.getStatus());
                 timeZoneWorkCalendarHolidayRefDTO.setHoliday(d.getHoliday());
