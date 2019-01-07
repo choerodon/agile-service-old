@@ -241,7 +241,7 @@
         GROUP BY
         a2.sprint_id,
         a2.assignee_id
-        ) bb ON cc.asi_assignee_id = bb.asi_assignee_id order by cc.asi_assignee_id
+        ) bb ON cc.asi_assignee_id = bb.asi_assignee_id and cc.asi_sprint_id = bb.asi_sprint_id order by cc.asi_assignee_id
     </sql>
 
     <select id="queryAssigneeIssueByActiveSprintId" resultType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
