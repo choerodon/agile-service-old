@@ -3099,6 +3099,7 @@
        SELECT
             apv.name,
             ai.status_id,
+            apv.sequence,
             count( * ) AS count
         FROM
             agile_version_issue_rel avir
@@ -3123,7 +3124,8 @@
             AND apv.NAME IS NOT NULL
         GROUP BY
             apv.NAME,
-            ai.status_id
+            ai.status_id,
+            apv.sequence
         order by apv.sequence desc
     </select>
 
