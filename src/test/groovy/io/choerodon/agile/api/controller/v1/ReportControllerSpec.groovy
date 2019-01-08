@@ -622,7 +622,7 @@ class ReportControllerSpec extends Specification {
 
     def 'fixCumulativeFlowDiagram'() {
         when: '修复累积流图'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/reports/fix_cumulative_flow_diagram', null,null, projectId)
+        def entity = restTemplate.postForEntity('/v1/fix_data/fix_cumulative_flow_diagram', null,null, null)
 
         then: '接口是否请求成功'
         entity.statusCode.is2xxSuccessful()

@@ -176,13 +176,10 @@ public class ReportServiceImpl implements ReportService {
                 }
             }
         });
-        handleDeleteErrorDataLog(dataLogIds);
+        if (!dataLogIds.isEmpty()) {
+            dataLogRepository.batchDeleteErrorDataLog(dataLogIds);
+        }
     }
-
-    public void handleDeleteErrorDataLog(Set<Long> dataLogIds) {
-        dataLogRepository.batchDeleteErrorDataLog(dataLogIds);
-    }
-
 
     @Override
     public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
