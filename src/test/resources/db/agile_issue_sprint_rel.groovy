@@ -26,10 +26,4 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue_sprint_rel.groovy') {
             column(name: 'issue_id')
         }
     }
-
-    changeSet(id: '2018-06-26-agile-issue-sprint-rel-init-data', author: 'jian_zhang02@163.com') {
-        sql(stripComments: true, splitStatements: true, endDelimiter: ';') {
-            "INSERT IGNORE INTO agile_issue_sprint_rel(issue_id, sprint_id, project_id) SELECT ai.issue_id, ai.sprint_id, ai.project_id FROM agile_issue ai WHERE ai.sprint_id IS NOT NULL AND ai.sprint_id != 0;"
-        }
-    }
 }

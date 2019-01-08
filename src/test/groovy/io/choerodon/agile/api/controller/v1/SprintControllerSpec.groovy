@@ -231,7 +231,7 @@ class SprintControllerSpec extends Specification {
         searchDTOList.get(0).issueSearchDTOList.size() == 1
         searchDTOList.get(0).issueSearchDTOList.get(0).issueTypeDTO.typeCode == 'story'
         searchDTOList.get(0).issueSearchDTOList.get(0).summary == '加入冲刺issue'
-        searchDTOList.get(0).assigneeIssues.size() == 2
+        searchDTOList.get(0).assigneeIssues.size() == 1
         searchDTOList.get(0).assigneeIssues.get(0).sprintId == sprintIds[0]
         searchDTOList.get(0).assigneeIssues.get(0).assigneeId == 0
         searchDTOList.get(0).assigneeIssues.get(0).totalStoryPoints == null
