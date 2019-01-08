@@ -42,4 +42,12 @@ class FixDataControllerTest extends Specification {
         entity.statusCode.is2xxSuccessful()
 
     }
+
+    def 'fixCumulativeFlowDiagram'() {
+        when: '修复累积流图'
+        def entity = restTemplate.postForEntity('/v1/fix_data/fix_cumulative_flow_diagram', null,null, new HashMap<String, Object>())
+
+        then: '接口是否请求成功'
+        entity.statusCode.is2xxSuccessful()
+    }
 }
