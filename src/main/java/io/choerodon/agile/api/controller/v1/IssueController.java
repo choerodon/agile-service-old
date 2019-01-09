@@ -357,6 +357,36 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issue.updateIssueTypeCode"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("任务转换为子任务")
+    @PostMapping("/transformed_sub_task")
+    public ResponseEntity<IssueSubDTO> transformedSubTask(@ApiParam(value = "项目id", required = true)
+                                                          @PathVariable(name = "project_id") Long projectId,
+                                                          @ApiParam(value = "组织id", required = true)
+                                                          @RequestParam Long organizationId,
+                                                          @ApiParam(value = "转换子任务信息", required = true)
+                                                          @RequestBody IssueTransformSubTask issueTransformSubTask) {
+        issueRule.verifyTransformedSubTask(issueTransformSubTask);
+        return Optional.ofNullable(issueService.transformedSubTask(projectId, organizationId, issueTransformSubTask))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.issue.transformedSubTask"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("子任务转换为任务")
+    @PostMapping("/transformed_task")
+    public ResponseEntity<IssueDTO> transformedTask(@ApiParam(value = "项目id", required = true)
+                                                    @PathVariable(name = "project_id") Long projectId,
+                                                    @ApiParam(value = "组织id", required = true)
+                                                    @RequestParam Long organizationId,
+                                                    @ApiParam(value = "转换任务信息", required = true)
+                                                    @RequestBody IssueTransformTask issueTransformTask) {
+        IssueE issueE = issueRule.verifyTransformedTask(projectId, issueTransformTask);
+        return Optional.ofNullable(issueService.transformedTask(issueE, issueTransformTask, organizationId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.issue.transformedTask"));
+    }
+
     @ResponseBody
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("导出issue列表")
@@ -388,21 +418,6 @@ public class IssueController {
         return Optional.ofNullable(issueService.cloneIssueByIssueId(projectId, issueId, copyConditionDTO, organizationId, applyType))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.cloneIssueByIssueId"));
-    }
-
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("任务转换为子任务")
-    @PostMapping("/transformed_sub_task")
-    public ResponseEntity<IssueSubDTO> transformedSubTask(@ApiParam(value = "项目id", required = true)
-                                                          @PathVariable(name = "project_id") Long projectId,
-                                                          @ApiParam(value = "组织id", required = true)
-                                                          @RequestParam Long organizationId,
-                                                          @ApiParam(value = "转换子任务信息", required = true)
-                                                          @RequestBody IssueTransformSubTask issueTransformSubTask) {
-        issueRule.verifyTransformedSubTask(issueTransformSubTask);
-        return Optional.ofNullable(issueService.transformedSubTask(projectId, organizationId, issueTransformSubTask))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
-                .orElseThrow(() -> new CommonException("error.issue.transformedSubTask"));
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
