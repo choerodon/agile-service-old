@@ -689,7 +689,39 @@ class IssueControllerSpec extends Specification {
         i | expectedTypeCode
         5 | "sub_task"
         6 | "sub_task"
+    }
 
+    def "transformedTask"() {
+        given: '给定一个修改类型DTO'
+        IssueTransformTask issueTransformTask = new IssueTransformTask()
+        issueTransformTask.issueId = issueIdList[0]
+        issueTransformTask.projectId = projectId
+        issueTransformTask.typeCode = typeCode
+        issueTransformTask.issueTypeId = issueTypeId
+        issueTransformTask.objectVersionNumber = issueObjectVersionNumberList[0]
+        issueTransformTask.epicName = "测试epic"
+
+        when: '执行子任务转为任务'
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/transformed_task?organizationId={organizationId}',
+                issueTransformTask, IssueDTO, projectId, organizationId)
+
+        then: '返回值'
+        entity.statusCode.is2xxSuccessful()
+        print(entity.body ? entity.body.toString() : null)
+
+        and: '设置值'
+        if (entity.body.objectVersionNumber) {
+            issueObjectVersionNumberList[0] = entity.body.objectVersionNumber
+        }
+
+        expect: '设置期望值'
+        entity.body.typeCode == expectedTypeCode
+
+        where: '不同issue类型返回值与期望值对比'
+        typeCode     | issueTypeId || expectedTypeCode
+        "task"       | 2L          || "task"
+        "issue_epic" | 4L          || "issue_epic"
+        "story"      | 1L          || "story"
     }
 
     def "listByIssueIds"() {
