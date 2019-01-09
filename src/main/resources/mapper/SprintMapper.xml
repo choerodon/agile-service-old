@@ -490,7 +490,7 @@
         WHERE
         asp.project_id = #{projectId}
         and asp.status_code != 'sprint_planning'
-        and asp.start_date &gt;= #{startDate}
+        and (asp.start_date &gt;= #{startDate} or (asp.start_date &lt;= #{startDate} and asp.end_date &gt;= #{startDate}))
         <if test="endDate != null">
             and asp.start_date &lt;= #{endDate}
         </if>
