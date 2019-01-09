@@ -224,8 +224,9 @@ class IssueControllerSpec extends Specification {
         issueE.setSprintId(sprintId)
         ProjectInfoE projectInfoE = new ProjectInfoE()
         projectInfoE.setProjectId(1L)
-        CreateIssuePayload noDonecreateIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE)
-        stateMachineService.createIssue(issueE.getIssueId(), 1, JSONObject.toJSONString(noDonecreateIssuePayload))
+        issueE.setAssigneerCondtiion(false)
+        CreateIssuePayload noDoneCreateIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE)
+        stateMachineService.createIssue(issueE.getIssueId(), 1, JSONObject.toJSONString(noDoneCreateIssuePayload))
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
         print(entity.body ? entity.body.toString() : null)
