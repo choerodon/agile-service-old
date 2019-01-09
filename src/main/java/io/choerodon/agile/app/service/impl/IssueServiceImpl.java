@@ -1535,13 +1535,20 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void insertSprintWhenTransform(Long issueId, Long sprintId, Long projectId) {
+    private void insertSprintWhenTransform(Long issueId, Long sprintId, Long projectId, List<Long> issueIds) {
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         IssueSprintRelDO issueSprintRelDO = new IssueSprintRelDO();
         issueSprintRelDO.setIssueId(issueId);
         issueSprintRelDO.setSprintId(sprintId);
         issueSprintRelDO.setProjectId(projectId);
         if (issueSprintRelMapper.selectOne(issueSprintRelDO) == null) {
-            issueSprintRelRepository.createIssueSprintRel(ConvertHelper.convert(issueSprintRelDO, IssueSprintRelE.class));
+            if (issueMapper.selectUnCloseSprintId(projectId, issueId) != null) {
+                BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, issueIds);
+                issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+                issueRepository.issueToDestinationByIds(projectId, sprintId, issueIds, new Date(), customUserDetails.getUserId());
+            } else {
+                issueSprintRelRepository.createIssueSprintRel(ConvertHelper.convert(issueSprintRelDO, IssueSprintRelE.class));
+            }
         }
     }
 
@@ -1566,9 +1573,16 @@ public class IssueServiceImpl implements IssueService {
                 //删除链接
                 issueLinkRepository.deleteByIssueId(issueE.getIssueId());
                 issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, ISSUE_TYPE_ID, RANK_FIELD, STATUS_ID, PARENT_ISSUE_ID, EPIC_SEQUENCE, STORY_POINTS_FIELD});
-                Long sprintId = issueMapper.selectUnCloseSprintId(issueTransformSubTask.getParentIssueId());
+                Long sprintId = issueMapper.selectUnCloseSprintId(projectId, issueTransformSubTask.getParentIssueId());
+                List<Long> issueIds = new ArrayList<>();
+                issueIds.add(issueE.getIssueId());
                 if (sprintId != null) {
-                    insertSprintWhenTransform(issueE.getIssueId(), sprintId, projectId);
+                    insertSprintWhenTransform(issueE.getIssueId(), sprintId, projectId, issueIds);
+                } else {
+                    if (issueMapper.selectUnCloseSprintId(projectId, issueE.getIssueId()) != null) {
+                        BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, issueIds);
+                        issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+                    }
                 }
                 return queryIssueSub(projectId, organizationId, issueE.getIssueId());
             } else {
