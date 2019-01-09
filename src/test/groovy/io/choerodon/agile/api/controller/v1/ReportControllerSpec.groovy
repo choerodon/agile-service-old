@@ -191,6 +191,7 @@ class ReportControllerSpec extends Specification {
         issueE.setSprintId(sprintId)
         ProjectInfoE projectInfoE = new ProjectInfoE()
         projectInfoE.setProjectId(1L)
+        issueE.setAssigneerCondtiion(false)
         CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE)
         stateMachineService.createIssue(issueE.getIssueId(), 1, JSONObject.toJSONString(createIssuePayload))
         issueIds.add(issueDTO.issueId)
@@ -216,8 +217,9 @@ class ReportControllerSpec extends Specification {
         IssueE noDoneIssueE = new IssueE()
         BeanUtils.copyProperties(noDoneIssue, noDoneIssueE)
         noDoneIssueE.setSprintId(sprintId)
-        CreateIssuePayload noDonecreateIssuePayload = new CreateIssuePayload(noDone, noDoneIssueE, projectInfoE)
-        stateMachineService.createIssue(noDoneIssueE.getIssueId(), 1, JSONObject.toJSONString(noDonecreateIssuePayload))
+        issueE.setAssigneerCondtiion(false)
+        CreateIssuePayload noDoneCreateIssuePayload = new CreateIssuePayload(noDone, noDoneIssueE, projectInfoE)
+        stateMachineService.createIssue(noDoneIssueE.getIssueId(), 1, JSONObject.toJSONString(noDoneCreateIssuePayload))
         issueIds.add(noDoneIssue.issueId)
 
         and: '设置冲刺开启对象'

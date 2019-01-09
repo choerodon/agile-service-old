@@ -232,7 +232,7 @@ public class IssueServiceImpl implements IssueService {
         //处理冲刺
         handleCreateSprintRel(issueE.getSprintId(), issueE.getProjectId(), issueId);
         handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
-        handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId, projectInfoE, issueE.getAssigneeId());
+        handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId, projectInfoE, issueE.getAssigneerCondtiion());
         handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
     }
 
@@ -241,7 +241,7 @@ public class IssueServiceImpl implements IssueService {
         //处理冲刺
         handleCreateSprintRel(subIssueE.getSprintId(), subIssueE.getProjectId(), issueId);
         handleCreateLabelIssue(issueSubCreateDTO.getLabelIssueRelDTOList(), issueId);
-        handleCreateComponentIssueRel(issueSubCreateDTO.getComponentIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId, projectInfoE, subIssueE.getAssigneeId());
+        handleCreateComponentIssueRel(issueSubCreateDTO.getComponentIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId, projectInfoE, subIssueE.getAssigneerCondtiion());
         handleCreateVersionIssueRel(issueSubCreateDTO.getVersionIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
     }
 
@@ -1177,17 +1177,17 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void handleCreateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId, ProjectInfoE projectInfoE, Long assigneeId) {
+    private void handleCreateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId, ProjectInfoE projectInfoE, Boolean assigneeCondition) {
         if (componentIssueRelDTOList != null && !componentIssueRelDTOList.isEmpty()) {
-            handleComponentIssueRelWithHandleAssignee(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId, projectInfoE, assigneeId);
+            handleComponentIssueRelWithHandleAssignee(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId, projectInfoE, assigneeCondition);
         }
     }
 
-    private void handleComponentIssueRelWithHandleAssignee(List<ComponentIssueRelE> componentIssueRelEList, Long projectId, Long issueId, ProjectInfoE projectInfoE, Long assigneeId) {
+    private void handleComponentIssueRelWithHandleAssignee(List<ComponentIssueRelE> componentIssueRelEList, Long projectId, Long issueId, ProjectInfoE projectInfoE, Boolean assigneeCondition) {
         componentIssueRelEList.forEach(componentIssueRelE -> {
             handleComponentIssueRel(componentIssueRelE, projectId, issueId);
             //issue经办人可以根据模块策略进行区分
-            if (assigneeId == null) {
+            if (assigneeCondition) {
                 handleComponentIssue(componentIssueRelE, issueId, projectInfoE);
             }
         });
