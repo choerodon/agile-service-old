@@ -1,6 +1,7 @@
 package io.choerodon.agile.domain.agile.repository;
 
 import io.choerodon.agile.domain.agile.entity.DataLogE;
+import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDO;
 
 import java.util.Set;
 
@@ -20,4 +21,11 @@ public interface DataLogRepository {
      * @param dataLogIds dataLogIds
      */
     void batchDeleteErrorDataLog(Set<Long> dataLogIds);
+
+    /**
+     * 更新脏数据
+     *
+     * @param dataLogStatusChangeDOS dataLogStatusChangeDOS
+     */
+    void batchUpdateErrorDataLog(Set<DataLogStatusChangeDO> dataLogStatusChangeDOS);
 }

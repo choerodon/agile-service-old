@@ -137,6 +137,7 @@ public class ReportServiceImpl implements ReportService {
         Set<Long> removeIssueIdS = reportMapper.queryRemoveIssueIds();
         issueIds.removeAll(removeIssueIdS);
         Set<Long> dataLogIds = Collections.synchronizedSet(new HashSet<>());
+        Set<DataLogStatusChangeDO> dataLogStatusChangeDOS = Collections.synchronizedSet(new HashSet<>());
         issueIds.parallelStream().forEach(issueId -> {
             List<FixCumulativeData> fixCumulativeData = reportMapper.queryFixCumulativeData(issueId);
             if (fixCumulativeData != null && !fixCumulativeData.isEmpty() && fixCumulativeData.size() > 1) {
@@ -159,6 +160,13 @@ public class ReportServiceImpl implements ReportService {
                             condition = false;
                         }
                     }
+                    if (preData.getNewStatusId().equals(nextData.getOldStatusId()) && nextData.getOldStatusId() == 0 && preData.getOldStatusId() != 0) {
+                        dataLogIds.add(nextData.getLogId());
+                        DataLogStatusChangeDO dataLogStatusChangeDO = new DataLogStatusChangeDO();
+                        dataLogStatusChangeDO.setLogId(preData.getLogId());
+                        dataLogStatusChangeDO.setNewValue(nextData.getNewStatusId());
+                        dataLogStatusChangeDOS.add(dataLogStatusChangeDO);
+                    }
                 }
                 if (!remove.isEmpty()) {
                     List<FixCumulativeData> removeDataList = new ArrayList<>(remove);
@@ -178,6 +186,9 @@ public class ReportServiceImpl implements ReportService {
         });
         if (!dataLogIds.isEmpty()) {
             dataLogRepository.batchDeleteErrorDataLog(dataLogIds);
+        }
+        if (!dataLogStatusChangeDOS.isEmpty()) {
+            dataLogRepository.batchUpdateErrorDataLog(dataLogStatusChangeDOS);
         }
     }
 
