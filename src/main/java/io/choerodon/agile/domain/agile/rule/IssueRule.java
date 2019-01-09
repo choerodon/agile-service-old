@@ -1,10 +1,7 @@
 package io.choerodon.agile.domain.agile.rule;
 
-import io.choerodon.agile.api.dto.IssueCreateDTO;
+import io.choerodon.agile.api.dto.*;
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.IssueSubCreateDTO;
-import io.choerodon.agile.api.dto.IssueTransformSubTask;
-import io.choerodon.agile.api.dto.IssueUpdateTypeDTO;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
@@ -217,6 +214,32 @@ public class IssueRule {
         if (issueTransformSubTask.getObjectVersionNumber() == null) {
             throw new CommonException("error.IssueRule.objectVersionNumber");
         }
+    }
+
+    public IssueE verifyTransformedTask(Long projectId, IssueTransformTask issueTransformTask) {
+        if (issueTransformTask.getIssueId() == null) {
+            throw new CommonException(ERROR_ISSUE_ID_NOT_FOUND);
+        }
+        if (issueTransformTask.getIssueTypeId() == null) {
+            throw new CommonException("error.issuetypeId.isNull");
+        }
+        if (issueTransformTask.getTypeCode() == null) {
+            throw new CommonException("error.IssueRule.typeCode");
+        }
+        if (issueTransformTask.getTypeCode().equals(ISSUE_EPIC) && issueTransformTask.getEpicName() == null) {
+            throw new CommonException("error.IssueRule.epicName");
+        }
+        IssueE issueE = issueService.queryIssueByProjectIdAndIssueId(projectId, issueTransformTask.getIssueId());
+        if (issueE == null) {
+            throw new CommonException("error.IssueUpdateTypeDTO.issueDO");
+        }
+        if (issueTransformTask.getTypeCode().equals(SUB_TASK)) {
+            throw new CommonException("error.IssueRule.subTask");
+        }
+        if (issueTransformTask.getTypeCode().equals(issueE.getTypeCode())) {
+            throw new CommonException("error.IssueRule.sameTypeCode");
+        }
+        return issueE;
     }
 
     public void verifySubTask(Long parentIssueId) {

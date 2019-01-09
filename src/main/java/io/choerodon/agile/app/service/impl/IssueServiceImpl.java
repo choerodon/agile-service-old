@@ -1563,6 +1563,46 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
+    @Override
+    public synchronized IssueDTO transformedTask(IssueE issueE, IssueTransformTask issueTransformTask, Long organizationId) {
+        String originType = issueE.getTypeCode();
+        if (originType.equals(SUB_TASK)) {
+            issueE.setParentIssueId(null);
+        }
+        if (STORY_TYPE.equals(issueE.getTypeCode()) && issueE.getStoryPoints() != null) {
+            issueE.setStoryPoints(null);
+        }
+        if (issueTransformTask.getTypeCode().equals(ISSUE_EPIC)) {
+            issueE.setRank(null);
+            issueE.setTypeCode(issueTransformTask.getTypeCode());
+            issueE.setEpicName(issueTransformTask.getEpicName());
+            List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
+            issueE.initializationColor(colorList);
+            issueE.setRemainingTime(null);
+            issueE.setEpicId(0L);
+            //排序编号
+            Integer sequence = issueMapper.queryMaxEpicSequenceByProject(issueE.getProjectId());
+            issueE.setEpicSequence(sequence == null ? 0 : sequence + 1);
+        } else if (issueE.getTypeCode().equals(ISSUE_EPIC)) {
+            // 如果之前类型是epic，会把该epic下的issue的epicId置为0
+            issueRepository.batchUpdateIssueEpicId(issueE.getProjectId(), issueE.getIssueId());
+            issueE.setTypeCode(issueTransformTask.getTypeCode());
+            issueE.setColorCode(null);
+            issueE.setEpicName(null);
+            issueE.setEpicSequence(null);
+            //rank值重置
+            calculationRank(issueE.getProjectId(), issueE);
+        } else {
+            issueE.setTypeCode(issueTransformTask.getTypeCode());
+        }
+        if (issueTransformTask.getStatusId() != null) {
+            issueE.setStatusId(issueTransformTask.getStatusId());
+        }
+        issueE.setIssueTypeId(issueTransformTask.getIssueTypeId());
+        issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, REMAIN_TIME_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, STORY_POINTS_FIELD, RANK_FIELD, EPIC_SEQUENCE, ISSUE_TYPE_ID, STATUS_ID});
+        return queryIssue(issueE.getProjectId(), issueE.getIssueId(), organizationId);
+    }
+
     private String exportIssuesVersionName(ExportIssuesDTO exportIssuesDTO) {
         StringBuilder versionName = new StringBuilder();
         if (exportIssuesDTO.getFixVersionName() != null && !"".equals(exportIssuesDTO.getFixVersionName())) {

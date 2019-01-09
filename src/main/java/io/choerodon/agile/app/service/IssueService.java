@@ -170,6 +170,16 @@ public interface IssueService {
      */
     IssueSubDTO transformedSubTask(Long projectId, Long organizationId, IssueTransformSubTask issueTransformSubTask);
 
+    /**
+     * 子任务转换为任务
+     *
+     * @param issueE
+     * @param issueTransformTask
+     * @param organizationId
+     * @return
+     */
+    IssueDTO transformedTask(IssueE issueE, IssueTransformTask issueTransformTask, Long organizationId);
+
     List<IssueInfoDTO> listByIssueIds(Long projectId, List<Long> issueIds);
 
     /**
