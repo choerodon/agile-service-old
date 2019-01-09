@@ -163,6 +163,8 @@ public class IssueServiceImpl implements IssueService {
     private StateMachineService stateMachineService;
     @Autowired
     private DataLogRedisUtil dataLogRedisUtil;
+    @Autowired
+    private IssueSprintRelMapper issueSprintRelMapper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IssueServiceImpl.class);
 
@@ -1533,6 +1535,16 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
+    private void insertSprintWhenTransform(Long issueId, Long sprintId, Long projectId) {
+        IssueSprintRelDO issueSprintRelDO = new IssueSprintRelDO();
+        issueSprintRelDO.setIssueId(issueId);
+        issueSprintRelDO.setSprintId(sprintId);
+        issueSprintRelDO.setProjectId(projectId);
+        if (issueSprintRelMapper.selectOne(issueSprintRelDO) == null) {
+            issueSprintRelRepository.createIssueSprintRel(ConvertHelper.convert(issueSprintRelDO, IssueSprintRelE.class));
+        }
+    }
+
     @Override
     public IssueSubDTO transformedSubTask(Long projectId, Long organizationId, IssueTransformSubTask issueTransformSubTask) {
         IssueE issueE = ConvertHelper.convert(queryIssueByIssueIdAndProjectId(projectId, issueTransformSubTask.getIssueId()), IssueE.class);
@@ -1554,6 +1566,10 @@ public class IssueServiceImpl implements IssueService {
                 //删除链接
                 issueLinkRepository.deleteByIssueId(issueE.getIssueId());
                 issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, ISSUE_TYPE_ID, RANK_FIELD, STATUS_ID, PARENT_ISSUE_ID, EPIC_SEQUENCE, STORY_POINTS_FIELD});
+                Long sprintId = issueMapper.selectUnCloseSprintId(issueE.getIssueId());
+                if (sprintId != null) {
+                    insertSprintWhenTransform(issueE.getIssueId(), sprintId, projectId);
+                }
                 return queryIssueSub(projectId, organizationId, issueE.getIssueId());
             } else {
                 throw new CommonException("error.IssueRule.subTaskError");

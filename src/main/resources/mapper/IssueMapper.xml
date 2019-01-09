@@ -2610,4 +2610,12 @@
         AND ai.issue_type_id = #{issueTypeId}
         AND ai.apply_type = #{applyType}
     </select>
+
+    <select id="selectUnCloseSprintId" resultType="java.lang.Long">
+        select aisr.sprint_id
+        from agile_issue_sprint_rel aisr, agile_sprint asp
+        where aisr.issue_id = #{issueId}
+        and aisr.sprint_id = asp.sprint_id
+        and asp.status_code != 'closed'
+    </select>
 </mapper>
