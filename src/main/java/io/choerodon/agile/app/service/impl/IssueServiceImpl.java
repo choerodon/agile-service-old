@@ -1566,7 +1566,7 @@ public class IssueServiceImpl implements IssueService {
                 //删除链接
                 issueLinkRepository.deleteByIssueId(issueE.getIssueId());
                 issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, ISSUE_TYPE_ID, RANK_FIELD, STATUS_ID, PARENT_ISSUE_ID, EPIC_SEQUENCE, STORY_POINTS_FIELD});
-                Long sprintId = issueMapper.selectUnCloseSprintId(issueE.getIssueId());
+                Long sprintId = issueMapper.selectUnCloseSprintId(issueTransformSubTask.getParentIssueId());
                 if (sprintId != null) {
                     insertSprintWhenTransform(issueE.getIssueId(), sprintId, projectId);
                 }
