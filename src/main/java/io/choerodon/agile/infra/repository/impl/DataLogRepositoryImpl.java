@@ -3,6 +3,7 @@ package io.choerodon.agile.infra.repository.impl;
 import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.domain.agile.repository.DataLogRepository;
 import io.choerodon.agile.infra.dataobject.DataLogDO;
+import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDO;
 import io.choerodon.agile.infra.mapper.DataLogMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -41,6 +42,11 @@ public class DataLogRepositoryImpl implements DataLogRepository {
     @Override
     public void batchDeleteErrorDataLog(Set<Long> dataLogIds) {
         dataLogMapper.batchDeleteErrorDataLog(dataLogIds);
+    }
+
+    @Override
+    public void batchUpdateErrorDataLog(Set<DataLogStatusChangeDO> dataLogStatusChangeDOS) {
+        dataLogMapper.batchUpdateErrorDataLog(dataLogStatusChangeDOS);
     }
 
 }

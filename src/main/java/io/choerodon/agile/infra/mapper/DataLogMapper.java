@@ -2,6 +2,7 @@ package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.infra.dataobject.DataLogDO;
+import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDO;
 import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.mybatis.common.BaseMapper;
@@ -65,4 +66,11 @@ public interface DataLogMapper extends BaseMapper<DataLogDO> {
      * @param dataLogIds dataLogIds
      */
     void batchDeleteErrorDataLog(@Param("dataLogIds") Set<Long> dataLogIds);
+
+    /**
+     * 更新脏数据
+     *
+     * @param dataLogStatusChangeDOS dataLogStatusChangeDOS
+     */
+    void batchUpdateErrorDataLog(@Param("dataLogStatusChangeDOS")Set<DataLogStatusChangeDO> dataLogStatusChangeDOS);
 }
