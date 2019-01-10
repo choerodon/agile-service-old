@@ -4,14 +4,20 @@ import com.alibaba.fastjson.JSON;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.IssueService;
+import io.choerodon.agile.app.service.ProductVersionService;
 import io.choerodon.agile.domain.agile.converter.ProductVersionConverter;
+import io.choerodon.agile.domain.agile.entity.ProductVersionE;
 import io.choerodon.agile.domain.agile.event.VersionPayload;
+import io.choerodon.agile.domain.agile.repository.ProductVersionRepository;
+import io.choerodon.agile.domain.agile.repository.VersionIssueRelRepository;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.dataobject.IssueCountDO;
+import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.agile.infra.dataobject.VersionIssueDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
+import io.choerodon.agile.infra.mapper.ProductVersionMapper;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaClient;
@@ -23,12 +29,6 @@ import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.choerodon.agile.app.service.ProductVersionService;
-import io.choerodon.agile.domain.agile.entity.ProductVersionE;
-import io.choerodon.agile.domain.agile.repository.ProductVersionRepository;
-import io.choerodon.agile.domain.agile.repository.VersionIssueRelRepository;
-import io.choerodon.agile.infra.dataobject.ProductVersionDO;
-import io.choerodon.agile.infra.mapper.ProductVersionMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Created by jian_zhang02@163.com on 2018/5/14.
@@ -229,15 +230,16 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     @Override
     public ProductVersionStatisticsDTO queryVersionStatisticsByVersionId(Long projectId, Long versionId) {
         ProductVersionStatisticsDTO productVersionStatisticsDTO = versionStatisticsAssembler.toTarget(productVersionMapper.queryVersionStatisticsByVersionId(projectId, versionId), ProductVersionStatisticsDTO.class);
-        Map<String, List<Long>> statusMap = issueFeignClient.queryStatusByProjectId(projectId, SchemeApplyType.AGILE).getBody()
-                .stream().collect(Collectors.groupingBy(StatusMapDTO::getType, Collectors.mapping(StatusMapDTO::getId, Collectors.toList())));
-        productVersionStatisticsDTO.setTodoIssueCount(statusMap.get(CATEGORY_TODO_CODE) != null && !statusMap.get(CATEGORY_TODO_CODE).isEmpty() ? productVersionMapper.queryStatusIssueCount(statusMap.get(CATEGORY_TODO_CODE), projectId, versionId) : 0);
-        productVersionStatisticsDTO.setDoingIssueCount(statusMap.get(CATEGORY_DOING_CODE) != null && !statusMap.get(CATEGORY_DOING_CODE).isEmpty() ? productVersionMapper.queryStatusIssueCount(statusMap.get(CATEGORY_DOING_CODE), projectId, versionId) : 0);
-        productVersionStatisticsDTO.setDoneIssueCount(statusMap.get(CATEGORY_DONE_CODE) != null && !statusMap.get(CATEGORY_DONE_CODE).isEmpty() ? productVersionMapper.queryStatusIssueCount(statusMap.get(CATEGORY_DONE_CODE), projectId, versionId) : 0);
+        List<StatusMapDTO> statusMapDTOS = issueFeignClient.queryStatusByProjectId(projectId, SchemeApplyType.AGILE).getBody();
+        Map<String, List<Long>> statusIdMap = statusMapDTOS.stream().collect(Collectors.groupingBy(StatusMapDTO::getType, Collectors.mapping(StatusMapDTO::getId, Collectors.toList())));
+        Map<String, List<StatusMapDTO>> statusMap = statusMapDTOS.stream().collect(Collectors.groupingBy(StatusMapDTO::getType));
+        productVersionStatisticsDTO.setTodoIssueCount(statusIdMap.get(CATEGORY_TODO_CODE) != null && !statusIdMap.get(CATEGORY_TODO_CODE).isEmpty() ? productVersionMapper.queryStatusIssueCount(statusIdMap.get(CATEGORY_TODO_CODE), projectId, versionId) : 0);
+        productVersionStatisticsDTO.setDoingIssueCount(statusIdMap.get(CATEGORY_DOING_CODE) != null && !statusIdMap.get(CATEGORY_DOING_CODE).isEmpty() ? productVersionMapper.queryStatusIssueCount(statusIdMap.get(CATEGORY_DOING_CODE), projectId, versionId) : 0);
+        productVersionStatisticsDTO.setDoneIssueCount(statusIdMap.get(CATEGORY_DONE_CODE) != null && !statusIdMap.get(CATEGORY_DONE_CODE).isEmpty() ? productVersionMapper.queryStatusIssueCount(statusIdMap.get(CATEGORY_DONE_CODE), projectId, versionId) : 0);
         productVersionStatisticsDTO.setIssueCount(productVersionStatisticsDTO.getTodoIssueCount() + productVersionStatisticsDTO.getDoingIssueCount() + productVersionStatisticsDTO.getDoneIssueCount());
-        productVersionStatisticsDTO.setTodoStatusIds(statusMap.get(CATEGORY_TODO_CODE));
-        productVersionStatisticsDTO.setDoingStatusIds(statusMap.get(CATEGORY_DOING_CODE));
-        productVersionStatisticsDTO.setDoneStatusIds(statusMap.get(CATEGORY_TODO_CODE));
+        productVersionStatisticsDTO.setTodoStatuses(statusMap.get(CATEGORY_TODO_CODE));
+        productVersionStatisticsDTO.setDoingStatuses(statusMap.get(CATEGORY_DOING_CODE));
+        productVersionStatisticsDTO.setDoneStatuses(statusMap.get(CATEGORY_DONE_CODE));
         return productVersionStatisticsDTO;
     }
 
