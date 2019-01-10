@@ -17,7 +17,7 @@ service:
   port: 8378
 
 preJob:
-  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.5.2
+  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.6.1
   preConfig:
     enable: true
     configFile: application.yml
