@@ -18,34 +18,34 @@ public class ProductVersionStatisticsDTO {
     private Long projectId;
     private Integer issueCount;
     private Integer doneIssueCount;
-    private List<Long> doneStatusIds;
-    private List<Long> doingStatusIds;
-    private List<Long> todoStatusIds;
+    private List<StatusMapDTO> doneStatuses;
+    private List<StatusMapDTO> doingStatuses;
+    private List<StatusMapDTO> todoStatuses;
     private Integer doingIssueCount;
     private Integer todoIssueCount;
 
-    public List<Long> getDoneStatusIds() {
-        return doneStatusIds;
+    public List<StatusMapDTO> getDoneStatuses() {
+        return doneStatuses;
     }
 
-    public void setDoneStatusIds(List<Long> doneStatusIds) {
-        this.doneStatusIds = doneStatusIds;
+    public void setDoneStatuses(List<StatusMapDTO> doneStatuses) {
+        this.doneStatuses = doneStatuses;
     }
 
-    public List<Long> getDoingStatusIds() {
-        return doingStatusIds;
+    public List<StatusMapDTO> getDoingStatuses() {
+        return doingStatuses;
     }
 
-    public void setDoingStatusIds(List<Long> doingStatusIds) {
-        this.doingStatusIds = doingStatusIds;
+    public void setDoingStatuses(List<StatusMapDTO> doingStatuses) {
+        this.doingStatuses = doingStatuses;
     }
 
-    public List<Long> getTodoStatusIds() {
-        return todoStatusIds;
+    public List<StatusMapDTO> getTodoStatuses() {
+        return todoStatuses;
     }
 
-    public void setTodoStatusIds(List<Long> todoStatusIds) {
-        this.todoStatusIds = todoStatusIds;
+    public void setTodoStatuses(List<StatusMapDTO> todoStatuses) {
+        this.todoStatuses = todoStatuses;
     }
 
     public Integer getIssueCount() {
