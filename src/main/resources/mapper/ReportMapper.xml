@@ -1002,8 +1002,7 @@
             #{issueId}
         </foreach>
         AND adl.creation_date &gt;= #{startDate}
-        AND adl.creation_date &lt;= #{endDate})a WHERE a.column_from != a.column_to and a.column_to!=0
-
+        AND adl.creation_date &lt;= #{endDate})a WHERE a.column_from != a.column_to
     </select>
 
     <select id="queryReportIssues" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
