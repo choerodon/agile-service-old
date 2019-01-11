@@ -271,6 +271,7 @@ public class ReportServiceImpl implements ReportService {
         if (cumulativeFlowFilterDTO.getQuickFilterIds() != null && !cumulativeFlowFilterDTO.getQuickFilterIds().isEmpty()) {
             filterSql = sprintService.getQuickFilter(cumulativeFlowFilterDTO.getQuickFilterIds());
         }
+        //epic没有计算在里面
         List<Long> allIssueIds = reportMapper.queryAllIssueIdsByFilter(projectId, filterSql);
         if (allIssueIds != null && !allIssueIds.isEmpty() && cumulativeFlowFilterDTO.getColumnIds() != null && !cumulativeFlowFilterDTO.getColumnIds().isEmpty()) {
             return getCumulativeFlowDiagram(allIssueIds, projectId, cumulativeFlowFilterDTO);
@@ -645,8 +646,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void handleCumulativeFlowAddDuringDate(List<Long> allIssueIds, List<ColumnChangeDTO> result, Date startDate, Date endDate, List<Long> columnIds) {
-        List<ColumnChangeDTO> addIssueDuringDate = reportAssembler.toTargetList
-                (reportMapper.queryAddIssueDuringDate(startDate, endDate, allIssueIds, columnIds), ColumnChangeDTO.class);
+        List<ColumnChangeDTO> addIssueDuringDate = reportAssembler.toTargetList(reportMapper.queryAddIssueDuringDate(startDate, endDate, allIssueIds, columnIds), ColumnChangeDTO.class);
         if (addIssueDuringDate != null && !addIssueDuringDate.isEmpty()) {
             //新创建的issue没有生成列变更日志，所以StatusTo字段为空，说明是新创建的issue，要进行处理
             List<Long> statusToNullIssueIds = addIssueDuringDate.stream().filter(columnChangeDTO -> columnChangeDTO.getStatusTo() == null).map(ColumnChangeDTO::getIssueId).collect(Collectors.toList());
