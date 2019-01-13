@@ -137,6 +137,7 @@ public class ReportServiceImpl implements ReportService {
         Set<Long> removeIssueIdS = reportMapper.queryRemoveIssueIds();
         issueIds.removeAll(removeIssueIdS);
         Set<Long> dataLogIds = Collections.synchronizedSet(new HashSet<>());
+        Set<DataLogStatusChangeDO> dataLogStatusChangeDOS = Collections.synchronizedSet(new HashSet<>());
         issueIds.parallelStream().forEach(issueId -> {
             List<FixCumulativeData> fixCumulativeData = reportMapper.queryFixCumulativeData(issueId);
             if (fixCumulativeData != null && !fixCumulativeData.isEmpty() && fixCumulativeData.size() > 1) {
@@ -159,6 +160,13 @@ public class ReportServiceImpl implements ReportService {
                             condition = false;
                         }
                     }
+                    if (preData.getNewStatusId().equals(nextData.getOldStatusId()) && nextData.getOldStatusId() == 0 && preData.getOldStatusId() != 0) {
+                        dataLogIds.add(nextData.getLogId());
+                        DataLogStatusChangeDO dataLogStatusChangeDO = new DataLogStatusChangeDO();
+                        dataLogStatusChangeDO.setLogId(preData.getLogId());
+                        dataLogStatusChangeDO.setNewValue(nextData.getNewStatusId());
+                        dataLogStatusChangeDOS.add(dataLogStatusChangeDO);
+                    }
                 }
                 if (!remove.isEmpty()) {
                     List<FixCumulativeData> removeDataList = new ArrayList<>(remove);
@@ -176,13 +184,13 @@ public class ReportServiceImpl implements ReportService {
                 }
             }
         });
-        handleDeleteErrorDataLog(dataLogIds);
+        if (!dataLogIds.isEmpty()) {
+            dataLogRepository.batchDeleteErrorDataLog(dataLogIds);
+        }
+        if (!dataLogStatusChangeDOS.isEmpty()) {
+            dataLogRepository.batchUpdateErrorDataLog(dataLogStatusChangeDOS);
+        }
     }
-
-    public void handleDeleteErrorDataLog(Set<Long> dataLogIds) {
-        dataLogRepository.batchDeleteErrorDataLog(dataLogIds);
-    }
-
 
     @Override
     public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
@@ -263,6 +271,7 @@ public class ReportServiceImpl implements ReportService {
         if (cumulativeFlowFilterDTO.getQuickFilterIds() != null && !cumulativeFlowFilterDTO.getQuickFilterIds().isEmpty()) {
             filterSql = sprintService.getQuickFilter(cumulativeFlowFilterDTO.getQuickFilterIds());
         }
+        //epic没有计算在里面
         List<Long> allIssueIds = reportMapper.queryAllIssueIdsByFilter(projectId, filterSql);
         if (allIssueIds != null && !allIssueIds.isEmpty() && cumulativeFlowFilterDTO.getColumnIds() != null && !cumulativeFlowFilterDTO.getColumnIds().isEmpty()) {
             return getCumulativeFlowDiagram(allIssueIds, projectId, cumulativeFlowFilterDTO);
@@ -637,8 +646,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void handleCumulativeFlowAddDuringDate(List<Long> allIssueIds, List<ColumnChangeDTO> result, Date startDate, Date endDate, List<Long> columnIds) {
-        List<ColumnChangeDTO> addIssueDuringDate = reportAssembler.toTargetList
-                (reportMapper.queryAddIssueDuringDate(startDate, endDate, allIssueIds, columnIds), ColumnChangeDTO.class);
+        List<ColumnChangeDTO> addIssueDuringDate = reportAssembler.toTargetList(reportMapper.queryAddIssueDuringDate(startDate, endDate, allIssueIds, columnIds), ColumnChangeDTO.class);
         if (addIssueDuringDate != null && !addIssueDuringDate.isEmpty()) {
             //新创建的issue没有生成列变更日志，所以StatusTo字段为空，说明是新创建的issue，要进行处理
             List<Long> statusToNullIssueIds = addIssueDuringDate.stream().filter(columnChangeDTO -> columnChangeDTO.getStatusTo() == null).map(ColumnChangeDTO::getIssueId).collect(Collectors.toList());

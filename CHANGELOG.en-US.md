@@ -1,6 +1,30 @@
 # Changelog
 All notable changes about agile-service will be documented in this file.
 
+## [0.13.0] - 2019-01-11
+
+### Added
+
+- Version details filtering functionality.Version details support advanced filter.
+- The statistical graph adds label dimensions, and adds sprint, version, and time filter conditions.
+- The board name modifying functionality in board setting, and add the verification of duplicate name.
+- Issue details narrow styles add log information.
+- The issue is supported by filling in remaining time and story points when creating.
+- Increase epic name, component name, and version name verification.
+
+### Changed
+
+- Select issues user action monitoring optimization in backlog view.
+- Partial view style optimization.
+- Optimize burndown chart calculation logic.
+
+### Fixed
+
+- The statistics of the sprinters in the planned backlog view are repeated.
+- Cumulative flow graph dirty data repair, need to be manually called for repair.
+- The creation state and the deletion state cause the state machine draft configuration table to generate dirty data and the publication is unavailable.
+- The date selector's holiday display error.
+
 ## [0.12.0] - 2018-12-14
 
 ### Added

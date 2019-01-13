@@ -160,6 +160,7 @@ class SprintControllerSpec extends Specification {
         issueE.setSprintId(sprintIds[0])
         ProjectInfoE projectInfoE = new ProjectInfoE()
         projectInfoE.setProjectId(1L)
+        issueE.setAssigneerCondtiion(false)
         CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE)
         stateMachineService.createIssue(issueE.getIssueId(), 1, JSONObject.toJSONString(createIssuePayload))
         issueIds.add(issueE.getIssueId())

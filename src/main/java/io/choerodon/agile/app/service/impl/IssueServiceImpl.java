@@ -234,7 +234,7 @@ public class IssueServiceImpl implements IssueService {
         //处理冲刺
         handleCreateSprintRel(issueE.getSprintId(), issueE.getProjectId(), issueId);
         handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
-        handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId, projectInfoE);
+        handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId, projectInfoE, issueE.getAssigneerCondtiion());
         handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
     }
 
@@ -243,7 +243,7 @@ public class IssueServiceImpl implements IssueService {
         //处理冲刺
         handleCreateSprintRel(subIssueE.getSprintId(), subIssueE.getProjectId(), issueId);
         handleCreateLabelIssue(issueSubCreateDTO.getLabelIssueRelDTOList(), issueId);
-        handleCreateComponentIssueRel(issueSubCreateDTO.getComponentIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId, projectInfoE);
+        handleCreateComponentIssueRel(issueSubCreateDTO.getComponentIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId, projectInfoE, subIssueE.getAssigneerCondtiion());
         handleCreateVersionIssueRel(issueSubCreateDTO.getVersionIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
     }
 
@@ -1179,17 +1179,19 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void handleCreateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId, ProjectInfoE projectInfoE) {
+    private void handleCreateComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId, ProjectInfoE projectInfoE, Boolean assigneeCondition) {
         if (componentIssueRelDTOList != null && !componentIssueRelDTOList.isEmpty()) {
-            handleComponentIssueRelWithHandleAssignee(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId, projectInfoE);
+            handleComponentIssueRelWithHandleAssignee(ConvertHelper.convertList(componentIssueRelDTOList, ComponentIssueRelE.class), projectId, issueId, projectInfoE, assigneeCondition);
         }
     }
 
-    private void handleComponentIssueRelWithHandleAssignee(List<ComponentIssueRelE> componentIssueRelEList, Long projectId, Long issueId, ProjectInfoE projectInfoE) {
+    private void handleComponentIssueRelWithHandleAssignee(List<ComponentIssueRelE> componentIssueRelEList, Long projectId, Long issueId, ProjectInfoE projectInfoE, Boolean assigneeCondition) {
         componentIssueRelEList.forEach(componentIssueRelE -> {
             handleComponentIssueRel(componentIssueRelE, projectId, issueId);
             //issue经办人可以根据模块策略进行区分
-            handleComponentIssue(componentIssueRelE, issueId, projectInfoE);
+            if (assigneeCondition) {
+                handleComponentIssue(componentIssueRelE, issueId, projectInfoE);
+            }
         });
     }
 
@@ -1533,13 +1535,20 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void insertSprintWhenTransform(Long issueId, Long sprintId, Long projectId) {
+    private void insertSprintWhenTransform(Long issueId, Long sprintId, Long projectId, List<Long> issueIds) {
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         IssueSprintRelDO issueSprintRelDO = new IssueSprintRelDO();
         issueSprintRelDO.setIssueId(issueId);
         issueSprintRelDO.setSprintId(sprintId);
         issueSprintRelDO.setProjectId(projectId);
         if (issueSprintRelMapper.selectOne(issueSprintRelDO) == null) {
-            issueSprintRelRepository.createIssueSprintRel(ConvertHelper.convert(issueSprintRelDO, IssueSprintRelE.class));
+            if (issueMapper.selectUnCloseSprintId(projectId, issueId) != null) {
+                BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, issueIds);
+                issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+                issueRepository.issueToDestinationByIds(projectId, sprintId, issueIds, new Date(), customUserDetails.getUserId());
+            } else {
+                issueSprintRelRepository.createIssueSprintRel(ConvertHelper.convert(issueSprintRelDO, IssueSprintRelE.class));
+            }
         }
     }
 
@@ -1564,9 +1573,16 @@ public class IssueServiceImpl implements IssueService {
                 //删除链接
                 issueLinkRepository.deleteByIssueId(issueE.getIssueId());
                 issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, ISSUE_TYPE_ID, RANK_FIELD, STATUS_ID, PARENT_ISSUE_ID, EPIC_SEQUENCE, STORY_POINTS_FIELD});
-                Long sprintId = issueMapper.selectUnCloseSprintId(issueTransformSubTask.getParentIssueId());
+                Long sprintId = issueMapper.selectUnCloseSprintId(projectId, issueTransformSubTask.getParentIssueId());
+                List<Long> issueIds = new ArrayList<>();
+                issueIds.add(issueE.getIssueId());
                 if (sprintId != null) {
-                    insertSprintWhenTransform(issueE.getIssueId(), sprintId, projectId);
+                    insertSprintWhenTransform(issueE.getIssueId(), sprintId, projectId, issueIds);
+                } else {
+                    if (issueMapper.selectUnCloseSprintId(projectId, issueE.getIssueId()) != null) {
+                        BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, issueIds);
+                        issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+                    }
                 }
                 return queryIssueSub(projectId, organizationId, issueE.getIssueId());
             } else {
@@ -1575,6 +1591,46 @@ public class IssueServiceImpl implements IssueService {
         } else {
             throw new CommonException("error.IssueRule.issueNoFound");
         }
+    }
+
+    @Override
+    public synchronized IssueDTO transformedTask(IssueE issueE, IssueTransformTask issueTransformTask, Long organizationId) {
+        String originType = issueE.getTypeCode();
+        if (originType.equals(SUB_TASK)) {
+            issueE.setParentIssueId(null);
+        }
+        if (STORY_TYPE.equals(issueE.getTypeCode()) && issueE.getStoryPoints() != null) {
+            issueE.setStoryPoints(null);
+        }
+        if (issueTransformTask.getTypeCode().equals(ISSUE_EPIC)) {
+            issueE.setRank(null);
+            issueE.setTypeCode(issueTransformTask.getTypeCode());
+            issueE.setEpicName(issueTransformTask.getEpicName());
+            List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
+            issueE.initializationColor(colorList);
+            issueE.setRemainingTime(null);
+            issueE.setEpicId(0L);
+            //排序编号
+            Integer sequence = issueMapper.queryMaxEpicSequenceByProject(issueE.getProjectId());
+            issueE.setEpicSequence(sequence == null ? 0 : sequence + 1);
+        } else if (issueE.getTypeCode().equals(ISSUE_EPIC)) {
+            // 如果之前类型是epic，会把该epic下的issue的epicId置为0
+            issueRepository.batchUpdateIssueEpicId(issueE.getProjectId(), issueE.getIssueId());
+            issueE.setTypeCode(issueTransformTask.getTypeCode());
+            issueE.setColorCode(null);
+            issueE.setEpicName(null);
+            issueE.setEpicSequence(null);
+            //rank值重置
+            calculationRank(issueE.getProjectId(), issueE);
+        } else {
+            issueE.setTypeCode(issueTransformTask.getTypeCode());
+        }
+        if (issueTransformTask.getStatusId() != null) {
+            issueE.setStatusId(issueTransformTask.getStatusId());
+        }
+        issueE.setIssueTypeId(issueTransformTask.getIssueTypeId());
+        issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, REMAIN_TIME_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, STORY_POINTS_FIELD, RANK_FIELD, EPIC_SEQUENCE, ISSUE_TYPE_ID, STATUS_ID});
+        return queryIssue(issueE.getProjectId(), issueE.getIssueId(), organizationId);
     }
 
     private String exportIssuesVersionName(ExportIssuesDTO exportIssuesDTO) {

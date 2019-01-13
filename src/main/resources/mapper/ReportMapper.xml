@@ -1002,8 +1002,7 @@
             #{issueId}
         </foreach>
         AND adl.creation_date &gt;= #{startDate}
-        AND adl.creation_date &lt;= #{endDate})a WHERE a.column_from != a.column_to and a.column_to!=0
-
+        AND adl.creation_date &lt;= #{endDate})a WHERE a.column_from != a.column_to
     </select>
 
     <select id="queryReportIssues" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
@@ -3099,6 +3098,7 @@
        SELECT
             apv.name,
             ai.status_id,
+            apv.sequence,
             count( * ) AS count
         FROM
             agile_version_issue_rel avir
@@ -3123,7 +3123,8 @@
             AND apv.NAME IS NOT NULL
         GROUP BY
             apv.NAME,
-            ai.status_id
+            ai.status_id,
+            apv.sequence
         order by apv.sequence desc
     </select>
 

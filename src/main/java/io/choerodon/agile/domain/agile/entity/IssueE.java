@@ -76,6 +76,16 @@ public class IssueE {
 
     private String applyType;
 
+    private Boolean assigneerCondtiion;
+
+    public Boolean getAssigneerCondtiion() {
+        return assigneerCondtiion;
+    }
+
+    public void setAssigneerCondtiion(Boolean assigneerCondtiion) {
+        this.assigneerCondtiion = assigneerCondtiion;
+    }
+
     public Integer getEpicSequence() {
         return epicSequence;
     }
@@ -295,7 +305,8 @@ public class IssueE {
      * @param subIssueE subIssueE
      * @return IssueE
      */
-    public IssueE initializationSubIssue(IssueE subIssueE,Long statusId, ProjectInfoE projectInfoE) {
+    public IssueE initializationSubIssue(IssueE subIssueE, Long statusId, ProjectInfoE projectInfoE) {
+        subIssueE.setAssigneerCondtiion(subIssueE.getAssigneeId() == null);
         subIssueE.setStatusId(statusId);
         subIssueE.setParentIssueId(this.issueId);
         subIssueE.setSprintId(this.sprintId);
@@ -328,6 +339,8 @@ public class IssueE {
         if (this.epicId == null) {
             this.epicId = 0L;
         }
+        //判断是否指定了经办人
+        this.assigneerCondtiion = this.assigneeId == null;
         //处理报告人
         initializationReporter();
         initializationIssueUser();
@@ -355,7 +368,7 @@ public class IssueE {
     }
 
     public Boolean isIssueMapRank() {
-        return Objects.equals(this.applyType,  SchemeApplyType.AGILE) && !Objects.equals(this.typeCode, ISSUE_EPIC) && !Objects.equals(this.typeCode, SUB_TASK);
+        return Objects.equals(this.applyType, SchemeApplyType.AGILE) && !Objects.equals(this.typeCode, ISSUE_EPIC) && !Objects.equals(this.typeCode, SUB_TASK);
     }
 
     public void initializationIssueUser() {
