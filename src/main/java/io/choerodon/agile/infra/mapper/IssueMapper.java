@@ -254,7 +254,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
                                                               @Param("otherArgs") Map<String, Object> otherArgs, @Param("content") String content);
 
     /**
-     * 待办事项查询相关issue的issueIds
+     * 待办事项查询相关issue的issueIds，不包含已完成的issue
      *
      * @param projectId          projectId
      * @param userId             userId
@@ -263,6 +263,17 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @return issueIds
      */
     List<Long> querySprintIssueIdsByCondition(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql, @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
+
+    /**
+     * 待办事项查询相关issue的issueIds，包含已完成的issue
+     *
+     * @param projectId          projectId
+     * @param userId             userId
+     * @param advancedSearchArgs advancedSearchArgs
+     * @param filterSql          filterSql
+     * @return issueIds
+     */
+    List<Long> querySprintAllIssueIdsByCondition(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql, @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
 
     List<StoryMapIssueDO> listIssuesByProjectIdSprint(@Param("projectId") Long projectId,
                                                       @Param("pageType") String pageType,

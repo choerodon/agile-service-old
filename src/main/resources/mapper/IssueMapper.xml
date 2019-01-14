@@ -876,6 +876,45 @@
         </if>
     </select>
 
+    <select id="querySprintAllIssueIdsByCondition" resultType="java.lang.Long">
+        SELECT
+        ai.issue_id
+        FROM agile_issue ai
+        WHERE ai.project_id = #{projectId} AND ai.type_code !='sub_task' AND ai.type_code != 'issue_epic' AND ai.apply_type = 'agile'
+        <if test='advancedSearchArgs != null'>
+            <if test='advancedSearchArgs.versionId != null'>
+                AND ai.issue_id IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id =
+                #{advancedSearchArgs.versionId} AND relation_type = 'fix')
+            </if>
+            <if test='advancedSearchArgs.epicId != null'>
+                AND ai.epic_id = #{advancedSearchArgs.epicId}
+            </if>
+            <if test='advancedSearchArgs.noVersion != "" and advancedSearchArgs.noVersion == "true"'>
+                AND ai.issue_id NOT IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id != 0 AND
+                relation_type = 'fix')
+            </if>
+            <if test='advancedSearchArgs.noEpic != "" and advancedSearchArgs.noEpic == "true"'>
+                AND (ai.epic_id IS NULL OR ai.epic_id = 0)
+            </if>
+            <if test='advancedSearchArgs.ownIssue != "" and advancedSearchArgs.ownIssue == "true"'>
+                AND ai.assignee_id = #{userId}
+            </if>
+            <if test='advancedSearchArgs.onlyStory != "" and advancedSearchArgs.onlyStory == "true"'>
+                AND ai.type_code = 'story'
+            </if>
+        </if>
+        <if test='filterSql != null'>
+            AND ai.issue_id IN (${filterSql})
+        </if>
+        <if test='assigneeFilterIds != null'>
+            AND ai.assignee_id IN
+            <foreach collection="assigneeFilterIds" item="assigneeFilterId"
+                     open="(" close=")" separator=",">
+                #{assigneeFilterId}
+            </foreach>
+        </if>
+    </select>
+
     <insert id="batchIssueToVersion">
         INSERT IGNORE INTO agile_version_issue_rel
         (version_id, issue_id, project_id, relation_type, creation_date, last_update_date, created_by, last_updated_by)
