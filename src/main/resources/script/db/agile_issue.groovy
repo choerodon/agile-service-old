@@ -144,7 +144,7 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue.groovy') {
         }
     }
 
-    changeSet(id: '2019-01-14-add-column-issue-stay-time', author: 'fuqianghuang01@gmail.com') {
+    changeSet(id: '2019-01-14-add-column-issue-stay-date', author: 'fuqianghuang01@gmail.com') {
         addColumn(tableName: 'agile_issue') {
             column(name: 'stay_date', type: 'DATETIME', remarks: 'stay date')
         }
