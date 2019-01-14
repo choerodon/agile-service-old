@@ -325,7 +325,11 @@ public class BoardServiceImpl implements BoardService {
     }
 
     private List<Long> sortAndJudgeCompleted(Long projectId, List<Long> parentIds) {
-        return boardColumnMapper.sortAndJudgeCompleted(projectId, parentIds);
+        if (parentIds != null && !parentIds.isEmpty()) {
+            return boardColumnMapper.sortAndJudgeCompleted(projectId, parentIds);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     @Override
