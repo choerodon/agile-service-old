@@ -291,5 +291,17 @@ public class SprintController {
                 .orElseThrow(() -> new CommonException("error.sprintController.querySprintWorkCalendarRefs"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("冲刺重名校验")
+    @GetMapping(value = "/check_name")
+    public ResponseEntity<Boolean> checkName(@ApiParam(value = "项目id", required = true)
+                                             @PathVariable(name = "project_id") Long projectId,
+                                             @ApiParam(value = "sprint name", required = true)
+                                             @RequestParam String sprintName) {
+        return Optional.ofNullable(sprintService.checkName(projectId, sprintName))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.sprintName.check"));
+    }
+
 
 }

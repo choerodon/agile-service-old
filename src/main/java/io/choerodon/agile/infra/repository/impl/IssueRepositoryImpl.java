@@ -172,4 +172,10 @@ public class IssueRepositoryImpl implements IssueRepository {
     public void updateIssueStatusByIssueTypeId(Long projectId, String applyType, Long issueTypeId, Long oldStatusId, Long newStatusId, Long userId) {
         issueMapper.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId, userId);
     }
+
+    @Override
+    public void updateStayDate(Long projectId, Long sprintId, Date nowDate) {
+        issueMapper.updateStayDate(projectId, sprintId, nowDate);
+    }
+
 }

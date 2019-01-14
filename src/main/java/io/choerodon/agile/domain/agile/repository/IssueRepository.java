@@ -99,4 +99,7 @@ public interface IssueRepository {
      * @param userId userId
      */
     void updateIssueStatusByIssueTypeId(Long projectId, String applyType, Long issueTypeId, Long oldStatusId, Long newStatusId,Long userId);
+
+    void updateStayDate(Long projectId, Long sprintId, Date nowDate);
+
 }

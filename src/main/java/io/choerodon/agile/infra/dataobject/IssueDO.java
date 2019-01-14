@@ -161,6 +161,8 @@ public class IssueDO extends AuditDomain {
 
     private Long issueTypeId;
 
+    private Date stayDate;
+
     public List<LabelIssueRelDO> getLabelIssueRelDOS() {
         return labelIssueRelDOS;
     }
@@ -463,6 +465,14 @@ public class IssueDO extends AuditDomain {
 
     public void setApplyType(String applyType) {
         this.applyType = applyType;
+    }
+
+    public void setStayDate(Date stayDate) {
+        this.stayDate = stayDate;
+    }
+
+    public Date getStayDate() {
+        return stayDate;
     }
 
     @Override

@@ -81,4 +81,6 @@ public interface SprintService {
      * @param calendarId calendarId
      */
     void deleteSprintWorkCalendarRef(Long projectId, Long calendarId);
+
+    Boolean checkName(Long projectId, String sprinName);
 }

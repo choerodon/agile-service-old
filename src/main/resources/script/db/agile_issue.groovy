@@ -143,4 +143,10 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue.groovy') {
             "update agile_issue set apply_type = (case when type_code IN ('task','bug','sub_task','story','issue_epic') then 'agile' else 'test' end );"
         }
     }
+
+    changeSet(id: '2019-01-14-add-column-issue-stay-time', author: 'fuqianghuang01@gmail.com') {
+        addColumn(tableName: 'agile_issue') {
+            column(name: 'stay_date', type: 'DATETIME', remarks: 'stay date')
+        }
+    }
 }

@@ -503,6 +503,12 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public IssueDTO updateIssueStatus(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType) {
         stateMachineService.executeTransform(projectId, issueId, transformId, objectVersionNumber, applyType, new InputDTO(issueId, "updateStatus", null));
+        if ("agile".equals(applyType)) {
+            IssueE issueE = new IssueE();
+            issueE.setIssueId(issueId);
+            issueE.setStayDate(new Date());
+            issueRepository.updateSelective(issueE);
+        }
         return queryIssueByUpdate(projectId, issueId, Collections.singletonList("statusId"));
     }
 

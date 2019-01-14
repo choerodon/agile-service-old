@@ -124,6 +124,9 @@ public class BoardServiceImpl implements BoardService {
     @Autowired
     private SprintMapper sprintMapper;
 
+    @Autowired
+    private IssueRepository issueRepository;
+
     @Override
     public void create(Long projectId, String boardName) {
         if (checkName(projectId, boardName)) {
@@ -188,7 +191,7 @@ public class BoardServiceImpl implements BoardService {
         return columnsData;
     }
 
-    private void addIssueInfos(IssueForBoardDO issue, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Map<Long, PriorityDTO> priorityMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+    private void addIssueInfos(IssueForBoardDO issue, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Map<Long, PriorityDTO> priorityMap, Map<Long, IssueTypeDTO> issueTypeDTOMap, Map<Long, List<Long>> parentWithSubs) {
         if (issue.getParentIssueId() != null && issue.getParentIssueId() != 0 && !parentIds.contains(issue.getParentIssueId())) {
             parentIds.add(issue.getParentIssueId());
         } else {
@@ -200,22 +203,36 @@ public class BoardServiceImpl implements BoardService {
         if (issue.getEpicId() != null && !epicIds.contains(issue.getEpicId())) {
             epicIds.add(issue.getEpicId());
         }
+        if ("sub_task".equals(issue.getTypeCode()) && issue.getParentIssueId() != null) {
+            List<Long> subtaskIds = null;
+            subtaskIds = parentWithSubs.get(issue.getParentIssueId());
+            if (subtaskIds == null) {
+                subtaskIds = new ArrayList<>();
+            }
+            subtaskIds.add(issue.getIssueId());
+            parentWithSubs.put(issue.getParentIssueId(), subtaskIds);
+        }
         issue.setPriorityDTO(priorityMap.get(issue.getPriorityId()));
         issue.setIssueTypeDTO(issueTypeDTOMap.get(issue.getIssueTypeId()));
+        if (issue.getStayDate() != null) {
+            issue.setStayDay(DateUtil.differentDaysByMillisecond(issue.getStayDate(), new Date()));
+        } else {
+            issue.setStayDay(0);
+        }
     }
 
-    private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Long organizationId) {
+    private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Long organizationId, Map<Long, List<Long>> parentWithSubs) {
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        subStatuses.forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> addIssueInfos(issueForBoardDO, parentIds, assigneeIds, ids, epicIds, priorityMap, issueTypeDTOMap)));
+        subStatuses.forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> addIssueInfos(issueForBoardDO, parentIds, assigneeIds, ids, epicIds, priorityMap, issueTypeDTOMap, parentWithSubs)));
     }
 
-    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds, Boolean condition, Long organizationId) {
+    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds, Boolean condition, Long organizationId, Map<Long, List<Long>> parentWithSubss) {
         List<Long> issueIds = new ArrayList<>();
         for (ColumnAndIssueDO column : columns) {
             List<SubStatus> subStatuses = column.getSubStatuses();
             fillStatusData(subStatuses, organizationId);
-            getDatas(subStatuses, parentIds, assigneeIds, issueIds, epicIds, organizationId);
+            getDatas(subStatuses, parentIds, assigneeIds, issueIds, epicIds, organizationId, parentWithSubss);
             Collections.sort(subStatuses, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
         }
         //选择故事泳道选择仅我的任务后，子任务经办人为自己，父任务经办人不为自己的情况
@@ -307,6 +324,10 @@ public class BoardServiceImpl implements BoardService {
         return sql.toString();
     }
 
+    private List<Long> sortAndJudgeCompleted(Long projectId, List<Long> parentIds) {
+        return boardColumnMapper.sortAndJudgeCompleted(projectId, parentIds);
+    }
+
     @Override
     public JSONObject queryAllData(Long projectId, Long boardId, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId, List<Long> assigneeFilterIds) {
         JSONObject jsonObject = new JSONObject(true);
@@ -324,9 +345,12 @@ public class BoardServiceImpl implements BoardService {
         List<Long> epicIds = new ArrayList<>();
         List<ColumnAndIssueDO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory, filterSql, assigneeFilterIds);
         Boolean condition = assigneeId != null && onlyStory;
-        putDatasAndSort(columns, parentIds, assigneeIds, boardId, epicIds, condition, organizationId);
+        Map<Long, List<Long>> parentWithSubs = new HashMap<>();
+        putDatasAndSort(columns, parentIds, assigneeIds, boardId, epicIds, condition, organizationId, parentWithSubs);
         jsonObject.put("parentIds", parentIds);
         jsonObject.put("assigneeIds", assigneeIds);
+        jsonObject.put("parentWithSubs", parentWithSubs);
+        jsonObject.put("parentCompleted", sortAndJudgeCompleted(projectId, parentIds));
         jsonObject.put("epicInfo", !epicIds.isEmpty() ? boardColumnMapper.selectEpicBatchByIds(epicIds) : null);
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         Comparator<IssueForBoardDO> comparator = Comparator.comparing(IssueForBoardDO::getRank, nullsFirst(naturalOrder()));
@@ -469,7 +493,17 @@ public class BoardServiceImpl implements BoardService {
             String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName() + userDOList.get(0).getRealName() : "";
             siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), issueDO.getAssigneeId(), projectId);
         }
+
+        // 更新stay date
+        updateStayDateByMove(issueDO.getIssueId());
         return result;
+    }
+
+    private void updateStayDateByMove(Long issueId) {
+        IssueE issueE = new IssueE();
+        issueE.setIssueId(issueId);
+        issueE.setStayDate(new Date());
+        issueRepository.updateSelective(issueE);
     }
 
     private JSONObject handleIssueMoveRank(Long projectId, IssueMoveDTO issueMoveDTO) {
