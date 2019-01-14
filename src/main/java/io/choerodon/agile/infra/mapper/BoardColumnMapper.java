@@ -86,4 +86,6 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
      * @param removeStatusWithProjects removeStatusWithProjects
      */
     void batchDeleteColumnAndStatusRel(@Param("removeStatusWithProjects") List<RemoveStatusWithProject> removeStatusWithProjects);
+
+    List<Long> sortAndJudgeCompleted(@Param("projectId") Long projectId, @Param("parentIds") List<Long> parentIds);
 }

@@ -47,6 +47,7 @@
         ai.type_code AS ai_type_code,
         ai.rank AS ai_rank,
         ai.epic_id AS ai_epic_id,
+        ai.stay_date AS ai_stay_date,
         ai.object_version_number AS ai_object_version_number
         FROM
         agile_board_column abc
@@ -289,5 +290,24 @@
         </foreach>
     </delete>
 
+    <select id="sortAndJudgeCompleted" resultType="java.lang.Long">
+        select ai.issue_id
+        from agile_issue ai,  agile_issue_status ais
+        where ai.project_id = #{projectId}
+        and ai.status_id = ais.status_id and ais.project_id = #{projectId} and ais.is_completed = 1
+        and (
+            select count(ai2.issue_id)
+            from agile_issue ai2, agile_issue_status ais2
+            where ai2.project_id = #{projectId}
+            and ai2.parent_issue_id = ai.issue_id
+            and ai2.status_id = ais2.status_id and ais2.project_id = #{projectId} and ais2.is_completed = 0
+        ) = 0
+        and ai.issue_id in
+        <foreach collection="parentIds" item="parentId"
+                 open="(" close=")" separator=",">
+            #{parentId}
+        </foreach>
+        order by ai.issue_id
+    </select>
 
 </mapper>

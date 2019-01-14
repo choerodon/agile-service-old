@@ -7,6 +7,7 @@ import io.choerodon.agile.infra.dataobject.LookupValueDO;
 import io.choerodon.core.oauth.DetailsHelper;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -85,6 +86,8 @@ public class IssueE {
     public void setAssigneerCondtiion(Boolean assigneerCondtiion) {
         this.assigneerCondtiion = assigneerCondtiion;
     }
+
+    private Date stayDate;
 
     public Integer getEpicSequence() {
         return epicSequence;
@@ -398,5 +401,13 @@ public class IssueE {
         Integer max = issueMaxNum.intValue() + 1;
         this.issueNum = max.toString();
         projectInfoE.setIssueMaxNum(issueMaxNum + 1);
+    }
+
+    public void setStayDate(Date stayDate) {
+        this.stayDate = stayDate;
+    }
+
+    public Date getStayDate() {
+        return stayDate;
     }
 }

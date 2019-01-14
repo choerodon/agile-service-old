@@ -459,4 +459,6 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     List<IssueDO> queryIssueWithCompleteInfoByStatusId(@Param("projectId") Long projectId, @Param("applyType") String applyType, @Param("issueTypeId") Long issueTypeId, @Param("statusId") Long statusId);
 
     Long selectUnCloseSprintId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+
+    void updateStayDate(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("nowDate") Date nowDate);
 }

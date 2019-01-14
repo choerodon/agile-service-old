@@ -125,10 +125,28 @@ public class SprintServiceImpl implements SprintService {
         return sprintCreateAssembler.toTarget(sprintRepository.createSprint(sprint), SprintDetailDTO.class);
     }
 
+    private Boolean checkNameUpdate(Long projectId, Long sprintId, String sprintName) {
+        SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
+        if (sprintName.equals(sprintDO.getSprintName())) {
+            return false;
+        }
+        SprintDO check = new SprintDO();
+        check.setProjectId(projectId);
+        check.setSprintName(sprintName);
+        List<SprintDO> sprintDOList = sprintMapper.select(check);
+        if (sprintDOList != null && !sprintDOList.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public SprintDetailDTO updateSprint(Long projectId, SprintUpdateDTO sprintUpdateDTO) {
         if (!Objects.equals(projectId, sprintUpdateDTO.getProjectId())) {
             throw new CommonException(NOT_EQUAL_ERROR);
+        }
+        if (sprintUpdateDTO.getSprintName() != null && checkNameUpdate(projectId, sprintUpdateDTO.getSprintId(), sprintUpdateDTO.getSprintName())) {
+            throw new CommonException("error.sprintName.exist");
         }
         sprintRule.checkDate(sprintUpdateDTO);
         SprintE sprintE = sprintUpdateAssembler.toTarget(sprintUpdateDTO, SprintE.class);
@@ -288,6 +306,7 @@ public class SprintServiceImpl implements SprintService {
                 sprintWorkCalendarRefRepository.create(sprintWorkCalendarRefDO);
             });
         }
+        issueRepository.updateStayDate(projectId, sprintE.getSprintId(), new Date());
         return sprintUpdateAssembler.toTarget(sprintRepository.updateSprint(sprintE), SprintDetailDTO.class);
     }
 
@@ -496,6 +515,9 @@ public class SprintServiceImpl implements SprintService {
 
     @Override
     public SprintDetailDTO createBySprintName(Long projectId, String sprintName) {
+        if (checkName(projectId, sprintName)) {
+            throw new CommonException("error.sprintName.exist");
+        }
         SprintE sprintE = new SprintE();
         sprintE.setProjectId(projectId);
         sprintE.setSprintName(sprintName);
@@ -582,4 +604,15 @@ public class SprintServiceImpl implements SprintService {
         dateUtil.handleDuplicateDate(dates);
     }
 
+    @Override
+    public Boolean checkName(Long projectId, String sprinName) {
+        SprintDO sprintDO = new SprintDO();
+        sprintDO.setProjectId(projectId);
+        sprintDO.setSprintName(sprinName);
+        List<SprintDO> sprintDOList = sprintMapper.select(sprintDO);
+        if (sprintDOList != null && !sprintDOList.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
 }

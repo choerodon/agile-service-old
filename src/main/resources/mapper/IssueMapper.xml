@@ -2618,4 +2618,14 @@
         and aisr.sprint_id = asp.sprint_id
         and asp.status_code != 'closed'
     </select>
+
+    <update id="updateStayDate">
+        update agile_issue set stay_date = #{nowDate}
+        where issue_id in (
+          select issue_id
+          from agile_issue_sprint_rel aisr
+          where aisr.project_id = #{projectId} and aisr.sprint_id = #{sprintId}
+        )
+        and project_id = #{projectId}
+    </update>
 </mapper>

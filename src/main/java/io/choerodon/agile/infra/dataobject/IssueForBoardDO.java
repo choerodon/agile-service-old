@@ -3,6 +3,8 @@ package io.choerodon.agile.infra.dataobject;
 import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
 
+import java.util.Date;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
  * Email: fuqianghuang01@gmail.com
@@ -32,6 +34,10 @@ public class IssueForBoardDO {
     private String rank;
 
     private Long priorityId;
+
+    private Date stayDate;
+
+    private Integer stayDay;
 
     private PriorityDTO priorityDTO;
 
@@ -157,5 +163,21 @@ public class IssueForBoardDO {
 
     public Long getIssueTypeId() {
         return issueTypeId;
+    }
+
+    public void setStayDate(Date stayDate) {
+        this.stayDate = stayDate;
+    }
+
+    public Date getStayDate() {
+        return stayDate;
+    }
+
+    public void setStayDay(Integer stayDay) {
+        this.stayDay = stayDay;
+    }
+
+    public Integer getStayDay() {
+        return stayDay;
     }
 }
