@@ -507,6 +507,7 @@ public class IssueServiceImpl implements IssueService {
             IssueE issueE = new IssueE();
             issueE.setIssueId(issueId);
             issueE.setStayDate(new Date());
+            issueE.setObjectVersionNumber(issueMapper.selectByPrimaryKey(issueId).getObjectVersionNumber());
             issueRepository.updateSelective(issueE);
         }
         return queryIssueByUpdate(projectId, issueId, Collections.singletonList("statusId"));
