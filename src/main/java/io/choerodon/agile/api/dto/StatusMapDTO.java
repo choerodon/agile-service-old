@@ -11,6 +11,7 @@ public class StatusMapDTO implements Serializable {
     private String type;
     private Long organizationId;
     private Long objectVersionNumber;
+    private Boolean completed;
 
     private Boolean canDelete;
 
@@ -76,5 +77,13 @@ public class StatusMapDTO implements Serializable {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public Boolean getCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
     }
 }
