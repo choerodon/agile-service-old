@@ -235,7 +235,9 @@
             agile_sprint asp
         WHERE
             asp.project_id = #{projectId}
-            AND asp.status_code = 'sprint_planning')) a2
+            AND asp.status_code = 'sprint_planning')
+        AND ai2.status_id IN ( SELECT ais.status_id FROM agile_issue_status ais WHERE ais.project_id = #{projectId} AND ais.is_completed != 1 )
+        ) a2
         GROUP BY
         a2.sprint_id,
         a2.assignee_id
