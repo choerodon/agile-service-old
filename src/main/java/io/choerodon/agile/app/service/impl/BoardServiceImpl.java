@@ -497,18 +497,7 @@ public class BoardServiceImpl implements BoardService {
             String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName() + userDOList.get(0).getRealName() : "";
             siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), issueDO.getAssigneeId(), projectId);
         }
-
-        // 更新stay date
-        updateStayDateByMove(issueDO.getIssueId(), issueDO.getObjectVersionNumber());
         return result;
-    }
-
-    private void updateStayDateByMove(Long issueId, Long objectVersionNumber) {
-        IssueE issueE = new IssueE();
-        issueE.setIssueId(issueId);
-        issueE.setStayDate(new Date());
-        issueE.setObjectVersionNumber(objectVersionNumber);
-        issueRepository.updateSelective(issueE);
     }
 
     private JSONObject handleIssueMoveRank(Long projectId, IssueMoveDTO issueMoveDTO) {
