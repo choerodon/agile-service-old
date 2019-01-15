@@ -1,9 +1,6 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.api.dto.IssueTypeDTO;
-import io.choerodon.agile.api.dto.PriorityDTO;
-import io.choerodon.agile.api.dto.SprintSearchDTO;
-import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.infra.dataobject.SprintSearchDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import org.springframework.beans.BeanUtils;
@@ -11,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by jian_zhang02@163.com on 2018/5/14.
@@ -31,7 +30,8 @@ public class SprintSearchAssembler extends AbstractAssembler {
         BeanUtils.copyProperties(sprintSearchDO, sprintSearchDTO);
         if (usersMap != null) {
             sprintSearchDTO.setAssigneeIssues(issueSearchAssembler.doListToAssigneeIssueDTO(sprintSearchDO.getAssigneeIssueDOList(), usersMap));
-            sprintSearchDTO.setIssueSearchDTOList(issueSearchAssembler.doListToDTO(sprintSearchDO.getIssueSearchDOList(), usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap));
+            List<IssueSearchDTO> issueSearchDTOS = issueSearchAssembler.doListToDTO(sprintSearchDO.getIssueSearchDOList(), usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap);
+            sprintSearchDTO.setIssueSearchDTOList(issueSearchDTOS.stream().sorted(Comparator.comparing(issue -> issue.getStatusMapDTO().getCompleted())).collect(Collectors.toList()));
         }
         return sprintSearchDTO;
     }
