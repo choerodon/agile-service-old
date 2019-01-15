@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 mkdir -p target
-if [ ! -f target/choerodon-tool-liquibase.jar ]
+if [ ! -f target/choerodon-tool-liuibase.jar ]
 then
-    curl http://nexus.choerodon.com.cn/repository/choerodon-release/io/choerodon/choerodon-tool-liquibase/0.9.0.RELEASE/choerodon-tool-liquibase-0.9.0.RELEASE.jar -o target/choerodon-tool-liquibase.jar
+    curl http://nexus.choerodon.com.cn/repository/choerodon-release/io/choerodon/choerodon-tool-liquibase/0.6.4.RELEASE/choerodon-tool-liquibase-0.6.4.RELEASE.jar -o target/choerodon-tool-liquibase.jar
 fi
 java -Dspring.datasource.url="jdbc:mysql://localhost:3306/agile_service?useUnicode=true&characterEncoding=utf-8&useSSL=false" \
  -Dspring.datasource.username=root \
