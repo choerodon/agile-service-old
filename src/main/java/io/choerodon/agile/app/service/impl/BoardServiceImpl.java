@@ -499,14 +499,15 @@ public class BoardServiceImpl implements BoardService {
         }
 
         // 更新stay date
-        updateStayDateByMove(issueDO.getIssueId());
+        updateStayDateByMove(issueDO.getIssueId(), issueDO.getObjectVersionNumber());
         return result;
     }
 
-    private void updateStayDateByMove(Long issueId) {
+    private void updateStayDateByMove(Long issueId, Long objectVersionNumber) {
         IssueE issueE = new IssueE();
         issueE.setIssueId(issueId);
         issueE.setStayDate(new Date());
+        issueE.setObjectVersionNumber(objectVersionNumber);
         issueRepository.updateSelective(issueE);
     }
 
