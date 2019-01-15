@@ -5,6 +5,7 @@ import io.choerodon.agile.infra.common.annotation.Update;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -62,6 +63,8 @@ public class IssueUpdateDTO {
     private String epicName;
 
     private Long priorityId;
+
+    private Date stayDate;
 
     public String getRank() {
         return rank;
@@ -261,6 +264,14 @@ public class IssueUpdateDTO {
 
     public Long getPriorityId() {
         return priorityId;
+    }
+
+    public void setStayDate(Date stayDate) {
+        this.stayDate = stayDate;
+    }
+
+    public Date getStayDate() {
+        return stayDate;
     }
 
     @Override

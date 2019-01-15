@@ -64,6 +64,7 @@ public class StateMachineServiceImpl implements StateMachineService {
     private static final String ERROR_CREATE_ISSUE_CREATE = "error.createIssue.create";
     private static final String RANK = "rank";
     private static final String STATUS_ID = "statusId";
+    private static final String STAY_DATE = "stayDate";
 
     @Autowired
     private IssueMapper issueMapper;
@@ -372,7 +373,8 @@ public class StateMachineServiceImpl implements StateMachineService {
         }
         if (!issue.getStatusId().equals(targetStatusId)) {
             issueUpdateDTO.setStatusId(targetStatusId);
-            issueService.handleUpdateIssue(issueUpdateDTO, Arrays.asList(STATUS_ID, RANK), issue.getProjectId());
+            issueUpdateDTO.setStayDate(new Date());
+            issueService.handleUpdateIssue(issueUpdateDTO, Arrays.asList(STATUS_ID, RANK, STAY_DATE), issue.getProjectId());
             logger.info("状态更新成功");
         } else {
             issueService.handleUpdateIssue(issueUpdateDTO, Collections.singletonList(RANK), issue.getProjectId());
