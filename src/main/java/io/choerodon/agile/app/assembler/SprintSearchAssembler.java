@@ -30,8 +30,7 @@ public class SprintSearchAssembler extends AbstractAssembler {
         BeanUtils.copyProperties(sprintSearchDO, sprintSearchDTO);
         if (usersMap != null) {
             sprintSearchDTO.setAssigneeIssues(issueSearchAssembler.doListToAssigneeIssueDTO(sprintSearchDO.getAssigneeIssueDOList(), usersMap));
-            List<IssueSearchDTO> issueSearchDTOS = issueSearchAssembler.doListToDTO(sprintSearchDO.getIssueSearchDOList(), usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap);
-            sprintSearchDTO.setIssueSearchDTOList(issueSearchDTOS.stream().sorted(Comparator.comparing(issue -> issue.getStatusMapDTO().getCompleted())).collect(Collectors.toList()));
+            sprintSearchDTO.setIssueSearchDTOList(issueSearchAssembler.doListToDTO(sprintSearchDO.getIssueSearchDOList(), usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap));
         }
         return sprintSearchDTO;
     }
