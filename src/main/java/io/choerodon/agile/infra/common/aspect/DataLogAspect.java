@@ -942,7 +942,8 @@ public class DataLogAspect {
                     IssueDO originIssueDO = new IssueDO();
                     BeanUtils.copyProperties(issueE, originIssueDO);
                     if (storyCondition) {
-                        originIssueDO.setStoryPoints(0);
+                        BigDecimal zero = new BigDecimal(0);
+                        originIssueDO.setStoryPoints(zero);
                         handleStoryPointsLog(originIssueDO, issueE);
                     } else {
                         originIssueDO.setRemainingTime(null);

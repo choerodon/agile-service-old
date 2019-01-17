@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import java.math.BigDecimal;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/8/8.
  * Email: fuqianghuang01@gmail.com
@@ -24,7 +26,7 @@ public class StoryMapIssueDTO {
 
     private String typeCode;
 
-    private int storyPoints;
+    private BigDecimal storyPoints;
 
     private String issueNum;
 
@@ -116,12 +118,12 @@ public class StoryMapIssueDTO {
         this.typeCode = typeCode;
     }
 
-    public int getStoryPoints() {
-        return storyPoints;
+    public void setStoryPoints(BigDecimal storyPoints) {
+        this.storyPoints = storyPoints;
     }
 
-    public void setStoryPoints(int storyPoints) {
-        this.storyPoints = storyPoints;
+    public BigDecimal getStoryPoints() {
+        return storyPoints;
     }
 
     public String getIssueNum() {

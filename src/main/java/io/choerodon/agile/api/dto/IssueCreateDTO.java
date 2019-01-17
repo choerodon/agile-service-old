@@ -44,14 +44,14 @@ public class IssueCreateDTO {
 
     private String epicName;
 
-    private Integer storyPoints;
+    private BigDecimal storyPoints;
 
-    public Integer getStoryPoints() {
-        return storyPoints;
+    public void setStoryPoints(BigDecimal storyPoints) {
+        this.storyPoints = storyPoints;
     }
 
-    public void setStoryPoints(Integer storyPoints) {
-        this.storyPoints = storyPoints;
+    public BigDecimal getStoryPoints() {
+        return storyPoints;
     }
 
     public String getTypeCode() {

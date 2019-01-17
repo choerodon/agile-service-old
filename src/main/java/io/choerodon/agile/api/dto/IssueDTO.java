@@ -40,7 +40,7 @@ public class IssueDTO {
 
     private Long parentIssueId;
 
-    private Integer storyPoints;
+    private BigDecimal storyPoints;
 
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
@@ -208,12 +208,12 @@ public class IssueDTO {
         this.parentIssueId = parentIssueId;
     }
 
-    public Integer getStoryPoints() {
-        return storyPoints;
+    public void setStoryPoints(BigDecimal storyPoints) {
+        this.storyPoints = storyPoints;
     }
 
-    public void setStoryPoints(Integer storyPoints) {
-        this.storyPoints = storyPoints;
+    public BigDecimal getStoryPoints() {
+        return storyPoints;
     }
 
     public Long getObjectVersionNumber() {

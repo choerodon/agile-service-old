@@ -1,5 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
+import java.math.BigDecimal;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/7/23.
  * Email: fuqianghuang01@gmail.com
@@ -12,21 +14,21 @@ public class VelocitySprintDO {
 
     private Long issueCount;
 
-    private int storyPoints;
+    private BigDecimal storyPoints;
 
-    private int remainTime;
+    private BigDecimal remainTime;
 
     private int committedIssueCount;
 
     private int completedIssueCount;
 
-    private int committedStoryPoints;
+    private BigDecimal committedStoryPoints;
 
-    private int completedStoryPoints;
+    private BigDecimal completedStoryPoints;
 
-    private int committedRemainTime;
+    private BigDecimal committedRemainTime;
 
-    private int completedRemainTime;
+    private BigDecimal completedRemainTime;
 
 
     public void setSprintId(Long sprintId) {
@@ -53,19 +55,19 @@ public class VelocitySprintDO {
         this.issueCount = issueCount;
     }
 
-    public void setStoryPoints(int storyPoints) {
+    public void setStoryPoints(BigDecimal storyPoints) {
         this.storyPoints = storyPoints;
     }
 
-    public int getStoryPoints() {
+    public BigDecimal getStoryPoints() {
         return storyPoints;
     }
 
-    public void setRemainTime(int remainTime) {
+    public void setRemainTime(BigDecimal remainTime) {
         this.remainTime = remainTime;
     }
 
-    public int getRemainTime() {
+    public BigDecimal getRemainTime() {
         return remainTime;
     }
 
@@ -85,35 +87,35 @@ public class VelocitySprintDO {
         return completedIssueCount;
     }
 
-    public int getCommittedStoryPoints() {
+    public BigDecimal getCommittedStoryPoints() {
         return committedStoryPoints;
     }
 
-    public void setCommittedStoryPoints(int committedStoryPoints) {
+    public void setCommittedStoryPoints(BigDecimal committedStoryPoints) {
         this.committedStoryPoints = committedStoryPoints;
     }
 
-    public int getCompletedStoryPoints() {
+    public BigDecimal getCompletedStoryPoints() {
         return completedStoryPoints;
     }
 
-    public void setCompletedStoryPoints(int completedStoryPoints) {
+    public void setCompletedStoryPoints(BigDecimal completedStoryPoints) {
         this.completedStoryPoints = completedStoryPoints;
     }
 
-    public void setCommittedRemainTime(int committedRemainTime) {
-        this.committedRemainTime = committedRemainTime;
-    }
-
-    public int getCommittedRemainTime() {
+    public BigDecimal getCommittedRemainTime() {
         return committedRemainTime;
     }
 
-    public void setCompletedRemainTime(int completedRemainTime) {
-        this.completedRemainTime = completedRemainTime;
+    public void setCommittedRemainTime(BigDecimal committedRemainTime) {
+        this.committedRemainTime = committedRemainTime;
     }
 
-    public int getCompletedRemainTime() {
+    public BigDecimal getCompletedRemainTime() {
         return completedRemainTime;
+    }
+
+    public void setCompletedRemainTime(BigDecimal completedRemainTime) {
+        this.completedRemainTime = completedRemainTime;
     }
 }

@@ -98,7 +98,7 @@ public class IssueDO extends AuditDomain {
     /**
      * 故事点
      */
-    private Integer storyPoints;
+    private BigDecimal storyPoints;
 
     @Transient
     private String priorityName;
@@ -307,12 +307,12 @@ public class IssueDO extends AuditDomain {
         this.parentIssueId = parentIssueId;
     }
 
-    public Integer getStoryPoints() {
-        return storyPoints;
+    public void setStoryPoints(BigDecimal storyPoints) {
+        this.storyPoints = storyPoints;
     }
 
-    public void setStoryPoints(Integer storyPoints) {
-        this.storyPoints = storyPoints;
+    public BigDecimal getStoryPoints() {
+        return storyPoints;
     }
 
     public String getPriorityName() {

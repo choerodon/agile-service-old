@@ -2,6 +2,7 @@ package io.choerodon.agile.infra.dataobject;
 
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/7/28.
@@ -11,13 +12,13 @@ public class GroupDataChartDO implements Serializable {
 
     private String groupDay;
 
-    private int completedStoryPoints;
+    private BigDecimal completedStoryPoints;
 
-    private int allStoryPoints;
+    private BigDecimal allStoryPoints;
 
-    private int allRemainTimes;
+    private BigDecimal allRemainTimes;
 
-    private int completedRemainTimes;
+    private BigDecimal completedRemainTimes;
 
     private int issueCount;
 
@@ -31,22 +32,6 @@ public class GroupDataChartDO implements Serializable {
 
     public void setGroupDay(String groupDay) {
         this.groupDay = groupDay;
-    }
-
-    public int getCompletedStoryPoints() {
-        return completedStoryPoints;
-    }
-
-    public void setCompletedStoryPoints(int completedStoryPoints) {
-        this.completedStoryPoints = completedStoryPoints;
-    }
-
-    public int getAllStoryPoints() {
-        return allStoryPoints;
-    }
-
-    public void setAllStoryPoints(int allStoryPoints) {
-        this.allStoryPoints = allStoryPoints;
     }
 
     public int getIssueCount() {
@@ -73,19 +58,35 @@ public class GroupDataChartDO implements Serializable {
         return issueCompletedCount;
     }
 
-    public void setCompletedRemainTimes(int completedRemainTimes) {
-        this.completedRemainTimes = completedRemainTimes;
+    public BigDecimal getCompletedStoryPoints() {
+        return completedStoryPoints;
     }
 
-    public int getAllRemainTimes() {
+    public void setCompletedStoryPoints(BigDecimal completedStoryPoints) {
+        this.completedStoryPoints = completedStoryPoints;
+    }
+
+    public BigDecimal getAllStoryPoints() {
+        return allStoryPoints;
+    }
+
+    public void setAllStoryPoints(BigDecimal allStoryPoints) {
+        this.allStoryPoints = allStoryPoints;
+    }
+
+    public BigDecimal getAllRemainTimes() {
         return allRemainTimes;
     }
 
-    public void setAllRemainTimes(int allRemainTimes) {
+    public void setAllRemainTimes(BigDecimal allRemainTimes) {
         this.allRemainTimes = allRemainTimes;
     }
 
-    public int getCompletedRemainTimes() {
+    public BigDecimal getCompletedRemainTimes() {
         return completedRemainTimes;
+    }
+
+    public void setCompletedRemainTimes(BigDecimal completedRemainTimes) {
+        this.completedRemainTimes = completedRemainTimes;
     }
 }

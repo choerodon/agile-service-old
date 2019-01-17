@@ -4,6 +4,8 @@ import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
 
+import java.math.BigDecimal;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/7/28.
  * Email: fuqianghuang01@gmail.com
@@ -22,7 +24,7 @@ public class GroupDataChartListDO {
 
     private String statusName;
 
-    private Integer storyPoints;
+    private BigDecimal storyPoints;
 
     private Integer remainTime;
 
@@ -90,11 +92,11 @@ public class GroupDataChartListDO {
         this.statusName = statusName;
     }
 
-    public void setStoryPoints(Integer storyPoints) {
+    public void setStoryPoints(BigDecimal storyPoints) {
         this.storyPoints = storyPoints;
     }
 
-    public Integer getStoryPoints() {
+    public BigDecimal getStoryPoints() {
         return storyPoints;
     }
 

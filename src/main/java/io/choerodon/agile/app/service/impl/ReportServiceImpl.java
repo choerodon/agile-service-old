@@ -28,6 +28,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -954,16 +955,16 @@ public class ReportServiceImpl implements ReportService {
 
     private List<VelocitySprintDO> dealStoryPointResult(List<VelocitySingleDO> committedList, List<VelocitySingleDO> completedList, List<VelocitySprintDO> sprintDOList, List<VelocitySprintDO> result) {
         for (VelocitySprintDO temp : sprintDOList) {
-            int committedStoryPoints = 0;
-            int completedStoryPoints = 0;
+            BigDecimal committedStoryPoints = new BigDecimal(0);
+            BigDecimal completedStoryPoints = new BigDecimal(0);
             for (VelocitySingleDO committed : committedList) {
                 if (committed.getSprintId().equals(temp.getSprintId())) {
-                    committedStoryPoints += committed.getStoryPoint();
+                    committedStoryPoints.add(committed.getStoryPoint());
                 }
             }
             for (VelocitySingleDO completed : completedList) {
                 if (completed.getSprintId().equals(temp.getSprintId())) {
-                    completedStoryPoints += completed.getStoryPoint();
+                    completedStoryPoints.add(completed.getStoryPoint());
                 }
             }
             temp.setCommittedStoryPoints(committedStoryPoints);
@@ -996,16 +997,16 @@ public class ReportServiceImpl implements ReportService {
 
     private List<VelocitySprintDO> dealRemainTimeResult(List<VelocitySingleDO> committedList, List<VelocitySingleDO> completedList, List<VelocitySprintDO> sprintDOList, List<VelocitySprintDO> result) {
         for (VelocitySprintDO temp : sprintDOList) {
-            int committedRemainTime = 0;
-            int completedRemainTime = 0;
+            BigDecimal committedRemainTime = new BigDecimal(0);
+            BigDecimal completedRemainTime = new BigDecimal(0);
             for (VelocitySingleDO committed : committedList) {
                 if (committed.getSprintId().equals(temp.getSprintId())) {
-                    committedRemainTime += committed.getRemainTime();
+                    committedRemainTime.add(committed.getRemainTime());
                 }
             }
             for (VelocitySingleDO completed : completedList) {
                 if (completed.getSprintId().equals(temp.getSprintId())) {
-                    completedRemainTime += completed.getRemainTime();
+                    completedRemainTime.add(completed.getRemainTime());
                 }
             }
             temp.setCommittedRemainTime(committedRemainTime);
@@ -1210,7 +1211,7 @@ public class ReportServiceImpl implements ReportService {
         }
         for (GroupDataChartDO g3 : remainTimeWorkLogCompleted) {
             if (g1.getGroupDay().equals(g3.getGroupDay())) {
-                g1.setCompletedRemainTimes(g1.getCompletedRemainTimes() + g3.getCompletedRemainTimes());
+                g1.setCompletedRemainTimes(g1.getCompletedRemainTimes().add(g3.getCompletedRemainTimes()));
                 break;
             }
         }
@@ -1225,7 +1226,7 @@ public class ReportServiceImpl implements ReportService {
         }
         for (GroupDataChartDO g5 : remainTimeWorkLogAll) {
             if (g1.getGroupDay().equals(g5.getGroupDay())) {
-                g1.setAllRemainTimes(g1.getAllRemainTimes() + g5.getAllRemainTimes());
+                g1.setAllRemainTimes(g1.getAllRemainTimes().add(g5.getAllRemainTimes()));
                 break;
             }
         }
