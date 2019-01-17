@@ -42,7 +42,7 @@ public class IssueListDTO implements Serializable {
 
     private String epicColor;
 
-    private Integer storyPoints;
+    private BigDecimal storyPoints;
 
     private Boolean addIssue;
 
@@ -217,12 +217,12 @@ public class IssueListDTO implements Serializable {
         this.assigneeImageUrl = assigneeImageUrl;
     }
 
-    public Integer getStoryPoints() {
-        return storyPoints;
+    public void setStoryPoints(BigDecimal storyPoints) {
+        this.storyPoints = storyPoints;
     }
 
-    public void setStoryPoints(Integer storyPoints) {
-        this.storyPoints = storyPoints;
+    public BigDecimal getStoryPoints() {
+        return storyPoints;
     }
 
     public Boolean getAddIssue() {

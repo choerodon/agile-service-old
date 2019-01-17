@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/7/26.
@@ -16,13 +17,13 @@ public class VelocitySprintDTO implements Serializable {
 
     private int completedIssueCount;
 
-    private int committedStoryPoints;
+    private BigDecimal committedStoryPoints;
 
-    private int completedStoryPoints;
+    private BigDecimal completedStoryPoints;
 
-    private int committedRemainTime;
+    private BigDecimal committedRemainTime;
 
-    private int completedRemainTime;
+    private BigDecimal completedRemainTime;
 
 
     public void setSprintId(Long sprintId) {
@@ -57,35 +58,35 @@ public class VelocitySprintDTO implements Serializable {
         return committedIssueCount;
     }
 
-    public int getCommittedStoryPoints() {
-        return committedStoryPoints;
-    }
-
-    public void setCommittedStoryPoints(int committedStoryPoints) {
+    public void setCommittedStoryPoints(BigDecimal committedStoryPoints) {
         this.committedStoryPoints = committedStoryPoints;
     }
 
-    public int getCompletedStoryPoints() {
-        return completedStoryPoints;
+    public BigDecimal getCommittedStoryPoints() {
+        return committedStoryPoints;
     }
 
-    public void setCompletedStoryPoints(int completedStoryPoints) {
+    public void setCompletedStoryPoints(BigDecimal completedStoryPoints) {
         this.completedStoryPoints = completedStoryPoints;
     }
 
-    public void setCompletedRemainTime(int completedRemainTime) {
-        this.completedRemainTime = completedRemainTime;
+    public BigDecimal getCompletedStoryPoints() {
+        return completedStoryPoints;
     }
 
-    public int getCompletedRemainTime() {
-        return completedRemainTime;
-    }
-
-    public void setCommittedRemainTime(int committedRemainTime) {
+    public void setCommittedRemainTime(BigDecimal committedRemainTime) {
         this.committedRemainTime = committedRemainTime;
     }
 
-    public int getCommittedRemainTime() {
+    public BigDecimal getCommittedRemainTime() {
         return committedRemainTime;
+    }
+
+    public void setCompletedRemainTime(BigDecimal completedRemainTime) {
+        this.completedRemainTime = completedRemainTime;
+    }
+
+    public BigDecimal getCompletedRemainTime() {
+        return completedRemainTime;
     }
 }

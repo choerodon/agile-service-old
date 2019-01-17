@@ -11,9 +11,9 @@ public class AssigneeIssueDTO {
     private String assigneeName;
     private String imageUrl;
     private BigDecimal totalRemainingTime;
-    private Integer totalStoryPoints;
+    private BigDecimal totalStoryPoints;
     private Integer issueCount;
-    private Integer remainingStoryPoints;
+    private BigDecimal remainingStoryPoints;
     private Integer remainingIssueCount;
     private BigDecimal remainingTime;
 
@@ -41,14 +41,6 @@ public class AssigneeIssueDTO {
         this.totalRemainingTime = totalRemainingTime;
     }
 
-    public Integer getTotalStoryPoints() {
-        return totalStoryPoints;
-    }
-
-    public void setTotalStoryPoints(Integer totalStoryPoints) {
-        this.totalStoryPoints = totalStoryPoints;
-    }
-
     public String getAssigneeName() {
         return assigneeName;
     }
@@ -73,14 +65,6 @@ public class AssigneeIssueDTO {
         this.issueCount = issueCount;
     }
 
-    public Integer getRemainingStoryPoints() {
-        return remainingStoryPoints;
-    }
-
-    public void setRemainingStoryPoints(Integer remainingStoryPoints) {
-        this.remainingStoryPoints = remainingStoryPoints;
-    }
-
     public Integer getRemainingIssueCount() {
         return remainingIssueCount;
     }
@@ -95,5 +79,21 @@ public class AssigneeIssueDTO {
 
     public void setRemainingTime(BigDecimal remainingTime) {
         this.remainingTime = remainingTime;
+    }
+
+    public void setTotalStoryPoints(BigDecimal totalStoryPoints) {
+        this.totalStoryPoints = totalStoryPoints;
+    }
+
+    public BigDecimal getTotalStoryPoints() {
+        return totalStoryPoints;
+    }
+
+    public void setRemainingStoryPoints(BigDecimal remainingStoryPoints) {
+        this.remainingStoryPoints = remainingStoryPoints;
+    }
+
+    public BigDecimal getRemainingStoryPoints() {
+        return remainingStoryPoints;
     }
 }

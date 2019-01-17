@@ -120,7 +120,7 @@
         ORDER BY ai.rank asc
     </select>
 
-    <select id="queryStoryPoint" resultType="java.lang.Integer">
+    <select id="queryStoryPoint" resultType="java.math.BigDecimal">
         SELECT IFNULL(SUM(ai.story_points), 0)
         FROM agile_issue ai
         WHERE ai.project_id = #{projectId}

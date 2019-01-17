@@ -4,6 +4,7 @@ import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -26,7 +27,7 @@ public class IssueSearchDO {
     private List<Long> versionIds;
     private List<String> versionNames;
     private Long sprintId;
-    private Integer storyPoints;
+    private BigDecimal storyPoints;
     private String color;
     private Long objectVersionNumber;
 
@@ -150,12 +151,12 @@ public class IssueSearchDO {
         this.statusId = statusId;
     }
 
-    public Integer getStoryPoints() {
-        return storyPoints;
+    public void setStoryPoints(BigDecimal storyPoints) {
+        this.storyPoints = storyPoints;
     }
 
-    public void setStoryPoints(Integer storyPoints) {
-        this.storyPoints = storyPoints;
+    public BigDecimal getStoryPoints() {
+        return storyPoints;
     }
 
     public String getAssigneeName() {

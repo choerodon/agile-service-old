@@ -1,5 +1,6 @@
 package io.choerodon.agile.api.dto;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -14,9 +15,9 @@ public class SprintSearchDTO {
     private Date endDate;
     private String statusCode;
     private Integer issueCount;
-    private Integer todoStoryPoint;
-    private Integer doingStoryPoint;
-    private Integer doneStoryPoint;
+    private BigDecimal todoStoryPoint;
+    private BigDecimal doingStoryPoint;
+    private BigDecimal doneStoryPoint;
     private List<IssueSearchDTO> issueSearchDTOList;
     private List<AssigneeIssueDTO> assigneeIssues;
     private String objectVersionNumber;
@@ -85,30 +86,6 @@ public class SprintSearchDTO {
         this.issueSearchDTOList = issueSearchDTOList;
     }
 
-    public Integer getTodoStoryPoint() {
-        return todoStoryPoint;
-    }
-
-    public void setTodoStoryPoint(Integer todoStoryPoint) {
-        this.todoStoryPoint = todoStoryPoint;
-    }
-
-    public Integer getDoingStoryPoint() {
-        return doingStoryPoint;
-    }
-
-    public void setDoingStoryPoint(Integer doingStoryPoint) {
-        this.doingStoryPoint = doingStoryPoint;
-    }
-
-    public Integer getDoneStoryPoint() {
-        return doneStoryPoint;
-    }
-
-    public void setDoneStoryPoint(Integer doneStoryPoint) {
-        this.doneStoryPoint = doneStoryPoint;
-    }
-
     public List<AssigneeIssueDTO> getAssigneeIssues() {
         return assigneeIssues;
     }
@@ -123,5 +100,29 @@ public class SprintSearchDTO {
 
     public void setObjectVersionNumber(String objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public BigDecimal getTodoStoryPoint() {
+        return todoStoryPoint;
+    }
+
+    public void setTodoStoryPoint(BigDecimal todoStoryPoint) {
+        this.todoStoryPoint = todoStoryPoint;
+    }
+
+    public BigDecimal getDoingStoryPoint() {
+        return doingStoryPoint;
+    }
+
+    public void setDoingStoryPoint(BigDecimal doingStoryPoint) {
+        this.doingStoryPoint = doingStoryPoint;
+    }
+
+    public BigDecimal getDoneStoryPoint() {
+        return doneStoryPoint;
+    }
+
+    public void setDoneStoryPoint(BigDecimal doneStoryPoint) {
+        this.doneStoryPoint = doneStoryPoint;
     }
 }

@@ -1,6 +1,8 @@
 package io.choerodon.agile.infra.dataobject;
 
 
+import java.math.BigDecimal;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/7/30.
  * Email: fuqianghuang01@gmail.com
@@ -11,9 +13,9 @@ public class VelocitySingleDO {
 
     private Long issueId;
 
-    private Integer storyPoint;
+    private BigDecimal storyPoint;
 
-    private int remainTime;
+    private BigDecimal remainTime;
 
     private Integer issueCount;
 
@@ -33,19 +35,19 @@ public class VelocitySingleDO {
         this.issueId = issueId;
     }
 
-    public Integer getStoryPoint() {
-        return storyPoint;
-    }
-
-    public void setStoryPoint(Integer storyPoint) {
+    public void setStoryPoint(BigDecimal storyPoint) {
         this.storyPoint = storyPoint;
     }
 
-    public void setRemainTime(int remainTime) {
+    public BigDecimal getStoryPoint() {
+        return storyPoint;
+    }
+
+    public void setRemainTime(BigDecimal remainTime) {
         this.remainTime = remainTime;
     }
 
-    public int getRemainTime() {
+    public BigDecimal getRemainTime() {
         return remainTime;
     }
 
