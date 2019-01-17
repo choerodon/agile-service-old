@@ -231,16 +231,17 @@ public class ReportServiceImpl implements ReportService {
     private JSONObject handleSameDay(List<ReportIssueE> reportIssueEList) {
         JSONObject jsonObject = new JSONObject();
         DateFormat bf = new SimpleDateFormat("yyyy-MM-dd");
-        TreeMap<String, Integer> report = new TreeMap<>();
+        TreeMap<String, BigDecimal> report = new TreeMap<>();
         //处理同一天
         reportIssueEList.forEach(reportIssueE -> {
             if (reportIssueE.getStatistical()) {
                 String date = bf.format(reportIssueE.getDate());
                 if (report.get(date) == null) {
-                    Integer count = report.lastEntry() == null ? 0 : report.lastEntry().getValue();
-                    report.put(date, count + reportIssueE.getNewValue() - reportIssueE.getOldValue());
+                    BigDecimal zero = new BigDecimal(0);
+                    BigDecimal count = report.lastEntry() == null ? zero : report.lastEntry().getValue();
+                    report.put(date, count.add(reportIssueE.getNewValue()).subtract(reportIssueE.getOldValue()));
                 } else {
-                    report.put(date, report.get(date) + reportIssueE.getNewValue() - reportIssueE.getOldValue());
+                    report.put(date, report.get(date).add(reportIssueE.getNewValue()).subtract(reportIssueE.getOldValue()));
                 }
             }
         });
@@ -250,13 +251,13 @@ public class ReportServiceImpl implements ReportService {
         return jsonObject;
     }
 
-    private Integer handleExpectCount(List<ReportIssueE> reportIssueEList) {
-        Integer expectCount = 0;
+    private BigDecimal handleExpectCount(List<ReportIssueE> reportIssueEList) {
+        BigDecimal expectCount = new BigDecimal(0);
         List<ReportIssueE> startReportIssue = reportIssueEList.stream().filter(reportIssueE -> "startSprint".equals(reportIssueE.getType())).collect(Collectors.toList());
         if (startReportIssue != null && !startReportIssue.isEmpty()) {
             for (ReportIssueE reportIssueE : startReportIssue) {
                 if (reportIssueE.getStatistical()) {
-                    expectCount += reportIssueE.getNewValue() - reportIssueE.getOldValue();
+                    expectCount = expectCount.add(reportIssueE.getNewValue().subtract(reportIssueE.getOldValue()));
                 }
             }
         }
@@ -959,12 +960,12 @@ public class ReportServiceImpl implements ReportService {
             BigDecimal completedStoryPoints = new BigDecimal(0);
             for (VelocitySingleDO committed : committedList) {
                 if (committed.getSprintId().equals(temp.getSprintId())) {
-                    committedStoryPoints.add(committed.getStoryPoint());
+                    committedStoryPoints = committedStoryPoints.add(committed.getStoryPoint());
                 }
             }
             for (VelocitySingleDO completed : completedList) {
                 if (completed.getSprintId().equals(temp.getSprintId())) {
-                    completedStoryPoints.add(completed.getStoryPoint());
+                    completedStoryPoints = completedStoryPoints.add(completed.getStoryPoint());
                 }
             }
             temp.setCommittedStoryPoints(committedStoryPoints);
@@ -1001,12 +1002,12 @@ public class ReportServiceImpl implements ReportService {
             BigDecimal completedRemainTime = new BigDecimal(0);
             for (VelocitySingleDO committed : committedList) {
                 if (committed.getSprintId().equals(temp.getSprintId())) {
-                    committedRemainTime.add(committed.getRemainTime());
+                    committedRemainTime = committedRemainTime.add(committed.getRemainTime());
                 }
             }
             for (VelocitySingleDO completed : completedList) {
                 if (completed.getSprintId().equals(temp.getSprintId())) {
-                    completedRemainTime.add(completed.getRemainTime());
+                    completedRemainTime = completedRemainTime.add(completed.getRemainTime());
                 }
             }
             temp.setCommittedRemainTime(committedRemainTime);

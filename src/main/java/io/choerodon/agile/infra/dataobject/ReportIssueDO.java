@@ -2,6 +2,7 @@ package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -16,11 +17,11 @@ public class ReportIssueDO {
 
     private Date date;
 
-    private Integer oldValue;
+    private BigDecimal oldValue;
 
     private String type;
 
-    private Integer newValue;
+    private BigDecimal newValue;
 
     private Boolean statistical;
 
@@ -52,28 +53,12 @@ public class ReportIssueDO {
         this.issueNum = issueNum;
     }
 
-    public Integer getOldValue() {
-        return oldValue;
-    }
-
-    public void setOldValue(Integer oldValue) {
-        this.oldValue = oldValue;
-    }
-
     public String getType() {
         return type;
     }
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public Integer getNewValue() {
-        return newValue;
-    }
-
-    public void setNewValue(Integer newValue) {
-        this.newValue = newValue;
     }
 
     public Boolean getStatistical() {
@@ -98,6 +83,22 @@ public class ReportIssueDO {
 
     public void setParentIssueNum(String parentIssueNum) {
         this.parentIssueNum = parentIssueNum;
+    }
+
+    public void setNewValue(BigDecimal newValue) {
+        this.newValue = newValue;
+    }
+
+    public BigDecimal getNewValue() {
+        return newValue;
+    }
+
+    public void setOldValue(BigDecimal oldValue) {
+        this.oldValue = oldValue;
+    }
+
+    public BigDecimal getOldValue() {
+        return oldValue;
     }
 
     @Override

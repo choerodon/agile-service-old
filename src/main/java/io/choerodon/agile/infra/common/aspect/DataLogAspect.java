@@ -936,7 +936,7 @@ public class DataLogAspect {
                     issueE.setEpicId(null);
                     createIssueEpicLog(epicId, ConvertHelper.convert(issueE, IssueDO.class));
                 }
-                Boolean storyCondition = issueE.getStoryPoints() != null && issueE.getStoryPoints() != 0;
+                Boolean storyCondition = issueE.getStoryPoints() != null && issueE.getStoryPoints().compareTo(BigDecimal.ZERO) != 0;
                 Boolean remainingTimeCondition = issueE.getRemainingTime() != null && issueE.getRemainingTime().compareTo(new BigDecimal(0)) > 0;
                 if (storyCondition || remainingTimeCondition) {
                     IssueDO originIssueDO = new IssueDO();

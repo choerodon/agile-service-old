@@ -21,9 +21,9 @@ public class VelocitySprintDTO implements Serializable {
 
     private BigDecimal completedStoryPoints;
 
-    private int committedRemainTime;
+    private BigDecimal committedRemainTime;
 
-    private int completedRemainTime;
+    private BigDecimal completedRemainTime;
 
 
     public void setSprintId(Long sprintId) {
@@ -74,19 +74,19 @@ public class VelocitySprintDTO implements Serializable {
         return completedStoryPoints;
     }
 
-    public void setCompletedRemainTime(int completedRemainTime) {
-        this.completedRemainTime = completedRemainTime;
-    }
-
-    public int getCompletedRemainTime() {
-        return completedRemainTime;
-    }
-
-    public void setCommittedRemainTime(int committedRemainTime) {
+    public void setCommittedRemainTime(BigDecimal committedRemainTime) {
         this.committedRemainTime = committedRemainTime;
     }
 
-    public int getCommittedRemainTime() {
+    public BigDecimal getCommittedRemainTime() {
         return committedRemainTime;
+    }
+
+    public void setCompletedRemainTime(BigDecimal completedRemainTime) {
+        this.completedRemainTime = completedRemainTime;
+    }
+
+    public BigDecimal getCompletedRemainTime() {
+        return completedRemainTime;
     }
 }

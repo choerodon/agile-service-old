@@ -26,7 +26,7 @@ public class GroupDataChartListDO {
 
     private BigDecimal storyPoints;
 
-    private Integer remainTime;
+    private BigDecimal remainTime;
 
     private int completed;
 
@@ -100,11 +100,11 @@ public class GroupDataChartListDO {
         return storyPoints;
     }
 
-    public void setRemainTime(Integer remainTime) {
+    public void setRemainTime(BigDecimal remainTime) {
         this.remainTime = remainTime;
     }
 
-    public Integer getRemainTime() {
+    public BigDecimal getRemainTime() {
         return remainTime;
     }
 

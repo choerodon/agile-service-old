@@ -12,18 +12,18 @@ public class AssigneeIssueDO {
     private Long sprintId;
     private Long assigneeId;
     private BigDecimal totalRemainingTime;
-    private Integer totalStoryPoints;
-    private Integer remainingStoryPoints;
+    private BigDecimal totalStoryPoints;
+    private BigDecimal remainingStoryPoints;
     private Integer issueCount;
     private Integer remainingIssueCount;
     private BigDecimal remainingTime;
 
-    public Integer getRemainingStoryPoints() {
-        return remainingStoryPoints;
+    public void setRemainingStoryPoints(BigDecimal remainingStoryPoints) {
+        this.remainingStoryPoints = remainingStoryPoints;
     }
 
-    public void setRemainingStoryPoints(Integer remainingStoryPoints) {
-        this.remainingStoryPoints = remainingStoryPoints;
+    public BigDecimal getRemainingStoryPoints() {
+        return remainingStoryPoints;
     }
 
     public Integer getRemainingIssueCount() {
@@ -66,12 +66,12 @@ public class AssigneeIssueDO {
         this.totalRemainingTime = totalRemainingTime;
     }
 
-    public Integer getTotalStoryPoints() {
-        return totalStoryPoints;
+    public void setTotalStoryPoints(BigDecimal totalStoryPoints) {
+        this.totalStoryPoints = totalStoryPoints;
     }
 
-    public void setTotalStoryPoints(Integer totalStoryPoints) {
-        this.totalStoryPoints = totalStoryPoints;
+    public BigDecimal getTotalStoryPoints() {
+        return totalStoryPoints;
     }
 
     public Integer getIssueCount() {

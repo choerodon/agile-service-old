@@ -3,6 +3,7 @@ package io.choerodon.agile.api.dto;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -17,11 +18,11 @@ public class ReportIssueDTO implements Serializable {
 
     private Date date;
 
-    private Integer oldValue;
+    private BigDecimal oldValue;
 
     private String type;
 
-    private Integer newValue;
+    private BigDecimal newValue;
 
     private Boolean statistical;
 
@@ -53,12 +54,12 @@ public class ReportIssueDTO implements Serializable {
         this.issueNum = issueNum;
     }
 
-    public Integer getOldValue() {
-        return oldValue;
+    public void setOldValue(BigDecimal oldValue) {
+        this.oldValue = oldValue;
     }
 
-    public void setOldValue(Integer oldValue) {
-        this.oldValue = oldValue;
+    public BigDecimal getOldValue() {
+        return oldValue;
     }
 
     public String getType() {
@@ -69,12 +70,12 @@ public class ReportIssueDTO implements Serializable {
         this.type = type;
     }
 
-    public Integer getNewValue() {
-        return newValue;
+    public void setNewValue(BigDecimal newValue) {
+        this.newValue = newValue;
     }
 
-    public void setNewValue(Integer newValue) {
-        this.newValue = newValue;
+    public BigDecimal getNewValue() {
+        return newValue;
     }
 
     public Boolean getStatistical() {
