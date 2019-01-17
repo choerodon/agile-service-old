@@ -149,4 +149,10 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue.groovy') {
             column(name: 'stay_date', type: 'DATETIME', remarks: 'stay date')
         }
     }
+
+    changeSet(id: '2019-01-17-modify-data-type', author: 'fuqianghuang01@gmail.com') {
+        modifyDataType(tableName: 'agile_issue', columnName: 'story_points', newDataType: "DECIMAL(10,1)")
+        modifyDataType(tableName: 'agile_issue', columnName: 'estimate_time', newDataType: "DECIMAL(10,1)")
+        modifyDataType(tableName: 'agile_issue', columnName: 'remaining_time', newDataType: "DECIMAL(10,1)")
+    }
 }
