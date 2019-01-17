@@ -281,9 +281,11 @@ public class SprintServiceImpl implements SprintService {
             planSprints.parallelStream().forEachOrdered(planSprint -> planSprint.setIssueCount(planSprint.getIssueSearchDTOList() == null ? 0 : planSprint.getIssueSearchDTOList().size()));
             sprintSearches.addAll(planSprints);
         }
-        List<IssueSearchDO> backLogIssue = sprintMapper.queryBacklogIssues(projectId, issueIds);
-        backLogIssueDTO.setBackLogIssue(issueSearchAssembler.doListToDTO(backLogIssue, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap));
-        backLogIssueDTO.setBacklogIssueCount(backLogIssue.size());
+        if (issueIds != null && !issueIds.isEmpty()) {
+            List<IssueSearchDO> backLogIssue = sprintMapper.queryBacklogIssues(projectId, issueIds);
+            backLogIssueDTO.setBackLogIssue(issueSearchAssembler.doListToDTO(backLogIssue, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap));
+            backLogIssueDTO.setBacklogIssueCount(backLogIssue.size());
+        }
     }
 
     @Override
