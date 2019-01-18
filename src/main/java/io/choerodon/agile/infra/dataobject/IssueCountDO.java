@@ -1,5 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
+import java.math.BigDecimal;
+
 /**
  * Created by jian_zhang02@163.com on 2018/5/30.
  */
@@ -7,6 +9,7 @@ public class IssueCountDO {
     private Long id;
     private String name;
     private Integer issueCount;
+    private BigDecimal storyPointCount;
 
     public Long getId() {
         return id;
@@ -30,5 +33,13 @@ public class IssueCountDO {
 
     public void setIssueCount(Integer issueCount) {
         this.issueCount = issueCount;
+    }
+
+    public void setStoryPointCount(BigDecimal storyPointCount) {
+        this.storyPointCount = storyPointCount;
+    }
+
+    public BigDecimal getStoryPointCount() {
+        return storyPointCount;
     }
 }

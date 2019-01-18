@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import java.math.BigDecimal;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/8/10.
  * Email: fuqianghuang01@gmail.com
@@ -13,7 +15,7 @@ public class StoryMapEpicDTO {
     private Integer issueCount;
     private Integer doneIssueCount;
     private Integer notEstimate;
-    private Integer totalEstimate;
+    private BigDecimal totalEstimate;
     private String color;
     private Long objectVersionNumber;
     private Integer epicSequence;
@@ -95,14 +97,6 @@ public class StoryMapEpicDTO {
         this.notEstimate = notEstimate;
     }
 
-    public Integer getTotalEstimate() {
-        return totalEstimate;
-    }
-
-    public void setTotalEstimate(Integer totalEstimate) {
-        this.totalEstimate = totalEstimate;
-    }
-
     public String getEpicName() {
         return epicName;
     }
@@ -157,5 +151,13 @@ public class StoryMapEpicDTO {
 
     public IssueTypeDTO getIssueTypeDTO() {
         return issueTypeDTO;
+    }
+
+    public void setTotalEstimate(BigDecimal totalEstimate) {
+        this.totalEstimate = totalEstimate;
+    }
+
+    public BigDecimal getTotalEstimate() {
+        return totalEstimate;
     }
 }
