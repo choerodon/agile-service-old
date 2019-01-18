@@ -1323,6 +1323,24 @@ public class ReportServiceImpl implements ReportService {
                 sorted(Comparator.comparing(ReportIssueE::getDate)).collect(Collectors.toList()));
     }
 
+    private BigDecimal calculateStoryPoints(List<IssueBurnDownReportDO> issueDOS) {
+        BigDecimal sum = new BigDecimal(0);
+        for (IssueBurnDownReportDO issueBurnDownReportDO : issueDOS) {
+            sum = sum.add(issueBurnDownReportDO.getStoryPoints());
+        }
+        return sum;
+    }
+
+    private BigDecimal calculateCompletedStoryPoints(List<IssueBurnDownReportDO> issueDOS) {
+        BigDecimal sum = new BigDecimal(0);
+        for (IssueBurnDownReportDO issueBurnDownReportDO : issueDOS) {
+            if (issueBurnDownReportDO.getCompleted()) {
+                sum = sum.add(issueBurnDownReportDO.getStoryPoints());
+            }
+        }
+        return sum;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     @Cacheable(cacheNames = AGILE, key = "'BurnDownCoordinateByType' + #projectId + ':' + #type  + ':' + #id")
@@ -1340,9 +1358,9 @@ public class ReportServiceImpl implements ReportService {
                 if (sprintDOList != null && !sprintDOList.isEmpty()) {
                     handleBurnDownCoordinateByTypeExistSprint(issueDOS, reportCoordinateDTOS, startDate, sprintDOList, type);
                 } else {
-                    Integer add = issueDOS.stream().mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
-                    Integer done = issueDOS.stream().filter(IssueBurnDownReportDO::getCompleted).mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
-                    reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(0, add, done, add - done,
+                    BigDecimal addNum = calculateStoryPoints(issueDOS);
+                    BigDecimal done = calculateCompletedStoryPoints(issueDOS);
+                    reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(new BigDecimal(0), addNum, done, addNum.subtract(done),
                             type + "开始时的预估", startDate, new Date()));
                 }
                 return reportCoordinateDTOS;
@@ -1469,11 +1487,11 @@ public class ReportServiceImpl implements ReportService {
 
     private void handleBurnDownCoordinateByTypeExistSprint(List<IssueBurnDownReportDO> issueDOS, List<BurnDownReportCoordinateDTO> reportCoordinateDTOS,
                                                            Date startDate, List<SprintDO> sprintDOList, String type) {
-        Integer add = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().before(sprintDOList.get(0).getStartDate()))
-                .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
-        Integer done = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().before(sprintDOList.get(0).getStartDate()))
-                .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
-        reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(0, add, done, add - done,
+        List<IssueBurnDownReportDO> issueFilters = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().before(sprintDOList.get(0).getStartDate())).collect(Collectors.toList());
+        BigDecimal addNum = calculateStoryPoints(issueFilters);
+        List<IssueBurnDownReportDO> issueCompletedFilters = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().before(sprintDOList.get(0).getStartDate())).collect(Collectors.toList());
+        BigDecimal done = calculateStoryPoints(issueCompletedFilters);
+        reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(new BigDecimal(0), addNum, done, addNum.subtract(done),
                 type + "开始时的预估", startDate, sprintDOList.get(0).getStartDate()));
         if (sprintDOList.size() == 1) {
             handleSprintSingle(reportCoordinateDTOS, issueDOS, sprintDOList);
@@ -1489,12 +1507,12 @@ public class ReportServiceImpl implements ReportService {
             Date endDate = sprintDOList.get(i).getActualEndDate() == null ? sprintDOList.get(i).getEndDate() : sprintDOList.get(i).getActualEndDate();
             handleReportCoordinateDuringSprint(issueDOS, startDateOne, startDateTwo, reportCoordinateDTOS, endDate, sprintDOList.get(i).getSprintName());
             if (i == sprintDOList.size() - 2) {
-                Integer startLast = reportCoordinateDTOS.get(reportCoordinateDTOS.size() - 1).getLeft();
-                Integer addLast = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().after(startDateTwo))
-                        .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
-                Integer doneLast = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().after(startDateTwo))
-                        .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
-                Integer left = startLast + addLast - doneLast;
+                BigDecimal startLast = reportCoordinateDTOS.get(reportCoordinateDTOS.size() - 1).getLeft();
+                List<IssueBurnDownReportDO> addList = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().after(startDateTwo)).collect(Collectors.toList());
+                BigDecimal addLast = calculateStoryPoints(addList);
+                List<IssueBurnDownReportDO> dones = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().after(startDateTwo)).collect(Collectors.toList());
+                BigDecimal doneLast = calculateStoryPoints(dones);
+                BigDecimal left = startLast.add(addLast).subtract(doneLast);
                 reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(startLast, addLast, doneLast, left,
                         sprintDOList.get(sprintDOList.size() - 1).getSprintName(), sprintDOList.get(sprintDOList.size() - 1).getStartDate(), endDate));
             }
@@ -1503,33 +1521,34 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void handleReportCoordinateDuringSprint(List<IssueBurnDownReportDO> issueDOS, Date startDateOne, Date startDateTwo, List<BurnDownReportCoordinateDTO> reportCoordinateDTOS, Date endDate, String sprintName) {
-        Integer add = 0;
-        Integer done = 0;
-        Integer start = reportCoordinateDTOS.get(reportCoordinateDTOS.size() - 1).getLeft();
+        BigDecimal addNum = new BigDecimal(0);
+        BigDecimal done = new BigDecimal(0);
+        BigDecimal start = reportCoordinateDTOS.get(reportCoordinateDTOS.size() - 1).getLeft();
         for (IssueBurnDownReportDO issueDO : issueDOS) {
             if (issueDO.getAddDate().after(startDateOne) && issueDO.getAddDate().before(startDateTwo)) {
-                add += issueDO.getStoryPoints();
+                addNum = addNum.add(issueDO.getStoryPoints());
             }
             if (issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().after(startDateOne) && issueDO.getDoneDate().before(startDateTwo)) {
-                done += issueDO.getStoryPoints();
+                done = done.add(issueDO.getStoryPoints());
             }
         }
-        Integer left = start + add - done;
-        if (!(start == 0 && add == 0 && done == 0 && left == 0)) {
-            reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(start, add, done, left,
+        BigDecimal left = start.add(addNum).subtract(done);
+
+        if (!(start.compareTo(BigDecimal.ZERO) == 0 && addNum.compareTo(BigDecimal.ZERO) == 0 && done.compareTo(BigDecimal.ZERO) == 0 && left.compareTo(BigDecimal.ZERO) == 0)) {
+            reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(start, addNum, done, left,
                     sprintName, startDateOne, endDate));
         }
     }
 
 
     private void handleSprintSingle(List<BurnDownReportCoordinateDTO> reportCoordinateDTOS, List<IssueBurnDownReportDO> issueDOS, List<SprintDO> sprintDOList) {
-        Integer start = reportCoordinateDTOS.get(0).getLeft();
-        Integer add = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().after(sprintDOList.get(0).getStartDate()))
-                .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
-        Integer done = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate().after(sprintDOList.get(0).getStartDate()))
-                .mapToInt(IssueBurnDownReportDO::getStoryPoints).sum();
+        BigDecimal start = reportCoordinateDTOS.get(0).getLeft();
+        List<IssueBurnDownReportDO> addList = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().after(sprintDOList.get(0).getStartDate())).collect(Collectors.toList());
+        BigDecimal addNum = calculateStoryPoints(addList);
+        List<IssueBurnDownReportDO> dones = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate().after(sprintDOList.get(0).getStartDate())).collect(Collectors.toList());
+        BigDecimal done = calculateStoryPoints(dones);
         Date endDate = sprintDOList.get(0).getActualEndDate() == null ? sprintDOList.get(0).getEndDate() : sprintDOList.get(0).getActualEndDate();
-        reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(start, add, done, start + add - done,
+        reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(start, addNum, done, start.add(addNum).subtract(done),
                 sprintDOList.get(0).getSprintName(), sprintDOList.get(0).getStartDate(), endDate));
     }
 

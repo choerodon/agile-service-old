@@ -3,6 +3,7 @@ package io.choerodon.agile.infra.dataobject;
 import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -27,7 +28,7 @@ public class IssueBurnDownReportDO {
 
     private Long id;
 
-    private Integer storyPoints;
+    private BigDecimal storyPoints;
 
     private Date addDate;
 
@@ -115,12 +116,12 @@ public class IssueBurnDownReportDO {
         this.id = id;
     }
 
-    public Integer getStoryPoints() {
-        return storyPoints;
+    public void setStoryPoints(BigDecimal storyPoints) {
+        this.storyPoints = storyPoints;
     }
 
-    public void setStoryPoints(Integer storyPoints) {
-        this.storyPoints = storyPoints;
+    public BigDecimal getStoryPoints() {
+        return storyPoints;
     }
 
     public Date getAddDate() {

@@ -2,6 +2,8 @@ package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import java.math.BigDecimal;
+
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/9/10
@@ -24,7 +26,7 @@ public class IssueBurnDownReportDTO {
 
     private Long id;
 
-    private Integer storyPoints;
+    private BigDecimal storyPoints;
 
     private Long priorityId;
 
@@ -106,12 +108,12 @@ public class IssueBurnDownReportDTO {
         this.id = id;
     }
 
-    public Integer getStoryPoints() {
-        return storyPoints;
+    public void setStoryPoints(BigDecimal storyPoints) {
+        this.storyPoints = storyPoints;
     }
 
-    public void setStoryPoints(Integer storyPoints) {
-        this.storyPoints = storyPoints;
+    public BigDecimal getStoryPoints() {
+        return storyPoints;
     }
 
     public Long getPriorityId() {
