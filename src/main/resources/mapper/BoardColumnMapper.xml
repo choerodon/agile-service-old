@@ -172,7 +172,7 @@
         FROM
             agile_board_column_status_rel abcsr
         WHERE
-            abcsr.project_id = #{projectId}
+            abcsr.project_id = #{projectId} and abcsr.status_id != 0
     </select>
 
     <select id="selectColumnByColumnId" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDO">
