@@ -755,9 +755,9 @@
     </select>
 
     <select id="queryTotalEstimateByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
-        SELECT ai.issue_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
+        SELECT ai.issue_id AS id, IFNULL(ic.sp_count, 0) AS story_point_count
         FROM agile_issue ai
-        LEFT JOIN (SELECT ai1.epic_id AS epic_id, SUM(ai1.story_points) AS issue_count
+        LEFT JOIN (SELECT ai1.epic_id AS epic_id, SUM(ai1.story_points) AS sp_count
         FROM agile_issue ai1
         WHERE ai1.project_id = #{projectId} AND ai1.type_code = 'story'
         AND ai1.epic_id IN
