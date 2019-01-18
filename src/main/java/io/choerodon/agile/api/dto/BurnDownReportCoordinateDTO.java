@@ -3,6 +3,7 @@ package io.choerodon.agile.api.dto;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Date;
  */
 public class BurnDownReportCoordinateDTO implements Serializable {
 
-    public BurnDownReportCoordinateDTO(Integer start, Integer add, Integer done, Integer left, String name, Date startDate, Date endDate) {
+    public BurnDownReportCoordinateDTO(BigDecimal start, BigDecimal add, BigDecimal done, BigDecimal left, String name, Date startDate, Date endDate) {
         this.start = start;
         this.add = add;
         this.done = done;
@@ -21,13 +22,13 @@ public class BurnDownReportCoordinateDTO implements Serializable {
         this.endDate = endDate;
     }
 
-    private Integer start;
+    private BigDecimal start;
 
-    private Integer add;
+    private BigDecimal add;
 
-    private Integer done;
+    private BigDecimal done;
 
-    private Integer left;
+    private BigDecimal left;
 
     private String name;
 
@@ -35,36 +36,12 @@ public class BurnDownReportCoordinateDTO implements Serializable {
 
     private Date endDate;
 
-    public Integer getStart() {
-        return start;
-    }
-
-    public void setStart(Integer start) {
+    public void setStart(BigDecimal start) {
         this.start = start;
     }
 
-    public Integer getAdd() {
-        return add;
-    }
-
-    public void setAdd(Integer add) {
-        this.add = add;
-    }
-
-    public Integer getDone() {
-        return done;
-    }
-
-    public void setDone(Integer done) {
-        this.done = done;
-    }
-
-    public Integer getLeft() {
-        return left;
-    }
-
-    public void setLeft(Integer left) {
-        this.left = left;
+    public BigDecimal getStart() {
+        return start;
     }
 
     public String getName() {
@@ -89,6 +66,30 @@ public class BurnDownReportCoordinateDTO implements Serializable {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public BigDecimal getAdd() {
+        return add;
+    }
+
+    public void setAdd(BigDecimal add) {
+        this.add = add;
+    }
+
+    public BigDecimal getDone() {
+        return done;
+    }
+
+    public void setDone(BigDecimal done) {
+        this.done = done;
+    }
+
+    public BigDecimal getLeft() {
+        return left;
+    }
+
+    public void setLeft(BigDecimal left) {
+        this.left = left;
     }
 
     @Override
