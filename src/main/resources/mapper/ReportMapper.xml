@@ -1477,7 +1477,7 @@
         SELECT
         t1.sprint_id,
         t1.issue_id,
-        adl.new_value + IFNULL(t5.work_times,0) AS remain_time
+        IFNULL(adl.new_value + IFNULL(t5.work_times,0), 0) AS remain_time
         FROM
         agile_data_log adl,
         (
@@ -1536,7 +1536,7 @@
         SELECT
         t1.sprint_id,
         t1.issue_id,
-        adl.new_value + IFNULL(t5.work_times,0) AS remain_time
+        IFNULL(adl.new_value + IFNULL(t5.work_times,0), 0) AS remain_time
         FROM
         agile_data_log adl,
         (
@@ -1916,7 +1916,7 @@
     <select id="selectByStoryPointCompletedFinal" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
         SELECT
         t11.group_day AS group_day,
-        SUM(t11.story_points + 0) AS completed_story_points
+        IFNULL(SUM(t11.story_points + 0), 0) AS completed_story_points
         FROM
         (
         SELECT
@@ -2064,7 +2064,7 @@
     <select id="selectByStoryPointAllFinal" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
         SELECT
         t2.group_day AS group_day,
-        SUM(adl2.new_string + 0) AS all_story_points
+        IFNULL(SUM(adl2.new_string + 0), 0) AS all_story_points
         FROM
         (
         SELECT
@@ -2278,7 +2278,7 @@
     <select id="selectByRemainTimeRemainCompleted" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
         SELECT
         t11.group_day AS group_day,
-        SUM(t11.remain_time + 0) AS completed_remain_times
+        IFNULL(SUM(t11.remain_time + 0), 0) AS completed_remain_times
         FROM
         (
         SELECT
@@ -2427,7 +2427,7 @@
     <select id="selectByRemainTimeWorkLogCompleted" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
         SELECT
         t11.group_day AS group_day,
-        SUM(t11.work_time + 0) AS completed_remain_times
+        IFNULL(SUM(t11.work_time + 0), 0) AS completed_remain_times
         FROM
         (
         SELECT
@@ -2575,7 +2575,7 @@
     <select id="selectByRemainTimeRemainAll" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
         SELECT
         t2.group_day AS group_day,
-        SUM(adl2.new_string + 0) AS all_remain_times
+        IFNULL(SUM(adl2.new_string + 0), 0) AS all_remain_times
         FROM
         (
         SELECT
@@ -2645,7 +2645,7 @@
     <select id="selectByRemainTimeWorkLogAll" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
         SELECT
         t2.group_day AS group_day,
-        SUM(adl2.new_string + 0) AS all_remain_times
+        IFNULL(SUM(adl2.new_string + 0), 0) AS all_remain_times
         FROM
         (
         SELECT
