@@ -18,9 +18,10 @@ public interface IssueLinkTypeMapper extends BaseMapper<IssueLinkTypeDO> {
      *
      * @param projectId       projectId
      * @param issueLinkTypeId 不包含的，为空则查全部
+     * @param linkName        linkName
      * @return IssueLinkTypeDO
      */
-    List<IssueLinkTypeDO> queryIssueLinkTypeByProjectId(@Param("projectId") Long projectId, @Param("issueLinkTypeId") Long issueLinkTypeId);
+    List<IssueLinkTypeDO> queryIssueLinkTypeByProjectId(@Param("projectId") Long projectId, @Param("issueLinkTypeId") Long issueLinkTypeId, @Param("linkName") String linkName);
 
     Integer queryIssueLinkTypeName(@Param("projectId") Long projectId,
                                    @Param("issueLinkTypeName") String issueLinkTypeName,

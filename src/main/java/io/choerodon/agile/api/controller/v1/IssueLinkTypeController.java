@@ -3,6 +3,10 @@ package io.choerodon.agile.api.controller.v1;
 import java.util.List;
 import java.util.Optional;
 
+import io.choerodon.core.domain.Page;
+import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +22,7 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * @author dinghuang123@gmail.com
@@ -35,11 +40,16 @@ public class IssueLinkTypeController {
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据项目id查询issueLinkType")
     @GetMapping
-    public ResponseEntity<List<IssueLinkTypeDTO>> listIssueLinkType(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<Page<IssueLinkTypeDTO>> listIssueLinkType(@ApiParam(value = "项目id", required = true)
                                                                     @PathVariable(name = "project_id") Long projectId,
                                                                     @ApiParam(value = "不包含的issueLinkTypeId")
-                                                                    @RequestParam(required = false) Long issueLinkTypeId) {
-        return Optional.ofNullable(issueLinkTypeService.listIssueLinkType(projectId, issueLinkTypeId))
+                                                                    @RequestParam(required = false) Long issueLinkTypeId,
+                                                                    @ApiParam(value = "连接名称")
+                                                                    @RequestParam(required = false) String linkName,
+                                                                    @ApiParam(value = "分页信息", required = true)
+                                                                    @SortDefault(value = "link_type_id", direction = Sort.Direction.DESC)
+                                                                    @ApiIgnore PageRequest pageRequest) {
+        return Optional.ofNullable(issueLinkTypeService.listIssueLinkType(projectId, issueLinkTypeId, linkName, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.listIssueLinkType"));
     }
@@ -64,7 +74,7 @@ public class IssueLinkTypeController {
                                                                 @ApiParam(value = "创建issueLinkType对象", required = true)
                                                                 @RequestBody IssueLinkTypeCreateDTO issueLinkTypeCreateDTO) {
         issueLinkTypeRule.verifyCreateData(issueLinkTypeCreateDTO, projectId);
-        issueLinkTypeRule.verifyIssueLinkTypeName(projectId,issueLinkTypeCreateDTO.getLinkName(), null);
+        issueLinkTypeRule.verifyIssueLinkTypeName(projectId, issueLinkTypeCreateDTO.getLinkName(), null);
         return Optional.ofNullable(issueLinkTypeService.createIssueLinkType(issueLinkTypeCreateDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.createIssueLinkType"));
@@ -78,7 +88,7 @@ public class IssueLinkTypeController {
                                                                 @ApiParam(value = "issueLinkType", required = true)
                                                                 @RequestBody IssueLinkTypeDTO issueLinkTypeDTO) {
         issueLinkTypeRule.verifyUpdateData(issueLinkTypeDTO, projectId);
-        issueLinkTypeRule.verifyIssueLinkTypeName(projectId,issueLinkTypeDTO.getLinkName(), issueLinkTypeDTO.getLinkTypeId());
+        issueLinkTypeRule.verifyIssueLinkTypeName(projectId, issueLinkTypeDTO.getLinkName(), issueLinkTypeDTO.getLinkTypeId());
         return Optional.ofNullable(issueLinkTypeService.updateIssueLinkType(issueLinkTypeDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.updateIssueLinkType"));

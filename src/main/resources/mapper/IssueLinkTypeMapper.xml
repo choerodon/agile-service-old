@@ -7,6 +7,9 @@
         <if test='issueLinkTypeId != null'>
             and link_type_id != #{issueLinkTypeId}
         </if>
+        <if test='linkName != null and linkName != "" '>
+            and link_name = #{linkName}
+        </if>
     </select>
 
     <select id="queryIssueLinkTypeName" resultType="java.lang.Integer">
