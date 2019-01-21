@@ -2,6 +2,9 @@ package io.choerodon.agile.app.service.impl;
 
 import java.util.List;
 
+import io.choerodon.core.domain.Page;
+import io.choerodon.mybatis.pagehelper.PageHelper;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +35,8 @@ public class IssueLinkTypeServiceImpl implements IssueLinkTypeService {
     private IssueLinkTypeAssembler issueLinkTypeAssembler;
 
     @Override
-    public List<IssueLinkTypeDTO> listIssueLinkType(Long projectId, Long issueLinkTypeId) {
-        return ConvertHelper.convertList(issueLinkTypeMapper.queryIssueLinkTypeByProjectId(projectId, issueLinkTypeId), IssueLinkTypeDTO.class);
+    public Page<IssueLinkTypeDTO> listIssueLinkType(Long projectId, Long issueLinkTypeId, String linkName, PageRequest pageRequest) {
+        return PageHelper.doPageAndSort(pageRequest, () -> issueLinkTypeMapper.queryIssueLinkTypeByProjectId(projectId, issueLinkTypeId, linkName));
     }
 
     @Override

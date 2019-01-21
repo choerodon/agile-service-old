@@ -5,6 +5,7 @@ import io.choerodon.agile.api.dto.IssueLinkTypeCreateDTO
 import io.choerodon.agile.api.dto.IssueLinkTypeDTO
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper
+import io.choerodon.core.domain.Page
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -99,13 +100,13 @@ class IssueLinkTypeControllerSpec extends Specification {
 
     def 'listIssueLinkType'() {
         when: '发请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issue_link_types?issueLinkTypeId={issueLinkTypeId}', List, projectId, issueLinkTypeId)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issue_link_types?issueLinkTypeId={issueLinkTypeId}', Page, projectId, issueLinkTypeId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        List<IssueLinkTypeDTO> result = entity.body
+        List<IssueLinkTypeDTO> result = entity.body.content
 
         expect: '设置期望值'
         result.size() == exceptCount
