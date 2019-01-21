@@ -306,7 +306,7 @@
         WHERE
         adl.field = 'Sprint'
         AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
         AND adl.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
         AND adl.issue_id IN
         <foreach collection="issueIdAddList" item="issueId"
@@ -376,7 +376,7 @@
         WHERE
         adl.field = 'Sprint'
         AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
         AND adl.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
         AND adl.issue_id IN
         <foreach collection="issueIdRemoveList" item="issueId"

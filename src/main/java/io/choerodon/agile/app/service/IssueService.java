@@ -295,7 +295,7 @@ public interface IssueService {
      * @param searchDTO searchDTO
      * @param projectId projectId
      */
-    void handleSearchUser(SearchDTO searchDTO, Long projectId);
+    Boolean handleSearchUser(SearchDTO searchDTO, Long projectId);
 
     Boolean checkEpicName(Long projectId, String epicName);
 

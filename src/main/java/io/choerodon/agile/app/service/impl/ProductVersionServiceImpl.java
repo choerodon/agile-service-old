@@ -246,19 +246,24 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     @Override
     public List<IssueListDTO> queryIssueByVersionIdAndStatusCode(Long projectId, Long versionId, String statusCode, Long organizationId, SearchDTO searchDTO) {
         //处理用户搜索
-        issueService.handleSearchUser(searchDTO, projectId);
-        Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        List<Long> filterStatusIds = new ArrayList<>();
-        if (statusCode != null) {
-            for (Long key : statusMapDTOMap.keySet()) {
-                if (statusCode.equals(statusMapDTOMap.get(key).getType())) {
-                    filterStatusIds.add(key);
+        Boolean condition = issueService.handleSearchUser(searchDTO, projectId);
+        if (condition) {
+            Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+            Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+            Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+            List<Long> filterStatusIds = new ArrayList<>();
+            if (statusCode != null) {
+                for (Long key : statusMapDTOMap.keySet()) {
+                    if (statusCode.equals(statusMapDTOMap.get(key).getType())) {
+                        filterStatusIds.add(key);
+                    }
                 }
             }
+            return issueAssembler.issueDoToIssueListDto(productVersionMapper.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, filterStatusIds, searchDTO), priorityMap, statusMapDTOMap, issueTypeDTOMap);
+        } else {
+            return new ArrayList<>();
+
         }
-        return issueAssembler.issueDoToIssueListDto(productVersionMapper.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, filterStatusIds, searchDTO), priorityMap, statusMapDTOMap, issueTypeDTOMap);
     }
 
     @Override
