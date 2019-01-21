@@ -11,6 +11,7 @@ import io.choerodon.agile.infra.mapper.ComponentIssueRelMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.convertor.ConvertPageHelper;
 import io.choerodon.core.domain.Page;
+import io.choerodon.core.domain.PageInfo;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.app.service.IssueComponentService;
 import io.choerodon.agile.domain.agile.entity.IssueComponentE;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -127,34 +129,42 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     @SuppressWarnings("unchecked")
     public Page<ComponentForListDTO> queryComponentByProjectId(Long projectId, Long componentId, Boolean noIssueTest, SearchDTO searchDTO, PageRequest pageRequest) {
         //处理用户搜索
-        handleSearchUser(searchDTO, projectId);
-        Page<ComponentForListDTO> componentForListDTOPage = ConvertPageHelper.convertPage(PageHelper.doPageAndSort(pageRequest, () ->
-                issueComponentMapper.queryComponentByOption(projectId, noIssueTest, componentId, searchDTO.getSearchArgs(),
-                        searchDTO.getAdvancedSearchArgs(), searchDTO.getContent())), ComponentForListDTO.class);
-        if ((componentForListDTOPage.getContent() != null) && !componentForListDTOPage.getContent().isEmpty()) {
-            List<Long> assigneeIds = componentForListDTOPage.getContent().stream().filter(componentForListDTO -> componentForListDTO.getManagerId() != null
-                    && !Objects.equals(componentForListDTO.getManagerId(), 0L)).map(ComponentForListDTO::getManagerId).distinct().collect(Collectors.toList());
-            Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
-            componentForListDTOPage.getContent().forEach(componentForListDTO -> {
-                String assigneeName = usersMap.get(componentForListDTO.getManagerId()) != null ? usersMap.get(componentForListDTO.getManagerId()).getName() : null;
-                String imageUrl = assigneeName != null ? usersMap.get(componentForListDTO.getManagerId()).getImageUrl() : null;
-                componentForListDTO.setManagerName(assigneeName);
-                componentForListDTO.setImageUrl(imageUrl);
-            });
+        Boolean condition = handleSearchUser(searchDTO, projectId);
+        if(condition){
+            Page<ComponentForListDTO> componentForListDTOPage = ConvertPageHelper.convertPage(PageHelper.doPageAndSort(pageRequest, () ->
+                    issueComponentMapper.queryComponentByOption(projectId, noIssueTest, componentId, searchDTO.getSearchArgs(),
+                            searchDTO.getAdvancedSearchArgs(), searchDTO.getContent())), ComponentForListDTO.class);
+            if ((componentForListDTOPage.getContent() != null) && !componentForListDTOPage.getContent().isEmpty()) {
+                List<Long> assigneeIds = componentForListDTOPage.getContent().stream().filter(componentForListDTO -> componentForListDTO.getManagerId() != null
+                        && !Objects.equals(componentForListDTO.getManagerId(), 0L)).map(ComponentForListDTO::getManagerId).distinct().collect(Collectors.toList());
+                Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+                componentForListDTOPage.getContent().forEach(componentForListDTO -> {
+                    String assigneeName = usersMap.get(componentForListDTO.getManagerId()) != null ? usersMap.get(componentForListDTO.getManagerId()).getName() : null;
+                    String imageUrl = assigneeName != null ? usersMap.get(componentForListDTO.getManagerId()).getImageUrl() : null;
+                    componentForListDTO.setManagerName(assigneeName);
+                    componentForListDTO.setImageUrl(imageUrl);
+                });
+            }
+            return componentForListDTOPage;
+        }else{
+            return new Page<>(new ArrayList<>(), new PageInfo(0,20) , 0);
         }
-        return componentForListDTOPage;
+
     }
 
-    private void handleSearchUser(SearchDTO searchDTO, Long projectId) {
+    private Boolean handleSearchUser(SearchDTO searchDTO, Long projectId) {
         if (searchDTO.getSearchArgs() != null && searchDTO.getSearchArgs().get(MANAGER) != null) {
             String userName = (String) searchDTO.getSearchArgs().get(MANAGER);
-            if (userName != null && !"".equals(userName)) {
+            if (userName != null && !"" .equals(userName)) {
                 List<UserDTO> userDTOS = userRepository.queryUsersByNameAndProjectId(projectId, userName);
                 if (userDTOS != null && !userDTOS.isEmpty()) {
                     searchDTO.getAdvancedSearchArgs().put("managerId", userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));
+                } else {
+                    return false;
                 }
             }
         }
+        return true;
     }
 
     @Override
