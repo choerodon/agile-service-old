@@ -3,6 +3,7 @@ package io.choerodon.agile.api.controller.v1
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.IssueLinkTypeCreateDTO
 import io.choerodon.agile.api.dto.IssueLinkTypeDTO
+import io.choerodon.agile.api.dto.IssueLinkTypeSearchDTO
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper
 import io.choerodon.core.domain.Page
@@ -99,8 +100,16 @@ class IssueLinkTypeControllerSpec extends Specification {
     }
 
     def 'listIssueLinkType'() {
+        given: '准备数据'
+        List<String> contents = new ArrayList<>(2)
+        contents.add("阻塞")
+        contents.add("被阻塞")
+        IssueLinkTypeSearchDTO issueLinkTypeSearchDTO = new IssueLinkTypeSearchDTO()
+        issueLinkTypeSearchDTO.contents = contents
+        issueLinkTypeSearchDTO.linkName = "阻塞"
+
         when: '发请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issue_link_types?issueLinkTypeId={issueLinkTypeId}', Page, projectId, issueLinkTypeId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issue_link_types/query_all?issueLinkTypeId={issueLinkTypeId}', issueLinkTypeSearchDTO, Page, projectId, issueLinkTypeId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -113,15 +122,15 @@ class IssueLinkTypeControllerSpec extends Specification {
 
         where: '给定参数'
         issueLinkTypeId | exceptCount
-        null            | 4
-        1L              | 3
-        2L              | 3
+        null            | 1
+        1L              | 1
+        2L              | 0
     }
 
     def 'queryIssueLinkType'() {
 
         when: '发请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issue_link_types/{linkTypeId}?content={content}', IssueLinkTypeDTO, projectId, issueLinkTypeId, "复制")
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issue_link_types/{linkTypeId}', IssueLinkTypeDTO, projectId, issueLinkTypeId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()

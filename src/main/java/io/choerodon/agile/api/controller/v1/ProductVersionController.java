@@ -104,7 +104,7 @@ public class ProductVersionController {
     @PostMapping(value = "/versions")
     public ResponseEntity<Page<ProductVersionPageDTO>> listByOptions(@ApiParam(value = "项目id", required = true)
                                                                      @PathVariable(name = "project_id") Long projectId,
-                                                                     @ApiParam(value = "查询参数", required = false)
+                                                                     @ApiParam(value = "查询参数")
                                                                      @RequestBody(required = false) SearchDTO searchDTO,
                                                                      @ApiParam(value = "分页信息", required = true)
                                                                      @SortDefault(value = "sequence", direction = Sort.Direction.DESC)
@@ -170,7 +170,7 @@ public class ProductVersionController {
                                                                             @ApiParam(value = "组织id", required = true)
                                                                             @RequestParam Long organizationId,
                                                                             @RequestBody SearchDTO searchDTO,
-                                                                            @ApiParam(value = "issue状态码", required = false)
+                                                                            @ApiParam(value = "issue状态码")
                                                                             @RequestParam(required = false) String statusCode) {
         return Optional.ofNullable(productVersionService.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, organizationId, searchDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

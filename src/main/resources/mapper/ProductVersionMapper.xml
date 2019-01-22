@@ -22,8 +22,10 @@
                 </foreach>
             </if>
         </if>
-        <if test='content != null and content != ""'>
-            AND (name LIKE CONCAT(CONCAT('%', #{content}), '%') OR description LIKE CONCAT(CONCAT('%',#{content}), '%'))
+        <if test='contents != null and contents.size != 0'>
+            <foreach collection="contents" item="content" index="index">
+                AND (name LIKE CONCAT(CONCAT('%', #{content}), '%') OR description LIKE CONCAT(CONCAT('%',#{content}), '%'))
+            </foreach>
         </if>
     </select>
 
@@ -238,9 +240,11 @@
                 AND position(#{searchDTO.searchArgs.issueNum} IN search.issue_num)
             </if>
         </if>
-        <if test='searchDTO.content != null and searchDTO.content != ""'>
-            AND (search.issue_num LIKE CONCAT(CONCAT('%', #{searchDTO.content}), '%') OR search.summary LIKE CONCAT(CONCAT('%',
-            #{searchDTO.content}), '%'))
+        <if test='searchDTO.contents != null and searchDTO.contents.size != 0'>
+            <foreach collection="searchDTO.contents" item="content" index="index">
+                AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE CONCAT(CONCAT('%',
+                #{content}), '%'))
+            </foreach>
         </if>
     </select>
 

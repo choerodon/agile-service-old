@@ -32,10 +32,17 @@ public class SearchDTO {
 
     private Boolean onlyStory;
 
-    /**
-     * issueNum+summary模糊搜索
-     */
     private String content;
+
+    private List<String> contents;
+
+    public List<String> getContents() {
+        return contents;
+    }
+
+    public void setContents(List<String> contents) {
+        this.contents = contents;
+    }
 
     public Boolean getOnlyStory() {
         return onlyStory;

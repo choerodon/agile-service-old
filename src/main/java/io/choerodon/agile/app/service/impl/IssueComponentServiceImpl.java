@@ -133,7 +133,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         if(condition){
             Page<ComponentForListDTO> componentForListDTOPage = ConvertPageHelper.convertPage(PageHelper.doPageAndSort(pageRequest, () ->
                     issueComponentMapper.queryComponentByOption(projectId, noIssueTest, componentId, searchDTO.getSearchArgs(),
-                            searchDTO.getAdvancedSearchArgs(), searchDTO.getContent())), ComponentForListDTO.class);
+                            searchDTO.getAdvancedSearchArgs(), searchDTO.getContents())), ComponentForListDTO.class);
             if ((componentForListDTOPage.getContent() != null) && !componentForListDTOPage.getContent().isEmpty()) {
                 List<Long> assigneeIds = componentForListDTOPage.getContent().stream().filter(componentForListDTO -> componentForListDTO.getManagerId() != null
                         && !Objects.equals(componentForListDTO.getManagerId(), 0L)).map(ComponentForListDTO::getManagerId).distinct().collect(Collectors.toList());

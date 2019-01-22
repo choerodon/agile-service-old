@@ -186,7 +186,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     public Page<ProductVersionPageDTO> queryByProjectId(Long projectId, PageRequest pageRequest, SearchDTO searchDTO) {
         //过滤查询和排序
         Page<Long> versionIds = PageHelper.doPageAndSort(pageRequest, () ->
-                productVersionMapper.queryVersionIdsByProjectId(projectId, searchDTO.getSearchArgs(), searchDTO.getAdvancedSearchArgs(), searchDTO.getContent()));
+                productVersionMapper.queryVersionIdsByProjectId(projectId, searchDTO.getSearchArgs(), searchDTO.getAdvancedSearchArgs(), searchDTO.getContents()));
         Page<ProductVersionPageDTO> versionPage = new Page<>();
         versionPage.setNumber(versionIds.getNumber());
         versionPage.setNumberOfElements(versionIds.getNumberOfElements());

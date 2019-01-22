@@ -164,20 +164,20 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @param searchArgs         searchArgs
      * @param advancedSearchArgs advancedSearchArgs
      * @param otherArgs          otherArgs
-     * @param content            content
+     * @param contents           contents
      * @return IssueDO
      */
     List<IssueDO> listIssueWithoutSubToTestComponent(@Param("projectId") Long projectId,
                                                      @Param("searchArgs") Map<String, Object> searchArgs,
                                                      @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
                                                      @Param("otherArgs") Map<String, Object> otherArgs,
-                                                     @Param("content") String content);
+                                                     @Param("contents") List<String> contents);
 
     List<IssueDO> listIssueWithLinkedIssues(@Param("projectId") Long projectId,
                                             @Param("searchArgs") Map<String, Object> searchArgs,
                                             @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
                                             @Param("otherArgs") Map<String, Object> otherArgs,
-                                            @Param("content") String content);
+                                            @Param("contents") List<String> contents);
 
     List<IssueCreationNumDO> queryIssueNumByTimeSlot(@Param("projectId") Long projectId,
                                                      @Param("typeCode") String typeCode,
@@ -246,12 +246,12 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @param searchArgs         searchArgs
      * @param advancedSearchArgs advancedSearchArgs
      * @param otherArgs          otherArgs
-     * @param content            content
+     * @param contents           contents
      * @return IssueComponentDetailDO
      */
     List<Long> listIssueIdsWithoutSubDetail(@Param("projectId") Long projectId, @Param("searchArgs") Map<String, Object> searchArgs,
-                                                              @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
-                                                              @Param("otherArgs") Map<String, Object> otherArgs, @Param("content") String content);
+                                            @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
+                                            @Param("otherArgs") Map<String, Object> otherArgs, @Param("contents") List<String> contents);
 
     /**
      * 待办事项查询相关issue的issueIds，不包含已完成的issue

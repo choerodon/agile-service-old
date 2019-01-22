@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -19,10 +20,11 @@ public interface IssueLinkTypeMapper extends BaseMapper<IssueLinkTypeDO> {
      * @param projectId       projectId
      * @param issueLinkTypeId 不包含的，为空则查全部
      * @param linkName        linkName
+     * @param contents        contents
      * @return IssueLinkTypeDO
      */
     List<IssueLinkTypeDO> queryIssueLinkTypeByProjectId(@Param("projectId") Long projectId, @Param("issueLinkTypeId") Long issueLinkTypeId,
-                                                        @Param("linkName") String linkName, @Param("content") String content);
+                                                        @Param("linkName") String linkName, @Param("contents") List<String> contents);
 
     Integer queryIssueLinkTypeName(@Param("projectId") Long projectId,
                                    @Param("issueLinkTypeName") String issueLinkTypeName,

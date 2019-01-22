@@ -16,7 +16,7 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
 
     List queryVersionIdsByProjectId(@Param("projectId") Long projectId,
                                     @Param("searchArgs") Map<String, Object> searchArgs,
-                                    @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("content") String content);
+                                    @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("contents") List<String> contents);
 
     List<ProductVersionDO> queryVersionByIds(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds);
 
