@@ -10,6 +10,11 @@
         <if test='linkName != null and linkName != "" '>
             and link_name = #{linkName}
         </if>
+        <if test='content != null and content != ""'>
+            AND (link_name LIKE CONCAT(CONCAT('%', #{content}), '%') OR in_ward LIKE
+            CONCAT(CONCAT('%', #{content}), '%') OR out_ward LIKE
+            CONCAT(CONCAT('%', #{content}), '%') )
+        </if>
     </select>
 
     <select id="queryIssueLinkTypeName" resultType="java.lang.Integer">

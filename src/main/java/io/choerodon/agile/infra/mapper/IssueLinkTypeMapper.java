@@ -21,7 +21,8 @@ public interface IssueLinkTypeMapper extends BaseMapper<IssueLinkTypeDO> {
      * @param linkName        linkName
      * @return IssueLinkTypeDO
      */
-    List<IssueLinkTypeDO> queryIssueLinkTypeByProjectId(@Param("projectId") Long projectId, @Param("issueLinkTypeId") Long issueLinkTypeId, @Param("linkName") String linkName);
+    List<IssueLinkTypeDO> queryIssueLinkTypeByProjectId(@Param("projectId") Long projectId, @Param("issueLinkTypeId") Long issueLinkTypeId,
+                                                        @Param("linkName") String linkName, @Param("content") String content);
 
     Integer queryIssueLinkTypeName(@Param("projectId") Long projectId,
                                    @Param("issueLinkTypeName") String issueLinkTypeName,
