@@ -19,10 +19,11 @@ public interface IssueLinkTypeService {
      * @param projectId       projectId
      * @param issueLinkTypeId issueLinkTypeId不包含的id
      * @param linkName        linkName
+     * @param content         content
      * @param pageRequest     pageRequest
      * @return IssueLinkTypeDTO
      */
-    Page<IssueLinkTypeDTO> listIssueLinkType(Long projectId, Long issueLinkTypeId, String linkName, PageRequest pageRequest);
+    Page<IssueLinkTypeDTO> listIssueLinkType(Long projectId, Long issueLinkTypeId, String linkName, String content, PageRequest pageRequest);
 
     /**
      * 创建issueLinkType

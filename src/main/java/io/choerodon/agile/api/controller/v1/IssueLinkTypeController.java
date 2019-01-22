@@ -44,12 +44,14 @@ public class IssueLinkTypeController {
                                                                     @PathVariable(name = "project_id") Long projectId,
                                                                     @ApiParam(value = "不包含的issueLinkTypeId")
                                                                     @RequestParam(required = false) Long issueLinkTypeId,
-                                                                    @ApiParam(value = "连接名称")
+                                                                    @ApiParam(value = "链接名称")
                                                                     @RequestParam(required = false) String linkName,
+                                                                    @ApiParam(value = "模糊搜索")
+                                                                    @RequestParam(required = false) String content,
                                                                     @ApiParam(value = "分页信息", required = true)
                                                                     @SortDefault(value = "link_type_id", direction = Sort.Direction.DESC)
                                                                     @ApiIgnore PageRequest pageRequest) {
-        return Optional.ofNullable(issueLinkTypeService.listIssueLinkType(projectId, issueLinkTypeId, linkName, pageRequest))
+        return Optional.ofNullable(issueLinkTypeService.listIssueLinkType(projectId, issueLinkTypeId, content, linkName, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.listIssueLinkType"));
     }

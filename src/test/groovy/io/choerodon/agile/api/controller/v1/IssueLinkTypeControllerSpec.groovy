@@ -121,7 +121,7 @@ class IssueLinkTypeControllerSpec extends Specification {
     def 'queryIssueLinkType'() {
 
         when: '发请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issue_link_types/{linkTypeId}', IssueLinkTypeDTO, projectId, issueLinkTypeId)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issue_link_types/{linkTypeId}?content={content}', IssueLinkTypeDTO, projectId, issueLinkTypeId, "复制")
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()

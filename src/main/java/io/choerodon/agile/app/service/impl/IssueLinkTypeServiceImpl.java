@@ -35,8 +35,8 @@ public class IssueLinkTypeServiceImpl implements IssueLinkTypeService {
     private IssueLinkTypeAssembler issueLinkTypeAssembler;
 
     @Override
-    public Page<IssueLinkTypeDTO> listIssueLinkType(Long projectId, Long issueLinkTypeId, String linkName, PageRequest pageRequest) {
-        return PageHelper.doPageAndSort(pageRequest, () -> issueLinkTypeMapper.queryIssueLinkTypeByProjectId(projectId, issueLinkTypeId, linkName));
+    public Page<IssueLinkTypeDTO> listIssueLinkType(Long projectId, Long issueLinkTypeId, String linkName, String content, PageRequest pageRequest) {
+        return PageHelper.doPageAndSort(pageRequest, () -> issueLinkTypeMapper.queryIssueLinkTypeByProjectId(projectId, issueLinkTypeId, linkName, content));
     }
 
     @Override
