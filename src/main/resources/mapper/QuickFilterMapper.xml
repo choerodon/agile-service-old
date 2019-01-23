@@ -48,11 +48,19 @@
     <select id="queryFiltersByProjectId" resultType="io.choerodon.agile.infra.dataobject.QuickFilterDO">
         SELECT *
         FROM
-            agile_quick_filter aqf
-        WHERE aqf.project_id = #{projectId}
-        ORDER BY aqf.sequence DESC
+        agile_quick_filter
+        WHERE project_id = #{projectId}
+        <if test='filterName != null and filterName != "" '>
+            and name = #{filterName}
+        </if>
+        <if test='contents != null and contents.size != 0'>
+            <foreach collection="contents" item="content" index="index">
+                AND (name LIKE CONCAT(CONCAT('%', #{content}), '%') OR express_query LIKE
+                CONCAT(CONCAT('%', #{content}), '%') OR description LIKE
+                CONCAT(CONCAT('%', #{content}), '%') )
+            </foreach>
+        </if>
     </select>
-
 
 
 </mapper>

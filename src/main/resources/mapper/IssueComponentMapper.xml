@@ -66,8 +66,10 @@
                 </foreach>
             </if>
         </if>
-        <if test='content != null and content != ""'>
-            AND (aic.name LIKE CONCAT(CONCAT('%', #{content}), '%') OR aic.description LIKE CONCAT(CONCAT('%',#{content}), '%'))
+        <if test='contents != null and contents.size != 0'>
+            <foreach collection="contents" item="content" index="index">
+                AND (aic.name LIKE CONCAT(CONCAT('%', #{content}), '%') OR aic.description LIKE CONCAT(CONCAT('%',#{content}), '%'))
+            </foreach>
         </if>
     </select>
 

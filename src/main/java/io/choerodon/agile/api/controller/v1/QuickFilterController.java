@@ -3,9 +3,13 @@ package io.choerodon.agile.api.controller.v1;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.QuickFilterFieldService;
 import io.choerodon.agile.app.service.QuickFilterService;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -13,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,9 +42,9 @@ public class QuickFilterController {
     @ApiOperation("创建quick filter")
     @PostMapping
     public ResponseEntity<QuickFilterDTO> create(@ApiParam(value = "项目id", required = true)
-                                                  @PathVariable(name = "project_id") Long projectId,
-                                                  @ApiParam(value = "quick filter object", required = true)
-                                                  @RequestBody QuickFilterDTO quickFilterDTO) {
+                                                 @PathVariable(name = "project_id") Long projectId,
+                                                 @ApiParam(value = "quick filter object", required = true)
+                                                 @RequestBody QuickFilterDTO quickFilterDTO) {
         return Optional.ofNullable(quickFilterService.create(projectId, quickFilterDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.quickFilter.create"));
@@ -49,11 +54,11 @@ public class QuickFilterController {
     @ApiOperation("修改quick filter")
     @PutMapping(value = "/{filterId}")
     public ResponseEntity<QuickFilterDTO> update(@ApiParam(value = "项目id", required = true)
-                                                  @PathVariable(name = "project_id") Long projectId,
-                                                  @ApiParam(value = "filter id", required = true)
-                                                  @PathVariable Long filterId,
-                                                  @ApiParam(value = "quick filter object", required = true)
-                                                  @RequestBody QuickFilterDTO quickFilterDTO) {
+                                                 @PathVariable(name = "project_id") Long projectId,
+                                                 @ApiParam(value = "filter id", required = true)
+                                                 @PathVariable Long filterId,
+                                                 @ApiParam(value = "quick filter object", required = true)
+                                                 @RequestBody QuickFilterDTO quickFilterDTO) {
         return Optional.ofNullable(quickFilterService.update(projectId, filterId, quickFilterDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.quickFilter.update"));
@@ -63,9 +68,9 @@ public class QuickFilterController {
     @ApiOperation("修改quick filter")
     @DeleteMapping(value = "/{filterId}")
     public ResponseEntity<QuickFilterDTO> deleteById(@ApiParam(value = "项目id", required = true)
-                                                      @PathVariable(name = "project_id") Long projectId,
-                                                      @ApiParam(value = "filter id", required = true)
-                                                      @PathVariable Long filterId) {
+                                                     @PathVariable(name = "project_id") Long projectId,
+                                                     @ApiParam(value = "filter id", required = true)
+                                                     @PathVariable Long filterId) {
         quickFilterService.deleteById(projectId, filterId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -74,9 +79,9 @@ public class QuickFilterController {
     @ApiOperation("根据id查询quick filter")
     @GetMapping(value = "/{filterId}")
     public ResponseEntity<QuickFilterDTO> queryById(@ApiParam(value = "项目id", required = true)
-                                                     @PathVariable(name = "project_id") Long projectId,
-                                                     @ApiParam(value = "filter id", required = true)
-                                                     @PathVariable Long filterId) {
+                                                    @PathVariable(name = "project_id") Long projectId,
+                                                    @ApiParam(value = "filter id", required = true)
+                                                    @PathVariable Long filterId) {
         return Optional.ofNullable(quickFilterService.queryById(projectId, filterId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.quickFilter.get"));
@@ -84,10 +89,15 @@ public class QuickFilterController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询quick filter列表")
-    @GetMapping
-    public ResponseEntity<List<QuickFilterDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
-                                                                 @PathVariable(name = "project_id") Long projectId) {
-        return Optional.ofNullable(quickFilterService.listByProjectId(projectId))
+    @PostMapping(value = "/query_all")
+    public ResponseEntity<Page<QuickFilterDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
+                                                                @PathVariable(name = "project_id") Long projectId,
+                                                                @RequestBody(required = false) QuickFilterSearchDTO quickFilterSearchDTO,
+                                                                @ApiIgnore
+                                                                @ApiParam(value = "分页信息", required = true)
+                                                                @SortDefault(value = "sequence", direction = Sort.Direction.DESC)
+                                                                        PageRequest pageRequest) {
+        return Optional.ofNullable(quickFilterService.listByProjectId(projectId, quickFilterSearchDTO, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.quickFilter.list"));
     }
@@ -107,9 +117,9 @@ public class QuickFilterController {
     @ApiOperation(value = "拖动过滤位置")
     @PutMapping(value = "/drag")
     public ResponseEntity<QuickFilterDTO> dragFilter(@ApiParam(value = "项目id", required = true)
-                                                             @PathVariable(name = "project_id") Long projectId,
-                                                             @ApiParam(value = "排序对象", required = true)
-                                                             @RequestBody QuickFilterSequenceDTO quickFilterSequenceDTO) {
+                                                     @PathVariable(name = "project_id") Long projectId,
+                                                     @ApiParam(value = "排序对象", required = true)
+                                                     @RequestBody QuickFilterSequenceDTO quickFilterSequenceDTO) {
         return Optional.ofNullable(quickFilterService.dragFilter(projectId, quickFilterSequenceDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException(DRAG_ERROR));
@@ -120,7 +130,7 @@ public class QuickFilterController {
     @GetMapping("/check_name")
     public ResponseEntity<Boolean> checkName(@ApiParam(value = "项目id", required = true)
                                              @PathVariable(name = "project_id") Long projectId,
-                                             @ApiParam(value = "快速搜索名称" , required = true)
+                                             @ApiParam(value = "快速搜索名称", required = true)
                                              @RequestParam String quickFilterName) {
         return Optional.ofNullable(quickFilterService.checkName(projectId, quickFilterName))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

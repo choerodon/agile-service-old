@@ -1688,7 +1688,7 @@ public class IssueServiceImpl implements IssueService {
         //连表查询需要设置主表别名
         pageRequest.resetOrder(SEARCH, new HashMap<>());
         Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () -> issueMapper.listIssueWithoutSubToTestComponent(projectId, searchDTO.getSearchArgs(),
-                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
+                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContents()));
         return handleIssueListTestDoToDto(issueDOPage, organizationId, projectId);
     }
 
@@ -1711,7 +1711,7 @@ public class IssueServiceImpl implements IssueService {
         pageRequest.resetOrder(SEARCH, new HashMap<>());
         Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
                 issueMapper.listIssueWithLinkedIssues(projectId, searchDTO.getSearchArgs(),
-                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
+                        searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContents()));
         return handleIssueListTestDoToDto(issueDOPage, organizationId, projectId);
     }
 
@@ -1782,7 +1782,7 @@ public class IssueServiceImpl implements IssueService {
         //连表查询需要设置主表别名
         pageRequest.resetOrder(SEARCH, new HashMap<>());
         Page<Long> issueIds = PageHelper.doPageAndSort(pageRequest, () -> issueMapper.listIssueIdsWithoutSubDetail(projectId, searchDTO.getSearchArgs(),
-                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContent()));
+                searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContents()));
         List<IssueComponentDetailDO> issueComponentDetailDOS = new ArrayList<>(issueIds.getContent().size());
         if (issueIds.getContent() != null && !issueIds.getContent().isEmpty()) {
             issueComponentDetailDOS.addAll(issueMapper.listIssueWithoutSubDetailByIssueIds(issueIds));

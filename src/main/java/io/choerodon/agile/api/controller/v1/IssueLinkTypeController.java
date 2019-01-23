@@ -1,8 +1,8 @@
 package io.choerodon.agile.api.controller.v1;
 
-import java.util.List;
 import java.util.Optional;
 
+import io.choerodon.agile.api.dto.IssueLinkTypeSearchDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
@@ -39,19 +39,17 @@ public class IssueLinkTypeController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据项目id查询issueLinkType")
-    @GetMapping
+    @PostMapping("/query_all")
     public ResponseEntity<Page<IssueLinkTypeDTO>> listIssueLinkType(@ApiParam(value = "项目id", required = true)
                                                                     @PathVariable(name = "project_id") Long projectId,
                                                                     @ApiParam(value = "不包含的issueLinkTypeId")
                                                                     @RequestParam(required = false) Long issueLinkTypeId,
-                                                                    @ApiParam(value = "链接名称")
-                                                                    @RequestParam(required = false) String linkName,
-                                                                    @ApiParam(value = "模糊搜索")
-                                                                    @RequestParam(required = false) String content,
+                                                                    @ApiParam(value = "查询参数")
+                                                                    @RequestBody IssueLinkTypeSearchDTO issueLinkTypeSearchDTO,
                                                                     @ApiParam(value = "分页信息", required = true)
                                                                     @SortDefault(value = "link_type_id", direction = Sort.Direction.DESC)
                                                                     @ApiIgnore PageRequest pageRequest) {
-        return Optional.ofNullable(issueLinkTypeService.listIssueLinkType(projectId, issueLinkTypeId, content, linkName, pageRequest))
+        return Optional.ofNullable(issueLinkTypeService.listIssueLinkType(projectId, issueLinkTypeId, issueLinkTypeSearchDTO, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.listIssueLinkType"));
     }

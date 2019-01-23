@@ -2,6 +2,8 @@ package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.IssueLinkTypeCreateDTO;
 import io.choerodon.agile.api.dto.IssueLinkTypeDTO;
+import io.choerodon.agile.api.dto.IssueLinkTypeSearchDTO;
+import io.choerodon.agile.api.dto.SearchDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
@@ -16,14 +18,13 @@ public interface IssueLinkTypeService {
     /**
      * 查询issueLink类型
      *
-     * @param projectId       projectId
-     * @param issueLinkTypeId issueLinkTypeId不包含的id
-     * @param linkName        linkName
-     * @param content         content
-     * @param pageRequest     pageRequest
+     * @param projectId              projectId
+     * @param issueLinkTypeId        issueLinkTypeId不包含的id
+     * @param issueLinkTypeSearchDTO issueLinkTypeSearchDTO
+     * @param pageRequest            pageRequest
      * @return IssueLinkTypeDTO
      */
-    Page<IssueLinkTypeDTO> listIssueLinkType(Long projectId, Long issueLinkTypeId, String linkName, String content, PageRequest pageRequest);
+    Page<IssueLinkTypeDTO> listIssueLinkType(Long projectId, Long issueLinkTypeId, IssueLinkTypeSearchDTO issueLinkTypeSearchDTO, PageRequest pageRequest);
 
     /**
      * 创建issueLinkType

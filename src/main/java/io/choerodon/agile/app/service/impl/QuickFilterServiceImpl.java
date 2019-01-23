@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.QuickFilterDTO;
+import io.choerodon.agile.api.dto.QuickFilterSearchDTO;
 import io.choerodon.agile.api.dto.QuickFilterSequenceDTO;
 import io.choerodon.agile.api.dto.QuickFilterValueDTO;
 import io.choerodon.agile.app.service.QuickFilterService;
@@ -10,7 +11,10 @@ import io.choerodon.agile.infra.dataobject.QuickFilterDO;
 import io.choerodon.agile.infra.mapper.QuickFilterFieldMapper;
 import io.choerodon.agile.infra.mapper.QuickFilterMapper;
 import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.mybatis.pagehelper.PageHelper;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +54,7 @@ public class QuickFilterServiceImpl implements QuickFilterService {
             if (NOT_IN.equals(operation)) {
                 sqlQuery.append(" issue_id not in ( select issue_id from agile_component_issue_rel where component_id in " + value + " ) ");
             } else {
-                sqlQuery.append(" issue_id in ( select issue_id from agile_component_issue_rel where " + field +" " + operation + " " + value + " ) ");
+                sqlQuery.append(" issue_id in ( select issue_id from agile_component_issue_rel where " + field + " " + operation + " " + value + " ) ");
             }
         }
     }
@@ -148,10 +152,10 @@ public class QuickFilterServiceImpl implements QuickFilterService {
                     dealCaseSprint(field, value, operation, sqlQuery);
                     break;
                 case "creation_date":
-                    sqlQuery.append(" unix_timestamp(" + field + ")" + " " + quickFilterValueDTO.getOperation() + " " + "unix_timestamp('" + value+"') ");
+                    sqlQuery.append(" unix_timestamp(" + field + ")" + " " + quickFilterValueDTO.getOperation() + " " + "unix_timestamp('" + value + "') ");
                     break;
                 case "last_update_date":
-                    sqlQuery.append(" unix_timestamp(" + field + ")" + " " + quickFilterValueDTO.getOperation() + " " + "unix_timestamp('" + value+"') ");
+                    sqlQuery.append(" unix_timestamp(" + field + ")" + " " + quickFilterValueDTO.getOperation() + " " + "unix_timestamp('" + value + "') ");
                     break;
                 default:
                     sqlQuery.append(" " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " ");
@@ -159,8 +163,8 @@ public class QuickFilterServiceImpl implements QuickFilterService {
             }
             int length = relationOperations.size();
             if (idx < length && !relationOperations.get(idx).isEmpty()) {
-                sqlQuery.append(relationOperations.get(idx) +" ");
-                idx ++;
+                sqlQuery.append(relationOperations.get(idx) + " ");
+                idx++;
             }
         }
         if (!childIncluded) {
@@ -228,8 +232,8 @@ public class QuickFilterServiceImpl implements QuickFilterService {
     }
 
     @Override
-    public List<QuickFilterDTO> listByProjectId(Long projectId) {
-        return ConvertHelper.convertList(quickFilterMapper.queryFiltersByProjectId(projectId), QuickFilterDTO.class);
+    public Page<QuickFilterDTO> listByProjectId(Long projectId, QuickFilterSearchDTO quickFilterSearchDTO, PageRequest pageRequest) {
+        return PageHelper.doPageAndSort(pageRequest, () -> quickFilterMapper.queryFiltersByProjectId(projectId, quickFilterSearchDTO.getFilterName(), quickFilterSearchDTO.getContents()));
     }
 
     @Override
@@ -237,10 +241,10 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         if (quickFilterSequenceDTO.getAfterSequence() == null && quickFilterSequenceDTO.getBeforeSequence() == null) {
             throw new CommonException("error.dragFilter.noSequence");
         }
-        QuickFilterE quickFilterE = ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(quickFilterSequenceDTO.getFilterId()),QuickFilterE.class);
+        QuickFilterE quickFilterE = ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(quickFilterSequenceDTO.getFilterId()), QuickFilterE.class);
         if (quickFilterE == null) {
             throw new CommonException(NOT_FOUND);
-        }else{
+        } else {
             if (quickFilterSequenceDTO.getAfterSequence() == null) {
                 Integer maxSequence = quickFilterMapper.queryMaxAfterSequence(quickFilterSequenceDTO.getBeforeSequence(), projectId);
                 quickFilterSequenceDTO.setAfterSequence(maxSequence);
@@ -250,11 +254,11 @@ public class QuickFilterServiceImpl implements QuickFilterService {
             }
             handleSequence(quickFilterSequenceDTO, projectId, quickFilterE);
         }
-        return ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(quickFilterSequenceDTO.getFilterId()),QuickFilterDTO.class);
+        return ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(quickFilterSequenceDTO.getFilterId()), QuickFilterDTO.class);
 
     }
 
-    private void handleSequence(QuickFilterSequenceDTO quickFilterSequenceDTO,Long projectId, QuickFilterE quickFilterE) {
+    private void handleSequence(QuickFilterSequenceDTO quickFilterSequenceDTO, Long projectId, QuickFilterE quickFilterE) {
         if (quickFilterSequenceDTO.getBeforeSequence() == null) {
             quickFilterE.setSequence(quickFilterSequenceDTO.getAfterSequence() + 1);
             quickFilterRepository.update(quickFilterE);
