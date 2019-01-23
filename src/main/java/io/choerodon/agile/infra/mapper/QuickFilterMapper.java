@@ -54,8 +54,10 @@ public interface QuickFilterMapper extends BaseMapper<QuickFilterDO> {
     /**
      * 根据项目id查询快速筛选，通过sequence排序
      *
-     * @param projectId projectId
+     * @param projectId  projectId
+     * @param filterName filterName
+     * @param contents   contents
      * @return QuickFilterDO
      */
-    List<QuickFilterDO> queryFiltersByProjectId(@Param("projectId") Long projectId);
+    List<QuickFilterDO> queryFiltersByProjectId(@Param("projectId") Long projectId, @Param("filterName") String filterName, @Param("contents") List<String> contents);
 }

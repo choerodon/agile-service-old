@@ -1,9 +1,11 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.QuickFilterDTO;
+import io.choerodon.agile.api.dto.QuickFilterSearchDTO;
 import io.choerodon.agile.api.dto.QuickFilterSequenceDTO;
+import io.choerodon.core.domain.Page;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
-import java.util.List;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/6/13.
@@ -19,7 +21,15 @@ public interface QuickFilterService {
 
     QuickFilterDTO queryById(Long projectId, Long filterId);
 
-    List<QuickFilterDTO> listByProjectId(Long projectId);
+    /**
+     * 分页搜索过滤条件
+     *
+     * @param projectId            projectId
+     * @param quickFilterSearchDTO quickFilterSearchDTO
+     * @param pageRequest          pageRequest
+     * @return QuickFilterDTO
+     */
+    Page<QuickFilterDTO> listByProjectId(Long projectId, QuickFilterSearchDTO quickFilterSearchDTO, PageRequest pageRequest);
 
     /**
      * 拖动排序

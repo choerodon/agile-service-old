@@ -1,14 +1,15 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.BoardDTO
 import io.choerodon.agile.api.dto.QuickFilterDTO
 import io.choerodon.agile.api.dto.QuickFilterFieldDTO
+import io.choerodon.agile.api.dto.QuickFilterSearchDTO
 import io.choerodon.agile.api.dto.QuickFilterSequenceDTO
 import io.choerodon.agile.api.dto.QuickFilterValueDTO
 import io.choerodon.agile.infra.mapper.QuickFilterFieldMapper
 import io.choerodon.agile.infra.mapper.QuickFilterMapper
 import io.choerodon.core.convertor.ConvertHelper
+import io.choerodon.core.domain.Page
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -218,18 +219,19 @@ class QuickFilterControllerSpec extends Specification {
     }
 
     def 'listByProjectId'() {
+
+        given: '准备数据'
+        QuickFilterSearchDTO quickFilterSearchDTO = new QuickFilterSearchDTO()
+
         when: '发请求'
-        def entity = restTemplate.exchange('/v1/projects/{project_id}/quick_filter',
-                HttpMethod.GET,
-                null,
-                List,
-                projectId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/quick_filter/query_all', quickFilterSearchDTO, Page, projectId)
+
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        List<QuickFilterDTO> result = entity.body
+        List<QuickFilterDTO> result = entity.body.content
 
         expect: '设置期望值'
         result.size() == 1
