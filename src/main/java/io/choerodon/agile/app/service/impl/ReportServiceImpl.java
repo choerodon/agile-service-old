@@ -1391,7 +1391,7 @@ public class ReportServiceImpl implements ReportService {
             query.setVersionId(id);
             ProductVersionDO productVersionDO = versionMapper.selectOne(query);
             if (productVersionDO != null) {
-                startDate = productVersionDO.getCreationDate();
+                startDate = productVersionDO.getStartDate() == null ? productVersionDO.getCreationDate() : productVersionDO.getStartDate();
                 sprintDOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate, productVersionDO.getReleaseDate());
             } else {
                 throw new CommonException(EPIC_OR_VERSION_NOT_FOUND_ERROR);
