@@ -252,7 +252,7 @@
                  open="(" close=")" separator=",">
             #{columnId}
         </foreach>
-        ORDER BY abc.column_id
+        ORDER BY abc.sequence
     </select>
 
     <select id="selectEpicBatchByIds" resultType="io.choerodon.agile.infra.dataobject.EpicIdWithNameDO">
