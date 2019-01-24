@@ -1513,8 +1513,9 @@ public class ReportServiceImpl implements ReportService {
                 List<IssueBurnDownReportDO> dones = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().after(startDateTwo)).collect(Collectors.toList());
                 BigDecimal doneLast = calculateStoryPoints(dones);
                 BigDecimal left = startLast.add(addLast).subtract(doneLast);
+                endDate = sprintDOList.get(i + 1).getActualEndDate() == null ? sprintDOList.get(i + 1).getEndDate() : sprintDOList.get(i + 1).getActualEndDate();
                 reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(startLast, addLast, doneLast, left,
-                        sprintDOList.get(sprintDOList.size() - 1).getSprintName(), sprintDOList.get(sprintDOList.size() - 1).getStartDate(), endDate));
+                        sprintDOList.get(i + 1).getSprintName(), sprintDOList.get(i + 1).getStartDate(), endDate));
             }
 
         }
