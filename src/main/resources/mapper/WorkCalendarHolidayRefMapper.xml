@@ -16,4 +16,9 @@
         select * from agile_work_calendar_holiday_ref where (year = #{year} or year = (#{year}+1)) order by calendar_id asc
     </select>
 
+    <select id="queryByYearIncludeLastAndNext"
+            resultType="io.choerodon.agile.infra.dataobject.WorkCalendarHolidayRefDO">
+        select * from agile_work_calendar_holiday_ref where (year = #{year} or year = (#{year}+1) or year = (#{year}-1)) order by calendar_id asc
+    </select>
+
 </mapper>

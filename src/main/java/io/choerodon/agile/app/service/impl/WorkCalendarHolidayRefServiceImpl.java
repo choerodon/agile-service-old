@@ -51,7 +51,16 @@ public class WorkCalendarHolidayRefServiceImpl implements WorkCalendarHolidayRef
 
     @Override
     public List<WorkCalendarHolidayRefDTO> queryWorkCalendarHolidayRelByYear(Integer year) {
-        List<WorkCalendarHolidayRefDO> workCalendarHolidayRefDOS = workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelWithNextYearByYear(year);
+        return formatAndSortToDTO(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelWithNextYearByYear(year));
+
+    }
+
+    @Override
+    public List<WorkCalendarHolidayRefDTO> queryByYearIncludeLastAndNext(Integer year) {
+        return formatAndSortToDTO(workCalendarHolidayRefMapper.queryByYearIncludeLastAndNext(year));
+    }
+
+    private List<WorkCalendarHolidayRefDTO> formatAndSortToDTO(List<WorkCalendarHolidayRefDO> workCalendarHolidayRefDOS) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT);
         workCalendarHolidayRefDOS.forEach(workCalendarHolidayRefDO -> {
             try {
