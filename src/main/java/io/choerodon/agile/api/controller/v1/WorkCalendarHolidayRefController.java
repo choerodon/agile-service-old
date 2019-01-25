@@ -51,5 +51,4 @@ public class WorkCalendarHolidayRefController {
                 .orElseThrow(() -> new CommonException("error.WorkCalendarHolidayRefController.queryWorkCalendarHolidayRelByYear"));
     }
 
-
 }

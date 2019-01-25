@@ -25,4 +25,12 @@ public interface WorkCalendarHolidayRefService {
      * @return WorkCalendarHolidayRefDTO
      */
     List<WorkCalendarHolidayRefDTO> queryWorkCalendarHolidayRelByYear(Integer year);
+
+    /**
+     * 根据年份查询工作日历，包含当年、去年、明年
+     *
+     * @param year year
+     * @return WorkCalendarHolidayRefDTO
+     */
+    List<WorkCalendarHolidayRefDTO> queryByYearIncludeLastAndNext(Integer year);
 }
