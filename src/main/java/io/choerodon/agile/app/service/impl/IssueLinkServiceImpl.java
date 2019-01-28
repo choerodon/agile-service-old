@@ -35,6 +35,7 @@ public class IssueLinkServiceImpl implements IssueLinkService {
     public List<IssueLinkDTO> createIssueLinkList(List<IssueLinkCreateDTO> issueLinkCreateDTOList, Long issueId, Long projectId) {
         List<IssueLinkE> issueLinkEList = issueLinkAssembler.toTargetList(issueLinkCreateDTOList, IssueLinkE.class);
         issueLinkEList.forEach(issueLinkE -> {
+            issueLinkE.setProjectId(projectId);
             issueLinkRule.verifyCreateData(issueLinkE);
             if (issueLinkMapper.selectByPrimaryKey(issueLinkE) == null) {
                 issueLinkRepository.create(issueLinkE);

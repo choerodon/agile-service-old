@@ -41,6 +41,16 @@ public class IssueSubCreateDTO {
 
     private List<ComponentIssueRelDTO> componentIssueRelDTOList;
 
+    private List<IssueLinkCreateDTO> issueLinkCreateDTOList;
+
+    public List<IssueLinkCreateDTO> getIssueLinkCreateDTOList() {
+        return issueLinkCreateDTOList;
+    }
+
+    public void setIssueLinkCreateDTOList(List<IssueLinkCreateDTO> issueLinkCreateDTOList) {
+        this.issueLinkCreateDTOList = issueLinkCreateDTOList;
+    }
+
     public BigDecimal getRemainingTime() {
         return remainingTime;
     }

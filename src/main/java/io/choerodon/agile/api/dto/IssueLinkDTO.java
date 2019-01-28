@@ -35,11 +35,21 @@ public class IssueLinkDTO {
 
     private String imageUrl;
 
+    private Long projectId;
+
     private IssueTypeDTO issueTypeDTO;
 
     private StatusMapDTO statusMapDTO;
 
     private PriorityDTO priorityDTO;
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
 
     public Long getIssueId() {
         return issueId;

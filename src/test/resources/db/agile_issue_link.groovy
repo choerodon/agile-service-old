@@ -18,6 +18,9 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue_link.groovy') {
             column(name: 'link_type_id', type: 'BIGINT UNSIGNED', remarks: '主键') {
                 constraints(nullable: false)
             }
+            column(name: 'project_id', type: 'BIGINT UNSIGNED', remarks: '项目id') {
+                constraints(nullable: false)
+            }
             column(name: "object_version_number", type: "BIGINT UNSIGNED", defaultValue: "1")
             column(name: "created_by", type: "BIGINT UNSIGNED", defaultValue: "0")
             column(name: "creation_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")

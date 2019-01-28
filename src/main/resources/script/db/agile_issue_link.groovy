@@ -49,4 +49,18 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue_link.groovy') {
             column(name: 'linked_issue_id')
         }
     }
+
+    changeSet(id: '2019-01-28-agile-issue-link-add-project_id', author: 'dinghuang123@gmail.com') {
+        addColumn(tableName: 'agile_issue_link') {
+            column(name: 'project_id', type: 'BIGINT UNSIGNED', remarks: '项目id')
+        }
+        sql(stripComments: true, splitStatements: true, endDelimiter: ';') {
+            "UPDATE agile_issue_link ail,( SELECT ailt.project_id, ailt.link_type_id FROM agile_issue_link_type ailt) AS res SET ail.project_id = res.project_id WHERE ail.link_type_id = res.link_type_id"
+        }
+        createIndex(indexName: 'idx_project_id', tableName: 'agile_issue_link') {
+            column(name: 'project_id')
+        }
+        addNotNullConstraint(tableName: 'agile_issue_link', columnName: 'project_id', columnDataType: "BIGINT UNSIGNED")
+    }
+
 }
