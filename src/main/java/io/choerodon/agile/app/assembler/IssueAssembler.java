@@ -189,6 +189,17 @@ public class IssueAssembler extends AbstractAssembler {
         return issueCreateDTO;
     }
 
+    public IssueSubCreateDTO issueDtoToIssueSubCreateDto(IssueDetailDO issueDetailDO) {
+        IssueSubCreateDTO issueSubCreateDTO = new IssueSubCreateDTO();
+        BeanUtils.copyProperties(issueDetailDO, issueSubCreateDTO);
+        issueSubCreateDTO.setSprintId(null);
+        issueSubCreateDTO.setRemainingTime(null);
+        issueSubCreateDTO.setComponentIssueRelDTOList(copyComponentIssueRel(issueDetailDO.getComponentIssueRelDOList()));
+        issueSubCreateDTO.setVersionIssueRelDTOList(copyVersionIssueRel(issueDetailDO.getVersionIssueRelDOList()));
+        issueSubCreateDTO.setLabelIssueRelDTOList(copyLabelIssueRel(issueDetailDO.getLabelIssueRelDOList(), issueDetailDO.getProjectId()));
+        return issueSubCreateDTO;
+    }
+
     private List<ComponentIssueRelDTO> copyComponentIssueRel(List<ComponentIssueRelDO> componentIssueRelDOList) {
         List<ComponentIssueRelDTO> componentIssueRelDTOList = new ArrayList<>(componentIssueRelDOList.size());
         componentIssueRelDOList.forEach(componentIssueRelDO -> {
@@ -340,4 +351,6 @@ public class IssueAssembler extends AbstractAssembler {
         }
         return undistributedIssueDTOS;
     }
+
+
 }

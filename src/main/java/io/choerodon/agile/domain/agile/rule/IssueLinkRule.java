@@ -26,6 +26,9 @@ public class IssueLinkRule {
         if (issueLinkE.getLinkedIssueId() == null) {
             throw new CommonException("error.issueLink.LinkIssueId");
         }
+        if (issueLinkE.getProjectId() == null) {
+            throw new CommonException("error.issueLink.ProjectId");
+        }
         if (issueMapper.selectByPrimaryKey(issueLinkE.getIssueId()) == null) {
             throw new CommonException("error.issueLink.IssueNotFound");
         }

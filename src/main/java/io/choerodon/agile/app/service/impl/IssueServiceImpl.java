@@ -10,6 +10,7 @@ import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.domain.agile.event.IssuePayload;
 import io.choerodon.agile.domain.agile.repository.*;
+import io.choerodon.agile.domain.agile.rule.IssueLinkRule;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
@@ -230,23 +231,29 @@ public class IssueServiceImpl implements IssueService {
         this.issueMapper = issueMapper;
     }
 
+    @Autowired
+    private IssueLinkAssembler issueLinkAssembler;
+    @Autowired
+    private IssueLinkRule issueLinkRule;
+
 
     @Override
     public void afterCreateIssue(Long issueId, IssueE issueE, IssueCreateDTO issueCreateDTO, ProjectInfoE projectInfoE) {
+        handleCreateIssueRearAction(issueE, issueId, projectInfoE, issueCreateDTO.getLabelIssueRelDTOList(), issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getIssueLinkCreateDTOList());
+    }
+
+    private void handleCreateIssueRearAction(IssueE issueE, Long issueId, ProjectInfoE projectInfoE, List<LabelIssueRelDTO> labelIssueRelDTOList, List<ComponentIssueRelDTO> componentIssueRelDTOList, List<VersionIssueRelDTO> versionIssueRelDTOList, List<IssueLinkCreateDTO> issueLinkCreateDTOList) {
         //处理冲刺
         handleCreateSprintRel(issueE.getSprintId(), issueE.getProjectId(), issueId);
-        handleCreateLabelIssue(issueCreateDTO.getLabelIssueRelDTOList(), issueId);
-        handleCreateComponentIssueRel(issueCreateDTO.getComponentIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId, projectInfoE, issueE.getAssigneerCondtiion());
-        handleCreateVersionIssueRel(issueCreateDTO.getVersionIssueRelDTOList(), issueCreateDTO.getProjectId(), issueId);
+        handleCreateLabelIssue(labelIssueRelDTOList, issueId);
+        handleCreateComponentIssueRel(componentIssueRelDTOList, projectInfoE.getProjectId(), issueId, projectInfoE, issueE.getAssigneerCondtiion());
+        handleCreateVersionIssueRel(versionIssueRelDTOList, projectInfoE.getProjectId(), issueId);
+        handleCreateIssueLink(issueLinkCreateDTOList, projectInfoE.getProjectId(), issueId);
     }
 
     @Override
     public void afterCreateSubIssue(Long issueId, IssueE subIssueE, IssueSubCreateDTO issueSubCreateDTO, ProjectInfoE projectInfoE) {
-        //处理冲刺
-        handleCreateSprintRel(subIssueE.getSprintId(), subIssueE.getProjectId(), issueId);
-        handleCreateLabelIssue(issueSubCreateDTO.getLabelIssueRelDTOList(), issueId);
-        handleCreateComponentIssueRel(issueSubCreateDTO.getComponentIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId, projectInfoE, subIssueE.getAssigneerCondtiion());
-        handleCreateVersionIssueRel(issueSubCreateDTO.getVersionIssueRelDTOList(), issueSubCreateDTO.getProjectId(), issueId);
+        handleCreateIssueRearAction(subIssueE, issueId, projectInfoE, issueSubCreateDTO.getLabelIssueRelDTOList(), issueSubCreateDTO.getComponentIssueRelDTOList(), issueSubCreateDTO.getVersionIssueRelDTOList(), issueSubCreateDTO.getIssueLinkCreateDTOList());
     }
 
     @Override
@@ -460,7 +467,7 @@ public class IssueServiceImpl implements IssueService {
     public Boolean handleSearchUser(SearchDTO searchDTO, Long projectId) {
         if (searchDTO.getSearchArgs() != null && searchDTO.getSearchArgs().get(ASSIGNEE) != null) {
             String userName = (String) searchDTO.getSearchArgs().get(ASSIGNEE);
-            if (userName != null && !"" .equals(userName)) {
+            if (userName != null && !"".equals(userName)) {
                 List<UserDTO> userDTOS = userRepository.queryUsersByNameAndProjectId(projectId, userName);
                 if (userDTOS != null && !userDTOS.isEmpty()) {
                     searchDTO.getAdvancedSearchArgs().put("assigneeIds", userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));
@@ -471,7 +478,7 @@ public class IssueServiceImpl implements IssueService {
         }
         if (searchDTO.getSearchArgs() != null && searchDTO.getSearchArgs().get(REPORTER) != null) {
             String userName = (String) searchDTO.getSearchArgs().get(REPORTER);
-            if (userName != null && !"" .equals(userName)) {
+            if (userName != null && !"".equals(userName)) {
                 List<UserDTO> userDTOS = userRepository.queryUsersByNameAndProjectId(projectId, userName);
                 if (userDTOS != null && !userDTOS.isEmpty()) {
                     searchDTO.getAdvancedSearchArgs().put("reporterIds", userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));
@@ -514,7 +521,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public IssueDTO updateIssueStatus(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType) {
         stateMachineService.executeTransform(projectId, issueId, transformId, objectVersionNumber, applyType, new InputDTO(issueId, "updateStatus", null));
-        if ("agile" .equals(applyType)) {
+        if ("agile".equals(applyType)) {
             IssueE issueE = new IssueE();
             issueE.setIssueId(issueId);
             issueE.setStayDate(new Date());
@@ -1164,6 +1171,20 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
+    private void handleCreateIssueLink(List<IssueLinkCreateDTO> issueLinkCreateDTOList, Long projectId, Long issueId) {
+        if (issueLinkCreateDTOList != null && !issueLinkCreateDTOList.isEmpty()) {
+            List<IssueLinkE> issueLinkEList = issueLinkAssembler.toTargetList(issueLinkCreateDTOList, IssueLinkE.class);
+            issueLinkEList.forEach(issueLinkE -> {
+                issueLinkE.setIssueId(issueId);
+                issueLinkE.setProjectId(projectId);
+                issueLinkRule.verifyCreateData(issueLinkE);
+                if (issueLinkMapper.selectByPrimaryKey(issueLinkE) == null) {
+                    issueLinkRepository.create(issueLinkE);
+                }
+            });
+        }
+    }
+
     private void handleVersionIssueRel(List<VersionIssueRelE> versionIssueRelEList, Long projectId, Long issueId) {
         versionIssueRelEList.forEach(versionIssueRelE -> {
             versionIssueRelE.setIssueId(issueId);
@@ -1449,9 +1470,9 @@ public class IssueServiceImpl implements IssueService {
      * @param projectId        projectId
      * @param issueId          issueId
      * @param copyConditionDTO copyConditionDTO
-     * @param organizationId
-     * @param applyType
-     * @return
+     * @param organizationId   organizationId
+     * @param applyType        applyType
+     * @return IssueDTO
      */
     @Override
     @Transactional(isolation = Isolation.READ_UNCOMMITTED, rollbackFor = Exception.class)
@@ -1461,39 +1482,51 @@ public class IssueServiceImpl implements IssueService {
         }
         IssueDetailDO issueDetailDO = issueMapper.queryIssueDetail(projectId, issueId);
         if (issueDetailDO != null) {
+            Long newIssueId;
+            Long objectVersionNumber;
             issueDetailDO.setSummary(copyConditionDTO.getSummary());
-            IssueCreateDTO issueCreateDTO = issueAssembler.issueDtoToIssueCreateDto(issueDetailDO);
-            issueCreateDTO.setEpicName(issueCreateDTO.getTypeCode().equals(ISSUE_EPIC) ? issueCreateDTO.getEpicName() + COPY : null);
-            IssueDTO newIssue = stateMachineService.createIssue(issueCreateDTO, applyType);
+            IssueTypeDTO issueTypeDTO = issueFeignClient.queryIssueTypeById(ConvertUtil.getOrganizationId(projectId), issueDetailDO.getIssueTypeId()).getBody();
+            if (issueTypeDTO.getTypeCode().equals(SUB_TASK)) {
+                IssueSubCreateDTO issueSubCreateDTO = issueAssembler.issueDtoToIssueSubCreateDto(issueDetailDO);
+                IssueSubDTO newIssue = stateMachineService.createSubIssue(issueSubCreateDTO);
+                newIssueId = newIssue.getIssueId();
+                objectVersionNumber = newIssue.getObjectVersionNumber();
+            } else {
+                IssueCreateDTO issueCreateDTO = issueAssembler.issueDtoToIssueCreateDto(issueDetailDO);
+                issueCreateDTO.setEpicName(issueCreateDTO.getTypeCode().equals(ISSUE_EPIC) ? issueCreateDTO.getEpicName() + COPY : null);
+                IssueDTO newIssue = stateMachineService.createIssue(issueCreateDTO, applyType);
+                newIssueId = newIssue.getIssueId();
+                objectVersionNumber = newIssue.getObjectVersionNumber();
+            }
             //复制链接
-            batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueId, newIssue.getIssueId(), projectId);
+            batchCreateCopyIssueLink(copyConditionDTO.getIssueLink(), issueId, newIssueId, projectId);
             //生成一条复制的关联
-            createCopyIssueLink(issueDetailDO.getIssueId(), newIssue.getIssueId(), projectId);
+            createCopyIssueLink(issueDetailDO.getIssueId(), newIssueId, projectId);
             //复制故事点和剩余工作量并记录日志
-            copyStoryPointAndRemainingTimeData(issueDetailDO, projectId, newIssue);
+            copyStoryPointAndRemainingTimeData(issueDetailDO, projectId, newIssueId, objectVersionNumber);
             //复制冲刺
-            handleCreateCopyIssueSprintRel(copyConditionDTO.getSprintValues(), issueDetailDO, newIssue.getIssueId());
+            handleCreateCopyIssueSprintRel(copyConditionDTO.getSprintValues(), issueDetailDO, newIssueId);
             if (copyConditionDTO.getSubTask()) {
                 List<IssueDO> subIssueDOList = issueDetailDO.getSubIssueDOList();
                 if (subIssueDOList != null && !subIssueDOList.isEmpty()) {
-                    subIssueDOList.forEach(issueDO -> copySubIssue(issueDO, newIssue.getIssueId(), projectId));
+                    subIssueDOList.forEach(issueDO -> copySubIssue(issueDO, newIssueId, projectId));
                 }
             }
-            return queryIssue(projectId, newIssue.getIssueId(), organizationId);
+            return queryIssue(projectId, newIssueId, organizationId);
         } else {
             throw new CommonException("error.issue.copyIssueByIssueId");
         }
     }
 
-    private void copyStoryPointAndRemainingTimeData(IssueDetailDO issueDetailDO, Long projectId, IssueDTO newIssue) {
+    private void copyStoryPointAndRemainingTimeData(IssueDetailDO issueDetailDO, Long projectId, Long issueId, Long objectVersionNumber) {
         if (issueDetailDO.getStoryPoints() == null && issueDetailDO.getEstimateTime() == null) {
             return;
         }
         IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO();
         issueUpdateDTO.setStoryPoints(issueDetailDO.getStoryPoints());
         issueUpdateDTO.setRemainingTime(issueDetailDO.getRemainingTime());
-        issueUpdateDTO.setIssueId(newIssue.getIssueId());
-        issueUpdateDTO.setObjectVersionNumber(newIssue.getObjectVersionNumber());
+        issueUpdateDTO.setIssueId(issueId);
+        issueUpdateDTO.setObjectVersionNumber(objectVersionNumber);
         List<String> fieldList = new ArrayList<>();
         if (issueDetailDO.getStoryPoints() != null) {
             fieldList.add(STORY_POINTS_FIELD);
@@ -1538,6 +1571,7 @@ public class IssueServiceImpl implements IssueService {
                     copy.setLinkedIssueId(newIssueId);
                 }
                 copy.setLinkTypeId(issueLinkE.getLinkTypeId());
+                copy.setProjectId(projectId);
                 issueLinkRepository.create(copy);
             });
         }
@@ -1553,6 +1587,7 @@ public class IssueServiceImpl implements IssueService {
             issueLinkE.setLinkedIssueId(issueId);
             issueLinkE.setLinkTypeId(issueLinkTypeDO.getLinkTypeId());
             issueLinkE.setIssueId(newIssueId);
+            issueLinkE.setProjectId(projectId);
             issueLinkRepository.create(issueLinkE);
         }
     }
@@ -1657,9 +1692,9 @@ public class IssueServiceImpl implements IssueService {
 
     private String exportIssuesVersionName(ExportIssuesDTO exportIssuesDTO) {
         StringBuilder versionName = new StringBuilder();
-        if (exportIssuesDTO.getFixVersionName() != null && !"" .equals(exportIssuesDTO.getFixVersionName())) {
+        if (exportIssuesDTO.getFixVersionName() != null && !"".equals(exportIssuesDTO.getFixVersionName())) {
             versionName.append("修复的版本:").append(exportIssuesDTO.getFixVersionName()).append("\r\n");
-        } else if (exportIssuesDTO.getInfluenceVersionName() != null && !"" .equals(exportIssuesDTO.getInfluenceVersionName())) {
+        } else if (exportIssuesDTO.getInfluenceVersionName() != null && !"".equals(exportIssuesDTO.getInfluenceVersionName())) {
             versionName.append("影响的版本:").append(exportIssuesDTO.getInfluenceVersionName());
         }
         return versionName.toString();
@@ -1844,7 +1879,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void getDoneIds(Map<Long, StatusMapDTO> statusMapDTOMap, List<Long> doneIds) {
         for (Long key : statusMapDTOMap.keySet()) {
-            if ("done" .equals(statusMapDTOMap.get(key).getType())) {
+            if ("done".equals(statusMapDTOMap.get(key).getType())) {
                 doneIds.add(key);
             }
         }
@@ -2037,7 +2072,7 @@ public class IssueServiceImpl implements IssueService {
 
     public String getDes(String str) {
         StringBuilder result = new StringBuilder();
-        if (!"" .equals(str) && str != null) {
+        if (!"".equals(str) && str != null) {
             String[] arrayLine = str.split(("\\},\\{"));
             String regEx = "\"insert\":\"(.*)\"";
             Pattern pattern = Pattern.compile(regEx);

@@ -70,6 +70,16 @@ public class IssueLinkDO extends AuditDomain {
     @Transient
     private String applyType;
 
+    private Long projectId;
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
     public String getApplyType() {
         return applyType;
     }

@@ -36,6 +36,8 @@ public class IssueCreateDTO {
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
+    private List<IssueLinkCreateDTO> issueLinkCreateDTOList;
+
     private List<ComponentIssueRelDTO> componentIssueRelDTOList;
 
     private BigDecimal remainingTime;
@@ -45,6 +47,14 @@ public class IssueCreateDTO {
     private String epicName;
 
     private BigDecimal storyPoints;
+
+    public List<IssueLinkCreateDTO> getIssueLinkCreateDTOList() {
+        return issueLinkCreateDTOList;
+    }
+
+    public void setIssueLinkCreateDTOList(List<IssueLinkCreateDTO> issueLinkCreateDTOList) {
+        this.issueLinkCreateDTOList = issueLinkCreateDTOList;
+    }
 
     public void setStoryPoints(BigDecimal storyPoints) {
         this.storyPoints = storyPoints;
