@@ -226,6 +226,7 @@ public class DateUtil {
                 Date holidayDate = sdf.parse(timeZoneWorkCalendarRefDO.getWorkDay());
                 if (isSameDay(holidayDate, date) && timeZoneWorkCalendarRefDO.getStatus() == 1) {
                     remove.add(date);
+                    remove.add(holidayDate);
                 } else {
                     boolean condition = (holidayDate.before(endDate) && holidayDate.after(startDate) || isSameDay(holidayDate, startDate) || isSameDay(holidayDate, endDate)) && timeZoneWorkCalendarRefDO.getStatus() == 0;
                     if (condition) {
@@ -292,6 +293,7 @@ public class DateUtil {
                 Date holidayDate = sdf.parse(holiday.getHoliday());
                 if (isSameDay(holidayDate, date) && holiday.getStatus() == 1) {
                     remove.add(date);
+                    remove.add(holidayDate);
                 } else if (holidayDate.before(endDate) && holidayDate.after(startDate)) {
                     add.add(holidayDate);
                 }
