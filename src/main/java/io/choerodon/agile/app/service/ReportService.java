@@ -21,12 +21,13 @@ public interface ReportService {
     /**
      * 燃尽图报告信息
      *
-     * @param projectId projectId
-     * @param sprintId  sprintId
-     * @param type      storyPoints、remainingEstimatedTime、originalEstimatedTime、issueCount
+     * @param projectId   projectId
+     * @param sprintId    sprintId
+     * @param type        storyPoints、remainingEstimatedTime、originalEstimatedTime、issueCount
+     * @param ordinalType asc、desc
      * @return ReportIssueDTO
      */
-    List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type);
+    List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type, String ordinalType);
 
     /**
      * 查看累积流量图
