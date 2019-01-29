@@ -108,6 +108,7 @@ public class ReportServiceImpl implements ReportService {
     private static final String SPRINT_DO_LIST = "sprintDOList";
     private static final String START_DATE = "startDate";
     private static final String E_PIC = "Epic";
+    private static final String ASC = "asc";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportServiceImpl.class);
 
@@ -194,10 +195,11 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type) {
+    public List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type, String ordinalType) {
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
-        return ConvertHelper.convertList(reportIssueEList.stream().
-                sorted(Comparator.comparing(ReportIssueE::getDate)).collect(Collectors.toList()), ReportIssueDTO.class);
+        return ConvertHelper.convertList(ordinalType.equals(ASC) ? reportIssueEList.stream().
+                sorted(Comparator.comparing(ReportIssueE::getDate)).collect(Collectors.toList()) : reportIssueEList.stream().
+                sorted(Comparator.comparing(ReportIssueE::getDate).reversed()).collect(Collectors.toList()), ReportIssueDTO.class);
     }
 
     private List<ReportIssueE> getBurnDownReport(Long projectId, Long sprintId, String type) {

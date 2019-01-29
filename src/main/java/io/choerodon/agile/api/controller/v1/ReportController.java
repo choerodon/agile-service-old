@@ -50,8 +50,10 @@ public class ReportController {
                                                                     @ApiParam(value = "sprintId", required = true)
                                                                     @PathVariable Long sprintId,
                                                                     @ApiParam(value = "类型(storyPoints、remainingEstimatedTime、issueCount)", required = true)
-                                                                    @RequestParam String type) {
-        return Optional.ofNullable(reportService.queryBurnDownReport(projectId, sprintId, type))
+                                                                    @RequestParam String type,
+                                                                    @ApiParam(value = "排序方式(asc,desc)", required = true)
+                                                                    @RequestParam String ordinalType) {
+        return Optional.ofNullable(reportService.queryBurnDownReport(projectId, sprintId, type, ordinalType))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.report.queryBurnDownReport"));
     }
