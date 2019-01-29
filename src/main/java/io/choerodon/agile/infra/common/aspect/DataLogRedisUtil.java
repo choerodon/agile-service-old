@@ -264,4 +264,10 @@ public class DataLogRedisUtil {
                 BURN_DOWN_COORDINATE_BY_TYPE + projectId + COLON + POINTER
         });
     }
+
+    @Async(REDIS_TASK_EXECUTOR)
+    public void deleteByCreateSprint(SprintE sprintE) {
+        redisUtil.deleteRedisCache(new String[]{PIE_CHART + sprintE.getProjectId() + COLON + SPRINT + POINTER,
+                VELOCITY_CHART + sprintE.getSprintId() + COLON + POINTER});
+    }
 }
