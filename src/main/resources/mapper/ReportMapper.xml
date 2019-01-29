@@ -1626,7 +1626,7 @@
     </select>
 
 
-    <select id="selectRecentSprint" resultType="io.choerodon.agile.infra.dataobject.VelocitySprintDO">
+    <select id="selectAllSprint" resultType="io.choerodon.agile.infra.dataobject.VelocitySprintDO">
         SELECT
             sprint_id,
             sprint_name
@@ -1635,7 +1635,6 @@
         WHERE
             project_id = #{projectId} and status_code in ('started','closed')
         ORDER BY sprint_id DESC
-        LIMIT 7
     </select>
 
 

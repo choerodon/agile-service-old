@@ -275,7 +275,7 @@ public interface ReportMapper {
 
     Integer queryCompletedIssueCount(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-    List<VelocitySprintDO> selectRecentSprint(@Param("projectId") Long projectId);
+    List<VelocitySprintDO> selectAllSprint(@Param("projectId") Long projectId);
 
     List<VelocitySingleDO> selectByIssueCountCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
 

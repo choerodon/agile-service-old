@@ -1020,14 +1020,11 @@ public class ReportServiceImpl implements ReportService {
     @Override
     @Cacheable(cacheNames = AGILE, key = "'VelocityChart' + #projectId + ':' + #type")
     public List<VelocitySprintDTO> queryVelocityChart(Long projectId, String type) {
-        List<VelocitySprintDO> sprintDOList = reportMapper.selectRecentSprint(projectId);
+        List<VelocitySprintDO> sprintDOList = reportMapper.selectAllSprint(projectId);
         if (sprintDOList.isEmpty()) {
             return new ArrayList<>();
         }
-        List<Long> ids = new ArrayList<>();
-        for (VelocitySprintDO velocitySprintDO : sprintDOList) {
-            ids.add(velocitySprintDO.getSprintId());
-        }
+        List<Long> ids = sprintDOList.stream().map(VelocitySprintDO::getSprintId).collect(Collectors.toList());
         String now = getNowTime();
         List<VelocitySprintDO> result = new ArrayList<>();
         switch (type) {
