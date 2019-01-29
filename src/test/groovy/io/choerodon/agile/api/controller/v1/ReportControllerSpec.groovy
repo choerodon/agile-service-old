@@ -239,8 +239,8 @@ class ReportControllerSpec extends Specification {
 
     def 'queryBurnDownReport'() {
         when: '向开始查询冲刺对应的燃尽图报告信息的接口发请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/{sprintId}/burn_down_report?type={type}',
-                List, projectId, sprintId, type)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/{sprintId}/burn_down_report?type={type}&ordinalType={ordinalType}',
+                List, projectId, sprintId, type, ordinalType)
 
         then: '接口是否请求成功'
         entity.statusCode.is2xxSuccessful()
@@ -252,10 +252,10 @@ class ReportControllerSpec extends Specification {
         reportIssueDTOList.size() == expectSize
 
         where: '设置期望值'
-        type                     | expectSize
-        'storyPoints'            | 2
-        'remainingEstimatedTime' | 2
-        'issueCount'             | 2
+        type                     | ordinalType || expectSize
+        'storyPoints'            | "asc"       || 2
+        'remainingEstimatedTime' | "desc"      || 2
+        'issueCount'             | "asc"       || 2
 
     }
 
