@@ -14,8 +14,10 @@ public class ExportIssuesDTO {
     private String projectCode;
     private Long assigneeId;
     private String assigneeName;
+    private String assigneeRealName;
     private Long reporterId;
     private String reporterName;
+    private String reporterRealName;
     private String statusName;
     private String description;
     private String sprintName;
@@ -39,6 +41,22 @@ public class ExportIssuesDTO {
     private String componentName;
     private String labelName;
     private String resolution;
+
+    public String getAssigneeRealName() {
+        return assigneeRealName;
+    }
+
+    public void setAssigneeRealName(String assigneeRealName) {
+        this.assigneeRealName = assigneeRealName;
+    }
+
+    public String getReporterRealName() {
+        return reporterRealName;
+    }
+
+    public void setReporterRealName(String reporterRealName) {
+        this.reporterRealName = reporterRealName;
+    }
 
     public String getResolution() {
         return resolution;

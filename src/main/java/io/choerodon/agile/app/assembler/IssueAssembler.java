@@ -165,14 +165,18 @@ public class IssueAssembler extends AbstractAssembler {
         Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         exportIssues.forEach(issueDO -> {
             String assigneeName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getName() : null;
-            String reportName = usersMap.get(issueDO.getReporterId()) != null ? usersMap.get(issueDO.getReporterId()).getName() : null;
+            String assigneeRealName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getRealName() : null;
+            String reporterName = usersMap.get(issueDO.getReporterId()) != null ? usersMap.get(issueDO.getReporterId()).getName() : null;
+            String reporterRealName = usersMap.get(issueDO.getReporterId()) != null ? usersMap.get(issueDO.getReporterId()).getRealName() : null;
             ExportIssuesDTO exportIssuesDTO = new ExportIssuesDTO();
             BeanUtils.copyProperties(issueDO, exportIssuesDTO);
+            exportIssuesDTO.setPriorityName(priorityDTOMap.get(issueDO.getPriorityId()) == null ? null : priorityDTOMap.get(issueDO.getPriorityId()).getName());
+            exportIssuesDTO.setStatusName(statusMapDTOMap.get(issueDO.getStatusId()) == null ? null : statusMapDTOMap.get(issueDO.getStatusId()).getName());
+            exportIssuesDTO.setTypeName(issueTypeDTOMap.get(issueDO.getIssueTypeId()) == null ? null : issueTypeDTOMap.get(issueDO.getIssueTypeId()).getName());
             exportIssuesDTO.setAssigneeName(assigneeName);
-            exportIssuesDTO.setPriorityName(priorityDTOMap.get(issueDO.getPriorityId()).getName());
-            exportIssuesDTO.setStatusName(statusMapDTOMap.get(issueDO.getStatusId()).getName());
-            exportIssuesDTO.setTypeName(issueTypeDTOMap.get(issueDO.getIssueTypeId()).getName());
-            exportIssuesDTO.setReporterName(reportName);
+            exportIssuesDTO.setAssigneeRealName(assigneeRealName);
+            exportIssuesDTO.setReporterName(reporterName);
+            exportIssuesDTO.setReporterRealName(reporterRealName);
             exportIssuesDTOS.add(exportIssuesDTO);
         });
         return exportIssuesDTOS;
