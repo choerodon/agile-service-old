@@ -14,6 +14,16 @@ public class IssueLinkCreateDTO {
 
     private Long issueId;
 
+    private Boolean in;
+
+    public Boolean getIn() {
+        return in;
+    }
+
+    public void setIn(Boolean in) {
+        this.in = in;
+    }
+
     public Long getLinkTypeId() {
         return linkTypeId;
     }

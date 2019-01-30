@@ -21,7 +21,17 @@ public class IssueLinkE {
 
     private Long projectId;
 
+    private Boolean in;
+
     private Long objectVersionNumber;
+
+    public Boolean getIn() {
+        return in;
+    }
+
+    public void setIn(Boolean in) {
+        this.in = in;
+    }
 
     public Long getProjectId() {
         return projectId;
