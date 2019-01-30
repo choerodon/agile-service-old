@@ -1175,7 +1175,9 @@ public class IssueServiceImpl implements IssueService {
         if (issueLinkCreateDTOList != null && !issueLinkCreateDTOList.isEmpty()) {
             List<IssueLinkE> issueLinkEList = issueLinkAssembler.toTargetList(issueLinkCreateDTOList, IssueLinkE.class);
             issueLinkEList.forEach(issueLinkE -> {
-                issueLinkE.setIssueId(issueId);
+                Long linkIssueId = issueLinkE.getLinkedIssueId();
+                issueLinkE.setIssueId(issueLinkE.getIn() ? issueId : linkIssueId);
+                issueLinkE.setLinkedIssueId(issueLinkE.getIn() ? linkIssueId : issueId);
                 issueLinkE.setProjectId(projectId);
                 issueLinkRule.verifyCreateData(issueLinkE);
                 if (issueLinkMapper.selectByPrimaryKey(issueLinkE) == null) {
