@@ -24,6 +24,8 @@ public class ProductVersionCommonDO {
 
     private String statusName;
 
+    private Integer sequence;
+
     public Long getVersionId() {
         return versionId;
     }
@@ -86,5 +88,13 @@ public class ProductVersionCommonDO {
 
     public void setStatusName(String statusName) {
         this.statusName = statusName;
+    }
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
     }
 }
