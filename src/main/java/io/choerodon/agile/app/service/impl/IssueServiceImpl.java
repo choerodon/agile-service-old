@@ -360,9 +360,6 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId) {
-        if (organizationId == null) {
-            organizationId = ConvertUtil.getOrganizationId(projectId);
-        }
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
@@ -373,7 +370,7 @@ public class IssueServiceImpl implements IssueService {
         return issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
     }
 
-    public IssueDTO queryIssueByUpdate(Long projectId, Long issueId, List<String> fieldList) {
+    private IssueDTO queryIssueByUpdate(Long projectId, Long issueId, List<String> fieldList) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));

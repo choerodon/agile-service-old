@@ -82,6 +82,10 @@ public class IssueDTO {
 
     private String reporterImageUrl;
 
+    private String createrImageUrl;
+
+    private String createrName;
+
     private Long priorityId;
 
     private Long issueTypeId;
@@ -95,6 +99,22 @@ public class IssueDTO {
     private Long createdBy;
 
     private String applyType;
+
+    public String getCreaterImageUrl() {
+        return createrImageUrl;
+    }
+
+    public void setCreaterImageUrl(String createrImageUrl) {
+        this.createrImageUrl = createrImageUrl;
+    }
+
+    public String getCreaterName() {
+        return createrName;
+    }
+
+    public void setCreaterName(String createrName) {
+        this.createrName = createrName;
+    }
 
     public String getApplyType() {
         return applyType;
