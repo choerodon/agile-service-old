@@ -87,7 +87,8 @@
             IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) AS issue_num,
             ai.summary,
             ai.status_id,
-            ai.issue_type_id
+            ai.issue_type_id,
+            ai.object_version_number
         from agile_issue ai
         left join agile_project_info api ON api.project_id = ai.project_id
         where ai.project_id = #{projectId} and ai.issue_id in
