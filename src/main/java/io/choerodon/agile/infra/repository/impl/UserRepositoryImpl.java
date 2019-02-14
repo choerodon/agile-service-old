@@ -53,15 +53,18 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Map<Long, UserMessageDO> queryUsersMap(List<Long> assigneeIdList, Boolean withLoginName) {
-        Map<Long, UserMessageDO> userMessageMap = new HashMap<>();
-        if (assigneeIdList != null && !assigneeIdList.isEmpty()) {
+        if (assigneeIdList == null) {
+            return new HashMap<>();
+        }
+        Map<Long, UserMessageDO> userMessageMap = new HashMap<>(assigneeIdList.size());
+        if (!assigneeIdList.isEmpty()) {
             Long[] assigneeIds = new Long[assigneeIdList.size()];
             assigneeIdList.toArray(assigneeIds);
             List<UserDO> userDOS = userFeignClient.listUsersByIds(assigneeIds, false).getBody();
             if (withLoginName) {
-                userDOS.forEach(userDO -> userMessageMap.put(userDO.getId(), new UserMessageDO(userDO.getLoginName() + userDO.getRealName(), userDO.getImageUrl(),userDO.getEmail())));
+                userDOS.forEach(userDO -> userMessageMap.put(userDO.getId(), new UserMessageDO(userDO.getLoginName() + userDO.getRealName(), userDO.getLoginName(), userDO.getRealName(), userDO.getImageUrl(), userDO.getEmail())));
             } else {
-                userDOS.forEach(userDO -> userMessageMap.put(userDO.getId(), new UserMessageDO(userDO.getRealName(), userDO.getImageUrl(),userDO.getEmail())));
+                userDOS.forEach(userDO -> userMessageMap.put(userDO.getId(), new UserMessageDO(userDO.getRealName(), userDO.getLoginName(), userDO.getRealName(), userDO.getImageUrl(), userDO.getEmail())));
             }
         }
         return userMessageMap;
