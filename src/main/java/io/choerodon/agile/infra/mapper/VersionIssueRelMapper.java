@@ -4,6 +4,7 @@ import io.choerodon.mybatis.common.BaseMapper;
 import io.choerodon.agile.infra.dataobject.*;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,4 +35,6 @@ public interface VersionIssueRelMapper extends BaseMapper<VersionIssueRelDO> {
      * @return Long
      */
     List<Long> queryByIssueIdAndProjectIdNoArchived(@Param("projectId")Long projectId, @Param("issueId")Long issueId);
+
+    void updateDemoVersionIssueTime(@Param("projectId")Long projectId, @Param("updateDate")Date updateDate);
 }

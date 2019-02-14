@@ -43,4 +43,10 @@
         where apv.version_id = avir.version_id
         and apv.status_code != 'archived' and avir.project_id = #{projectId} and avir.issue_id = #{issueId}
     </select>
+
+    <update id="updateDemoVersionIssueTime">
+        update agile_version_issue_rel
+        set creation_date = #{updateDate}, last_update_date = #{updateDate}
+        where project_id = #{projectId} and relation_type = 'fix'
+    </update>
 </mapper>

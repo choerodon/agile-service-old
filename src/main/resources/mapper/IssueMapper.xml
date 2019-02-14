@@ -2675,4 +2675,11 @@
         )
         and project_id = #{projectId}
     </update>
+
+    <update id="updateAssigneeIdBySpecify">
+        update agile_issue
+        set assignee_id = #{assigneeId}, creation_date = #{creationDate}, last_update_date = #{lastUpdateDate}
+        where project_id = #{projectId}
+        and issue_id = #{issueId}
+    </update>
 </mapper>
