@@ -73,4 +73,19 @@ public interface IssueFeignClient {
     ResponseEntity<Boolean> updateDeployProgress(@PathVariable("organization_id") Long organizationId,
                                                  @PathVariable("scheme_id") Long schemeId,
                                                  @RequestParam("deployProgress") Integer deployProgress);
+
+    @GetMapping("/v1/organizations/{organization_id}/priority/default")
+    ResponseEntity<PriorityDTO> queryDefaultByOrganizationId(@ApiParam(value = "组织id", required = true)
+                                                             @PathVariable("organization_id") Long organizationId);
+
+    @GetMapping(value = "/v1/projects/{project_id}/schemes/query_transforms")
+    ResponseEntity<List<TransformDTO>> queryTransformsByProjectId(@PathVariable("project_id") Long projectId,
+                                                                  @RequestParam("current_status_id") Long currentStatusId,
+                                                                  @RequestParam("issue_id") Long issueId,
+                                                                  @RequestParam("issue_type_id") Long issueTypeId,
+                                                                  @RequestParam("apply_type") String applyType);
+
+    @GetMapping("/v1/organizations/{organization_id}/priority/list_by_org")
+    ResponseEntity<List<PriorityDTO>> queryByOrganizationIdList(@ApiParam(value = "组织id", required = true)
+                                                                @PathVariable("organization_id") Long organizationId);
 }

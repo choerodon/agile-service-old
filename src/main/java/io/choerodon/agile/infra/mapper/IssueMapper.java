@@ -472,4 +472,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     Long selectUnCloseSprintId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
     void updateStayDate(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("nowDate") Date nowDate);
+
+    void updateAssigneeIdBySpecify(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("assigneeId") Long assigneeId, @Param("creationDate") Date creationDate, @Param("lastUpdateDate") Date lastUpdateDate);
+
 }

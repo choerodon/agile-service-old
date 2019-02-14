@@ -8,6 +8,7 @@ import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -73,4 +74,10 @@ public interface DataLogMapper extends BaseMapper<DataLogDO> {
      * @param dataLogStatusChangeDOS dataLogStatusChangeDOS
      */
     void batchUpdateErrorDataLog(@Param("dataLogStatusChangeDOS")Set<DataLogStatusChangeDO> dataLogStatusChangeDOS);
+
+    void updateStatusRtDataLog(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("creationDate") Date creationDate, @Param("lastUpdateDate") Date lastUpdateDate);
+
+    void updateExpStatusRtDataLog(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("creationDate") Date creationDate, @Param("lastUpdateDate") Date lastUpdateDate);
+
+    void deleteDemoData(@Param("projectId") Long projectId);
 }

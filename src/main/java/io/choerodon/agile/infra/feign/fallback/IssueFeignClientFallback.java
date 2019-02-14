@@ -88,4 +88,19 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     public ResponseEntity<Boolean> updateDeployProgress(Long organizationId, Long schemeId, Integer deployProgress) {
         throw new CommonException("error.issue.updateDeployProgress");
     }
+
+    @Override
+    public ResponseEntity<PriorityDTO> queryDefaultByOrganizationId(Long organizationId) {
+        throw new CommonException("error.defaultPriority.get");
+    }
+
+    @Override
+    public ResponseEntity<List<TransformDTO>> queryTransformsByProjectId(Long projectId, Long currentStatusId, Long issueId, Long issueTypeId, String applyType) {
+        throw new CommonException("error.transform.get");
+    }
+
+    @Override
+    public ResponseEntity<List<PriorityDTO>> queryByOrganizationIdList(Long organizationId) {
+        throw new CommonException("error.priorityList.get");
+    }
 }

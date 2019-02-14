@@ -9,4 +9,9 @@
             api.project_id = #{projectId}
     </update>
 
+    <update id="updateProjectAndIssues">
+        update agile_project_info set creation_date = #{creationDate1}, last_update_date = #{creationDate1} where project_id = #{projectId};
+        update agile_issue set creation_date = #{creationDate2}, last_update_date = #{creationDate2} where project_id = #{projectId};
+    </update>
+
 </mapper>
