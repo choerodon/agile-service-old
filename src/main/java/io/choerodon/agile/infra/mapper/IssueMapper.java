@@ -475,4 +475,5 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     void updateAssigneeIdBySpecify(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("assigneeId") Long assigneeId, @Param("creationDate") Date creationDate, @Param("lastUpdateDate") Date lastUpdateDate);
 
+    void updateTestIssue(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("reporterId") Long reporterId, @Param("creationDate") Date creationDate, @Param("lastUpdateDate") Date lastUpdateDate);
 }

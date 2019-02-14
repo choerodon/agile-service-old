@@ -2682,4 +2682,11 @@
         where project_id = #{projectId}
         and issue_id = #{issueId}
     </update>
+
+    <update id="updateTestIssue">
+        update agile_issue
+        set reporter_id = #{reporterId}, creation_date = #{creationDate}, last_update_date = #{lastUpdateDate}
+        where project_id = #{projectId}
+        and issue_id = #{issueId}
+    </update>
 </mapper>
