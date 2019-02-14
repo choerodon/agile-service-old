@@ -48,6 +48,7 @@ public class IssueAssembler extends AbstractAssembler {
         List<Long> assigneeIdList = new ArrayList<>();
         assigneeIdList.add(issueDetailDO.getAssigneeId());
         assigneeIdList.add(issueDetailDO.getReporterId());
+        assigneeIdList.add(issueDetailDO.getCreatedBy());
         Boolean issueCommentCondition = issueDTO.getIssueCommentDTOList() != null && !issueDTO.getIssueCommentDTOList().isEmpty();
         if (issueCommentCondition) {
             assigneeIdList.addAll(issueDTO.getIssueCommentDTOList().stream().map(IssueCommentDTO::getUserId).collect(Collectors.toList()));
@@ -56,10 +57,13 @@ public class IssueAssembler extends AbstractAssembler {
                 assigneeIdList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
         String assigneeName = userMessageDOMap.get(issueDTO.getAssigneeId()) != null ? userMessageDOMap.get(issueDTO.getAssigneeId()).getName() : null;
         String reporterName = userMessageDOMap.get(issueDTO.getReporterId()) != null ? userMessageDOMap.get(issueDTO.getReporterId()).getName() : null;
+        String createrName = userMessageDOMap.get(issueDTO.getCreatedBy()) != null ? userMessageDOMap.get(issueDTO.getCreatedBy()).getName() : null;
         issueDTO.setAssigneeName(assigneeName);
         issueDTO.setAssigneeImageUrl(assigneeName != null ? userMessageDOMap.get(issueDTO.getAssigneeId()).getImageUrl() : null);
         issueDTO.setReporterName(reporterName);
         issueDTO.setReporterImageUrl(reporterName != null ? userMessageDOMap.get(issueDTO.getReporterId()).getImageUrl() : null);
+        issueDTO.setCreaterName(createrName);
+        issueDTO.setCreaterImageUrl(createrName != null ? userMessageDOMap.get(issueDTO.getCreatedBy()).getImageUrl() : null);
         if (issueCommentCondition) {
             issueDTO.getIssueCommentDTOList().forEach(issueCommentDTO -> {
                 issueCommentDTO.setUserName(userMessageDOMap.get(issueCommentDTO.getUserId()) != null ? userMessageDOMap.get(issueCommentDTO.getUserId()).getName() : null);
@@ -143,15 +147,31 @@ public class IssueAssembler extends AbstractAssembler {
         issueSubDTO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
         issueSubDTO.setIssueAttachmentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueAttachmentDOList(), IssueAttachmentDTO.class));
         issueSubDTO.setIssueCommentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueCommentDOList(), IssueCommentDTO.class));
-        List<Long> assigneeIdList = Arrays.asList(issueDetailDO.getAssigneeId(), issueDetailDO.getReporterId());
+        List<Long> assigneeIdList = new ArrayList<>();
+        assigneeIdList.add(issueDetailDO.getAssigneeId());
+        assigneeIdList.add(issueDetailDO.getReporterId());
+        assigneeIdList.add(issueDetailDO.getCreatedBy());
+        Boolean issueCommentCondition = issueSubDTO.getIssueCommentDTOList() != null && !issueSubDTO.getIssueCommentDTOList().isEmpty();
+        if (issueCommentCondition) {
+            assigneeIdList.addAll(issueSubDTO.getIssueCommentDTOList().stream().map(IssueCommentDTO::getUserId).collect(Collectors.toList()));
+        }
         Map<Long, UserMessageDO> userMessageDOMap = userRepository.queryUsersMap(
                 assigneeIdList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
         String assigneeName = userMessageDOMap.get(issueSubDTO.getAssigneeId()) != null ? userMessageDOMap.get(issueSubDTO.getAssigneeId()).getName() : null;
         String reporterName = userMessageDOMap.get(issueSubDTO.getReporterId()) != null ? userMessageDOMap.get(issueSubDTO.getReporterId()).getName() : null;
+        String createrName = userMessageDOMap.get(issueSubDTO.getCreatedBy()) != null ? userMessageDOMap.get(issueSubDTO.getCreatedBy()).getName() : null;
         issueSubDTO.setAssigneeName(assigneeName);
         issueSubDTO.setAssigneeImageUrl(assigneeName != null ? userMessageDOMap.get(issueSubDTO.getAssigneeId()).getImageUrl() : null);
         issueSubDTO.setReporterName(reporterName);
         issueSubDTO.setReporterImageUrl(reporterName != null ? userMessageDOMap.get(issueSubDTO.getReporterId()).getImageUrl() : null);
+        issueSubDTO.setCreaterName(createrName);
+        issueSubDTO.setCreaterImageUrl(createrName != null ? userMessageDOMap.get(issueSubDTO.getCreatedBy()).getImageUrl() : null);
+        if (issueCommentCondition) {
+            issueSubDTO.getIssueCommentDTOList().forEach(issueCommentDTO -> {
+                issueCommentDTO.setUserName(userMessageDOMap.get(issueCommentDTO.getUserId()) != null ? userMessageDOMap.get(issueCommentDTO.getUserId()).getName() : null);
+                issueCommentDTO.setUserImageUrl(userMessageDOMap.get(issueCommentDTO.getUserId()) != null ? userMessageDOMap.get(issueCommentDTO.getUserId()).getImageUrl() : null);
+            });
+        }
         return issueSubDTO;
     }
 

@@ -80,6 +80,36 @@ public class IssueSubDTO {
 
     private String applyType;
 
+    private String createrImageUrl;
+
+    private String createrName;
+
+    private Long createdBy;
+
+    public Long getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getCreaterImageUrl() {
+        return createrImageUrl;
+    }
+
+    public void setCreaterImageUrl(String createrImageUrl) {
+        this.createrImageUrl = createrImageUrl;
+    }
+
+    public String getCreaterName() {
+        return createrName;
+    }
+
+    public void setCreaterName(String createrName) {
+        this.createrName = createrName;
+    }
+
     public String getApplyType() {
         return applyType;
     }
