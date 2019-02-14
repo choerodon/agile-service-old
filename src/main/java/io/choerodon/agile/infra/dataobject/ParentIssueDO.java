@@ -26,6 +26,8 @@ public class ParentIssueDO {
 
     private Long issueTypeId;
 
+    private Long objectVersionNumber;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -80,5 +82,13 @@ public class ParentIssueDO {
 
     public Long getIssueTypeId() {
         return issueTypeId;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
     }
 }
