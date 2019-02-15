@@ -17,6 +17,7 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -27,6 +28,7 @@ import java.util.*;
  * Email: fuqianghuang01@gmail.com
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class DemoServiceImpl implements DemoService {
 
     private final static String AGILE_APPLYTYPE = "agile";
@@ -69,7 +71,7 @@ public class DemoServiceImpl implements DemoService {
     private IssueMapper issueMapper;
 
     @Autowired
-    private TimeZoneWorkCalendarService timeZoneWorkCalendarService;
+    private WorkCalendarHolidayRefService workCalendarHolidayRefService;
 
     @Autowired
     private VersionIssueRelMapper versionIssueRelMapper;
@@ -316,14 +318,11 @@ public class DemoServiceImpl implements DemoService {
         return Integer.parseInt(sdf.format(date));
     }
 
-    private Boolean judgeBeWork(Date date, TimeZoneWorkCalendarRefDetailDTO calendarDays) {
+    private Boolean judgeBeWork(Date date, List<WorkCalendarHolidayRefDTO> calendarDays) {
         int week = getWeekOfDate(date);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         String dateString = formatter.format(date);
-        Set<TimeZoneWorkCalendarHolidayRefDTO> timeZoneWorkCalendars = calendarDays.getWorkHolidayCalendarDTOS();
-        Iterator<TimeZoneWorkCalendarHolidayRefDTO> iterator = timeZoneWorkCalendars.iterator();
-        while (iterator.hasNext()) {
-            TimeZoneWorkCalendarHolidayRefDTO value = iterator.next();
+        for (WorkCalendarHolidayRefDTO value : calendarDays) {
             if (dateString.equals(value.getHoliday()) && Objects.equals(value.getStatus(), 1)) {
                 return true;
             } else if (dateString.equals(value.getHoliday()) && Objects.equals(value.getStatus(), 0)){
@@ -338,12 +337,11 @@ public class DemoServiceImpl implements DemoService {
 
     /**
      * 获取第一个冲刺的工作日期
-     * @param organizationId
      * @param endDate
      * @return
      */
-    private List<Date> getWorkDays(Long organizationId, Date endDate) {
-        TimeZoneWorkCalendarRefDetailDTO calendarDays = timeZoneWorkCalendarService.queryTimeZoneWorkCalendarDetail(organizationId, getCurrentYear());
+    private List<Date> getWorkDays(Date endDate) {
+        List<WorkCalendarHolidayRefDTO> calendarDays = workCalendarHolidayRefService.queryByYearIncludeLastAndNext(getCurrentYear());
         int sumDays = 0;
         int ago = -1;
         List<Date> result = new ArrayList<>();
@@ -363,12 +361,11 @@ public class DemoServiceImpl implements DemoService {
 
     /**
      * 获取第二个冲刺的工作日期
-     * @param organizationId
      * @param startDate
      * @return
      */
-    private List<Date> getWorkDaysAfter(Long organizationId, Date startDate) {
-        TimeZoneWorkCalendarRefDetailDTO calendarDays = timeZoneWorkCalendarService.queryTimeZoneWorkCalendarDetail(organizationId, getCurrentYear());
+    private List<Date> getWorkDaysAfter(Date startDate) {
+        List<WorkCalendarHolidayRefDTO> calendarDays = workCalendarHolidayRefService.queryByYearIncludeLastAndNext(getCurrentYear());
         int sumDays = 0;
         int ago = 0;
         List<Date> result = new ArrayList<>();
@@ -713,7 +710,7 @@ public class DemoServiceImpl implements DemoService {
         updateLabel(projectId, task3.getIssueId(), "部署");
 
         // 开启冲刺1
-        List<Date> workDays = getWorkDays(organizationId, new Date());
+        List<Date> workDays = getWorkDays(new Date());
         startSprint(projectId, sprintId1, sprintDetailDTO.getObjectVersionNumber(), workDays.get(11), workDays.get(2));
 
         // 更新fix版本时间
@@ -831,7 +828,7 @@ public class DemoServiceImpl implements DemoService {
         dataLogMapper.updateStatusRtDataLog(projectId, bug1.getIssueId(), workDays.get(2), workDays.get(2));
 
 
-        List<Date> dateAfters = getWorkDaysAfter(organizationId, workDays.get(1));
+        List<Date> dateAfters = getWorkDaysAfter(workDays.get(1));
 
 
         // 更新冲刺2的日志
@@ -879,7 +876,11 @@ public class DemoServiceImpl implements DemoService {
     }
 
     @Override
+    @Saga(code = "demo-project-clean", description = "demo项目清除数据", inputSchemaClass = DemoPayload.class)
     public void demoDelete(Long projectId) {
         dataLogMapper.deleteDemoData(projectId);
+        DemoPayload demoPayload = new DemoPayload();
+        demoPayload.setProjectId(projectId);
+        sagaClient.startSaga("demo-project-clean", new StartInstanceDTO(JSON.toJSONString(demoPayload), "", "",ResourceLevel.PROJECT.value(), projectId));
     }
 }
