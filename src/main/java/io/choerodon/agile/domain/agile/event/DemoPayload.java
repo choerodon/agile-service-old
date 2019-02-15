@@ -8,6 +8,8 @@ import java.util.List;
  */
 public class DemoPayload {
 
+    private Long projectId;
+
     private List<Long> testIssueIds;
 
     public void setTestIssueIds(List<Long> testIssueIds) {
@@ -16,5 +18,13 @@ public class DemoPayload {
 
     public List<Long> getTestIssueIds() {
         return testIssueIds;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public Long getProjectId() {
+        return projectId;
     }
 }
