@@ -39,9 +39,13 @@
 
     <select id="queryByIssueIdAndProjectIdNoArchived" resultType="java.lang.Long">
         SELECT avir.version_id from
-            agile_version_issue_rel avir ,agile_product_version apv
+        agile_version_issue_rel avir ,agile_product_version apv
         where apv.version_id = avir.version_id
-        and apv.status_code != 'archived' and avir.project_id = #{projectId} and avir.issue_id = #{issueId}
+        and avir.project_id = #{projectId} and avir.issue_id = #{issueId}
+        <if test='versionType == "fix"'>
+            and apv.status_code != 'archived'
+        </if>
+        and avir.relation_type = #{versionType}
     </select>
 
     <update id="updateDemoVersionIssueTime">
