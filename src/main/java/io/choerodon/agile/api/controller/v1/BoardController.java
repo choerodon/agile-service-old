@@ -152,7 +152,7 @@ public class BoardController {
                 .orElseThrow(() -> new CommonException("error.board.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("校验看板名称重复性")
     @GetMapping("/check_name")
     public ResponseEntity<Boolean> checkName(@ApiParam(value = "项目id", required = true)

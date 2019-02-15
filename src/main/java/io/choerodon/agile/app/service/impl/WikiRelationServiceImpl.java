@@ -33,6 +33,8 @@ import java.util.Map;
 @Transactional(rollbackFor = Exception.class)
 public class WikiRelationServiceImpl implements WikiRelationService {
 
+    private static final String ENC = "utf-8";
+
     @Autowired
     private WikiRelationRepository wikiRelationRepository;
 
@@ -102,8 +104,8 @@ public class WikiRelationServiceImpl implements WikiRelationService {
             String organizationName = null;
             String projectName = null;
             try {
-                organizationName = URLEncoder.encode(organizationDTO.getName(), "utf-8");
-                projectName = URLEncoder.encode(wikiMenuDTO.getProjectName(), "utf-8");
+                organizationName = URLEncoder.encode(organizationDTO.getName(), ENC);
+                projectName = URLEncoder.encode(wikiMenuDTO.getProjectName(), ENC);
             } catch (UnsupportedEncodingException u) {
                 throw new CommonException(u.getMessage());
             }
@@ -111,7 +113,7 @@ public class WikiRelationServiceImpl implements WikiRelationService {
         } else {
             String menuIdStr = null;
             try {
-                menuIdStr = URLEncoder.encode(wikiMenuDTO.getMenuId(), "utf-8");
+                menuIdStr = URLEncoder.encode(wikiMenuDTO.getMenuId(), ENC);
             } catch (UnsupportedEncodingException n) {
                 throw new CommonException(n.getMessage());
             }

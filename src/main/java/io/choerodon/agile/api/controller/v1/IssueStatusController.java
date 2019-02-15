@@ -66,18 +66,6 @@ public class IssueStatusController {
                 .orElseThrow(() -> new CommonException("error.status.create"));
     }
 
-//    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-//    @ApiOperation("查询项目下未对应的状态")
-//    @GetMapping(value = "/list_by_options")
-//    public ResponseEntity<List<StatusAndIssuesDTO>> listUnCorrespondStatus(@ApiParam(value = "项目id", required = true)
-//                                                                           @PathVariable(name = "project_id") Long projectId,
-//                                                                           @ApiParam(value = "board id", required = true)
-//                                                                           @RequestParam Long boardId) {
-//        return Optional.ofNullable(issueStatusService.queryUnCorrespondStatus(projectId, boardId))
-//                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-//                .orElseThrow(() -> new CommonException(ERROR_STATUS_GET));
-//    }
-
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询项目下未对应的状态")
     @GetMapping(value = "/list_by_options")
@@ -139,38 +127,5 @@ public class IssueStatusController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.status.update"));
     }
-
-//    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-//    @ApiOperation("根据项目id查询状态列表")
-//    @CustomPageRequest
-//    @GetMapping(value = "/statuses")
-//    public ResponseEntity<Page<StatusDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
-//                                                           @PathVariable(name = "project_id") Long projectId,
-//                                                           @ApiIgnore
-//                                                           @ApiParam(value = "分页信息", required = true)
-//                                                           @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-//        return Optional.ofNullable(issueStatusService.listByProjectId(projectId, pageRequest))
-//                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-//                .orElseThrow(() -> new CommonException("error.statusList.get"));
-//    }
-
-//    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
-//    @ApiOperation("迁移数据，查询所有状态，执行1")
-//    @GetMapping(value = "/move_status")
-//    public ResponseEntity moveStatus(@ApiParam(value = "项目id", required = true)
-//                                     @PathVariable(name = "project_id") Long projectId,
-//                                     Boolean isFixStatus) {
-//        issueStatusService.moveStatus(projectId, isFixStatus);
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
-//
-//    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
-//    @ApiOperation("迁移数据，查询所有状态，执行2")
-//    @GetMapping(value = "/update_all_data")
-//    public ResponseEntity updateAllData(@ApiParam(value = "项目id", required = true)
-//                                        @PathVariable(name = "project_id") Long projectId) {
-//        issueStatusService.updateAllData(projectId);
-//        return new ResponseEntity<>(HttpStatus.CREATED);
-//    }
 
 }

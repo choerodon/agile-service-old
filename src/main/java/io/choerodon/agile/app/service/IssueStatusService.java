@@ -19,10 +19,6 @@ public interface IssueStatusService {
 
     IssueStatusDTO moveStatusToColumn(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO);
 
-//    List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId);
-
-//    List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId);
-
     List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId);
 
     IssueStatusDTO moveStatusToUnCorrespond(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO);
@@ -40,8 +36,6 @@ public interface IssueStatusService {
     List<IssueStatusDTO> queryIssueStatusList(Long projectId);
 
     IssueStatusDTO updateStatus(Long projectId, IssueStatusDTO issueStatusDTO);
-
-//    Page<StatusDTO> listByProjectId(Long projectId, PageRequest pageRequest);
 
     void moveStatus();
 

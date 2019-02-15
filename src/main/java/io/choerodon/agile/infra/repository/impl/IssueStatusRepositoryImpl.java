@@ -76,8 +76,4 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
         issueStatusMapper.batchCreateStatusByProjectIds(addStatusWithProjects, userId);
     }
 
-//    @Override
-//    public Boolean checkSameStatus(Long projectId, String statusName) {
-//        return issueStatusMapper.checkSameStatus(projectId, statusName) != 0;
-//    }
 }

@@ -113,11 +113,6 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         }
     }
 
-//    @Override
-//    public Boolean checkSameStatusName(Long projectId, String statusName) {
-//        return issueStatusRepository.checkSameStatus(projectId, statusName);
-//    }
-
     private void setColumnColor(BoardColumnDTO boardColumnDTO, Boolean checkStatus) {
         if (!checkStatus) {
             switch (boardColumnDTO.getCategoryCode()) {
