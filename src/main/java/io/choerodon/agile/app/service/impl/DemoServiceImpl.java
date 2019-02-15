@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.domain.agile.event.DemoPayload;
-import io.choerodon.agile.domain.agile.event.VersionPayload;
 import io.choerodon.agile.infra.dataobject.BoardColumnDO;
 import io.choerodon.agile.infra.dataobject.BoardDO;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
