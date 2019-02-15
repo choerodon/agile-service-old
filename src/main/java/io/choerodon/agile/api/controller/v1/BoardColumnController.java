@@ -28,7 +28,7 @@ public class BoardColumnController {
     @Autowired
     private BoardColumnService boardColumnService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建BoardColumn")
     @PostMapping
     public ResponseEntity<BoardColumnDTO> createBoardColumn(@ApiParam(value = "项目id", required = true)
@@ -42,7 +42,7 @@ public class BoardColumnController {
                 .orElseThrow(() -> new CommonException("error.BoardColumn.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更新BoardColumn")
     @PutMapping(value = "/{columnId}")
     public ResponseEntity<BoardColumnDTO> updateBoardColumn(@ApiParam(value = "项目id", required = true)
@@ -58,7 +58,7 @@ public class BoardColumnController {
                 .orElseThrow(() -> new CommonException("error.BoardColumn.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("调整列的顺序")
     @PostMapping(value = "/column_sort")
     public ResponseEntity columnSort(@ApiParam(value = "项目id", required = true)
@@ -69,7 +69,7 @@ public class BoardColumnController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("删除BoardColumn")
     @DeleteMapping(value = "/{columnId}")
     public ResponseEntity deleteBoardColumn(@ApiParam(value = "项目id", required = true)
@@ -92,7 +92,7 @@ public class BoardColumnController {
                 .orElseThrow(() -> new CommonException("error.BoardColumn.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据id更新最大最小值")
     @PostMapping(value = "/{columnId}/column_contraint")
     public ResponseEntity<BoardColumnDTO> updateColumnContraint(@ApiParam(value = "项目id", required = true)

@@ -90,7 +90,7 @@ public class IssueStatusController {
                 .orElseThrow(() -> new CommonException(ERROR_STATUS_GET));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("状态移动至列中")
     @PostMapping(value = "/{statusId}/move_to_column")
     public ResponseEntity<IssueStatusDTO> moveStatusToColumn(@ApiParam(value = "项目id", required = true)
@@ -104,7 +104,7 @@ public class IssueStatusController {
                 .orElseThrow(() -> new CommonException(ERROR_STATUS_GET));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("状态移动至未对应")
     @PostMapping(value = "/{statusId}/move_to_uncorrespond")
     public ResponseEntity<IssueStatusDTO> moveStatusToUnCorrespond(@ApiParam(value = "项目id", required = true)

@@ -30,7 +30,7 @@ public class BoardController {
     @Autowired
     private BoardService boardService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建scrum board,创建默认列，关联项目状态")
     @PostMapping
     public ResponseEntity createScrumBoard(@ApiParam(value = "项目id", required = true)
@@ -41,7 +41,7 @@ public class BoardController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更新scrum board")
     @PutMapping(value = "/{boardId}")
     public ResponseEntity<BoardDTO> updateScrumBoard(@ApiParam(value = "项目id", required = true)
