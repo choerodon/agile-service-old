@@ -30,11 +30,12 @@ public interface VersionIssueRelMapper extends BaseMapper<VersionIssueRelDO> {
     /**
      * 查询当前版本关联（不包括归档的）
      *
-     * @param projectId projectId
-     * @param issueId   issueId
+     * @param projectId   projectId
+     * @param issueId     issueId
+     * @param versionType versionType
      * @return Long
      */
-    List<Long> queryByIssueIdAndProjectIdNoArchived(@Param("projectId")Long projectId, @Param("issueId")Long issueId);
+    List<Long> queryByIssueIdAndProjectIdNoArchived(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("versionType") String versionType);
 
-    void updateDemoVersionIssueTime(@Param("projectId")Long projectId, @Param("updateDate")Date updateDate);
+    void updateDemoVersionIssueTime(@Param("projectId") Long projectId, @Param("updateDate") Date updateDate);
 }

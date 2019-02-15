@@ -1311,7 +1311,7 @@ public class IssueServiceImpl implements IssueService {
                 List<VersionIssueRelE> versionIssueRelES = ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class);
                 List<VersionIssueRelE> versionIssueRelCreate = versionIssueRelES.stream().filter(versionIssueRelE ->
                         versionIssueRelE.getVersionId() != null).collect(Collectors.toList());
-                List<Long> curVersionIds = versionIssueRelMapper.queryByIssueIdAndProjectIdNoArchived(projectId, issueId);
+                List<Long> curVersionIds = versionIssueRelMapper.queryByIssueIdAndProjectIdNoArchived(projectId, issueId, versionType);
                 List<Long> createVersionIds = versionIssueRelCreate.stream().map(VersionIssueRelE::getVersionId).collect(Collectors.toList());
                 curVersionIds.forEach(id -> {
                     if (!createVersionIds.contains(id)) {
