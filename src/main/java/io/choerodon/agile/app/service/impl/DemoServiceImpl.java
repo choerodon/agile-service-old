@@ -28,7 +28,6 @@ import java.util.*;
  * Email: fuqianghuang01@gmail.com
  */
 @Service
-@Transactional(rollbackFor = Exception.class)
 public class DemoServiceImpl implements DemoService {
 
     private final static String AGILE_APPLYTYPE = "agile";
