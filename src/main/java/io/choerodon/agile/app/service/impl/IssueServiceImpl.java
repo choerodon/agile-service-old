@@ -504,7 +504,7 @@ public class IssueServiceImpl implements IssueService {
         if (fieldList.contains("epicName") && issueUpdateDTO.getEpicName() != null && checkEpicNameUpdate(projectId, issueUpdateDTO.getIssueId(), issueUpdateDTO.getEpicName())) {
             throw new CommonException("error.epicName.exist");
         }
-        if (fieldList != null && !fieldList.isEmpty()) {
+        if (!fieldList.isEmpty()) {
             //处理issue自己字段
             handleUpdateIssue(issueUpdateDTO, fieldList, projectId);
         }

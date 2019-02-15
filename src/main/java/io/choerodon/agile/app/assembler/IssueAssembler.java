@@ -58,6 +58,7 @@ public class IssueAssembler extends AbstractAssembler {
         String assigneeName = userMessageDOMap.get(issueDTO.getAssigneeId()) != null ? userMessageDOMap.get(issueDTO.getAssigneeId()).getName() : null;
         String reporterName = userMessageDOMap.get(issueDTO.getReporterId()) != null ? userMessageDOMap.get(issueDTO.getReporterId()).getName() : null;
         String createrName = userMessageDOMap.get(issueDTO.getCreatedBy()) != null ? userMessageDOMap.get(issueDTO.getCreatedBy()).getName() : null;
+        issueDTO.setCreaterEmail(userMessageDOMap.get(issueDTO.getCreatedBy()) != null ? userMessageDOMap.get(issueDTO.getCreatedBy()).getEmail() : null);
         issueDTO.setAssigneeName(assigneeName);
         issueDTO.setAssigneeImageUrl(assigneeName != null ? userMessageDOMap.get(issueDTO.getAssigneeId()).getImageUrl() : null);
         issueDTO.setReporterName(reporterName);
@@ -160,6 +161,7 @@ public class IssueAssembler extends AbstractAssembler {
         String assigneeName = userMessageDOMap.get(issueSubDTO.getAssigneeId()) != null ? userMessageDOMap.get(issueSubDTO.getAssigneeId()).getName() : null;
         String reporterName = userMessageDOMap.get(issueSubDTO.getReporterId()) != null ? userMessageDOMap.get(issueSubDTO.getReporterId()).getName() : null;
         String createrName = userMessageDOMap.get(issueSubDTO.getCreatedBy()) != null ? userMessageDOMap.get(issueSubDTO.getCreatedBy()).getName() : null;
+        issueSubDTO.setCreaterEmail(userMessageDOMap.get(issueSubDTO.getCreatedBy()) != null ? userMessageDOMap.get(issueSubDTO.getCreatedBy()).getEmail() : null);
         issueSubDTO.setAssigneeName(assigneeName);
         issueSubDTO.setAssigneeImageUrl(assigneeName != null ? userMessageDOMap.get(issueSubDTO.getAssigneeId()).getImageUrl() : null);
         issueSubDTO.setReporterName(reporterName);
