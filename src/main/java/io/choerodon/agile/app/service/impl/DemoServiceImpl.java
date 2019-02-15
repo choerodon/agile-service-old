@@ -408,7 +408,7 @@ public class DemoServiceImpl implements DemoService {
 
     @Saga(code = "agile-demo-for-test", description = "为测试提供demo数据", inputSchemaClass = DemoPayload.class)
     @Override
-    public void demoInit(Long projectId) {
+    public void demoInit(Long projectId, Long userId1, Long userId2) {
 
         // 查询项目信息
         ProjectDTO projectDTO = userFeignClient.queryProject(projectId).getBody();
@@ -725,31 +725,31 @@ public class DemoServiceImpl implements DemoService {
 
 
         // 更新经办人
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask8.getIssueId(), 2781L, workDays.get(12), workDays.get(12));
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask7.getIssueId(), 3356L, workDays.get(12), workDays.get(12));
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask6.getIssueId(), 3356L, workDays.get(12), workDays.get(12));
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask5.getIssueId(), 2781L, workDays.get(12), workDays.get(12));
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask4.getIssueId(), 2781L, workDays.get(12), workDays.get(12));
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask3.getIssueId(), 3356L, workDays.get(12), workDays.get(12));
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask2.getIssueId(), 2781L, workDays.get(12), workDays.get(12));
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask1.getIssueId(), 3356L, workDays.get(12), workDays.get(12));
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask9.getIssueId(), 3356L, workDays.get(12), workDays.get(12));
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask10.getIssueId(), 2781L, workDays.get(12), workDays.get(12));
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask11.getIssueId(), 3356L, workDays.get(12), workDays.get(12));
-        issueMapper.updateAssigneeIdBySpecify(projectId, task3.getIssueId(), 3356L, workDays.get(12), workDays.get(12));
-        issueMapper.updateAssigneeIdBySpecify(projectId, bug1.getIssueId(), 3356L, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask8.getIssueId(), userId1, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask7.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask6.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask5.getIssueId(), userId1, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask4.getIssueId(), userId1, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask3.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask2.getIssueId(), userId1, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask1.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask9.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask10.getIssueId(), userId1, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask11.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, task3.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, bug1.getIssueId(), userId2, workDays.get(12), workDays.get(12));
 
-        issueMapper.updateTestIssue(projectId, test1.getIssueId(), 3347L, workDays.get(2), workDays.get(2));
-        issueMapper.updateTestIssue(projectId, test2.getIssueId(), 3347L, workDays.get(2), workDays.get(2));
-        issueMapper.updateTestIssue(projectId, test3.getIssueId(), 3347L, workDays.get(2), workDays.get(2));
-        issueMapper.updateTestIssue(projectId, test4.getIssueId(), 3347L, workDays.get(2), workDays.get(2));
+        issueMapper.updateTestIssue(projectId, test1.getIssueId(), userId2, workDays.get(2), workDays.get(2));
+        issueMapper.updateTestIssue(projectId, test2.getIssueId(), userId2, workDays.get(2), workDays.get(2));
+        issueMapper.updateTestIssue(projectId, test3.getIssueId(), userId2, workDays.get(2), workDays.get(2));
+        issueMapper.updateTestIssue(projectId, test4.getIssueId(), userId2, workDays.get(2), workDays.get(2));
 
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask16.getIssueId(), 3356L, workDays.get(3), workDays.get(3));
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask17.getIssueId(), 2781L, workDays.get(3), workDays.get(3));
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask18.getIssueId(), 3356L, workDays.get(3), workDays.get(3));
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask19.getIssueId(), 2781L, workDays.get(3), workDays.get(3));
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask20.getIssueId(), 3356L, workDays.get(3), workDays.get(3));
-        issueMapper.updateAssigneeIdBySpecify(projectId, subtask21.getIssueId(), 2781L, workDays.get(3), workDays.get(3));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask16.getIssueId(), userId2, workDays.get(3), workDays.get(3));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask17.getIssueId(), userId1, workDays.get(3), workDays.get(3));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask18.getIssueId(), userId2, workDays.get(3), workDays.get(3));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask19.getIssueId(), userId1, workDays.get(3), workDays.get(3));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask20.getIssueId(), userId2, workDays.get(3), workDays.get(3));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask21.getIssueId(), userId1, workDays.get(3), workDays.get(3));
 
         // 更新项目创建时间
         updateProjectAndIssues(projectId, workDays.get(13), workDays.get(12));
@@ -872,6 +872,10 @@ public class DemoServiceImpl implements DemoService {
         testIssueIds.add(test3.getIssueId());
         testIssueIds.add(test4.getIssueId());
         demoPayload.setTestIssueIds(testIssueIds);
+        demoPayload.setProjectId(projectId);
+        demoPayload.setUserId(userId2);
+        demoPayload.setVersionId(productVersionDetailDTO.getVersionId());
+        demoPayload.setSprintEndDate(workDays.get(2));
         sagaClient.startSaga("agile-demo-for-test", new StartInstanceDTO(JSON.toJSONString(demoPayload), "", "", ResourceLevel.PROJECT.value(), projectId));
     }
 
