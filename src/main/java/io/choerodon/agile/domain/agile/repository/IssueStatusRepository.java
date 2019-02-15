@@ -25,6 +25,4 @@ public interface IssueStatusRepository {
      */
     void batchCreateStatusByProjectIds(List<AddStatusWithProject> addStatusWithProjects, Long userId);
 
-//    Boolean checkSameStatus(Long projectId, String statusName);
-
 }

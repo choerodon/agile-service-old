@@ -106,16 +106,4 @@ public class BoardColumnController {
                 .orElseThrow(() -> new CommonException("error.MaxAndMinNum.update"));
     }
 
-//    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-//    @ApiOperation("校验状态名称是否重复")
-//    @GetMapping(value = "/check")
-//    public ResponseEntity<Boolean> checkStatusName(@ApiParam(value = "项目id", required = true)
-//                                                   @PathVariable(name = "project_id") Long projectId,
-//                                                   @ApiParam(value = "状态名称", required = true)
-//                                                   @RequestParam String statusName) {
-//        return Optional.ofNullable(boardColumnService.checkSameStatusName(projectId, statusName))
-//                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-//                .orElseThrow(() -> new CommonException("error.status.checkStatusName"));
-//    }
-
 }

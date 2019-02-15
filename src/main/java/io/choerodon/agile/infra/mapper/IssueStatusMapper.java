@@ -13,20 +13,7 @@ import java.util.List;
  */
 public interface IssueStatusMapper extends BaseMapper<IssueStatusDO> {
 
-    //    List queryUnCorrespondStatus(@Param("projectId") Long projectId, @Param("boardId") Long boardId);
     List queryUnCorrespondStatus(@Param("projectId") Long projectId, @Param("boardId") Long boardId, @Param("realStatusIds") List<Long> realStatusIds);
-
-    /**
-     * 根据项目id查询第一列的第一个状态
-     *
-     * @param projectId projectId
-     * @return Long
-     */
-//    List<IssueStatusCreateDO> queryIssueStatus(@Param("projectId") Long projectId);
-
-//    Integer checkSameStatus(@Param("projectId") Long projectId, @Param("statusName") String statusName);
-
-//    List<StatusDO> listByProjectId(@Param("projectId") Long projectId);
 
     List<IssueStatusDO> selectStatusIdIsNotNull();
 

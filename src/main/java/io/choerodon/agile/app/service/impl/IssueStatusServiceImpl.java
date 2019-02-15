@@ -160,16 +160,6 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         return ConvertHelper.convert(issueStatusMapper.selectByStatusId(projectId, statusId), IssueStatusDTO.class);
     }
 
-//    @Override
-//    public List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId) {
-//        List<StatusAndIssuesDO> statusAndIssuesDOList = issueStatusMapper.queryUnCorrespondStatus(projectId, boardId);
-//        List<StatusAndIssuesDTO> statusAndIssuesDTOList = new ArrayList<>();
-//        if (statusAndIssuesDOList != null) {
-//            statusAndIssuesDTOList = ConvertHelper.convertList(statusAndIssuesDOList, StatusAndIssuesDTO.class);
-//        }
-//        return statusAndIssuesDTOList;
-//    }
-
     @Override
     public List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId) {
         List<StatusMapDTO> statusMapDTOList = issueFeignClient.queryStatusByProjectId(projectId, "agile").getBody();
@@ -255,19 +245,6 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         IssueStatusE issueStatusE = ConvertHelper.convert(issueStatusDTO, IssueStatusE.class);
         return ConvertHelper.convert(issueStatusRepository.update(issueStatusE), IssueStatusDTO.class);
     }
-
-//    @Override
-//    public Page<StatusDTO> listByProjectId(Long projectId, PageRequest pageRequest) {
-//        Page<StatusDO> statusDOPage = PageHelper.doPageAndSort(pageRequest, () -> issueStatusMapper.listByProjectId(projectId));
-//        Page<StatusDTO> statusDTOPage = new Page<>();
-//        statusDTOPage.setTotalPages(statusDOPage.getTotalPages());
-//        statusDTOPage.setNumber(statusDOPage.getNumber());
-//        statusDTOPage.setNumberOfElements(statusDOPage.getNumberOfElements());
-//        statusDTOPage.setTotalElements(statusDOPage.getTotalElements());
-//        statusDTOPage.setSize(statusDOPage.getSize());
-//        statusDTOPage.setContent(ConvertHelper.convertList(statusDOPage.getContent(), StatusDTO.class));
-//        return statusDTOPage;
-//    }
 
     @Override
     public void moveStatus() {
