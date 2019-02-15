@@ -86,6 +86,16 @@ public class IssueSubDTO {
 
     private Long createdBy;
 
+    private String createrEmail;
+
+    public String getCreaterEmail() {
+        return createrEmail;
+    }
+
+    public void setCreaterEmail(String createrEmail) {
+        this.createrEmail = createrEmail;
+    }
+
     public Long getCreatedBy() {
         return createdBy;
     }

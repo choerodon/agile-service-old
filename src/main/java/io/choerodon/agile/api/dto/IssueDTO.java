@@ -100,6 +100,16 @@ public class IssueDTO {
 
     private String applyType;
 
+    private String createrEmail;
+
+    public String getCreaterEmail() {
+        return createrEmail;
+    }
+
+    public void setCreaterEmail(String createrEmail) {
+        this.createrEmail = createrEmail;
+    }
+
     public String getCreaterImageUrl() {
         return createrImageUrl;
     }
