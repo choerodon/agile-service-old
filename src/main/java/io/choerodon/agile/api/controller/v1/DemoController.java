@@ -27,7 +27,7 @@ public class DemoController {
     @PostMapping
     public ResponseEntity demoInit(@ApiParam(value = "项目id", required = true)
                                    @PathVariable(name = "project_id") Long projectId) {
-        demoService.demoInit(projectId);
+        demoService.demoInit(projectId, 2781L, 3356L);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

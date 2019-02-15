@@ -1,5 +1,6 @@
 package io.choerodon.agile.domain.agile.event;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -9,6 +10,12 @@ import java.util.List;
 public class DemoPayload {
 
     private Long projectId;
+
+    private Long versionId;
+
+    private Long userId;
+
+    private Date sprintEndDate;
 
     private List<Long> testIssueIds;
 
@@ -26,5 +33,29 @@ public class DemoPayload {
 
     public Long getProjectId() {
         return projectId;
+    }
+
+    public Long getVersionId() {
+        return versionId;
+    }
+
+    public void setVersionId(Long versionId) {
+        this.versionId = versionId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Date getSprintEndDate() {
+        return sprintEndDate;
+    }
+
+    public void setSprintEndDate(Date sprintEndDate) {
+        this.sprintEndDate = sprintEndDate;
     }
 }

@@ -6,7 +6,7 @@ package io.choerodon.agile.app.service;
  */
 public interface DemoService {
 
-    void demoInit(Long projectId);
+    void demoInit(Long projectId, Long userId1, Long userId2);
 
     void demoDelete(Long projectId);
 
