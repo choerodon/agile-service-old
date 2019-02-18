@@ -175,6 +175,19 @@ public class BoardServiceImpl implements BoardService {
             boardColumnRepository.delete(column.getColumnId());
         }
         boardRepository.delete(boardId);
+        //删除默认看板UserSetting
+        UserSettingDO userSettingDO = new UserSettingDO();
+        userSettingDO.setProjectId(projectId);
+        userSettingDO.setTypeCode(BOARD);
+        userSettingDO.setBoardId(boardId);
+        userSettingDO.setUserId(DetailsHelper.getUserDetails().getUserId());
+        userSettingMapper.delete(userSettingDO);
+        //更新第一个为默认
+        List<BoardDTO> boardDTOS = queryByProjectId(projectId);
+        if(!boardDTOS.isEmpty()){
+            Long defaultBoardId = boardDTOS.get(0).getBoardId();
+            handleUserSetting(defaultBoardId, projectId);
+        }
     }
 
     @Override
