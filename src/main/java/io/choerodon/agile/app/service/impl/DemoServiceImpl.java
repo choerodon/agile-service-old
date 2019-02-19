@@ -874,7 +874,13 @@ public class DemoServiceImpl implements DemoService {
         demoPayload.setProjectId(projectId);
         demoPayload.setUserId(userId2);
         demoPayload.setVersionId(productVersionDetailDTO.getVersionId());
-        demoPayload.setSprintEndDate(workDays.get(2));
+        demoPayload.setOrganizationId(organizationId);
+        demoPayload.setDateOne(workDays.get(6));
+        demoPayload.setDateTwo(workDays.get(4));
+        demoPayload.setDateThree(workDays.get(2));
+        demoPayload.setDateFour(dateAfters.get(0));
+        demoPayload.setDateFive(dateAfters.get(2));
+        demoPayload.setDateSix(dateAfters.get(4));
         sagaClient.startSaga("agile-demo-for-test", new StartInstanceDTO(JSON.toJSONString(demoPayload), "", "", ResourceLevel.PROJECT.value(), projectId));
     }
 
