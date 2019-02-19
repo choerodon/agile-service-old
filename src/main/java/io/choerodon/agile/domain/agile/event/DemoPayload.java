@@ -11,13 +11,25 @@ public class DemoPayload {
 
     private Long projectId;
 
+    private Long organizationId;
+
     private Long versionId;
 
     private Long userId;
 
-    private Date sprintEndDate;
-
     private List<Long> testIssueIds;
+
+    private Date dateOne;   //第一个迭代第六个工作日
+
+    private Date dateTwo;   //第一个迭代第八个工作日
+
+    private Date dateThree; //第一个迭代第十个工作日
+
+    private Date dateFour;  //第二个迭代第一个工作日
+
+    private Date dateFive;  //第二个迭代第三个工作日
+
+    private Date dateSix;   //第二个迭代第五个工作日
 
     public void setTestIssueIds(List<Long> testIssueIds) {
         this.testIssueIds = testIssueIds;
@@ -51,11 +63,59 @@ public class DemoPayload {
         this.userId = userId;
     }
 
-    public Date getSprintEndDate() {
-        return sprintEndDate;
+    public Long getOrganizationId() {
+        return organizationId;
     }
 
-    public void setSprintEndDate(Date sprintEndDate) {
-        this.sprintEndDate = sprintEndDate;
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
+    }
+
+    public Date getDateOne() {
+        return dateOne;
+    }
+
+    public void setDateOne(Date dateOne) {
+        this.dateOne = dateOne;
+    }
+
+    public Date getDateTwo() {
+        return dateTwo;
+    }
+
+    public void setDateTwo(Date dateTwo) {
+        this.dateTwo = dateTwo;
+    }
+
+    public Date getDateThree() {
+        return dateThree;
+    }
+
+    public void setDateThree(Date dateThree) {
+        this.dateThree = dateThree;
+    }
+
+    public Date getDateFour() {
+        return dateFour;
+    }
+
+    public void setDateFour(Date dateFour) {
+        this.dateFour = dateFour;
+    }
+
+    public Date getDateFive() {
+        return dateFive;
+    }
+
+    public void setDateFive(Date dateFive) {
+        this.dateFive = dateFive;
+    }
+
+    public Date getDateSix() {
+        return dateSix;
+    }
+
+    public void setDateSix(Date dateSix) {
+        this.dateSix = dateSix;
     }
 }
