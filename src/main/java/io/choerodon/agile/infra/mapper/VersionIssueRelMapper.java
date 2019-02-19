@@ -25,7 +25,7 @@ public interface VersionIssueRelMapper extends BaseMapper<VersionIssueRelDO> {
      * @param versionType versionType
      * @return int
      */
-    int batchDeleteByIssueIdAndType(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("versionType") String versionType);
+    int batchDeleteByIssueIdAndTypeArchivedExceptInfluence(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("versionType") String versionType);
 
     /**
      * 查询当前版本关联（不包括归档的）
@@ -35,7 +35,7 @@ public interface VersionIssueRelMapper extends BaseMapper<VersionIssueRelDO> {
      * @param versionType versionType
      * @return Long
      */
-    List<Long> queryByIssueIdAndProjectIdNoArchived(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("versionType") String versionType);
+    List<Long> queryByIssueIdAndProjectIdNoArchivedExceptInfluence(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("versionType") String versionType);
 
     void updateDemoVersionIssueTime(@Param("projectId") Long projectId, @Param("updateDate") Date updateDate);
 }

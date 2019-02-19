@@ -446,7 +446,7 @@
             version_id
     </select>
 
-    <select id="queryVersionRelByIssueIdAndType" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDO">
+    <select id="queryVersionRelByIssueIdAndTypeArchivedExceptInfluence" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDO">
         SELECT
             avir.version_id AS version_id,
             avir.issue_id   AS issue_id,
@@ -459,6 +459,9 @@
         WHERE avir.project_id = #{projectId}
               AND avir.issue_id = #{issueId}
               AND avir.relation_type = #{relationType}
+        <if test='relationType == "fix"'>
+            and apv.status_code != 'archived'
+        </if>
     </select>
 
     <update id="batchUpdateSequence">

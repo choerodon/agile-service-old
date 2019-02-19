@@ -24,7 +24,7 @@
         </foreach>
     </delete>
 
-    <delete id="batchDeleteByIssueIdAndType">
+    <delete id="batchDeleteByIssueIdAndTypeArchivedExceptInfluence">
         DELETE avir
         FROM
             agile_version_issue_rel avir,
@@ -34,10 +34,12 @@
             AND apv.version_id = avir.version_id
             AND avir.project_id = #{projectId}
             AND avir.relation_type = #{versionType}
-            AND apv.status_code != 'archived';
+        <if test='versionType == "fix"'>
+            and apv.status_code != 'archived'
+        </if>
     </delete>
 
-    <select id="queryByIssueIdAndProjectIdNoArchived" resultType="java.lang.Long">
+    <select id="queryByIssueIdAndProjectIdNoArchivedExceptInfluence" resultType="java.lang.Long">
         SELECT avir.version_id from
         agile_version_issue_rel avir ,agile_product_version apv
         where apv.version_id = avir.version_id

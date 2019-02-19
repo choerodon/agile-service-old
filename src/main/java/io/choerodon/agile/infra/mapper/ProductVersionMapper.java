@@ -81,7 +81,7 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
      * @param relationType relationType
      * @return ProductVersionDO
      */
-    List<ProductVersionDO> queryVersionRelByIssueIdAndType(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("relationType") String relationType);
+    List<ProductVersionDO> queryVersionRelByIssueIdAndTypeArchivedExceptInfluence(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("relationType") String relationType);
 
     /**
      * 批量更新排序

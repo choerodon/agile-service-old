@@ -597,7 +597,7 @@ public class DataLogAspect {
             }
         }
         if (versionIssueRelE != null) {
-            List<ProductVersionDO> productVersionDOS = productVersionMapper.queryVersionRelByIssueIdAndType(
+            List<ProductVersionDO> productVersionDOS = productVersionMapper.queryVersionRelByIssueIdAndTypeArchivedExceptInfluence(
                     versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), versionIssueRelE.getRelationType());
             Long issueId = versionIssueRelE.getIssueId();
             String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
