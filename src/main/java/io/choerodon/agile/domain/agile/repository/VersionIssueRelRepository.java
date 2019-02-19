@@ -34,7 +34,7 @@ public interface VersionIssueRelRepository {
      * @param versionIssueRelE   versionIssueRelE
      * @return int
      */
-    int batchDeleteByIssueIdAndType(VersionIssueRelE versionIssueRelE);
+    int batchDeleteByIssueIdAndTypeArchivedExceptInfluence(VersionIssueRelE versionIssueRelE);
 
     /**
      * 根据id删除

@@ -1311,7 +1311,7 @@ public class IssueServiceImpl implements IssueService {
                 List<VersionIssueRelE> versionIssueRelES = ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class);
                 List<VersionIssueRelE> versionIssueRelCreate = versionIssueRelES.stream().filter(versionIssueRelE ->
                         versionIssueRelE.getVersionId() != null).collect(Collectors.toList());
-                List<Long> curVersionIds = versionIssueRelMapper.queryByIssueIdAndProjectIdNoArchived(projectId, issueId, versionType);
+                List<Long> curVersionIds = versionIssueRelMapper.queryByIssueIdAndProjectIdNoArchivedExceptInfluence(projectId, issueId, versionType);
                 List<Long> createVersionIds = versionIssueRelCreate.stream().map(VersionIssueRelE::getVersionId).collect(Collectors.toList());
                 curVersionIds.forEach(id -> {
                     if (!createVersionIds.contains(id)) {
@@ -1327,7 +1327,7 @@ public class IssueServiceImpl implements IssueService {
             } else {
                 VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
                 versionIssueRelE.createBatchDeleteVersionIssueRel(projectId, issueId, versionType);
-                versionIssueRelRepository.batchDeleteByIssueIdAndType(versionIssueRelE);
+                versionIssueRelRepository.batchDeleteByIssueIdAndTypeArchivedExceptInfluence(versionIssueRelE);
             }
         }
 
