@@ -77,7 +77,7 @@ public class DataLogRedisUtil {
         if (sprintId == null && issueId != null) {
             sprintId = sprintMapper.queryNotCloseSprintIdByIssueId(issueId, projectId);
         }
-        if (sprintId != null) {
+        if (sprintId != null && sprintId != 0L) {
             redisUtil.deleteRedisCache(new String[]{BURN_DOWN_COORDINATE + projectId + COLON + sprintId + COLON + type});
         }
     }
@@ -167,7 +167,7 @@ public class DataLogRedisUtil {
         redisUtil.deleteRedisCache(new String[]{CUMULATIVE_FLOW_DIAGRAM + originIssueDO.getProjectId() + COLON + POINTER,
                 VELOCITY_CHART + originIssueDO.getProjectId() + COLON + POINTER,
                 PIE_CHART + issueE.getProjectId() + COLON + ISSUE_TYPE + POINTER,
-                PIE_CHART +  issueE.getProjectId() + COLON + FIELD_STATUS + POINTER,
+                PIE_CHART + issueE.getProjectId() + COLON + FIELD_STATUS + POINTER,
                 PIE_CHART + issueE.getProjectId() + COLON + EPIC_FIELD + POINTER
         });
     }
@@ -200,8 +200,9 @@ public class DataLogRedisUtil {
     }
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void deleteByBatchRemoveSprintToTarget(Long sprintId, Long projectId) {
-        deleteBurnDownCache(sprintId, projectId, null, POINTER);
+    public void deleteByBatchRemoveSprintToTarget(Long targetSprintId, Long projectId, Long originSprintId) {
+        deleteBurnDownCache(targetSprintId, projectId, null, POINTER);
+        deleteBurnDownCache(originSprintId, projectId, null, POINTER);
         redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + projectId + COLON + POINTER,
                 PIE_CHART + projectId + COLON + SPRINT + POINTER,
                 BURN_DOWN_COORDINATE_BY_TYPE + projectId + COLON + POINTER
