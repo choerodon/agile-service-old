@@ -350,7 +350,7 @@ public class DataLogAspect {
                 List<SprintNameDO> sprintNames = issueMapper.querySprintNameByIssueId(issueId);
                 handleBatchCreateDataLogForSpring(sprintNames, sprintNameDO, newSprintNameStr, newSprintIdStr, sprintDO, projectId, issueId);
             }
-            dataLogRedisUtil.deleteByBatchRemoveSprintToTarget(sprintId, projectId);
+            dataLogRedisUtil.deleteByBatchRemoveSprintToTarget(sprintId, projectId, null);
         }
     }
 
@@ -715,12 +715,14 @@ public class DataLogAspect {
         SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
         for (Long issueId : issueIds) {
             SprintNameDO activeSprintName = issueMapper.queryActiveSprintNameByIssueId(issueId);
+            Long originSprintId = null;
             if (activeSprintName != null) {
                 if (sprintId != null && sprintId.equals(activeSprintName.getSprintId())) {
                     continue;
                 }
+                originSprintId = activeSprintName.getSprintId();
             }
-            dataLogRedisUtil.deleteByBatchRemoveSprintToTarget(sprintId, projectId);
+            dataLogRedisUtil.deleteByBatchRemoveSprintToTarget(sprintId, projectId, originSprintId);
             StringBuilder newSprintIdStr = new StringBuilder();
             StringBuilder newSprintNameStr = new StringBuilder();
             List<SprintNameDO> sprintNames = issueMapper.querySprintNameByIssueId(issueId);
