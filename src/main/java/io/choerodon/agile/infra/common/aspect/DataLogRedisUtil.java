@@ -9,6 +9,7 @@ import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.agile.infra.dataobject.SprintDO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.SprintMapper;
+import io.choerodon.agile.infra.mapper.VersionIssueRelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,8 @@ public class DataLogRedisUtil {
     private SprintMapper sprintMapper;
     @Autowired
     private IssueMapper issueMapper;
+    @Autowired
+    private VersionIssueRelMapper versionIssueRelMapper;
 
     @Async(REDIS_TASK_EXECUTOR)
     public void handleBatchDeleteRedisCache(List<IssueDO> issueDOS, Long projectId) {
@@ -122,10 +125,16 @@ public class DataLogRedisUtil {
         if (condition) {
             deleteEpicChartCache(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId(), POINTER);
             deleteBurnDownCoordinateByTypeEpic(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId());
+            deleteBurnDownCoordinateByVersion(originIssueDO.getProjectId(), issueE.getIssueId());
             deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), POINTER);
             redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + originIssueDO.getProjectId() + COLON + POINTER});
             deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), POINTER);
         }
+    }
+
+    public void deleteBurnDownCoordinateByVersion(Long projectId, Long issueId) {
+        List<Long> versionIds = versionIssueRelMapper.queryVersionIdsByIssueId(issueId, projectId);
+        deleteByBatchDeleteVersionByVersionIds(projectId, versionIds);
     }
 
     public void deleteBurnDownCoordinateByTypeEpic(Long epicId, Long projectId, Long issueId) {
@@ -194,9 +203,11 @@ public class DataLogRedisUtil {
 
     @Async(REDIS_TASK_EXECUTOR)
     public void deleteByBatchDeleteVersionByVersionIds(Long projectId, List<Long> versionIds) {
-        versionIds.forEach(versionId -> redisUtil.deleteRedisCache(new String[]{VERSION_CHART + projectId + COLON + versionId + COLON + POINTER,
-                BURN_DOWN_COORDINATE_BY_TYPE + projectId + COLON + VERSION + COLON + versionId
-        }));
+        if (versionIds != null && !versionIds.isEmpty()) {
+            versionIds.forEach(versionId -> redisUtil.deleteRedisCache(new String[]{VERSION_CHART + projectId + COLON + versionId + COLON + POINTER,
+                    BURN_DOWN_COORDINATE_BY_TYPE + projectId + COLON + VERSION + COLON + versionId
+            }));
+        }
     }
 
     @Async(REDIS_TASK_EXECUTOR)

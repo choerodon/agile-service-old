@@ -38,4 +38,13 @@ public interface VersionIssueRelMapper extends BaseMapper<VersionIssueRelDO> {
     List<Long> queryByIssueIdAndProjectIdNoArchivedExceptInfluence(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("versionType") String versionType);
 
     void updateDemoVersionIssueTime(@Param("projectId") Long projectId, @Param("updateDate") Date updateDate);
+
+    /**
+     * 根据issueId和projectId查询versionIds
+     *
+     * @param issueId   issueId
+     * @param projectId projectId
+     * @return Long
+     */
+    List<Long> queryVersionIdsByIssueId(@Param("issueId") Long issueId, @Param("projectId") Long projectId);
 }
