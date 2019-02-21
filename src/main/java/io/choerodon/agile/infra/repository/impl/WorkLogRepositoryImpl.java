@@ -40,8 +40,12 @@ public class WorkLogRepositoryImpl implements WorkLogRepository {
     }
 
     @Override
-    public void delete(Long logId) {
-        WorkLogDO workLogDO = workLogMapper.selectByPrimaryKey(logId);
+    @DataLog(type = "deleteWorkLog")
+    public void delete(Long projectId,Long logId) {
+        WorkLogDO query = new WorkLogDO();
+        query.setProjectId(projectId);
+        query.setLogId(logId);
+        WorkLogDO workLogDO = workLogMapper.selectOne(query);
         if (workLogDO == null) {
             throw new CommonException("error.workLog.get");
         }

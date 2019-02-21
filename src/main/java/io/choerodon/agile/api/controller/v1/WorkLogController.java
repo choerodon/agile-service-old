@@ -53,7 +53,7 @@ public class WorkLogController {
                 .orElseThrow(() -> new CommonException("error.workLog.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("删除work log")
     @DeleteMapping(value = "/{logId}")
     public ResponseEntity deleteWorkLog(@ApiParam(value = "项目id", required = true)

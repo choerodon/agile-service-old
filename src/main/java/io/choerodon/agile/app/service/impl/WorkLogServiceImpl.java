@@ -56,7 +56,7 @@ public class WorkLogServiceImpl implements WorkLogService {
     private void setTo(Long issueId, BigDecimal predictionTime) {
         IssueE issueE = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueE.class);
         issueE.setRemainingTime(predictionTime);
-        issueRepository.update(issueE,new String[]{REMAINING_TIME_FIELD});
+        issueRepository.update(issueE, new String[]{REMAINING_TIME_FIELD});
     }
 
     private BigDecimal getRemainTime(IssueE issueE, BigDecimal theTime) {
@@ -68,7 +68,7 @@ public class WorkLogServiceImpl implements WorkLogService {
         IssueE issueE = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueE.class);
         if (issueE.getRemainingTime() != null) {
             issueE.setRemainingTime(getRemainTime(issueE, predictionTime));
-            issueRepository.update(issueE,new String[]{REMAINING_TIME_FIELD});
+            issueRepository.update(issueE, new String[]{REMAINING_TIME_FIELD});
         }
     }
 
@@ -76,7 +76,7 @@ public class WorkLogServiceImpl implements WorkLogService {
         IssueE issueE = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueE.class);
         if (issueE.getRemainingTime() != null) {
             issueE.setRemainingTime(getRemainTime(issueE, workTime));
-            issueRepository.update(issueE,new String[]{REMAINING_TIME_FIELD});
+            issueRepository.update(issueE, new String[]{REMAINING_TIME_FIELD});
         }
     }
 
@@ -117,7 +117,7 @@ public class WorkLogServiceImpl implements WorkLogService {
 
     @Override
     public void delete(Long projectId, Long logId) {
-        workLogRepository.delete(logId);
+        workLogRepository.delete(projectId, logId);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class WorkLogServiceImpl implements WorkLogService {
 
     @Override
     public List<WorkLogDTO> queryWorkLogListByIssueId(Long projectId, Long issueId) {
-        List<WorkLogDTO> workLogDTOList = ConvertHelper.convertList(workLogMapper.queryByIssueId(issueId,projectId), WorkLogDTO.class);
+        List<WorkLogDTO> workLogDTOList = ConvertHelper.convertList(workLogMapper.queryByIssueId(issueId, projectId), WorkLogDTO.class);
         List<Long> assigneeIds = workLogDTOList.stream().filter(workLogDTO -> workLogDTO.getUserId() != null && !Objects.equals(workLogDTO.getUserId(), 0L)).map(WorkLogDTO::getUserId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         workLogDTOList.forEach(workLogDTO -> {
