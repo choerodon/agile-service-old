@@ -25,7 +25,6 @@ All notable changes about agile-service will be documented in this file.
 - Partial views style optimization. 
 - Partial report optimization.
 
-
 ### Fixed
 
 - Problems in pasting network pictures with sub-text.
