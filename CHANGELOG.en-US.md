@@ -20,7 +20,6 @@ All notable changes about agile-service will be documented in this file.
 - Under the epic swimming lane, the board supports viewing stories and reflects the relationship between stories and subtasks.
 - Display optimization of task cards after filtering in different swimming lanes.     
 - Optimized modification of logic problems related to creating modules.
-- Return the creator's avatar and name when create a issue.
 - The affected version can be selected to the full version.    
 - Partial views style optimization. 
 - Partial report optimization.
