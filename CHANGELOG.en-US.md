@@ -26,7 +26,7 @@ All notable changes about agile-service will be documented in this file.
 
 ### Fixed
 
-- Problems in pasting network pictures with sub-text.
+- The problem of incorrect number of sub-texts when pasting network pictures.
 - Repair the problem of double counting the number of burnout issues when closing the sprint.
 - Issue is not refreshed synchronously in the backlog when modified the name of the epic.
 - There is error when version or sprint is null in statistic chart.
