@@ -9,7 +9,7 @@ All notable changes about agile-service will be documented in this file.
 - Repeated prompt for sprint name.
 - Board permission restriction.
 - Support association when creating issues.
-- Story point, remain time support decimal point after one
+- Story point, remain time support 0.5 decimal points.
 
 ### Changed
 
