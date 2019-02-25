@@ -355,6 +355,15 @@ public class BoardServiceImpl implements BoardService {
         return parentIssueDOList;
     }
 
+    private List<ColumnIssueNumDO> getAllColumnNum(Long projectId, Long boardId, Long activeSprintId) {
+        BoardDO boardDO = boardMapper.selectByPrimaryKey(boardId);
+        if (!CONTRAINT_NONE.equals(boardDO.getColumnConstraint())) {
+            return boardColumnMapper.getAllColumnNum(projectId, boardId, activeSprintId, boardDO.getColumnConstraint());
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
     @Override
     public JSONObject queryAllData(Long projectId, Long boardId, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId, List<Long> assigneeFilterIds) {
         JSONObject jsonObject = new JSONObject(true);
@@ -382,6 +391,7 @@ public class BoardServiceImpl implements BoardService {
         jsonObject.put("parentWithSubs", parentWithSubs);
         jsonObject.put("parentCompleted", sortAndJudgeCompleted(projectId, parentIds));
         jsonObject.put("epicInfo", !epicIds.isEmpty() ? boardColumnMapper.selectEpicBatchByIds(epicIds) : null);
+        jsonObject.put("allColumnNum", getAllColumnNum(projectId, boardId, activeSprintId));
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         Comparator<IssueForBoardDO> comparator = Comparator.comparing(IssueForBoardDO::getRank, nullsFirst(naturalOrder()));
         columns.forEach(columnAndIssueDO -> columnAndIssueDO.getSubStatuses().forEach(subStatus -> {
@@ -438,36 +448,36 @@ public class BoardServiceImpl implements BoardService {
         boardColumnService.initBoardColumns(projectId, boardResult.getBoardId(), statusPayloads);
     }
 
-    private void checkNumberContraint(BoardColumnCheckDO boardColumnCheckDO, BoardColumnCheckDO originBoardColumnCheckDO, Long currentStatusId, Long originStatusId) {
-        Long currentMaxNum = boardColumnCheckDO.getMaxNum();
-        Long currentIssueCount = boardColumnCheckDO.getIssueCount();
-        Long originMinNum = originBoardColumnCheckDO.getMinNum();
-        Long originIssueCount = originBoardColumnCheckDO.getIssueCount();
-        if (originMinNum != null && !originStatusId.equals(currentStatusId) && originIssueCount <= originMinNum) {
-            throw new CommonException("error.minNum.cannotReduce", originBoardColumnCheckDO.getName());
-        }
-        if (currentMaxNum != null && !originStatusId.equals(currentStatusId) && currentIssueCount >= currentMaxNum) {
-            throw new CommonException("error.maxNum.cannotAdd", boardColumnCheckDO.getName());
-        }
-    }
+//    private void checkNumberContraint(BoardColumnCheckDO boardColumnCheckDO, BoardColumnCheckDO originBoardColumnCheckDO, Long currentStatusId, Long originStatusId) {
+//        Long currentMaxNum = boardColumnCheckDO.getMaxNum();
+//        Long currentIssueCount = boardColumnCheckDO.getIssueCount();
+//        Long originMinNum = originBoardColumnCheckDO.getMinNum();
+//        Long originIssueCount = originBoardColumnCheckDO.getIssueCount();
+//        if (originMinNum != null && !originStatusId.equals(currentStatusId) && originIssueCount <= originMinNum) {
+//            throw new CommonException("error.minNum.cannotReduce", originBoardColumnCheckDO.getName());
+//        }
+//        if (currentMaxNum != null && !originStatusId.equals(currentStatusId) && currentIssueCount >= currentMaxNum) {
+//            throw new CommonException("error.maxNum.cannotAdd", boardColumnCheckDO.getName());
+//        }
+//    }
 
-    private void checkColumnContraint(Long projectId, IssueMoveDTO issueMoveDTO, String columnContraint, Long originStatusId) {
-        Long statusId = issueMoveDTO.getStatusId();
-        SprintDO activeSprint = getActiveSprint(projectId);
-        Long activeSprintId = null;
-        if (activeSprint != null) {
-            activeSprintId = activeSprint.getSprintId();
-        }
-        if (columnContraint.equals(CONTRAINT_ISSUE)) {
-            BoardColumnCheckDO boardColumnCheckDO = boardColumnMapper.selectColumnByColumnId(projectId, issueMoveDTO.getColumnId(), activeSprintId);
-            BoardColumnCheckDO originBoardColumnCheckDO = boardColumnMapper.selectColumnByColumnId(projectId, issueMoveDTO.getOriginColumnId(), activeSprintId);
-            checkNumberContraint(boardColumnCheckDO, originBoardColumnCheckDO, statusId, originStatusId);
-        } else if (columnContraint.equals(CONTRAINT_ISSUE_WITHOUT_SUBTASK)) {
-            BoardColumnCheckDO boardColumnCheckDO = boardColumnMapper.selectColumnByColumnIdWithoutSub(projectId, issueMoveDTO.getColumnId(), activeSprintId);
-            BoardColumnCheckDO originBoardColumnCheckDO = boardColumnMapper.selectColumnByColumnIdWithoutSub(projectId, issueMoveDTO.getOriginColumnId(), activeSprintId);
-            checkNumberContraint(boardColumnCheckDO, originBoardColumnCheckDO, statusId, originStatusId);
-        }
-    }
+//    private void checkColumnContraint(Long projectId, IssueMoveDTO issueMoveDTO, String columnContraint, Long originStatusId) {
+//        Long statusId = issueMoveDTO.getStatusId();
+//        SprintDO activeSprint = getActiveSprint(projectId);
+//        Long activeSprintId = null;
+//        if (activeSprint != null) {
+//            activeSprintId = activeSprint.getSprintId();
+//        }
+//        if (columnContraint.equals(CONTRAINT_ISSUE)) {
+//            BoardColumnCheckDO boardColumnCheckDO = boardColumnMapper.selectColumnByColumnId(projectId, issueMoveDTO.getColumnId(), activeSprintId);
+//            BoardColumnCheckDO originBoardColumnCheckDO = boardColumnMapper.selectColumnByColumnId(projectId, issueMoveDTO.getOriginColumnId(), activeSprintId);
+//            checkNumberContraint(boardColumnCheckDO, originBoardColumnCheckDO, statusId, originStatusId);
+//        } else if (columnContraint.equals(CONTRAINT_ISSUE_WITHOUT_SUBTASK)) {
+//            BoardColumnCheckDO boardColumnCheckDO = boardColumnMapper.selectColumnByColumnIdWithoutSub(projectId, issueMoveDTO.getColumnId(), activeSprintId);
+//            BoardColumnCheckDO originBoardColumnCheckDO = boardColumnMapper.selectColumnByColumnIdWithoutSub(projectId, issueMoveDTO.getOriginColumnId(), activeSprintId);
+//            checkNumberContraint(boardColumnCheckDO, originBoardColumnCheckDO, statusId, originStatusId);
+//        }
+//    }
 
     private String convertProjectName(ProjectDTO projectDTO) {
         String projectName = projectDTO.getName();
@@ -476,12 +486,11 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public IssueMoveDTO move(Long projectId, Long issueId, Long transformId, IssueMoveDTO issueMoveDTO) {
-        Long boardId = issueMoveDTO.getBoardId();
+//        Long boardId = issueMoveDTO.getBoardId();
         IssueDO issueDO = issueMapper.selectByPrimaryKey(issueMoveDTO.getIssueId());
-        BoardDO boardDO = boardMapper.selectByPrimaryKey(boardId);
-        checkColumnContraint(projectId, issueMoveDTO, boardDO.getColumnConstraint(), issueDO.getStatusId());
+//        BoardDO boardDO = boardMapper.selectByPrimaryKey(boardId);
+//        checkColumnContraint(projectId, issueMoveDTO, boardDO.getColumnConstraint(), issueDO.getStatusId());
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
-//        IssueMoveDTO result = ConvertHelper.convert(issueRepository.update(issueE, new String[]{"statusId"}), IssueMoveDTO.class);
         //执行状态机转换
         stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber(),
                 SchemeApplyType.AGILE, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleIssueMoveRank(projectId, issueMoveDTO))));

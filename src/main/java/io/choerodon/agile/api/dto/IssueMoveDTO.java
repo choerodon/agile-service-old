@@ -26,6 +26,10 @@ public class IssueMoveDTO {
 
     private Boolean rank;
 
+    private Long originColumnCount;
+
+    private Long columnCount;
+
     public Boolean getRank() {
         return rank;
     }
@@ -104,5 +108,21 @@ public class IssueMoveDTO {
 
     public void setOriginColumnId(Long originColumnId) {
         this.originColumnId = originColumnId;
+    }
+
+    public void setColumnCount(Long columnCount) {
+        this.columnCount = columnCount;
+    }
+
+    public Long getColumnCount() {
+        return columnCount;
+    }
+
+    public void setOriginColumnCount(Long originColumnCount) {
+        this.originColumnCount = originColumnCount;
+    }
+
+    public Long getOriginColumnCount() {
+        return originColumnCount;
     }
 }
