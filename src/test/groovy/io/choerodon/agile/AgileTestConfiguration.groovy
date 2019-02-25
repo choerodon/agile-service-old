@@ -275,7 +275,7 @@ class AgileTestConfiguration {
         OrganizationCreateEventPayload organizationCreateEventPayload = new OrganizationCreateEventPayload()
         organizationCreateEventPayload.setId(1L)
         String message = JSON.toJSONString(organizationCreateEventPayload)
-        agileEventHandler.handleOrgaizationRegisterByConsumeSagaTask(message)
+        agileEventHandler.handleOrgaizationCreateByConsumeSagaTask(message)
     }
 
     private void initIssues() {
