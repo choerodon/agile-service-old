@@ -60,7 +60,6 @@ public class AgileEventHandler {
     private static final String IAM_CREATE_PROJECT = "iam-create-project";
     private static final String ORG_CREATE = "org-create-organization";
     private static final String PROJECT_CREATE_STATE_MACHINE = "project-create-state-machine";
-    private static final String ORG_REGISTER = "org-register";
     private static final String ISSUE_SERVICE_CONSUME_STATUS = "issue-service-consume-status";
     private static final String AGILE_REMOVE_STATUS = "agile-remove-status";
     private static final String AGILE_CHANGE_STATUS = "agile-change-status";
@@ -116,15 +115,6 @@ public class AgileEventHandler {
     public void issueServiceConSumeStatus(String message) {
         StatusPayload statusPayload = JSONObject.parseObject(message, StatusPayload.class);
         issueStatusService.consumDeleteStatus(statusPayload);
-    }
-
-    @SagaTask(code = AGILE_INIT_TIMEZONE,
-            description = "issue消费注册组织初始化数据",
-            sagaCode = ORG_REGISTER,
-            seq = 1)
-    public String handleOrgaizationRegisterByConsumeSagaTask(String data) {
-        handleOrganizationInitTimeZoneSagaTask(data);
-        return data;
     }
 
     private void handleOrganizationInitTimeZoneSagaTask(String data) {
