@@ -1,6 +1,39 @@
 # Changelog
 All notable changes about agile-service will be documented in this file.
 
+## [0.14.0] - 2019-02-22
+
+### Added
+
+- Warning hints for residence time of cards in board.
+- Repeated prompt for sprint name.
+- Board permission restriction.
+- Support association when creating issues.
+- Story point and remain time support 0.5 decimal points.
+
+### Changed
+
+- Show the completed issue and cross out the number.
+- The stories which all the subtasks completed are sorted under the story swimming lane.
+- Description optimization of active logs.
+- Add or modify filter for issue links, issue management, version details, release versions, modules and quick filter.
+- Under the epic swimming lane, the board supports viewing stories and reflects the relationship between stories and subtasks.
+- Display optimization of task cards after filtering in different swimming lanes.     
+- Optimized modification of logic problems related to creating modules.
+- The affected version can be selected to the full version.    
+- Partial views style optimization. 
+- Partial report optimization.
+
+### Fixed
+
+- The problem of incorrect number of sub-texts when pasting network pictures.
+- Repair the problem of double counting the number of burnout issues when closing the sprint.
+- Issue is not refreshed synchronously in the backlog when modified the name of the epic.
+- There is error when version or sprint is null in statistic chart.
+- Work Calendar Non-Holiday Computing bug.
+- Status color errors in story point statistics.
+
+
 ## [0.13.0] - 2019-01-11
 
 ### Added

@@ -55,4 +55,12 @@
         set creation_date = #{updateDate}, last_update_date = #{updateDate}
         where project_id = #{projectId} and relation_type = 'fix'
     </update>
+
+    <select id="queryVersionIdsByIssueId" resultType="java.lang.Long">
+        SELECT distinct avir.version_id from
+        agile_version_issue_rel avir
+        where avir.issue_id = #{issueId}
+        and avir.project_id = #{projectId}
+    </select>
+
 </mapper>

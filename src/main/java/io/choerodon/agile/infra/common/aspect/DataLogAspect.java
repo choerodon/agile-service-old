@@ -77,6 +77,7 @@ public class DataLogAspect {
     private static final String UPDATE_COMMENT = "updateComment";
     private static final String DELETE_COMMENT = "deleteComment";
     private static final String CREATE_WORKLOG = "createWorkLog";
+    private static final String DELETE_WORKLOG = "deleteWorkLog";
     private static final String EPIC_NAME_FIELD = "epicName";
     private static final String FIELD_EPIC_NAME = "Epic Name";
     private static final String SUMMARY_FIELD = "summary";
@@ -159,6 +160,8 @@ public class DataLogAspect {
     private IssueFeignClient issueFeignClient;
     @Autowired
     private DataLogRedisUtil dataLogRedisUtil;
+    @Autowired
+    private WorkLogMapper workLogMapper;
 
     /**
      * 定义拦截规则：拦截Spring管理的后缀为RepositoryImpl的bean中带有@DataLog注解的方法。
@@ -224,6 +227,9 @@ public class DataLogAspect {
                         break;
                     case CREATE_WORKLOG:
                         result = handleCreateWorkLogDataLog(args, pjp);
+                        break;
+                    case DELETE_WORKLOG:
+                        result = handleDeleteWorkLogDataLog(args);
                         break;
                     default:
                         break;
@@ -297,6 +303,22 @@ public class DataLogAspect {
             throw new CommonException(ERROR_METHOD_EXECUTE, e);
         }
         return result;
+    }
+
+    private Object handleDeleteWorkLogDataLog(Object[] args) {
+        Long projectId = (Long) args[0];
+        Long logId = (Long) args[1];
+        if (logId != null && projectId != null) {
+            WorkLogDO query = new WorkLogDO();
+            query.setProjectId(projectId);
+            query.setLogId(logId);
+            WorkLogDO workLogDO = workLogMapper.selectOne(query);
+            if (workLogDO != null) {
+                createDataLog(workLogDO.getProjectId(), workLogDO.getIssueId(), FIELD_WORKLOGID,
+                        workLogDO.getLogId().toString(), null, workLogDO.getLogId().toString(), null);
+            }
+        }
+        return null;
     }
 
     private void batchUpdateIssueStatusToOtherDataLog(Object[] args) {
@@ -484,7 +506,7 @@ public class DataLogAspect {
                 createDataLog(workLogE.getProjectId(), workLogE.getIssueId(), FIELD_TIMESPENT,
                         oldString, newString, oldValue, newValue);
                 createDataLog(workLogE.getProjectId(), workLogE.getIssueId(), FIELD_WORKLOGID,
-                        workLogE.getLogId().toString(), null, workLogE.getLogId().toString(), null);
+                        null, workLogE.getLogId().toString(), null, workLogE.getLogId().toString());
             } catch (Throwable e) {
                 throw new CommonException(ERROR_METHOD_EXECUTE, e);
             }

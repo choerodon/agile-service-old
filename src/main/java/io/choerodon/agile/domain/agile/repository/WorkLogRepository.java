@@ -12,6 +12,6 @@ public interface WorkLogRepository {
 
     WorkLogE update(WorkLogE workLogE);
 
-    void delete(Long logId);
+    void delete(Long projectId,Long logId);
 
 }
