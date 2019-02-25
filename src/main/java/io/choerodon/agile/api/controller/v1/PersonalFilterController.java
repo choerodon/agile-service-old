@@ -70,9 +70,21 @@ public class PersonalFilterController {
                                                                    @PathVariable(name = "project_id") Long projectId,
                                                                    @ApiParam(value = "用户id", required = true)
                                                                    @PathVariable Long userId,
-                                                                   @RequestParam(name = "searchStr") String searchStr) {
+                                                                   @RequestParam(name = "searchStr", required = false) String searchStr) {
         return Optional.ofNullable(personalFilterService.listByProjectId(projectId, userId, searchStr))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.personalFilter.list"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("根据id查询我的筛选")
+    @GetMapping(value = "/{filterId}")
+    public ResponseEntity<PersonalFilterDTO> queryById(@ApiParam(value = "项目id", required = true)
+                                                       @PathVariable(name = "project_id") Long projectId,
+                                                       @ApiParam(value = "filter id", required = true)
+                                                       @PathVariable Long filterId) {
+        return Optional.ofNullable(personalFilterService.queryById(projectId, filterId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.personalFilter.queryById"));
     }
 }

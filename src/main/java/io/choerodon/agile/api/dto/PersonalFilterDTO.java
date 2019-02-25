@@ -12,6 +12,26 @@ public class PersonalFilterDTO {
     private String name;
     private String filterJson;
 
+    private Long objectVersionNumber;
+
+    private PersonalFilterSearchDTO personalFilterSearchDTO;
+
+    public PersonalFilterSearchDTO getPersonalFilterSearchDTO() {
+        return personalFilterSearchDTO;
+    }
+
+    public void setPersonalFilterSearchDTO(PersonalFilterSearchDTO personalFilterSearchDTO) {
+        this.personalFilterSearchDTO = personalFilterSearchDTO;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
     public Long getFilterId() {
         return filterId;
     }

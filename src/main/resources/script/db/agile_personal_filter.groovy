@@ -1,4 +1,4 @@
-package db
+package script.db
 databaseChangeLog(logicalFilePath:'script/db/agile_personal_filter.groovy') {
     changeSet(id: '2019-02-25-agile-personal-filter', author: 'shinan.chenX@gmail.com') {
         createTable(tableName: "agile_personal_filter") {
