@@ -1,5 +1,6 @@
 package script.db
-databaseChangeLog(logicalFilePath:'agile_work_log.groovyoovy') {
+
+databaseChangeLog(logicalFilePath: 'agile_work_log.groovyoovy') {
     changeSet(id: '2018-05-18-agile-work-log', author: 'fuqianghuang01@gmail.com') {
         createTable(tableName: "agile_work_log") {
             column(name: 'log_id', type: 'BIGINT UNSIGNED', autoIncrement: true, remarks: 'log id') {
@@ -25,5 +26,8 @@ databaseChangeLog(logicalFilePath:'agile_work_log.groovyoovy') {
             column(name: "last_updated_by", type: "BIGINT UNSIGNED", defaultValue: "0")
             column(name: "last_update_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
+    }
+    changeSet(id: '2019-02-26-modify-data-type', author: 'shinan.chenX@gmail.com') {
+        modifyDataType(tableName: 'agile_work_log', columnName: 'work_time', newDataType: "DECIMAL(10,1)")
     }
 }
