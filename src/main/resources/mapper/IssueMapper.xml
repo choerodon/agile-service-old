@@ -441,12 +441,17 @@
             <if test='searchDTO.searchArgs.version != null and searchDTO.searchArgs.version != "" '>
                 AND ai.issue_id in (
                 SELECT avir.issue_id FROM agile_version_issue_rel avir,agile_product_version apv
-                where avir.version_id = apv.version_id and position(#{searchDTO.searchArgs.version} IN apv.name))
+                where avir.version_id = apv.version_id and position(#{searchDTO.searchArgs.version} IN apv.name) )
             </if>
             <if test='searchDTO.searchArgs.sprint != null and searchDTO.searchArgs.sprint != "" '>
                 AND ai.issue_id in (
                 SELECT aisr.issue_id FROM agile_issue_sprint_rel aisr,agile_sprint as2
                 where aisr.sprint_id = as2.sprint_id and position(#{searchDTO.searchArgs.sprint} IN as2.sprint_name) )
+            </if>
+            <if test='searchDTO.searchArgs.label != null and searchDTO.searchArgs.label != "" '>
+                AND ai.issue_id in (
+                SELECT alir.issue_id FROM agile_label_issue_rel alir,agile_issue_label ail
+                where alir.label_id = ail.label_id and position(#{searchDTO.searchArgs.label} IN ail.label_name) )
             </if>
         </if>
         <if test='searchDTO.otherArgs != null'>

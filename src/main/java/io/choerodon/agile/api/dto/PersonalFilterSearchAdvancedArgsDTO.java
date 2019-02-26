@@ -1,6 +1,5 @@
 package io.choerodon.agile.api.dto;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -12,8 +11,15 @@ public class PersonalFilterSearchAdvancedArgsDTO {
     List<Long> statusId;
     List<Long> priorityId;
     List<Long> assigneeIds;
-    Date createStartDate;
-    Date createEndDate;
+    List<Long> reporterIds;
+
+    public List<Long> getReporterIds() {
+        return reporterIds;
+    }
+
+    public void setReporterIds(List<Long> reporterIds) {
+        this.reporterIds = reporterIds;
+    }
 
     public List<Long> getIssueTypeId() {
         return issueTypeId;
@@ -45,21 +51,5 @@ public class PersonalFilterSearchAdvancedArgsDTO {
 
     public void setAssigneeIds(List<Long> assigneeIds) {
         this.assigneeIds = assigneeIds;
-    }
-
-    public Date getCreateStartDate() {
-        return createStartDate;
-    }
-
-    public void setCreateStartDate(Date createStartDate) {
-        this.createStartDate = createStartDate;
-    }
-
-    public Date getCreateEndDate() {
-        return createEndDate;
-    }
-
-    public void setCreateEndDate(Date createEndDate) {
-        this.createEndDate = createEndDate;
     }
 }

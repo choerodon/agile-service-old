@@ -1,17 +1,25 @@
 package io.choerodon.agile.api.dto;
 
+import java.util.Date;
+
 /**
  * @author shinan.chen
  * @since 2019/2/25
  */
 public class PersonalFilterSearchArgsDTO {
+    String summary;
+    String issueNum;
+
     String assignee;
+    String reporter;
     String component;
     String epic;
-    String issueNum;
     String sprint;
-    String summary;
     String version;
+    String label;
+
+    Date createStartDate;
+    Date createEndDate;
 
     public String getAssignee() {
         return assignee;
@@ -67,5 +75,37 @@ public class PersonalFilterSearchArgsDTO {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public Date getCreateStartDate() {
+        return createStartDate;
+    }
+
+    public void setCreateStartDate(Date createStartDate) {
+        this.createStartDate = createStartDate;
+    }
+
+    public Date getCreateEndDate() {
+        return createEndDate;
+    }
+
+    public void setCreateEndDate(Date createEndDate) {
+        this.createEndDate = createEndDate;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getReporter() {
+        return reporter;
+    }
+
+    public void setReporter(String reporter) {
+        this.reporter = reporter;
     }
 }
