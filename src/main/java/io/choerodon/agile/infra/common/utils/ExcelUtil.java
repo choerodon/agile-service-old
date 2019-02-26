@@ -1,14 +1,25 @@
 package io.choerodon.agile.infra.common.utils;
 
-import org.apache.poi.ss.usermodel.CellStyle;
+import io.choerodon.core.exception.CommonException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.util.NumberToTextConverter;
 import org.apache.poi.xssf.streaming.SXSSFCell;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
@@ -21,11 +32,57 @@ import java.util.List;
  */
 public class ExcelUtil {
 
+    public enum Mode {
+        SXSSF("SXSSF"), HSSF("HSSF"),XSSF("XSSF");
+        private String value;
+
+        Mode(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return this.value;
+        }
+    }
+
     private ExcelUtil() {
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExcelUtil.class);
     private static final String EXCEPTION = "Exception:{}";
+    private static final String ERROR_IO_WORKBOOK_WRITE_OUTPUTSTREAM = "error.io.workbook.write.output.stream";
+
+    public static <T> SXSSFWorkbook generateExcel(List<T> list, Class<T> clazz, String[] fieldsName, String[] fields, String sheetName) {
+        //1、创建工作簿
+        SXSSFWorkbook workbook = new SXSSFWorkbook();
+        if (list != null && !list.isEmpty()) {
+            //1.3、列标题样式
+            CellStyle style2 = createCellStyle(workbook, (short) 13, CellStyle.ALIGN_LEFT, true);
+            //1.4、强制换行
+            CellStyle cellStyle = workbook.createCellStyle();
+            cellStyle.setWrapText(true);
+            //2、创建工作表
+            SXSSFSheet sheet = workbook.createSheet(sheetName);
+            //设置默认列宽
+            sheet.setDefaultColumnWidth(13);
+            SXSSFRow row2 = sheet.createRow(0);
+            row2.setHeight((short) 260);
+            for (int j = 0; j < list.size(); j++) {
+                SXSSFRow row = sheet.createRow(j + 1);
+                row.setHeight((short) 260);
+                for (int i = 0; i < fieldsName.length; i++) {
+                    //3.3设置列标题
+                    SXSSFCell cell2 = row2.createCell(i);
+                    //加载单元格样式
+                    cell2.setCellStyle(style2);
+                    cell2.setCellValue(fieldsName[i]);
+                    //4、操作单元格；将数据写入excel
+                    handleWriteCell(row, i, j, list, cellStyle, fields, clazz);
+                }
+            }
+        }
+        return workbook;
+    }
 
     /**
      * 通过类导出
@@ -132,5 +189,30 @@ public class ExcelUtil {
             return null;
         }
         return "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+    }
+
+    public static Workbook getWorkbookFromMultipartFile(Mode mode, MultipartFile excelFile) {
+        try {
+            switch (mode) {
+                case HSSF:
+                    return new HSSFWorkbook(excelFile.getInputStream());
+                case XSSF:
+                    return new XSSFWorkbook(excelFile.getInputStream());
+                default:
+                    return null;
+            }
+        } catch (IOException e) {
+            throw new CommonException(e.getMessage());
+        }
+    }
+
+
+    public static byte[] getBytes(Workbook workbook) {
+        try (ByteArrayOutputStream workbookOutputStream = new ByteArrayOutputStream()) {
+            workbook.write(workbookOutputStream);
+            return workbookOutputStream.toByteArray();
+        } catch (IOException e) {
+            throw new CommonException(ERROR_IO_WORKBOOK_WRITE_OUTPUTSTREAM, e);
+        }
     }
 }
