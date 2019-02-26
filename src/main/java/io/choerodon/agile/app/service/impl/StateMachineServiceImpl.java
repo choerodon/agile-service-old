@@ -24,7 +24,10 @@ import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
-import io.choerodon.statemachine.annotation.*;
+import io.choerodon.statemachine.annotation.Condition;
+import io.choerodon.statemachine.annotation.PostAction;
+import io.choerodon.statemachine.annotation.UpdateStatus;
+import io.choerodon.statemachine.annotation.Validator;
 import io.choerodon.statemachine.client.StateMachineClient;
 import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.statemachine.dto.InputDTO;
@@ -35,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,7 +59,6 @@ public class StateMachineServiceImpl implements StateMachineService {
 
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
     private static final String ERROR_ISSUE_STATUS_NOT_FOUND = "error.createIssue.issueStatusNotFound";
-    private static final String ERROR_CREATE_ISSUE_CREATE = "error.createIssue.create";
     private static final String RANK = "rank";
     private static final String STATUS_ID = "statusId";
     private static final String STAY_DATE = "stayDate";
@@ -74,8 +75,6 @@ public class StateMachineServiceImpl implements StateMachineService {
     private IssueFeignClient issueFeignClient;
     @Autowired
     private IssueRepository issueRepository;
-    @Autowired
-    private PlatformTransactionManager transactionManager;
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
     @Autowired
@@ -99,8 +98,6 @@ public class StateMachineServiceImpl implements StateMachineService {
         IssueE issueE = issueAssembler.toTarget(issueCreateDTO, IssueE.class);
         Long projectId = issueE.getProjectId();
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
-        Long issueId;
-        ProjectInfoE projectInfoE;
         //获取状态机id
         Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, applyType, issueE.getIssueTypeId()).getBody();
         if (stateMachineId == null) {
@@ -114,20 +111,20 @@ public class StateMachineServiceImpl implements StateMachineService {
         //处理编号
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
-        projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
+        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
         if (projectInfoE == null) {
             throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
         }
         //创建issue
         issueE.setApplyType(applyType);
         issueService.handleInitIssue(issueE, initStatusId, projectInfoE);
-        issueId = issueRepository.create(issueE).getIssueId();
+        Long issueId = issueRepository.create(issueE).getIssueId();
 
         CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE);
-        InputDTO inputDTO = new InputDTO(issueId, "createIssue", JSON.toJSONString(createIssuePayload));
-        //通过状态机客户端创建实例
+        InputDTO inputDTO = new InputDTO(issueId, JSON.toJSONString(createIssuePayload));
+        //通过状态机客户端创建实例, 反射验证/条件/后置动作
         stateMachineClient.createInstance(organizationId, stateMachineId, inputDTO);
-
+        issueService.afterCreateIssue(issueId, issueE, issueCreateDTO, projectInfoE);
         return issueService.queryIssueCreate(issueCreateDTO.getProjectId(), issueId);
     }
 
@@ -142,8 +139,6 @@ public class StateMachineServiceImpl implements StateMachineService {
         IssueE subIssueE = issueAssembler.toTarget(issueSubCreateDTO, IssueE.class);
         Long projectId = subIssueE.getProjectId();
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
-        Long issueId;
-        ProjectInfoE projectInfoE;
         //获取状态机id
         Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, SchemeApplyType.AGILE, subIssueE.getIssueTypeId()).getBody();
         if (stateMachineId == null) {
@@ -157,7 +152,7 @@ public class StateMachineServiceImpl implements StateMachineService {
         //处理编号
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(subIssueE.getProjectId());
-        projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
+        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
         if (projectInfoE == null) {
             throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
         }
@@ -165,13 +160,13 @@ public class StateMachineServiceImpl implements StateMachineService {
         subIssueE.setApplyType(SchemeApplyType.AGILE);
         //初始化subIssue
         issueService.handleInitSubIssue(subIssueE, initStatusId, projectInfoE);
-        issueId = issueRepository.create(subIssueE).getIssueId();
+        Long issueId = issueRepository.create(subIssueE).getIssueId();
 
         CreateSubIssuePayload createSubIssuePayload = new CreateSubIssuePayload(issueSubCreateDTO, subIssueE, projectInfoE);
-        InputDTO inputDTO = new InputDTO(issueId, "createSubIssue", JSON.toJSONString(createSubIssuePayload));
-        //通过状态机客户端创建实例
+        InputDTO inputDTO = new InputDTO(issueId, JSON.toJSONString(createSubIssuePayload));
+        //通过状态机客户端创建实例, 反射验证/条件/后置动作
         stateMachineClient.createInstance(organizationId, stateMachineId, inputDTO);
-
+        issueService.afterCreateSubIssue(issueId, subIssueE, issueSubCreateDTO, projectInfoE);
         return issueService.queryIssueSubByCreate(subIssueE.getProjectId(), issueId);
     }
 
@@ -276,18 +271,6 @@ public class StateMachineServiceImpl implements StateMachineService {
     @PostAction(code = "create_change_log", name = "创建日志", description = "创建日志")
     public void createChangeLog(Long instanceId, StateMachineConfigDTO configDTO) {
         //todo
-    }
-
-    @StartInstance(code = "createIssue")
-    public void createIssue(Long instanceId, Long targetStatusId, String input) {
-        CreateIssuePayload createIssuePayload = JSONObject.parseObject(input, CreateIssuePayload.class);
-        issueService.afterCreateIssue(instanceId, createIssuePayload.getIssueE(), createIssuePayload.getIssueCreateDTO(), createIssuePayload.getProjectInfoE());
-    }
-
-    @StartInstance(code = "createSubIssue")
-    public void createSubIssue(Long instanceId, Long targetStatusId, String input) {
-        CreateSubIssuePayload createSubIssuePayload = JSONObject.parseObject(input, CreateSubIssuePayload.class);
-        issueService.afterCreateSubIssue(instanceId, createSubIssuePayload.getIssueE(), createSubIssuePayload.getIssueSubCreateDTO(), createSubIssuePayload.getProjectInfoE());
     }
 
     @UpdateStatus(code = "updateStatus")

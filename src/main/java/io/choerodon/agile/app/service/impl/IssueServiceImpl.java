@@ -45,7 +45,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -1463,18 +1462,7 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    /**
-     * 复制issue的接口调用了createIssue和createSubIssue导致手动事务失效，因此需要设置事务隔离级别为：READ_UNCOMMITTED
-     *
-     * @param projectId        projectId
-     * @param issueId          issueId
-     * @param copyConditionDTO copyConditionDTO
-     * @param organizationId   organizationId
-     * @param applyType        applyType
-     * @return IssueDTO
-     */
     @Override
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED, rollbackFor = Exception.class)
     public IssueDTO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO, Long organizationId, String applyType) {
         if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
             throw new CommonException("error.applyType.illegal");
