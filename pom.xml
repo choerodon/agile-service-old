@@ -191,6 +191,11 @@
             <artifactId>choerodon-starter-statemachine</artifactId>
             <version>0.1.0.RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>2.1.0</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
         <!--<dependency>-->
             <!--<groupId>org.powermock</groupId>-->

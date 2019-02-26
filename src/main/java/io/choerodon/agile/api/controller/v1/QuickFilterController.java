@@ -65,7 +65,7 @@ public class QuickFilterController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("修改quick filter")
+    @ApiOperation("删除quick filter")
     @DeleteMapping(value = "/{filterId}")
     public ResponseEntity<QuickFilterDTO> deleteById(@ApiParam(value = "项目id", required = true)
                                                      @PathVariable(name = "project_id") Long projectId,
