@@ -88,4 +88,7 @@ public interface IssueFeignClient {
     @GetMapping("/v1/organizations/{organization_id}/priority/list_by_org")
     ResponseEntity<List<PriorityDTO>> queryByOrganizationIdList(@ApiParam(value = "组织id", required = true)
                                                                 @PathVariable("organization_id") Long organizationId);
+
+    @GetMapping(value = "/v1/organizations/{organization_id}/issue_type/types")
+    ResponseEntity<List<IssueTypeDTO>> queryByOrgId(@PathVariable("organization_id") Long organizationId);
 }

@@ -65,6 +65,10 @@ public class ConvertUtil {
         return queryProject(projectId).getCode();
     }
 
+    public static String getName(Long projectId) {
+        return queryProject(projectId).getName();
+    }
+
     private static ProjectDTO queryProject(Long projectId) {
         ProjectDTO projectDTO = ORGANIZATION_MAP.get(projectId);
         if (projectDTO != null) {
