@@ -6,8 +6,26 @@ package io.choerodon.agile.api.dto;
  */
 public class PersonalFilterSearchDTO {
 
+    /**
+     * 搜索参数
+     */
     private PersonalFilterSearchArgsDTO searchArgs;
+    /**
+     * 高级搜索，issue的必填字段的对应id值，在sql中用in匹配
+     */
     private PersonalFilterSearchAdvancedArgsDTO advancedSearchArgs;
+    /**
+     * 其他搜索，issue的非必填字段的对应id值，在sql中用in匹配
+     */
+    private PersonalFilterSearchOtherArgsDTO otherArgs;
+
+    public PersonalFilterSearchOtherArgsDTO getOtherArgs() {
+        return otherArgs;
+    }
+
+    public void setOtherArgs(PersonalFilterSearchOtherArgsDTO otherArgs) {
+        this.otherArgs = otherArgs;
+    }
 
     public PersonalFilterSearchArgsDTO getSearchArgs() {
         return searchArgs;
