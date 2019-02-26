@@ -155,15 +155,7 @@ class SprintControllerSpec extends Specification {
 
         when: '更新issue'
         IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
-        IssueE issueE = new IssueE()
-        BeanUtils.copyProperties(issueDTO, issueE)
-        issueE.setSprintId(sprintIds[0])
-        ProjectInfoE projectInfoE = new ProjectInfoE()
-        projectInfoE.setProjectId(1L)
-        issueE.setAssigneerCondtiion(false)
-        CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE)
-        stateMachineService.createIssue(issueE.getIssueId(), 1, JSONObject.toJSONString(createIssuePayload))
-        issueIds.add(issueE.getIssueId())
+        issueIds.add(issueDTO.getIssueId())
 
         then: '判断issue是否成功生成'
         issueDTO.objectVersionNumber == 1

@@ -10,6 +10,7 @@ import io.choerodon.agile.infra.feign.fallback.NotifyFeignClientFallback;
 import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback;
 import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.statemachine.dto.InputDTO;
+import io.choerodon.statemachine.dto.StateMachineTransformDTO;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
 import io.choerodon.statemachine.feign.InstanceFeignClientFallback;
 import org.mockito.Matchers;
@@ -21,7 +22,10 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -52,7 +56,11 @@ public class FeignConfigure {
         executeResult.setSuccess(true);
         Mockito.when(instanceFeignClient.startInstance(Matchers.anyLong(), Matchers.anyString(), Matchers.anyLong(), Matchers.any(InputDTO.class)))
                 .thenReturn(new ResponseEntity<>(executeResult, HttpStatus.OK));
-        Mockito.when(instanceFeignClient.executeTransform(Matchers.anyLong(), Matchers.anyString(), Matchers.anyLong(), Matchers.anyLong(), Matchers.anyLong(), Matchers.any(InputDTO.class))).thenReturn(new ResponseEntity<>(executeResult, HttpStatus.OK));
+        Mockito.when(instanceFeignClient.executeTransform(Matchers.anyLong(), Matchers.anyString(), Matchers.anyLong(), Matchers.anyLong(), Matchers.anyLong(), Matchers.any(InputDTO.class)))
+                .thenReturn(new ResponseEntity<>(executeResult, HttpStatus.OK));
+        StateMachineTransformDTO stateMachineTransformDTO = new StateMachineTransformDTO();
+        Mockito.when(instanceFeignClient.queryInitTransform(Matchers.anyLong(), Matchers.anyLong()))
+                .thenReturn(new ResponseEntity<>(stateMachineTransformDTO, HttpStatus.OK));
         return instanceFeignClient;
     }
 
