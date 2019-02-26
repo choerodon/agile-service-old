@@ -219,14 +219,6 @@ class IssueControllerSpec extends Specification {
 
         when: '向开始创建issue的接口发请求'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues?applyType={applyType}', issueCreateDTO, IssueDTO, projectId, SchemeApplyType.AGILE)
-        IssueE issueE = new IssueE()
-        BeanUtils.copyProperties(entity.body, issueE)
-        issueE.setSprintId(sprintId)
-        ProjectInfoE projectInfoE = new ProjectInfoE()
-        projectInfoE.setProjectId(1L)
-        issueE.setAssigneerCondtiion(false)
-        CreateIssuePayload noDoneCreateIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE)
-        stateMachineService.createIssue(issueE.getIssueId(), 1, JSONObject.toJSONString(noDoneCreateIssuePayload))
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
         print(entity.body ? entity.body.toString() : null)

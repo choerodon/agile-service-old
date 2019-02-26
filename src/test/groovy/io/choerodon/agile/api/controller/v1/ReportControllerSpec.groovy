@@ -186,14 +186,6 @@ class ReportControllerSpec extends Specification {
         issueCreateDTO.issueTypeId = 1
         issueCreateDTO.reporterId = 1
         IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
-        IssueE issueE = new IssueE()
-        BeanUtils.copyProperties(issueDTO, issueE)
-        issueE.setSprintId(sprintId)
-        ProjectInfoE projectInfoE = new ProjectInfoE()
-        projectInfoE.setProjectId(1L)
-        issueE.setAssigneerCondtiion(false)
-        CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE)
-        stateMachineService.createIssue(issueE.getIssueId(), 1, JSONObject.toJSONString(createIssuePayload))
         issueIds.add(issueDTO.issueId)
 
         and: '将issue设置为done状态'
@@ -214,12 +206,6 @@ class ReportControllerSpec extends Specification {
         noDone.issueTypeId = 1
         noDone.reporterId = 1
         IssueDTO noDoneIssue = stateMachineService.createIssue(issueCreateDTO, "agile")
-        IssueE noDoneIssueE = new IssueE()
-        BeanUtils.copyProperties(noDoneIssue, noDoneIssueE)
-        noDoneIssueE.setSprintId(sprintId)
-        issueE.setAssigneerCondtiion(false)
-        CreateIssuePayload noDoneCreateIssuePayload = new CreateIssuePayload(noDone, noDoneIssueE, projectInfoE)
-        stateMachineService.createIssue(noDoneIssueE.getIssueId(), 1, JSONObject.toJSONString(noDoneCreateIssuePayload))
         issueIds.add(noDoneIssue.issueId)
 
         and: '设置冲刺开启对象'

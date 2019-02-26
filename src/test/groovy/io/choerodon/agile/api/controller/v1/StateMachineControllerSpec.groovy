@@ -99,14 +99,6 @@ class StateMachineControllerSpec extends Specification {
         issueCreateDTO.issueTypeId = 1L
         issueCreateDTO.reporterId = 1L
         IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
-        IssueE issueE = new IssueE()
-        BeanUtils.copyProperties(issueDTO, issueE)
-        issueE.setSprintId(1L)
-        ProjectInfoE projectInfoE = new ProjectInfoE()
-        projectInfoE.setProjectId(1L)
-        issueE.setAssigneerCondtiion(false)
-        CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE)
-        stateMachineService.createIssue(issueE.getIssueId(), 1, JSONObject.toJSONString(createIssuePayload))
         issueIds.add(issueDTO.issueId)
 
         when: '校验是否可以删除状态机的节点'
@@ -165,14 +157,6 @@ class StateMachineControllerSpec extends Specification {
         issueCreateDTO.issueTypeId = 1L
         issueCreateDTO.reporterId = 1L
         IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
-        IssueE issueE = new IssueE()
-        BeanUtils.copyProperties(issueDTO, issueE)
-        issueE.setSprintId(1L)
-        ProjectInfoE projectInfoE = new ProjectInfoE()
-        projectInfoE.setProjectId(1L)
-        issueE.setAssigneerCondtiion(false)
-        CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE)
-        stateMachineService.createIssue(issueE.getIssueId(), 1L, JSONObject.toJSONString(createIssuePayload))
         issueIds.add(issueDTO.issueId)
 
         when: '查询状态机方案变更后对issue的影响'
