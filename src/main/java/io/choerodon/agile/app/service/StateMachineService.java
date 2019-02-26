@@ -6,7 +6,6 @@ import io.choerodon.agile.api.dto.IssueSubCreateDTO;
 import io.choerodon.agile.api.dto.IssueSubDTO;
 import io.choerodon.agile.domain.agile.event.ProjectConfig;
 import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue;
-import io.choerodon.agile.infra.dataobject.IssueDetailDO;
 import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.statemachine.dto.InputDTO;
 
@@ -22,8 +21,6 @@ public interface StateMachineService {
     IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType);
 
     IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO);
-
-    IssueDetailDO queryIssueDetailWithUncommitted(Long projectId, Long issueId);
 
     /**
      * 执行状态转换
