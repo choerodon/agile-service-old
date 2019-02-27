@@ -193,18 +193,18 @@ public class AgileEventHandler {
         return message;
     }
 
-    /**
-     * demo项目创建消费
-     * @param message
-     * @return
-     */
-    @SagaTask(code = AGILE_DEMO_INIT,
-            description = "demo项目创建消费",
-            sagaCode = DEMO_CREATE_PROJECT,
-            seq = 10)
-    public void demoForAgileInit(String message) {
-        DemoProjectPayload demoProjectPayload = JSONObject.parseObject(message, DemoProjectPayload.class);
-        demoService.demoInit(demoProjectPayload.getProjectId(), demoProjectPayload.getUserId1(), demoProjectPayload.getUserId2());
-    }
+//    /**
+//     * demo项目创建消费
+//     * @param message
+//     * @return
+//     */
+//    @SagaTask(code = AGILE_DEMO_INIT,
+//            description = "demo项目创建消费",
+//            sagaCode = DEMO_CREATE_PROJECT,
+//            seq = 10)
+//    public void demoForAgileInit(String message) {
+//        DemoProjectPayload demoProjectPayload = JSONObject.parseObject(message, DemoProjectPayload.class);
+//        demoService.demoInit(demoProjectPayload.getProjectId(), demoProjectPayload.getUserId1(), demoProjectPayload.getUserId2());
+//    }
 
 }
