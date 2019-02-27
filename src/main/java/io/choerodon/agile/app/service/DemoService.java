@@ -1,12 +1,14 @@
 package io.choerodon.agile.app.service;
 
+import io.choerodon.agile.domain.agile.event.OrganizationRegisterEventPayload;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/01/07.
  * Email: fuqianghuang01@gmail.com
  */
 public interface DemoService {
 
-    void demoInit(Long projectId, Long userId1, Long userId2);
+    OrganizationRegisterEventPayload demoInit(OrganizationRegisterEventPayload demoProjectPayload);
 
     void demoDelete(Long projectId);
 
