@@ -32,6 +32,7 @@ public class PersonalFilterServiceImpl implements PersonalFilterService {
     public static final String NOTFOUND_ERROR = "error.personalFilter.notFound";
     public static final String NAME_ERROR = "error.personalFilter.nameNotNull";
     public static final String INSERT_ERROR = "error.personalFilter.create";
+    public static final String NAME_EXIST = "error.personalFilter.nameExist";
     private ModelMapper modelMapper = new ModelMapper();
 
     @Override
@@ -52,6 +53,9 @@ public class PersonalFilterServiceImpl implements PersonalFilterService {
         }
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         Long userId = customUserDetails.getUserId();
+        if (checkName(projectId, userId, personalFilterDTO.getName())) {
+            throw new CommonException(NAME_EXIST);
+        }
         personalFilterDTO.setUserId(userId);
         personalFilterDTO.setProjectId(projectId);
         personalFilterDTO.setFilterJson(JSON.toJSONString(personalFilterDTO.getPersonalFilterSearchDTO()));
@@ -87,6 +91,15 @@ public class PersonalFilterServiceImpl implements PersonalFilterService {
     public List<PersonalFilterDTO> listByProjectId(Long projectId, Long userId, String searchStr) {
         return modelMapper.map(personalFilterMapper.queryByProjectIdAndUserId(projectId, userId, searchStr), new TypeToken<List<PersonalFilterDTO>>() {
         }.getType());
+    }
 
+    @Override
+    public Boolean checkName(Long projectId, Long userId, String name) {
+        PersonalFilterDO personalFilterDO = new PersonalFilterDO();
+        personalFilterDO.setProjectId(projectId);
+        personalFilterDO.setUserId(userId);
+        personalFilterDO.setName(name);
+        List<PersonalFilterDO> list = personalFilterMapper.select(personalFilterDO);
+        return list != null && !list.isEmpty();
     }
 }
