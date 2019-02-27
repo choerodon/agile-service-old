@@ -28,14 +28,11 @@ public class DemoEventHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgileEventHandler.class);
 
-    private static final String DEMO_AGILE_ORG_CREATE_EVENT = "demo-agile-org-create-event";
     private static final String REGISTER_AGILE_INIT_ORG = "register-agile-init-org";
-
-    private static final String DEMO_AGILE_PRO_CREATE_EVENT = "demo-agile-pro-create-event";
     private static final String REGISTER_AGILE_INIT_PROJECT = "register-agile-init-project";
-
-    private static final String DEMO_AGILE_PRO_DEMO_INIT = "demo-agile-pro-demo-init";
     private static final String REGISTER_AGILE_INIT_DEMO_DATA = "register-agile-init-demo-data";
+    private static final String REGISTER_ORG = "register-org";
+
 
     @Autowired
     private TimeZoneWorkCalendarMapper timeZoneWorkCalendarMapper;
@@ -72,18 +69,18 @@ public class DemoEventHandler {
         LOGGER.info("demo接受组织创建消息{}", data);
     }
 
-    @SagaTask(code = DEMO_AGILE_ORG_CREATE_EVENT,
+    @SagaTask(code = REGISTER_AGILE_INIT_ORG,
             description = "接收org服务创建组织事件初始化时区",
-            sagaCode = REGISTER_AGILE_INIT_ORG,
+            sagaCode = REGISTER_ORG,
             seq = 60)
     public String orgCreateForDemoInitTimezone(String message) {
         demoHandleOrgInitTimeZoneSagaTask(message);
         return message;
     }
 
-    @SagaTask(code = DEMO_AGILE_PRO_CREATE_EVENT,
+    @SagaTask(code = REGISTER_AGILE_INIT_PROJECT,
             description = "demo消费创建项目事件初始化项目数据",
-            sagaCode = REGISTER_AGILE_INIT_PROJECT,
+            sagaCode = REGISTER_ORG,
             seq = 100)
     public String demoInitProject(String message) {
         OrganizationRegisterEventPayload organizationRegisterEventPayload = JSONObject.parseObject(message, OrganizationRegisterEventPayload.class);
@@ -102,9 +99,9 @@ public class DemoEventHandler {
      * @param message
      * @return
      */
-    @SagaTask(code = DEMO_AGILE_PRO_DEMO_INIT,
+    @SagaTask(code = REGISTER_AGILE_INIT_DEMO_DATA,
               description = "demo项目创建消费初始化数据",
-              sagaCode = REGISTER_AGILE_INIT_DEMO_DATA,
+              sagaCode = REGISTER_ORG,
               seq = 170)
     public String demoForAgileInit(String message) {
         OrganizationRegisterEventPayload demoProjectPayload = JSONObject.parseObject(message, OrganizationRegisterEventPayload.class);
