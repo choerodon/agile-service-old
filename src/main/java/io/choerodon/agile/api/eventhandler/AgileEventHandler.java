@@ -48,8 +48,8 @@ public class AgileEventHandler {
     private IssueRepository issueRepository;
     @Autowired
     private IssueFeignClient issueFeignClient;
-    @Autowired
-    private DemoService demoService;
+//    @Autowired
+//    private DemoService demoService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgileEventHandler.class);
 
@@ -65,8 +65,8 @@ public class AgileEventHandler {
     private static final String AGILE_CONSUME_DEPLOY_STATE_MACHINE_SCHEME = "agile-consume-deploy-statemachine-scheme";
     private static final String DEPLOY_STATE_MACHINE = "deploy-state-machine";
     private static final String DEPLOY_STATE_MACHINE_SCHEME = "deploy-state-machine-scheme";
-    private static final String AGILE_DEMO_INIT = "agile-demo-init";
-    private static final String DEMO_CREATE_PROJECT = "demo-create-project";
+//    private static final String AGILE_DEMO_INIT = "agile-demo-init";
+//    private static final String DEMO_CREATE_PROJECT = "demo-create-project";
 
     /**
      * 创建项目事件
