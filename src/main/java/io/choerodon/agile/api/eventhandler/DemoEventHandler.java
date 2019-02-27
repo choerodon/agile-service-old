@@ -103,9 +103,8 @@ public class DemoEventHandler {
               description = "demo项目创建消费初始化数据",
               sagaCode = REGISTER_ORG,
               seq = 170)
-    public String demoForAgileInit(String message) {
+    public OrganizationRegisterEventPayload demoForAgileInit(String message) {
         OrganizationRegisterEventPayload demoProjectPayload = JSONObject.parseObject(message, OrganizationRegisterEventPayload.class);
-        OrganizationRegisterEventPayload result = demoService.demoInit(demoProjectPayload);
-        return JSON.toJSONString(result);
+        return demoService.demoInit(demoProjectPayload);
     }
 }
