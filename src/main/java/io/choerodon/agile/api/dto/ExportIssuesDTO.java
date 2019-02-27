@@ -37,7 +37,7 @@ public class ExportIssuesDTO {
     private BigDecimal sumEstimateTime;
     private BigDecimal sumRemainingTime;
     private String epicName;
-    private Integer storyPoints;
+    private BigDecimal storyPoints;
     private String componentName;
     private String labelName;
     private String resolution;
@@ -282,11 +282,11 @@ public class ExportIssuesDTO {
         this.epicName = epicName;
     }
 
-    public Integer getStoryPoints() {
+    public BigDecimal getStoryPoints() {
         return storyPoints;
     }
 
-    public void setStoryPoints(Integer storyPoints) {
+    public void setStoryPoints(BigDecimal storyPoints) {
         this.storyPoints = storyPoints;
     }
 

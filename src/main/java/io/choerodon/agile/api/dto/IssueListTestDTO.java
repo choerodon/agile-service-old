@@ -32,7 +32,7 @@ public class IssueListTestDTO implements Serializable {
 
     private String epicName;
 
-    private Integer storyPoints;
+    private BigDecimal storyPoints;
 
     private Boolean addIssue;
 
@@ -127,11 +127,11 @@ public class IssueListTestDTO implements Serializable {
         this.assigneeImageUrl = assigneeImageUrl;
     }
 
-    public Integer getStoryPoints() {
+    public BigDecimal getStoryPoints() {
         return storyPoints;
     }
 
-    public void setStoryPoints(Integer storyPoints) {
+    public void setStoryPoints(BigDecimal storyPoints) {
         this.storyPoints = storyPoints;
     }
 
