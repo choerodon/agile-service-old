@@ -87,4 +87,18 @@ public class PersonalFilterController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.personalFilter.queryById"));
     }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("我的筛选重名校验")
+    @GetMapping(value = "/check_name")
+    public ResponseEntity<Boolean> checkName(@ApiParam(value = "项目id", required = true)
+                                             @PathVariable(name = "project_id") Long projectId,
+                                             @ApiParam(value = "用户id", required = true)
+                                             @RequestParam Long userId,
+                                             @ApiParam(value = "name", required = true)
+                                             @RequestParam String name) {
+        return Optional.ofNullable(personalFilterService.checkName(projectId, userId, name))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.checkName.get"));
+    }
 }

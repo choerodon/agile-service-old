@@ -19,4 +19,6 @@ public interface PersonalFilterService {
     void deleteById(Long projectId, Long filterId);
 
     List<PersonalFilterDTO> listByProjectId(Long projectId, Long userId, String searchStr);
+
+    Boolean checkName(Long projectId, Long userId, String name);
 }
