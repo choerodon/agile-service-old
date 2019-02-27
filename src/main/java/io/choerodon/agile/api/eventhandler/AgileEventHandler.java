@@ -48,8 +48,8 @@ public class AgileEventHandler {
     private IssueRepository issueRepository;
     @Autowired
     private IssueFeignClient issueFeignClient;
-    @Autowired
-    private DemoService demoService;
+//    @Autowired
+//    private DemoService demoService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgileEventHandler.class);
 
@@ -65,8 +65,8 @@ public class AgileEventHandler {
     private static final String AGILE_CONSUME_DEPLOY_STATE_MACHINE_SCHEME = "agile-consume-deploy-statemachine-scheme";
     private static final String DEPLOY_STATE_MACHINE = "deploy-state-machine";
     private static final String DEPLOY_STATE_MACHINE_SCHEME = "deploy-state-machine-scheme";
-    private static final String AGILE_DEMO_INIT = "agile-demo-init";
-    private static final String DEMO_CREATE_PROJECT = "demo-create-project";
+//    private static final String AGILE_DEMO_INIT = "agile-demo-init";
+//    private static final String DEMO_CREATE_PROJECT = "demo-create-project";
 
     /**
      * 创建项目事件
@@ -193,18 +193,18 @@ public class AgileEventHandler {
         return message;
     }
 
-    /**
-     * demo项目创建消费
-     * @param message
-     * @return
-     */
-    @SagaTask(code = AGILE_DEMO_INIT,
-            description = "demo项目创建消费",
-            sagaCode = DEMO_CREATE_PROJECT,
-            seq = 10)
-    public void demoForAgileInit(String message) {
-        DemoProjectPayload demoProjectPayload = JSONObject.parseObject(message, DemoProjectPayload.class);
-        demoService.demoInit(demoProjectPayload.getProjectId(), demoProjectPayload.getUserId1(), demoProjectPayload.getUserId2());
-    }
+//    /**
+//     * demo项目创建消费
+//     * @param message
+//     * @return
+//     */
+//    @SagaTask(code = AGILE_DEMO_INIT,
+//            description = "demo项目创建消费",
+//            sagaCode = DEMO_CREATE_PROJECT,
+//            seq = 10)
+//    public void demoForAgileInit(String message) {
+//        DemoProjectPayload demoProjectPayload = JSONObject.parseObject(message, DemoProjectPayload.class);
+//        demoService.demoInit(demoProjectPayload.getProjectId(), demoProjectPayload.getUserId1(), demoProjectPayload.getUserId2());
+//    }
 
 }
