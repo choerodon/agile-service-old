@@ -6,6 +6,7 @@ import io.choerodon.agile.app.service.IssueLinkTypeService;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarE;
 import io.choerodon.agile.domain.agile.event.OrganizationRegisterEventPayload;
+import io.choerodon.agile.domain.agile.event.OrganizationRegisterPayload;
 import io.choerodon.agile.domain.agile.event.ProjectEvent;
 import io.choerodon.agile.domain.agile.repository.TimeZoneWorkCalendarRepository;
 import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
@@ -47,8 +48,8 @@ public class DemoEventHandler {
     @Autowired
     private DemoService demoService;
 
-    private void demoHandleOrgInitTimeZoneSagaTask(OrganizationRegisterEventPayload organizationRegisterEventPayload) {
-        Long organizationId = organizationRegisterEventPayload.getOrganization().getId();
+    private void demoHandleOrgInitTimeZoneSagaTask(OrganizationRegisterPayload organizationRegisterPayload) {
+        Long organizationId = organizationRegisterPayload.getOrganization().getId();
         TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = new TimeZoneWorkCalendarDO();
         timeZoneWorkCalendarDO.setOrganizationId(organizationId);
         TimeZoneWorkCalendarDO query = timeZoneWorkCalendarMapper.selectOne(timeZoneWorkCalendarDO);
@@ -68,27 +69,27 @@ public class DemoEventHandler {
             description = "接收org服务创建组织事件初始化时区",
             sagaCode = REGISTER_ORG,
             seq = 60)
-    public OrganizationRegisterEventPayload orgCreateForDemoInitTimezone(String message) {
+    public OrganizationRegisterPayload orgCreateForDemoInitTimezone(String message) {
         LOGGER.info("demo接受组织创建消息{}", message);
-        OrganizationRegisterEventPayload organizationRegisterEventPayload = JSONObject.parseObject(message, OrganizationRegisterEventPayload.class);
-        demoHandleOrgInitTimeZoneSagaTask(organizationRegisterEventPayload);
-        return organizationRegisterEventPayload;
+        OrganizationRegisterPayload organizationRegisterPayload = JSONObject.parseObject(message, OrganizationRegisterPayload.class);
+        demoHandleOrgInitTimeZoneSagaTask(organizationRegisterPayload);
+        return organizationRegisterPayload;
     }
 
     @SagaTask(code = REGISTER_AGILE_INIT_PROJECT,
             description = "demo消费创建项目事件初始化项目数据",
             sagaCode = REGISTER_ORG,
             seq = 100)
-    public OrganizationRegisterEventPayload demoInitProject(String message) {
-        OrganizationRegisterEventPayload organizationRegisterEventPayload = JSONObject.parseObject(message, OrganizationRegisterEventPayload.class);
+    public OrganizationRegisterPayload demoInitProject(String message) {
+        OrganizationRegisterPayload OrganizationRegisterPayload = JSONObject.parseObject(message, OrganizationRegisterPayload.class);
         ProjectEvent projectEvent = new ProjectEvent();
-        projectEvent.setProjectId(organizationRegisterEventPayload.getProject().getId());
-        projectEvent.setProjectCode(organizationRegisterEventPayload.getProject().getCode());
-        projectEvent.setProjectName(organizationRegisterEventPayload.getProject().getName());
+        projectEvent.setProjectId(OrganizationRegisterPayload.getProject().getId());
+        projectEvent.setProjectCode(OrganizationRegisterPayload.getProject().getCode());
+        projectEvent.setProjectName(OrganizationRegisterPayload.getProject().getName());
         projectInfoService.initializationProjectInfo(projectEvent);
         issueLinkTypeService.initIssueLinkType(projectEvent.getProjectId());
         LOGGER.info("demo接受项目创建消息{}", message);
-        return organizationRegisterEventPayload;
+        return OrganizationRegisterPayload;
     }
 
     /**
