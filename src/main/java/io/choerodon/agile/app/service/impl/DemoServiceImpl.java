@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.domain.agile.event.DemoPayload;
+import io.choerodon.agile.domain.agile.event.OrganizationRegisterEventPayload;
 import io.choerodon.agile.infra.dataobject.BoardColumnDO;
 import io.choerodon.agile.infra.dataobject.BoardDO;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
@@ -407,7 +408,11 @@ public class DemoServiceImpl implements DemoService {
 
     @Saga(code = "agile-demo-for-test", description = "为测试提供demo数据", inputSchemaClass = DemoPayload.class)
     @Override
-    public void demoInit(Long projectId, Long userId1, Long userId2) {
+    public OrganizationRegisterEventPayload demoInit(OrganizationRegisterEventPayload demoProjectPayload) {
+
+        Long projectId = demoProjectPayload.getProject().getId();
+        Long userId1 = demoProjectPayload.getUser().getId();
+        Long userId2 = demoProjectPayload.getUserA().getId();
 
         // 查询项目信息
         ProjectDTO projectDTO = userFeignClient.queryProject(projectId).getBody();
@@ -863,25 +868,23 @@ public class DemoServiceImpl implements DemoService {
         startSprint(projectId, sprintId2, sprintDetailDTO2.getObjectVersionNumber(), dateAfters.get(0), dateAfters.get(9));
 
         // 发送saga到测试
-        DemoPayload demoPayload = new DemoPayload();
+        OrganizationRegisterEventPayload.TestData testData = new OrganizationRegisterEventPayload.TestData();
         List<Long> testIssueIds = new ArrayList<>();
         testIssueIds.add(bug1.getIssueId());
         testIssueIds.add(test1.getIssueId());
         testIssueIds.add(test2.getIssueId());
         testIssueIds.add(test3.getIssueId());
         testIssueIds.add(test4.getIssueId());
-        demoPayload.setTestIssueIds(testIssueIds);
-        demoPayload.setProjectId(projectId);
-        demoPayload.setUserId(userId2);
-        demoPayload.setVersionId(productVersionDetailDTO.getVersionId());
-        demoPayload.setOrganizationId(organizationId);
-        demoPayload.setDateOne(workDays.get(6));
-        demoPayload.setDateTwo(workDays.get(4));
-        demoPayload.setDateThree(workDays.get(2));
-        demoPayload.setDateFour(dateAfters.get(0));
-        demoPayload.setDateFive(dateAfters.get(2));
-        demoPayload.setDateSix(dateAfters.get(4));
-        sagaClient.startSaga("agile-demo-for-test", new StartInstanceDTO(JSON.toJSONString(demoPayload), "", "", ResourceLevel.PROJECT.value(), projectId));
+        testData.setTestIssueIds(testIssueIds);
+        testData.setVersionId(productVersionDetailDTO.getVersionId());
+        testData.setDateOne(workDays.get(6));
+        testData.setDateTwo(workDays.get(4));
+        testData.setDateThree(workDays.get(2));
+        testData.setDateFour(dateAfters.get(0));
+        testData.setDateFive(dateAfters.get(2));
+        testData.setDateSix(dateAfters.get(4));
+        demoProjectPayload.setTestData(testData);
+        return demoProjectPayload;
     }
 
     @Override
