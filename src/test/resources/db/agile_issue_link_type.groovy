@@ -24,9 +24,6 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue_link_type.groovy') {
     }
 
     changeSet(id: '2018-06-25-agile-issue-link-type-add-column', author: 'dinghuang123@gmail.com') {
-        addColumn(tableName: 'agile_issue_link_type') {
-            column(name: 'project_id', type: 'BIGINT UNSIGNED', remarks: '项目id')
-        }
         addNotNullConstraint(tableName: 'agile_issue_link_type', columnName: 'project_id', columnDataType: "BIGINT UNSIGNED")
     }
 
