@@ -1,8 +1,5 @@
 package io.choerodon.agile.domain.agile.event;
 
-import java.util.Date;
-import java.util.List;
-
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/2/27.
  * Email: fuqianghuang01@gmail.com

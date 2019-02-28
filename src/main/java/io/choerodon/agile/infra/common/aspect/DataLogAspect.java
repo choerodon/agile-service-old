@@ -44,8 +44,6 @@ import io.choerodon.core.exception.CommonException;
 @Transactional(rollbackFor = Exception.class)
 public class DataLogAspect {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataLogAspect.class);
-
     private static final String ISSUE = "issue";
     private static final String ISSUE_CREATE = "issueCreate";
     private static final String SPRINT = "sprint";

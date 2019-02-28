@@ -18,7 +18,6 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -242,6 +241,7 @@ public class DemoServiceImpl implements DemoService {
 
     /**
      * 封装返回 转换名称：转化ID 的Map
+     *
      * @param transformMap
      * @param transformDTOList
      */
@@ -259,7 +259,7 @@ public class DemoServiceImpl implements DemoService {
         BoardColumnDO boardColumnDO = new BoardColumnDO();
         boardColumnDO.setProjectId(projectId);
         boardColumnDO.setBoardId(boardRes.getBoardId());
-        List<BoardColumnDO> boardColumnList =  boardColumnMapper.select(boardColumnDO);
+        List<BoardColumnDO> boardColumnList = boardColumnMapper.select(boardColumnDO);
         Map<String, Long> columnMap = new HashMap<>();
         for (BoardColumnDO boardColumn : boardColumnList) {
             columnMap.put(boardColumn.getCategoryCode(), boardColumn.getColumnId());
@@ -296,6 +296,7 @@ public class DemoServiceImpl implements DemoService {
 
     /**
      * 判断一个日期是星期几
+     *
      * @param date
      * @return
      */
@@ -310,9 +311,10 @@ public class DemoServiceImpl implements DemoService {
 
     /**
      * 获取当前年分
+     *
      * @return
      */
-    public Integer getCurrentYear(){
+    public Integer getCurrentYear() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
         Date date = new Date();
         return Integer.parseInt(sdf.format(date));
@@ -325,7 +327,7 @@ public class DemoServiceImpl implements DemoService {
         for (WorkCalendarHolidayRefDTO value : calendarDays) {
             if (dateString.equals(value.getHoliday()) && Objects.equals(value.getStatus(), 1)) {
                 return true;
-            } else if (dateString.equals(value.getHoliday()) && Objects.equals(value.getStatus(), 0)){
+            } else if (dateString.equals(value.getHoliday()) && Objects.equals(value.getStatus(), 0)) {
                 return false;
             }
         }
@@ -337,6 +339,7 @@ public class DemoServiceImpl implements DemoService {
 
     /**
      * 获取第一个冲刺的工作日期
+     *
      * @param endDate
      * @return
      */
@@ -348,19 +351,20 @@ public class DemoServiceImpl implements DemoService {
         while (true) {
             Date date = getSpecifyTimeByOneTime(endDate, ago);
             if (judgeBeWork(date, calendarDays)) {
-                sumDays ++;
+                sumDays++;
                 result.add(date);
             }
             if (sumDays == 14) {
                 break;
             }
-            ago -- ;
+            ago--;
         }
         return result;
     }
 
     /**
      * 获取第二个冲刺的工作日期
+     *
      * @param startDate
      * @return
      */
@@ -372,13 +376,13 @@ public class DemoServiceImpl implements DemoService {
         while (true) {
             Date date = getSpecifyTimeByOneTime(startDate, ago);
             if (judgeBeWork(date, calendarDays)) {
-                sumDays ++;
+                sumDays++;
                 result.add(date);
             }
             if (sumDays == 10) {
                 break;
             }
-            ago ++ ;
+            ago++;
         }
         return result;
     }
@@ -394,6 +398,7 @@ public class DemoServiceImpl implements DemoService {
 
     /**
      * 更新项目时间及issue创建时间
+     *
      * @param projectId
      */
     private void updateProjectAndIssues(Long projectId, Date date1, Date date2) {
@@ -598,7 +603,6 @@ public class DemoServiceImpl implements DemoService {
         updateFixVersion(projectId, subtask11.getIssueId(), productVersionDetailDTO.getVersionId());
 
 
-
         // 完成冲刺1所有的issue
         List<IssueStatusDTO> issueStatusDTOS = issueStatusService.queryIssueStatusList(projectId);
         Map<String, Long> statusMap = new HashMap<>();
@@ -669,14 +673,14 @@ public class DemoServiceImpl implements DemoService {
 
 
         // 创建模块与关联模块
-        IssueComponentDTO issueComponentDTO1 =  createComponent(projectId, "用户模块");
-        IssueComponentDTO issueComponentDTO2 =  createComponent(projectId, "订单模块");
-        IssueComponentDTO issueComponentDTO3 =  createComponent(projectId, "商品模块");
-        IssueComponentDTO issueComponentDTO4 =  createComponent(projectId, "设计模块");
-        IssueComponentDTO issueComponentDTO5 =  createComponent(projectId, "环境");
-        IssueComponentDTO issueComponentDTO6 =  createComponent(projectId, "购买模块");
-        IssueComponentDTO issueComponentDTO7 =  createComponent(projectId, "支付模块");
-        IssueComponentDTO issueComponentDTO8 =  createComponent(projectId, "售后");
+        IssueComponentDTO issueComponentDTO1 = createComponent(projectId, "用户模块");
+        IssueComponentDTO issueComponentDTO2 = createComponent(projectId, "订单模块");
+        IssueComponentDTO issueComponentDTO3 = createComponent(projectId, "商品模块");
+        IssueComponentDTO issueComponentDTO4 = createComponent(projectId, "设计模块");
+        IssueComponentDTO issueComponentDTO5 = createComponent(projectId, "环境");
+        IssueComponentDTO issueComponentDTO6 = createComponent(projectId, "购买模块");
+        IssueComponentDTO issueComponentDTO7 = createComponent(projectId, "支付模块");
+        IssueComponentDTO issueComponentDTO8 = createComponent(projectId, "售后");
         updateComponent(projectId, story1.getIssueId(), issueComponentDTO1.getComponentId());
         updateComponent(projectId, story5.getIssueId(), issueComponentDTO1.getComponentId());
         updateComponent(projectId, story4.getIssueId(), issueComponentDTO2.getComponentId());
@@ -893,6 +897,6 @@ public class DemoServiceImpl implements DemoService {
         dataLogMapper.deleteDemoData(projectId);
         DemoPayload demoPayload = new DemoPayload();
         demoPayload.setProjectId(projectId);
-        sagaClient.startSaga("demo-project-clean", new StartInstanceDTO(JSON.toJSONString(demoPayload), "", "",ResourceLevel.PROJECT.value(), projectId));
+        sagaClient.startSaga("demo-project-clean", new StartInstanceDTO(JSON.toJSONString(demoPayload), "", "", ResourceLevel.PROJECT.value(), projectId));
     }
 }

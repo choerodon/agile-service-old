@@ -25,8 +25,6 @@ import java.util.List;
 @Component
 public class DataLogRedisUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataLogAspect.class);
-
     private static final String AGILE = "Agile:";
     private static final String COLON = ":";
     private static final String POINTER = "*";

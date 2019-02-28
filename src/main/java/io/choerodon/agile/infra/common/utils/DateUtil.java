@@ -443,8 +443,7 @@ public class DateUtil {
     }
 
     public static int differentDaysByMillisecond(Date startdate,Date endDate) {
-        int days = (int) ((endDate.getTime() - startdate.getTime()) / (1000*3600*24));
-        return days;
+        return (int) ((endDate.getTime() - startdate.getTime()) / (1000*3600*24));
     }
 
 

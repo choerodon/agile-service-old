@@ -81,26 +81,27 @@ public class DemoEventHandler {
             sagaCode = REGISTER_ORG,
             seq = 100)
     public OrganizationRegisterPayload demoInitProject(String message) {
-        OrganizationRegisterPayload OrganizationRegisterPayload = JSONObject.parseObject(message, OrganizationRegisterPayload.class);
+        OrganizationRegisterPayload organizationRegisterPayload = JSONObject.parseObject(message, OrganizationRegisterPayload.class);
         ProjectEvent projectEvent = new ProjectEvent();
-        projectEvent.setProjectId(OrganizationRegisterPayload.getProject().getId());
-        projectEvent.setProjectCode(OrganizationRegisterPayload.getProject().getCode());
-        projectEvent.setProjectName(OrganizationRegisterPayload.getProject().getName());
+        projectEvent.setProjectId(organizationRegisterPayload.getProject().getId());
+        projectEvent.setProjectCode(organizationRegisterPayload.getProject().getCode());
+        projectEvent.setProjectName(organizationRegisterPayload.getProject().getName());
         projectInfoService.initializationProjectInfo(projectEvent);
         issueLinkTypeService.initIssueLinkType(projectEvent.getProjectId());
         LOGGER.info("demo接受项目创建消息{}", message);
-        return OrganizationRegisterPayload;
+        return organizationRegisterPayload;
     }
 
     /**
      * demo项目创建消费
+     *
      * @param message
      * @return
      */
     @SagaTask(code = REGISTER_AGILE_INIT_DEMO_DATA,
-              description = "demo项目创建消费初始化数据",
-              sagaCode = REGISTER_ORG,
-              seq = 170)
+            description = "demo项目创建消费初始化数据",
+            sagaCode = REGISTER_ORG,
+            seq = 170)
     public OrganizationRegisterEventPayload demoForAgileInit(String message) {
         OrganizationRegisterEventPayload demoProjectPayload = JSONObject.parseObject(message, OrganizationRegisterEventPayload.class);
         return demoService.demoInit(demoProjectPayload);
