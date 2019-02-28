@@ -136,10 +136,7 @@ public class SprintServiceImpl implements SprintService {
         check.setProjectId(projectId);
         check.setSprintName(sprintName);
         List<SprintDO> sprintDOList = sprintMapper.select(check);
-        if (sprintDOList != null && !sprintDOList.isEmpty()) {
-            return true;
-        }
-        return false;
+        return sprintDOList != null && !sprintDOList.isEmpty();
     }
 
     @Override
@@ -629,9 +626,6 @@ public class SprintServiceImpl implements SprintService {
         sprintDO.setProjectId(projectId);
         sprintDO.setSprintName(sprinName);
         List<SprintDO> sprintDOList = sprintMapper.select(sprintDO);
-        if (sprintDOList != null && !sprintDOList.isEmpty()) {
-            return true;
-        }
-        return false;
+        return sprintDOList != null && !sprintDOList.isEmpty();
     }
 }

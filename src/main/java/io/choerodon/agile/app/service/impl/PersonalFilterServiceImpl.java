@@ -91,7 +91,7 @@ public class PersonalFilterServiceImpl implements PersonalFilterService {
     public List<PersonalFilterDTO> listByProjectId(Long projectId, Long userId, String searchStr) {
         List<PersonalFilterDTO> list = modelMapper.map(personalFilterMapper.queryByProjectIdAndUserId(projectId, userId, searchStr), new TypeToken<List<PersonalFilterDTO>>() {
         }.getType());
-        list.stream().forEach(dto -> parseJson(dto));
+        list.stream().forEach(PersonalFilterServiceImpl::parseJson);
         return list;
     }
 
@@ -109,7 +109,7 @@ public class PersonalFilterServiceImpl implements PersonalFilterService {
      * 解析json为dto
      * @param personalFilterDTO
      */
-    private void parseJson(PersonalFilterDTO personalFilterDTO) {
+    private static void parseJson(PersonalFilterDTO personalFilterDTO) {
         personalFilterDTO.setPersonalFilterSearchDTO(JSONObject.parseObject(personalFilterDTO.getFilterJson(), PersonalFilterSearchDTO.class));
     }
 }

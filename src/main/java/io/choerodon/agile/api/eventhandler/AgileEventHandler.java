@@ -75,7 +75,6 @@ public class AgileEventHandler {
             seq = 2)
     public String handleProjectInitByConsumeSagaTask(String message) {
         ProjectEvent projectEvent = JSONObject.parseObject(message, ProjectEvent.class);
-//        boardService.initBoard(projectEvent.getProjectId(), projectEvent.getProjectName() + BOARD);
         projectInfoService.initializationProjectInfo(projectEvent);
         issueLinkTypeService.initIssueLinkType(projectEvent.getProjectId());
         LOGGER.info("接受项目创建消息{}", message);

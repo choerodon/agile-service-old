@@ -1,10 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.api.dto.IssueTypeDTO;
-import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
-
-import java.util.Date;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/01/24.

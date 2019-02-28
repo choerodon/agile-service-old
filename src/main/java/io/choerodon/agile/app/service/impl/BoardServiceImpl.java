@@ -42,8 +42,6 @@ import static java.util.Comparator.nullsFirst;
 public class BoardServiceImpl implements BoardService {
 
     private static final String CONTRAINT_NONE = "constraint_none";
-    private static final String CONTRAINT_ISSUE = "issue";
-    private static final String CONTRAINT_ISSUE_WITHOUT_SUBTASK = "issue_without_sub_task";
     private static final String STORY_POINTS = "story_point";
     private static final String PARENT_CHILD = "parent_child";
     private static final String BOARD = "board";
@@ -145,10 +143,7 @@ public class BoardServiceImpl implements BoardService {
         check.setProjectId(projectId);
         check.setName(boardName);
         List<BoardDO> boardDOList = boardMapper.select(check);
-        if (boardDOList != null && !boardDOList.isEmpty()) {
-            return true;
-        }
-        return false;
+        return boardDOList != null && !boardDOList.isEmpty();
     }
 
     @Override
@@ -646,9 +641,6 @@ public class BoardServiceImpl implements BoardService {
         boardDO.setProjectId(projectId);
         boardDO.setName(boardName);
         List<BoardDO> boardDOList = boardMapper.select(boardDO);
-        if (boardDOList != null && !boardDOList.isEmpty()) {
-            return true;
-        }
-        return false;
+        return boardDOList != null && !boardDOList.isEmpty();
     }
 }

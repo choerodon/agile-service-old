@@ -2,25 +2,25 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.BoardColumnValidator;
+import io.choerodon.agile.app.service.BoardColumnService;
+import io.choerodon.agile.domain.agile.entity.BoardColumnE;
 import io.choerodon.agile.domain.agile.entity.BoardE;
+import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
+import io.choerodon.agile.domain.agile.entity.IssueStatusE;
 import io.choerodon.agile.domain.agile.event.StatusPayload;
+import io.choerodon.agile.domain.agile.repository.BoardColumnRepository;
+import io.choerodon.agile.domain.agile.repository.ColumnStatusRelRepository;
+import io.choerodon.agile.domain.agile.repository.IssueStatusRepository;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.BoardColumnDO;
 import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO;
 import io.choerodon.agile.infra.dataobject.ColumnWithStatusRelDO;
-import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.dataobject.IssueStatusDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.mapper.BoardColumnMapper;
 import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper;
 import io.choerodon.agile.infra.mapper.IssueStatusMapper;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.agile.app.service.BoardColumnService;
-import io.choerodon.agile.domain.agile.entity.BoardColumnE;
-import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
-import io.choerodon.agile.domain.agile.entity.IssueStatusE;
-import io.choerodon.agile.domain.agile.repository.BoardColumnRepository;
-import io.choerodon.agile.domain.agile.repository.ColumnStatusRelRepository;
-import io.choerodon.agile.domain.agile.repository.IssueStatusRepository;
-import io.choerodon.agile.infra.mapper.BoardColumnMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -82,7 +82,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         boardColumnDTO.setSequence(lastSequence);
     }
 
-    private void setColumnProperties(BoardColumnDTO boardColumnDTO,BoardColumnDO boardColumnDO, String categoryDO, String categoryDTO) {
+    private void setColumnProperties(BoardColumnDTO boardColumnDTO, BoardColumnDO boardColumnDO, String categoryDO, String categoryDTO) {
         boardColumnDO.setCategoryCode(categoryDO);
         if (!boardColumnMapper.select(boardColumnDO).isEmpty()) {
             boardColumnDTO.setCategoryCode(categoryDTO);
@@ -138,11 +138,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         columnStatusRelDO.setProjectId(projectId);
         columnStatusRelDO.setStatusId(statusId);
         List<ColumnStatusRelDO> columnStatusRelDOS = columnStatusRelMapper.select(columnStatusRelDO);
-        if (columnStatusRelDOS != null && !columnStatusRelDOS.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        return columnStatusRelDOS != null && !columnStatusRelDOS.isEmpty();
     }
 
 
@@ -233,13 +229,13 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         column.setCategoryCode(categoryCode);
         column.setSequence(sequence);
         switch (categoryCode) {
-            case "todo":
+            case TODO_CODE:
                 column.setColorCode(COLUMN_COLOR_TODO);
                 break;
-            case "doing":
+            case DOING_CODE:
                 column.setColorCode(COLUMN_COLOR_DOING);
                 break;
-            case "done":
+            case DONE_CODE:
                 column.setColorCode(COLUMN_COLOR_DONE);
                 break;
             default:
