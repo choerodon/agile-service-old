@@ -9,6 +9,7 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,10 +35,12 @@ public class ExcelController {
     @ApiOperation("下载导入模版")
     @GetMapping(value = "/download")
     public void download(@ApiParam(value = "项目id", required = true)
-                                   @PathVariable(name = "project_id") Long projectId,
-                                   HttpServletRequest request,
-                                   HttpServletResponse response) {
-        excelService.download(projectId, request, response);
+                         @PathVariable(name = "project_id") Long projectId,
+                             @ApiParam(value = "组织id", required = true)
+                         @RequestParam Long organizationId,
+                             HttpServletRequest request,
+                             HttpServletResponse response) {
+        excelService.download(projectId, organizationId, request, response);
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})

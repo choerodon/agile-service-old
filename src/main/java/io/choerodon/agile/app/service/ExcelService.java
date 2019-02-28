@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface ExcelService {
 
-    void download(Long projectId, HttpServletRequest request, HttpServletResponse response);
+    void download(Long projectId, Long organizationId, HttpServletRequest request, HttpServletResponse response);
 
     void batchImport(Long projectId, Long organizationId, Workbook workbook);
 
