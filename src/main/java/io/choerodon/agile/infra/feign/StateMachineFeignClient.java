@@ -3,6 +3,7 @@ package io.choerodon.agile.infra.feign;
 import io.choerodon.agile.api.dto.Status;
 import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.infra.feign.fallback.StateMachineFeignClientFallback;
+import io.choerodon.statemachine.dto.StateMachineTransformDTO;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -27,11 +28,14 @@ public interface StateMachineFeignClient {
 
     @GetMapping(value = "/v1/organizations/{organization_id}/status/{status_id}")
     ResponseEntity<StatusMapDTO> queryStatusById(@PathVariable("organization_id") Long organizationId,
-                                                  @PathVariable("status_id") Long statusId);
+                                                 @PathVariable("status_id") Long statusId);
 
     @GetMapping(value = "/v1/fix_data/query_status")
     ResponseEntity<Map<Long, List<Status>>> queryAllStatus();
 
     @GetMapping({"/v1/organizations/{organization_id}/instances/query_init_status_ids"})
-    ResponseEntity<Map<Long,Long>> queryInitStatusIds(@PathVariable("organization_id") Long organizationId, @RequestParam("state_machine_id") List<Long> stateMachineIds);
+    ResponseEntity<Map<Long, Long>> queryInitStatusIds(@PathVariable("organization_id") Long organizationId, @RequestParam("state_machine_id") List<Long> stateMachineIds);
+
+    @GetMapping({"/v1/organizations/{organization_id}/state_machine_transforms/query_deploy_transform"})
+    ResponseEntity<StateMachineTransformDTO> queryDeployTransformForAgile(@PathVariable("organization_id") Long organizationId, @RequestParam("transformId") Long transformId);
 }

@@ -89,7 +89,7 @@ public class BoardController {
                                              @RequestParam Long transformId,
                                              @ApiParam(value = "issue move object", required = true)
                                              @RequestBody IssueMoveDTO issueMoveDTO) {
-        return Optional.ofNullable(boardService.move(projectId, issueId, transformId, issueMoveDTO))
+        return Optional.ofNullable(boardService.move(projectId, issueId, transformId, issueMoveDTO, false))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.update"));
     }

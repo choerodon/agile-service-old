@@ -19,6 +19,7 @@ import io.choerodon.agile.infra.common.utils.EnumUtil;
 import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -56,12 +57,13 @@ public class StateMachineServiceImpl implements StateMachineService {
     private static final String ERROR_ISSUE_STATE_MACHINE_NOT_FOUND = "error.issueStateMachine.notFound";
     private static final String ERROR_ISSUE_NOT_FOUND = "error.issue.notFound";
     private static final String ERROR_INSTANCE_FEGIN_CLIENT_EXECUTE_TRANSFORM = "error.instanceFeignClient.executeTransform";
-
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
     private static final String ERROR_ISSUE_STATUS_NOT_FOUND = "error.createIssue.issueStatusNotFound";
     private static final String RANK = "rank";
     private static final String STATUS_ID = "statusId";
     private static final String STAY_DATE = "stayDate";
+    private static final String UPDATE_STATUS = "updateStatus";
+    private static final String UPDATE_STATUS_MOVE = "updateStatusMove";
 
     @Autowired
     private IssueMapper issueMapper;
@@ -79,6 +81,8 @@ public class StateMachineServiceImpl implements StateMachineService {
     private ProjectInfoMapper projectInfoMapper;
     @Autowired
     private StateMachineClient stateMachineClient;
+    @Autowired
+    private StateMachineFeignClient stateMachineFeignClient;
 
     /**
      * 创建issue，用于敏捷和测试
@@ -198,6 +202,41 @@ public class StateMachineServiceImpl implements StateMachineService {
         return responseEntity.getBody();
     }
 
+    /**
+     * 专用于demo的状态转换，demo创建数据不走状态机
+     *
+     * @param projectId
+     * @param issueId
+     * @param transformId
+     * @param objectVersionNumber
+     * @param applyType
+     * @param inputDTO
+     * @return
+     */
+    @Override
+    public ExecuteResult executeTransformForDemo(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType, InputDTO inputDTO) {
+        if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
+            throw new CommonException("error.applyType.illegal");
+        }
+        Long organizationId = ConvertUtil.getOrganizationId(projectId);
+        IssueDO issue = issueMapper.selectByPrimaryKey(issueId);
+        if (issue == null) {
+            throw new CommonException(ERROR_ISSUE_NOT_FOUND);
+        }
+        //获取状态机id
+        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, applyType, issue.getIssueTypeId()).getBody();
+        if (stateMachineId == null) {
+            throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
+        }
+        Long targetStatusId = stateMachineFeignClient.queryDeployTransformForAgile(organizationId, transformId).getBody().getEndStatusId();
+        if (UPDATE_STATUS.equals(inputDTO.getInvokeCode())) {
+            updateStatus(issueId, targetStatusId, inputDTO.getInput());
+        } else if (UPDATE_STATUS_MOVE.equals(inputDTO.getInvokeCode())) {
+            updateStatusMove(issueId, targetStatusId, inputDTO.getInput());
+        }
+        return new ExecuteResult();
+    }
+
     @Override
     public Map<String, Object> checkDeleteNode(Long organizationId, Long statusId, List<ProjectConfig> projectConfigs) {
         Map<String, Object> result = new HashMap<>(2);
@@ -273,7 +312,7 @@ public class StateMachineServiceImpl implements StateMachineService {
         //todo
     }
 
-    @UpdateStatus(code = "updateStatus")
+    @UpdateStatus(code = UPDATE_STATUS)
     public void updateStatus(Long instanceId, Long targetStatusId, String input) {
         IssueDO issue = issueMapper.selectByPrimaryKey(instanceId);
         if (issue == null) {
@@ -290,7 +329,7 @@ public class StateMachineServiceImpl implements StateMachineService {
         }
     }
 
-    @UpdateStatus(code = "updateStatusMove")
+    @UpdateStatus(code = UPDATE_STATUS_MOVE)
     public void updateStatusMove(Long instanceId, Long targetStatusId, String input) {
         IssueDO issue = issueMapper.selectByPrimaryKey(instanceId);
         if (issue == null) {
