@@ -207,6 +207,19 @@
         and ail.project_id = #{projectId}
     </select>
 
+    <select id="queryComponentIssueByIssueIds" resultType="io.choerodon.agile.infra.dataobject.ComponentIssueRelDO">
+        SELECT
+        acir.*,
+        aic.name
+        FROM agile_component_issue_rel acir LEFT JOIN agile_issue_component aic ON aic.component_id = acir.component_id
+        WHERE acir.issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+        and acir.project_id = #{projectId}
+    </select>
+
     <select id="queryComponentIssueRelByIssueId" resultType="io.choerodon.agile.infra.dataobject.ComponentIssueRelDO">
         SELECT
             acir.*,
@@ -1288,6 +1301,7 @@
         ai.issue_type_id,
         ai.status_id,
         ai.priority_id,
+        ai.story_points,
         IF((ais.is_completed = 1), '是', '否') AS resolution,
         IF ((ai.parent_issue_id IS NULL OR ai.parent_issue_id = 0),
         ai.issue_id,ai.parent_issue_id) as parent_issue_id,

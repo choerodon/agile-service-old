@@ -195,8 +195,8 @@ public class IssueServiceImpl implements IssueService {
     private static final String RANK_FIELD = "rank";
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
-    private static final String[] FIELDS_NAME = {"任务编号", "概要", "描述", "类型", "所属项目", "经办人", "经办人名称", "报告人", "报告人名称", "解决状态", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本", "史诗", "标签"};
-    private static final String[] FIELDS = {"issueNum", "summary", "description", "typeName", "projectName", "assigneeName", "assigneeRealName", "reporterName", "reporterRealName", "resolution", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", REMAIN_TIME_FIELD, "versionName", "epicName", "labelName"};
+    private static final String[] FIELDS_NAME = {"任务编号", "概要", "描述", "类型", "所属项目", "经办人", "经办人名称", "报告人", "报告人名称", "解决状态", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本", "史诗", "标签", "故事点", "模块"};
+    private static final String[] FIELDS = {"issueNum", "summary", "description", "typeName", "projectName", "assigneeName", "assigneeRealName", "reporterName", "reporterRealName", "resolution", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", REMAIN_TIME_FIELD, "versionName", "epicName", "labelName", "storyPoints", "componentName"};
     private static final String PROJECT_ERROR = "error.project.notFound";
     private static final String ERROR_ISSUE_NOT_FOUND = "error.Issue.queryIssue";
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
@@ -1441,11 +1441,13 @@ public class IssueServiceImpl implements IssueService {
                 Map<Long, List<VersionIssueRelDO>> fixVersionNames = issueMapper.queryVersionNameByIssueIds(projectId, issueIds, FIX_RELATION_TYPE).stream().collect(Collectors.groupingBy(VersionIssueRelDO::getIssueId));
                 Map<Long, List<VersionIssueRelDO>> influenceVersionNames = issueMapper.queryVersionNameByIssueIds(projectId, issueIds, INFLUENCE_RELATION_TYPE).stream().collect(Collectors.groupingBy(VersionIssueRelDO::getIssueId));
                 Map<Long, List<LabelIssueRelDO>> labelNames = issueMapper.queryLabelIssueByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(LabelIssueRelDO::getIssueId));
+                Map<Long, List<ComponentIssueRelDO>> componentMap = issueMapper.queryComponentIssueByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(ComponentIssueRelDO::getIssueId));
                 exportIssues.forEach(exportIssue -> {
                     String closeSprintName = closeSprintNames.get(exportIssue.getIssueId()) != null ? closeSprintNames.get(exportIssue.getIssueId()).stream().map(SprintNameDO::getSprintName).collect(Collectors.joining(",")) : "";
                     String fixVersionName = fixVersionNames.get(exportIssue.getIssueId()) != null ? fixVersionNames.get(exportIssue.getIssueId()).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(",")) : "";
                     String influenceVersionName = influenceVersionNames.get(exportIssue.getIssueId()) != null ? influenceVersionNames.get(exportIssue.getIssueId()).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(",")) : "";
                     String labelName = labelNames.get(exportIssue.getIssueId()) != null ? labelNames.get(exportIssue.getIssueId()).stream().map(LabelIssueRelDO::getLabelName).collect(Collectors.joining(",")) : "";
+                    String componentName = componentMap.get(exportIssue.getIssueId()) != null ? componentMap.get(exportIssue.getIssueId()).stream().map(ComponentIssueRelDO::getName).collect(Collectors.joining(",")) : "";
                     exportIssue.setCloseSprintName(closeSprintName);
                     exportIssue.setProjectName(project.getName());
                     exportIssue.setSprintName(exportIssuesSprintName(exportIssue));
@@ -1454,6 +1456,7 @@ public class IssueServiceImpl implements IssueService {
                     exportIssue.setVersionName(exportIssuesVersionName(exportIssue));
                     exportIssue.setDescription(getDes(exportIssue.getDescription()));
                     exportIssue.setLabelName(labelName);
+                    exportIssue.setComponentName(componentName);
                 });
             }
             ExcelUtil.export(exportIssues, ExportIssuesDTO.class, FIELDS_NAME, FIELDS, project.getName(), response);

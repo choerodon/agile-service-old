@@ -36,7 +36,7 @@ public class IssueSubDTO {
 
     private Long parentIssueId;
 
-    private Integer storyPoints;
+    private BigDecimal storyPoints;
 
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
@@ -264,11 +264,11 @@ public class IssueSubDTO {
         this.parentIssueId = parentIssueId;
     }
 
-    public Integer getStoryPoints() {
+    public BigDecimal getStoryPoints() {
         return storyPoints;
     }
 
-    public void setStoryPoints(Integer storyPoints) {
+    public void setStoryPoints(BigDecimal storyPoints) {
         this.storyPoints = storyPoints;
     }
 
