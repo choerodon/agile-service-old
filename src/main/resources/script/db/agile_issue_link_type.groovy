@@ -35,4 +35,9 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue_link_type.groovy') {
         addNotNullConstraint(tableName: 'agile_issue_link_type', columnName: 'project_id', columnDataType: "BIGINT UNSIGNED")
     }
 
+    changeSet(id: '2019-02-27-agile-issue-link-type-update-sql-project-id', author: 'shinan.chenX@gmail.com') {
+        sql(stripComments: true, splitStatements: true, endDelimiter: ';') {
+            "UPDATE agile_issue_link ail,( SELECT ailt.project_id, ailt.link_type_id FROM agile_issue_link_type ailt) AS res SET ail.project_id = res.project_id WHERE ail.link_type_id = res.link_type_id"
+        }
+    }
 }
