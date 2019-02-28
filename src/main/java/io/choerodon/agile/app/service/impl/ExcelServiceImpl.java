@@ -6,35 +6,37 @@ import io.choerodon.agile.app.service.ExcelService;
 import io.choerodon.agile.app.service.StateMachineService;
 import io.choerodon.agile.domain.agile.entity.FileOperationHistoryE;
 import io.choerodon.agile.domain.agile.repository.FileOperationHistoryRepository;
-import io.choerodon.agile.infra.common.utils.ConvertUtil;
-import io.choerodon.agile.infra.common.utils.ExcelUtil;
-import io.choerodon.agile.infra.common.utils.MultipartExcelUtil;
+import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.FileOperationHistoryDO;
+import io.choerodon.agile.infra.dataobject.IssueComponentDO;
+import io.choerodon.agile.infra.dataobject.ProductVersionCommonDO;
 import io.choerodon.agile.infra.feign.FileFeignClient;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.NotifyFeignClient;
 import io.choerodon.agile.infra.mapper.FileOperationHistoryMapper;
+import io.choerodon.agile.infra.mapper.IssueComponentMapper;
+import io.choerodon.agile.infra.mapper.ProductVersionMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.NumberUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.FileOutputStream;
+import java.math.BigDecimal;
+import java.util.*;
 
 import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING;
 
@@ -47,8 +49,8 @@ public class ExcelServiceImpl implements ExcelService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExcelServiceImpl.class);
 
-    private static final String[] FIELDS_NAME = {"概要", "描述", "优先级", "问题类型"};
-    private static final String[] FIELDS = {"summary", "description", "priorityName", "typeName"};
+    private static final String[] FIELDS_NAME = {"概要", "描述", "优先级", "问题类型","故事点", "剩余时间", "修复版本"};
+    private static final String[] FIELDS = {"summary", "description", "priorityName", "typeName", "storyPoints", "remainTime", "version"};
     private static final String BACKETNAME = "agile-service";
 
     @Autowired
@@ -69,38 +71,155 @@ public class ExcelServiceImpl implements ExcelService {
     @Autowired
     private FileFeignClient fileFeignClient;
 
-    @Override
-    public void download(Long projectId, HttpServletRequest request, HttpServletResponse response) {
-        String projectName = ConvertUtil.getName(projectId);
-        List<ExportIssuesDTO> res = new ArrayList<>();
-        ExportIssuesDTO exportIssuesDTO = new ExportIssuesDTO();
-        exportIssuesDTO.setSummary("输入概要");
-        exportIssuesDTO.setDescription("输入描述");
-        exportIssuesDTO.setPriorityName("高");
-        exportIssuesDTO.setTypeName("故事");
-        ExportIssuesDTO exportIssuesDTO1 = new ExportIssuesDTO();
-        exportIssuesDTO.setSummary("输入概要");
-        exportIssuesDTO.setDescription("输入描述");
-        exportIssuesDTO.setPriorityName("1");
-        exportIssuesDTO.setTypeName("故事");
-        res.add(exportIssuesDTO);
-        res.add(exportIssuesDTO1);
-        ExcelUtil.export(res, ExportIssuesDTO.class, FIELDS_NAME, FIELDS, projectName, response);
+    @Autowired
+    private ProductVersionMapper productVersionMapper;
+
+    @Autowired
+    private IssueComponentMapper issueComponentMapper;
+
+    /**
+     * @param wb HSSFWorkbook对象
+     * @param realSheet 需要操作的sheet对象
+     * @param datas 下拉的列表数据
+     * @param startRow 开始行
+     * @param endRow 结束行
+     * @param startCol 开始列
+     * @param endCol 结束列
+     * @param hiddenSheetName 隐藏的sheet名
+     * @param hiddenSheetIndex 隐藏的sheet索引
+     * @return
+     * @throws Exception
+     */
+    public static XSSFWorkbook dropDownList2007(Workbook wb, Sheet realSheet, List<String> datas, int startRow, int endRow,
+                                                int startCol, int endCol, String hiddenSheetName, int hiddenSheetIndex) {
+
+        XSSFWorkbook workbook = (XSSFWorkbook) wb;
+        // 创建一个数据源sheet
+        XSSFSheet hidden = workbook.createSheet(hiddenSheetName);
+        // 数据源sheet页不显示
+        workbook.setSheetHidden(hiddenSheetIndex, true);
+        // 将下拉列表的数据放在数据源sheet上
+        XSSFRow row = null;
+        XSSFCell cell = null;
+        for (int i = 0; i < datas.size(); i++) {
+            row = hidden.createRow(i);
+            cell = row.createCell(0);
+            cell.setCellValue(datas.get(i));
+        }
+        //2016-12-15更新，遇到问题：生成的excel下拉框还是可以手动编辑，不满足
+        //HSSFName namedCell = workbook.createName();
+        //namedCell.setNameName(hiddenSheetName);
+        // A1 到 Adatas.length 表示第一列的第一行到datas.length行，需要与前一步生成的隐藏的数据源sheet数据位置对应
+        //namedCell.setRefersToFormula(hiddenSheetName + "!$A$1:$A" + datas.length);
+        // 指定下拉数据时，给定目标数据范围 hiddenSheetName!$A$1:$A5   隐藏sheet的A1到A5格的数据
+        XSSFDataValidationHelper dvHelper = new XSSFDataValidationHelper((XSSFSheet)realSheet);
+        XSSFDataValidationConstraint dvConstraint = (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint(hiddenSheetName + "!$A$1:$A" + datas.size());
+        CellRangeAddressList addressList = null;
+        XSSFDataValidation validation = null;
+        row = null;
+        cell = null;
+        // 单元格样式
+        CellStyle style = workbook.createCellStyle();
+        style.setAlignment(CellStyle.ALIGN_CENTER);
+        style.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
+        // 循环指定单元格下拉数据
+        for (int i = startRow; i <= endRow; i++) {
+            row = (XSSFRow) realSheet.createRow(i);
+            cell = row.createCell(startCol);
+            cell.setCellStyle(style);
+            addressList = new CellRangeAddressList(i, i, startCol, endCol);
+            validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
+            realSheet.addValidationData(validation);
+        }
+
+        return workbook;
     }
 
-    private Boolean setIssueCreateInfo(IssueCreateDTO issueCreateDTO, Long projectId, Row row, Map<String, IssueTypeDTO> issueTypeMap, Map<String, Long> priorityMap) {
-        String summary = row.getCell(0).getStringCellValue();
+    @Override
+    public void download(Long projectId, Long organizationId, HttpServletRequest request, HttpServletResponse response) {
+        List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
+        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(projectId, "agile").getBody();
+        List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
+        List<String> priorityList = new ArrayList<>();
+        for (PriorityDTO priorityDTO : priorityDTOList) {
+            priorityList.add(priorityDTO.getName());
+        }
+        List<String> issueTypeList = new ArrayList<>();
+        for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
+            issueTypeList.add(issueTypeDTO.getName());
+        }
+        List<String> versionList = new ArrayList<>();
+        for (ProductVersionCommonDO productVersionCommonDO : productVersionCommonDOList) {
+            if ("version_planning".equals(productVersionCommonDO.getStatusCode())) {
+                versionList.add(productVersionCommonDO.getName());
+            }
+        }
+        List<String> componentList = new ArrayList<>();
+        IssueComponentDO issueComponentDO = new IssueComponentDO();
+        issueComponentDO.setProjectId(projectId);
+        List<IssueComponentDO> issueComponentDOList = issueComponentMapper.select(issueComponentDO);
+        for (IssueComponentDO issueComponent : issueComponentDOList) {
+            componentList.add(issueComponent.getName());
+        }
+        Workbook wb = new XSSFWorkbook();
+        Sheet sheet = wb.createSheet("导入模板");
+        Row row = sheet.createRow(0);
+        CellStyle style = CatalogExcelUtil.getHeadStyle(wb);
+
+        CatalogExcelUtil.initCell(row.createCell(0), style, FIELDS_NAME[0]);
+        CatalogExcelUtil.initCell(row.createCell(1), style, FIELDS_NAME[1]);
+        CatalogExcelUtil.initCell(row.createCell(2), style, FIELDS_NAME[2]);
+        CatalogExcelUtil.initCell(row.createCell(3), style, FIELDS_NAME[3]);
+        CatalogExcelUtil.initCell(row.createCell(4), style, FIELDS_NAME[4]);
+        CatalogExcelUtil.initCell(row.createCell(5), style, FIELDS_NAME[5]);
+        CatalogExcelUtil.initCell(row.createCell(6), style, FIELDS_NAME[6]);
+
+        try {
+            wb = dropDownList2007(wb, sheet, priorityList, 1, 100, 2, 2, "hidden_priority", 1);
+            wb = dropDownList2007(wb, sheet, issueTypeList, 1, 100, 3, 3, "hidden_issue_type", 2);
+            wb = dropDownList2007(wb, sheet, versionList, 1, 100, 6, 6, "hidden_fix_version", 3);
+//            FileOutputStream stream = new FileOutputStream("/Users/huangfuqiang/Downloads/success10.xlsx");
+            wb.write(response.getOutputStream());
+//            stream.close();
+        } catch (Exception e) {
+            LOGGER.info(e.getMessage());
+        }
+    }
+
+    private Boolean setIssueCreateInfo(IssueCreateDTO issueCreateDTO, Long projectId, Row row, Map<String, IssueTypeDTO> issueTypeMap, Map<String, Long> priorityMap, Map<String, Long> versionMap) {
+        String summary = row.getCell(0).toString();
         if (summary == null) {
             throw new CommonException("error.summary.null");
         }
-        String description = row.getCell(1).getStringCellValue();
-        String priorityName = row.getCell(2).getStringCellValue();
-        String typeName = row.getCell(3).getStringCellValue();
+        String description = null;
+        if (!(row.getCell(1)==null || row.getCell(1).equals("") || row.getCell(1).getCellType() ==XSSFCell.CELL_TYPE_BLANK)){
+            description = row.getCell(1).toString();
+        }
+        String priorityName = row.getCell(2).toString();
+        String typeName = row.getCell(3).toString();
         if (priorityMap.get(priorityName) == null) {
             return false;
         }
         if (issueTypeMap.get(typeName) == null) {
             return false;
+        }
+        BigDecimal storyPoint = null;
+        if(!(row.getCell(4)==null || row.getCell(4).equals("") || row.getCell(4).getCellType() ==XSSFCell.CELL_TYPE_BLANK) && "故事".equals(typeName)) {
+            storyPoint = new BigDecimal(row.getCell(4).toString());
+        }
+        BigDecimal remainTime = null;
+        if(!(row.getCell(5)==null || row.getCell(5).equals("") || row.getCell(5).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
+            remainTime = new BigDecimal(row.getCell(5).toString());
+        }
+        String versionName = null;
+        if(!(row.getCell(6)==null || row.getCell(6).equals("") || row.getCell(6).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
+            versionName = row.getCell(6).toString();
+        }
+        List<VersionIssueRelDTO> versionIssueRelDTOList = null;
+        if (versionName != null) {
+            VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
+            versionIssueRelDTO.setVersionId(versionMap.get(versionName));
+            versionIssueRelDTO.setRelationType("fix");
         }
         issueCreateDTO.setProjectId(projectId);
         issueCreateDTO.setSummary(summary);
@@ -108,8 +227,10 @@ public class ExcelServiceImpl implements ExcelService {
         issueCreateDTO.setPriorityCode("priority" + priorityMap.get(priorityName));
         issueCreateDTO.setPriorityId(priorityMap.get(priorityName));
         issueCreateDTO.setIssueTypeId(issueTypeMap.get(typeName).getId());
-        issueCreateDTO.setSprintId(null);
         issueCreateDTO.setTypeCode(issueTypeMap.get(typeName).getTypeCode());
+        issueCreateDTO.setStoryPoints(storyPoint);
+        issueCreateDTO.setRemainingTime(remainTime);
+        issueCreateDTO.setVersionIssueRelDTOList(versionIssueRelDTOList);
         return true;
     }
 
@@ -125,14 +246,18 @@ public class ExcelServiceImpl implements ExcelService {
         sendProcess(result, result.getUserId(), 1.0);
     }
 
-    private void setIssueTypeAndPriorityMap(Long organizationId, Map<String, IssueTypeDTO> issueTypeMap, Map<String, Long> priorityMap) {
+    private void setIssueTypeAndPriorityMap(Long organizationId, Map<String, IssueTypeDTO> issueTypeMap, Map<String, Long> priorityMap, List<String> issueTypeList, List<String> priorityList) {
         List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
         List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryByOrgId(organizationId).getBody();
         for (PriorityDTO priorityDTO : priorityDTOList) {
             priorityMap.put(priorityDTO.getName(), priorityDTO.getId());
+            priorityList.add(priorityDTO.getName());
         }
         for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-            issueTypeMap.put(issueTypeDTO.getName(), issueTypeDTO);
+            if (!"sub_task".equals(issueTypeDTO.getTypeCode())) {
+                issueTypeMap.put(issueTypeDTO.getName(), issueTypeDTO);
+                issueTypeList.add(issueTypeDTO.getName());
+            }
         }
     }
 
@@ -143,17 +268,28 @@ public class ExcelServiceImpl implements ExcelService {
 
 
     private SXSSFWorkbook generateErrorExcel(Sheet sheet, List<Integer> errorRows) {
-        List<ExportIssuesDTO> res = new ArrayList<>();
+        List<ExcelExportDTO> res = new ArrayList<>();
         for (int i = 0; i < errorRows.size(); i++) {
             Row row = sheet.getRow(errorRows.get(i));
-            ExportIssuesDTO exportIssuesDTO = new ExportIssuesDTO();
-            exportIssuesDTO.setSummary(row.getCell(0).getStringCellValue());
-            exportIssuesDTO.setDescription(row.getCell(1).getStringCellValue());
-            exportIssuesDTO.setPriorityName(row.getCell(2).getStringCellValue());
-            exportIssuesDTO.setTypeName(row.getCell(3).getStringCellValue());
-            res.add(exportIssuesDTO);
+            ExcelExportDTO excelExportDTO = new ExcelExportDTO();
+            excelExportDTO.setSummary(row.getCell(0).toString());
+            if (!(row.getCell(1)==null || row.getCell(1).equals("") || row.getCell(1).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
+                excelExportDTO.setDescription(row.getCell(1).toString());
+            }
+            excelExportDTO.setPriorityName(row.getCell(2).toString());
+            excelExportDTO.setTypeName(row.getCell(3).toString());
+            if (!(row.getCell(4)==null || row.getCell(4).equals("") || row.getCell(4).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
+                excelExportDTO.setStoryPoints(row.getCell(4).toString());
+            }
+            if (!(row.getCell(5)==null || row.getCell(5).equals("") || row.getCell(5).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
+                excelExportDTO.setRemainTime(row.getCell(5).toString());
+            }
+            if (!(row.getCell(6)==null || row.getCell(6).equals("") || row.getCell(6).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
+                excelExportDTO.setVersion(row.getCell(6).toString());
+            }
+            res.add(excelExportDTO);
         }
-        return ExcelUtil.generateExcel(res, ExportIssuesDTO.class, FIELDS_NAME, FIELDS, "123");
+        return ExcelUtil.generateExcel(res, ExcelExportDTO.class, FIELDS_NAME, FIELDS, "123");
     }
 
     private String uploadErrorExcel(Workbook errorWorkbook) {
@@ -163,6 +299,69 @@ public class ExcelServiceImpl implements ExcelService {
             throw new CommonException("error.errorWorkbook.upload");
         }
         return response.getBody();
+    }
+
+    private Map<Integer, String> checkRule(Row row, List<String> issueTypeList, List<String> priorityList, List<String> versionList) {
+        Map<Integer, String> errorMessage = new HashMap<>();
+        // check summary
+        if (row.getCell(0)==null || row.getCell(0).equals("") || row.getCell(0).getCellType() == XSSFCell.CELL_TYPE_BLANK) {
+            errorMessage.put(0, "概要不能为空");
+        } else if (row.getCell(0).toString().length() > 44){
+            errorMessage.put(0, "概要过长");
+        }
+        // check priority
+        if (row.getCell(2) == null || row.getCell(2).equals("") || row.getCell(2).getCellType() == XSSFCell.CELL_TYPE_BLANK) {
+            errorMessage.put(2, "优先级不能为空");
+        } else if (!priorityList.contains(row.getCell(2).toString())){
+            errorMessage.put(2, "优先级输入错误");
+        }
+        // check issue type
+        if (row.getCell(3) == null || row.getCell(3).equals("") || row.getCell(3).getCellType() == XSSFCell.CELL_TYPE_BLANK) {
+            errorMessage.put(3, "问题类型不能为空");
+        } else if (!issueTypeList.contains(row.getCell(3).toString())) {
+            errorMessage.put(3, "问题类型输入错误");
+        }
+        // check story point
+        if (!(row.getCell(4) == null || row.getCell(4).equals("") || row.getCell(4).getCellType() == XSSFCell.CELL_TYPE_BLANK)) {
+            String storyPointStr = row.getCell(4).toString();
+            if (!NumberUtil.isNumeric(storyPointStr)) {
+                errorMessage.put(4, "请输入数字");
+            } else {
+                if (NumberUtil.isInteger(storyPointStr)  || NumberUtil.canParseInteger(storyPointStr)) {
+                    if (storyPointStr.trim().length() > 3) {
+                        errorMessage.put(4, "最大支持3位整数");
+                    } else if (storyPointStr.trim().length() > 1 && "0".equals(storyPointStr.trim().substring(0,0))){
+                        errorMessage.put(4, "请输入正确的整数");
+                    }
+                } else if (!"0.5".equals(storyPointStr)){
+                    errorMessage.put(4, "小数只支持0.5");
+                }
+            }
+        }
+        // check remain time
+        if (!(row.getCell(5) == null || row.getCell(5).equals("") || row.getCell(5).getCellType() == XSSFCell.CELL_TYPE_BLANK)) {
+            String remainTime = row.getCell(5).toString();
+            if (!NumberUtil.isNumeric(remainTime)) {
+                errorMessage.put(5, "请输入数字");
+            } else {
+                if (NumberUtil.isInteger(remainTime) || NumberUtil.canParseInteger(remainTime)) {
+                    if (remainTime.trim().length() > 3) {
+                        errorMessage.put(5, "最大支持3位整数");
+                    } else if (remainTime.trim().length() > 1 && "0".equals(remainTime.trim().substring(0,0))){
+                        errorMessage.put(5, "请输入正确的整数");
+                    }
+                } else if (!"0.5".equals(remainTime)){
+                    errorMessage.put(5, "小数只支持0.5");
+                }
+            }
+        }
+        // check version
+        if (!(row.getCell(6) == null || row.getCell(6).equals("") || row.getCell(6).getCellType() == XSSFCell.CELL_TYPE_BLANK)) {
+            if (!versionList.contains(row.getCell(6).toString())) {
+                errorMessage.put(6, "请输入正确的版本");
+            }
+        }
+        return errorMessage;
     }
 
     @Override
@@ -179,18 +378,52 @@ public class ExcelServiceImpl implements ExcelService {
         // 查询组织下的优先级与问题类型
         Map<String, IssueTypeDTO> issueTypeMap = new HashMap<>();
         Map<String, Long> priorityMap = new HashMap<>();
-        setIssueTypeAndPriorityMap(organizationId, issueTypeMap, priorityMap);
+        List<String> issueTypeList = new ArrayList<>();
+        List<String> priorityList = new ArrayList<>();
+        setIssueTypeAndPriorityMap(organizationId, issueTypeMap, priorityMap, issueTypeList, priorityList);
         Long failCount = 0L;
         Long successcount = 0L;
         Integer processNum = 0;
         List<Integer> errorRows = new ArrayList<>();
-        for (int r = 1; r <= sheet.getLastRowNum(); r++) {
+        for (int r = 1; r <= allRowCount; r++) {
             Row row = sheet.getRow(r);
-            if (row == null) {
+            if (row == null || (((row.getCell(0)==null || row.getCell(0).equals("") || row.getCell(0).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) &&
+                    (row.getCell(1)==null || row.getCell(1).equals("") || row.getCell(1).getCellType() ==XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(2)==null || row.getCell(2).equals("") || row.getCell(2).getCellType() ==XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(3)==null || row.getCell(3).equals("") || row.getCell(3).getCellType() ==XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(4)==null || row.getCell(4).equals("") || row.getCell(4).getCellType() ==XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(5)==null || row.getCell(5).equals("") || row.getCell(5).getCellType() ==XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(6)==null || row.getCell(6).equals("") || row.getCell(6).getCellType() ==XSSFCell.CELL_TYPE_BLANK))) {
+                continue;
+            }
+            for (int w = 0; w < FIELDS.length; w++) {
+                if (row.getCell(w) != null) {
+                    row.getCell(w).setCellType(XSSFCell.CELL_TYPE_STRING);
+                }
+            }
+            List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
+            Map<String, Long> versionMap = new HashMap<>();
+            List<String> versionList = new ArrayList<>();
+            for (ProductVersionCommonDO productVersionCommonDO : productVersionCommonDOList) {
+                versionMap.put(productVersionCommonDO.getName(), productVersionCommonDO.getVersionId());
+                versionList.add(productVersionCommonDO.getName());
+            }
+            Map errorMap = checkRule(row, issueTypeList, priorityList, versionList);
+            if (!errorMap.isEmpty()) {
+                failCount ++ ;
+                Iterator<Map.Entry<Integer, String>> entries = errorMap.entrySet().iterator();
+                while (entries.hasNext()) {
+                    Map.Entry<Integer, String> entry = entries.next();
+                    Integer key = entry.getKey();
+                    String value = entry.getValue();
+                    row.getCell(key).setCellValue(row.getCell(key).toString() + " (" + value + ")");
+                }
+                errorRows.add(row.getRowNum());
                 continue;
             }
             IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
-            Boolean ok = setIssueCreateInfo(issueCreateDTO, projectId, row, issueTypeMap, priorityMap);
+
+            Boolean ok = setIssueCreateInfo(issueCreateDTO, projectId, row, issueTypeMap, priorityMap, versionMap);
             IssueDTO result = null;
             if (ok) {
                 result = stateMachineService.createIssue(issueCreateDTO, "agile");
