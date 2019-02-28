@@ -42,7 +42,7 @@ public class PersonalFilterServiceImpl implements PersonalFilterService {
             throw new CommonException(NOTFOUND_ERROR);
         }
         PersonalFilterDTO personalFilterDTO = modelMapper.map(personalFilterDO, PersonalFilterDTO.class);
-        personalFilterDTO.setPersonalFilterSearchDTO(JSONObject.parseObject(personalFilterDO.getFilterJson(), PersonalFilterSearchDTO.class));
+        parseJson(personalFilterDTO);
         return personalFilterDTO;
     }
 
@@ -89,8 +89,10 @@ public class PersonalFilterServiceImpl implements PersonalFilterService {
 
     @Override
     public List<PersonalFilterDTO> listByProjectId(Long projectId, Long userId, String searchStr) {
-        return modelMapper.map(personalFilterMapper.queryByProjectIdAndUserId(projectId, userId, searchStr), new TypeToken<List<PersonalFilterDTO>>() {
+        List<PersonalFilterDTO> list = modelMapper.map(personalFilterMapper.queryByProjectIdAndUserId(projectId, userId, searchStr), new TypeToken<List<PersonalFilterDTO>>() {
         }.getType());
+        list.stream().forEach(dto -> parseJson(dto));
+        return list;
     }
 
     @Override
@@ -101,5 +103,13 @@ public class PersonalFilterServiceImpl implements PersonalFilterService {
         personalFilterDO.setName(name);
         List<PersonalFilterDO> list = personalFilterMapper.select(personalFilterDO);
         return list != null && !list.isEmpty();
+    }
+
+    /**
+     * 解析json为dto
+     * @param personalFilterDTO
+     */
+    private void parseJson(PersonalFilterDTO personalFilterDTO) {
+        personalFilterDTO.setPersonalFilterSearchDTO(JSONObject.parseObject(personalFilterDTO.getFilterJson(), PersonalFilterSearchDTO.class));
     }
 }

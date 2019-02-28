@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import java.util.List;
+
 /**
  * @author shinan.chen
  * @since 2019/2/25
@@ -18,6 +20,19 @@ public class PersonalFilterSearchDTO {
      * 其他搜索，issue的非必填字段的对应id值，在sql中用in匹配
      */
     private PersonalFilterSearchOtherArgsDTO otherArgs;
+
+    /**
+     * 全局搜索：目前仅包括issueNum和summery
+     */
+    private List<String> contents;
+
+    public List<String> getContents() {
+        return contents;
+    }
+
+    public void setContents(List<String> contents) {
+        this.contents = contents;
+    }
 
     public PersonalFilterSearchOtherArgsDTO getOtherArgs() {
         return otherArgs;
