@@ -4,6 +4,7 @@ import io.choerodon.agile.api.dto.Status;
 import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.statemachine.dto.StateMachineTransformDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +40,13 @@ public class StateMachineFeignClientFallback implements StateMachineFeignClient 
     }
 
     @Override
-    public ResponseEntity<Map<Long,Long>> queryInitStatusIds(Long organizationId, List<Long> stateMachineIds) {
+    public ResponseEntity<Map<Long, Long>> queryInitStatusIds(Long organizationId, List<Long> stateMachineIds) {
         throw new CommonException("error.statusMap.queryInitStatusIds");
+    }
+
+    @Override
+    public ResponseEntity<StateMachineTransformDTO> queryDeployTransformForAgile(Long organizationId, Long tansformId) {
+        throw new CommonException("error.stateMachineFegin.queryDeployTransformForAgile");
+
     }
 }

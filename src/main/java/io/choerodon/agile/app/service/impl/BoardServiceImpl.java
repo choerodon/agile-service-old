@@ -179,7 +179,7 @@ public class BoardServiceImpl implements BoardService {
         userSettingMapper.delete(userSettingDO);
         //更新第一个为默认
         List<BoardDTO> boardDTOS = queryByProjectId(projectId);
-        if(!boardDTOS.isEmpty()){
+        if (!boardDTOS.isEmpty()) {
             Long defaultBoardId = boardDTOS.get(0).getBoardId();
             handleUserSetting(defaultBoardId, projectId);
         }
@@ -480,15 +480,20 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public IssueMoveDTO move(Long projectId, Long issueId, Long transformId, IssueMoveDTO issueMoveDTO) {
+    public IssueMoveDTO move(Long projectId, Long issueId, Long transformId, IssueMoveDTO issueMoveDTO, Boolean isDemo) {
 //        Long boardId = issueMoveDTO.getBoardId();
         IssueDO issueDO = issueMapper.selectByPrimaryKey(issueMoveDTO.getIssueId());
 //        BoardDO boardDO = boardMapper.selectByPrimaryKey(boardId);
 //        checkColumnContraint(projectId, issueMoveDTO, boardDO.getColumnConstraint(), issueDO.getStatusId());
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
         //执行状态机转换
-        stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber(),
-                SchemeApplyType.AGILE, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleIssueMoveRank(projectId, issueMoveDTO))));
+        if (isDemo) {
+            stateMachineService.executeTransformForDemo(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber(),
+                    SchemeApplyType.AGILE, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleIssueMoveRank(projectId, issueMoveDTO))));
+        } else {
+            stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber(),
+                    SchemeApplyType.AGILE, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleIssueMoveRank(projectId, issueMoveDTO))));
+        }
         issueDO = issueMapper.selectByPrimaryKey(issueId);
         IssueMoveDTO result = ConvertHelper.convert(issueDO, IssueMoveDTO.class);
 

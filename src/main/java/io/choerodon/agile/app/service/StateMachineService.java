@@ -33,6 +33,8 @@ public interface StateMachineService {
      */
     ExecuteResult executeTransform(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType, InputDTO inputDTO);
 
+    ExecuteResult executeTransformForDemo(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType, InputDTO inputDTO);
+
     /**
      * 【内部调用】校验是否可以删除状态机的节点
      *

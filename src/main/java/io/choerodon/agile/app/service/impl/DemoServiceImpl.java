@@ -18,6 +18,7 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -275,7 +276,7 @@ public class DemoServiceImpl implements DemoService {
         issueMoveDTO.setRank(false);
         issueMoveDTO.setSprintId(sprintId);
         issueMoveDTO.setStatusId(statusId);
-        boardService.move(projectId, issueId, transformId, issueMoveDTO);
+        boardService.move(projectId, issueId, transformId, issueMoveDTO, true);
     }
 
     private void setPriorityMap(List<PriorityDTO> priorityDTOList, Map<String, Long> priorityMap) {
@@ -413,6 +414,7 @@ public class DemoServiceImpl implements DemoService {
 
     @Saga(code = "agile-demo-for-test", description = "为测试提供demo数据", inputSchemaClass = DemoPayload.class)
     @Override
+    @Transactional
     public OrganizationRegisterEventPayload demoInit(OrganizationRegisterEventPayload demoProjectPayload) {
 
         Long projectId = demoProjectPayload.getProject().getId();
