@@ -50,9 +50,11 @@ public class ExcelController {
                                       @PathVariable(name = "project_id") Long projectId,
                                       @ApiParam(value = "组织id", required = true)
                                       @RequestParam Long organizationId,
+                                      @ApiParam(value = "user id", required = true)
+                                      @RequestParam Long userId,
                                       @ApiParam(value = "导入文件", required = true)
                                       @RequestParam("file") MultipartFile file) {
-        excelService.batchImport(projectId, organizationId, ExcelUtil.getWorkbookFromMultipartFile(ExcelUtil.Mode.XSSF, file));
+        excelService.batchImport(projectId, organizationId, userId, ExcelUtil.getWorkbookFromMultipartFile(ExcelUtil.Mode.XSSF, file));
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
@@ -62,8 +64,10 @@ public class ExcelController {
     public ResponseEntity cancelImport(@ApiParam(value = "项目id", required = true)
                                        @PathVariable(name = "project_id") Long projectId,
                                        @ApiParam(value = "file history id", required = true)
-                                       @RequestParam Long id) {
-        excelService.cancelImport(projectId, id);
+                                       @RequestParam Long id,
+                                       @ApiParam(value = "objectVersionNumber", required = true)
+                                       @RequestParam Long objectVersionNumber) {
+        excelService.cancelImport(projectId, id, objectVersionNumber);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
