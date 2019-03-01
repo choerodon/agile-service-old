@@ -23,6 +23,8 @@ public class FileOperationHistoryDTO {
 
     private String fileUrl;
 
+    private Long objectVersionNumber;
+
     public Long getId() {
         return id;
     }
@@ -85,5 +87,13 @@ public class FileOperationHistoryDTO {
 
     public Long getUserId() {
         return userId;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
     }
 }

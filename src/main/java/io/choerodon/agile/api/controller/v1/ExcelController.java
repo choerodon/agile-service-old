@@ -60,7 +60,7 @@ public class ExcelController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("取消导入")
-    @PostMapping(value = "/cancel")
+    @PutMapping(value = "/cancel")
     public ResponseEntity cancelImport(@ApiParam(value = "项目id", required = true)
                                        @PathVariable(name = "project_id") Long projectId,
                                        @ApiParam(value = "file history id", required = true)
