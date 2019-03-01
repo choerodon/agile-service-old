@@ -94,6 +94,8 @@ public interface IssueService {
 
     void batchDeleteIssues(Long projectId, List<Long> issueIds);
 
+    void batchDeleteIssuesAgile(Long projectId, List<Long> issueIds);
+
     void handleInitSubIssue(IssueE subIssueE, Long statusId, ProjectInfoE projectInfoE);
 
     IssueSubDTO queryIssueSubByCreate(Long projectId, Long issueId);

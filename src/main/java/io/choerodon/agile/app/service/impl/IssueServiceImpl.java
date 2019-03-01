@@ -693,6 +693,17 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
+    public void batchDeleteIssuesAgile(Long projectId, List<Long> issueIds) {
+        if (issueMapper.queryIssueIdsIsNotTest(projectId, issueIds) != issueIds.size()) {
+            throw new CommonException("error.Issue.type.isNotIssueTest");
+        }
+        List<Long> issueIdList = issueMapper.queryIssueSubListByIssueIds(projectId, issueIds);
+        issueIds.addAll(issueIdList);
+        issueMapper.batchDeleteIssues(projectId, issueIds);
+        issueIds.forEach(issueId -> deleteIssueInfo(issueId, projectId));
+    }
+
+    @Override
     public void batchDeleteIssues(Long projectId, List<Long> issueIds) {
         if (issueMapper.queryIssueIdsIsTest(projectId, issueIds) != issueIds.size()) {
             throw new CommonException("error.Issue.type.isNotIssueTest");

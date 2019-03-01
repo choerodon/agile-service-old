@@ -14,9 +14,9 @@ public interface ExcelService {
 
     void download(Long projectId, Long organizationId, HttpServletRequest request, HttpServletResponse response);
 
-    void batchImport(Long projectId, Long organizationId, Workbook workbook);
+    void batchImport(Long projectId, Long organizationId, Long userId, Workbook workbook);
 
-    void cancelImport(Long projectId, Long id);
+    void cancelImport(Long projectId, Long id, Long objectVersionNumber);
 
     FileOperationHistoryDTO queryLatestRecode(Long projectId);
 }

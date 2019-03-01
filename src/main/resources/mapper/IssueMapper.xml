@@ -2523,6 +2523,17 @@
         </foreach>
     </select>
 
+    <select id="queryIssueIdsIsNotTest" resultType="java.lang.Integer">
+        select count(1)
+        from agile_issue ai
+        where ai.apply_type = 'agile'
+        AND ai.issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+    </select>
+
     <delete id="batchRemoveFromVersionTest">
         DELETE avir
         FROM

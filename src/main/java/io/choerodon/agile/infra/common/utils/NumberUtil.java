@@ -12,9 +12,9 @@ public class NumberUtil {
      * @return
      */
     public static Boolean isNumeric(String str) {
-        Pattern pattern = Pattern.compile("-?[0-9]+.?[0-9]+");
-        Matcher isNum = pattern.matcher(str);
-        if (!isNum.matches()) {
+        try {
+            Double.parseDouble(String.valueOf(str));
+        } catch (Exception e) {
             return false;
         }
         return true;
@@ -31,15 +31,15 @@ public class NumberUtil {
     }
 
     public static Boolean canParseInteger(String str) {
-        Boolean flag = false;// 没碰到小数点时候标记是false
+        Boolean flag = true;// 没碰到小数点时候标记是false
         int n = 0;// 计数器
         char[] charArray = str.toCharArray();
         for (char c : charArray) {
             if (c == '.') {
-                flag = true;
+                flag = false;
                 continue;
             }
-            if (flag && Integer.valueOf(String.valueOf(c)) > 0) {
+            if (!flag && Integer.valueOf(String.valueOf(c)) > 0) {
                 n++;
             }
         }

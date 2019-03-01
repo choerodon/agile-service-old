@@ -3,25 +3,23 @@ package io.choerodon.agile.app.service.impl;
 import com.alibaba.fastjson.JSON;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.ExcelService;
+import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
 import io.choerodon.agile.domain.agile.entity.FileOperationHistoryE;
 import io.choerodon.agile.domain.agile.repository.FileOperationHistoryRepository;
 import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.FileOperationHistoryDO;
-import io.choerodon.agile.infra.dataobject.IssueComponentDO;
 import io.choerodon.agile.infra.dataobject.ProductVersionCommonDO;
 import io.choerodon.agile.infra.feign.FileFeignClient;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.NotifyFeignClient;
 import io.choerodon.agile.infra.mapper.FileOperationHistoryMapper;
-import io.choerodon.agile.infra.mapper.IssueComponentMapper;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
@@ -29,8 +27,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.NumberUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -75,65 +73,8 @@ public class ExcelServiceImpl implements ExcelService {
     private ProductVersionMapper productVersionMapper;
 
     @Autowired
-    private IssueComponentMapper issueComponentMapper;
+    private IssueService issueService;
 
-    /**
-     * @param wb HSSFWorkbook对象
-     * @param realSheet 需要操作的sheet对象
-     * @param datas 下拉的列表数据
-     * @param startRow 开始行
-     * @param endRow 结束行
-     * @param startCol 开始列
-     * @param endCol 结束列
-     * @param hiddenSheetName 隐藏的sheet名
-     * @param hiddenSheetIndex 隐藏的sheet索引
-     * @return
-     * @throws Exception
-     */
-    public static XSSFWorkbook dropDownList2007(Workbook wb, Sheet realSheet, List<String> datas, int startRow, int endRow,
-                                                int startCol, int endCol, String hiddenSheetName, int hiddenSheetIndex) {
-
-        XSSFWorkbook workbook = (XSSFWorkbook) wb;
-        // 创建一个数据源sheet
-        XSSFSheet hidden = workbook.createSheet(hiddenSheetName);
-        // 数据源sheet页不显示
-        workbook.setSheetHidden(hiddenSheetIndex, true);
-        // 将下拉列表的数据放在数据源sheet上
-        XSSFRow row = null;
-        XSSFCell cell = null;
-        for (int i = 0; i < datas.size(); i++) {
-            row = hidden.createRow(i);
-            cell = row.createCell(0);
-            cell.setCellValue(datas.get(i));
-        }
-        //2016-12-15更新，遇到问题：生成的excel下拉框还是可以手动编辑，不满足
-        //HSSFName namedCell = workbook.createName();
-        //namedCell.setNameName(hiddenSheetName);
-        // A1 到 Adatas.length 表示第一列的第一行到datas.length行，需要与前一步生成的隐藏的数据源sheet数据位置对应
-        //namedCell.setRefersToFormula(hiddenSheetName + "!$A$1:$A" + datas.length);
-        // 指定下拉数据时，给定目标数据范围 hiddenSheetName!$A$1:$A5   隐藏sheet的A1到A5格的数据
-        XSSFDataValidationHelper dvHelper = new XSSFDataValidationHelper((XSSFSheet)realSheet);
-        XSSFDataValidationConstraint dvConstraint = (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint(hiddenSheetName + "!$A$1:$A" + datas.size());
-        CellRangeAddressList addressList = null;
-        XSSFDataValidation validation = null;
-        row = null;
-        cell = null;
-        // 单元格样式
-        CellStyle style = workbook.createCellStyle();
-        style.setAlignment(CellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
-        // 循环指定单元格下拉数据
-        for (int i = startRow; i <= endRow; i++) {
-            row = (XSSFRow) realSheet.createRow(i);
-            cell = row.createCell(startCol);
-            cell.setCellStyle(style);
-            addressList = new CellRangeAddressList(i, i, startCol, endCol);
-            validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
-            realSheet.addValidationData(validation);
-        }
-
-        return workbook;
-    }
 
     @Override
     public void download(Long projectId, Long organizationId, HttpServletRequest request, HttpServletResponse response) {
@@ -154,13 +95,6 @@ public class ExcelServiceImpl implements ExcelService {
                 versionList.add(productVersionCommonDO.getName());
             }
         }
-        List<String> componentList = new ArrayList<>();
-        IssueComponentDO issueComponentDO = new IssueComponentDO();
-        issueComponentDO.setProjectId(projectId);
-        List<IssueComponentDO> issueComponentDOList = issueComponentMapper.select(issueComponentDO);
-        for (IssueComponentDO issueComponent : issueComponentDOList) {
-            componentList.add(issueComponent.getName());
-        }
         Workbook wb = new XSSFWorkbook();
         Sheet sheet = wb.createSheet("导入模板");
         Row row = sheet.createRow(0);
@@ -175,9 +109,9 @@ public class ExcelServiceImpl implements ExcelService {
         CatalogExcelUtil.initCell(row.createCell(6), style, FIELDS_NAME[6]);
 
         try {
-            wb = dropDownList2007(wb, sheet, priorityList, 1, 100, 2, 2, "hidden_priority", 1);
-            wb = dropDownList2007(wb, sheet, issueTypeList, 1, 100, 3, 3, "hidden_issue_type", 2);
-            wb = dropDownList2007(wb, sheet, versionList, 1, 100, 6, 6, "hidden_fix_version", 3);
+            wb = ExcelUtil.dropDownList2007(wb, sheet, priorityList, 1, 100, 2, 2, "hidden_priority", 1);
+            wb = ExcelUtil.dropDownList2007(wb, sheet, issueTypeList, 1, 100, 3, 3, "hidden_issue_type", 2);
+            wb = ExcelUtil.dropDownList2007(wb, sheet, versionList, 1, 100, 6, 6, "hidden_fix_version", 3);
 //            FileOutputStream stream = new FileOutputStream("/Users/huangfuqiang/Downloads/success10.xlsx");
             wb.write(response.getOutputStream());
 //            stream.close();
@@ -186,7 +120,7 @@ public class ExcelServiceImpl implements ExcelService {
         }
     }
 
-    private Boolean setIssueCreateInfo(IssueCreateDTO issueCreateDTO, Long projectId, Row row, Map<String, IssueTypeDTO> issueTypeMap, Map<String, Long> priorityMap, Map<String, Long> versionMap) {
+    private Boolean setIssueCreateInfo(IssueCreateDTO issueCreateDTO, Long projectId, Row row, Map<String, IssueTypeDTO> issueTypeMap, Map<String, Long> priorityMap, Map<String, Long> versionMap, Long reporterId) {
         String summary = row.getCell(0).toString();
         if (summary == null) {
             throw new CommonException("error.summary.null");
@@ -231,6 +165,7 @@ public class ExcelServiceImpl implements ExcelService {
         issueCreateDTO.setStoryPoints(storyPoint);
         issueCreateDTO.setRemainingTime(remainTime);
         issueCreateDTO.setVersionIssueRelDTOList(versionIssueRelDTOList);
+        issueCreateDTO.setReporterId(reporterId);
         return true;
     }
 
@@ -254,7 +189,7 @@ public class ExcelServiceImpl implements ExcelService {
             priorityList.add(priorityDTO.getName());
         }
         for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-            if (!"sub_task".equals(issueTypeDTO.getTypeCode())) {
+            if (!"agile_subtask".equals(issueTypeDTO.getTypeCode())) {
                 issueTypeMap.put(issueTypeDTO.getName(), issueTypeDTO);
                 issueTypeList.add(issueTypeDTO.getName());
             }
@@ -356,7 +291,7 @@ public class ExcelServiceImpl implements ExcelService {
             }
         }
         // check version
-        if (!(row.getCell(6) == null || row.getCell(6).equals("") || row.getCell(6).getCellType() == XSSFCell.CELL_TYPE_BLANK)) {
+        if (!(row.getCell(6) == null || row.getCell(6).toString().equals("") || row.getCell(6).getCellType() == XSSFCell.CELL_TYPE_BLANK)) {
             if (!versionList.contains(row.getCell(6).toString())) {
                 errorMessage.put(6, "请输入正确的版本");
             }
@@ -364,9 +299,22 @@ public class ExcelServiceImpl implements ExcelService {
         return errorMessage;
     }
 
+    private Boolean checkCanceled(Long projectId, Long fileOperationHistoryId, List<Long> importedIssueIds) {
+        FileOperationHistoryDO checkCanceledDO = fileOperationHistoryMapper.selectByPrimaryKey(fileOperationHistoryId);
+        if ("upload_file".equals(checkCanceledDO.getAction()) && "canceled".equals(checkCanceledDO.getStatus())) {
+            if (!importedIssueIds.isEmpty()) {
+                LOGGER.info(importedIssueIds.toString());
+                issueService.batchDeleteIssuesAgile(projectId, importedIssueIds);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Async
     @Override
-    public void batchImport(Long projectId, Long organizationId, Workbook workbook) {
-        Long userId = DetailsHelper.getUserDetails().getUserId();
+    public void batchImport(Long projectId, Long organizationId, Long userId, Workbook workbook) {
+//        Long userId = DetailsHelper.getUserDetails().getUserId();
         String status = "doing";
         FileOperationHistoryE fileOperationHistoryE = fileOperationHistoryRepository.create(new FileOperationHistoryE(projectId, userId, "upload_file", 0L, 0L, status));
         Sheet sheet = workbook.getSheetAt(0);
@@ -385,7 +333,19 @@ public class ExcelServiceImpl implements ExcelService {
         Long successcount = 0L;
         Integer processNum = 0;
         List<Integer> errorRows = new ArrayList<>();
+        Map<Integer, List<Integer>> errorMapList = new HashMap<>();
+        Map<String, Long> versionMap = new HashMap<>();
+        List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
+        List<String> versionList = new ArrayList<>();
+        for (ProductVersionCommonDO productVersionCommonDO : productVersionCommonDOList) {
+            versionMap.put(productVersionCommonDO.getName(), productVersionCommonDO.getVersionId());
+            versionList.add(productVersionCommonDO.getName());
+        }
+        List<Long> importedIssueIds = new ArrayList<>();
         for (int r = 1; r <= allRowCount; r++) {
+            if (checkCanceled(projectId, fileOperationHistoryE.getId(), importedIssueIds)) {
+                return;
+            }
             Row row = sheet.getRow(r);
             if (row == null || (((row.getCell(0)==null || row.getCell(0).equals("") || row.getCell(0).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) &&
                     (row.getCell(1)==null || row.getCell(1).equals("") || row.getCell(1).getCellType() ==XSSFCell.CELL_TYPE_BLANK) &&
@@ -401,13 +361,6 @@ public class ExcelServiceImpl implements ExcelService {
                     row.getCell(w).setCellType(XSSFCell.CELL_TYPE_STRING);
                 }
             }
-            List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
-            Map<String, Long> versionMap = new HashMap<>();
-            List<String> versionList = new ArrayList<>();
-            for (ProductVersionCommonDO productVersionCommonDO : productVersionCommonDOList) {
-                versionMap.put(productVersionCommonDO.getName(), productVersionCommonDO.getVersionId());
-                versionList.add(productVersionCommonDO.getName());
-            }
             Map errorMap = checkRule(row, issueTypeList, priorityList, versionList);
             if (!errorMap.isEmpty()) {
                 failCount ++ ;
@@ -416,14 +369,28 @@ public class ExcelServiceImpl implements ExcelService {
                     Map.Entry<Integer, String> entry = entries.next();
                     Integer key = entry.getKey();
                     String value = entry.getValue();
-                    row.getCell(key).setCellValue(row.getCell(key).toString() + " (" + value + ")");
+                    if (row.getCell(key) == null) {
+                        row.createCell(key).setCellValue("(" + value + ")");
+                    } else {
+                        row.getCell(key).setCellValue(row.getCell(key).toString()+ " (" + value + ")");
+                    }
+
+                    List<Integer> cList =  errorMapList.get(r);
+                    if (cList == null) {
+                        cList = new ArrayList<>();
+                    }
+                    cList.add(key);
+                    errorMapList.put(r, cList);
                 }
                 errorRows.add(row.getRowNum());
+                fileOperationHistoryE.setFailCount(++failCount);
+                processNum ++;
+                sendProcess(fileOperationHistoryE, userId, processNum * 1.0 / allRowCount);
                 continue;
             }
             IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
 
-            Boolean ok = setIssueCreateInfo(issueCreateDTO, projectId, row, issueTypeMap, priorityMap, versionMap);
+            Boolean ok = setIssueCreateInfo(issueCreateDTO, projectId, row, issueTypeMap, priorityMap, versionMap, userId);
             IssueDTO result = null;
             if (ok) {
                 result = stateMachineService.createIssue(issueCreateDTO, "agile");
@@ -432,17 +399,24 @@ public class ExcelServiceImpl implements ExcelService {
                 failCount ++;
                 errorRows.add(row.getRowNum());
             } else {
+                importedIssueIds.add(result.getIssueId());
                 successcount ++;
             }
             processNum ++ ;
             fileOperationHistoryE.setFailCount(failCount);
             fileOperationHistoryE.setSuccessCount(successcount);
             sendProcess(fileOperationHistoryE, userId, processNum * 1.0 / allRowCount);
+            try {
+                Thread.sleep(20000);
+            } catch (Exception e) {
+
+            }
         }
         if (!errorRows.isEmpty()) {
             LOGGER.info("导入数据有误");
-            SXSSFWorkbook generateExcel = generateErrorExcel(sheet, errorRows);
-            String errorWorkBookUrl = uploadErrorExcel(generateExcel);
+//            SXSSFWorkbook generateExcel = generateErrorExcel(sheet, errorRows);
+            Workbook result = ExcelUtil.generateExcelAwesome(workbook, errorRows, errorMapList, FIELDS_NAME, priorityList, issueTypeList, versionList, ConvertUtil.getName(projectId));
+            String errorWorkBookUrl = uploadErrorExcel(result);
             fileOperationHistoryE.setFileUrl(errorWorkBookUrl);
             status = "failed";
         } else {
@@ -453,10 +427,11 @@ public class ExcelServiceImpl implements ExcelService {
 
 
     @Override
-    public void cancelImport(Long projectId, Long id) {
+    public void cancelImport(Long projectId, Long id, Long objectVersionNumber) {
         FileOperationHistoryE fileOperationHistoryE = new FileOperationHistoryE();
         fileOperationHistoryE.setId(id);
         fileOperationHistoryE.setStatus("canceled");
+        fileOperationHistoryE.setObjectVersionNumber(objectVersionNumber);
         fileOperationHistoryRepository.updateBySeletive(fileOperationHistoryE);
     }
 

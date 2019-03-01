@@ -372,6 +372,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     Integer queryIssueIdsIsTest(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
+    Integer queryIssueIdsIsNotTest(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
     /**
      * 查询epic信息
      *
