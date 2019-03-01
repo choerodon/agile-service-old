@@ -317,6 +317,7 @@ public class ExcelServiceImpl implements ExcelService {
 //        Long userId = DetailsHelper.getUserDetails().getUserId();
         String status = "doing";
         FileOperationHistoryE fileOperationHistoryE = fileOperationHistoryRepository.create(new FileOperationHistoryE(projectId, userId, "upload_file", 0L, 0L, status));
+        sendProcess(fileOperationHistoryE, userId, 0.0);
         Sheet sheet = workbook.getSheetAt(0);
         if (sheet == null) {
             throw new CommonException("error.sheet.empty");
@@ -406,11 +407,6 @@ public class ExcelServiceImpl implements ExcelService {
             fileOperationHistoryE.setFailCount(failCount);
             fileOperationHistoryE.setSuccessCount(successcount);
             sendProcess(fileOperationHistoryE, userId, processNum * 1.0 / allRowCount);
-            try {
-                Thread.sleep(20000);
-            } catch (Exception e) {
-
-            }
         }
         if (!errorRows.isEmpty()) {
             LOGGER.info("导入数据有误");
