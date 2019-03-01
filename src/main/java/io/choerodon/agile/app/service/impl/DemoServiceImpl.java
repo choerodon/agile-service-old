@@ -7,6 +7,7 @@ import io.choerodon.agile.domain.agile.event.DemoPayload;
 import io.choerodon.agile.domain.agile.event.OrganizationRegisterEventPayload;
 import io.choerodon.agile.infra.dataobject.BoardColumnDO;
 import io.choerodon.agile.infra.dataobject.BoardDO;
+import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
@@ -84,6 +85,12 @@ public class DemoServiceImpl implements DemoService {
 
     @Autowired
     private SagaClient sagaClient;
+
+    @Autowired
+    private IssueLinkTypeMapper issueLinkTypeMapper;
+
+    @Autowired
+    private IssueLinkService issueLinkService;
 
 
     private void setIssueTypeMap(Map<String, IssueTypeWithStateMachineIdDTO> issueTypeMap, List<IssueTypeWithStateMachineIdDTO> issueTypes) {
@@ -603,7 +610,28 @@ public class DemoServiceImpl implements DemoService {
         updateFixVersion(projectId, subtask9.getIssueId(), productVersionDetailDTO.getVersionId());
         updateFixVersion(projectId, subtask10.getIssueId(), productVersionDetailDTO.getVersionId());
         updateFixVersion(projectId, subtask11.getIssueId(), productVersionDetailDTO.getVersionId());
+        updateFixVersion(projectId, test1.getIssueId(), productVersionDetailDTO.getVersionId());
+        updateFixVersion(projectId, test2.getIssueId(), productVersionDetailDTO.getVersionId());
+        updateFixVersion(projectId, test3.getIssueId(), productVersionDetailDTO.getVersionId());
+        updateFixVersion(projectId, test4.getIssueId(), productVersionDetailDTO.getVersionId());
 
+        // 创建issueLink
+        List<IssueLinkCreateDTO> issueLinkCreateDTOList = new ArrayList<>();
+        IssueLinkTypeDO issueLinkTypeDO = new IssueLinkTypeDO();
+        issueLinkTypeDO.setProjectId(projectId);
+        List<IssueLinkTypeDO> issueLinkTypeDOS = issueLinkTypeMapper.select(issueLinkTypeDO);
+        Long wantLinkTypeId = null;
+        for (IssueLinkTypeDO issueLinkTypeDO1 : issueLinkTypeDOS) {
+            if ("阻塞".equals(issueLinkTypeDO1.getLinkName())) {
+                wantLinkTypeId = issueLinkTypeDO1.getLinkTypeId();
+            }
+        }
+        IssueLinkCreateDTO issueLinkCreateDTO = new IssueLinkCreateDTO();
+        issueLinkCreateDTO.setLinkTypeId(wantLinkTypeId);
+        issueLinkCreateDTO.setIssueId(test4.getIssueId());
+        issueLinkCreateDTO.setLinkedIssueId(story4.getIssueId());
+        issueLinkCreateDTOList.add(issueLinkCreateDTO);
+        issueLinkService.createIssueLinkList(issueLinkCreateDTOList, story4.getIssueId(), projectId);
 
         // 完成冲刺1所有的issue
         List<IssueStatusDTO> issueStatusDTOS = issueStatusService.queryIssueStatusList(projectId);
