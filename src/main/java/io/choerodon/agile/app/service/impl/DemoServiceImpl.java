@@ -276,8 +276,8 @@ public class DemoServiceImpl implements DemoService {
         IssueMoveDTO issueMoveDTO = new IssueMoveDTO();
         issueMoveDTO.setBefore(true);
         issueMoveDTO.setBoardId(boardRes.getBoardId());
-        issueMoveDTO.setColumnId(columnMap.get("done"));
-        issueMoveDTO.setOriginColumnId(columnMap.get("todo"));
+//        issueMoveDTO.setColumnId(columnMap.get("done"));
+//        issueMoveDTO.setOriginColumnId(columnMap.get("todo"));
         issueMoveDTO.setIssueId(issueId);
         issueMoveDTO.setObjectVersionNumber(objectVersionNumber);
         issueMoveDTO.setRank(false);
