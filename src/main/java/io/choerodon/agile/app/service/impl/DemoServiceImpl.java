@@ -746,20 +746,20 @@ public class DemoServiceImpl implements DemoService {
 
         // 完成冲刺2的任务
         completeIssue(projectId, subtask16.getIssueId(), doingTransformId3, subtask16.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
-        completeIssue(projectId, subtask16.getIssueId(), completeTransformId3, subtask16.getObjectVersionNumber(), sprintId2, statusMap.get("done"));
+        completeIssue(projectId, subtask16.getIssueId(), completeTransformId3, subtask16.getObjectVersionNumber()+1, sprintId2, statusMap.get("done"));
 
         completeIssue(projectId, subtask17.getIssueId(), doingTransformId3, subtask17.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
-        completeIssue(projectId, subtask17.getIssueId(), completeTransformId3, subtask17.getObjectVersionNumber(), sprintId2, statusMap.get("done"));
+        completeIssue(projectId, subtask17.getIssueId(), completeTransformId3, subtask17.getObjectVersionNumber()+1, sprintId2, statusMap.get("done"));
 
         completeIssue(projectId, story6.getIssueId(), doingTransformId1, story6.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
-        completeIssue(projectId, story6.getIssueId(), completeTransformId1, story6.getObjectVersionNumber(), sprintId2, statusMap.get("done"));
+        completeIssue(projectId, story6.getIssueId(), completeTransformId1, story6.getObjectVersionNumber()+1, sprintId2, statusMap.get("done"));
 
         completeIssue(projectId, subtask21.getIssueId(), doingTransformId3, subtask21.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
         completeIssue(projectId, subtask18.getIssueId(), doingTransformId3, subtask18.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
         completeIssue(projectId, subtask19.getIssueId(), doingTransformId3, subtask19.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
 
         completeIssue(projectId, task2.getIssueId(), doingTransformId2, task2.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
-        completeIssue(projectId, task2.getIssueId(), completeTransformId2, task2.getObjectVersionNumber(), sprintId2, statusMap.get("done"));
+        completeIssue(projectId, task2.getIssueId(), completeTransformId2, task2.getObjectVersionNumber()+1, sprintId2, statusMap.get("done"));
 
 
         // 创建模块与关联模块
