@@ -79,5 +79,7 @@ public interface DataLogMapper extends BaseMapper<DataLogDO> {
 
     void updateExpStatusRtDataLog(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("creationDate") Date creationDate, @Param("lastUpdateDate") Date lastUpdateDate);
 
+    void updateStatusDingDataLog(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("creationDate") Date creationDate, @Param("lastUpdateDate") Date lastUpdateDate);
+
     void deleteDemoData(@Param("projectId") Long projectId);
 }
