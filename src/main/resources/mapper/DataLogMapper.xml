@@ -85,7 +85,7 @@
         set creation_date = #{creationDate}, last_update_date = #{lastUpdateDate}
         where project_id = #{projectId}
         and issue_id = #{issueId}
-        and (field = 'status' and new_string = '已完成') or ( field = 'resolution')
+        and ((field = 'status' and new_string = '已完成') or ( field = 'resolution'))
     </update>
 
     <update id="updateStatusDingDataLog">
