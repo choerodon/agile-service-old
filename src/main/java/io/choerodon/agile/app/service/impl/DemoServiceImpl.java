@@ -669,6 +669,7 @@ public class DemoServiceImpl implements DemoService {
         Map<String, Long> transformMap1 = new HashMap<>();
         setTransformMap(transformMap1, transformDTOList1);
         Long completeTransformId1 = transformMap1.get("全部转换到已完成");
+        Long doingTransformId1 = transformMap1.get("全部转换到处理中");
 
 
         Long currentStatusId2 = task1.getStatusId();
@@ -676,12 +677,14 @@ public class DemoServiceImpl implements DemoService {
         Map<String, Long> transformMap2 = new HashMap<>();
         setTransformMap(transformMap2, transformDTOList2);
         Long completeTransformId2 = transformMap2.get("全部转换到已完成");
+        Long doingTransformId2 = transformMap2.get("全部转换到处理中");
 
         Long currentStatusId4 = bug1.getStatusId();
         List<TransformDTO> transformDTOList4 = issueFeignClient.queryTransformsByProjectId(projectId, currentStatusId4, bug1.getIssueId(), bug1.getIssueTypeId(), "agile").getBody();
         Map<String, Long> transformMap4 = new HashMap<>();
         setTransformMap(transformMap4, transformDTOList4);
         Long completeTransformId4 = transformMap4.get("全部转换到已完成");
+        Long doingTransformId4 = transformMap4.get("全部转换到已完成");
 
 
         Long currentStatusId3 = subtask1.getStatusId();
@@ -693,29 +696,29 @@ public class DemoServiceImpl implements DemoService {
 
 
         // 完成冲刺1的所有issue
-        completeIssue(projectId, story1.getIssueId(), completeTransformId1, story1.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, story2.getIssueId(), completeTransformId1, story2.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, story3.getIssueId(), completeTransformId1, story3.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, story4.getIssueId(), completeTransformId1, story4.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, story5.getIssueId(), completeTransformId1, story5.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, task1.getIssueId(), completeTransformId2, task1.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, task3.getIssueId(), completeTransformId2, task3.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, subtask1.getIssueId(), completeTransformId3, subtask1.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, subtask2.getIssueId(), completeTransformId3, subtask2.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, subtask3.getIssueId(), completeTransformId3, subtask3.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, subtask4.getIssueId(), completeTransformId3, subtask4.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, subtask5.getIssueId(), completeTransformId3, subtask5.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, subtask6.getIssueId(), completeTransformId3, subtask6.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, subtask7.getIssueId(), completeTransformId3, subtask7.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, subtask8.getIssueId(), completeTransformId3, subtask8.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, subtask9.getIssueId(), completeTransformId3, subtask9.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, subtask10.getIssueId(), completeTransformId3, subtask10.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, subtask11.getIssueId(), completeTransformId3, subtask11.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, subtask12.getIssueId(), completeTransformId3, subtask12.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, subtask13.getIssueId(), completeTransformId3, subtask13.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, subtask14.getIssueId(), completeTransformId3, subtask14.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, subtask15.getIssueId(), completeTransformId3, subtask15.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
-        completeIssue(projectId, bug1.getIssueId(), completeTransformId4, bug1.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, story1.getIssueId(), doingTransformId1, story1.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, story2.getIssueId(), doingTransformId1, story2.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, story3.getIssueId(), doingTransformId1, story3.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, story4.getIssueId(), doingTransformId1, story4.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, story5.getIssueId(), doingTransformId1, story5.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, task1.getIssueId(), doingTransformId2, task1.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, task3.getIssueId(), doingTransformId2, task3.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask1.getIssueId(), doingTransformId3, subtask1.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask2.getIssueId(), doingTransformId3, subtask2.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask3.getIssueId(), doingTransformId3, subtask3.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask4.getIssueId(), doingTransformId3, subtask4.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask5.getIssueId(), doingTransformId3, subtask5.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask6.getIssueId(), doingTransformId3, subtask6.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask7.getIssueId(), doingTransformId3, subtask7.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask8.getIssueId(), doingTransformId3, subtask8.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask9.getIssueId(), doingTransformId3, subtask9.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask10.getIssueId(), doingTransformId3, subtask10.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask11.getIssueId(), doingTransformId3, subtask11.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask12.getIssueId(), doingTransformId3, subtask12.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask13.getIssueId(), doingTransformId3, subtask13.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask14.getIssueId(), doingTransformId3, subtask14.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask15.getIssueId(), doingTransformId3, subtask15.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, bug1.getIssueId(), doingTransformId4, bug1.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
 
         completeIssue(projectId, story1.getIssueId(), completeTransformId1, story1.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
         completeIssue(projectId, story2.getIssueId(), completeTransformId1, story2.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
@@ -742,20 +745,20 @@ public class DemoServiceImpl implements DemoService {
         completeIssue(projectId, bug1.getIssueId(), completeTransformId4, bug1.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
 
         // 完成冲刺2的任务
-        completeIssue(projectId, subtask16.getIssueId(), completeTransformId3, subtask16.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
+        completeIssue(projectId, subtask16.getIssueId(), doingTransformId3, subtask16.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
         completeIssue(projectId, subtask16.getIssueId(), completeTransformId3, subtask16.getObjectVersionNumber(), sprintId2, statusMap.get("done"));
 
-        completeIssue(projectId, subtask17.getIssueId(), completeTransformId3, subtask17.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
+        completeIssue(projectId, subtask17.getIssueId(), doingTransformId3, subtask17.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
         completeIssue(projectId, subtask17.getIssueId(), completeTransformId3, subtask17.getObjectVersionNumber(), sprintId2, statusMap.get("done"));
 
-        completeIssue(projectId, story6.getIssueId(), completeTransformId1, story6.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
+        completeIssue(projectId, story6.getIssueId(), doingTransformId1, story6.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
         completeIssue(projectId, story6.getIssueId(), completeTransformId1, story6.getObjectVersionNumber(), sprintId2, statusMap.get("done"));
 
         completeIssue(projectId, subtask21.getIssueId(), doingTransformId3, subtask21.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
         completeIssue(projectId, subtask18.getIssueId(), doingTransformId3, subtask18.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
         completeIssue(projectId, subtask19.getIssueId(), doingTransformId3, subtask19.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
 
-        completeIssue(projectId, task2.getIssueId(), completeTransformId2, task2.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
+        completeIssue(projectId, task2.getIssueId(), doingTransformId2, task2.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
         completeIssue(projectId, task2.getIssueId(), completeTransformId2, task2.getObjectVersionNumber(), sprintId2, statusMap.get("done"));
 
 
