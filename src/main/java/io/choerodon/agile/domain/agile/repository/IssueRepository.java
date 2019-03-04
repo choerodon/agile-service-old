@@ -96,10 +96,20 @@ public interface IssueRepository {
      * @param issueTypeId issueTypeId
      * @param oldStatusId oldStatusId
      * @param newStatusId newStatusId
-     * @param userId userId
+     * @param userId      userId
      */
-    void updateIssueStatusByIssueTypeId(Long projectId, String applyType, Long issueTypeId, Long oldStatusId, Long newStatusId,Long userId);
+    void updateIssueStatusByIssueTypeId(Long projectId, String applyType, Long issueTypeId, Long oldStatusId, Long newStatusId, Long userId);
 
     void updateStayDate(Long projectId, Long sprintId, Date nowDate);
+
+    /**
+     * 【内部调用】批量更新issue的优先级
+     *
+     * @param organizationId
+     * @param priorityId
+     * @param changePriorityId
+     * @param projectIds
+     */
+    void batchUpdateIssuePriority(Long organizationId, Long priorityId, Long changePriorityId, Long userId, List<Long> projectIds);
 
 }

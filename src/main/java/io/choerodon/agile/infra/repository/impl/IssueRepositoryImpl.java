@@ -1,18 +1,18 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
+import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
+import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.domain.service.IIssueService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
+import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.dataobject.MoveIssueDO;
 import io.choerodon.agile.infra.dataobject.StoryMapMoveIssueDO;
+import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.domain.agile.entity.IssueE;
-import io.choerodon.agile.domain.agile.repository.IssueRepository;
-import io.choerodon.agile.infra.dataobject.IssueDO;
-import io.choerodon.agile.infra.mapper.IssueMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -171,6 +171,12 @@ public class IssueRepositoryImpl implements IssueRepository {
     @DataLog(type = "batchUpdateIssueStatusToOther", single = false)
     public void updateIssueStatusByIssueTypeId(Long projectId, String applyType, Long issueTypeId, Long oldStatusId, Long newStatusId, Long userId) {
         issueMapper.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId, userId);
+    }
+
+    @Override
+    @DataLog(type = "batchUpdateIssuePriority", single = false)
+    public void batchUpdateIssuePriority(Long organizationId, Long priorityId, Long changePriorityId, Long userId, List<Long> projectIds) {
+        issueMapper.batchUpdateIssuePriority(priorityId, changePriorityId, userId, projectIds);
     }
 
     @Override

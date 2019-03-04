@@ -1,37 +1,35 @@
 package io.choerodon.agile.infra.common.aspect;
 
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.domain.agile.entity.*;
+import io.choerodon.agile.domain.agile.repository.DataLogRepository;
+import io.choerodon.agile.domain.agile.repository.UserRepository;
+import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
+import io.choerodon.agile.infra.common.utils.RedisUtil;
+import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
+import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.choerodon.agile.domain.agile.entity.*;
-import io.choerodon.agile.domain.agile.repository.DataLogRepository;
-import io.choerodon.agile.domain.agile.repository.UserRepository;
-import io.choerodon.agile.infra.common.annotation.DataLog;
-import io.choerodon.agile.infra.common.utils.RedisUtil;
-import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.mapper.*;
-import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.core.exception.CommonException;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 日志切面
@@ -69,6 +67,7 @@ public class DataLogAspect {
     private static final String BATCH_DELETE_LABEL = "batchDeleteLabel";
     private static final String BATCH_UPDATE_ISSUE_STATUS = "batchUpdateIssueStatus";
     private static final String BATCH_UPDATE_ISSUE_STATUS_TO_OTHER = "batchUpdateIssueStatusToOther";
+    private static final String BATCH_UPDATE_ISSUE_PRIORITY = "batchUpdateIssuePriority";
     private static final String CREATE_ATTACHMENT = "createAttachment";
     private static final String DELETE_ATTACHMENT = "deleteAttachment";
     private static final String CREATE_COMMENT = "createComment";
@@ -285,6 +284,9 @@ public class DataLogAspect {
                     case BATCH_UPDATE_ISSUE_EPIC_ID:
                         batchUpdateIssueEpicId(args);
                         break;
+                    case BATCH_UPDATE_ISSUE_PRIORITY:
+                        batchUpdateIssuePriority(args);
+                        break;
                     default:
                         break;
                 }
@@ -338,6 +340,22 @@ public class DataLogAspect {
                     dataLogMapper.batchCreateStatusLogByIssueDOS(projectId, issueDOS, userId, newStatus, newStatusDO.getCompleted());
                 }
                 dataLogRedisUtil.handleBatchDeleteRedisCacheByChangeStatusId(issueDOS, projectId);
+            }
+        }
+    }
+
+    private void batchUpdateIssuePriority(Object[] args) {
+        Long organizationId = (Long) args[0];
+        Long priorityId = (Long) args[1];
+        Long changePriorityId = (Long) args[2];
+        Long userId = (Long) args[3];
+        List<Long> projectIds = (List) args[4];
+        if (priorityId != null && Objects.nonNull(changePriorityId) && projectIds != null && !projectIds.isEmpty()) {
+            List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
+            Map<Long, PriorityDTO> priorityMap = priorityDTOList.stream().collect(Collectors.toMap(PriorityDTO::getId, Function.identity()));
+            List<IssueDO> issueDOS = issueMapper.queryIssuesByPriorityId(priorityId, projectIds);
+            if (issueDOS != null && !issueDOS.isEmpty()) {
+                dataLogMapper.batchCreateChangePriorityLogByIssueDOs(issueDOS, userId, priorityMap.get(priorityId).getName(), priorityMap.get(changePriorityId).getName());
             }
         }
     }

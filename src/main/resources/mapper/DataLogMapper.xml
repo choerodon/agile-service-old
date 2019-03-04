@@ -76,7 +76,8 @@
 
     <update id="batchUpdateErrorDataLog">
         <foreach collection="dataLogStatusChangeDOS" item="dataLogStatusChangeDO" open="" close="" separator=";">
-            update agile_data_log set new_value = #{dataLogStatusChangeDO.newValue} where log_id = #{dataLogStatusChangeDO.logId}
+            update agile_data_log set new_value = #{dataLogStatusChangeDO.newValue} where log_id =
+            #{dataLogStatusChangeDO.logId}
         </foreach>
     </update>
 
@@ -130,4 +131,13 @@
         delete from agile_wiki_relation where project_id = #{projectId};
         delete from agile_work_log where project_id = #{projectId};
     </delete>
+
+    <insert id="batchCreateChangePriorityLogByIssueDOs">
+        INSERT INTO agile_data_log(project_id,field,old_value,old_string,new_value,new_string,issue_id,created_by)
+        values
+        <foreach collection="issueDOS" item="issueDO" index="index" separator=",">
+            (#{issueDO.projectId} , 'priority' ,null ,#{oldPriorityName},null ,
+            #{newPriorityName} ,#{issueDO.issueId},#{userId})
+        </foreach>
+    </insert>
 </mapper>
