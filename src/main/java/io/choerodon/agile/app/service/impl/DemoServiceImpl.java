@@ -419,6 +419,20 @@ public class DemoServiceImpl implements DemoService {
         projectInfoMapper.updateProjectAndIssues(projectId, date1, date2);
     }
 
+    /**
+     * 日期相加减
+     * @param cur
+     * @return
+     */
+    public Date getNewDate(Date cur) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(cur);   //设置时间
+        c.add(Calendar.DATE, 30); //日期分钟加1,Calendar.DATE(天),Calendar.HOUR(小时)
+        Date date = c.getTime(); //结果
+        return date;
+    }
+
+
     @Saga(code = "agile-demo-for-test", description = "为测试提供demo数据", inputSchemaClass = DemoPayload.class)
     @Override
     @Transactional
@@ -460,6 +474,7 @@ public class DemoServiceImpl implements DemoService {
         productVersionCreateDTO.setName("v1.0");
         productVersionCreateDTO.setProjectId(projectId);
         productVersionCreateDTO.setStartDate(new Date());
+        productVersionCreateDTO.setExpectReleaseDate(getNewDate(new Date()));
         ProductVersionDetailDTO productVersionDetailDTO = productVersionService.createVersion(projectId, productVersionCreateDTO);
 
 
@@ -610,6 +625,16 @@ public class DemoServiceImpl implements DemoService {
         updateFixVersion(projectId, subtask9.getIssueId(), productVersionDetailDTO.getVersionId());
         updateFixVersion(projectId, subtask10.getIssueId(), productVersionDetailDTO.getVersionId());
         updateFixVersion(projectId, subtask11.getIssueId(), productVersionDetailDTO.getVersionId());
+        updateFixVersion(projectId, subtask12.getIssueId(), productVersionDetailDTO.getVersionId());
+        updateFixVersion(projectId, subtask13.getIssueId(), productVersionDetailDTO.getVersionId());
+        updateFixVersion(projectId, subtask14.getIssueId(), productVersionDetailDTO.getVersionId());
+        updateFixVersion(projectId, subtask15.getIssueId(), productVersionDetailDTO.getVersionId());
+        updateFixVersion(projectId, subtask16.getIssueId(), productVersionDetailDTO.getVersionId());
+        updateFixVersion(projectId, subtask17.getIssueId(), productVersionDetailDTO.getVersionId());
+        updateFixVersion(projectId, subtask18.getIssueId(), productVersionDetailDTO.getVersionId());
+        updateFixVersion(projectId, subtask19.getIssueId(), productVersionDetailDTO.getVersionId());
+        updateFixVersion(projectId, subtask20.getIssueId(), productVersionDetailDTO.getVersionId());
+        updateFixVersion(projectId, subtask21.getIssueId(), productVersionDetailDTO.getVersionId());
         updateFixVersion(projectId, test1.getIssueId(), productVersionDetailDTO.getVersionId());
         updateFixVersion(projectId, test2.getIssueId(), productVersionDetailDTO.getVersionId());
         updateFixVersion(projectId, test3.getIssueId(), productVersionDetailDTO.getVersionId());
@@ -668,37 +693,69 @@ public class DemoServiceImpl implements DemoService {
 
 
         // 完成冲刺1的所有issue
-        completeIssue(projectId, story1.getIssueId(), completeTransformId1, story1.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, story2.getIssueId(), completeTransformId1, story2.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, story3.getIssueId(), completeTransformId1, story3.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, story4.getIssueId(), completeTransformId1, story4.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, story5.getIssueId(), completeTransformId1, story5.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, task1.getIssueId(), completeTransformId2, task1.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, task3.getIssueId(), completeTransformId2, task3.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask1.getIssueId(), completeTransformId3, subtask1.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask2.getIssueId(), completeTransformId3, subtask2.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask3.getIssueId(), completeTransformId3, subtask3.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask4.getIssueId(), completeTransformId3, subtask4.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask5.getIssueId(), completeTransformId3, subtask5.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask6.getIssueId(), completeTransformId3, subtask6.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask7.getIssueId(), completeTransformId3, subtask7.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask8.getIssueId(), completeTransformId3, subtask8.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask9.getIssueId(), completeTransformId3, subtask9.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask10.getIssueId(), completeTransformId3, subtask10.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask11.getIssueId(), completeTransformId3, subtask11.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask12.getIssueId(), completeTransformId3, subtask12.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask13.getIssueId(), completeTransformId3, subtask13.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask14.getIssueId(), completeTransformId3, subtask14.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask15.getIssueId(), completeTransformId3, subtask15.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
-        completeIssue(projectId, bug1.getIssueId(), completeTransformId4, bug1.getObjectVersionNumber(), sprintId1, statusMap.get("done"));
+        completeIssue(projectId, story1.getIssueId(), completeTransformId1, story1.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, story2.getIssueId(), completeTransformId1, story2.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, story3.getIssueId(), completeTransformId1, story3.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, story4.getIssueId(), completeTransformId1, story4.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, story5.getIssueId(), completeTransformId1, story5.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, task1.getIssueId(), completeTransformId2, task1.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, task3.getIssueId(), completeTransformId2, task3.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask1.getIssueId(), completeTransformId3, subtask1.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask2.getIssueId(), completeTransformId3, subtask2.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask3.getIssueId(), completeTransformId3, subtask3.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask4.getIssueId(), completeTransformId3, subtask4.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask5.getIssueId(), completeTransformId3, subtask5.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask6.getIssueId(), completeTransformId3, subtask6.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask7.getIssueId(), completeTransformId3, subtask7.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask8.getIssueId(), completeTransformId3, subtask8.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask9.getIssueId(), completeTransformId3, subtask9.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask10.getIssueId(), completeTransformId3, subtask10.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask11.getIssueId(), completeTransformId3, subtask11.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask12.getIssueId(), completeTransformId3, subtask12.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask13.getIssueId(), completeTransformId3, subtask13.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask14.getIssueId(), completeTransformId3, subtask14.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, subtask15.getIssueId(), completeTransformId3, subtask15.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+        completeIssue(projectId, bug1.getIssueId(), completeTransformId4, bug1.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
+
+        completeIssue(projectId, story1.getIssueId(), completeTransformId1, story1.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, story2.getIssueId(), completeTransformId1, story2.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, story3.getIssueId(), completeTransformId1, story3.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, story4.getIssueId(), completeTransformId1, story4.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, story5.getIssueId(), completeTransformId1, story5.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, task1.getIssueId(), completeTransformId2, task1.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, task3.getIssueId(), completeTransformId2, task3.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask1.getIssueId(), completeTransformId3, subtask1.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask2.getIssueId(), completeTransformId3, subtask2.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask3.getIssueId(), completeTransformId3, subtask3.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask4.getIssueId(), completeTransformId3, subtask4.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask5.getIssueId(), completeTransformId3, subtask5.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask6.getIssueId(), completeTransformId3, subtask6.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask7.getIssueId(), completeTransformId3, subtask7.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask8.getIssueId(), completeTransformId3, subtask8.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask9.getIssueId(), completeTransformId3, subtask9.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask10.getIssueId(), completeTransformId3, subtask10.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask11.getIssueId(), completeTransformId3, subtask11.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask12.getIssueId(), completeTransformId3, subtask12.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask13.getIssueId(), completeTransformId3, subtask13.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask14.getIssueId(), completeTransformId3, subtask14.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask15.getIssueId(), completeTransformId3, subtask15.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, bug1.getIssueId(), completeTransformId4, bug1.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
 
         // 完成冲刺2的任务
+        completeIssue(projectId, subtask16.getIssueId(), completeTransformId3, subtask16.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
         completeIssue(projectId, subtask16.getIssueId(), completeTransformId3, subtask16.getObjectVersionNumber(), sprintId2, statusMap.get("done"));
+
+        completeIssue(projectId, subtask17.getIssueId(), completeTransformId3, subtask17.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
         completeIssue(projectId, subtask17.getIssueId(), completeTransformId3, subtask17.getObjectVersionNumber(), sprintId2, statusMap.get("done"));
+
+        completeIssue(projectId, story6.getIssueId(), completeTransformId1, story6.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
         completeIssue(projectId, story6.getIssueId(), completeTransformId1, story6.getObjectVersionNumber(), sprintId2, statusMap.get("done"));
+
         completeIssue(projectId, subtask21.getIssueId(), doingTransformId3, subtask21.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
         completeIssue(projectId, subtask18.getIssueId(), doingTransformId3, subtask18.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
         completeIssue(projectId, subtask19.getIssueId(), doingTransformId3, subtask19.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
+
+        completeIssue(projectId, task2.getIssueId(), completeTransformId2, task2.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
         completeIssue(projectId, task2.getIssueId(), completeTransformId2, task2.getObjectVersionNumber(), sprintId2, statusMap.get("done"));
 
 
@@ -794,75 +851,98 @@ public class DemoServiceImpl implements DemoService {
 
         // 更新日志
         dataLogMapper.updateExpStatusRtDataLog(projectId, task1.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, task1.getIssueId(), workDays.get(11), workDays.get(11));
         dataLogMapper.updateStatusRtDataLog(projectId, task1.getIssueId(), workDays.get(9), workDays.get(9));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, task3.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, task3.getIssueId(), workDays.get(10), workDays.get(10));
         dataLogMapper.updateStatusRtDataLog(projectId, task3.getIssueId(), workDays.get(6), workDays.get(6));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask12.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask12.getIssueId(), workDays.get(11), workDays.get(11));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask12.getIssueId(), workDays.get(9), workDays.get(9));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask13.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask13.getIssueId(), workDays.get(7), workDays.get(7));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask13.getIssueId(), workDays.get(6), workDays.get(6));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask14.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask14.getIssueId(), workDays.get(8), workDays.get(8));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask14.getIssueId(), workDays.get(10), workDays.get(10));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask15.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask15.getIssueId(), workDays.get(6), workDays.get(6));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask15.getIssueId(), workDays.get(4), workDays.get(4));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask1.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask1.getIssueId(), workDays.get(11), workDays.get(11));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask1.getIssueId(), workDays.get(10), workDays.get(10));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask2.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask2.getIssueId(), workDays.get(11), workDays.get(11));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask2.getIssueId(), workDays.get(10), workDays.get(10));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, story1.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, story1.getIssueId(), workDays.get(10), workDays.get(10));
         dataLogMapper.updateStatusRtDataLog(projectId, story1.getIssueId(), workDays.get(10), workDays.get(10));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask3.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask3.getIssueId(), workDays.get(9), workDays.get(9));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask3.getIssueId(), workDays.get(8), workDays.get(8));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask4.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask4.getIssueId(), workDays.get(10), workDays.get(10));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask4.getIssueId(), workDays.get(9), workDays.get(9));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, story2.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, story2.getIssueId(), workDays.get(9), workDays.get(9));
         dataLogMapper.updateStatusRtDataLog(projectId, story2.getIssueId(), workDays.get(8), workDays.get(8));
 
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask5.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask5.getIssueId(), workDays.get(9), workDays.get(9));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask5.getIssueId(), workDays.get(8), workDays.get(8));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask6.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask6.getIssueId(), workDays.get(12), workDays.get(12));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask6.getIssueId(), workDays.get(9), workDays.get(9));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, story3.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, story3.getIssueId(), workDays.get(8), workDays.get(8));
         dataLogMapper.updateStatusRtDataLog(projectId, story3.getIssueId(), workDays.get(7), workDays.get(7));
 
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask7.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask7.getIssueId(), workDays.get(4), workDays.get(4));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask7.getIssueId(), workDays.get(3), workDays.get(3));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask8.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask8.getIssueId(), workDays.get(4), workDays.get(4));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask8.getIssueId(), workDays.get(3), workDays.get(3));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, story4.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, story4.getIssueId(), workDays.get(4), workDays.get(4));
         dataLogMapper.updateStatusRtDataLog(projectId, story4.getIssueId(), workDays.get(3), workDays.get(3));
 
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask9.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask9.getIssueId(), workDays.get(4), workDays.get(4));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask9.getIssueId(), workDays.get(3), workDays.get(3));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask10.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask10.getIssueId(), workDays.get(7), workDays.get(7));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask10.getIssueId(), workDays.get(6), workDays.get(6));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask11.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask11.getIssueId(), workDays.get(6), workDays.get(6));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask11.getIssueId(), workDays.get(5), workDays.get(5));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, story5.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, story5.getIssueId(), workDays.get(3), workDays.get(3));
         dataLogMapper.updateStatusRtDataLog(projectId, story5.getIssueId(), workDays.get(2), workDays.get(2));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, bug1.getIssueId(), workDays.get(12), workDays.get(12));
+        dataLogMapper.updateStatusDingDataLog(projectId, bug1.getIssueId(), workDays.get(3), workDays.get(3));
         dataLogMapper.updateStatusRtDataLog(projectId, bug1.getIssueId(), workDays.get(2), workDays.get(2));
 
 
@@ -871,12 +951,15 @@ public class DemoServiceImpl implements DemoService {
 
         // 更新冲刺2的日志
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask16.getIssueId(), workDays.get(2), workDays.get(2));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask16.getIssueId(), dateAfters.get(0), dateAfters.get(0));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask16.getIssueId(), dateAfters.get(1), dateAfters.get(1));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask17.getIssueId(), workDays.get(2), workDays.get(2));
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask17.getIssueId(), dateAfters.get(1), dateAfters.get(1));
         dataLogMapper.updateStatusRtDataLog(projectId, subtask17.getIssueId(), dateAfters.get(2), dateAfters.get(2));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, task2.getIssueId(), workDays.get(2), workDays.get(2));
+        dataLogMapper.updateStatusDingDataLog(projectId, task2.getIssueId(), dateAfters.get(0), dateAfters.get(2));
         dataLogMapper.updateStatusRtDataLog(projectId, task2.getIssueId(), dateAfters.get(2), dateAfters.get(2));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask21.getIssueId(), workDays.get(2), workDays.get(2));
@@ -889,6 +972,7 @@ public class DemoServiceImpl implements DemoService {
         dataLogMapper.updateStatusRtDataLog(projectId, subtask19.getIssueId(), dateAfters.get(1), dateAfters.get(1));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, story6.getIssueId(), workDays.get(2), workDays.get(2));
+        dataLogMapper.updateStatusDingDataLog(projectId, story6.getIssueId(), dateAfters.get(1), dateAfters.get(1));
         dataLogMapper.updateStatusRtDataLog(projectId, story6.getIssueId(), dateAfters.get(2), dateAfters.get(2));
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, story7.getIssueId(), workDays.get(2), workDays.get(2));
