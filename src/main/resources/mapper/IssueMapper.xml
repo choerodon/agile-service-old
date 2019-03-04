@@ -566,8 +566,10 @@
             <if test='searchDTO.otherArgs.epic != null and searchDTO.otherArgs.epic.size > 0'>
                 <choose>
                     <when test="searchDTO.otherArgs.epic.size == 1 and searchDTO.otherArgs.epic[0] == 0">
-                        and (((ai.epic_id is null or ai.epic_id = 0) and ai.type_code != 'issue_epic' and ai.type_code != 'sub_task')
-                        or (ai.parent_issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id = ai.parent_issue_id and
+                        and (((ai.epic_id is null or ai.epic_id = 0) and ai.type_code != 'issue_epic' and ai.type_code
+                        != 'sub_task')
+                        or (ai.parent_issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id =
+                        ai.parent_issue_id and
                         (ai7.epic_id is null or ai7.epic_id = 0) and ai.type_code = 'sub_task' )))
                     </when>
                     <otherwise>
@@ -575,8 +577,10 @@
                         <foreach collection="searchDTO.otherArgs.epic" item="id" open="(" separator=","
                                  close=")">
                             #{id}
-                        </foreach> and ai.type_code != 'sub_task')
-                        or (ai.parent_issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id = ai.parent_issue_id and
+                        </foreach>
+                        and ai.type_code != 'sub_task')
+                        or (ai.parent_issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id =
+                        ai.parent_issue_id and
                         ai7.epic_id in
                         <foreach collection="searchDTO.otherArgs.epic" item="id" open="(" separator=","
                                  close=")">
@@ -861,7 +865,8 @@
         left join agile_issue_status ais on ais.status_id = ai.status_id and ais.project_id = ai.project_id
         WHERE
         (ais.is_completed != 1 or ais.is_completed is null)
-        and ai.project_id = #{projectId} AND ai.type_code !='sub_task' AND ai.type_code != 'issue_epic' AND ai.apply_type = 'agile'
+        and ai.project_id = #{projectId} AND ai.type_code !='sub_task' AND ai.type_code != 'issue_epic' AND
+        ai.apply_type = 'agile'
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.versionId != null'>
                 AND ai.issue_id IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id =
@@ -900,7 +905,8 @@
         SELECT
         ai.issue_id
         FROM agile_issue ai
-        WHERE ai.project_id = #{projectId} AND ai.type_code !='sub_task' AND ai.type_code != 'issue_epic' AND ai.apply_type = 'agile'
+        WHERE ai.project_id = #{projectId} AND ai.type_code !='sub_task' AND ai.type_code != 'issue_epic' AND
+        ai.apply_type = 'agile'
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.versionId != null'>
                 AND ai.issue_id IN (SELECT issue_id FROM agile_version_issue_rel WHERE version_id =
@@ -1483,7 +1489,8 @@
         </if>
         <if test='contents != null and contents.size != 0'>
             <foreach collection="contents" item="content" index="index">
-                AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE CONCAT(CONCAT('%',
+                AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE
+                CONCAT(CONCAT('%',
                 #{content}), '%'))
             </foreach>
         </if>
@@ -1595,7 +1602,8 @@
         </if>
         <if test='contents != null and contents.size != 0'>
             <foreach collection="contents" item="content" index="index">
-                AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE CONCAT(CONCAT('%',
+                AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE
+                CONCAT(CONCAT('%',
                 #{content}), '%'))
             </foreach>
         </if>
@@ -1701,7 +1709,8 @@
         </if>
         <if test='contents != null and contents.size != 0'>
             <foreach collection="contents" item="content" index="index">
-                AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE CONCAT(CONCAT('%',
+                AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE
+                CONCAT(CONCAT('%',
                 #{content}), '%'))
             </foreach>
         </if>
@@ -1987,7 +1996,8 @@
         FROM
         agile_version_issue_rel avir
         LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
-        LEFT JOIN agile_issue ai ON ai.apply_type = 'agile' and ai.type_code != 'sub_task' and ai.type_code != 'issue_epic'
+        LEFT JOIN agile_issue ai ON ai.apply_type = 'agile' and ai.type_code != 'sub_task' and ai.type_code !=
+        'issue_epic'
         <if test='onlyStory != null and onlyStory == true'>
             AND ai.type_code = 'story'
         </if>
@@ -2719,4 +2729,36 @@
         where project_id = #{projectId}
         and issue_id = #{issueId}
     </update>
+
+    <select id="checkPriorityDelete" resultType="java.lang.Long">
+        select count(ai.issue_id)
+        from agile_issue ai
+        where ai.priority_id = #{priorityId}
+        AND ai.project_id IN
+        <foreach collection="projectIds" item="index" open="(" separator="," close=")">
+            #{index}
+        </foreach>
+    </select>
+
+    <update id="batchUpdateIssuePriority">
+        update agile_issue
+        set priority_id = #{changePriorityId},last_updated_by = #{userId}
+        where priority_id = #{priorityId}
+        AND project_id IN
+        <foreach collection="projectIds" item="index" open="(" separator="," close=")">
+            #{index}
+        </foreach>
+    </update>
+
+    <select id="queryIssuesByPriorityId" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT
+        ai.*
+        FROM agile_issue ai
+        WHERE ai.priority_id = #{priorityId}
+        AND ai.project_id IN
+        <foreach collection="projectIds" item="index" open="(" separator="," close=")">
+            #{index}
+        </foreach>
+    </select>
+
 </mapper>

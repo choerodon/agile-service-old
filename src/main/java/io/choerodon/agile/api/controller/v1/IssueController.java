@@ -645,7 +645,7 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("测试服务用，issue按照项目分组接口")
+    @ApiOperation("【测试专用】issue按照项目分组接口")
     @GetMapping("/list_issues_by_project")
     public ResponseEntity<List<IssueProjectDTO>> queryIssueTestGroupByProject(@ApiParam(value = "项目id", required = true)
                                                                               @PathVariable(name = "project_id") Long projectId) {
@@ -653,5 +653,4 @@ public class IssueController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.issue.queryIssueTestGroupByProject"));
     }
-
 }
