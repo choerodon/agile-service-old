@@ -419,6 +419,20 @@ public class DemoServiceImpl implements DemoService {
         projectInfoMapper.updateProjectAndIssues(projectId, date1, date2);
     }
 
+    /**
+     * 日期相加减
+     * @param cur
+     * @return
+     */
+    public Date getNewDate(Date cur) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(cur);   //设置时间
+        c.add(Calendar.DATE, 30); //日期分钟加1,Calendar.DATE(天),Calendar.HOUR(小时)
+        Date date = c.getTime(); //结果
+        return date;
+    }
+
+
     @Saga(code = "agile-demo-for-test", description = "为测试提供demo数据", inputSchemaClass = DemoPayload.class)
     @Override
     @Transactional
@@ -460,6 +474,7 @@ public class DemoServiceImpl implements DemoService {
         productVersionCreateDTO.setName("v1.0");
         productVersionCreateDTO.setProjectId(projectId);
         productVersionCreateDTO.setStartDate(new Date());
+        productVersionCreateDTO.setExpectReleaseDate(getNewDate(new Date()));
         ProductVersionDetailDTO productVersionDetailDTO = productVersionService.createVersion(projectId, productVersionCreateDTO);
 
 
