@@ -87,7 +87,9 @@ public class ExcelServiceImpl implements ExcelService {
         }
         List<String> issueTypeList = new ArrayList<>();
         for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-            issueTypeList.add(issueTypeDTO.getName());
+            if (!"sub_task".equals(issueTypeDTO.getTypeCode())) {
+                issueTypeList.add(issueTypeDTO.getName());
+            }
         }
         List<String> versionList = new ArrayList<>();
         for (ProductVersionCommonDO productVersionCommonDO : productVersionCommonDOList) {
