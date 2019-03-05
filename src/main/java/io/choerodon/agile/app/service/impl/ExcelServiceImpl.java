@@ -111,7 +111,9 @@ public class ExcelServiceImpl implements ExcelService {
         try {
             wb = ExcelUtil.dropDownList2007(wb, sheet, priorityList, 1, 100, 2, 2, "hidden_priority", 1);
             wb = ExcelUtil.dropDownList2007(wb, sheet, issueTypeList, 1, 100, 3, 3, "hidden_issue_type", 2);
-            wb = ExcelUtil.dropDownList2007(wb, sheet, versionList, 1, 100, 6, 6, "hidden_fix_version", 3);
+            if (!versionList.isEmpty()) {
+                wb = ExcelUtil.dropDownList2007(wb, sheet, versionList, 1, 100, 6, 6, "hidden_fix_version", 3);
+            }
 //            FileOutputStream stream = new FileOutputStream("/Users/huangfuqiang/Downloads/success10.xlsx");
             wb.write(response.getOutputStream());
 //            stream.close();
