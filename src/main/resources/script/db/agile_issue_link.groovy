@@ -57,7 +57,6 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue_link.groovy') {
         createIndex(indexName: 'idx_project_id', tableName: 'agile_issue_link') {
             column(name: 'project_id')
         }
-        addNotNullConstraint(tableName: 'agile_issue_link', columnName: 'project_id', columnDataType: "BIGINT UNSIGNED")
     }
 
 }
