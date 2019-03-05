@@ -109,10 +109,10 @@ public class ExcelServiceImpl implements ExcelService {
         CatalogExcelUtil.initCell(row.createCell(6), style, FIELDS_NAME[6]);
 
         try {
-            wb = ExcelUtil.dropDownList2007(wb, sheet, priorityList, 1, 100, 2, 2, "hidden_priority", 1);
-            wb = ExcelUtil.dropDownList2007(wb, sheet, issueTypeList, 1, 100, 3, 3, "hidden_issue_type", 2);
+            wb = ExcelUtil.dropDownList2007(wb, sheet, priorityList, 1, 500, 2, 2, "hidden_priority", 1);
+            wb = ExcelUtil.dropDownList2007(wb, sheet, issueTypeList, 1, 500, 3, 3, "hidden_issue_type", 2);
             if (!versionList.isEmpty()) {
-                wb = ExcelUtil.dropDownList2007(wb, sheet, versionList, 1, 100, 6, 6, "hidden_fix_version", 3);
+                wb = ExcelUtil.dropDownList2007(wb, sheet, versionList, 1, 500, 6, 6, "hidden_fix_version", 3);
             }
 //            FileOutputStream stream = new FileOutputStream("/Users/huangfuqiang/Downloads/success10.xlsx");
             wb.write(response.getOutputStream());
@@ -314,6 +314,24 @@ public class ExcelServiceImpl implements ExcelService {
         return false;
     }
 
+    private Integer getRealRowCount(Sheet sheet) {
+        Integer count = 0;
+        for (int r = 1; r <= sheet.getPhysicalNumberOfRows(); r++) {
+            Row row = sheet.getRow(r);
+            if (row == null || (((row.getCell(0) == null || row.getCell(0).equals("") || row.getCell(0).getCellType() == XSSFCell.CELL_TYPE_BLANK)) &&
+                    (row.getCell(1) == null || row.getCell(1).equals("") || row.getCell(1).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(2) == null || row.getCell(2).equals("") || row.getCell(2).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(3) == null || row.getCell(3).equals("") || row.getCell(3).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(4) == null || row.getCell(4).equals("") || row.getCell(4).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(5) == null || row.getCell(5).equals("") || row.getCell(5).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(6) == null || row.getCell(6).equals("") || row.getCell(6).getCellType() == XSSFCell.CELL_TYPE_BLANK))) {
+                continue;
+            }
+            count ++;
+        }
+        return count;
+    }
+
     @Async
     @Override
     public void batchImport(Long projectId, Long organizationId, Long userId, Workbook workbook) {
@@ -326,7 +344,7 @@ public class ExcelServiceImpl implements ExcelService {
             throw new CommonException("error.sheet.empty");
         }
         // 获取所有非空行
-        Integer allRowCount = sheet.getPhysicalNumberOfRows() - 1;
+        Integer allRowCount = getRealRowCount(sheet);
         // 查询组织下的优先级与问题类型
         Map<String, IssueTypeDTO> issueTypeMap = new HashMap<>();
         Map<String, Long> priorityMap = new HashMap<>();

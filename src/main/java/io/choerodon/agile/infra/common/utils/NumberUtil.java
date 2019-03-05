@@ -3,6 +3,10 @@ package io.choerodon.agile.infra.common.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Created by HuangFuqiang@choerodon.io on 2019/2/28.
+ * Email: fuqianghuang01@gmail.com
+ */
 public class NumberUtil {
 
     /**
