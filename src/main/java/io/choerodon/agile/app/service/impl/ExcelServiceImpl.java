@@ -149,11 +149,12 @@ public class ExcelServiceImpl implements ExcelService {
         if(!(row.getCell(6)==null || row.getCell(6).equals("") || row.getCell(6).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
             versionName = row.getCell(6).toString();
         }
-        List<VersionIssueRelDTO> versionIssueRelDTOList = null;
+        List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>();
         if (versionName != null) {
             VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
             versionIssueRelDTO.setVersionId(versionMap.get(versionName));
             versionIssueRelDTO.setRelationType("fix");
+            versionIssueRelDTOList.add(versionIssueRelDTO);
         }
         issueCreateDTO.setProjectId(projectId);
         issueCreateDTO.setSummary(summary);
