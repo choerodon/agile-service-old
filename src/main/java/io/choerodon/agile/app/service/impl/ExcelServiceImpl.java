@@ -407,7 +407,7 @@ public class ExcelServiceImpl implements ExcelService {
                     errorMapList.put(r, cList);
                 }
                 errorRows.add(row.getRowNum());
-                fileOperationHistoryE.setFailCount(++failCount);
+                fileOperationHistoryE.setFailCount(failCount);
                 processNum ++;
                 sendProcess(fileOperationHistoryE, userId, processNum * 1.0 / allRowCount);
                 continue;
