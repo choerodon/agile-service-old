@@ -190,7 +190,7 @@ public class ExcelServiceImpl implements ExcelService {
             priorityList.add(priorityDTO.getName());
         }
         for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-            if (!"agile_subtask".equals(issueTypeDTO.getTypeCode())) {
+            if (!"sub_task".equals(issueTypeDTO.getTypeCode())) {
                 issueTypeMap.put(issueTypeDTO.getName(), issueTypeDTO);
                 issueTypeList.add(issueTypeDTO.getName());
             }
