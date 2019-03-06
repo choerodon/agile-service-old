@@ -194,6 +194,11 @@ public class FeignConfigure {
         priorityDTOMap.put(1L, low);
         priorityDTOMap.put(2L, high);
         priorityDTOMap.put(3L, middle);
+        List<PriorityDTO> list = new ArrayList<>();
+        list.add(low);
+        list.add(high);
+        list.add(middle);
+        Mockito.when(issueFeignClient.queryByOrganizationIdList(Matchers.anyLong())).thenReturn(new ResponseEntity<>(list, HttpStatus.OK));
         Mockito.when(issueFeignClient.queryByOrganizationId(Matchers.anyLong())).thenReturn(new ResponseEntity<>(priorityDTOMap, HttpStatus.OK));
         Mockito.when(issueFeignClient.queryById(Matchers.anyLong(), Matchers.anyLong())).thenReturn(new ResponseEntity<>(low, HttpStatus.OK));
         Mockito.when(issueFeignClient.queryIssueTypeById(Matchers.anyLong(), Matchers.eq(1L))).thenReturn(new ResponseEntity<>(story, HttpStatus.OK));
