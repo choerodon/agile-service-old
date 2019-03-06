@@ -385,7 +385,7 @@ public interface ReportMapper {
      * @param projectId projectId
      * @return IssuePriorityDistributionChartDO
      */
-    List<IssuePriorityDistributionChartDO> queryIssuePriorityDistributionChart(@Param("projectId") Long projectId);
+    List<IssuePriorityDistributionChartDO> queryIssuePriorityDistributionChart(@Param("projectId") Long projectId, @Param("priorityIds") List<Long> priorityIds);
 
     /**
      * 修复数据

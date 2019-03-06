@@ -176,6 +176,7 @@ public class IssueRepositoryImpl implements IssueRepository {
     @Override
     @DataLog(type = "batchUpdateIssuePriority", single = false)
     public void batchUpdateIssuePriority(Long organizationId, Long priorityId, Long changePriorityId, Long userId, List<Long> projectIds) {
+        System.out.println("我执行了："+organizationId+","+priorityId+","+changePriorityId+","+userId+","+projectIds);
         issueMapper.batchUpdateIssuePriority(priorityId, changePriorityId, userId, projectIds);
     }
 
