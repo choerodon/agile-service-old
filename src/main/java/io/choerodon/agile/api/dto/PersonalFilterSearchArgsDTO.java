@@ -7,8 +7,11 @@ import java.util.Date;
  * @since 2019/2/25
  */
 public class PersonalFilterSearchArgsDTO {
+
     private String summary;
     private String issueNum;
+    private String storyPoints;
+    private String remainingTime;
 
     private String assignee;
     private String reporter;
@@ -20,6 +23,22 @@ public class PersonalFilterSearchArgsDTO {
 
     private Date createStartDate;
     private Date createEndDate;
+
+    public String getStoryPoints() {
+        return storyPoints;
+    }
+
+    public void setStoryPoints(String storyPoints) {
+        this.storyPoints = storyPoints;
+    }
+
+    public String getRemainingTime() {
+        return remainingTime;
+    }
+
+    public void setRemainingTime(String remainingTime) {
+        this.remainingTime = remainingTime;
+    }
 
     public String getAssignee() {
         return assignee;
