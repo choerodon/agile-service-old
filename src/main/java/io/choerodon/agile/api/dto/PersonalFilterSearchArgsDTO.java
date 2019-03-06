@@ -7,19 +7,19 @@ import java.util.Date;
  * @since 2019/2/25
  */
 public class PersonalFilterSearchArgsDTO {
-    String summary;
-    String issueNum;
+    private String summary;
+    private String issueNum;
 
-    String assignee;
-    String reporter;
-    String component;
-    String epic;
-    String sprint;
-    String version;
-    String label;
+    private String assignee;
+    private String reporter;
+    private String component;
+    private String epic;
+    private String sprint;
+    private String version;
+    private String label;
 
-    Date createStartDate;
-    Date createEndDate;
+    private Date createStartDate;
+    private Date createEndDate;
 
     public String getAssignee() {
         return assignee;

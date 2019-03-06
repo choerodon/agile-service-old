@@ -7,11 +7,11 @@ import java.util.List;
  * @since 2019/2/25
  */
 public class PersonalFilterSearchAdvancedArgsDTO {
-    List<Long> issueTypeId;
-    List<Long> statusId;
-    List<Long> priorityId;
-    List<Long> assigneeIds;
-    List<Long> reporterIds;
+    private List<Long> issueTypeId;
+    private List<Long> statusId;
+    private List<Long> priorityId;
+    private List<Long> assigneeIds;
+    private List<Long> reporterIds;
 
     public List<Long> getReporterIds() {
         return reporterIds;
