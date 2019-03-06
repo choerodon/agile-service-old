@@ -1,5 +1,7 @@
 package io.choerodon.agile.infra.common.utils;
 
+import io.choerodon.core.exception.CommonException;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +19,11 @@ public class NumberUtil {
      */
     public static Boolean isNumeric(String str) {
         try {
+            for (int i = 0;i < str.length(); i++) {
+                if (!((str.charAt(i) >= '0' && str.charAt(i) <= '9') || str.charAt(i) == '.')) {
+                    return false;
+                }
+            }
             Double.parseDouble(String.valueOf(str));
         } catch (Exception e) {
             return false;
