@@ -50,6 +50,14 @@ public class ExcelServiceImpl implements ExcelService {
     private static final String[] FIELDS_NAME = {"概要", "描述", "优先级", "问题类型","故事点", "剩余时间", "修复版本"};
     private static final String[] FIELDS = {"summary", "description", "priorityName", "typeName", "storyPoints", "remainTime", "version"};
     private static final String BACKETNAME = "agile-service";
+    private static final String SUB_TASK = "sub_task";
+    private static final String UPLOAD_FILE = "upload_file";
+    private static final String APPLY_TYPE_AGILE = "agile";
+    private static final String CANCELED = "canceled";
+    private static final String DOING = "doing";
+    private static final String SUCCESS = "success";
+    private static final String FAILED = "failed";
+    private static final String WEBSOCKET_IMPORT_CODE = "agile-import-issues";
 
     @Autowired
     private StateMachineService stateMachineService;
@@ -79,7 +87,7 @@ public class ExcelServiceImpl implements ExcelService {
     @Override
     public void download(Long projectId, Long organizationId, HttpServletRequest request, HttpServletResponse response) {
         List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
-        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(projectId, "agile").getBody();
+        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
         List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
         List<String> priorityList = new ArrayList<>();
         for (PriorityDTO priorityDTO : priorityDTOList) {
@@ -87,7 +95,7 @@ public class ExcelServiceImpl implements ExcelService {
         }
         List<String> issueTypeList = new ArrayList<>();
         for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-            if (!"sub_task".equals(issueTypeDTO.getTypeCode())) {
+            if (!SUB_TASK.equals(issueTypeDTO.getTypeCode())) {
                 issueTypeList.add(issueTypeDTO.getName());
             }
         }
@@ -160,14 +168,17 @@ public class ExcelServiceImpl implements ExcelService {
             versionIssueRelDTO.setRelationType("fix");
             versionIssueRelDTOList.add(versionIssueRelDTO);
         }
+        String typeCode = issueTypeMap.get(typeName).getTypeCode();
         issueCreateDTO.setProjectId(projectId);
         issueCreateDTO.setSummary(summary);
         issueCreateDTO.setDescription(description);
         issueCreateDTO.setPriorityCode("priority" + priorityMap.get(priorityName));
         issueCreateDTO.setPriorityId(priorityMap.get(priorityName));
         issueCreateDTO.setIssueTypeId(issueTypeMap.get(typeName).getId());
-        issueCreateDTO.setTypeCode(issueTypeMap.get(typeName).getTypeCode());
-        issueCreateDTO.setStoryPoints(storyPoint);
+        issueCreateDTO.setTypeCode(typeCode);
+        if ("story".equals(typeCode)) {
+            issueCreateDTO.setStoryPoints(storyPoint);
+        }
         issueCreateDTO.setRemainingTime(remainTime);
         issueCreateDTO.setVersionIssueRelDTOList(versionIssueRelDTOList);
         issueCreateDTO.setReporterId(reporterId);
@@ -194,7 +205,7 @@ public class ExcelServiceImpl implements ExcelService {
             priorityList.add(priorityDTO.getName());
         }
         for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-            if (!"sub_task".equals(issueTypeDTO.getTypeCode())) {
+            if (!SUB_TASK.equals(issueTypeDTO.getTypeCode())) {
                 issueTypeMap.put(issueTypeDTO.getName(), issueTypeDTO);
                 issueTypeList.add(issueTypeDTO.getName());
             }
@@ -203,7 +214,7 @@ public class ExcelServiceImpl implements ExcelService {
 
     private void sendProcess(FileOperationHistoryE fileOperationHistoryE, Long userId, Double process) {
         fileOperationHistoryE.setProcess(process);
-        notifyFeignClient.postWebSocket("agile-import-issues", userId.toString(), JSON.toJSONString(fileOperationHistoryE));
+        notifyFeignClient.postWebSocket(WEBSOCKET_IMPORT_CODE, userId.toString(), JSON.toJSONString(fileOperationHistoryE));
     }
 
 
@@ -306,7 +317,7 @@ public class ExcelServiceImpl implements ExcelService {
 
     private Boolean checkCanceled(Long projectId, Long fileOperationHistoryId, List<Long> importedIssueIds) {
         FileOperationHistoryDO checkCanceledDO = fileOperationHistoryMapper.selectByPrimaryKey(fileOperationHistoryId);
-        if ("upload_file".equals(checkCanceledDO.getAction()) && "canceled".equals(checkCanceledDO.getStatus())) {
+        if (UPLOAD_FILE.equals(checkCanceledDO.getAction()) && CANCELED.equals(checkCanceledDO.getStatus())) {
             if (!importedIssueIds.isEmpty()) {
                 LOGGER.info(importedIssueIds.toString());
                 issueService.batchDeleteIssuesAgile(projectId, importedIssueIds);
@@ -338,8 +349,8 @@ public class ExcelServiceImpl implements ExcelService {
     @Override
     public void batchImport(Long projectId, Long organizationId, Long userId, Workbook workbook) {
 //        Long userId = DetailsHelper.getUserDetails().getUserId();
-        String status = "doing";
-        FileOperationHistoryE fileOperationHistoryE = fileOperationHistoryRepository.create(new FileOperationHistoryE(projectId, userId, "upload_file", 0L, 0L, status));
+        String status = DOING;
+        FileOperationHistoryE fileOperationHistoryE = fileOperationHistoryRepository.create(new FileOperationHistoryE(projectId, userId, UPLOAD_FILE, 0L, 0L, status));
         sendProcess(fileOperationHistoryE, userId, 0.0);
         Sheet sheet = workbook.getSheetAt(0);
         if (sheet == null) {
@@ -417,7 +428,7 @@ public class ExcelServiceImpl implements ExcelService {
             Boolean ok = setIssueCreateInfo(issueCreateDTO, projectId, row, issueTypeMap, priorityMap, versionMap, userId);
             IssueDTO result = null;
             if (ok) {
-                result = stateMachineService.createIssue(issueCreateDTO, "agile");
+                result = stateMachineService.createIssue(issueCreateDTO, APPLY_TYPE_AGILE);
             }
             if (result == null) {
                 failCount ++;
@@ -437,9 +448,9 @@ public class ExcelServiceImpl implements ExcelService {
             Workbook result = ExcelUtil.generateExcelAwesome(workbook, errorRows, errorMapList, FIELDS_NAME, priorityList, issueTypeList, versionList, ConvertUtil.getName(projectId));
             String errorWorkBookUrl = uploadErrorExcel(result);
             fileOperationHistoryE.setFileUrl(errorWorkBookUrl);
-            status = "failed";
+            status = FAILED;
         } else {
-            status = "success";
+            status = SUCCESS;
         }
         updateFinalRecode(fileOperationHistoryE, successcount, failCount, status);
     }
@@ -449,7 +460,7 @@ public class ExcelServiceImpl implements ExcelService {
     public void cancelImport(Long projectId, Long id, Long objectVersionNumber) {
         FileOperationHistoryE fileOperationHistoryE = new FileOperationHistoryE();
         fileOperationHistoryE.setId(id);
-        fileOperationHistoryE.setStatus("canceled");
+        fileOperationHistoryE.setStatus(CANCELED);
         fileOperationHistoryE.setObjectVersionNumber(objectVersionNumber);
         fileOperationHistoryRepository.updateBySeletive(fileOperationHistoryE);
     }
