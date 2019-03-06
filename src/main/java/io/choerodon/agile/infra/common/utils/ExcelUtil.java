@@ -64,7 +64,9 @@ public class ExcelUtil {
 
         workbook = dropDownList2007(workbook, resultSheet, priorityList, 1, 500, 2, 2, "hidden_priority", 1);
         workbook = dropDownList2007(workbook, resultSheet, issueTypeList, 1, 500, 3, 3, "hidden_issue_type", 2);
-        workbook = dropDownList2007(workbook, resultSheet, versionList, 1, 500, 6, 6, "hidden_fix_version", 3);
+        if (!versionList.isEmpty()) {
+            workbook = dropDownList2007(workbook, resultSheet, versionList, 1, 500, 6, 6, "hidden_fix_version", 3);
+        }
 
         Sheet sheet = generateExcel.getSheetAt(0);
         int size = sheet.getPhysicalNumberOfRows();
