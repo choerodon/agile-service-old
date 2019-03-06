@@ -19,7 +19,7 @@ public interface ProductVersionService {
      */
     ProductVersionDetailDTO createVersion(Long projectId, ProductVersionCreateDTO versionCreateDTO);
 
-    Boolean deleteVersion(Long projectId, Long versionId, Long fixTargetVersionId, Long influenceTargetVersionId);
+    Boolean deleteVersion(Long projectId, Long versionId, Long targetVersionId);
 
     ProductVersionDetailDTO updateVersion(Long projectId, Long versionId, ProductVersionUpdateDTO versionUpdateDTO, List<String> fieldList);
 

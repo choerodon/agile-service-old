@@ -132,17 +132,14 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     }
 
     @Override
-    public Boolean deleteVersion(Long projectId, Long versionId, Long fixTargetVersionId, Long influenceTargetVersionId) {
-        productVersionRule.judgeExist(projectId, fixTargetVersionId);
-        productVersionRule.judgeExist(projectId, influenceTargetVersionId);
+    public Boolean deleteVersion(Long projectId, Long versionId, Long targetVersionId) {
+        productVersionRule.judgeExist(projectId, targetVersionId);
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        if (fixTargetVersionId != null && !Objects.equals(fixTargetVersionId, 0L)) {
-            List<VersionIssueDO> versionIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, FIX_RELATION_TYPE);
-            productVersionRepository.batchIssueToDestination(projectId, fixTargetVersionId, versionIssues, new Date(), customUserDetails.getUserId());
-        }
-        if (influenceTargetVersionId != null && !Objects.equals(influenceTargetVersionId, 0L)) {
-            List<VersionIssueDO> versionIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, INFLUENCE_RELATION_TYPE);
-            productVersionRepository.batchIssueToDestination(projectId, influenceTargetVersionId, versionIssues, new Date(), customUserDetails.getUserId());
+        if (targetVersionId != null && !Objects.equals(targetVersionId, 0L)) {
+            List<VersionIssueDO> versionFixIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, FIX_RELATION_TYPE);
+            productVersionRepository.batchIssueToDestination(projectId, targetVersionId, versionFixIssues, new Date(), customUserDetails.getUserId());
+            List<VersionIssueDO> versionInfIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, INFLUENCE_RELATION_TYPE);
+            productVersionRepository.batchIssueToDestination(projectId, targetVersionId, versionInfIssues, new Date(), customUserDetails.getUserId());
         }
         versionIssueRelRepository.deleteByVersionId(projectId, versionId);
         return simpleDeleteVersion(projectId, versionId);
@@ -309,8 +306,8 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     @Override
     public VersionMessageDTO queryDeleteMessageByVersionId(Long projectId, Long versionId) {
         VersionMessageDTO versionDeleteMessage = new VersionMessageDTO();
-        versionDeleteMessage.setFixIssueCount(productVersionMapper.queryIssueCountByRelationType(projectId, versionId, FIX_RELATION_TYPE));
-        versionDeleteMessage.setInfluenceIssueCount(productVersionMapper.queryIssueCountByRelationType(projectId, versionId, INFLUENCE_RELATION_TYPE));
+        versionDeleteMessage.setAgileIssueCount(productVersionMapper.queryIssueCountByApplyType(projectId, versionId, SchemeApplyType.AGILE));
+        versionDeleteMessage.setTestCaseCount(productVersionMapper.queryIssueCountByApplyType(projectId, versionId, SchemeApplyType.TEST));
         versionDeleteMessage.setVersionNames(versionStatisticsAssembler.
                 toTargetList(productVersionMapper.queryVersionNames(projectId, versionId), ProductVersionNameDTO.class));
         return versionDeleteMessage;

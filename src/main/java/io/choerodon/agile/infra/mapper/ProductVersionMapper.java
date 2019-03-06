@@ -55,6 +55,8 @@ public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
 
     int queryIssueCountByRelationType(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("relationType") String relationType);
 
+    int queryIssueCountByApplyType(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("applyType") String applyType);
+
     List<ProductVersionNameDO> queryVersionNames(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
     List<VersionIssueDO> queryIncompleteIssues(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
