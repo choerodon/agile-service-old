@@ -58,6 +58,8 @@ public class ExcelServiceImpl implements ExcelService {
     private static final String SUCCESS = "success";
     private static final String FAILED = "failed";
     private static final String WEBSOCKET_IMPORT_CODE = "agile-import-issues";
+    private static final String STORY = "story";
+    private static final String ISSUE_EPIC = "issue_epic";
 
     @Autowired
     private StateMachineService stateMachineService;
@@ -176,8 +178,13 @@ public class ExcelServiceImpl implements ExcelService {
         issueCreateDTO.setPriorityId(priorityMap.get(priorityName));
         issueCreateDTO.setIssueTypeId(issueTypeMap.get(typeName).getId());
         issueCreateDTO.setTypeCode(typeCode);
-        if ("story".equals(typeCode)) {
+        // 当问题类型为故事，设置故事点
+        if (STORY.equals(typeCode)) {
             issueCreateDTO.setStoryPoints(storyPoint);
+        }
+        // 当问题类型为史诗，默认史诗名称与概要相同
+        if (ISSUE_EPIC.equals(typeCode)) {
+            issueCreateDTO.setEpicName(summary);
         }
         issueCreateDTO.setRemainingTime(remainTime);
         issueCreateDTO.setVersionIssueRelDTOList(versionIssueRelDTOList);
@@ -215,32 +222,6 @@ public class ExcelServiceImpl implements ExcelService {
     private void sendProcess(FileOperationHistoryE fileOperationHistoryE, Long userId, Double process) {
         fileOperationHistoryE.setProcess(process);
         notifyFeignClient.postWebSocket(WEBSOCKET_IMPORT_CODE, userId.toString(), JSON.toJSONString(fileOperationHistoryE));
-    }
-
-
-    private SXSSFWorkbook generateErrorExcel(Sheet sheet, List<Integer> errorRows) {
-        List<ExcelExportDTO> res = new ArrayList<>();
-        for (int i = 0; i < errorRows.size(); i++) {
-            Row row = sheet.getRow(errorRows.get(i));
-            ExcelExportDTO excelExportDTO = new ExcelExportDTO();
-            excelExportDTO.setSummary(row.getCell(0).toString());
-            if (!(row.getCell(1)==null || row.getCell(1).equals("") || row.getCell(1).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
-                excelExportDTO.setDescription(row.getCell(1).toString());
-            }
-            excelExportDTO.setPriorityName(row.getCell(2).toString());
-            excelExportDTO.setTypeName(row.getCell(3).toString());
-            if (!(row.getCell(4)==null || row.getCell(4).equals("") || row.getCell(4).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
-                excelExportDTO.setStoryPoints(row.getCell(4).toString());
-            }
-            if (!(row.getCell(5)==null || row.getCell(5).equals("") || row.getCell(5).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
-                excelExportDTO.setRemainTime(row.getCell(5).toString());
-            }
-            if (!(row.getCell(6)==null || row.getCell(6).equals("") || row.getCell(6).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
-                excelExportDTO.setVersion(row.getCell(6).toString());
-            }
-            res.add(excelExportDTO);
-        }
-        return ExcelUtil.generateExcel(res, ExcelExportDTO.class, FIELDS_NAME, FIELDS, "123");
     }
 
     private String uploadErrorExcel(Workbook errorWorkbook) {
@@ -348,7 +329,6 @@ public class ExcelServiceImpl implements ExcelService {
     @Async
     @Override
     public void batchImport(Long projectId, Long organizationId, Long userId, Workbook workbook) {
-//        Long userId = DetailsHelper.getUserDetails().getUserId();
         String status = DOING;
         FileOperationHistoryE fileOperationHistoryE = fileOperationHistoryRepository.create(new FileOperationHistoryE(projectId, userId, UPLOAD_FILE, 0L, 0L, status));
         sendProcess(fileOperationHistoryE, userId, 0.0);
@@ -444,7 +424,6 @@ public class ExcelServiceImpl implements ExcelService {
         }
         if (!errorRows.isEmpty()) {
             LOGGER.info("导入数据有误");
-//            SXSSFWorkbook generateExcel = generateErrorExcel(sheet, errorRows);
             Workbook result = ExcelUtil.generateExcelAwesome(workbook, errorRows, errorMapList, FIELDS_NAME, priorityList, issueTypeList, versionList, ConvertUtil.getName(projectId));
             String errorWorkBookUrl = uploadErrorExcel(result);
             fileOperationHistoryE.setFileUrl(errorWorkBookUrl);
