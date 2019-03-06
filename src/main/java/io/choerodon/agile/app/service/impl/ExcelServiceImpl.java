@@ -9,11 +9,13 @@ import io.choerodon.agile.domain.agile.entity.FileOperationHistoryE;
 import io.choerodon.agile.domain.agile.repository.FileOperationHistoryRepository;
 import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.FileOperationHistoryDO;
+import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.dataobject.ProductVersionCommonDO;
 import io.choerodon.agile.infra.feign.FileFeignClient;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.NotifyFeignClient;
 import io.choerodon.agile.infra.mapper.FileOperationHistoryMapper;
+import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -47,8 +49,8 @@ public class ExcelServiceImpl implements ExcelService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExcelServiceImpl.class);
 
-    private static final String[] FIELDS_NAME = {"概要", "描述", "优先级", "问题类型","故事点", "剩余时间", "修复版本"};
-    private static final String[] FIELDS = {"summary", "description", "priorityName", "typeName", "storyPoints", "remainTime", "version"};
+    private static final String[] FIELDS_NAME = {"概要", "描述", "优先级", "问题类型","故事点", "剩余时间", "修复版本", "史诗名称"};
+    private static final String[] FIELDS = {"summary", "description", "priorityName", "typeName", "storyPoints", "remainTime", "version", "epicName"};
     private static final String BACKETNAME = "agile-service";
     private static final String SUB_TASK = "sub_task";
     private static final String UPLOAD_FILE = "upload_file";
@@ -85,6 +87,9 @@ public class ExcelServiceImpl implements ExcelService {
     @Autowired
     private IssueService issueService;
 
+    @Autowired
+    private IssueMapper issueMapper;
+
 
     @Override
     public void download(Long projectId, Long organizationId, HttpServletRequest request, HttpServletResponse response) {
@@ -119,6 +124,7 @@ public class ExcelServiceImpl implements ExcelService {
         CatalogExcelUtil.initCell(row.createCell(4), style, FIELDS_NAME[4]);
         CatalogExcelUtil.initCell(row.createCell(5), style, FIELDS_NAME[5]);
         CatalogExcelUtil.initCell(row.createCell(6), style, FIELDS_NAME[6]);
+        CatalogExcelUtil.initCell(row.createCell(7), style, FIELDS_NAME[7]);
 
         try {
             wb = ExcelUtil.dropDownList2007(wb, sheet, priorityList, 1, 500, 2, 2, "hidden_priority", 1);
@@ -163,8 +169,12 @@ public class ExcelServiceImpl implements ExcelService {
         if(!(row.getCell(6)==null || row.getCell(6).equals("") || row.getCell(6).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
             versionName = row.getCell(6).toString();
         }
+        String epicName = null;
+        if(!(row.getCell(7)==null || row.getCell(7).equals("") || row.getCell(7).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
+            epicName = row.getCell(7).toString();
+        }
         List<VersionIssueRelDTO> versionIssueRelDTOList = null;
-        if (versionName != null) {
+        if (!(versionName == null || "".equals(versionName))) {
             versionIssueRelDTOList = new ArrayList<>();
             VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
             versionIssueRelDTO.setVersionId(versionMap.get(versionName));
@@ -186,6 +196,7 @@ public class ExcelServiceImpl implements ExcelService {
         // 当问题类型为史诗，默认史诗名称与概要相同
         if (ISSUE_EPIC.equals(typeCode)) {
             issueCreateDTO.setEpicName(summary);
+            issueCreateDTO.setEpicName(epicName);
         }
         issueCreateDTO.setRemainingTime(remainTime);
         issueCreateDTO.setVersionIssueRelDTOList(versionIssueRelDTOList);
@@ -234,7 +245,15 @@ public class ExcelServiceImpl implements ExcelService {
         return response.getBody();
     }
 
-    private Map<Integer, String> checkRule(Row row, List<String> issueTypeList, List<String> priorityList, List<String> versionList) {
+    private Boolean checkEpicNameExist(Long projectId, String epicName) {
+        IssueDO issueDO = new IssueDO();
+        issueDO.setProjectId(projectId);
+        issueDO.setEpicName(epicName);
+        List<IssueDO> issueDOList = issueMapper.select(issueDO);
+        return issueDOList == null || issueDOList.isEmpty();
+    }
+
+    private Map<Integer, String> checkRule(Long projectId, Row row, List<String> issueTypeList, List<String> priorityList, List<String> versionList, Map<String, IssueTypeDTO> issueTypeMap) {
         Map<Integer, String> errorMessage = new HashMap<>();
         // check summary
         if (row.getCell(0)==null || row.getCell(0).equals("") || row.getCell(0).getCellType() == XSSFCell.CELL_TYPE_BLANK) {
@@ -256,8 +275,10 @@ public class ExcelServiceImpl implements ExcelService {
         }
         // check story point
         if (!(row.getCell(4) == null || row.getCell(4).equals("") || row.getCell(4).getCellType() == XSSFCell.CELL_TYPE_BLANK)) {
-            String storyPointStr = row.getCell(4).toString();
-            if (!NumberUtil.isNumeric(storyPointStr)) {
+            String storyPointStr = row.getCell(4).toString().trim();
+            if (storyPointStr.length() > 3) {
+                errorMessage.put(4, "请输入正确的位数");
+            } else if (!NumberUtil.isNumeric(storyPointStr)) {
                 errorMessage.put(4, "请输入数字");
             } else {
                 if (NumberUtil.isInteger(storyPointStr)  || NumberUtil.canParseInteger(storyPointStr)) {
@@ -273,8 +294,10 @@ public class ExcelServiceImpl implements ExcelService {
         }
         // check remain time
         if (!(row.getCell(5) == null || row.getCell(5).equals("") || row.getCell(5).getCellType() == XSSFCell.CELL_TYPE_BLANK)) {
-            String remainTime = row.getCell(5).toString();
-            if (!NumberUtil.isNumeric(remainTime)) {
+            String remainTime = row.getCell(5).toString().trim();
+            if (remainTime.length() > 3) {
+                errorMessage.put(4, "请输入正确的位数");
+            } else if (!NumberUtil.isNumeric(remainTime)) {
                 errorMessage.put(5, "请输入数字");
             } else {
                 if (NumberUtil.isInteger(remainTime) || NumberUtil.canParseInteger(remainTime)) {
@@ -294,6 +317,22 @@ public class ExcelServiceImpl implements ExcelService {
                 errorMessage.put(6, "请输入正确的版本");
             }
         }
+        // check epic name
+        if (!(row.getCell(3) == null || row.getCell(3).equals("") || row.getCell(3).getCellType() == XSSFCell.CELL_TYPE_BLANK)
+                && issueTypeList.contains(row.getCell(3).toString())
+                && "issue_epic".equals(issueTypeMap.get(row.getCell(3).toString()).getTypeCode())) {
+            if (row.getCell(7)==null || row.getCell(7).equals("") || row.getCell(7).getCellType() == XSSFCell.CELL_TYPE_BLANK) {
+                errorMessage.put(7, "史诗名称不能为空");
+            } else {
+                String epicName = row.getCell(7).toString().trim();
+                if (epicName.length() > 10) {
+                    errorMessage.put(7, "史诗名称过长");
+                } else if (!checkEpicNameExist(projectId, epicName)) {
+                    errorMessage.put(7, "史诗名称重复");
+                }
+            }
+        }
+
         return errorMessage;
     }
 
@@ -319,7 +358,8 @@ public class ExcelServiceImpl implements ExcelService {
                     (row.getCell(3) == null || row.getCell(3).equals("") || row.getCell(3).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
                     (row.getCell(4) == null || row.getCell(4).equals("") || row.getCell(4).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
                     (row.getCell(5) == null || row.getCell(5).equals("") || row.getCell(5).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
-                    (row.getCell(6) == null || row.getCell(6).equals("") || row.getCell(6).getCellType() == XSSFCell.CELL_TYPE_BLANK))) {
+                    (row.getCell(6) == null || row.getCell(6).equals("") || row.getCell(6).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(7) == null || row.getCell(7).equals("") || row.getCell(7).getCellType() == XSSFCell.CELL_TYPE_BLANK))) {
                 continue;
             }
             count ++;
@@ -369,7 +409,8 @@ public class ExcelServiceImpl implements ExcelService {
                     (row.getCell(3)==null || row.getCell(3).equals("") || row.getCell(3).getCellType() ==XSSFCell.CELL_TYPE_BLANK) &&
                     (row.getCell(4)==null || row.getCell(4).equals("") || row.getCell(4).getCellType() ==XSSFCell.CELL_TYPE_BLANK) &&
                     (row.getCell(5)==null || row.getCell(5).equals("") || row.getCell(5).getCellType() ==XSSFCell.CELL_TYPE_BLANK) &&
-                    (row.getCell(6)==null || row.getCell(6).equals("") || row.getCell(6).getCellType() ==XSSFCell.CELL_TYPE_BLANK))) {
+                    (row.getCell(6)==null || row.getCell(6).equals("") || row.getCell(6).getCellType() ==XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(7)==null || row.getCell(7).equals("") || row.getCell(7).getCellType() == XSSFCell.CELL_TYPE_BLANK))) {
                 continue;
             }
             for (int w = 0; w < FIELDS.length; w++) {
@@ -377,7 +418,7 @@ public class ExcelServiceImpl implements ExcelService {
                     row.getCell(w).setCellType(XSSFCell.CELL_TYPE_STRING);
                 }
             }
-            Map errorMap = checkRule(row, issueTypeList, priorityList, versionList);
+            Map errorMap = checkRule(projectId, row, issueTypeList, priorityList, versionList, issueTypeMap);
             if (!errorMap.isEmpty()) {
                 failCount ++ ;
                 Iterator<Map.Entry<Integer, String>> entries = errorMap.entrySet().iterator();

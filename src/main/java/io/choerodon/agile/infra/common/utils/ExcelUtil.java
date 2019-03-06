@@ -61,6 +61,7 @@ public class ExcelUtil {
         CatalogExcelUtil.initCell(titleRow.createCell(4), style, FIELDS_NAME[4]);
         CatalogExcelUtil.initCell(titleRow.createCell(5), style, FIELDS_NAME[5]);
         CatalogExcelUtil.initCell(titleRow.createCell(6), style, FIELDS_NAME[6]);
+        CatalogExcelUtil.initCell(titleRow.createCell(7), style, FIELDS_NAME[7]);
 
         workbook = dropDownList2007(workbook, resultSheet, priorityList, 1, 500, 2, 2, "hidden_priority", 1);
         workbook = dropDownList2007(workbook, resultSheet, issueTypeList, 1, 500, 3, 3, "hidden_issue_type", 2);
