@@ -59,7 +59,7 @@
         FROM
         agile_issue ai
         WHERE
-        ai.project_id =  #{sprintDO.projectId} and
+        ai.project_id = #{sprintDO.projectId} and
         ai.issue_id IN
         <foreach collection="issueIdList" item="issueId"
                  open="(" close=")" separator=",">
@@ -70,7 +70,8 @@
         select
         adl3.new_string,adl3.issue_id,adl3.creation_date
         from
-        agile_data_log adl3 where adl3.project_id = #{sprintDO.projectId} and adl3.field = #{field} and adl3.log_id in (SELECT
+        agile_data_log adl3 where adl3.project_id = #{sprintDO.projectId} and adl3.field = #{field} and adl3.log_id in
+        (SELECT
         MAX(adl.log_id) as log_id
         FROM
         agile_data_log adl
@@ -116,31 +117,31 @@
         ai2.issue_id as parent_issue_id,
         case when
         (
-            SELECT CASE WHEN adl3.issue_id IS NOT NULL AND adl3.new_value IS NULL
-            THEN 1
-            ELSE 0 END
-            FROM
-            agile_data_log adl3
-            WHERE
-            adl3.issue_id = bbb.issue_id
-            AND adl3.creation_date &lt; bbb.date
-            AND adl3.field = 'resolution'
-            ORDER BY adl3.creation_date DESC
-            LIMIT 1
+        SELECT CASE WHEN adl3.issue_id IS NOT NULL AND adl3.new_value IS NULL
+        THEN 1
+        ELSE 0 END
+        FROM
+        agile_data_log adl3
+        WHERE
+        adl3.issue_id = bbb.issue_id
+        AND adl3.creation_date &lt; bbb.date
+        AND adl3.field = 'resolution'
+        ORDER BY adl3.creation_date DESC
+        LIMIT 1
         ) is null then 1
         else
         (
-            SELECT CASE WHEN adl3.issue_id IS NOT NULL AND adl3.new_value IS NULL
-            THEN 1
-            ELSE 0 END
-            FROM
-            agile_data_log adl3
-            WHERE
-            adl3.issue_id = bbb.issue_id
-            AND adl3.creation_date &lt; bbb.date
-            AND adl3.field = 'resolution'
-            ORDER BY adl3.creation_date DESC
-            LIMIT 1
+        SELECT CASE WHEN adl3.issue_id IS NOT NULL AND adl3.new_value IS NULL
+        THEN 1
+        ELSE 0 END
+        FROM
+        agile_data_log adl3
+        WHERE
+        adl3.issue_id = bbb.issue_id
+        AND adl3.creation_date &lt; bbb.date
+        AND adl3.field = 'resolution'
+        ORDER BY adl3.creation_date DESC
+        LIMIT 1
         ) end as statistical
         from (
         SELECT
@@ -155,7 +156,8 @@
         adl.field = 'Sprint'
         AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt; #{sprintDO.actualEndDate}
-        AND adl.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        AND adl.new_value REGEXP
+        '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
         AND adl.issue_id IN
         <foreach collection="issueIdAddList" item="issueId"
                  open="(" close=")" separator=",">
@@ -196,32 +198,32 @@
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_id,
         case when (
-            SELECT CASE WHEN adl3.issue_id IS NOT NULL AND adl3.new_value IS NULL
-            THEN 1
-            ELSE 0 END
-            FROM
-            agile_data_log adl3
-            WHERE
-            adl3.issue_id = a.issue_id
-            AND adl3.creation_date &lt; a.date
-            AND adl3.field = 'resolution'
-            ORDER BY adl3.creation_date DESC
-            LIMIT 1
+        SELECT CASE WHEN adl3.issue_id IS NOT NULL AND adl3.new_value IS NULL
+        THEN 1
+        ELSE 0 END
+        FROM
+        agile_data_log adl3
+        WHERE
+        adl3.issue_id = a.issue_id
+        AND adl3.creation_date &lt; a.date
+        AND adl3.field = 'resolution'
+        ORDER BY adl3.creation_date DESC
+        LIMIT 1
         ) is null then 1
         else
-            (
-            SELECT CASE WHEN adl3.issue_id IS NOT NULL AND adl3.new_value IS NULL
-            THEN 1
-            ELSE 0 END
-            FROM
-            agile_data_log adl3
-            WHERE
-            adl3.issue_id = a.issue_id
-            AND adl3.creation_date &lt; a.date
-            AND adl3.field = 'resolution'
-            ORDER BY adl3.creation_date DESC
-            LIMIT 1
-            ) end
+        (
+        SELECT CASE WHEN adl3.issue_id IS NOT NULL AND adl3.new_value IS NULL
+        THEN 1
+        ELSE 0 END
+        FROM
+        agile_data_log adl3
+        WHERE
+        adl3.issue_id = a.issue_id
+        AND adl3.creation_date &lt; a.date
+        AND adl3.field = 'resolution'
+        ORDER BY adl3.creation_date DESC
+        LIMIT 1
+        ) end
         as statistical
         FROM
         (
@@ -237,8 +239,10 @@
         adl.field = 'Sprint'
         AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt; #{sprintDO.actualEndDate}
-        AND adl.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
-        AND (adl.new_value is null or not (adl.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'))
+        AND adl.old_value REGEXP
+        '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        AND (adl.new_value is null or not (adl.new_value REGEXP
+        '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'))
         AND adl.issue_id IN
         <foreach collection="issueIdRemoveList" item="issueId"
                  open="(" close=")" separator=",">
@@ -261,43 +265,43 @@
         ai2.issue_num) AS parent_issue_num,
         ai2.issue_id as parent_issue_id,
         case when
-            (
-                SELECT
-                CASE
-                WHEN
-                adl2.issue_id IS NOT NULL
-                AND adl2.new_value IS NULL THEN
-                1 ELSE 0
-                END
-                FROM
-                agile_data_log adl2
-                WHERE
-                adl2.issue_id = ai.issue_id
-                AND adl2.creation_date &lt; abd.date
-                 AND adl2.field = 'resolution'
-                 ORDER BY
-                 adl2.creation_date DESC
-                 LIMIT 1
-            ) is null then 1
+        (
+        SELECT
+        CASE
+        WHEN
+        adl2.issue_id IS NOT NULL
+        AND adl2.new_value IS NULL THEN
+        1 ELSE 0
+        END
+        FROM
+        agile_data_log adl2
+        WHERE
+        adl2.issue_id = ai.issue_id
+        AND adl2.creation_date &lt; abd.date
+        AND adl2.field = 'resolution'
+        ORDER BY
+        adl2.creation_date DESC
+        LIMIT 1
+        ) is null then 1
         else
-            (
-                SELECT
-                CASE
-                WHEN
-                adl2.issue_id IS NOT NULL
-                AND adl2.new_value IS NULL THEN
-                1 ELSE 0
-                END
-                FROM
-                agile_data_log adl2
-                WHERE
-                adl2.issue_id = ai.issue_id
-                AND adl2.creation_date &lt; abd.date
-                AND adl2.field = 'resolution'
-                ORDER BY
-                adl2.creation_date DESC
-                LIMIT 1
-            )  end AS statistical
+        (
+        SELECT
+        CASE
+        WHEN
+        adl2.issue_id IS NOT NULL
+        AND adl2.new_value IS NULL THEN
+        1 ELSE 0
+        END
+        FROM
+        agile_data_log adl2
+        WHERE
+        adl2.issue_id = ai.issue_id
+        AND adl2.creation_date &lt; abd.date
+        AND adl2.field = 'resolution'
+        ORDER BY
+        adl2.creation_date DESC
+        LIMIT 1
+        ) end AS statistical
         FROM (SELECT
         adl.issue_id,
         adl.creation_date AS date
@@ -307,7 +311,8 @@
         adl.field = 'Sprint'
         AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt; #{sprintDO.actualEndDate}
-        AND adl.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        AND adl.new_value REGEXP
+        '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
         AND adl.issue_id IN
         <foreach collection="issueIdAddList" item="issueId"
                  open="(" close=")" separator=",">
@@ -331,42 +336,42 @@
         ai2.issue_id as parent_issue_id,
         case when
         (
-            SELECT
-            CASE
-            WHEN
-            adl2.issue_id IS NOT NULL
-            AND adl2.new_value IS NULL THEN
-            1 ELSE 0
-            END
-            FROM
-            agile_data_log adl2
-            WHERE
-            adl2.issue_id = adl.issue_id
-            AND adl2.creation_date &lt; adl.creation_date
-            AND adl2.field = 'resolution'
-            ORDER BY
-            adl2.creation_date DESC
-            LIMIT 1
+        SELECT
+        CASE
+        WHEN
+        adl2.issue_id IS NOT NULL
+        AND adl2.new_value IS NULL THEN
+        1 ELSE 0
+        END
+        FROM
+        agile_data_log adl2
+        WHERE
+        adl2.issue_id = adl.issue_id
+        AND adl2.creation_date &lt; adl.creation_date
+        AND adl2.field = 'resolution'
+        ORDER BY
+        adl2.creation_date DESC
+        LIMIT 1
         ) is null then 1
         else
-            (
-                SELECT
-                CASE
-                WHEN
-                adl2.issue_id IS NOT NULL
-                AND adl2.new_value IS NULL THEN
-                1 ELSE 0
-                END
-                FROM
-                agile_data_log adl2
-                WHERE
-                adl2.issue_id = adl.issue_id
-                AND adl2.creation_date &lt; adl.creation_date
-                AND adl2.field = 'resolution'
-                ORDER BY
-                adl2.creation_date DESC
-                LIMIT 1
-            ) end
+        (
+        SELECT
+        CASE
+        WHEN
+        adl2.issue_id IS NOT NULL
+        AND adl2.new_value IS NULL THEN
+        1 ELSE 0
+        END
+        FROM
+        agile_data_log adl2
+        WHERE
+        adl2.issue_id = adl.issue_id
+        AND adl2.creation_date &lt; adl.creation_date
+        AND adl2.field = 'resolution'
+        ORDER BY
+        adl2.creation_date DESC
+        LIMIT 1
+        ) end
         AS statistical
         FROM
         agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
@@ -377,7 +382,8 @@
         adl.field = 'Sprint'
         AND adl.creation_date &gt; #{sprintDO.startDate}
         AND adl.creation_date &lt; #{sprintDO.actualEndDate}
-        AND adl.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        AND adl.old_value REGEXP
+        '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
         AND adl.issue_id IN
         <foreach collection="issueIdRemoveList" item="issueId"
                  open="(" close=")" separator=",">
@@ -530,7 +536,8 @@
         ai2.issue_id as parent_issue_id,
         case when
         (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = adl.issue_id and adl3.field = 'Sprint' and
-        adl3.creation_date &lt; adl.creation_date order by adl3.log_id desc limit 1) REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        adl3.creation_date &lt; adl.creation_date order by adl3.log_id desc limit 1) REGEXP
+        '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
         then 1 else 0 end as statistical
         FROM
         agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
@@ -551,36 +558,36 @@
     <select id="queryRemoveIssueDoneDetailDurationSprint"
             resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
         SELECT
-            adl.issue_id,
-            adl.creation_date AS date,
-            'removeDoneDuringSprint' as type,
-            0 as old_value,
-            1 as new_value,
-            CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
-            CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
-            ai2.issue_id as parent_issue_id,
-            case when
-                (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = adl.issue_id and adl3.field = 'Sprint' and
-                adl3.creation_date &lt; adl.creation_date order by adl3.log_id desc limit 1)
-                REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
-                then 1 else 0
-            end as statistical
+        adl.issue_id,
+        adl.creation_date AS date,
+        'removeDoneDuringSprint' as type,
+        0 as old_value,
+        1 as new_value,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+        CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
+        ai2.issue_id as parent_issue_id,
+        case when
+        (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = adl.issue_id and adl3.field = 'Sprint' and
+        adl3.creation_date &lt; adl.creation_date order by adl3.log_id desc limit 1)
+        REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        then 1 else 0
+        end as statistical
         FROM
-            agile_data_log adl
-            LEFT JOIN agile_issue ai on adl.issue_id = ai.issue_id
-            LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
-            LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id
-            LEFT JOIN agile_project_info api2 ON api2.project_id = ai2.project_id
+        agile_data_log adl
+        LEFT JOIN agile_issue ai on adl.issue_id = ai.issue_id
+        LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
+        LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id
+        LEFT JOIN agile_project_info api2 ON api2.project_id = ai2.project_id
         WHERE
-            adl.field = 'resolution'
-            AND adl.creation_date &gt;= #{sprintDO.startDate}
-            AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
-            and adl.new_value is NULL
-            AND adl.issue_id IN
-            <foreach collection="issueIdRemoveDoneList" item="issueId"
-                     open="(" close=")" separator=",">
-                #{issueId}
-            </foreach>
+        adl.field = 'resolution'
+        AND adl.creation_date &gt;= #{sprintDO.startDate}
+        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        and adl.new_value is NULL
+        AND adl.issue_id IN
+        <foreach collection="issueIdRemoveDoneList" item="issueId"
+                 open="(" close=")" separator=",">
+            #{issueId}
+        </foreach>
     </select>
 
     <select id="queryIssueChangeValueDurationSprint"
@@ -1673,7 +1680,8 @@
         agile_issue ai
         <if test="!own">
             <if test="fieldName == 'resolution'">
-                LEFT JOIN agile_issue_status other on ai.status_id = other.status_id and other.project_id = ai.project_id
+                LEFT JOIN agile_issue_status other on ai.status_id = other.status_id and other.project_id =
+                ai.project_id
             </if>
             <if test="fieldName == 'component_id'">
                 LEFT JOIN agile_component_issue_rel other on ai.issue_id = other.issue_id
@@ -1699,10 +1707,12 @@
             and ai.creation_date &gt;= #{startDate} and ai.creation_date &lt;= #{endDate}
         </if>
         <if test="sprintId != null">
-            and ai.issue_id in (select aisr.issue_id from agile_issue_sprint_rel aisr where aisr.sprint_id = #{sprintId})
+            and ai.issue_id in (select aisr.issue_id from agile_issue_sprint_rel aisr where aisr.sprint_id =
+            #{sprintId})
         </if>
         <if test="versionId != null">
-            and ai.issue_id in (select avir.issue_id from agile_version_issue_rel avir where avir.version_id = #{versionId} and avir.relation_type = 'fix')
+            and ai.issue_id in (select avir.issue_id from agile_version_issue_rel avir where avir.version_id =
+            #{versionId} and avir.relation_type = 'fix')
         </if>
         GROUP BY
         <choose>
@@ -1725,50 +1735,52 @@
 
     <select id="queryPieChartByEpic" resultType="io.choerodon.agile.infra.dataobject.PieChartDO">
         select *,(pieData.value/#{total})*100 as percent from (
-           SELECT
-                IFNULL( epica.epic_id, 0 ) AS type_name,
-                count(*) as value,
-                ai2.epic_name AS NAME
-            FROM
-                (
-                SELECT
-                    ai.issue_id,
-                    ai.epic_id,
-                    ai.creation_date
-                FROM
-                    agile_issue ai
-                WHERE
-                    ai.project_id = #{projectId}
-                    AND ai.apply_type = 'agile'
-                    AND ai.type_code != 'sub_task'
-                    AND ai.type_code != 'issue_epic'
-                UNION
-                SELECT
-                    ai4.issue_id,
-                    ai5.epic_id,
-                    ai4.creation_date
-                FROM
-                    agile_issue ai4
-                    LEFT JOIN agile_issue ai5 ON ai5.issue_id = ai4.parent_issue_id
-                WHERE
-                    ai4.project_id = #{projectId}
-                    and ai4.type_code = 'sub_task'
-                    AND ai5.apply_type = 'agile'
-                ) epica
-                LEFT JOIN agile_issue ai2 ON ai2.issue_id = epica.epic_id
-            WHERE
-                1=1
-                <if test="startDate != null and endDate!= null">
-                    and epica.creation_date &gt;= #{startDate} and epica.creation_date &lt;= #{endDate}
-                </if>
-                <if test="sprintId != null">
-                    and epica.issue_id in (select aisr.issue_id from agile_issue_sprint_rel aisr where aisr.sprint_id = #{sprintId})
-                </if>
-                <if test="versionId != null">
-                    and epica.issue_id in (select avir.issue_id from agile_version_issue_rel avir where avir.version_id = #{versionId}
-                    and avir.relation_type = 'fix')
-                </if>
-                GROUP BY type_name,name
+        SELECT
+        IFNULL( epica.epic_id, 0 ) AS type_name,
+        count(*) as value,
+        ai2.epic_name AS NAME
+        FROM
+        (
+        SELECT
+        ai.issue_id,
+        ai.epic_id,
+        ai.creation_date
+        FROM
+        agile_issue ai
+        WHERE
+        ai.project_id = #{projectId}
+        AND ai.apply_type = 'agile'
+        AND ai.type_code != 'sub_task'
+        AND ai.type_code != 'issue_epic'
+        UNION
+        SELECT
+        ai4.issue_id,
+        ai5.epic_id,
+        ai4.creation_date
+        FROM
+        agile_issue ai4
+        LEFT JOIN agile_issue ai5 ON ai5.issue_id = ai4.parent_issue_id
+        WHERE
+        ai4.project_id = #{projectId}
+        and ai4.type_code = 'sub_task'
+        AND ai5.apply_type = 'agile'
+        ) epica
+        LEFT JOIN agile_issue ai2 ON ai2.issue_id = epica.epic_id
+        WHERE
+        1=1
+        <if test="startDate != null and endDate!= null">
+            and epica.creation_date &gt;= #{startDate} and epica.creation_date &lt;= #{endDate}
+        </if>
+        <if test="sprintId != null">
+            and epica.issue_id in (select aisr.issue_id from agile_issue_sprint_rel aisr where aisr.sprint_id =
+            #{sprintId})
+        </if>
+        <if test="versionId != null">
+            and epica.issue_id in (select avir.issue_id from agile_version_issue_rel avir where avir.version_id =
+            #{versionId}
+            and avir.relation_type = 'fix')
+        </if>
+        GROUP BY type_name,name
         )pieData ORDER BY pieData.value DESC
     </select>
 
@@ -1795,13 +1807,15 @@
             AND ai.type_code != 'issue_epic'
         </if>
         <if test="startDate != null and endDate!= null">
-           and ai.creation_date &gt;= #{startDate} and ai.creation_date &lt;= #{endDate}
+            and ai.creation_date &gt;= #{startDate} and ai.creation_date &lt;= #{endDate}
         </if>
         <if test="sprintId != null">
-           and ai.issue_id in (select aisr.issue_id from agile_issue_sprint_rel aisr where aisr.sprint_id = #{sprintId})
+            and ai.issue_id in (select aisr.issue_id from agile_issue_sprint_rel aisr where aisr.sprint_id =
+            #{sprintId})
         </if>
         <if test="versionId != null">
-           and ai.issue_id in (select avir.issue_id from agile_version_issue_rel avir where avir.version_id = #{versionId} and avir.relation_type = 'fix')
+            and ai.issue_id in (select avir.issue_id from agile_version_issue_rel avir where avir.version_id =
+            #{versionId} and avir.relation_type = 'fix')
         </if>
     </select>
 
@@ -1965,14 +1979,16 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
+            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirw.issue_id FROM agile_version_issue_rel avirw, agile_issue aiw WHERE avirw.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirw.last_update_date, '%Y-%m-%d' )
+            SELECT avirw.issue_id FROM agile_version_issue_rel avirw, agile_issue aiw WHERE avirw.version_id = #{id} and
+            t1.group_day >= DATE_FORMAT( avirw.last_update_date, '%Y-%m-%d' )
             and avirw.issue_id = aiw.issue_id and aiw.apply_type = 'agile'
         </if>
         )
@@ -2033,14 +2049,16 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
+            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and
+            t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
             and avirh.issue_id = aih.issue_id and aih.apply_type = 'agile'
         </if>
         )
@@ -2107,14 +2125,16 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
+            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and
+            t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
             and avirh.issue_id = aih.issue_id and aih.apply_type = 'agile'
         </if>
         )
@@ -2179,7 +2199,8 @@
         )
         <if test="chartType == 'epic_chart'">
             AND adl.field = 'Epic Link'
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
+            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         <if test="chartType == 'version_chart'">
             AND adl.field = 'Fix Version' and (adl.old_value = #{id} OR adl.new_value = #{id})
@@ -2189,7 +2210,8 @@
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and
+            t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
             and avirh.issue_id = aih.issue_id and aih.apply_type = 'agile'
         </if>
         )
@@ -2252,14 +2274,16 @@
         )
         AND adl.field = 'Story Points'
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
+            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and
+            t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
             and avirh.issue_id = aih.issue_id and aih.apply_type = 'agile'
         </if>
         )
@@ -2327,14 +2351,16 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
+            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirw.issue_id FROM agile_version_issue_rel avirw, agile_issue aiw WHERE avirw.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirw.last_update_date, '%Y-%m-%d' )
+            SELECT avirw.issue_id FROM agile_version_issue_rel avirw, agile_issue aiw WHERE avirw.version_id = #{id} and
+            t1.group_day >= DATE_FORMAT( avirw.last_update_date, '%Y-%m-%d' )
             and avirw.issue_id = aiw.issue_id and aiw.apply_type = 'agile'
 
         </if>
@@ -2396,14 +2422,16 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
+            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and
+            t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
             and avirh.issue_id = aih.issue_id and aih.apply_type = 'agile'
         </if>
         )
@@ -2476,14 +2504,16 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
+            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirw.issue_id FROM agile_version_issue_rel avirw, agile_issue aiw WHERE avirw.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirw.last_update_date, '%Y-%m-%d' )
+            SELECT avirw.issue_id FROM agile_version_issue_rel avirw, agile_issue aiw WHERE avirw.version_id = #{id} and
+            t1.group_day >= DATE_FORMAT( avirw.last_update_date, '%Y-%m-%d' )
             and avirw.issue_id = aiw.issue_id and aiw.apply_type = 'agile'
         </if>
         )
@@ -2524,7 +2554,7 @@
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirm.issue_id FROM agile_version_issue_rel avirm,agile_issue aim  WHERE avirm.version_id = #{id}
+            SELECT avirm.issue_id FROM agile_version_issue_rel avirm,agile_issue aim WHERE avirm.version_id = #{id}
             and avirm.issue_id = aim.issue_id and aim.apply_type = 'agile'
         </if>
         )
@@ -2544,14 +2574,16 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
+            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and
+            t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
             and avirh.issue_id = aih.issue_id and aih.apply_type = 'agile'
         </if>
         )
@@ -2618,14 +2650,16 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
+            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and
+            t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
             and avirh.issue_id = aih.issue_id and aih.apply_type = 'agile'
         </if>
         )
@@ -2688,14 +2722,16 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
+            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and
+            t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
             and avirh.issue_id = aih.issue_id and aih.apply_type = 'agile'
         </if>
         )
@@ -2760,7 +2796,8 @@
         )
         <if test="chartType == 'epic_chart'">
             AND adl.field = 'Epic Link'
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
+            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         <if test="chartType == 'version_chart'">
             AND adl.field = 'Fix Version' and (adl.old_value = #{id} OR adl.new_value = #{id})
@@ -2770,7 +2807,8 @@
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and
+            t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
             and avirh.issue_id = aih.issue_id and aih.apply_type = 'agile'
         </if>
         )
@@ -2834,14 +2872,16 @@
         )
         AND adl.field = 'timeestimate'
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
+            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and
+            t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
             and avirh.issue_id = aih.issue_id and aih.apply_type = 'agile'
         </if>
         )
@@ -2906,7 +2946,8 @@
         )
         <if test="chartType == 'epic_chart'">
             AND adl.field = 'Epic Link'
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
+            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         <if test="chartType == 'version_chart'">
             AND adl.field = 'Fix Version' and (adl.old_value = #{id} OR adl.new_value = #{id})
@@ -2916,7 +2957,8 @@
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirr.issue_id FROM agile_version_issue_rel avirr, agile_issue air WHERE avirr.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirr.last_update_date, '%Y-%m-%d' )
+            SELECT avirr.issue_id FROM agile_version_issue_rel avirr, agile_issue air WHERE avirr.version_id = #{id} and
+            t1.group_day >= DATE_FORMAT( avirr.last_update_date, '%Y-%m-%d' )
             and avirr.issue_id = air.issue_id and air.apply_type = 'agile'
         </if>
         )
@@ -2973,14 +3015,16 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
+            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
         <if test="chartType == 'epic_chart'">
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
+            SELECT avirh.issue_id FROM agile_version_issue_rel avirh, agile_issue aih WHERE avirh.version_id = #{id} and
+            t1.group_day >= DATE_FORMAT( avirh.last_update_date, '%Y-%m-%d' )
             and avirh.issue_id = aih.issue_id and aih.apply_type = 'agile'
         </if>
         )
@@ -3051,7 +3095,8 @@
         )
         <if test="chartType == 'epic_chart'">
             AND adl.field = 'Epic Link'
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' ) AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
+            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         <if test="chartType == 'version_chart'">
             AND adl.field = 'Fix Version' and (adl.old_value = #{id} OR adl.new_value = #{id})
@@ -3061,7 +3106,8 @@
             SELECT issue_id FROM agile_issue WHERE epic_id = #{id} and apply_type = 'agile'
         </if>
         <if test="chartType == 'version_chart'">
-            SELECT avirp.issue_id FROM agile_version_issue_rel avirp, agile_issue aip WHERE avirp.version_id = #{id} and t1.group_day >= DATE_FORMAT( avirp.last_update_date, '%Y-%m-%d' )
+            SELECT avirp.issue_id FROM agile_version_issue_rel avirp, agile_issue aip WHERE avirp.version_id = #{id} and
+            t1.group_day >= DATE_FORMAT( avirp.last_update_date, '%Y-%m-%d' )
             and avirp.issue_id = aip.issue_id and aip.apply_type = 'agile'
         </if>
         )
@@ -3076,7 +3122,8 @@
         t2.group_day
     </select>
 
-    <select id="queryIssueTypeDistributionChart" resultType="io.choerodon.agile.infra.dataobject.IssueTypeDistributionChartDO">
+    <select id="queryIssueTypeDistributionChart"
+            resultType="io.choerodon.agile.infra.dataobject.IssueTypeDistributionChartDO">
        SELECT
             ai.issue_type_id,
             ai.status_id,
@@ -3093,7 +3140,8 @@
             ai.status_id
     </select>
 
-    <select id="queryVersionProgressChart" resultType="io.choerodon.agile.infra.dataobject.IssueTypeDistributionChartDO">
+    <select id="queryVersionProgressChart"
+            resultType="io.choerodon.agile.infra.dataobject.IssueTypeDistributionChartDO">
        SELECT
             apv.name,
             ai.status_id,
@@ -3127,32 +3175,37 @@
         order by apv.sequence desc
     </select>
 
-    <select id="queryIssuePriorityDistributionChart" resultType="io.choerodon.agile.infra.dataobject.IssuePriorityDistributionChartDO">
+    <select id="queryIssuePriorityDistributionChart"
+            resultType="io.choerodon.agile.infra.dataobject.IssuePriorityDistributionChartDO">
         SELECT
-            aaa.priority_id,
-            SUM( CASE WHEN aaa.is_completed = 1 THEN aaa.count ELSE 0 END ) AS done_count,
-            SUM( aaa.count ) AS total_count
+        aaa.priority_id,
+        SUM( CASE WHEN aaa.is_completed = 1 THEN aaa.count ELSE 0 END ) AS done_count,
+        SUM( aaa.count ) AS total_count
         FROM
-            (
+        (
         SELECT
-            ai.priority_id,
-            ais.is_completed,
-            count( * ) AS count
+        ai.priority_id,
+        ais.is_completed,
+        count( * ) AS count
         FROM
-            agile_issue ai
-            LEFT JOIN agile_issue ai2 ON ai.parent_issue_id = ai2.issue_id
-            LEFT JOIN agile_issue_status ais ON ai.status_id = ais.status_id and ais.project_id = ai.project_id
+        agile_issue ai
+        LEFT JOIN agile_issue ai2 ON ai.parent_issue_id = ai2.issue_id
+        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.status_id and ais.project_id = ai.project_id
         WHERE
-            ai.project_id = #{projectId}
-            AND ai.apply_type = 'agile'
-            AND ( ai2.apply_type = 'agile' OR ai2.type_code IS NULL )
+        ai.project_id = #{projectId}
+        AND ai.apply_type = 'agile'
+        AND ( ai2.apply_type = 'agile' OR ai2.type_code IS NULL )
         GROUP BY
-            ai.priority_id,
-            ais.is_completed
-            ) aaa
+        ai.priority_id,
+        ais.is_completed
+        ) aaa
         GROUP BY
-            aaa.priority_id
-        order by total_count desc
+        aaa.priority_id
+        order by CASE aaa.priority_id
+        <foreach collection="priorityIds" item="priorityId" index="index">
+            when #{priorityId} then #{index}
+        </foreach>
+        end
     </select>
 
     <select id="queryFixCumulativeData" resultType="io.choerodon.agile.infra.dataobject.FixCumulativeData">
