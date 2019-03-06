@@ -467,7 +467,7 @@ class ProductVersionControllerSpec extends Specification {
         VersionMessageDTO VersionMessageDTO = entity.body
 
         expect: "设置期望值"
-        VersionMessageDTO.fixIssueCount > 0
+        VersionMessageDTO.agileIssueCount > 0
         VersionMessageDTO.versionNames.size() > 0
 
     }

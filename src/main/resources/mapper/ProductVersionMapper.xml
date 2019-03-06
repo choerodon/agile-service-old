@@ -24,7 +24,8 @@
         </if>
         <if test='contents != null and contents.size != 0'>
             <foreach collection="contents" item="content" index="index">
-                AND (name LIKE CONCAT(CONCAT('%', #{content}), '%') OR description LIKE CONCAT(CONCAT('%',#{content}), '%'))
+                AND (name LIKE CONCAT(CONCAT('%', #{content}), '%') OR description LIKE CONCAT(CONCAT('%',#{content}),
+                '%'))
             </foreach>
         </if>
     </select>
@@ -94,7 +95,7 @@
         WHERE ai.project_id = #{projectId} AND avir.issue_id = ai.issue_id AND avir.relation_type = 'fix'
         AND ai.type_code != 'sub_task' AND ai.status_id = ais.status_id and ai.project_id = ais.project_id
         <if test="statusIds!=null and statusIds.size> 0 ">
-         and ai.status_id in
+            and ai.status_id in
             <foreach collection="statusIds" item="statusId" index="index"
                      open="(" close=")" separator=",">
                 #{statusId}
@@ -209,13 +210,15 @@
         <if test='searchDTO.advancedSearchArgs != null'>
             <if test='searchDTO.advancedSearchArgs.issueTypeId != null and searchDTO.advancedSearchArgs.issueTypeId.size > 0'>
                 AND ai.issue_type_id IN
-                <foreach collection="searchDTO.advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator="," close=")">
+                <foreach collection="searchDTO.advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator=","
+                         close=")">
                     #{issueTypeId}
                 </foreach>
             </if>
             <if test='searchDTO.advancedSearchArgs.assigneeIds != null and searchDTO.advancedSearchArgs.assigneeIds.size > 0'>
                 AND ai.assignee_id IN
-                <foreach collection="searchDTO.advancedSearchArgs.assigneeIds" item="assigneeId" open="(" separator="," close=")">
+                <foreach collection="searchDTO.advancedSearchArgs.assigneeIds" item="assigneeId" open="(" separator=","
+                         close=")">
                     #{assigneeId}
                 </foreach>
             </if>
@@ -228,7 +231,8 @@
             </if>
             <if test='searchDTO.advancedSearchArgs.statusId != null and searchDTO.advancedSearchArgs.statusId.size > 0'>
                 and ai.status_id in
-                <foreach collection="searchDTO.advancedSearchArgs.statusId" item="statusId" open="(" separator="," close=")">
+                <foreach collection="searchDTO.advancedSearchArgs.statusId" item="statusId" open="(" separator=","
+                         close=")">
                     #{statusId}
                 </foreach>
             </if>
@@ -242,7 +246,8 @@
         </if>
         <if test='searchDTO.contents != null and searchDTO.contents.size != 0'>
             <foreach collection="searchDTO.contents" item="content" index="index">
-                AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE CONCAT(CONCAT('%',
+                AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE
+                CONCAT(CONCAT('%',
                 #{content}), '%'))
             </foreach>
         </if>
@@ -355,7 +360,7 @@
         WHERE
         avir.project_id = #{projectId}
         AND avir.issue_id = ai.issue_id
-        AND avir.version_id =  #{versionId}
+        AND avir.version_id = #{versionId}
         AND ai.status_id IN
         <foreach collection="statusIds" item="statusId" index="index"
                  open="(" close=")" separator=",">
@@ -389,6 +394,20 @@
         FROM agile_version_issue_rel avir, agile_issue ai
         WHERE avir.version_id = #{versionId} AND avir.issue_id = ai.issue_id AND avir.relation_type = #{relationType}
               AND ai.project_id = #{projectId}
+    </select>
+
+    <select id="queryIssueCountByApplyType" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM agile_issue ai
+        WHERE ai.project_id = #{projectId}
+        and ai.issue_id in (
+           SELECT ai.issue_id
+           FROM agile_version_issue_rel avir, agile_issue ai
+           WHERE avir.version_id = #{versionId}
+           AND avir.issue_id = ai.issue_id
+           AND ai.project_id = #{projectId}
+           and ai.apply_type = #{applyType}
+        )
     </select>
 
     <select id="queryVersionNames" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
@@ -446,19 +465,20 @@
             version_id
     </select>
 
-    <select id="queryVersionRelByIssueIdAndTypeArchivedExceptInfluence" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDO">
+    <select id="queryVersionRelByIssueIdAndTypeArchivedExceptInfluence"
+            resultType="io.choerodon.agile.infra.dataobject.ProductVersionDO">
         SELECT
-            avir.version_id AS version_id,
-            avir.issue_id   AS issue_id,
-            apv.`name`,
-            avir.relation_type,
-            avir.project_id
+        avir.version_id AS version_id,
+        avir.issue_id AS issue_id,
+        apv.`name`,
+        avir.relation_type,
+        avir.project_id
         FROM
-            agile_version_issue_rel avir
-            LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
+        agile_version_issue_rel avir
+        LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
         WHERE avir.project_id = #{projectId}
-              AND avir.issue_id = #{issueId}
-              AND avir.relation_type = #{relationType}
+        AND avir.issue_id = #{issueId}
+        AND avir.relation_type = #{relationType}
         <if test='relationType == "fix"'>
             and apv.status_code != 'archived'
         </if>

@@ -2,6 +2,7 @@ package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.app.service.ProductVersionService;
 import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
@@ -10,7 +11,6 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
-import io.choerodon.agile.app.service.ProductVersionService;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
@@ -89,11 +89,9 @@ public class ProductVersionController {
                                                  @PathVariable(name = "project_id") Long projectId,
                                                  @ApiParam(value = "versionId", required = true)
                                                  @PathVariable Long versionId,
-                                                 @ApiParam(value = "修复版本issue目标版本", required = false)
-                                                 @RequestParam(required = false, name = "fixTargetVersionId") Long fixTargetVersionId,
-                                                 @ApiParam(value = "影响版本issue目标版本", required = false)
-                                                 @RequestParam(required = false, name = "influenceTargetVersionId") Long influenceTargetVersionId) {
-        return Optional.ofNullable(productVersionService.deleteVersion(projectId, versionId, fixTargetVersionId, influenceTargetVersionId))
+                                                 @ApiParam(value = "更改的目标版本")
+                                                 @RequestParam(required = false, name = "targetVersionId") Long targetVersionId) {
+        return Optional.ofNullable(productVersionService.deleteVersion(projectId, versionId, targetVersionId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.NO_CONTENT))
                 .orElseThrow(() -> new CommonException(DELETE_ERROR));
     }
