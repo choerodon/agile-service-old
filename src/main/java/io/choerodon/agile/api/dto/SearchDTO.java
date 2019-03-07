@@ -11,6 +11,7 @@ import java.util.Map;
  */
 public class SearchDTO {
 
+    private List<String> exportFieldCodes;
     /**
      * 输入查询参数
      */
@@ -35,6 +36,14 @@ public class SearchDTO {
     private String content;
 
     private List<String> contents;
+
+    public List<String> getExportFieldCodes() {
+        return exportFieldCodes;
+    }
+
+    public void setExportFieldCodes(List<String> exportFieldCodes) {
+        this.exportFieldCodes = exportFieldCodes;
+    }
 
     public List<String> getContents() {
         return contents;

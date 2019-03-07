@@ -214,6 +214,8 @@ public class IssueServiceImpl implements IssueService {
     private static final String URL_TEMPLATE5 = "&paramOpenIssueId=";
     private static final String URL_TEMPLATE6 = "&organizationId=";
     private static final String AGILE = "agile";
+    private static final String FIELD_CODES = "fieldCodes";
+    private static final String FIELD_NAMES = "fieldNames";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -1428,6 +1430,11 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response, Long organizationId) {
+        //处理根据界面筛选结果导出的字段
+        Map<String, String[]> fieldMap = handleExportFields(searchDTO.getExportFieldCodes());
+        String[] fieldCodes = fieldMap.get(FIELD_CODES);
+        String[] fieldNames = fieldMap.get(FIELD_NAMES);
+
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
         projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
@@ -1470,10 +1477,43 @@ public class IssueServiceImpl implements IssueService {
                     exportIssue.setComponentName(componentName);
                 });
             }
-            ExcelUtil.export(exportIssues, ExportIssuesDTO.class, FIELDS_NAME, FIELDS, project.getName(), response);
+            ExcelUtil.export(exportIssues, ExportIssuesDTO.class, fieldNames, fieldCodes, project.getName(), response);
         } else {
-            ExcelUtil.export(new ArrayList<>(), ExportIssuesDTO.class, FIELDS_NAME, FIELDS, project.getName(), response);
+            ExcelUtil.export(new ArrayList<>(), ExportIssuesDTO.class, fieldNames, fieldCodes, project.getName(), response);
         }
+    }
+
+    /**
+     * 处理根据界面筛选结果导出的字段
+     *
+     * @param exportFieldCodes
+     * @return
+     */
+    private Map<String, String[]> handleExportFields(List<String> exportFieldCodes) {
+        Map<String, String[]> fieldMap = new HashMap<>(2);
+        if (exportFieldCodes != null && exportFieldCodes.size() != 0) {
+            Map<String, String> data = new HashMap<>(FIELDS.length);
+            for (int i = 0; i < FIELDS.length; i++) {
+                data.put(FIELDS[i], FIELDS_NAME[i]);
+            }
+            List<String> fieldCodes = new ArrayList<>(exportFieldCodes.size());
+            List<String> fieldNames = new ArrayList<>(exportFieldCodes.size());
+            exportFieldCodes.stream().forEach(code -> {
+                String name = data.get(code);
+                if (name != null) {
+                    fieldCodes.add(code);
+                    fieldNames.add(name);
+                } else {
+                    throw new CommonException("error.issue.exportFieldIllegal");
+                }
+            });
+            fieldMap.put(FIELD_CODES, fieldCodes.stream().toArray(String[]::new));
+            fieldMap.put(FIELD_NAMES, fieldNames.stream().toArray(String[]::new));
+        } else {
+            fieldMap.put(FIELD_CODES, FIELDS);
+            fieldMap.put(FIELD_NAMES, FIELDS_NAME);
+        }
+        return fieldMap;
     }
 
     @Override

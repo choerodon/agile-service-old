@@ -7,11 +7,23 @@ import java.util.List;
  * @since 2019/2/25
  */
 public class PersonalFilterSearchOtherArgsDTO {
-    List<Long> sprint;
-    List<Long> version;
-    List<Long> component;
-    List<Long> epic;
-    List<Long> label;
+    private List<Long> sprint;
+    private List<Long> version;
+    private List<Long> component;
+    private List<Long> epic;
+    private List<Long> label;
+    /**
+     * 只用于未分配的经办人，即assigneeId=[0]
+     */
+    private List<Long> assigneeId;
+
+    public List<Long> getAssigneeId() {
+        return assigneeId;
+    }
+
+    public void setAssigneeId(List<Long> assigneeId) {
+        this.assigneeId = assigneeId;
+    }
 
     public List<Long> getVersion() {
         return version;
