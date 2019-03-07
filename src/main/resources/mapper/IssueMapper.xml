@@ -479,18 +479,16 @@
         </if>
         <if test='searchDTO.otherArgs != null'>
             <if test='searchDTO.otherArgs.assigneeId != null and searchDTO.otherArgs.assigneeId.size > 0'>
-                <choose>
-                    <when test="searchDTO.otherArgs.assigneeId.size == 1 and searchDTO.otherArgs.assigneeId[0]==0">
-                        AND (ai.assignee_id = #{searchDTO.otherArgs.assigneeId[0]} or ai.assignee_id is null)
-                    </when>
-                    <otherwise>
-                        and ai.assignee_id in
-                        <foreach collection="searchDTO.otherArgs.assigneeId" item="aId" open="(" separator=","
-                                 close=")">
-                            #{aId}
-                        </foreach>
-                    </otherwise>
-                </choose>
+                AND (
+                <if test='searchDTO.otherArgs.assigneeIdNull != null and searchDTO.otherArgs.assigneeIdNull == true'>
+                    (ai.assignee_id = 0 or ai.assignee_id is null) OR
+                </if>
+                ai.assignee_id in
+                <foreach collection="searchDTO.otherArgs.assigneeId" item="aId" open="(" separator=","
+                         close=")">
+                    #{aId}
+                </foreach>
+                )
             </if>
             <if test='searchDTO.otherArgs.statusId != null and searchDTO.otherArgs.statusId.size > 0'>
                 AND ai.status_id in
@@ -514,91 +512,80 @@
                 )
             </if>
             <if test='searchDTO.otherArgs.component != null and searchDTO.otherArgs.component.size > 0'>
-                <choose>
-                    <when test="searchDTO.otherArgs.component.size == 1 and searchDTO.otherArgs.component[0] == 0">
-                        and ai.issue_id in (SELECT ai12.issue_id from agile_issue ai12 left join
-                        agile_component_issue_rel acir2
-                        on ai12.issue_id = acir2.issue_id WHERE
-                        acir2.component_id is null )
-                    </when>
-                    <otherwise>
-                        and ai.issue_id in
-                        (SELECT acir2.issue_id FROM agile_component_issue_rel acir2 WHERE
-                        acir2.component_id in
-                        <foreach collection="searchDTO.otherArgs.component" item="id" open="(" separator=","
-                                 close=")">
-                            #{id}
-                        </foreach>
-                        )
-                    </otherwise>
-                </choose>
+                AND (
+                <if test='searchDTO.otherArgs.componentNull != null and searchDTO.otherArgs.componentNull == true'>
+                    ai.issue_id in (SELECT ai12.issue_id from agile_issue ai12 left join
+                    agile_component_issue_rel acir2
+                    on ai12.issue_id = acir2.issue_id WHERE
+                    acir2.component_id is null ) OR
+                </if>
+                ai.issue_id in
+                (SELECT acir2.issue_id FROM agile_component_issue_rel acir2 WHERE
+                acir2.component_id in
+                <foreach collection="searchDTO.otherArgs.component" item="id" open="(" separator=","
+                         close=")">
+                    #{id}
+                </foreach>
+                ))
             </if>
             <if test='searchDTO.otherArgs.fixVersion != null and searchDTO.otherArgs.fixVersion.size > 0'>
-                <choose>
-                    <when test="searchDTO.otherArgs.fixVersion.size == 1 and searchDTO.otherArgs.fixVersion[0] == 0">
-                        and ai.issue_id in (SELECT ai11.issue_id from agile_issue ai11 left join
-                        agile_version_issue_rel avir4
-                        on ai11.issue_id = avir4.issue_id and avir4.relation_type = 'fix' WHERE
-                        avir4.version_id is null )
-                    </when>
-                    <otherwise>
-                        and ai.issue_id in
-                        (SELECT avir4.issue_id FROM agile_version_issue_rel avir4 WHERE avir4.relation_type = 'fix' and
-                        avir4.version_id in
-                        <foreach collection="searchDTO.otherArgs.fixVersion" item="id" open="(" separator=","
-                                 close=")">
-                            #{id}
-                        </foreach>
-                        )
-                    </otherwise>
-                </choose>
+                AND (
+                <if test='searchDTO.otherArgs.versionNull != null and searchDTO.otherArgs.versionNull == true'>
+                    ai.issue_id in (SELECT ai11.issue_id from agile_issue ai11 left join
+                    agile_version_issue_rel avir4
+                    on ai11.issue_id = avir4.issue_id and avir4.relation_type = 'fix' WHERE
+                    avir4.version_id is null ) OR
+                </if>
+                ai.issue_id in
+                (SELECT avir4.issue_id FROM agile_version_issue_rel avir4 WHERE avir4.relation_type = 'fix' and
+                avir4.version_id in
+                <foreach collection="searchDTO.otherArgs.fixVersion" item="id" open="(" separator=","
+                         close=")">
+                    #{id}
+                </foreach>
+                ))
             </if>
             <if test='searchDTO.otherArgs.sprint != null and searchDTO.otherArgs.sprint.size > 0'>
-                <choose>
-                    <when test="searchDTO.otherArgs.sprint.size == 1 and searchDTO.otherArgs.sprint[0] == 0">
-                        and ai.issue_id in (SELECT ai10.issue_id from agile_issue ai10 left join
-                        agile_issue_sprint_rel aisr2
-                        on ai10.issue_id = aisr2.issue_id WHERE
-                        aisr2.sprint_id is null )
-                    </when>
-                    <otherwise>
-                        and ai.issue_id in
-                        (SELECT aisr2.issue_id FROM agile_issue_sprint_rel aisr2 WHERE
-                        aisr2.sprint_id in
-                        <foreach collection="searchDTO.otherArgs.sprint" item="id" open="(" separator=","
-                                 close=")">
-                            #{id}
-                        </foreach>
-                        )
-                    </otherwise>
-                </choose>
+                AND (
+                <if test='searchDTO.otherArgs.sprintNull != null and searchDTO.otherArgs.sprintNull == true'>
+                    ai.issue_id in (SELECT ai10.issue_id from agile_issue ai10 left join
+                    agile_issue_sprint_rel aisr2
+                    on ai10.issue_id = aisr2.issue_id WHERE
+                    aisr2.sprint_id is null ) OR
+                </if>
+                ai.issue_id in
+                (SELECT aisr2.issue_id FROM agile_issue_sprint_rel aisr2 WHERE
+                aisr2.sprint_id in
+                <foreach collection="searchDTO.otherArgs.sprint" item="id" open="(" separator=","
+                         close=")">
+                    #{id}
+                </foreach>
+                ))
             </if>
             <if test='searchDTO.otherArgs.epic != null and searchDTO.otherArgs.epic.size > 0'>
-                <choose>
-                    <when test="searchDTO.otherArgs.epic.size == 1 and searchDTO.otherArgs.epic[0] == 0">
-                        and (((ai.epic_id is null or ai.epic_id = 0) and ai.type_code != 'issue_epic' and ai.type_code
-                        != 'sub_task')
-                        or (ai.parent_issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id =
-                        ai.parent_issue_id and
-                        (ai7.epic_id is null or ai7.epic_id = 0) and ai.type_code = 'sub_task' )))
-                    </when>
-                    <otherwise>
-                        and ((ai.epic_id in
-                        <foreach collection="searchDTO.otherArgs.epic" item="id" open="(" separator=","
-                                 close=")">
-                            #{id}
-                        </foreach>
-                        and ai.type_code != 'sub_task')
-                        or (ai.parent_issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id =
-                        ai.parent_issue_id and
-                        ai7.epic_id in
-                        <foreach collection="searchDTO.otherArgs.epic" item="id" open="(" separator=","
-                                 close=")">
-                            #{id}
-                        </foreach>
-                        ) and ai.type_code = 'sub_task'))
-                    </otherwise>
-                </choose>
+                AND (
+                <if test='searchDTO.otherArgs.epicNull != null and searchDTO.otherArgs.epicNull == true'>
+                    (((ai.epic_id is null or ai.epic_id = 0) and ai.type_code != 'issue_epic' and ai.type_code
+                    != 'sub_task')
+                    or (ai.parent_issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id =
+                    ai.parent_issue_id and
+                    (ai7.epic_id is null or ai7.epic_id = 0) and ai.type_code = 'sub_task' ))) OR
+                </if>
+                ((ai.epic_id in
+                <foreach collection="searchDTO.otherArgs.epic" item="id" open="(" separator=","
+                         close=")">
+                    #{id}
+                </foreach>
+                and ai.type_code != 'sub_task' and ai.type_code != 'issue_epic')
+                or (ai.parent_issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id =
+                ai.parent_issue_id and
+                ai7.epic_id in
+                <foreach collection="searchDTO.otherArgs.epic" item="id" open="(" separator=","
+                         close=")">
+                    #{id}
+                </foreach>
+                ) and ai.type_code = 'sub_task'))
+                )
             </if>
             <if test='searchDTO.otherArgs.version != null and searchDTO.otherArgs.version.size > 0'>
                 AND ai.issue_id in ( SELECT avir3.issue_id FROM
@@ -609,21 +596,19 @@
                 </foreach>)
             </if>
             <if test='searchDTO.otherArgs.label != null and searchDTO.otherArgs.label.size > 0'>
-                <choose>
-                    <when test="searchDTO.otherArgs.label.size == 1 and searchDTO.otherArgs.label[0] == 0">
-                        and ai.issue_id in (SELECT ai13.issue_id from agile_issue ai13 left join
-                        agile_label_issue_rel alir2 on ai13.issue_id = alir2.issue_id WHERE
-                        alir2.label_id is null )
-                    </when>
-                    <otherwise>
-                        AND ai.issue_id in ( SELECT alir2.issue_id FROM
-                        agile_label_issue_rel alir2 WHERE alir2.label_id in
-                        <foreach collection="searchDTO.otherArgs.label" item="id" open="(" separator=","
-                                 close=")">
-                            #{id}
-                        </foreach>)
-                    </otherwise>
-                </choose>
+                AND (
+                <if test='searchDTO.otherArgs.labelNull != null and searchDTO.otherArgs.labelNull == true'>
+                    ai.issue_id in (SELECT ai13.issue_id from agile_issue ai13 left join
+                    agile_label_issue_rel alir2 on ai13.issue_id = alir2.issue_id WHERE
+                    alir2.label_id is null ) OR
+                </if>
+                ai.issue_id in ( SELECT alir2.issue_id FROM
+                agile_label_issue_rel alir2 WHERE alir2.label_id in
+                <foreach collection="searchDTO.otherArgs.label" item="id" open="(" separator=","
+                         close=")">
+                    #{id}
+                </foreach>)
+                )
             </if>
             <if test='searchDTO.otherArgs.issueIds != null and searchDTO.otherArgs.issueIds.size > 0'>
                 AND ai.issue_id in
