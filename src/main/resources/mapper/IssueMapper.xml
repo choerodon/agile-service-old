@@ -528,23 +528,6 @@
                 </foreach>
                 ))
             </if>
-            <if test='searchDTO.otherArgs.fixVersion != null and searchDTO.otherArgs.fixVersion.size > 0'>
-                AND (
-                <if test='searchDTO.otherArgs.versionNull != null and searchDTO.otherArgs.versionNull == true'>
-                    ai.issue_id in (SELECT ai11.issue_id from agile_issue ai11 left join
-                    agile_version_issue_rel avir4
-                    on ai11.issue_id = avir4.issue_id and avir4.relation_type = 'fix' WHERE
-                    avir4.version_id is null ) OR
-                </if>
-                ai.issue_id in
-                (SELECT avir4.issue_id FROM agile_version_issue_rel avir4 WHERE avir4.relation_type = 'fix' and
-                avir4.version_id in
-                <foreach collection="searchDTO.otherArgs.fixVersion" item="id" open="(" separator=","
-                         close=")">
-                    #{id}
-                </foreach>
-                ))
-            </if>
             <if test='searchDTO.otherArgs.sprint != null and searchDTO.otherArgs.sprint.size > 0'>
                 AND (
                 <if test='searchDTO.otherArgs.sprintNull != null and searchDTO.otherArgs.sprintNull == true'>
@@ -588,12 +571,20 @@
                 )
             </if>
             <if test='searchDTO.otherArgs.version != null and searchDTO.otherArgs.version.size > 0'>
-                AND ai.issue_id in ( SELECT avir3.issue_id FROM
+                AND (
+                <if test='searchDTO.otherArgs.versionNull != null and searchDTO.otherArgs.versionNull == true'>
+                    ai.issue_id in (SELECT ai31.issue_id from agile_issue ai31
+                    left join agile_version_issue_rel avir44
+                    on ai31.issue_id = avir44.issue_id
+                    WHERE avir44.version_id is null ) OR
+                </if>
+                ai.issue_id in ( SELECT avir3.issue_id FROM
                 agile_version_issue_rel avir3 WHERE avir3.version_id in
                 <foreach collection="searchDTO.otherArgs.version" item="id" open="(" separator=","
                          close=")">
                     #{id}
                 </foreach>)
+                )
             </if>
             <if test='searchDTO.otherArgs.label != null and searchDTO.otherArgs.label.size > 0'>
                 AND (
