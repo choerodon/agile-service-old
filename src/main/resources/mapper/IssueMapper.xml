@@ -271,6 +271,8 @@
         <id property="statusId" column="status_id"/>
         <id property="issueNum" column="issue_num"/>
         <id property="lastUpdateDate" column="issue_last_update_date"/>
+        <id property="remainingTime" column="remaining_time"/>
+        <id property="storyPoints" column="story_points"/>
         <collection property="versionIssueRelDOS" autoMapping="true"
                     ofType="io.choerodon.agile.infra.dataobject.VersionIssueRelDO">
             <id property="versionId" column="version_id"/>
@@ -338,7 +340,9 @@
         aic.name as component_name,
         acir.component_id,
         ail.label_name,
-        ail.label_id
+        ail.label_id,
+        ai.story_points,
+        ai.remaining_time
         FROM agile_issue ai
         left join agile_issue ai3 on ai.epic_id = ai3.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai3.color_code = alv2.value_code
@@ -390,6 +394,12 @@
         <if test='searchDTO.searchArgs != null'>
             <if test='searchDTO.searchArgs.summary != null and searchDTO.searchArgs.summary != "" '>
                 AND position(#{searchDTO.searchArgs.summary} IN ai.summary)
+            </if>
+            <if test='searchDTO.searchArgs.storyPoints != null and searchDTO.searchArgs.storyPoints != "" '>
+                AND position(#{searchDTO.searchArgs.storyPoints} IN ai.story_points)
+            </if>
+            <if test='searchDTO.searchArgs.remainingTime != null and searchDTO.searchArgs.remainingTime != "" '>
+                AND position(#{searchDTO.searchArgs.remainingTime} IN ai.remaining_time)
             </if>
         </if>
         <if test='searchDTO.onlyStory != null and searchDTO.onlyStory'>
