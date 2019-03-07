@@ -137,9 +137,13 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         if (targetVersionId != null && !Objects.equals(targetVersionId, 0L)) {
             List<VersionIssueDO> versionFixIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, FIX_RELATION_TYPE);
-            productVersionRepository.batchIssueToDestination(projectId, targetVersionId, versionFixIssues, new Date(), customUserDetails.getUserId());
+            if (versionFixIssues != null && !versionFixIssues.isEmpty()) {
+                productVersionRepository.batchIssueToDestination(projectId, targetVersionId, versionFixIssues, new Date(), customUserDetails.getUserId());
+            }
             List<VersionIssueDO> versionInfIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, INFLUENCE_RELATION_TYPE);
-            productVersionRepository.batchIssueToDestination(projectId, targetVersionId, versionInfIssues, new Date(), customUserDetails.getUserId());
+            if (versionInfIssues != null && !versionInfIssues.isEmpty()) {
+                productVersionRepository.batchIssueToDestination(projectId, targetVersionId, versionInfIssues, new Date(), customUserDetails.getUserId());
+            }
         }
         versionIssueRelRepository.deleteByVersionId(projectId, versionId);
         return simpleDeleteVersion(projectId, versionId);
