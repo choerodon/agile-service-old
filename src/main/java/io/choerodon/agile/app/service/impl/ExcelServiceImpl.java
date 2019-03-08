@@ -374,119 +374,111 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Async
     @Override
-    public void batchImport(Long projectId, Long organizationId, Long userId, Workbook workbook, SecurityContext context) {
-        try {
-            SecurityContextHolder.setContext(context);
-            LOGGER.info(SecurityContextHolder.getContextHolderStrategy().toString());
-            String status = DOING;
-            FileOperationHistoryE fileOperationHistoryE = fileOperationHistoryRepository.create(new FileOperationHistoryE(projectId, userId, UPLOAD_FILE, 0L, 0L, status));
-            sendProcess(fileOperationHistoryE, userId, 0.0);
-            Sheet sheet = workbook.getSheetAt(0);
-            if (sheet == null) {
-                throw new CommonException("error.sheet.empty");
-            }
-            // 获取所有非空行
-            Integer allRowCount = getRealRowCount(sheet);
-            // 查询组织下的优先级与问题类型
-            Map<String, IssueTypeDTO> issueTypeMap = new HashMap<>();
-            Map<String, Long> priorityMap = new HashMap<>();
-            List<String> issueTypeList = new ArrayList<>();
-            List<String> priorityList = new ArrayList<>();
-            setIssueTypeAndPriorityMap(organizationId, issueTypeMap, priorityMap, issueTypeList, priorityList);
-            Long failCount = 0L;
-            Long successcount = 0L;
-            Integer processNum = 0;
-            List<Integer> errorRows = new ArrayList<>();
-            Map<Integer, List<Integer>> errorMapList = new HashMap<>();
-            Map<String, Long> versionMap = new HashMap<>();
-            List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
-            List<String> versionList = new ArrayList<>();
-            for (ProductVersionCommonDO productVersionCommonDO : productVersionCommonDOList) {
-                versionMap.put(productVersionCommonDO.getName(), productVersionCommonDO.getVersionId());
-                versionList.add(productVersionCommonDO.getName());
-            }
-            List<Long> importedIssueIds = new ArrayList<>();
-            for (int r = 1; r <= allRowCount; r++) {
-                if (checkCanceled(projectId, fileOperationHistoryE.getId(), importedIssueIds)) {
-                    return;
-                }
-                Row row = sheet.getRow(r);
-                if (row == null || (((row.getCell(0) == null || row.getCell(0).toString().equals("") || row.getCell(0).getCellType() == XSSFCell.CELL_TYPE_BLANK)) &&
-                        (row.getCell(1) == null || row.getCell(1).toString().equals("") || row.getCell(1).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
-                        (row.getCell(2) == null || row.getCell(2).toString().equals("") || row.getCell(2).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
-                        (row.getCell(3) == null || row.getCell(3).toString().equals("") || row.getCell(3).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
-                        (row.getCell(4) == null || row.getCell(4).toString().equals("") || row.getCell(4).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
-                        (row.getCell(5) == null || row.getCell(5).toString().equals("") || row.getCell(5).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
-                        (row.getCell(6) == null || row.getCell(6).toString().equals("") || row.getCell(6).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
-                        (row.getCell(7) == null || row.getCell(7).toString().equals("") || row.getCell(7).getCellType() == XSSFCell.CELL_TYPE_BLANK))) {
-                    continue;
-                }
-                for (int w = 0; w < FIELDS.length; w++) {
-                    if (row.getCell(w) != null) {
-                        row.getCell(w).setCellType(XSSFCell.CELL_TYPE_STRING);
-                    }
-                }
-                Map errorMap = checkRule(projectId, row, issueTypeList, priorityList, versionList, issueTypeMap);
-                if (!errorMap.isEmpty()) {
-                    failCount++;
-                    Iterator<Map.Entry<Integer, String>> entries = errorMap.entrySet().iterator();
-                    while (entries.hasNext()) {
-                        Map.Entry<Integer, String> entry = entries.next();
-                        Integer key = entry.getKey();
-                        String value = entry.getValue();
-                        if (row.getCell(key) == null) {
-                            row.createCell(key).setCellValue("(" + value + ")");
-                        } else {
-                            row.getCell(key).setCellValue(row.getCell(key).toString() + " (" + value + ")");
-                        }
-
-                        List<Integer> cList = errorMapList.get(r);
-                        if (cList == null) {
-                            cList = new ArrayList<>();
-                        }
-                        cList.add(key);
-                        errorMapList.put(r, cList);
-                    }
-                    errorRows.add(row.getRowNum());
-                    fileOperationHistoryE.setFailCount(failCount);
-                    processNum++;
-                    sendProcess(fileOperationHistoryE, userId, processNum * 1.0 / allRowCount);
-                    continue;
-                }
-                IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
-
-                Boolean ok = setIssueCreateInfo(issueCreateDTO, projectId, row, issueTypeMap, priorityMap, versionMap, userId);
-                IssueDTO result = null;
-                if (ok) {
-                    result = stateMachineService.createIssue(issueCreateDTO, APPLY_TYPE_AGILE);
-                }
-                if (result == null) {
-                    failCount++;
-                    errorRows.add(row.getRowNum());
-                } else {
-                    importedIssueIds.add(result.getIssueId());
-                    successcount++;
-                }
-                processNum++;
-                fileOperationHistoryE.setFailCount(failCount);
-                fileOperationHistoryE.setSuccessCount(successcount);
-                sendProcess(fileOperationHistoryE, userId, processNum * 1.0 / allRowCount);
-            }
-            if (!errorRows.isEmpty()) {
-                LOGGER.info("导入数据有误");
-                Workbook result = ExcelUtil.generateExcelAwesome(workbook, errorRows, errorMapList, FIELDS_NAME, priorityList, issueTypeList, versionList, ConvertUtil.getName(projectId));
-                String errorWorkBookUrl = uploadErrorExcel(result);
-                fileOperationHistoryE.setFileUrl(errorWorkBookUrl);
-                status = FAILED;
-            } else {
-                status = SUCCESS;
-            }
-            updateFinalRecode(fileOperationHistoryE, successcount, failCount, status);
-        } catch (Exception e) {
-            LOGGER.info(e.getMessage());
-        }  finally {
-            SecurityContextHolder.clearContext();
+    public void batchImport(Long projectId, Long organizationId, Long userId, Workbook workbook) {
+        String status = DOING;
+        FileOperationHistoryE fileOperationHistoryE = fileOperationHistoryRepository.create(new FileOperationHistoryE(projectId, userId, UPLOAD_FILE, 0L, 0L, status));
+        sendProcess(fileOperationHistoryE, userId, 0.0);
+        Sheet sheet = workbook.getSheetAt(0);
+        if (sheet == null) {
+            throw new CommonException("error.sheet.empty");
         }
+        // 获取所有非空行
+        Integer allRowCount = getRealRowCount(sheet);
+        // 查询组织下的优先级与问题类型
+        Map<String, IssueTypeDTO> issueTypeMap = new HashMap<>();
+        Map<String, Long> priorityMap = new HashMap<>();
+        List<String> issueTypeList = new ArrayList<>();
+        List<String> priorityList = new ArrayList<>();
+        setIssueTypeAndPriorityMap(organizationId, issueTypeMap, priorityMap, issueTypeList, priorityList);
+        Long failCount = 0L;
+        Long successcount = 0L;
+        Integer processNum = 0;
+        List<Integer> errorRows = new ArrayList<>();
+        Map<Integer, List<Integer>> errorMapList = new HashMap<>();
+        Map<String, Long> versionMap = new HashMap<>();
+        List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
+        List<String> versionList = new ArrayList<>();
+        for (ProductVersionCommonDO productVersionCommonDO : productVersionCommonDOList) {
+            versionMap.put(productVersionCommonDO.getName(), productVersionCommonDO.getVersionId());
+            versionList.add(productVersionCommonDO.getName());
+        }
+        List<Long> importedIssueIds = new ArrayList<>();
+        for (int r = 1; r <= allRowCount; r++) {
+            if (checkCanceled(projectId, fileOperationHistoryE.getId(), importedIssueIds)) {
+                return;
+            }
+            Row row = sheet.getRow(r);
+            if (row == null || (((row.getCell(0) == null || row.getCell(0).toString().equals("") || row.getCell(0).getCellType() == XSSFCell.CELL_TYPE_BLANK)) &&
+                    (row.getCell(1) == null || row.getCell(1).toString().equals("") || row.getCell(1).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(2) == null || row.getCell(2).toString().equals("") || row.getCell(2).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(3) == null || row.getCell(3).toString().equals("") || row.getCell(3).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(4) == null || row.getCell(4).toString().equals("") || row.getCell(4).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(5) == null || row.getCell(5).toString().equals("") || row.getCell(5).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(6) == null || row.getCell(6).toString().equals("") || row.getCell(6).getCellType() == XSSFCell.CELL_TYPE_BLANK) &&
+                    (row.getCell(7) == null || row.getCell(7).toString().equals("") || row.getCell(7).getCellType() == XSSFCell.CELL_TYPE_BLANK))) {
+                continue;
+            }
+            for (int w = 0; w < FIELDS.length; w++) {
+                if (row.getCell(w) != null) {
+                    row.getCell(w).setCellType(XSSFCell.CELL_TYPE_STRING);
+                }
+            }
+            Map errorMap = checkRule(projectId, row, issueTypeList, priorityList, versionList, issueTypeMap);
+            if (!errorMap.isEmpty()) {
+                failCount++;
+                Iterator<Map.Entry<Integer, String>> entries = errorMap.entrySet().iterator();
+                while (entries.hasNext()) {
+                    Map.Entry<Integer, String> entry = entries.next();
+                    Integer key = entry.getKey();
+                    String value = entry.getValue();
+                    if (row.getCell(key) == null) {
+                        row.createCell(key).setCellValue("(" + value + ")");
+                    } else {
+                        row.getCell(key).setCellValue(row.getCell(key).toString() + " (" + value + ")");
+                    }
+
+                    List<Integer> cList = errorMapList.get(r);
+                    if (cList == null) {
+                        cList = new ArrayList<>();
+                    }
+                    cList.add(key);
+                    errorMapList.put(r, cList);
+                }
+                errorRows.add(row.getRowNum());
+                fileOperationHistoryE.setFailCount(failCount);
+                processNum++;
+                sendProcess(fileOperationHistoryE, userId, processNum * 1.0 / allRowCount);
+                continue;
+            }
+            IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
+
+            Boolean ok = setIssueCreateInfo(issueCreateDTO, projectId, row, issueTypeMap, priorityMap, versionMap, userId);
+            IssueDTO result = null;
+            if (ok) {
+                result = stateMachineService.createIssue(issueCreateDTO, APPLY_TYPE_AGILE);
+            }
+            if (result == null) {
+                failCount++;
+                errorRows.add(row.getRowNum());
+            } else {
+                importedIssueIds.add(result.getIssueId());
+                successcount++;
+            }
+            processNum++;
+            fileOperationHistoryE.setFailCount(failCount);
+            fileOperationHistoryE.setSuccessCount(successcount);
+            sendProcess(fileOperationHistoryE, userId, processNum * 1.0 / allRowCount);
+        }
+        if (!errorRows.isEmpty()) {
+            LOGGER.info("导入数据有误");
+            Workbook result = ExcelUtil.generateExcelAwesome(workbook, errorRows, errorMapList, FIELDS_NAME, priorityList, issueTypeList, versionList, ConvertUtil.getName(projectId));
+            String errorWorkBookUrl = uploadErrorExcel(result);
+            fileOperationHistoryE.setFileUrl(errorWorkBookUrl);
+            status = FAILED;
+        } else {
+            status = SUCCESS;
+        }
+        updateFinalRecode(fileOperationHistoryE, successcount, failCount, status);
     }
 
 

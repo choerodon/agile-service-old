@@ -15,7 +15,7 @@ public interface ExcelService {
 
     void download(Long projectId, Long organizationId, HttpServletRequest request, HttpServletResponse response);
 
-    void batchImport(Long projectId, Long organizationId, Long userId, Workbook workbook, SecurityContext context);
+    void batchImport(Long projectId, Long organizationId, Long userId, Workbook workbook);
 
     void cancelImport(Long projectId, Long id, Long objectVersionNumber);
 
