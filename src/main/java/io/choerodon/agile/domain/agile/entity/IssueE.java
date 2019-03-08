@@ -79,8 +79,6 @@ public class IssueE {
 
     private Boolean assigneerCondtiion;
 
-    private Long createdBy;
-
     public Boolean getAssigneerCondtiion() {
         return assigneerCondtiion;
     }
@@ -413,11 +411,4 @@ public class IssueE {
         return stayDate;
     }
 
-    public void setCreatedBy(Long createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Long getCreatedBy() {
-        return createdBy;
-    }
 }
