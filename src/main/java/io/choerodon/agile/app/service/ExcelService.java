@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.FileOperationHistoryDTO;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.security.core.context.SecurityContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +15,7 @@ public interface ExcelService {
 
     void download(Long projectId, Long organizationId, HttpServletRequest request, HttpServletResponse response);
 
-    void batchImport(Long projectId, Long organizationId, Long userId, Workbook workbook);
+    void batchImport(Long projectId, Long organizationId, Long userId, Workbook workbook, SecurityContext context);
 
     void cancelImport(Long projectId, Long id, Long objectVersionNumber);
 

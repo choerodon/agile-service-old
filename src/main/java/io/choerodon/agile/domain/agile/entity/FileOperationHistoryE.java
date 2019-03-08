@@ -37,6 +37,8 @@ public class FileOperationHistoryE {
 
     private Double process;
 
+    private Long createdBy;
+
     public Long getId() {
         return id;
     }
@@ -115,5 +117,13 @@ public class FileOperationHistoryE {
 
     public Long getUserId() {
         return userId;
+    }
+
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Long getCreatedBy() {
+        return createdBy;
     }
 }

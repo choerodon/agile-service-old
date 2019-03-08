@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,7 +55,7 @@ public class ExcelController {
                                       @RequestParam Long userId,
                                       @ApiParam(value = "导入文件", required = true)
                                       @RequestParam("file") MultipartFile file) {
-        excelService.batchImport(projectId, organizationId, userId, ExcelUtil.getWorkbookFromMultipartFile(ExcelUtil.Mode.XSSF, file));
+        excelService.batchImport(projectId, organizationId, userId, ExcelUtil.getWorkbookFromMultipartFile(ExcelUtil.Mode.XSSF, file), SecurityContextHolder.getContext());
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 

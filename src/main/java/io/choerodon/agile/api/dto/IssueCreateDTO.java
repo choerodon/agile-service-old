@@ -32,6 +32,8 @@ public class IssueCreateDTO {
 
     private Long issueTypeId;
 
+    private Long createdBy;
+
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
@@ -198,6 +200,14 @@ public class IssueCreateDTO {
 
     public Long getIssueTypeId() {
         return issueTypeId;
+    }
+
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Long getCreatedBy() {
+        return createdBy;
     }
 
     @Override
