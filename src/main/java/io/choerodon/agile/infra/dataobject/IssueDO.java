@@ -163,8 +163,6 @@ public class IssueDO extends AuditDomain {
 
     private Date stayDate;
 
-    private Long createdBy;
-
     public List<LabelIssueRelDO> getLabelIssueRelDOS() {
         return labelIssueRelDOS;
     }
@@ -475,16 +473,6 @@ public class IssueDO extends AuditDomain {
 
     public Date getStayDate() {
         return stayDate;
-    }
-
-    @Override
-    public void setCreatedBy(Long createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    @Override
-    public Long getCreatedBy() {
-        return createdBy;
     }
 
     @Override

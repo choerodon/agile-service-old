@@ -205,7 +205,6 @@ public class ExcelServiceImpl implements ExcelService {
         issueCreateDTO.setRemainingTime(remainTime);
         issueCreateDTO.setVersionIssueRelDTOList(versionIssueRelDTOList);
         issueCreateDTO.setReporterId(userId);
-        issueCreateDTO.setCreatedBy(userId);
         return true;
     }
 
