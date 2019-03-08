@@ -186,7 +186,9 @@ public class ExcelServiceImpl implements ExcelService {
         String typeCode = issueTypeMap.get(typeName).getTypeCode();
         issueCreateDTO.setProjectId(projectId);
         issueCreateDTO.setSummary(summary);
-        issueCreateDTO.setDescription("[{\"insert\":\"" + description + "\\n\"}]");
+        if (description != null) {
+            issueCreateDTO.setDescription("[{\"insert\":\"" + description + "\\n\"}]");
+        }
         issueCreateDTO.setPriorityCode("priority" + priorityMap.get(priorityName));
         issueCreateDTO.setPriorityId(priorityMap.get(priorityName));
         issueCreateDTO.setIssueTypeId(issueTypeMap.get(typeName).getId());
@@ -375,6 +377,7 @@ public class ExcelServiceImpl implements ExcelService {
     public void batchImport(Long projectId, Long organizationId, Long userId, Workbook workbook, SecurityContext context) {
         try {
             SecurityContextHolder.setContext(context);
+            LOGGER.info(SecurityContextHolder.getContextHolderStrategy().toString());
             String status = DOING;
             FileOperationHistoryE fileOperationHistoryE = fileOperationHistoryRepository.create(new FileOperationHistoryE(projectId, userId, UPLOAD_FILE, 0L, 0L, status));
             sendProcess(fileOperationHistoryE, userId, 0.0);
