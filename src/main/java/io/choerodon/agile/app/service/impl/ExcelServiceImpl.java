@@ -20,9 +20,7 @@ import io.choerodon.agile.infra.mapper.ProductVersionMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
-import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,17 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.util.*;
-
-import static org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/2/25.
@@ -64,6 +57,14 @@ public class ExcelServiceImpl implements ExcelService {
     private static final String WEBSOCKET_IMPORT_CODE = "agile-import-issues";
     private static final String STORY = "story";
     private static final String ISSUE_EPIC = "issue_epic";
+    private static final String FILE_NAME = "error.xlsx";
+    private static final String EXCEL_NAME = "error";
+    private static final String ORIGINAL_FILE_NAME = ".xlsx";
+    private static final String VERSION_PLANNING = "version_planning";
+    private static final String HIDDEN_PRIORITY = "hidden_priority";
+    private static final String HIDDEN_ISSUE_TYPE = "hidden_issue_type";
+    private static final String HIDDEN_FIX_VERSION = "hidden_fix_version";
+    private static final String RELATION_TYPE_FIX = "fix";
 
     @Autowired
     private StateMachineService stateMachineService;
@@ -110,7 +111,7 @@ public class ExcelServiceImpl implements ExcelService {
         }
         List<String> versionList = new ArrayList<>();
         for (ProductVersionCommonDO productVersionCommonDO : productVersionCommonDOList) {
-            if ("version_planning".equals(productVersionCommonDO.getStatusCode())) {
+            if (VERSION_PLANNING.equals(productVersionCommonDO.getStatusCode())) {
                 versionList.add(productVersionCommonDO.getName());
             }
         }
@@ -129,10 +130,10 @@ public class ExcelServiceImpl implements ExcelService {
         CatalogExcelUtil.initCell(row.createCell(7), style, FIELDS_NAME[7]);
 
         try {
-            wb = ExcelUtil.dropDownList2007(wb, sheet, priorityList, 1, 500, 2, 2, "hidden_priority", 1);
-            wb = ExcelUtil.dropDownList2007(wb, sheet, issueTypeList, 1, 500, 3, 3, "hidden_issue_type", 2);
+            wb = ExcelUtil.dropDownList2007(wb, sheet, priorityList, 1, 500, 2, 2, HIDDEN_PRIORITY, 1);
+            wb = ExcelUtil.dropDownList2007(wb, sheet, issueTypeList, 1, 500, 3, 3, HIDDEN_ISSUE_TYPE, 2);
             if (!versionList.isEmpty()) {
-                wb = ExcelUtil.dropDownList2007(wb, sheet, versionList, 1, 500, 6, 6, "hidden_fix_version", 3);
+                wb = ExcelUtil.dropDownList2007(wb, sheet, versionList, 1, 500, 6, 6, HIDDEN_FIX_VERSION, 3);
             }
 //            FileOutputStream stream = new FileOutputStream("/Users/huangfuqiang/Downloads/success10.xlsx");
             wb.write(response.getOutputStream());
@@ -180,7 +181,7 @@ public class ExcelServiceImpl implements ExcelService {
             versionIssueRelDTOList = new ArrayList<>();
             VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
             versionIssueRelDTO.setVersionId(versionMap.get(versionName));
-            versionIssueRelDTO.setRelationType("fix");
+            versionIssueRelDTO.setRelationType(RELATION_TYPE_FIX);
             versionIssueRelDTOList.add(versionIssueRelDTO);
         }
         String typeCode = issueTypeMap.get(typeName).getTypeCode();
@@ -242,7 +243,7 @@ public class ExcelServiceImpl implements ExcelService {
 
     private String uploadErrorExcel(Workbook errorWorkbook) {
         // 上传错误的excel
-        ResponseEntity<String> response =  fileFeignClient.uploadFile(BACKETNAME, "error.xlsx", new MultipartExcelUtil("file", ".xlsx", errorWorkbook));
+        ResponseEntity<String> response =  fileFeignClient.uploadFile(BACKETNAME, FILE_NAME, new MultipartExcelUtil(EXCEL_NAME, ORIGINAL_FILE_NAME, errorWorkbook));
         if (response == null || response.getStatusCode() != HttpStatus.OK) {
             throw new CommonException("error.errorWorkbook.upload");
         }
@@ -324,7 +325,7 @@ public class ExcelServiceImpl implements ExcelService {
         // check epic name
         if (!(row.getCell(3) == null || row.getCell(3).toString().equals("") || row.getCell(3).getCellType() == XSSFCell.CELL_TYPE_BLANK)
                 && issueTypeList.contains(row.getCell(3).toString())
-                && "issue_epic".equals(issueTypeMap.get(row.getCell(3).toString()).getTypeCode())) {
+                && ISSUE_EPIC.equals(issueTypeMap.get(row.getCell(3).toString()).getTypeCode())) {
             if (row.getCell(7)==null || row.getCell(7).toString().equals("") || row.getCell(7).getCellType() == XSSFCell.CELL_TYPE_BLANK) {
                 errorMessage.put(7, "史诗名称不能为空");
             } else {
