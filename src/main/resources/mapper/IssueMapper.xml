@@ -2199,6 +2199,14 @@
             <if test='otherArgs.summary != null and otherArgs.summary != ""'>
                 AND position(#{otherArgs.summary} IN ai.summary)
             </if>
+            <if test='otherArgs.label != null and searchDTO.otherArgs.label.size > 0'>
+                AND ai.issue_id in ( SELECT alir2.issue_id FROM
+                agile_label_issue_rel alir2 WHERE alir2.label_id in
+                <foreach collection="otherArgs.label" item="id" open="(" separator=","
+                         close=")">
+                    #{id}
+                </foreach>)
+            </if>
         </if>
     </select>
 
