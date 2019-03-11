@@ -58,7 +58,7 @@ public class ExcelServiceImpl implements ExcelService {
     private static final String STORY = "story";
     private static final String ISSUE_EPIC = "issue_epic";
     private static final String FILE_NAME = "error.xlsx";
-    private static final String EXCEL_NAME = "error";
+    private static final String MULTIPART_NAME = "file";
     private static final String ORIGINAL_FILE_NAME = ".xlsx";
     private static final String VERSION_PLANNING = "version_planning";
     private static final String HIDDEN_PRIORITY = "hidden_priority";
@@ -243,7 +243,7 @@ public class ExcelServiceImpl implements ExcelService {
 
     private String uploadErrorExcel(Workbook errorWorkbook) {
         // 上传错误的excel
-        ResponseEntity<String> response =  fileFeignClient.uploadFile(BACKETNAME, FILE_NAME, new MultipartExcelUtil(EXCEL_NAME, ORIGINAL_FILE_NAME, errorWorkbook));
+        ResponseEntity<String> response =  fileFeignClient.uploadFile(BACKETNAME, FILE_NAME, new MultipartExcelUtil(MULTIPART_NAME, ORIGINAL_FILE_NAME, errorWorkbook));
         if (response == null || response.getStatusCode() != HttpStatus.OK) {
             throw new CommonException("error.errorWorkbook.upload");
         }
