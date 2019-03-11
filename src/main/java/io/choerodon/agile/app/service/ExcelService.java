@@ -2,7 +2,6 @@ package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.FileOperationHistoryDTO;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.springframework.security.core.context.SecurityContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
