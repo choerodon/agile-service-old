@@ -43,6 +43,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     private static final String TODO_CODE = "todo";
     private static final String DOING_CODE = "doing";
     private static final String DONE_CODE = "done";
+    private static final String PREPARE_CODE = "prepare";
     private static final Integer POSITION = 0;
     private static final Integer SEQUENCE_ONE = 0;
     private static final Integer SEQUENCE_TWO = 1;
@@ -229,6 +230,9 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         column.setCategoryCode(categoryCode);
         column.setSequence(sequence);
         switch (categoryCode) {
+            case PREPARE_CODE:
+                column.setColorCode(COLUMN_COLOR_NO_STATUS);
+                break;
             case TODO_CODE:
                 column.setColorCode(COLUMN_COLOR_TODO);
                 break;
@@ -336,6 +340,14 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     public BoardColumnDTO updateColumnContraint(Long projectId, Long columnId, ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO) {
         BoardColumnValidator.checkUpdateColumnContraint(projectId, columnId, columnWithMaxMinNumDTO);
         return ConvertHelper.convert(boardColumnRepository.updateMaxAndMinNum(columnWithMaxMinNumDTO), BoardColumnDTO.class);
+    }
+
+    @Override
+    public void initBoardColumnsByProgram(Long projectId, Long boardId, List<StatusPayload> statusPayloads) {
+        Integer sequence = 0;
+        for (StatusPayload statusPayload : statusPayloads) {
+            initColumnWithStatus(projectId, boardId, statusPayload.getStatusName(), statusPayload.getType(), statusPayload.getStatusId(), sequence++);
+        }
     }
 
 }

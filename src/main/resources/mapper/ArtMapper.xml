@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.choerodon.agile.infra.mapper.ArtMapper">
+
+    <select id="selectArtList" resultType="io.choerodon.agile.infra.dataobject.ArtDO">
+        select
+          aa.id,
+          aa.name,
+          aa.is_enabled as enabled,
+          aa.start_date,
+          aa.program_id,
+          aa.object_version_number
+        from agile_art aa
+        where aa.program_id = #{programId}
+    </select>
+
+    <select id="selectActiveArt" resultType="io.choerodon.agile.infra.dataobject.ArtDO">
+        select *
+        from agile_art
+        where is_enabled = 1
+        and program_id = #{programId}
+    </select>
+
+
+</mapper>

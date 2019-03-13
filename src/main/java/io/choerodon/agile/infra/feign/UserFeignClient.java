@@ -72,5 +72,8 @@ public interface UserFeignClient {
 
     @GetMapping(value = "/v1/organizations/{organization_id}")
     ResponseEntity<OrganizationDTO> query(@PathVariable(name = "organization_id") Long id);
+
+    @GetMapping(value = "/v1/project_relation/{parent_id}")
+    ResponseEntity<List<ProjectRelationshipDTO>> getProjUnderGroup(@PathVariable(name = "parent_id") Long id);
 }
 

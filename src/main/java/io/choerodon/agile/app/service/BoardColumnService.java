@@ -30,4 +30,6 @@ public interface BoardColumnService {
 
     BoardColumnDTO updateColumnContraint(Long projectId, Long columnId, ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO);
 
+    void initBoardColumnsByProgram(Long projectId, Long boardId, List<StatusPayload> statusPayloads);
+
 }

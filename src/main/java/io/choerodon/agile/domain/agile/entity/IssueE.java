@@ -89,6 +89,16 @@ public class IssueE {
 
     private Date stayDate;
 
+    private Long featureId;
+
+    private Date startDate;
+
+    private Date endDate;
+
+    private Long programId;
+
+    private Long piId;
+
     public Integer getEpicSequence() {
         return epicSequence;
     }
@@ -370,6 +380,10 @@ public class IssueE {
         return Objects.equals(this.applyType, SchemeApplyType.AGILE) && !Objects.equals(this.typeCode, ISSUE_EPIC);
     }
 
+    public Boolean isProgramRank() {
+        return Objects.equals(this.applyType, SchemeApplyType.PROGRAM) && !Objects.equals(this.typeCode, ISSUE_EPIC);
+    }
+
     public Boolean isIssueMapRank() {
         return Objects.equals(this.applyType, SchemeApplyType.AGILE) && !Objects.equals(this.typeCode, ISSUE_EPIC) && !Objects.equals(this.typeCode, SUB_TASK);
     }
@@ -411,4 +425,43 @@ public class IssueE {
         return stayDate;
     }
 
+    public Long getFeatureId() {
+        return featureId;
+    }
+
+    public void setFeatureId(Long featureId) {
+        this.featureId = featureId;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public Long getProgramId() {
+        return programId;
+    }
+
+    public void setProgramId(Long programId) {
+        this.programId = programId;
+    }
+
+    public void setPiId(Long piId) {
+        this.piId = piId;
+    }
+
+    public Long getPiId() {
+        return piId;
+    }
 }

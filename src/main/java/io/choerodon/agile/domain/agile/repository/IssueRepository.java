@@ -1,5 +1,6 @@
 package io.choerodon.agile.domain.agile.repository;
 
+import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
 import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
@@ -67,9 +68,13 @@ public interface IssueRepository {
 
     int batchUpdateIssueRank(Long projectId, List<MoveIssueDO> moveIssueDOS);
 
+    int batchUpdateFeatureRank(Long projectId, List<MoveIssueDO> moveIssueDOS);
+
     int batchUpdateMapIssueRank(Long projectId, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS);
 
     int removeIssueFromSprintByIssueIds(BatchRemoveSprintE batchRemoveSprintE);
+
+    int removeFeatureFromPiByIssueIds(BatchRemovePiE batchRemovePiE);
 
     int deleteIssueFromSprintByIssueId(Long projectId, Long issueId);
 
@@ -87,6 +92,8 @@ public interface IssueRepository {
     IssueE updateSelective(IssueE issueE);
 
     int issueToDestinationByIdsCloseSprint(Long projectId, Long targetSprintId, List<Long> issueIds, Date date, Long userId);
+
+    int featureToDestinationByIdsClosePi(Long programId, Long targetPiId, List<Long> issueIds, Date date, Long userId);
 
     /**
      * 【内部调用】状态机方案变更后批量更新issue的状态匹配
@@ -111,5 +118,9 @@ public interface IssueRepository {
      * @param projectIds
      */
     void batchUpdateIssuePriority(Long organizationId, Long priorityId, Long changePriorityId, Long userId, List<Long> projectIds);
+
+    void batchFeatureToPi(Long programId, Long piId, List<Long> issueIds, Date date, Long userId);
+
+    void batchFeatureToEpic(Long programId, Long epicId, List<Long> featureIds);
 
 }

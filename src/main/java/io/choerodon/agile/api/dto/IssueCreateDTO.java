@@ -3,6 +3,7 @@ package io.choerodon.agile.api.dto;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,6 +48,16 @@ public class IssueCreateDTO {
     private String epicName;
 
     private BigDecimal storyPoints;
+
+    private Long featureId;
+
+    private Date startDate;
+
+    private Date endDate;
+
+    private Long programId;
+
+    private Long piId;
 
     public List<IssueLinkCreateDTO> getIssueLinkCreateDTOList() {
         return issueLinkCreateDTOList;
@@ -198,6 +209,46 @@ public class IssueCreateDTO {
 
     public Long getIssueTypeId() {
         return issueTypeId;
+    }
+
+    public Long getFeatureId() {
+        return featureId;
+    }
+
+    public void setFeatureId(Long featureId) {
+        this.featureId = featureId;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public Long getProgramId() {
+        return programId;
+    }
+
+    public void setProgramId(Long programId) {
+        this.programId = programId;
+    }
+
+    public void setPiId(Long piId) {
+        this.piId = piId;
+    }
+
+    public Long getPiId() {
+        return piId;
     }
 
     @Override

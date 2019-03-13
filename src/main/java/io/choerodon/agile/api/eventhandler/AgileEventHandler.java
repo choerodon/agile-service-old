@@ -63,6 +63,10 @@ public class AgileEventHandler {
     private static final String AGILE_CONSUME_DEPLOY_STATE_MACHINE_SCHEME = "agile-consume-deploy-statemachine-scheme";
     private static final String DEPLOY_STATE_MACHINE = "deploy-state-machine";
     private static final String DEPLOY_STATE_MACHINE_SCHEME = "deploy-state-machine-scheme";
+    private static final String PROGRAM_CREATE_STATE_MACHINE = "program-create-state-machine";
+    private static final String STATE_MACHINE_INIT_PROGRAM = "state-machine-init-program";
+    private static final String PROJECT_CATEGORY_AGILE = "AGILE";
+    private static final String PROJECT_CATEGORY_PROGRAM = "PROGRAM";
 
     /**
      * 创建项目事件
@@ -75,8 +79,12 @@ public class AgileEventHandler {
             seq = 2)
     public String handleProjectInitByConsumeSagaTask(String message) {
         ProjectEvent projectEvent = JSONObject.parseObject(message, ProjectEvent.class);
-        projectInfoService.initializationProjectInfo(projectEvent);
-        issueLinkTypeService.initIssueLinkType(projectEvent.getProjectId());
+        if (PROJECT_CATEGORY_AGILE.equals(projectEvent.getProjectCategory())) {
+            projectInfoService.initializationProjectInfo(projectEvent);
+            issueLinkTypeService.initIssueLinkType(projectEvent.getProjectId());
+        } else if (PROJECT_CATEGORY_PROGRAM.equals(projectEvent.getProjectCategory())) {
+            projectInfoService.initializationProjectInfo(projectEvent);
+        }
         LOGGER.info("接受项目创建消息{}", message);
         return message;
     }
@@ -185,6 +193,19 @@ public class AgileEventHandler {
             boardColumnRepository.batchDeleteColumnAndStatusRel(deployUpdateIssue.getRemoveStatusWithProjects());
         }
         issueFeignClient.updateDeployProgress(deployUpdateIssue.getOrganizationId(), deployUpdateIssue.getSchemeId(), 100);
+        return message;
+    }
+
+    @SagaTask(code = STATE_MACHINE_INIT_PROGRAM,
+            description = "状态机服务初始化状态后，消费项目群",
+            sagaCode = PROGRAM_CREATE_STATE_MACHINE,
+            seq = 3)
+    public String dealStateMachineInitProgram(String message) {
+        ProjectCreateAgilePayload projectCreateAgilePayload = JSONObject.parseObject(message, ProjectCreateAgilePayload.class);
+        ProjectEvent projectEvent = projectCreateAgilePayload.getProjectEvent();
+        List<StatusPayload> statusPayloads = projectCreateAgilePayload.getStatusPayloads();
+        boardService.initBoardByProgram(projectEvent.getProjectId(), projectEvent.getProjectName() + BOARD, statusPayloads);
+        LOGGER.info("项目群创建接受接收状态服务消息{}", message);
         return message;
     }
 

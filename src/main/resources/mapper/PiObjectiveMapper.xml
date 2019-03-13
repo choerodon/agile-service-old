@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.choerodon.agile.infra.mapper.PiObjectiveMapper">
+
+    <select id="selectPiObjectiveList" resultType="io.choerodon.agile.infra.dataobject.PiObjectiveDO">
+        select *
+        from agile_pi_objective apo
+        where apo.program_id = #{programId}
+        and apo.pi_id = #{piId}
+        order by apo.id desc
+    </select>
+
+</mapper>

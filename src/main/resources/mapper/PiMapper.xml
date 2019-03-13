@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.choerodon.agile.infra.mapper.PiMapper">
+
+    <select id="hasPiIssue" resultType="java.lang.Boolean">
+        select CASE COUNT(1) WHEN 0 THEN FALSE ELSE TRUE END
+        from agile_issue ai
+        where ai.program_id = #{programId} AND ai.type_code = 'feature' and ai.apply_type = 'program'
+        and ai.issue_id
+        <choose>
+            <when test="piId != null and piId != 0">
+                in (SELECT
+                    apf.issue_id
+                    FROM
+                    agile_pi_feature apf,
+                    agile_pi ap
+                    WHERE
+                    apf.program_id = #{programId}
+                    AND apf.pi_id = ap.id
+                    AND ap.status_code != 'done'
+                    AND apf.pi_id = #{piId})
+            </when>
+            <otherwise>
+                not in (SELECT
+                    apf.issue_id
+                    FROM
+                    agile_pi_feature apf,
+                    agile_pi ap
+                    WHERE
+                    apf.program_id = #{programId}
+                    AND apf.pi_id = ap.id
+                    AND ap.status_code != 'done' )
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="queryPiMaxRank" resultType="java.lang.String">
+        select MAX(ai.rank) from agile_issue ai
+        where ai.program_id = #{programId} AND ai.type_code = 'feature' and ai.apply_type = 'program'
+        and ai.issue_id
+        <choose>
+            <when test="piId != null and piId != 0">
+                in (SELECT
+                apf.issue_id
+                FROM
+                agile_pi_feature apf,
+                agile_pi ap
+                WHERE
+                apf.program_id = #{programId}
+                AND apf.pi_id = ap.id
+                AND ap.status_code != 'done'
+                AND apf.pi_id = #{piId})
+            </when>
+            <otherwise>
+                not in (SELECT
+                apf.issue_id
+                FROM
+                agile_pi_feature apf,
+                agile_pi ap
+                WHERE
+                apf.program_id = #{programId}
+                AND apf.pi_id = ap.id
+                AND ap.status_code != 'done' )
+            </otherwise>
+        </choose>
+    </select>
+
+    <resultMap id="programPiMap" type="io.choerodon.agile.infra.dataobject.PiWithFeatureDO">
+        <id property="id" column="pi_id"/>
+        <id property="name" column="pi_name"/>
+        <id property="statusCode" column="pi_status_code"/>
+        <id property="startDate" column="pi_start_date"/>
+        <id property="endDate" column="pi_end_date"/>
+        <collection property="subFeatureDOList" autoMapping="true" columnPrefix="ai_"
+                    ofType="io.choerodon.agile.infra.dataobject.SubFeatureDO"/>
+    </resultMap>
+
+    <select id="selectBacklogPiList" resultMap="programPiMap">
+        SELECT
+            ap.id as pi_id,
+            CONCAT_WS( '-', ap.CODE, ap.NAME ) AS pi_name,
+            ap.status_code as pi_status_code,
+            ap.start_date as pi_start_date,
+            ap.end_date as pi_end_date,
+            ai.issue_id as ai_issue_id,
+            ai.issue_num as ai_issue_num,
+            ai.summary as ai_summary,
+            ais.name as ai_status_name,
+            ai.story_points as ai_story_points,
+            ai.issue_type_id as ai_issue_type_id,
+            ai.type_code as ai_type_code,
+            ai.rank as ai_rank,
+            ai.object_version_number as ai_object_version_number
+        FROM
+            agile_pi ap
+            LEFT JOIN agile_pi_feature apf ON ap.id = apf.pi_id AND apf.program_id = #{programId}
+            LEFT JOIN agile_issue ai ON apf.issue_id = ai.issue_id
+            LEFT JOIN agile_issue_status ais ON ai.status_id = ais.status_id and ais.project_id = #{programId}
+        WHERE
+            ap.program_id = #{programId}
+            AND ap.art_id = #{artId}
+            and ap.status_code != 'done'
+            order by ap.creation_date desc
+    </select>
+
+    <select id="selectBacklogNoPiList" resultType="io.choerodon.agile.infra.dataobject.SubFeatureDO">
+        SELECT
+            ai.issue_id,
+            ai.issue_num,
+            ai.summary,
+            ais.name AS ai_status_name,
+            ai.story_points,
+            ai.issue_type_id,
+            ai.type_code,
+            ai.rank,
+            ai.object_version_number
+        FROM
+            agile_issue ai
+        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.status_id and ais.project_id = #{programId}
+        WHERE
+            ai.program_id = #{programId}
+            AND ai.issue_id NOT IN (
+              SELECT apf.issue_id
+              FROM agile_pi_feature apf
+              WHERE apf.program_id = #{programId} )
+    </select>
+
+    <select id="selectFeatureIdByFeatureIds" resultType="io.choerodon.agile.infra.dataobject.SubFeatureDO">
+        SELECT
+            ai.issue_id,
+            ai.issue_num,
+            ai.summary,
+            ais.NAME AS ai_status_name,
+            ai.story_points,
+            ai.issue_type_id,
+            ai.type_code,
+            ai.rank,
+            ai.object_version_number,
+            pi_rel.pi_id
+        FROM
+          agile_issue ai
+        left join (
+           select issue_id, pi_id
+           from agile_pi_feature apf, agile_pi ap
+           where apf.pi_id = ap.id and ap.status_code != 'done'
+        ) pi_rel on pi_rel.issue_id = ai.issue_id
+        WHERE
+          ai.program_id = #{programId}
+        and ai.issue_id in
+        <foreach collection="featureIds" item="featureId" open="("
+                 separator="," close=")">
+            #{featureId}
+        </foreach>
+    </select>
+
+    <select id="selectLastPi" resultType="io.choerodon.agile.infra.dataobject.PiDO">
+        select *
+        from agile_pi
+        where program_id = #{programId}
+        and art_id = #{artId}
+        order by id desc
+        limit 1
+    </select>
+
+    <select id="selectPiList" resultType="io.choerodon.agile.infra.dataobject.PiDO">
+        select *
+        from agile_pi
+        where program_id = #{programId}
+    </select>
+
+    <select id="queryFeatureIdOrderByRankDesc" resultType="java.lang.Long">
+        SELECT ai.issue_id
+        FROM agile_issue ai, agile_issue_status ais, agile_pi_feature apf
+        WHERE ai.program_id = #{programId} AND apf.issue_id = ai.issue_id AND apf.pi_id = #{piId}
+        AND ai.type_code = 'feature'
+        AND ai.status_id = ais.status_id and ai.project_id = ais.project_id AND ais.is_completed != 1
+        ORDER BY rank DESC
+    </select>
+
+    <select id="queryFeatureIds" resultType="java.lang.Long">
+        SELECT ai.issue_id
+        FROM agile_issue ai, agile_issue_status ais, agile_pi_feature apf
+        WHERE ai.program_id = #{programId} AND apf.issue_id = ai.issue_id AND apf.pi_id = #{piId}
+        AND ai.type_code = 'feature'
+        AND ai.status_id = ais.status_id and ai.project_id = ais.project_id AND ais.is_completed != 1
+    </select>
+
+    <select id="queryPiMinRank" resultType="java.lang.String">
+        select MIN(ai.rank) from agile_issue ai
+        where ai.program_id = #{programId} AND ai.type_code = 'feature' and ai.apply_type = 'program'
+        and ai.issue_id
+        <choose>
+            <when test="piId != null and piId != 0">
+                in (SELECT
+                apf.issue_id
+                FROM
+                agile_pi_feature apf,
+                agile_pi ap
+                WHERE
+                apf.program_id = #{programId}
+                AND apf.pi_id = ap.id
+                AND ap.status_code != 'done'
+                AND apf.pi_id = #{piId})
+            </when>
+            <otherwise>
+                not in (SELECT
+                apf.issue_id
+                FROM
+                agile_pi_feature apf,
+                agile_pi ap
+                WHERE
+                apf.program_id = #{programId}
+                AND apf.pi_id = ap.id
+                AND ap.status_code != 'done' )
+            </otherwise>
+        </choose>
+    </select>
+
+
+</mapper>

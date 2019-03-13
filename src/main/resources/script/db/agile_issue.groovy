@@ -155,4 +155,13 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue.groovy') {
         modifyDataType(tableName: 'agile_issue', columnName: 'estimate_time', newDataType: "DECIMAL(10,1)")
         modifyDataType(tableName: 'agile_issue', columnName: 'remaining_time', newDataType: "DECIMAL(10,1)")
     }
+
+    changeSet(id: '2019-03-12-add-column-program', author: 'fuqianghuang01@gmail.com') {
+        addColumn(tableName: 'agile_issue') {
+            column(name: 'feature_id', type: 'BIGINT UNSIGNED', remarks: 'feature id')
+            column(name: 'start_date', type: 'DATETIME', remarks: 'start date')
+            column(name: 'end_date', type: 'DATETIME', remarks: 'end date')
+            column(name: 'program_id', type: 'BIGINT UNSIGNED', remarks: 'program id')
+        }
+    }
 }

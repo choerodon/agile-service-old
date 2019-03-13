@@ -50,4 +50,6 @@ public interface BoardService {
     UserSettingDTO updateUserSettingBoard(Long projectId, Long boardId, String swimlaneBasedCode);
 
     Boolean checkName(Long projectId, String boardName);
+
+    void initBoardByProgram(Long projectId, String boardName, List<StatusPayload> statusPayloads);
 }
