@@ -3,6 +3,9 @@ package script.db
 databaseChangeLog(logicalFilePath: 'agile_feature.groovy') {
     changeSet(id: '2019-03-11-agile-feature', author: 'fuqianghuang01@gmail.com') {
         createTable(tableName: "agile_feature") {
+            column(name: 'id', type: 'BIGINT UNSIGNED', autoIncrement: true, remarks: 'id') {
+                constraints(primaryKey: true)
+            }
             column(name: 'issue_id', type: 'BIGINT UNSIGNED', remarks: 'issue id')
             column(name: 'project_id', type: 'BIGINT UNSIGNED', remarks: 'project id')
             column(name: 'benfit_hypothesis', type: 'VARCHAR(255)', remarks: 'benfit hypothesis')

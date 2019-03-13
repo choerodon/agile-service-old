@@ -1,24 +1,11 @@
-package io.choerodon.agile.infra.dataobject;
-
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+package io.choerodon.agile.api.dto;
 
 /**
- * Created by HuangFuqiang@choerodon.io on 2019/3/11.
+ * Created by HuangFuqiang@choerodon.io on 2019/3/13.
  * Email: fuqianghuang01@gmail.com
  */
-@VersionAudit
-@ModifyAudit
-@Table(name = "agile_feature")
-public class FeatureDO extends AuditDomain {
+public class FeatureDTO {
 
-    @Id
-    @GeneratedValue
     private Long id;
 
     private Long issueId;
@@ -47,12 +34,12 @@ public class FeatureDO extends AuditDomain {
         this.issueId = issueId;
     }
 
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
-    }
-
     public Long getProjectId() {
         return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 
     public String getBenfitHypothesis() {
@@ -63,12 +50,12 @@ public class FeatureDO extends AuditDomain {
         this.benfitHypothesis = benfitHypothesis;
     }
 
-    public String getAcceptanceCritera() {
-        return acceptanceCritera;
-    }
-
     public void setAcceptanceCritera(String acceptanceCritera) {
         this.acceptanceCritera = acceptanceCritera;
+    }
+
+    public String getAcceptanceCritera() {
+        return acceptanceCritera;
     }
 
     public String getFeatureType() {
