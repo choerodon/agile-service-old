@@ -43,4 +43,10 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_sprint.groovy') {
             column(name: 'duration')
         }
     }
+
+    changeSet(id: '2019-03-13-add-column-pi-id', author: 'fuqianghuang01@gmail.com') {
+        addColumn(tableName: 'agile_sprint') {
+            column(name: 'pi_id', type: 'BIGINT UNSIGNED', remarks: 'pi id')
+        }
+    }
 }

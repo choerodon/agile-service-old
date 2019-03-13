@@ -29,6 +29,7 @@ public class SprintDO extends AuditDomain {
     private String statusCode;
     @NotNull
     private Long projectId;
+    private Long piId;
 
     public Long getSprintId() {
         return sprintId;
@@ -92,5 +93,13 @@ public class SprintDO extends AuditDomain {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    public void setPiId(Long piId) {
+        this.piId = piId;
+    }
+
+    public Long getPiId() {
+        return piId;
     }
 }

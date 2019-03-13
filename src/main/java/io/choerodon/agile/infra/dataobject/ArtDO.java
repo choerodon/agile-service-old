@@ -48,7 +48,7 @@ public class ArtDO extends AuditDomain {
 
     private Long interationCount;
 
-    private Long interationWorkdays;
+    private Long interationWeeks;
 
     private Long programId;
 
@@ -156,12 +156,12 @@ public class ArtDO extends AuditDomain {
         this.interationCount = interationCount;
     }
 
-    public Long getInterationWorkdays() {
-        return interationWorkdays;
+    public void setInterationWeeks(Long interationWeeks) {
+        this.interationWeeks = interationWeeks;
     }
 
-    public void setInterationWorkdays(Long interationWorkdays) {
-        this.interationWorkdays = interationWorkdays;
+    public Long getInterationWeeks() {
+        return interationWeeks;
     }
 
     public Long getProgramId() {

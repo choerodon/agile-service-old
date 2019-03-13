@@ -19,6 +19,7 @@ public class SprintE {
     private String statusCode;
     private Long projectId;
     private Long objectVersionNumber;
+    private Long piId;
 
     private static final String STATUS_SPRINT_PLANNING_CODE = "sprint_planning";
     private static final String STATUS_STARTED_CODE = "started";
@@ -96,6 +97,14 @@ public class SprintE {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public void setPiId(Long piId) {
+        this.piId = piId;
+    }
+
+    public Long getPiId() {
+        return piId;
     }
 
     public void createSprint(ProjectInfoDO project) {

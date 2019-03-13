@@ -86,6 +86,20 @@ public class PiServiceImpl implements PiService {
         return Integer.parseInt(sdf.format(date));
     }
 
+    private Date formatDate(Date date) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        Date res = null;
+        Date d = c.getTime();
+        try {
+            res = format.parse(format.format(d));
+        } catch (Exception e) {
+            throw new CommonException(e.getMessage());
+        }
+        return res;
+    }
+
     private Date getSpecifyTimeByOneTime(Date date, int amount) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Calendar c = Calendar.getInstance();
@@ -165,20 +179,23 @@ public class PiServiceImpl implements PiService {
     private Long getPiWorkDays(ArtDO artDO) {
         Long ipWorkdays = artDO.getIpWorkdays();
         Long interationCount = artDO.getInterationCount();
-        Long interationWorkdays = artDO.getInterationWorkdays();
-        return interationCount * interationWorkdays + ipWorkdays;
+        Long interationWeeks = artDO.getInterationWeeks();
+        return interationCount * interationWeeks * 7 + ipWorkdays;
     }
 
     private void setPiStartAndEndDate(Long programId, Long artId, PiE piE, Long piWorkDays) {
         PiDO lastPi = piMapper.selectLastPi(programId, artId);
-        List<Date> workDates = null;
+        Date startDate = null;
+        Date endDate = null;
         if (lastPi == null) {
-            workDates = getWorkDaysAfter(new Date(), piWorkDays, true);
+            startDate = formatDate(new Date());
+            endDate = getSpecifyTimeByOneTime(new Date(), piWorkDays.intValue());
         } else {
-            workDates = getWorkDaysAfter(lastPi.getEndDate(), piWorkDays, false);
+            startDate = formatDate(lastPi.getEndDate());
+            endDate = getSpecifyTimeByOneTime(lastPi.getEndDate(), piWorkDays.intValue());
         }
-        piE.setStartDate(workDates.get(0));
-        piE.setEndDate(workDates.get(workDates.size() - 1));
+        piE.setStartDate(startDate);
+        piE.setEndDate(endDate);
     }
 
     @Override
@@ -245,14 +262,14 @@ public class PiServiceImpl implements PiService {
         return dtoPage;
     }
 
-    private void createSprintWhenStartPi(Long programId, Long artId) {
+    private void createSprintWhenStartPi(Long programId, Long artId, Long piId) {
         ArtDO artDO = artMapper.selectByPrimaryKey(artId);
         Long interationCount = artDO.getInterationCount();
         List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(programId).getBody();
         for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
             Long projectId = projectRelationshipDTO.getProjectId();
             for (int i = 0; i < interationCount; i++) {
-                sprintService.createSprint(projectId);
+                sprintService.createSprint(projectId, piId);
             }
         }
     }
@@ -261,7 +278,7 @@ public class PiServiceImpl implements PiService {
     public PiDTO startPi(Long programId, PiDTO piDTO) {
         piValidator.checkPiStart(piDTO);
         // create sprint in each project
-        createSprintWhenStartPi(programId, piDTO.getArtId());
+        createSprintWhenStartPi(programId, piDTO.getArtId(), piDTO.getId());
         // update pi status: doing
         PiE piE = new PiE();
         piE.setProgramId(programId);

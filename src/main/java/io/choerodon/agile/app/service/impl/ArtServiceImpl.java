@@ -40,12 +40,16 @@ public class ArtServiceImpl implements ArtService {
     private PiService piService;
 
     @Override
-    public ArtDTO createArt(Long ProgramId, ArtDTO artDTO) {
+    public ArtDTO createArt(Long programId, ArtDTO artDTO) {
+        if (!artValidator.checkHasArt(programId)) {
+            throw new CommonException("error.art.areadyExist");
+        }
         return ConvertHelper.convert(artRepository.create(ConvertHelper.convert(artDTO, ArtE.class)), ArtDTO.class);
     }
 
     @Override
-    public ArtDTO updateArt(Long ProgramId, ArtDTO artDTO) {
+    public ArtDTO updateArt(Long programId, ArtDTO artDTO) {
+        artValidator.checkArtUpdate(programId, artDTO);
         return ConvertHelper.convert(artRepository.updateBySelective(ConvertHelper.convert(artDTO, ArtE.class)), ArtDTO.class);
     }
 
@@ -81,10 +85,6 @@ public class ArtServiceImpl implements ArtService {
 
     @Override
     public ArtDTO releaseArt(Long programId, Long artId, Long piNumber) {
-        // check art exist
-        if (!artValidator.checkArtExistAndEbaled(programId, artId)) {
-            throw new CommonException("error.art.existOrEnabled");
-        }
         // auto create pi with piNumber
         ArtDO artDO = artMapper.selectByPrimaryKey(artId);
         piService.createPi(programId, piNumber, artDO);
