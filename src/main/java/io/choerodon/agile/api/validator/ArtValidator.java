@@ -44,14 +44,31 @@ public class ArtValidator {
         return true;
     }
 
-    public Boolean checkHasArt(Long programId) {
+    public void checkHasArt(Long programId) {
         ArtDO artDO = new ArtDO();
         artDO.setProgramId(programId);
         List<ArtDO> res = artMapper.select(artDO);
         if (res != null && !res.isEmpty()) {
-            return false;
+            throw new CommonException("error.art.areadyExist");
         }
-        return true;
+    }
+
+    public void checkArtCreate(ArtDTO artDTO) {
+        if (artDTO.getEnabled() == null) {
+            throw new CommonException("error.enabled.null");
+        }
+        if (artDTO.getCode() == null) {
+            throw new CommonException("error.code.null");
+        }
+        if (artDTO.getName() == null) {
+            throw new CommonException("error.name.null");
+        }
+        if (artDTO.getStartDate() == null) {
+            throw new CommonException("error.startDate.null");
+        }
+        if (artDTO.getProgramId() == null) {
+            throw new CommonException("error.programId.null");
+        }
     }
 
     public void checkArtUpdate(Long programId, ArtDTO artDTO) {
@@ -61,7 +78,7 @@ public class ArtValidator {
         if (artDTO.getObjectVersionNumber() == null) {
             throw new CommonException("error.objectVersionNumber.null");
         }
-        if (artDTO.getEnabled()) {
+        if (artDTO.getEnabled() != null && artDTO.getEnabled()) {
             ArtDO artDO = artMapper.selectByPrimaryKey(artDTO.getId());
             if (artDTO.getEnabled().compareTo(artDO.getEnabled()) == 0) {
                 return;
