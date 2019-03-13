@@ -6,6 +6,8 @@ package io.choerodon.agile.domain.agile.entity;
  */
 public class FeatureE {
 
+    private Long id;
+
     private Long issueId;
 
     private Long projectId;
@@ -15,6 +17,14 @@ public class FeatureE {
     private String acceptanceCritera;
 
     private String featureType;
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
 
     public Long getIssueId() {
         return issueId;

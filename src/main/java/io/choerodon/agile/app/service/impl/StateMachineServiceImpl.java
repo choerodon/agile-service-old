@@ -6,12 +6,14 @@ import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
+import io.choerodon.agile.domain.agile.entity.FeatureE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.domain.agile.event.CreateIssuePayload;
 import io.choerodon.agile.domain.agile.event.CreateSubIssuePayload;
 import io.choerodon.agile.domain.agile.event.ProjectConfig;
 import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue;
+import io.choerodon.agile.domain.agile.repository.FeatureRepository;
 import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
@@ -83,6 +85,8 @@ public class StateMachineServiceImpl implements StateMachineService {
     private StateMachineClient stateMachineClient;
     @Autowired
     private StateMachineFeignClient stateMachineFeignClient;
+    @Autowired
+    private FeatureRepository featureRepository;
 
     /**
      * 创建issue，用于敏捷和测试
@@ -123,6 +127,14 @@ public class StateMachineServiceImpl implements StateMachineService {
         issueE.setApplyType(applyType);
         issueService.handleInitIssue(issueE, initStatusId, projectInfoE);
         Long issueId = issueRepository.create(issueE).getIssueId();
+
+        // if issueType is feature, create extends table
+        if ("program".equals(applyType) && "feature".equals(issueCreateDTO.getTypeCode())) {
+            FeatureDTO featureDTO = issueCreateDTO.getFeatureDTO();
+            featureDTO.setIssueId(issueId);
+            featureDTO.setProjectId(issueCreateDTO.getProjectId());
+            featureRepository.create(ConvertHelper.convert(featureDTO, FeatureE.class));
+        }
 
         CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE);
         InputDTO inputDTO = new InputDTO(issueId, JSON.toJSONString(createIssuePayload));

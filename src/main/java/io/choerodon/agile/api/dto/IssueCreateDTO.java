@@ -59,6 +59,8 @@ public class IssueCreateDTO {
 
     private Long piId;
 
+    private FeatureDTO featureDTO;
+
     public List<IssueLinkCreateDTO> getIssueLinkCreateDTOList() {
         return issueLinkCreateDTOList;
     }
@@ -249,6 +251,14 @@ public class IssueCreateDTO {
 
     public Long getPiId() {
         return piId;
+    }
+
+    public void setFeatureDTO(FeatureDTO featureDTO) {
+        this.featureDTO = featureDTO;
+    }
+
+    public FeatureDTO getFeatureDTO() {
+        return featureDTO;
     }
 
     @Override
