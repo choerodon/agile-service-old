@@ -41,9 +41,8 @@ public class ArtServiceImpl implements ArtService {
 
     @Override
     public ArtDTO createArt(Long programId, ArtDTO artDTO) {
-        if (!artValidator.checkHasArt(programId)) {
-            throw new CommonException("error.art.areadyExist");
-        }
+        artValidator.checkHasArt(programId);
+        artValidator.checkArtCreate(artDTO);
         return ConvertHelper.convert(artRepository.create(ConvertHelper.convert(artDTO, ArtE.class)), ArtDTO.class);
     }
 
