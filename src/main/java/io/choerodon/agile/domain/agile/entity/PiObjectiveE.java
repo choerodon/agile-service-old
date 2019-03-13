@@ -10,8 +10,6 @@ public class PiObjectiveE {
 
     private String name;
 
-    private String description;
-
     private Long planBv;
 
     private Long actualBv;
@@ -42,14 +40,6 @@ public class PiObjectiveE {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public Long getPlanBv() {

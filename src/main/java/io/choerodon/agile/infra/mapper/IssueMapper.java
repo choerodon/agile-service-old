@@ -503,7 +503,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<IssueDO> queryIssuesByPriorityId(@Param("priorityId") Long priorityId, @Param("projectIds") List<Long> projectIds);
 
-    void batchFeatureToPi(@Param("programId") Long projectId, @Param("piId") Long piId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date, @Param("userId") Long userId);
+    void batchFeatureToPi(@Param("programId") Long programId, @Param("piId") Long piId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date, @Param("userId") Long userId);
 
     void batchFeatureToEpic(@Param("programId") Long programId, @Param("epicId") Long epicId, @Param("featureIds") List<Long> featureIds);
 }

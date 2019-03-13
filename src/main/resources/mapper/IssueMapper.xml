@@ -963,9 +963,9 @@
         UPDATE agile_issue
         SET epic_id = #{epicId}
         WHERE program_id = #{programId} AND issue_id IN
-        <foreach collection="issueIds" item="issueId" open="("
+        <foreach collection="featureIds" item="featureId" open="("
                  separator="," close=")">
-            #{issueId}
+            #{featureId}
         </foreach>
     </update>
 
@@ -994,7 +994,7 @@
                 </foreach>
             </trim>
         </trim>
-        WHERE programId = #{programId} AND issue_id IN
+        WHERE program_id = #{programId} AND issue_id IN
         <foreach collection="moveIssues" item="moveIssue" open="("
                  separator="," close=")">
             #{moveIssue.issueId,jdbcType=BIGINT}
@@ -1377,7 +1377,7 @@
     </delete>
 
     <delete id="removeFeatureFromPiByIssueIds">
-        DELETE FROM agile_pi_feature WHERE EXISTS (SELECT 0 FROM agile_pi ap WHERE ap.pi_id =
+        DELETE FROM agile_pi_feature WHERE EXISTS (SELECT 0 FROM agile_pi ap WHERE ap.id =
         agile_pi_feature.pi_id AND ap.status_code != 'done' ) and agile_pi_feature.program_id =
         #{programId}
         AND agile_pi_feature.issue_id IN
@@ -1413,7 +1413,7 @@
 
     <insert id="batchFeatureToPi">
         INSERT IGNORE INTO agile_pi_feature
-        (issue_id, pi_id, programId, creation_date, last_update_date, created_by, last_updated_by) VALUES
+        (issue_id, pi_id, program_id, creation_date, last_update_date, created_by, last_updated_by) VALUES
         <foreach collection="issueIds" item="issueId" index="index"
                  separator=",">
             (#{issueId}, #{piId}, #{programId}, #{date}, #{date}, #{userId}, #{userId})

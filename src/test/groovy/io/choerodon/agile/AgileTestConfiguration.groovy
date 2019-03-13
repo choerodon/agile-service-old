@@ -242,6 +242,7 @@ class AgileTestConfiguration {
         projectEvent.setProjectId(1L)
         projectEvent.setProjectCode("AGILE")
         projectEvent.setProjectName("agile")
+        projectEvent.setProjectCategory("AGILE")
 
         String data = JSON.toJSONString(projectEvent)
         agileEventHandler.handleProjectInitByConsumeSagaTask(data)
