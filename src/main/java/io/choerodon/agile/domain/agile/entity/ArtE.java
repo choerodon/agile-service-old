@@ -23,6 +23,8 @@ public class ArtE {
 
     private String name;
 
+    private String description;
+
     private String seqNumber;
 
     private Boolean enabled;
@@ -69,6 +71,14 @@ public class ArtE {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public String getSeqNumber() {

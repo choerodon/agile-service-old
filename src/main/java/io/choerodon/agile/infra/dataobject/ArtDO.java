@@ -27,6 +27,8 @@ public class ArtDO extends AuditDomain {
 
     private String name;
 
+    private String description;
+
     private String seqNumber;
 
     @Column(name = "is_enabled")
@@ -72,6 +74,14 @@ public class ArtDO extends AuditDomain {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public String getSeqNumber() {

@@ -130,7 +130,7 @@
             ai.issue_id,
             ai.issue_num,
             ai.summary,
-            ais.NAME AS ai_status_name,
+            ais.name AS ai_status_name,
             ai.story_points,
             ai.issue_type_id,
             ai.type_code,
@@ -139,6 +139,7 @@
             pi_rel.pi_id
         FROM
           agile_issue ai
+        left join agile_issue_status ais on ai.status_id = ais.status_id and ais.project_id = #{programId}
         left join (
            select issue_id, pi_id
            from agile_pi_feature apf, agile_pi ap
