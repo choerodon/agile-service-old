@@ -18,7 +18,7 @@ databaseChangeLog(logicalFilePath: 'agile_art.groovy') {
             column(name: 'pi_code_prefix', type: 'VARCHAR(255)', remarks: 'pi code prefix')
             column(name: 'pi_code_number', type: 'BIGINT UNSIGNED', remarks: 'pi code number')
             column(name: 'interation_count', type: 'BIGINT UNSIGNED', remarks: 'interation count')
-            column(name: 'interation_workdays', type: 'BIGINT UNSIGNED', remarks: 'interation workdays')
+            column(name: 'interation_weeks', type: 'BIGINT UNSIGNED', remarks: 'interation weeks')
             column(name: 'program_id', type: 'BIGINT UNSIGNED', remarks: 'program id')
 
             column(name: "object_version_number", type: "BIGINT UNSIGNED", defaultValue: "1")

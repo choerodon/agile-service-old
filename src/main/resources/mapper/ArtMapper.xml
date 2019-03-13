@@ -5,6 +5,7 @@
     <select id="selectArtList" resultType="io.choerodon.agile.infra.dataobject.ArtDO">
         select
           aa.id,
+          aa.code,
           aa.name,
           aa.is_enabled as enabled,
           aa.start_date,

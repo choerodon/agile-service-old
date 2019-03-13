@@ -53,8 +53,10 @@ public class SprintController {
     @ApiOperation(value = "创建冲刺")
     @PostMapping
     public ResponseEntity<SprintDetailDTO> createSprint(@ApiParam(value = "项目id", required = true)
-                                                        @PathVariable(name = "project_id") Long projectId) {
-        return Optional.ofNullable(sprintService.createSprint(projectId))
+                                                        @PathVariable(name = "project_id") Long projectId,
+                                                        @ApiParam(value = "pi id", required = false)
+                                                        @RequestParam(required = false) Long piId) {
+        return Optional.ofNullable(sprintService.createSprint(projectId, piId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException(CREATE_ERROR));
     }

@@ -13,7 +13,8 @@ import java.util.Map;
  * Created by jian_zhang02@163.com on 2018/5/15.
  */
 public interface SprintService {
-    SprintDetailDTO createSprint(Long projectId);
+
+    SprintDetailDTO createSprint(Long projectId, Long piId);
 
     SprintDetailDTO updateSprint(Long projectId, SprintUpdateDTO sprintUpdateDTO);
 

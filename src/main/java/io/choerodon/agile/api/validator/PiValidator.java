@@ -16,6 +16,9 @@ public class PiValidator {
     public static final String PI_DONE = "done";
 
     public void checkPiStart(PiDTO piDTO) {
+        if (piDTO.getId() == null) {
+            throw new CommonException("error.piId.null");
+        }
         if (piDTO.getArtId() == null) {
             throw new CommonException("error.artId.null");
         }
