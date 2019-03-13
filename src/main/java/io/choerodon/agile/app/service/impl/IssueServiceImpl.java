@@ -236,6 +236,8 @@ public class IssueServiceImpl implements IssueService {
     private IssueLinkAssembler issueLinkAssembler;
     @Autowired
     private IssueLinkRule issueLinkRule;
+    @Autowired
+    private PiMapper piMapper;
 
 
     @Override
@@ -274,10 +276,23 @@ public class IssueServiceImpl implements IssueService {
         if (issueE.isIssueRank()) {
             calculationRank(issueE.getProjectId(), issueE);
         }
+        // 初始化feature排序
+        if (issueE.isProgramRank()) {
+            calculationProgramRank(issueE);
+        }
         if (issueE.isIssueMapRank()) {
             calculationMapRank(issueE);
         }
         issueRule.verifyStoryPoints(issueE);
+    }
+
+    private void calculationProgramRank(IssueE issueE) {
+        if (piMapper.hasPiIssue(issueE.getProgramId(), issueE.getPiId())) {
+            String rank = piMapper.queryPiMaxRank(issueE.getProgramId(), issueE.getPiId());
+            issueE.setRank(RankUtil.genNext(rank));
+        } else {
+            issueE.setRank(RankUtil.mid());
+        }
     }
 
     private void calculationMapRank(IssueE issueE) {

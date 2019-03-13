@@ -16,4 +16,8 @@ public class SchemeApplyType {
      * 测试方案
      */
     public static final String TEST = "test";
+    /**
+     * 项目群方案
+     */
+    public static final String PROGRAM = "program";
 }

@@ -959,6 +959,16 @@
         </foreach>
     </update>
 
+    <update id="batchFeatureToEpic">
+        UPDATE agile_issue
+        SET epic_id = #{epicId}
+        WHERE program_id = #{programId} AND issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+    </update>
+
     <update id="batchUpdateIssueRank">
         UPDATE agile_issue
         <trim prefix="set" suffixOverrides=",">
@@ -969,6 +979,22 @@
             </trim>
         </trim>
         WHERE project_id = #{projectId} AND issue_id IN
+        <foreach collection="moveIssues" item="moveIssue" open="("
+                 separator="," close=")">
+            #{moveIssue.issueId,jdbcType=BIGINT}
+        </foreach>
+    </update>
+
+    <update id="batchUpdateFeatureRank">
+        UPDATE agile_issue
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="rank =case" suffix="end,">
+                <foreach collection="moveIssues" item="moveIssue">
+                    when issue_id = #{moveIssue.issueId} then #{moveIssue.rank}
+                </foreach>
+            </trim>
+        </trim>
+        WHERE programId = #{programId} AND issue_id IN
         <foreach collection="moveIssues" item="moveIssue" open="("
                  separator="," close=")">
             #{moveIssue.issueId,jdbcType=BIGINT}
@@ -1132,10 +1158,32 @@
         ORDER BY rank DESC
     </select>
 
+    <select id="queryFeatureIdOrderByRankDesc" resultType="java.lang.Long">
+        SELECT issue_id
+        FROM agile_issue
+        WHERE program_id = #{programId} AND issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+        ORDER BY rank DESC
+    </select>
+
     <select id="queryIssueIdOrderByRankAsc" resultType="java.lang.Long">
         SELECT issue_id
         FROM agile_issue
         WHERE project_id = #{projectId} AND issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+        ORDER BY rank ASC
+    </select>
+
+    <select id="queryFeatureIdOrderByRankAsc" resultType="java.lang.Long">
+        SELECT issue_id
+        FROM agile_issue
+        WHERE program_id = #{programId} AND issue_id IN
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
             #{issueId}
@@ -1211,6 +1259,74 @@
         )
     </select>
 
+    <select id="queryLeftRankByProgram" resultType="java.lang.String">
+        SELECT
+        MAX(ai.rank)
+        FROM
+        agile_issue ai
+        WHERE
+        ai.programId = #{programId}
+        AND ai.type_code = 'feature'
+        AND ai.rank &lt; #{rightRank}
+        AND ai.issue_id
+        <choose>
+            <when test="piId != null and piId != 0">
+                IN
+            </when>
+            <otherwise>
+                NOT IN
+            </otherwise>
+        </choose>
+        (
+        SELECT
+        apf.issue_id
+        FROM
+        agile_pi_feature apf,
+        agile_pi ap
+        WHERE
+        apf.program_id = #{programId}
+        AND apf.pi_id = ap.id
+        AND ap.status_code != 'done'
+        <if test="piId != null and piId != 0">
+            AND apf.piId = #{piId}
+        </if>
+        )
+    </select>
+
+    <select id="queryRightRankByProgram" resultType="java.lang.String">
+        SELECT
+        MAX(ai.rank)
+        FROM
+        agile_issue ai
+        WHERE
+        ai.programId = #{programId}
+        AND ai.type_code = 'feature'
+        AND ai.rank > #{leftRank}
+        AND ai.issue_id
+        <choose>
+            <when test="piId != null and piId != 0">
+                IN
+            </when>
+            <otherwise>
+                NOT IN
+            </otherwise>
+        </choose>
+        (
+        SELECT
+        apf.issue_id
+        FROM
+        agile_pi_feature apf,
+        agile_pi ap
+        WHERE
+        apf.program_id = #{programId}
+        AND apf.pi_id = ap.id
+        AND ap.status_code != 'done'
+        <if test="piId != null and piId != 0">
+            AND apf.piId = #{piId}
+        </if>
+        )
+    </select>
+
     <select id="queryRank" resultType="java.lang.String">
         SELECT
         ai.rank
@@ -1218,6 +1334,16 @@
         agile_issue ai
         WHERE
         ai.project_id = #{projectId}
+        AND ai.issue_id = #{outsetIssueId}
+    </select>
+
+    <select id="queryRankByProgram" resultType="java.lang.String">
+        SELECT
+        ai.rank
+        FROM
+        agile_issue ai
+        WHERE
+        ai.program_id = #{programId}
         AND ai.issue_id = #{outsetIssueId}
     </select>
 
@@ -1250,6 +1376,17 @@
         </foreach>
     </delete>
 
+    <delete id="removeFeatureFromPiByIssueIds">
+        DELETE FROM agile_pi_feature WHERE EXISTS (SELECT 0 FROM agile_pi ap WHERE ap.pi_id =
+        agile_pi_feature.pi_id AND ap.status_code != 'done' ) and agile_pi_feature.program_id =
+        #{programId}
+        AND agile_pi_feature.issue_id IN
+        <foreach collection="issueIds" item="issueId"
+                 open="(" separator="," close=")">
+            #{issueId}
+        </foreach>
+    </delete>
+
     <delete id="deleteIssueFromSprintByIssueId">
         DELETE
         FROM agile_issue_sprint_rel
@@ -1262,6 +1399,24 @@
         <foreach collection="issueIds" item="issueId" index="index"
                  separator=",">
             (#{issueId}, #{sprintId}, #{projectId}, #{date}, #{date}, #{userId}, #{userId})
+        </foreach>
+    </insert>
+
+    <insert id="featureToDestinationByIdsClosePi">
+        INSERT IGNORE INTO agile_pi_feature
+        (issue_id, pi_id, programId, creation_date, last_update_date, created_by, last_updated_by) VALUES
+        <foreach collection="issueIds" item="issueId" index="index"
+                 separator=",">
+            (#{issueId}, #{piId}, #{programId}, #{date}, #{date}, #{userId}, #{userId})
+        </foreach>
+    </insert>
+
+    <insert id="batchFeatureToPi">
+        INSERT IGNORE INTO agile_pi_feature
+        (issue_id, pi_id, programId, creation_date, last_update_date, created_by, last_updated_by) VALUES
+        <foreach collection="issueIds" item="issueId" index="index"
+                 separator=",">
+            (#{issueId}, #{piId}, #{programId}, #{date}, #{date}, #{userId}, #{userId})
         </foreach>
     </insert>
 

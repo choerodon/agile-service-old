@@ -22,6 +22,8 @@ public class ProjectEvent {
 
     private Long userId;
 
+    private String projectCategory;
+
     private List<String> roleLabels;
 
     public Long getProjectId() {
@@ -86,5 +88,13 @@ public class ProjectEvent {
 
     public void setRoleLabels(List<String> roleLabels) {
         this.roleLabels = roleLabels;
+    }
+
+    public void setProjectCategory(String projectCategory) {
+        this.projectCategory = projectCategory;
+    }
+
+    public String getProjectCategory() {
+        return projectCategory;
     }
 }

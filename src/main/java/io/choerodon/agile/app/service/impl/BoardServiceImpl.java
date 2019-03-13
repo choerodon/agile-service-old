@@ -648,4 +648,10 @@ public class BoardServiceImpl implements BoardService {
         List<BoardDO> boardDOList = boardMapper.select(boardDO);
         return boardDOList != null && !boardDOList.isEmpty();
     }
+
+    @Override
+    public void initBoardByProgram(Long projectId, String boardName, List<StatusPayload> statusPayloads) {
+        BoardE boardResult = createBoard(projectId, boardName);
+        boardColumnService.initBoardColumnsByProgram(projectId, boardResult.getBoardId(), statusPayloads);
+    }
 }

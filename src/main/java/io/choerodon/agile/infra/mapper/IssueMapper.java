@@ -51,9 +51,19 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     String queryRank(@Param("projectId") Long projectId, @Param("outsetIssueId") Long outsetIssueId);
 
+    String queryRankByProgram(@Param("programId") Long programId, @Param("outsetIssueId") Long outsetIssueId);
+
+    String queryLeftRankByProgram(@Param("programId") Long programId, @Param("piId") Long piId, @Param("rightRank") String rightRank);
+
+    String queryRightRankByProgram(@Param("programId") Long programId, @Param("piId") Long piId, @Param("leftRank") String leftRank);
+
     List<Long> queryIssueIdOrderByRankDesc(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
+    List<Long> queryFeatureIdOrderByRankDesc(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
+
     List<Long> queryIssueIdOrderByRankAsc(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
+    List<Long> queryFeatureIdOrderByRankAsc(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     String queryRightRank(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("leftRank") String leftRank);
 
@@ -95,13 +105,19 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     int issueToDestinationByIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date, @Param("userId") Long userId);
 
+    int featureToDestinationByIdsClosePi(@Param("programId") Long projectId, @Param("piId") Long piId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date, @Param("userId") Long userId);
+
     int batchUpdateIssueRank(@Param("projectId") Long projectId, @Param("moveIssues") List<MoveIssueDO> moveIssues);
+
+    int batchUpdateFeatureRank(@Param("programId") Long programId, @Param("moveIssues") List<MoveIssueDO> moveIssues);
 
     int batchUpdateMapIssueRank(@Param("projectId") Long projectId, @Param("storyMapMoveIssueDOS") List<StoryMapMoveIssueDO> storyMapMoveIssueDOS);
 
     List<Long> querySubIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     int removeIssueFromSprintByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
+    int removeFeatureFromPiByIssueIds(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
 
     List<Long> querySubIssueIdsByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
@@ -486,4 +502,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     void batchUpdateIssuePriority(@Param("priorityId") Long priorityId, @Param("changePriorityId") Long changePriorityId, @Param("userId") Long userId, @Param("projectIds") List<Long> projectIds);
 
     List<IssueDO> queryIssuesByPriorityId(@Param("priorityId") Long priorityId, @Param("projectIds") List<Long> projectIds);
+
+    void batchFeatureToPi(@Param("programId") Long projectId, @Param("piId") Long piId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date, @Param("userId") Long userId);
+
+    void batchFeatureToEpic(@Param("programId") Long programId, @Param("epicId") Long epicId, @Param("featureIds") List<Long> featureIds);
 }

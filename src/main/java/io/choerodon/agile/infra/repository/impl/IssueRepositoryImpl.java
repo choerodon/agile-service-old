@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
 import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
@@ -131,6 +132,11 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
+    public int batchUpdateFeatureRank(Long programId, List<MoveIssueDO> moveIssues) {
+        return issueMapper.batchUpdateFeatureRank(programId, moveIssues);
+    }
+
+    @Override
     public int batchUpdateMapIssueRank(Long projectId, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
         return issueMapper.batchUpdateMapIssueRank(projectId, storyMapMoveIssueDOS);
     }
@@ -139,6 +145,11 @@ public class IssueRepositoryImpl implements IssueRepository {
     @DataLog(type = "batchRemoveSprint", single = false)
     public int removeIssueFromSprintByIssueIds(BatchRemoveSprintE batchRemoveSprintE) {
         return issueMapper.removeIssueFromSprintByIssueIds(batchRemoveSprintE.getProjectId(), batchRemoveSprintE.getIssueIds());
+    }
+
+    @Override
+    public int removeFeatureFromPiByIssueIds(BatchRemovePiE batchRemovePiE) {
+        return issueMapper.removeFeatureFromPiByIssueIds(batchRemovePiE.getProgramId(), batchRemovePiE.getIssueIds());
     }
 
     @Override
@@ -167,6 +178,10 @@ public class IssueRepositoryImpl implements IssueRepository {
         return issueMapper.issueToDestinationByIds(projectId, targetSprintId, issueIds, date, userId);
     }
 
+    public int featureToDestinationByIdsClosePi(Long programId, Long targetPiId, List<Long> issueIds, Date date, Long userId) {
+        return issueMapper.featureToDestinationByIdsClosePi(programId, targetPiId, issueIds, date, userId);
+    }
+
     @Override
     @DataLog(type = "batchUpdateIssueStatusToOther", single = false)
     public void updateIssueStatusByIssueTypeId(Long projectId, String applyType, Long issueTypeId, Long oldStatusId, Long newStatusId, Long userId) {
@@ -183,6 +198,16 @@ public class IssueRepositoryImpl implements IssueRepository {
     @Override
     public void updateStayDate(Long projectId, Long sprintId, Date nowDate) {
         issueMapper.updateStayDate(projectId, sprintId, nowDate);
+    }
+
+    @Override
+    public void batchFeatureToPi(Long programId, Long piId, List<Long> issueIds, Date date, Long userId) {
+        issueMapper.batchFeatureToPi(programId, piId, issueIds, date, userId);
+    }
+
+    @Override
+    public void batchFeatureToEpic(Long programId, Long epicId, List<Long> featureIds) {
+        issueMapper.batchFeatureToEpic(programId, epicId, featureIds);
     }
 
 }

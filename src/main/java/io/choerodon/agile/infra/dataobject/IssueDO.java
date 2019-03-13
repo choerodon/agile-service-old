@@ -163,6 +163,14 @@ public class IssueDO extends AuditDomain {
 
     private Date stayDate;
 
+    private Long featureId;
+
+    private Date startDate;
+
+    private Date endDate;
+
+    private Long programId;
+
     public List<LabelIssueRelDO> getLabelIssueRelDOS() {
         return labelIssueRelDOS;
     }
@@ -473,6 +481,38 @@ public class IssueDO extends AuditDomain {
 
     public Date getStayDate() {
         return stayDate;
+    }
+
+    public Long getFeatureId() {
+        return featureId;
+    }
+
+    public void setFeatureId(Long featureId) {
+        this.featureId = featureId;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public Long getProgramId() {
+        return programId;
+    }
+
+    public void setProgramId(Long programId) {
+        this.programId = programId;
     }
 
     @Override

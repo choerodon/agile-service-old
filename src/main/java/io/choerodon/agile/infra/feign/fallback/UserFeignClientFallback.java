@@ -55,4 +55,9 @@ public class UserFeignClientFallback implements UserFeignClient {
     public ResponseEntity<OrganizationDTO> query(Long id) {
         throw new CommonException("error.organization.get");
     }
+
+    @Override
+    public ResponseEntity<List<ProjectRelationshipDTO>> getProjUnderGroup(Long id) {
+        throw new CommonException("error.projectRelationShipDTO.get");
+    }
 }
