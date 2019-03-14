@@ -440,7 +440,6 @@ public class DemoServiceImpl implements DemoService {
 
     @Saga(code = "agile-demo-for-test", description = "为测试提供demo数据", inputSchemaClass = DemoPayload.class)
     @Override
-    @Transactional
     public OrganizationRegisterEventPayload demoInit(OrganizationRegisterEventPayload demoProjectPayload) {
 
         Long projectId = demoProjectPayload.getProject().getId();
@@ -858,136 +857,136 @@ public class DemoServiceImpl implements DemoService {
         updateProjectAndIssues(projectId, workDays.get(13), workDays.get(12));
 
         // 更新日志
-        dataLogMapper.updateExpStatusRtDataLog(projectId, task1.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, task1.getIssueId(), workDays.get(11), workDays.get(11));
-        dataLogMapper.updateStatusRtDataLog(projectId, task1.getIssueId(), workDays.get(9), workDays.get(9));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, task1.getIssueId(), workDays.get(12), workDays.get(12), userId2);
+        dataLogMapper.updateStatusDingDataLog(projectId, task1.getIssueId(), workDays.get(11), workDays.get(11), userId2);
+        dataLogMapper.updateStatusRtDataLog(projectId, task1.getIssueId(), workDays.get(9), workDays.get(9), userId2);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, task3.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, task3.getIssueId(), workDays.get(10), workDays.get(10));
-        dataLogMapper.updateStatusRtDataLog(projectId, task3.getIssueId(), workDays.get(6), workDays.get(6));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, task3.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateStatusDingDataLog(projectId, task3.getIssueId(), workDays.get(10), workDays.get(10), userId1);
+        dataLogMapper.updateStatusRtDataLog(projectId, task3.getIssueId(), workDays.get(6), workDays.get(6), userId1);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask12.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask12.getIssueId(), workDays.get(11), workDays.get(11));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask12.getIssueId(), workDays.get(9), workDays.get(9));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask12.getIssueId(), workDays.get(12), workDays.get(12), userId2);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask12.getIssueId(), workDays.get(11), workDays.get(11), userId2);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask12.getIssueId(), workDays.get(9), workDays.get(9), userId2);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask13.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask13.getIssueId(), workDays.get(7), workDays.get(7));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask13.getIssueId(), workDays.get(6), workDays.get(6));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask13.getIssueId(), workDays.get(12), workDays.get(12), userId2);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask13.getIssueId(), workDays.get(7), workDays.get(7), userId2);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask13.getIssueId(), workDays.get(6), workDays.get(6), userId2);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask14.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask14.getIssueId(), workDays.get(8), workDays.get(8));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask14.getIssueId(), workDays.get(10), workDays.get(10));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask14.getIssueId(), workDays.get(12), workDays.get(12), userId2);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask14.getIssueId(), workDays.get(8), workDays.get(8), userId2);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask14.getIssueId(), workDays.get(10), workDays.get(10), userId2);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask15.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask15.getIssueId(), workDays.get(6), workDays.get(6));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask15.getIssueId(), workDays.get(4), workDays.get(4));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask15.getIssueId(), workDays.get(12), workDays.get(12), userId2);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask15.getIssueId(), workDays.get(6), workDays.get(6), userId2);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask15.getIssueId(), workDays.get(4), workDays.get(4), userId2);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask1.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask1.getIssueId(), workDays.get(11), workDays.get(11));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask1.getIssueId(), workDays.get(10), workDays.get(10));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask1.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask1.getIssueId(), workDays.get(11), workDays.get(11), userId1);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask1.getIssueId(), workDays.get(10), workDays.get(10), userId1);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask2.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask2.getIssueId(), workDays.get(11), workDays.get(11));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask2.getIssueId(), workDays.get(10), workDays.get(10));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask2.getIssueId(), workDays.get(12), workDays.get(12), userId2);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask2.getIssueId(), workDays.get(11), workDays.get(11), userId2);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask2.getIssueId(), workDays.get(10), workDays.get(10), userId2);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, story1.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, story1.getIssueId(), workDays.get(10), workDays.get(10));
-        dataLogMapper.updateStatusRtDataLog(projectId, story1.getIssueId(), workDays.get(10), workDays.get(10));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, story1.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateStatusDingDataLog(projectId, story1.getIssueId(), workDays.get(10), workDays.get(10), userId1);
+        dataLogMapper.updateStatusRtDataLog(projectId, story1.getIssueId(), workDays.get(10), workDays.get(10), userId1);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask3.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask3.getIssueId(), workDays.get(9), workDays.get(9));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask3.getIssueId(), workDays.get(8), workDays.get(8));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask3.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask3.getIssueId(), workDays.get(9), workDays.get(9), userId1);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask3.getIssueId(), workDays.get(8), workDays.get(8), userId1);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask4.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask4.getIssueId(), workDays.get(10), workDays.get(10));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask4.getIssueId(), workDays.get(9), workDays.get(9));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask4.getIssueId(), workDays.get(12), workDays.get(12), userId2);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask4.getIssueId(), workDays.get(10), workDays.get(10), userId2);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask4.getIssueId(), workDays.get(9), workDays.get(9), userId2);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, story2.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, story2.getIssueId(), workDays.get(9), workDays.get(9));
-        dataLogMapper.updateStatusRtDataLog(projectId, story2.getIssueId(), workDays.get(8), workDays.get(8));
-
-
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask5.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask5.getIssueId(), workDays.get(9), workDays.get(9));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask5.getIssueId(), workDays.get(8), workDays.get(8));
-
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask6.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask6.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask6.getIssueId(), workDays.get(9), workDays.get(9));
-
-        dataLogMapper.updateExpStatusRtDataLog(projectId, story3.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, story3.getIssueId(), workDays.get(8), workDays.get(8));
-        dataLogMapper.updateStatusRtDataLog(projectId, story3.getIssueId(), workDays.get(7), workDays.get(7));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, story2.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateStatusDingDataLog(projectId, story2.getIssueId(), workDays.get(9), workDays.get(9), userId1);
+        dataLogMapper.updateStatusRtDataLog(projectId, story2.getIssueId(), workDays.get(8), workDays.get(8), userId1);
 
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask7.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask7.getIssueId(), workDays.get(4), workDays.get(4));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask7.getIssueId(), workDays.get(3), workDays.get(3));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask5.getIssueId(), workDays.get(12), workDays.get(12), userId2);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask5.getIssueId(), workDays.get(9), workDays.get(9), userId2);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask5.getIssueId(), workDays.get(8), workDays.get(8), userId2);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask8.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask8.getIssueId(), workDays.get(4), workDays.get(4));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask8.getIssueId(), workDays.get(3), workDays.get(3));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask6.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask6.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask6.getIssueId(), workDays.get(9), workDays.get(9), userId1);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, story4.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, story4.getIssueId(), workDays.get(4), workDays.get(4));
-        dataLogMapper.updateStatusRtDataLog(projectId, story4.getIssueId(), workDays.get(3), workDays.get(3));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, story3.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateStatusDingDataLog(projectId, story3.getIssueId(), workDays.get(8), workDays.get(8), userId1);
+        dataLogMapper.updateStatusRtDataLog(projectId, story3.getIssueId(), workDays.get(7), workDays.get(7), userId1);
 
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask9.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask9.getIssueId(), workDays.get(4), workDays.get(4));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask9.getIssueId(), workDays.get(3), workDays.get(3));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask7.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask7.getIssueId(), workDays.get(4), workDays.get(4), userId1);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask7.getIssueId(), workDays.get(3), workDays.get(3), userId1);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask10.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask10.getIssueId(), workDays.get(7), workDays.get(7));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask10.getIssueId(), workDays.get(6), workDays.get(6));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask8.getIssueId(), workDays.get(12), workDays.get(12), userId2);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask8.getIssueId(), workDays.get(4), workDays.get(4), userId2);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask8.getIssueId(), workDays.get(3), workDays.get(3), userId2);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask11.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask11.getIssueId(), workDays.get(6), workDays.get(6));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask11.getIssueId(), workDays.get(5), workDays.get(5));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, story4.getIssueId(), workDays.get(12), workDays.get(12), userId2);
+        dataLogMapper.updateStatusDingDataLog(projectId, story4.getIssueId(), workDays.get(4), workDays.get(4), userId2);
+        dataLogMapper.updateStatusRtDataLog(projectId, story4.getIssueId(), workDays.get(3), workDays.get(3), userId2);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, story5.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, story5.getIssueId(), workDays.get(3), workDays.get(3));
-        dataLogMapper.updateStatusRtDataLog(projectId, story5.getIssueId(), workDays.get(2), workDays.get(2));
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, bug1.getIssueId(), workDays.get(12), workDays.get(12));
-        dataLogMapper.updateStatusDingDataLog(projectId, bug1.getIssueId(), workDays.get(3), workDays.get(3));
-        dataLogMapper.updateStatusRtDataLog(projectId, bug1.getIssueId(), workDays.get(2), workDays.get(2));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask9.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask9.getIssueId(), workDays.get(4), workDays.get(4), userId1);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask9.getIssueId(), workDays.get(3), workDays.get(3), userId1);
+
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask10.getIssueId(), workDays.get(12), workDays.get(12), userId2);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask10.getIssueId(), workDays.get(7), workDays.get(7), userId2);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask10.getIssueId(), workDays.get(6), workDays.get(6), userId2);
+
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask11.getIssueId(), workDays.get(12), workDays.get(12), userId2);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask11.getIssueId(), workDays.get(6), workDays.get(6), userId2);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask11.getIssueId(), workDays.get(5), workDays.get(5), userId2);
+
+        dataLogMapper.updateExpStatusRtDataLog(projectId, story5.getIssueId(), workDays.get(12), workDays.get(12), userId2);
+        dataLogMapper.updateStatusDingDataLog(projectId, story5.getIssueId(), workDays.get(3), workDays.get(3), userId2);
+        dataLogMapper.updateStatusRtDataLog(projectId, story5.getIssueId(), workDays.get(2), workDays.get(2), userId2);
+
+        dataLogMapper.updateExpStatusRtDataLog(projectId, bug1.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateStatusDingDataLog(projectId, bug1.getIssueId(), workDays.get(3), workDays.get(3), userId1);
+        dataLogMapper.updateStatusRtDataLog(projectId, bug1.getIssueId(), workDays.get(2), workDays.get(2), userId1);
 
 
         List<Date> dateAfters = getWorkDaysAfter(workDays.get(1));
 
 
         // 更新冲刺2的日志
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask16.getIssueId(), workDays.get(2), workDays.get(2));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask16.getIssueId(), dateAfters.get(0), dateAfters.get(0));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask16.getIssueId(), dateAfters.get(1), dateAfters.get(1));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask16.getIssueId(), workDays.get(2), workDays.get(2), userId1);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask16.getIssueId(), dateAfters.get(0), dateAfters.get(0), userId1);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask16.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId1);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask17.getIssueId(), workDays.get(2), workDays.get(2));
-        dataLogMapper.updateStatusDingDataLog(projectId, subtask17.getIssueId(), dateAfters.get(1), dateAfters.get(1));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask17.getIssueId(), dateAfters.get(2), dateAfters.get(2));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask17.getIssueId(), workDays.get(2), workDays.get(2), userId2);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask17.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId2);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask17.getIssueId(), dateAfters.get(2), dateAfters.get(2), userId2);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, task2.getIssueId(), workDays.get(2), workDays.get(2));
-        dataLogMapper.updateStatusDingDataLog(projectId, task2.getIssueId(), dateAfters.get(0), dateAfters.get(2));
-        dataLogMapper.updateStatusRtDataLog(projectId, task2.getIssueId(), dateAfters.get(2), dateAfters.get(2));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, task2.getIssueId(), workDays.get(2), workDays.get(2), userId1);
+        dataLogMapper.updateStatusDingDataLog(projectId, task2.getIssueId(), dateAfters.get(0), dateAfters.get(2), userId1);
+        dataLogMapper.updateStatusRtDataLog(projectId, task2.getIssueId(), dateAfters.get(2), dateAfters.get(2), userId1);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask21.getIssueId(), workDays.get(2), workDays.get(2));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask21.getIssueId(), dateAfters.get(1), dateAfters.get(1));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask21.getIssueId(), workDays.get(2), workDays.get(2), userId2);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask21.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId2);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask18.getIssueId(), workDays.get(2), workDays.get(2));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask18.getIssueId(), dateAfters.get(1), dateAfters.get(1));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask18.getIssueId(), workDays.get(2), workDays.get(2), userId1);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask18.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId1);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask19.getIssueId(), workDays.get(2), workDays.get(2));
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask19.getIssueId(), dateAfters.get(1), dateAfters.get(1));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask19.getIssueId(), workDays.get(2), workDays.get(2), userId2);
+        dataLogMapper.updateStatusRtDataLog(projectId, subtask19.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId2);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, story6.getIssueId(), workDays.get(2), workDays.get(2));
-        dataLogMapper.updateStatusDingDataLog(projectId, story6.getIssueId(), dateAfters.get(1), dateAfters.get(1));
-        dataLogMapper.updateStatusRtDataLog(projectId, story6.getIssueId(), dateAfters.get(2), dateAfters.get(2));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, story6.getIssueId(), workDays.get(2), workDays.get(2), userId1);
+        dataLogMapper.updateStatusDingDataLog(projectId, story6.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId1);
+        dataLogMapper.updateStatusRtDataLog(projectId, story6.getIssueId(), dateAfters.get(2), dateAfters.get(2), userId1);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, story7.getIssueId(), workDays.get(2), workDays.get(2));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, story7.getIssueId(), workDays.get(2), workDays.get(2), userId2);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, story8.getIssueId(), workDays.get(2), workDays.get(2));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, story8.getIssueId(), workDays.get(2), workDays.get(2), userId2);
 
-        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask20.getIssueId(), workDays.get(2), workDays.get(2));
+        dataLogMapper.updateExpStatusRtDataLog(projectId, subtask20.getIssueId(), workDays.get(2), workDays.get(2), userId1);
 
 
         // 开启冲刺2

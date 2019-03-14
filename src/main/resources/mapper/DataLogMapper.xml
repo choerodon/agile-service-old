@@ -83,7 +83,7 @@
 
     <update id="updateStatusRtDataLog">
         update agile_data_log
-        set creation_date = #{creationDate}, last_update_date = #{lastUpdateDate}
+        set creation_date = #{creationDate}, last_update_date = #{lastUpdateDate}, created_by = #{userId}, last_updated_by = #{userId}
         where project_id = #{projectId}
         and issue_id = #{issueId}
         and ((field = 'status' and new_string = '已完成') or ( field = 'resolution'))
@@ -91,7 +91,7 @@
 
     <update id="updateStatusDingDataLog">
         update agile_data_log
-        set creation_date = #{creationDate}, last_update_date = #{lastUpdateDate}
+        set creation_date = #{creationDate}, last_update_date = #{lastUpdateDate}, created_by = #{userId}, last_updated_by = #{userId}
         where project_id = #{projectId}
         and issue_id = #{issueId}
         and field = 'status' and new_string = '处理中'
@@ -99,7 +99,7 @@
 
     <update id="updateExpStatusRtDataLog">
         update agile_data_log
-        set creation_date = #{creationDate}, last_update_date = #{lastUpdateDate}
+        set creation_date = #{creationDate}, last_update_date = #{lastUpdateDate}, created_by = #{userId}, last_updated_by = #{userId}
         where project_id = #{projectId}
         and issue_id = #{issueId}
         and field not in ('status', 'resolution')
