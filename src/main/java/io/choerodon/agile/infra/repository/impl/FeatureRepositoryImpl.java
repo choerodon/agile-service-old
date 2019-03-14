@@ -28,4 +28,26 @@ public class FeatureRepositoryImpl implements FeatureRepository {
         }
         return ConvertHelper.convert(featureMapper.selectByPrimaryKey(featureDO.getId()), FeatureE.class);
     }
+
+    @Override
+    public FeatureE updateSelective(FeatureE featureE) {
+        FeatureDO featureDO = ConvertHelper.convert(featureE, FeatureDO.class);
+        if (featureMapper.updateByPrimaryKeySelective(featureDO) != 1) {
+            throw new CommonException("error.feature.update");
+        }
+        return ConvertHelper.convert(featureMapper.selectByPrimaryKey(featureDO.getId()), FeatureE.class);
+    }
+
+    @Override
+    public void delete(Long issueId) {
+        FeatureDO featureDO = new FeatureDO();
+        featureDO.setIssueId(issueId);
+        FeatureDO res = featureMapper.selectOne(featureDO);
+        if (res == null) {
+            throw new CommonException("error.feature.exist");
+        }
+        if (featureMapper.delete(res) != 1) {
+            throw new CommonException("error.feature.insert");
+        }
+    }
 }

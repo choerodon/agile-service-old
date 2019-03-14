@@ -102,6 +102,8 @@ public class IssueDTO {
 
     private String createrEmail;
 
+    private FeatureDTO featureDTO;
+
     public String getCreaterEmail() {
         return createrEmail;
     }
@@ -452,6 +454,14 @@ public class IssueDTO {
 
     public Long getCreatedBy() {
         return createdBy;
+    }
+
+    public void setFeatureDTO(FeatureDTO featureDTO) {
+        this.featureDTO = featureDTO;
+    }
+
+    public FeatureDTO getFeatureDTO() {
+        return featureDTO;
     }
 
     @Override

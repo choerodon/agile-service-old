@@ -168,6 +168,12 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private IssueSprintRelMapper issueSprintRelMapper;
 
+    @Autowired
+    private FeatureMapper featureMapper;
+
+    @Autowired
+    private FeatureRepository featureRepository;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(IssueServiceImpl.class);
 
     private static final String SUB_TASK = "sub_task";
@@ -379,6 +385,14 @@ public class IssueServiceImpl implements IssueService {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
+        }
+        if ("feature".equals(issue.getTypeCode())) {
+            FeatureDO featureDO = new FeatureDO();
+            featureDO.setIssueId(issue.getIssueId());
+            FeatureDO res = featureMapper.selectOne(featureDO);
+            if (res != null) {
+                issue.setFeatureDO(res);
+            }
         }
         Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
@@ -607,6 +621,12 @@ public class IssueServiceImpl implements IssueService {
             }
         }
         issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
+        if (issueUpdateDTO.getFeatureDTO() != null && issueUpdateDTO.getFeatureDTO().getIssueId() != null) {
+            FeatureDTO featureDTO = issueUpdateDTO.getFeatureDTO();
+            if (featureDTO != null) {
+                featureRepository.updateSelective(ConvertHelper.convert(featureDTO, FeatureE.class));
+            }
+        }
     }
 
     private void handleIssueStatus(Long projectId, IssueE oldIssue, IssueE issueE, List<String> fieldList, List<Long> issueIds) {
@@ -714,6 +734,10 @@ public class IssueServiceImpl implements IssueService {
         issueCommentService.deleteByIssueId(issueE.getIssueId());
         //删除附件
         issueAttachmentService.deleteByIssueId(issueE.getIssueId());
+
+        if ("feature".equals(issueE.getTypeCode())) {
+            featureRepository.delete(issueId);
+        }
         //不是子任务的issue删除子任务
         if (!(SUB_TASK).equals(issueE.getTypeCode())) {
             if ((ISSUE_EPIC).equals(issueE.getTypeCode())) {

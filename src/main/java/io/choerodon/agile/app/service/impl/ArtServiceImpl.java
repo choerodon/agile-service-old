@@ -8,6 +8,7 @@ import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.domain.agile.entity.ArtE;
 import io.choerodon.agile.domain.agile.repository.ArtRepository;
 import io.choerodon.agile.infra.dataobject.ArtDO;
+import io.choerodon.agile.infra.dataobject.PiCalendarDO;
 import io.choerodon.agile.infra.mapper.ArtMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
@@ -16,6 +17,8 @@ import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/3/11.
@@ -91,5 +94,10 @@ public class ArtServiceImpl implements ArtService {
         ArtDO artDORe = artMapper.selectByPrimaryKey(artId);
         ArtE artE = new ArtE(programId, artId, true, artDORe.getObjectVersionNumber());
         return ConvertHelper.convert(artRepository.updateBySelective(artE), ArtDTO.class);
+    }
+
+    @Override
+    public List<PiCalendarDO> queryArtCalendar(Long programId, Long artId) {
+        return artMapper.selectArtCalendar(programId, artId);
     }
 }

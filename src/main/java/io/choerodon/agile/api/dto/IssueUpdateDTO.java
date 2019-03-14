@@ -66,6 +66,8 @@ public class IssueUpdateDTO {
 
     private Date stayDate;
 
+    private FeatureDTO featureDTO;
+
     public String getRank() {
         return rank;
     }
@@ -272,6 +274,14 @@ public class IssueUpdateDTO {
 
     public Date getStayDate() {
         return stayDate;
+    }
+
+    public void setFeatureDTO(FeatureDTO featureDTO) {
+        this.featureDTO = featureDTO;
+    }
+
+    public FeatureDTO getFeatureDTO() {
+        return featureDTO;
     }
 
     @Override

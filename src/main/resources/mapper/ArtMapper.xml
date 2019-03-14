@@ -22,5 +22,38 @@
         and program_id = #{programId}
     </select>
 
+    <resultMap id="artCalendarMap" type="io.choerodon.agile.infra.dataobject.PiCalendarDO">
+        <id property="id" column="pi_id"/>
+        <id property="code" column="pi_code"/>
+        <id property="name" column="pi_name"/>
+        <id property="statusCode" column="pi_status_code"/>
+        <id property="startDate" column="pi_start_date"/>
+        <id property="endDate" column="pi_end_date"/>
+        <id property="artId" column="pi_art_id"/>
+        <id property="programId" column="pi_program_id"/>
+        <collection property="sprintCalendarDOList" autoMapping="true" columnPrefix="asp_"
+                    ofType="io.choerodon.agile.infra.dataobject.SprintCalendarDO"/>
+    </resultMap>
+
+    <select id="selectArtCalendar" resultMap="artCalendarMap">
+        select
+           ap.id as pi_id,
+           ap.code as pi_code,
+           ap.name as pi_name,
+           ap.status_code as pi_status_code,
+           ap.start_date as pi_start_date,
+           ap.end_date as pi_end_date,
+           ap.art_id as pi_art_id,
+           ap.program_id as pi_program_id,
+           asp.sprint_id as asp_sprint_id,
+           asp.sprint_name as asp_sprint_name,
+           asp.start_date as asp_start_date,
+           asp.end_date as asp_end_date,
+           asp.status_code as asp_status_code
+        from agile_pi ap
+        left join agile_sprint asp on ap.id = asp.pi_id and asp.project_id = #{programId}
+        where ap.art_id = #{artId} and ap.program_id = #{programId}
+    </select>
+
 
 </mapper>

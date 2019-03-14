@@ -92,6 +92,8 @@ public class IssueDetailDO {
 
     private String issueTypeCode;
 
+    private FeatureDO featureDO;
+
     public String getIssueTypeCode() {
         return issueTypeCode;
     }
@@ -402,6 +404,14 @@ public class IssueDetailDO {
 
     public void setApplyType(String applyType) {
         this.applyType = applyType;
+    }
+
+    public void setFeatureDO(FeatureDO featureDO) {
+        this.featureDO = featureDO;
+    }
+
+    public FeatureDO getFeatureDO() {
+        return featureDO;
     }
 
     @Override

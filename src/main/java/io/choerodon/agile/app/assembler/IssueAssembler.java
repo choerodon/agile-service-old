@@ -34,6 +34,7 @@ public class IssueAssembler extends AbstractAssembler {
     public IssueDTO issueDetailDoToDto(IssueDetailDO issueDetailDO, Map<Long, IssueTypeDTO> issueTypeDTOMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, PriorityDTO> priorityDTOMap) {
         IssueDTO issueDTO = new IssueDTO();
         BeanUtils.copyProperties(issueDetailDO, issueDTO);
+        issueDTO.setFeatureDTO(ConvertHelper.convert(issueDetailDO.getFeatureDO(), FeatureDTO.class));
         issueDTO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
         issueDTO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDO.getActiveSprint(), SprintNameDTO.class));
         issueDTO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDO.getCloseSprint(), SprintNameDTO.class));
