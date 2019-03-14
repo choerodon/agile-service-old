@@ -115,7 +115,7 @@ public class SprintServiceImpl implements SprintService {
     private static final String STATUS_SPRINT_PLANNING_CODE = "sprint_planning";
 
     @Override
-    public synchronized SprintDetailDTO createSprint(Long projectId, Long piId) {
+    public synchronized SprintDetailDTO createSprint(Long projectId, Long piId, Date startDate, Date endDate) {
         ProjectInfoDO projectInfo = new ProjectInfoDO();
         projectInfo.setProjectId(projectId);
         projectInfo = projectInfoMapper.selectOne(projectInfo);
@@ -132,6 +132,8 @@ public class SprintServiceImpl implements SprintService {
         }
         if (piId != null) {
             sprint.setPiId(piId);
+            sprint.setStartDate(startDate);
+            sprint.setEndDate(endDate);
         }
         return sprintCreateAssembler.toTarget(sprintRepository.createSprint(sprint), SprintDetailDTO.class);
     }
@@ -645,12 +647,19 @@ public class SprintServiceImpl implements SprintService {
         piDO.setStatusCode("doing");
         PiDO res = piMapper.selectOne(piDO);
         if (res != null) {
-            Long piId = res.getId();
-            Long artId = res.getArtId();
-            ArtDO artDO = artMapper.selectByPrimaryKey(artId);
-            Long interationCount = artDO.getInterationCount();
-            for (int i = 0;i < interationCount; i++) {
-                createSprint(projectId, piId);
+            SprintDO sprintDO = new SprintDO();
+            sprintDO.setProjectId(programId);
+            sprintDO.setPiId(piDO.getId());
+            List<SprintDO> sprintDOList = sprintMapper.select(sprintDO);
+            for (SprintDO sprint : sprintDOList) {
+                SprintE sprintE = new SprintE();
+                sprintE.setPiId(sprint.getPiId());
+                sprintE.setEndDate(sprint.getEndDate());
+                sprintE.setStartDate(sprint.getStartDate());
+                sprintE.setSprintName(sprint.getSprintName());
+                sprintE.setProjectId(projectId);
+                sprintE.setStatusCode(sprint.getStatusCode());
+                sprintRepository.createSprint(sprintE);
             }
         }
     }
