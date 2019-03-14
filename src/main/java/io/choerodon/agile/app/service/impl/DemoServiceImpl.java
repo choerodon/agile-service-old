@@ -827,6 +827,15 @@ public class DemoServiceImpl implements DemoService {
 
 
         // 更新经办人
+        issueMapper.updateAssigneeIdBySpecify(projectId, story1.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, story2.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, story3.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, story4.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, story5.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, task1.getIssueId(), userId1, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, task2.getIssueId(), userId1, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, task3.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, bug1.getIssueId(), userId2, workDays.get(12), workDays.get(12));
         issueMapper.updateAssigneeIdBySpecify(projectId, subtask8.getIssueId(), userId1, workDays.get(12), workDays.get(12));
         issueMapper.updateAssigneeIdBySpecify(projectId, subtask7.getIssueId(), userId2, workDays.get(12), workDays.get(12));
         issueMapper.updateAssigneeIdBySpecify(projectId, subtask6.getIssueId(), userId2, workDays.get(12), workDays.get(12));
@@ -838,14 +847,19 @@ public class DemoServiceImpl implements DemoService {
         issueMapper.updateAssigneeIdBySpecify(projectId, subtask9.getIssueId(), userId2, workDays.get(12), workDays.get(12));
         issueMapper.updateAssigneeIdBySpecify(projectId, subtask10.getIssueId(), userId1, workDays.get(12), workDays.get(12));
         issueMapper.updateAssigneeIdBySpecify(projectId, subtask11.getIssueId(), userId2, workDays.get(12), workDays.get(12));
-        issueMapper.updateAssigneeIdBySpecify(projectId, task3.getIssueId(), userId2, workDays.get(12), workDays.get(12));
-        issueMapper.updateAssigneeIdBySpecify(projectId, bug1.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask12.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask13.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask14.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, subtask15.getIssueId(), userId2, workDays.get(12), workDays.get(12));
 
         issueMapper.updateTestIssue(projectId, test1.getIssueId(), userId2, workDays.get(2), workDays.get(2));
         issueMapper.updateTestIssue(projectId, test2.getIssueId(), userId2, workDays.get(2), workDays.get(2));
         issueMapper.updateTestIssue(projectId, test3.getIssueId(), userId2, workDays.get(2), workDays.get(2));
         issueMapper.updateTestIssue(projectId, test4.getIssueId(), userId2, workDays.get(2), workDays.get(2));
 
+        issueMapper.updateAssigneeIdBySpecify(projectId, story6.getIssueId(), userId1, workDays.get(3), workDays.get(3));
+        issueMapper.updateAssigneeIdBySpecify(projectId, story7.getIssueId(), userId1, workDays.get(3), workDays.get(3));
+        issueMapper.updateAssigneeIdBySpecify(projectId, story8.getIssueId(), userId1, workDays.get(3), workDays.get(3));
         issueMapper.updateAssigneeIdBySpecify(projectId, subtask16.getIssueId(), userId2, workDays.get(3), workDays.get(3));
         issueMapper.updateAssigneeIdBySpecify(projectId, subtask17.getIssueId(), userId1, workDays.get(3), workDays.get(3));
         issueMapper.updateAssigneeIdBySpecify(projectId, subtask18.getIssueId(), userId2, workDays.get(3), workDays.get(3));
@@ -970,13 +984,14 @@ public class DemoServiceImpl implements DemoService {
         dataLogMapper.updateStatusRtDataLog(projectId, task2.getIssueId(), dateAfters.get(2), dateAfters.get(2), userId1);
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask21.getIssueId(), workDays.get(2), workDays.get(2), userId2);
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask21.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId2);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask21.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId2);
+//        dataLogMapper.updateStatusRtDataLog(projectId, subtask21.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId2);
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask18.getIssueId(), workDays.get(2), workDays.get(2), userId1);
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask18.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId1);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask18.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId1);
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask19.getIssueId(), workDays.get(2), workDays.get(2), userId2);
-        dataLogMapper.updateStatusRtDataLog(projectId, subtask19.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId2);
+        dataLogMapper.updateStatusDingDataLog(projectId, subtask19.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId2);
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, story6.getIssueId(), workDays.get(2), workDays.get(2), userId1);
         dataLogMapper.updateStatusDingDataLog(projectId, story6.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId1);
@@ -987,6 +1002,94 @@ public class DemoServiceImpl implements DemoService {
         dataLogMapper.updateExpStatusRtDataLog(projectId, story8.getIssueId(), workDays.get(2), workDays.get(2), userId2);
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask20.getIssueId(), workDays.get(2), workDays.get(2), userId1);
+
+
+        // 更新其它日志
+        dataLogMapper.updateDemoEpicDataLog(projectId, epic1.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, epic2.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, epic3.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, epic4.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, epic5.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, story1.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, story2.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, story3.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, story4.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, story5.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, story6.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, story7.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, story8.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, story9.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, story10.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, story11.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, story12.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, task1.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, task2.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, task3.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask1.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask2.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask3.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask4.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask5.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask6.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask7.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask8.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask9.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask10.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask11.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask12.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask13.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask14.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask15.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask16.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask17.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask18.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask19.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask20.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, subtask21.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+        dataLogMapper.updateDemoEpicDataLog(projectId, bug1.getIssueId(), workDays.get(12), workDays.get(12), userId1);
+
+        issueMapper.updateDemoCreaterBySpecify(projectId, epic1.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, epic2.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, epic3.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, epic4.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, epic5.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, story1.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, story2.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, story3.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, story4.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, story5.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, story6.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, story7.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, story8.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, story9.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, story10.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, story11.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, story12.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, task1.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, task2.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, task3.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask1.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask2.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask3.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask4.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask5.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask6.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask7.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask8.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask9.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask10.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask11.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask12.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask13.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask14.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask15.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask16.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask17.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask18.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask19.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask20.getIssueId(), userId1);
+        issueMapper.updateDemoCreaterBySpecify(projectId, subtask21.getIssueId(), userId1);
+
 
 
         // 开启冲刺2

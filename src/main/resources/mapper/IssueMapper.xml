@@ -2872,6 +2872,13 @@
         and issue_id = #{issueId}
     </update>
 
+    <update id="updateDemoCreaterBySpecify">
+        update agile_issue
+        set created_by = #{userId}, last_updated_by = #{userId}
+        where project_id = #{projectId}
+        and issue_id = #{issueId}
+    </update>
+
     <update id="updateTestIssue">
         update agile_issue
         set reporter_id = #{reporterId}, creation_date = #{creationDate}, last_update_date = #{lastUpdateDate}
