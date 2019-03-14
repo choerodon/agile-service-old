@@ -210,4 +210,13 @@ public class IssueRepositoryImpl implements IssueRepository {
         issueMapper.batchFeatureToEpic(programId, epicId, featureIds);
     }
 
+    @Override
+    public void updateFeatureAndEpicWhenJoinProgram(Long programId, Long projectId, Long initStatusId) {
+        List<Long> updateIds = issueMapper.selectIssueIdWhenJoinProgram(projectId);
+        // if epic is none, skip
+        if (updateIds != null && !updateIds.isEmpty()) {
+            issueMapper.updateFeatureAndEpicWhenJoinProgram(programId, projectId, initStatusId, updateIds);
+        }
+    }
+
 }

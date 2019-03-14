@@ -13,7 +13,9 @@
            apo.pi_id,
            apo.program_id,
            apo.project_id,
-           apo.object_version_number
+           apo.object_version_number,
+           apo.creation_date,
+           apo.last_update_date
         from agile_pi_objective apo
         where apo.program_id = #{programId}
         and apo.pi_id = #{piId}

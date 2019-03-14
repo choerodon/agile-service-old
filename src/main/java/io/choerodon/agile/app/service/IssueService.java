@@ -301,4 +301,6 @@ public interface IssueService {
 
     Boolean checkEpicName(Long projectId, String epicName);
 
+    void dealFeatureAndEpicWhenJoinProgram(Long programId, Long projectId);
+
 }

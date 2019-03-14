@@ -91,6 +91,12 @@ public class SprintServiceImpl implements SprintService {
     @Autowired
     private IssueService issueService;
 
+    @Autowired
+    private PiMapper piMapper;
+
+    @Autowired
+    private ArtMapper artMapper;
+
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String SPRINT_DATA = "sprintData";
     private static final String BACKLOG_DATA = "backlogData";
@@ -630,5 +636,22 @@ public class SprintServiceImpl implements SprintService {
         sprintDO.setSprintName(sprinName);
         List<SprintDO> sprintDOList = sprintMapper.select(sprintDO);
         return sprintDOList != null && !sprintDOList.isEmpty();
+    }
+
+    @Override
+    public void addSprintsWhenJoinProgram(Long programId, Long projectId) {
+        PiDO piDO = new PiDO();
+        piDO.setProgramId(programId);
+        piDO.setStatusCode("doing");
+        PiDO res = piMapper.selectOne(piDO);
+        if (res != null) {
+            Long piId = res.getId();
+            Long artId = res.getArtId();
+            ArtDO artDO = artMapper.selectByPrimaryKey(artId);
+            Long interationCount = artDO.getInterationCount();
+            for (int i = 0;i < interationCount; i++) {
+                createSprint(projectId, piId);
+            }
+        }
     }
 }

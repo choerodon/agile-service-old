@@ -254,7 +254,7 @@ public class IssueRule {
     }
 
     public void verifyStoryPoints(IssueE issueE) {
-        if (issueE.getStoryPoints() != null && !issueE.getTypeCode().equals(STORY)) {
+        if (issueE.getStoryPoints() != null && !(STORY.equals(issueE.getTypeCode()) || "feature".equals(issueE.getTypeCode()))) {
             throw new CommonException("error.IssueRule.onlyStory");
         }
     }
