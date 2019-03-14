@@ -9,4 +9,8 @@ import io.choerodon.agile.domain.agile.entity.FeatureE;
 public interface FeatureRepository {
 
     FeatureE create(FeatureE featureE);
+
+    FeatureE updateSelective(FeatureE featureE);
+
+    void delete(Long issueId);
 }

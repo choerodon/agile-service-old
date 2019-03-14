@@ -2,6 +2,7 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.ArtDTO;
 import io.choerodon.agile.app.service.ArtService;
+import io.choerodon.agile.infra.dataobject.PiCalendarDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -103,6 +105,18 @@ public class ArtController {
         return Optional.ofNullable(artService.releaseArt(projectId, artId, piNumber))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.art.release"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("查询art日历")
+    @GetMapping("/art_calendar")
+    public ResponseEntity<List<PiCalendarDO>> queryArtCalendar(@ApiParam(value = "项目id", required = true)
+                                                               @PathVariable(name = "project_id") Long projectId,
+                                                               @ApiParam(value = "art id")
+                                                               @RequestParam Long id) {
+        return Optional.ofNullable(artService.queryArtCalendar(projectId, id))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.artCalendar.get"));
     }
 
 }

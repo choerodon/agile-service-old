@@ -1,8 +1,11 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.ArtDTO;
+import io.choerodon.agile.infra.dataobject.PiCalendarDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
+import java.util.List;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/3/11.
@@ -21,4 +24,6 @@ public interface ArtService {
     ArtDTO queryArt(Long programId, Long id);
 
     ArtDTO releaseArt(Long programId, Long artId, Long piNumber);
+
+    List<PiCalendarDO> queryArtCalendar(Long programId, Long artId);
 }

@@ -1,10 +1,13 @@
 package io.choerodon.agile.api.controller.v1;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
+import io.choerodon.agile.domain.agile.entity.FeatureE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
@@ -106,6 +109,9 @@ public class IssueController {
         issueRule.verifyUpdateData(issueUpdate, projectId);
         IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO();
         List<String> fieldList = verifyUpdateUtil.verifyUpdateData(issueUpdate, issueUpdateDTO);
+        if (issueUpdate.get("featureDTO") != null) {
+            issueUpdateDTO.setFeatureDTO(JSONObject.parseObject(JSON.toJSONString(issueUpdate.get("featureDTO")), FeatureDTO.class));
+        }
         return Optional.ofNullable(issueService.updateIssue(projectId, issueUpdateDTO, fieldList))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.Issue.updateIssue"));

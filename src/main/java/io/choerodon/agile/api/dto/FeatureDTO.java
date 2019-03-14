@@ -18,6 +18,8 @@ public class FeatureDTO {
 
     private String featureType;
 
+    private Long objectVersionNumber;
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -64,5 +66,13 @@ public class FeatureDTO {
 
     public void setFeatureType(String featureType) {
         this.featureType = featureType;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
     }
 }
