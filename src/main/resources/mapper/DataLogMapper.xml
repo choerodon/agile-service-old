@@ -105,6 +105,14 @@
         and field not in ('status', 'resolution')
     </update>
 
+    <update id="updateDemoEpicDataLog">
+        update agile_data_log
+        set creation_date = #{creationDate}, last_update_date = #{lastUpdateDate}, created_by = #{userId}, last_updated_by = #{userId}
+        where project_id = #{projectId}
+        and issue_id = #{issueId}
+        and field in ('Epic Link', 'Epic Child', 'Fix Version', 'Component')
+    </update>
+
     <delete id="deleteDemoData">
         delete from agile_board where project_id = #{projectId};
         delete from agile_board_column where project_id = #{projectId};
