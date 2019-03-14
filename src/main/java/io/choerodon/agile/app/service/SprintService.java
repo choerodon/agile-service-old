@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public interface SprintService {
 
-    SprintDetailDTO createSprint(Long projectId, Long piId);
+    SprintDetailDTO createSprint(Long projectId, Long piId, Date startDate, Date endDate);
 
     SprintDetailDTO updateSprint(Long projectId, SprintUpdateDTO sprintUpdateDTO);
 
