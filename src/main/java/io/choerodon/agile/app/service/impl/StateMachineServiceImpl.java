@@ -66,6 +66,7 @@ public class StateMachineServiceImpl implements StateMachineService {
     private static final String STAY_DATE = "stayDate";
     private static final String UPDATE_STATUS = "updateStatus";
     private static final String UPDATE_STATUS_MOVE = "updateStatusMove";
+    private static final String ISSUE_FEATURE = "feature";
 
     @Autowired
     private IssueMapper issueMapper;
@@ -129,7 +130,7 @@ public class StateMachineServiceImpl implements StateMachineService {
         Long issueId = issueRepository.create(issueE).getIssueId();
 
         // if issueType is feature, create extends table
-        if ("program".equals(applyType) && "feature".equals(issueCreateDTO.getTypeCode())) {
+        if (ISSUE_FEATURE.equals(issueCreateDTO.getTypeCode())) {
             FeatureDTO featureDTO = issueCreateDTO.getFeatureDTO();
             featureDTO.setIssueId(issueId);
             featureDTO.setProjectId(issueCreateDTO.getProjectId());

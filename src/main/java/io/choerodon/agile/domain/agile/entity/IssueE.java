@@ -22,6 +22,7 @@ public class IssueE {
 
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
+    private static final String ISSUE_FEATURE = "feature";
     private static final String DEFAULT_ASSIGNEE = "default_assignee";
     private static final String CURRENT_USER = "current_user";
 
@@ -381,7 +382,7 @@ public class IssueE {
     }
 
     public Boolean isProgramRank() {
-        return Objects.equals(this.applyType, SchemeApplyType.PROGRAM) && !Objects.equals(this.typeCode, ISSUE_EPIC);
+        return Objects.equals(this.applyType, SchemeApplyType.PROGRAM) && Objects.equals(this.typeCode, ISSUE_FEATURE);
     }
 
     public Boolean isIssueMapRank() {
