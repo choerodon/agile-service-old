@@ -827,9 +827,9 @@ public class DemoServiceImpl implements DemoService {
 
 
         // 更新经办人
-        issueMapper.updateAssigneeIdBySpecify(projectId, story1.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, story1.getIssueId(), userId1, workDays.get(12), workDays.get(12));
         issueMapper.updateAssigneeIdBySpecify(projectId, story2.getIssueId(), userId2, workDays.get(12), workDays.get(12));
-        issueMapper.updateAssigneeIdBySpecify(projectId, story3.getIssueId(), userId2, workDays.get(12), workDays.get(12));
+        issueMapper.updateAssigneeIdBySpecify(projectId, story3.getIssueId(), userId1, workDays.get(12), workDays.get(12));
         issueMapper.updateAssigneeIdBySpecify(projectId, story4.getIssueId(), userId2, workDays.get(12), workDays.get(12));
         issueMapper.updateAssigneeIdBySpecify(projectId, story5.getIssueId(), userId2, workDays.get(12), workDays.get(12));
         issueMapper.updateAssigneeIdBySpecify(projectId, task1.getIssueId(), userId1, workDays.get(12), workDays.get(12));
@@ -858,7 +858,7 @@ public class DemoServiceImpl implements DemoService {
         issueMapper.updateTestIssue(projectId, test4.getIssueId(), userId2, workDays.get(2), workDays.get(2));
 
         issueMapper.updateAssigneeIdBySpecify(projectId, story6.getIssueId(), userId1, workDays.get(3), workDays.get(3));
-        issueMapper.updateAssigneeIdBySpecify(projectId, story7.getIssueId(), userId1, workDays.get(3), workDays.get(3));
+        issueMapper.updateAssigneeIdBySpecify(projectId, story7.getIssueId(), userId2, workDays.get(3), workDays.get(3));
         issueMapper.updateAssigneeIdBySpecify(projectId, story8.getIssueId(), userId1, workDays.get(3), workDays.get(3));
         issueMapper.updateAssigneeIdBySpecify(projectId, subtask16.getIssueId(), userId2, workDays.get(3), workDays.get(3));
         issueMapper.updateAssigneeIdBySpecify(projectId, subtask17.getIssueId(), userId1, workDays.get(3), workDays.get(3));
