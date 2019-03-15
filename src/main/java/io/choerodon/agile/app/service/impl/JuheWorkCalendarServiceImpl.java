@@ -142,6 +142,7 @@ public class JuheWorkCalendarServiceImpl implements WorkCalendarService {
                 WorkCalendarHolidayRefDO day = new WorkCalendarHolidayRefDO();
                 day.setHoliday(dateStatus.getDate());
                 day.setYear(Integer.valueOf(day.getHoliday().split("-")[0]));
+                //接口返回的数据中，补班是2，放假是1
                 day.setStatus("1".equals(dateStatus.getStatus()) ? 0 : 1);
                 workCalendarHolidayRefDOS.add(day);
             });
