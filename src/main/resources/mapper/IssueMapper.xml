@@ -705,6 +705,24 @@
         ORDER BY ai.epic_sequence DESC
     </select>
 
+    <select id="queryProgramEpicList" resultType="io.choerodon.agile.infra.dataobject.EpicDataDO">
+        SELECT
+            ai.issue_id,
+            ai.summary,
+            ai.description,
+            ai.project_id,
+            CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,
+            ai.epic_name,
+            alv.name AS color,
+            ai.object_version_number,
+            ai.epic_sequence
+        FROM agile_issue ai
+        LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        WHERE ai.program_id = #{programId} AND ai.type_code = 'issue_epic'
+        ORDER BY ai.issue_id DESC
+    </select>
+
     <select id="queryStoryMapEpicList" resultType="io.choerodon.agile.infra.dataobject.StoryMapEpicDO">
         SELECT
         ai.issue_id,
@@ -784,6 +802,26 @@
         </foreach>
     </select>
 
+    <select id="queryProgramTotalEstimateByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+        SELECT ai.issue_id AS id, IFNULL(ic.sp_count, 0) AS story_point_count
+        FROM agile_issue ai
+        LEFT JOIN (SELECT ai1.epic_id AS epic_id, SUM(ai1.story_points) AS sp_count
+            FROM agile_issue ai1
+            WHERE ai1.program_id = #{programId} AND ai1.type_code = 'story'
+            AND ai1.epic_id IN
+            <foreach collection="epicIds" item="epicId" open="("
+                     separator="," close=")">
+                #{epicId}
+            </foreach>
+            GROUP BY ai1.epic_id
+        ) ic ON ic.epic_id = ai.issue_id
+        WHERE ai.program_id = #{programId} AND ai.issue_id IN
+        <foreach collection="epicIds" item="epicId" open="("
+                 separator="," close=")">
+            #{epicId}
+        </foreach>
+    </select>
+
     <select id="queryNotEstimateIssueCountByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
         SELECT ai.issue_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
         FROM agile_issue ai
@@ -798,6 +836,26 @@
         GROUP BY ai1.epic_id
         ) ic ON ic.epic_id = ai.issue_id
         WHERE ai.project_id = #{projectId} AND ai.issue_id IN
+        <foreach collection="epicIds" item="epicId" open="("
+                 separator="," close=")">
+            #{epicId}
+        </foreach>
+    </select>
+
+    <select id="queryProgramNotEstimateIssueCountByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+        SELECT ai.issue_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
+        FROM agile_issue ai
+        LEFT JOIN (SELECT ai1.epic_id AS epic_id, COUNT(1) AS issue_count
+            FROM agile_issue ai1
+            WHERE ai1.program_id = #{programId} AND ai1.type_code = 'feature' AND
+            (ai1.story_points IS NULL OR ai1.story_points = 0) AND ai1.epic_id IN
+            <foreach collection="epicIds" item="epicId" open="("
+                     separator="," close=")">
+                #{epicId}
+            </foreach>
+            GROUP BY ai1.epic_id
+        ) ic ON ic.epic_id = ai.issue_id
+        WHERE ai.program_id = #{programId} AND ai.issue_id IN
         <foreach collection="epicIds" item="epicId" open="("
                  separator="," close=")">
             #{epicId}
@@ -824,6 +882,25 @@
         </foreach>
     </select>
 
+    <select id="queryProgramIssueCountByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+        SELECT ai.issue_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
+        FROM agile_issue ai
+        LEFT JOIN (SELECT ai1.epic_id AS epic_id, COUNT(1) AS issue_count
+            FROM agile_issue ai1
+            WHERE ai1.program_id = #{programId} AND ai1.epic_id IN
+            <foreach collection="epicIds" item="epicId" open="("
+                     separator="," close=")">
+                #{epicId}
+            </foreach>
+            GROUP BY ai1.epic_id
+        ) ic ON ic.epic_id = ai.issue_id
+        WHERE ai.program_id = #{programId} AND ai.issue_id IN
+        <foreach collection="epicIds" item="epicId" open="("
+                 separator="," close=")">
+            #{epicId}
+        </foreach>
+    </select>
+
     <select id="queryDoneIssueCountByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
         SELECT ai.issue_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
         FROM agile_issue ai
@@ -838,6 +915,26 @@
         GROUP BY ai1.epic_id
         ) ic ON ic.epic_id = ai.issue_id
         WHERE ai.project_id = #{projectId} AND ai.issue_id IN
+        <foreach collection="epicIds" item="epicId" open="("
+                 separator="," close=")">
+            #{epicId}
+        </foreach>
+    </select>
+
+    <select id="queryProgramDoneIssueCountByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+        SELECT ai.issue_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
+        FROM agile_issue ai
+        LEFT JOIN (SELECT ai1.epic_id AS epic_id, COUNT(1) AS issue_count
+            FROM agile_issue ai1, agile_issue_status ais
+            WHERE ai1.program_id = #{programId} AND ai1.status_id = ais.status_id and ai1.program_id = ais.project_id AND
+            ais.is_completed = 1 AND ai1.epic_id IN
+            <foreach collection="epicIds" item="epicId" open="("
+                     separator="," close=")">
+                #{epicId}
+            </foreach>
+            GROUP BY ai1.epic_id
+        ) ic ON ic.epic_id = ai.issue_id
+        WHERE ai.program_id = #{programId} AND ai.issue_id IN
         <foreach collection="epicIds" item="epicId" open="("
                  separator="," close=")">
             #{epicId}
@@ -1128,6 +1225,18 @@
             agile_issue
         WHERE
             project_id = #{projectId}
+            AND type_code = 'issue_epic'
+        ORDER BY epic_sequence DESC
+    </select>
+
+    <select id="listEpicSelectProgramData" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT
+            issue_id,
+            epic_name
+        FROM
+            agile_issue
+        WHERE
+            program_id = #{programId}
             AND type_code = 'issue_epic'
         ORDER BY epic_sequence DESC
     </select>

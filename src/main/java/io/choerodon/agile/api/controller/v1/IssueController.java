@@ -242,6 +242,16 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("program查询epic")
+    @GetMapping(value = "/program/epics")
+    public ResponseEntity<List<EpicDataDTO>> listProgramEpic(@ApiParam(value = "项目id", required = true)
+                                                             @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(issueService.listProgramEpic(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.programEpic.listEpic"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("故事地图查询epic")
     @GetMapping(value = "/storymap/epics")
     public ResponseEntity<List<StoryMapEpicDTO>> listStoryMapEpic(@ApiParam(value = "项目id", required = true)
@@ -346,6 +356,16 @@ public class IssueController {
         return Optional.ofNullable(issueService.listEpicSelectData(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssueEpicList"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("查询项目群下的epic，提供给列表下拉")
+    @GetMapping(value = "/epics/select_program_data")
+    public ResponseEntity<List<IssueEpicDTO>> listEpicSelectProgramData(@ApiParam(value = "项目id", required = true)
+                                                                 @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(issueService.listEpicSelectProgramData(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.Issue.queryProgramIssueEpicList"));
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})

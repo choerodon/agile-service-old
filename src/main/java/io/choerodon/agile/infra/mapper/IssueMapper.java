@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
+import io.choerodon.agile.api.dto.EpicDataDTO;
 import io.choerodon.agile.api.dto.SearchDTO;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.BaseMapper;
@@ -31,6 +32,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<EpicDataDO> queryEpicList(@Param("projectId") Long projectId);
 
+    List<EpicDataDO> queryProgramEpicList(@Param("programId") Long programid);
+
     int batchIssueToVersion(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date, @Param("userId") Long userId);
 
     int batchIssueToEpic(@Param("projectId") Long projectId, @Param("epicId") Long epicId, @Param("issueIds") List<Long> issueIds);
@@ -44,6 +47,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @return IssueDO
      */
     List<IssueDO> queryIssueEpicSelectList(@Param("projectId") Long projectId);
+
+    List<IssueDO> listEpicSelectProgramData(@Param("programId") Long programId);
 
     Integer batchRemoveFromVersion(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
@@ -93,11 +98,19 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<IssueCountDO> queryIssueCountByEpicIds(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds);
 
+    List<IssueCountDO> queryProgramIssueCountByEpicIds(@Param("programId") Long programId, @Param("epicIds") List<Long> epicIds);
+
     List<IssueCountDO> queryDoneIssueCountByEpicIds(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds);
+
+    List<IssueCountDO> queryProgramDoneIssueCountByEpicIds(@Param("programId") Long programId, @Param("epicIds") List<Long> epicIds);
 
     List<IssueCountDO> queryNotEstimateIssueCountByEpicIds(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds);
 
+    List<IssueCountDO> queryProgramNotEstimateIssueCountByEpicIds(@Param("programId") Long programId, @Param("epicIds") List<Long> epicIds);
+
     List<IssueCountDO> queryTotalEstimateByEpicIds(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds);
+
+    List<IssueCountDO> queryProgramTotalEstimateByEpicIds(@Param("programId") Long programId, @Param("epicIds") List<Long> epicIds);
 
     List<IssueLabelDO> selectLabelNameByIssueId(@Param("issueId") Long issueId);
 
