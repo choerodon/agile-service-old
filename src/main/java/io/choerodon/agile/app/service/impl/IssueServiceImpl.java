@@ -222,6 +222,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String AGILE = "agile";
     private static final String FIELD_CODES = "fieldCodes";
     private static final String FIELD_NAMES = "fieldNames";
+    private static final String ISSUE_TYPE_FEATURE = "feature";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -386,7 +387,7 @@ public class IssueServiceImpl implements IssueService {
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
-        if ("feature".equals(issue.getTypeCode())) {
+        if (ISSUE_TYPE_FEATURE.equals(issue.getTypeCode())) {
             FeatureDO featureDO = new FeatureDO();
             featureDO.setIssueId(issue.getIssueId());
             FeatureDO res = featureMapper.selectOne(featureDO);
@@ -425,6 +426,15 @@ public class IssueServiceImpl implements IssueService {
                 url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId());
             }
             siteMsgUtil.issueAssignee(userIds, userName, summary, url.toString(), result.getAssigneeId(), projectId);
+        }
+        // return feature extends table info
+        if (ISSUE_TYPE_FEATURE.equals(result.getTypeCode())) {
+            FeatureDO featureDO = new FeatureDO();
+            featureDO.setIssueId(result.getIssueId());
+            FeatureDO res = featureMapper.selectOne(featureDO);
+            if (res != null) {
+                result.setFeatureDTO(ConvertHelper.convert(res, FeatureDTO.class));
+            }
         }
         Boolean completed = issueStatusMapper.selectByStatusId(projectId, result.getStatusId()).getCompleted();
         if (fieldList.contains(STATUS_ID) && completed != null && completed && result.getAssigneeId() != null && SchemeApplyType.AGILE.equals(result.getApplyType())) {
@@ -735,7 +745,7 @@ public class IssueServiceImpl implements IssueService {
         //删除附件
         issueAttachmentService.deleteByIssueId(issueE.getIssueId());
 
-        if ("feature".equals(issueE.getTypeCode())) {
+        if (ISSUE_TYPE_FEATURE.equals(issueE.getTypeCode())) {
             featureRepository.delete(issueId);
         }
         //不是子任务的issue删除子任务
@@ -1604,6 +1614,20 @@ public class IssueServiceImpl implements IssueService {
             } else {
                 IssueCreateDTO issueCreateDTO = issueAssembler.issueDtoToIssueCreateDto(issueDetailDO);
                 issueCreateDTO.setEpicName(issueCreateDTO.getTypeCode().equals(ISSUE_EPIC) ? issueCreateDTO.getEpicName() + COPY : null);
+                // deal feature extends table
+                if (ISSUE_TYPE_FEATURE.equals(issueDetailDO.getTypeCode())) {
+                    FeatureDO featureDO = new FeatureDO();
+                    featureDO.setIssueId(issueId);
+                    FeatureDO res = featureMapper.selectOne(featureDO);
+                    if (res != null) {
+                        FeatureDTO featureDTO = new FeatureDTO();
+                        featureDTO.setAcceptanceCritera(res.getAcceptanceCritera());
+                        featureDTO.setBenfitHypothesis(res.getBenfitHypothesis());
+                        featureDTO.setFeatureType(res.getFeatureType());
+                        featureDTO.setProjectId(projectId);
+                        issueCreateDTO.setFeatureDTO(featureDTO);
+                    }
+                }
                 IssueDTO newIssue = stateMachineService.createIssue(issueCreateDTO, applyType);
                 newIssueId = newIssue.getIssueId();
                 objectVersionNumber = newIssue.getObjectVersionNumber();
@@ -2240,7 +2264,7 @@ public class IssueServiceImpl implements IssueService {
         List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(programId, "program").getBody();
         Long issueTypeEpicId = null;
         for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-            if ("issue_epic".equals(issueTypeDTO.getTypeCode())) {
+            if (ISSUE_EPIC.equals(issueTypeDTO.getTypeCode())) {
                 issueTypeEpicId = issueTypeDTO.getId();
             }
         }

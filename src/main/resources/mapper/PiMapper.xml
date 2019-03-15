@@ -100,7 +100,7 @@
             ap.program_id = #{programId}
             AND ap.art_id = #{artId}
             and ap.status_code != 'done'
-            order by ap.creation_date desc
+            order by ap.id
     </select>
 
     <select id="selectBacklogNoPiList" resultType="io.choerodon.agile.infra.dataobject.SubFeatureDO">

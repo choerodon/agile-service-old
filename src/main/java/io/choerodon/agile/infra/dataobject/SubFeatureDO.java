@@ -25,7 +25,7 @@ public class SubFeatureDO {
 
     private String rank;
 
-    private Long objecVersionNumber;
+    private Long objectVersionNumber;
 
     @Transient
     private Long piId;
@@ -94,12 +94,12 @@ public class SubFeatureDO {
         this.rank = rank;
     }
 
-    public Long getObjecVersionNumber() {
-        return objecVersionNumber;
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
     }
 
-    public void setObjecVersionNumber(Long objecVersionNumber) {
-        this.objecVersionNumber = objecVersionNumber;
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
     }
 
     public void setPiId(Long piId) {
