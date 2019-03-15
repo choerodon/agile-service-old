@@ -63,7 +63,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<Long> queryIssueIdOrderByRankAsc(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-    List<Long> queryFeatureIdOrderByRankAsc(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+    List<Long> queryFeatureIdOrderByRankAsc(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
 
     String queryRightRank(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("leftRank") String leftRank);
 

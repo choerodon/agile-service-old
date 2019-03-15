@@ -1299,7 +1299,7 @@
         FROM
         agile_issue ai
         WHERE
-        ai.programId = #{programId}
+        ai.program_id = #{programId}
         AND ai.type_code = 'feature'
         AND ai.rank > #{leftRank}
         AND ai.issue_id
@@ -1322,7 +1322,7 @@
         AND apf.pi_id = ap.id
         AND ap.status_code != 'done'
         <if test="piId != null and piId != 0">
-            AND apf.piId = #{piId}
+            AND apf.pi_id = #{piId}
         </if>
         )
     </select>
