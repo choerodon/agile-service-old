@@ -52,6 +52,8 @@ public interface IssueService {
 
     List<EpicDataDTO> listEpic(Long projectId);
 
+    List<EpicDataDTO> listProgramEpic(Long programId);
+
     List<StoryMapEpicDTO> listStoryMapEpic(Long projectId, Long organizationId, Boolean showDoneEpic, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds);
 
     /**
@@ -121,6 +123,8 @@ public interface IssueService {
      * @return IssueEpicDTO
      */
     List<IssueEpicDTO> listEpicSelectData(Long projectId);
+
+    List<IssueEpicDTO> listEpicSelectProgramData(Long programId);
 
     /**
      * 查询单个子任务信息

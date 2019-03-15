@@ -688,6 +688,25 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
+    public List<EpicDataDTO> listProgramEpic(Long programId) {
+        List<EpicDataDTO> epicDataList = epicDataAssembler.toTargetList(issueMapper.queryProgramEpicList(programId), EpicDataDTO.class);
+        if (!epicDataList.isEmpty()) {
+            List<Long> epicIds = epicDataList.stream().map(EpicDataDTO::getIssueId).collect(Collectors.toList());
+            Map<Long, Integer> issueCountMap = issueMapper.queryProgramIssueCountByEpicIds(programId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> doneIssueCountMap = issueMapper.queryProgramDoneIssueCountByEpicIds(programId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> notEstimateIssueCountMap = issueMapper.queryProgramNotEstimateIssueCountByEpicIds(programId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, BigDecimal> totalEstimateMap = issueMapper.queryProgramTotalEstimateByEpicIds(programId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getStoryPointCount));
+            epicDataList.forEach(epicData -> {
+                epicData.setIssueCount(issueCountMap.get(epicData.getIssueId()));
+                epicData.setDoneIssueCount(doneIssueCountMap.get(epicData.getIssueId()));
+                epicData.setTotalEstimate(totalEstimateMap.get(epicData.getIssueId()));
+                epicData.setNotEstimate(notEstimateIssueCountMap.get(epicData.getIssueId()));
+            });
+        }
+        return epicDataList;
+    }
+
+    @Override
     public List<StoryMapEpicDTO> listStoryMapEpic(Long projectId, Long organizationId, Boolean showDoneEpic, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds) {
         String filterSql = null;
         if (quickFilterIds != null && !quickFilterIds.isEmpty()) {
@@ -1154,6 +1173,11 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public List<IssueEpicDTO> listEpicSelectData(Long projectId) {
         return issueAssembler.toTargetList(issueMapper.queryIssueEpicSelectList(projectId), IssueEpicDTO.class);
+    }
+
+    @Override
+    public List<IssueEpicDTO> listEpicSelectProgramData(Long programId) {
+        return issueAssembler.toTargetList(issueMapper.listEpicSelectProgramData(programId), IssueEpicDTO.class);
     }
 
     @Override
