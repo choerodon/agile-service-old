@@ -94,12 +94,20 @@
         FROM
             agile_pi ap
             LEFT JOIN agile_pi_feature apf ON ap.id = apf.pi_id AND apf.program_id = #{programId}
-            LEFT JOIN agile_issue ai ON apf.issue_id = ai.issue_id
+            LEFT JOIN agile_issue ai ON apf.issue_id = ai.issue_id and ai.type_code = 'feature'
             LEFT JOIN agile_issue_status ais ON ai.status_id = ais.status_id and ais.project_id = #{programId}
         WHERE
             ap.program_id = #{programId}
             AND ap.art_id = #{artId}
             and ap.status_code != 'done'
+            <if test='advancedSearchArgs != null'>
+                <if test='advancedSearchArgs.epicId != null'>
+                    AND ai.epic_id = #{advancedSearchArgs.epicId}
+                </if>
+                <if test='advancedSearchArgs.noEpic != "" and advancedSearchArgs.noEpic == "true"'>
+                    AND (ai.epic_id IS NULL OR ai.epic_id = 0)
+                </if>
+            </if>
             order by ap.id
     </select>
 
@@ -108,7 +116,7 @@
             ai.issue_id,
             ai.issue_num,
             ai.summary,
-            ais.name AS ai_status_name,
+            ais.name AS status_name,
             ai.story_points,
             ai.issue_type_id,
             ai.type_code,
@@ -118,11 +126,19 @@
             agile_issue ai
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.status_id and ais.project_id = #{programId}
         WHERE
-            ai.program_id = #{programId}
+            ai.program_id = #{programId} and ai.type_code = 'feature'
             AND ai.issue_id NOT IN (
               SELECT apf.issue_id
               FROM agile_pi_feature apf
               WHERE apf.program_id = #{programId} )
+              <if test='advancedSearchArgs != null'>
+                  <if test='advancedSearchArgs.epicId != null'>
+                      AND ai.epic_id = #{advancedSearchArgs.epicId}
+                  </if>
+                  <if test='advancedSearchArgs.noEpic != "" and advancedSearchArgs.noEpic == "true"'>
+                      AND (ai.epic_id IS NULL OR ai.epic_id = 0)
+                  </if>
+              </if>
     </select>
 
     <select id="selectFeatureIdByFeatureIds" resultType="io.choerodon.agile.infra.dataobject.SubFeatureDO">

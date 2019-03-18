@@ -9,6 +9,7 @@ import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -21,7 +22,7 @@ public interface PiService {
 
     PiDTO updatePi(Long programId, PiDTO piDTO);
 
-    JSONObject queryBacklogAll(Long programId);
+    JSONObject queryBacklogAll(Long programId, Map<String, Object> searchParamMap);
 
     Page<PiDTO> queryAll(Long programId, PageRequest pageRequest);
 

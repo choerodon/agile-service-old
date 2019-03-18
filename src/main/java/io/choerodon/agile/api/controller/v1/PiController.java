@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -49,10 +50,12 @@ public class PiController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("待办页面查询所有pi详情")
-    @GetMapping("/backlog_pi_list")
+    @PostMapping("/backlog_pi_list")
     public ResponseEntity<JSONObject> queryBacklogAll(@ApiParam(value = "项目id", required = true)
-                                                 @PathVariable(name = "project_id") Long projectId) {
-        return Optional.ofNullable(piService.queryBacklogAll(projectId))
+                                                      @PathVariable(name = "project_id") Long projectId,
+                                                      @ApiParam(value = "查询参数", required = false)
+                                                      @RequestBody(required = false) Map<String, Object> searchParamMap) {
+        return Optional.ofNullable(piService.queryBacklogAll(projectId, searchParamMap))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.backlogAll.get"));
     }
@@ -98,11 +101,11 @@ public class PiController {
     @ApiOperation("feature批量拖动到pi")
     @PostMapping(value = "/to_pi/{piId}")
     public ResponseEntity<List<SubFeatureDO>> batchFeatureToPi(@ApiParam(value = "项目id", required = true)
-                                                                 @PathVariable(name = "project_id") Long projectId,
+                                                               @PathVariable(name = "project_id") Long projectId,
                                                                @ApiParam(value = "pi id", required = true)
-                                                                 @PathVariable Long piId,
+                                                               @PathVariable Long piId,
                                                                @ApiParam(value = "移卡信息", required = true)
-                                                                 @RequestBody MoveIssueDTO moveIssueDTO) {
+                                                               @RequestBody MoveIssueDTO moveIssueDTO) {
         return Optional.ofNullable(piService.batchFeatureToPi(projectId, piId, moveIssueDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.feaature.batchToPi"));
@@ -112,11 +115,11 @@ public class PiController {
     @ApiOperation("feature批量拖动到epic")
     @PostMapping(value = "/to_epic/{epicId}")
     public ResponseEntity<List<SubFeatureDO>> batchFeatureToEpic(@ApiParam(value = "项目id", required = true)
-                                                               @PathVariable(name = "project_id") Long projectId,
-                                                               @ApiParam(value = "epic id", required = true)
-                                                               @PathVariable Long epicId,
-                                                               @ApiParam(value = "移卡信息", required = true)
-                                                               @RequestBody List<Long> featureIds) {
+                                                                 @PathVariable(name = "project_id") Long projectId,
+                                                                 @ApiParam(value = "epic id", required = true)
+                                                                 @PathVariable Long epicId,
+                                                                 @ApiParam(value = "移卡信息", required = true)
+                                                                 @RequestBody List<Long> featureIds) {
         return Optional.ofNullable(piService.batchFeatureToEpic(projectId, epicId, featureIds))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.feature.batchToEpic"));
