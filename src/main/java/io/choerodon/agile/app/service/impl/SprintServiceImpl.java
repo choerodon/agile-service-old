@@ -368,8 +368,6 @@ public class SprintServiceImpl implements SprintService {
         if (targetSprintId != null && !Objects.equals(targetSprintId, 0L)) {
             issueRepository.issueToDestinationByIdsCloseSprint(projectId, targetSprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
         }
-//        //状态更新为初始状态
-//        issueService.batchHandleIssueStatus(projectId, moveIssueIds, sprintCompleteDTO.getSprintId());
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
     }
 
@@ -462,7 +460,6 @@ public class SprintServiceImpl implements SprintService {
         Map<Long, SprintReportIssueStatusDO> reportIssueStoryPointsMap = reportIssueStoryPoints.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
         //冲刺完成前issue的最后变更状态
         List<SprintReportIssueStatusDO> reportIssueBeforeStatus = reportMapper.queryBeforeIssueStatus(projectId, reportIssueIds, startDate, actualEndDate);
-//        Map<Long, SprintReportIssueStatusDO> reportIssueBeforeStatusMap = reportIssueBeforeStatus.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
         Map<Long, SprintReportIssueStatusDO> reportIssueBeforeStatusMap = new HashMap<>();
         for (SprintReportIssueStatusDO sprintReportIssueStatusDO : reportIssueBeforeStatus) {
             StatusMapDTO statusMapDTO = statusMapDTOMap.get(sprintReportIssueStatusDO.getStatusId());
@@ -473,7 +470,6 @@ public class SprintServiceImpl implements SprintService {
         //冲刺完成后issue的最初变更状态
         reportIssueIds.removeAll(reportIssueBeforeStatusMap.keySet());
         List<SprintReportIssueStatusDO> reportIssueAfterStatus = reportIssueIds.isEmpty() ? new ArrayList<>() : reportMapper.queryAfterIssueStatus(projectId, reportIssueIds, actualEndDate);
-//        Map<Long, SprintReportIssueStatusDO> reportIssueAfterStatusMap = reportIssueAfterStatus.stream().collect(Collectors.toMap(SprintReportIssueStatusDO::getIssueId, sprintReportIssueStatusDO -> sprintReportIssueStatusDO));
         Map<Long, SprintReportIssueStatusDO> reportIssueAfterStatusMap = new HashMap<>();
         for (SprintReportIssueStatusDO sprintReportIssueStatusDO : reportIssueAfterStatus) {
             StatusMapDTO statusMapDTO = statusMapDTOMap.get(sprintReportIssueStatusDO.getStatusId());

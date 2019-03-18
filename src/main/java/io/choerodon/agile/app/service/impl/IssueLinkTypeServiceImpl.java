@@ -1,9 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import java.util.List;
-
 import io.choerodon.agile.api.dto.IssueLinkTypeSearchDTO;
-import io.choerodon.agile.api.dto.SearchDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;

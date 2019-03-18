@@ -290,18 +290,10 @@ public class ExcelUtil {
             cell = row.createCell(0);
             cell.setCellValue(datas.get(i));
         }
-        //2016-12-15更新，遇到问题：生成的excel下拉框还是可以手动编辑，不满足
-        //HSSFName namedCell = workbook.createName();
-        //namedCell.setNameName(hiddenSheetName);
-        // A1 到 Adatas.length 表示第一列的第一行到datas.length行，需要与前一步生成的隐藏的数据源sheet数据位置对应
-        //namedCell.setRefersToFormula(hiddenSheetName + "!$A$1:$A" + datas.length);
-        // 指定下拉数据时，给定目标数据范围 hiddenSheetName!$A$1:$A5   隐藏sheet的A1到A5格的数据
         XSSFDataValidationHelper dvHelper = new XSSFDataValidationHelper((XSSFSheet)realSheet);
         XSSFDataValidationConstraint dvConstraint = (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint(hiddenSheetName + "!$A$1:$A" + datas.size());
         CellRangeAddressList addressList = null;
         XSSFDataValidation validation = null;
-        row = null;
-        cell = null;
         // 单元格样式
         CellStyle style = workbook.createCellStyle();
         style.setAlignment(CellStyle.ALIGN_CENTER);

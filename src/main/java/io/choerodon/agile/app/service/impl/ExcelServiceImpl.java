@@ -135,9 +135,7 @@ public class ExcelServiceImpl implements ExcelService {
             if (!versionList.isEmpty()) {
                 wb = ExcelUtil.dropDownList2007(wb, sheet, versionList, 1, 500, 6, 6, HIDDEN_FIX_VERSION, 3);
             }
-//            FileOutputStream stream = new FileOutputStream("/Users/huangfuqiang/Downloads/success10.xlsx");
             wb.write(response.getOutputStream());
-//            stream.close();
         } catch (Exception e) {
             LOGGER.info(e.getMessage());
         }

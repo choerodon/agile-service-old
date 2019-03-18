@@ -1,7 +1,5 @@
 package io.choerodon.agile.domain.agile.entity;
 
-import io.choerodon.agile.infra.common.utils.StringUtil;
-
 import java.util.List;
 
 public class BatchRemovePiE {

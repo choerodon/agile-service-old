@@ -93,7 +93,6 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private static final String SOURCE_VERSION_ERROR = "error.sourceVersionIds.notNull";
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
-    private static final String SEARCH = "search";
 
     private final SagaClient sagaClient;
 

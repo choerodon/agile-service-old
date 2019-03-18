@@ -3,11 +3,8 @@ package io.choerodon.agile.app.service;
 import io.choerodon.agile.api.dto.IssueLinkTypeCreateDTO;
 import io.choerodon.agile.api.dto.IssueLinkTypeDTO;
 import io.choerodon.agile.api.dto.IssueLinkTypeSearchDTO;
-import io.choerodon.agile.api.dto.SearchDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-
-import java.util.List;
 
 /**
  * @author dinghuang123@gmail.com

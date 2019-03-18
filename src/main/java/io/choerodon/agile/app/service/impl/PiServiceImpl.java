@@ -48,6 +48,8 @@ public class PiServiceImpl implements PiService {
 
     public static final String PI_TODO = "todo";
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
+    private static final String YYYY_MM_DD = "yyyy-MM-dd";
+    private static final String YYYY = "yyyy";
 
     @Autowired
     private PiRepository piRepository;
@@ -91,13 +93,13 @@ public class PiServiceImpl implements PiService {
      * @return
      */
     public Integer getCurrentYear() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat(YYYY);
         Date date = new Date();
         return Integer.parseInt(sdf.format(date));
     }
 
     private Date formatDate(Date date) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format = new SimpleDateFormat(YYYY_MM_DD);
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         Date res = null;
@@ -111,7 +113,7 @@ public class PiServiceImpl implements PiService {
     }
 
     private Date getSpecifyTimeByOneTime(Date date, int amount) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format = new SimpleDateFormat(YYYY_MM_DD);
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         c.add(Calendar.DATE, amount);
@@ -142,7 +144,7 @@ public class PiServiceImpl implements PiService {
     }
 
     private Boolean judgeBeWork(Date date, List<WorkCalendarHolidayRefDTO> calendarDays) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat(YYYY_MM_DD);
         String dateString = formatter.format(date);
         int week = getWeekOfDate(date);
         for (WorkCalendarHolidayRefDTO value : calendarDays) {
@@ -437,7 +439,7 @@ public class PiServiceImpl implements PiService {
         }
         issueRepository.batchUpdateFeatureRank(programId, moveIssueDOS);
         List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
-        List<SubFeatureDO> featureDOList = piMapper.selectFeatureIdByFeatureIds(programId, moveIssueIds).stream().filter(subFeatureDO -> subFeatureDO.getPiId() == null ? piId != 0 : !subFeatureDO.getPiId().equals(piId)).collect(Collectors.toList());;
+        List<SubFeatureDO> featureDOList = piMapper.selectFeatureIdByFeatureIds(programId, moveIssueIds).stream().filter(subFeatureDO -> subFeatureDO.getPiId() == null ? piId != 0 : !subFeatureDO.getPiId().equals(piId)).collect(Collectors.toList());
         if (featureDOList != null && !featureDOList.isEmpty()) {
             List<Long> moveIssueIdsFilter = featureDOList.stream().map(SubFeatureDO::getIssueId).collect(Collectors.toList());
             BatchRemovePiE batchRemovePiE = new BatchRemovePiE(programId, piId, moveIssueIdsFilter);
