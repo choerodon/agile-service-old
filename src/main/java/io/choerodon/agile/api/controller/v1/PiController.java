@@ -53,9 +53,11 @@ public class PiController {
     @PostMapping("/backlog_pi_list")
     public ResponseEntity<JSONObject> queryBacklogAll(@ApiParam(value = "项目id", required = true)
                                                       @PathVariable(name = "project_id") Long projectId,
+                                                      @ApiParam(value = "组织id", required = true)
+                                                      @RequestParam(required = true) Long organizationId,
                                                       @ApiParam(value = "查询参数", required = false)
                                                       @RequestBody(required = false) Map<String, Object> searchParamMap) {
-        return Optional.ofNullable(piService.queryBacklogAll(projectId, searchParamMap))
+        return Optional.ofNullable(piService.queryBacklogAll(projectId, organizationId, searchParamMap))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.backlogAll.get"));
     }

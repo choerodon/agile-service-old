@@ -1,13 +1,13 @@
-package io.choerodon.agile.infra.dataobject;
+package io.choerodon.agile.api.dto;
 
 import javax.persistence.Transient;
 import java.math.BigDecimal;
 
 /**
- * Created by HuangFuqiang@choerodon.io on 2019/3/12.
+ * Created by HuangFuqiang@choerodon.io on 2019/3/18.
  * Email: fuqianghuang01@gmail.com
  */
-public class SubFeatureDO {
+public class SubFeatureDTO {
 
     private Long issueId;
 
@@ -29,6 +29,12 @@ public class SubFeatureDO {
 
     @Transient
     private Long piId;
+
+    @Transient
+    private IssueTypeDTO issueTypeDTO;
+
+    @Transient
+    private StatusMapDTO statusDTO;
 
     public void setIssueId(Long issueId) {
         this.issueId = issueId;
@@ -108,5 +114,21 @@ public class SubFeatureDO {
 
     public Long getPiId() {
         return piId;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
+    }
+
+    public void setStatusDTO(StatusMapDTO statusDTO) {
+        this.statusDTO = statusDTO;
+    }
+
+    public StatusMapDTO getStatusDTO() {
+        return statusDTO;
     }
 }

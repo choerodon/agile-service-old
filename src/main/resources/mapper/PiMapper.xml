@@ -85,7 +85,7 @@
             ai.issue_id as ai_issue_id,
             ai.issue_num as ai_issue_num,
             ai.summary as ai_summary,
-            ais.name as ai_status_name,
+            ai.status_id as ai_status_id,
             ai.story_points as ai_story_points,
             ai.issue_type_id as ai_issue_type_id,
             ai.type_code as ai_type_code,
@@ -95,7 +95,6 @@
             agile_pi ap
             LEFT JOIN agile_pi_feature apf ON ap.id = apf.pi_id AND apf.program_id = #{programId}
             LEFT JOIN agile_issue ai ON apf.issue_id = ai.issue_id and ai.type_code = 'feature'
-            LEFT JOIN agile_issue_status ais ON ai.status_id = ais.status_id and ais.project_id = #{programId}
         WHERE
             ap.program_id = #{programId}
             AND ap.art_id = #{artId}
@@ -116,7 +115,7 @@
             ai.issue_id,
             ai.issue_num,
             ai.summary,
-            ais.name AS status_name,
+            ai.status_id,
             ai.story_points,
             ai.issue_type_id,
             ai.type_code,
@@ -124,7 +123,6 @@
             ai.object_version_number
         FROM
             agile_issue ai
-        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.status_id and ais.project_id = #{programId}
         WHERE
             ai.program_id = #{programId} and ai.type_code = 'feature'
             AND ai.issue_id NOT IN (

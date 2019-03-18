@@ -22,7 +22,7 @@ public interface PiService {
 
     PiDTO updatePi(Long programId, PiDTO piDTO);
 
-    JSONObject queryBacklogAll(Long programId, Map<String, Object> searchParamMap);
+    JSONObject queryBacklogAll(Long programId, Long organizationId, Map<String, Object> searchParamMap);
 
     Page<PiDTO> queryAll(Long programId, PageRequest pageRequest);
 
