@@ -52,6 +52,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     private static final String COLUMN_COLOR_DOING = "column_color_doing";
     private static final String COLUMN_COLOR_DONE = "column_color_done";
     private static final String COLUMN_COLOR_NO_STATUS = "column_color_no_status";
+    private static final String COLUMN_COLOR_PREPARE = "column_color_prepare";
 
     @Autowired
     private BoardColumnRepository boardColumnRepository;
@@ -231,7 +232,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         column.setSequence(sequence);
         switch (categoryCode) {
             case PREPARE_CODE:
-                column.setColorCode(COLUMN_COLOR_NO_STATUS);
+                column.setColorCode(COLUMN_COLOR_PREPARE);
                 break;
             case TODO_CODE:
                 column.setColorCode(COLUMN_COLOR_TODO);
