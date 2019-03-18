@@ -19,7 +19,6 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -32,8 +31,8 @@ import java.util.*;
 @Service
 public class DemoServiceImpl implements DemoService {
 
-    private final static String AGILE_APPLYTYPE = "agile";
-    private final static String TEST_APPLYTYPE = "test";
+    private static final String AGILE_APPLYTYPE = "agile";
+    private static final String TEST_APPLYTYPE = "test";
 
     @Autowired
     private SprintService sprintService;
@@ -281,8 +280,6 @@ public class DemoServiceImpl implements DemoService {
         IssueMoveDTO issueMoveDTO = new IssueMoveDTO();
         issueMoveDTO.setBefore(true);
         issueMoveDTO.setBoardId(boardRes.getBoardId());
-//        issueMoveDTO.setColumnId(columnMap.get("done"));
-//        issueMoveDTO.setOriginColumnId(columnMap.get("todo"));
         issueMoveDTO.setIssueId(issueId);
         issueMoveDTO.setObjectVersionNumber(objectVersionNumber);
         issueMoveDTO.setRank(false);
@@ -985,7 +982,6 @@ public class DemoServiceImpl implements DemoService {
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask21.getIssueId(), workDays.get(2), workDays.get(2), userId2);
         dataLogMapper.updateStatusDingDataLog(projectId, subtask21.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId2);
-//        dataLogMapper.updateStatusRtDataLog(projectId, subtask21.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId2);
 
         dataLogMapper.updateExpStatusRtDataLog(projectId, subtask18.getIssueId(), workDays.get(2), workDays.get(2), userId1);
         dataLogMapper.updateStatusDingDataLog(projectId, subtask18.getIssueId(), dateAfters.get(1), dateAfters.get(1), userId1);

@@ -1,7 +1,5 @@
 package io.choerodon.agile.infra.common.utils;
 
-import io.choerodon.core.exception.CommonException;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

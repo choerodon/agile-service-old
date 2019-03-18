@@ -174,8 +174,6 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private FeatureRepository featureRepository;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IssueServiceImpl.class);
-
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
     private static final String COPY = "Copy";
@@ -223,6 +221,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String FIELD_CODES = "fieldCodes";
     private static final String FIELD_NAMES = "fieldNames";
     private static final String ISSUE_TYPE_FEATURE = "feature";
+    private static final String ERROR_PROJECT_NOTEXIST = "error.project.notExist";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -343,7 +342,7 @@ public class IssueServiceImpl implements IssueService {
             String userName = result.getReporterName();
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
             if (projectDTO == null) {
-                throw new CommonException("error.project.notExist");
+                throw new CommonException(ERROR_PROJECT_NOTEXIST);
             }
             String projectName = convertProjectName(projectDTO);
             String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId();
@@ -416,7 +415,7 @@ public class IssueServiceImpl implements IssueService {
             String userName = result.getAssigneeName();
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
             if (projectDTO == null) {
-                throw new CommonException("error.project.notExist");
+                throw new CommonException(ERROR_PROJECT_NOTEXIST);
             }
             String projectName = convertProjectName(projectDTO);
             StringBuilder url = new StringBuilder();
@@ -441,7 +440,7 @@ public class IssueServiceImpl implements IssueService {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", result);
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
             if (projectDTO == null) {
-                throw new CommonException("error.project.notExist");
+                throw new CommonException(ERROR_PROJECT_NOTEXIST);
             }
             String projectName = convertProjectName(projectDTO);
             StringBuilder url = new StringBuilder();
@@ -1208,7 +1207,7 @@ public class IssueServiceImpl implements IssueService {
             String userName = result.getReporterName();
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
             if (projectDTO == null) {
-                throw new CommonException("error.project.notExist");
+                throw new CommonException(ERROR_PROJECT_NOTEXIST);
             }
             String projectName = convertProjectName(projectDTO);
             String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getParentIssueNum() + URL_TEMPLATE4 + result.getParentIssueId() + URL_TEMPLATE5 + result.getIssueId();
@@ -1777,7 +1776,6 @@ public class IssueServiceImpl implements IssueService {
                 if (subIssueIds != null && !subIssueIds.isEmpty()) {
                     throw new CommonException("error.transformedSubTask.issueHaveSubIssue");
                 }
-//                issueE.setRank(null);
                 issueE.setEpicSequence(null);
                 issueE.setStoryPoints(null);
                 issueE.setStatusId(issueTransformSubTask.getStatusId());
