@@ -61,9 +61,9 @@ public class ArtController {
     @ApiOperation("删除art")
     @DeleteMapping("/{id}")
     public ResponseEntity deleteArt(@ApiParam(value = "项目id", required = true)
-                                            @PathVariable(name = "project_id") Long projectId,
-                                            @ApiParam(value = "art id", required = true)
-                                            @PathVariable Long id) {
+                                    @PathVariable(name = "project_id") Long projectId,
+                                    @ApiParam(value = "art id", required = true)
+                                    @PathVariable Long id) {
         artService.deleteArt(projectId, id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

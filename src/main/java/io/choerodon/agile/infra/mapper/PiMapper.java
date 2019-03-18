@@ -7,6 +7,7 @@ import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/3/11.
@@ -20,9 +21,9 @@ public interface PiMapper extends BaseMapper<PiDO> {
 
     String queryPiMinRank(@Param("programId") Long programId, @Param("piId") Long piId);
 
-    List<PiWithFeatureDO> selectBacklogPiList(@Param("programId") Long programId, @Param("artId") Long artId);
+    List<PiWithFeatureDO> selectBacklogPiList(@Param("programId") Long programId, @Param("artId") Long artId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
 
-    List<SubFeatureDO> selectBacklogNoPiList(@Param("programId") Long programId);
+    List<SubFeatureDO> selectBacklogNoPiList(@Param("programId") Long programId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
 
     PiDO selectLastPi(@Param("programId") Long programId, @Param("artId") Long artId);
 

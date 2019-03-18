@@ -18,6 +18,7 @@ import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.domain.agile.repository.PiRepository;
 import io.choerodon.agile.domain.agile.repository.SprintRepository;
 import io.choerodon.agile.infra.common.utils.RankUtil;
+import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.ArtMapper;
@@ -46,6 +47,7 @@ import java.util.stream.Collectors;
 public class PiServiceImpl implements PiService {
 
     public static final String PI_TODO = "todo";
+    private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
 
     @Autowired
     private PiRepository piRepository;
@@ -253,17 +255,17 @@ public class PiServiceImpl implements PiService {
     }
 
     @Override
-    public JSONObject queryBacklogAll(Long programId) {
+    public JSONObject queryBacklogAll(Long programId, Map<String, Object> searchParamMap) {
         JSONObject result = new JSONObject();
         // query backlog with all feature
-        List<SubFeatureDO> backlogFeatures = piMapper.selectBacklogNoPiList(programId);
+        List<SubFeatureDO> backlogFeatures = piMapper.selectBacklogNoPiList(programId, StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)));
         result.put("backlogAllFeatures",backlogFeatures);
         // query active art with all pi
         Long activeArtId = getActiveArt(programId);
         if (activeArtId == null) {
             return result;
         }
-        List<PiWithFeatureDO> piWithFeatureDOList = piMapper.selectBacklogPiList(programId, activeArtId);
+        List<PiWithFeatureDO> piWithFeatureDOList = piMapper.selectBacklogPiList(programId, activeArtId, StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)));
         result.put("allPiList", piWithFeatureDOList);
         return result;
     }

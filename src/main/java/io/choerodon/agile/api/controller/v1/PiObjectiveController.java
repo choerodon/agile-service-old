@@ -34,9 +34,9 @@ public class PiObjectiveController {
     @ApiOperation("创建pi objective")
     @PostMapping
     public ResponseEntity<PiObjectiveDTO> createPiObjective(@ApiParam(value = "项目id", required = true)
-                                                   @PathVariable(name = "project_id") Long projectId,
-                                                   @ApiParam(value = "pi objective dto", required = true)
-                                                   @RequestBody PiObjectiveDTO piObjectiveDTO) {
+                                                            @PathVariable(name = "project_id") Long projectId,
+                                                            @ApiParam(value = "pi objective dto", required = true)
+                                                            @RequestBody PiObjectiveDTO piObjectiveDTO) {
         return Optional.ofNullable(piObjectiveService.createPiObjective(projectId, piObjectiveDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.piObjective.create"));
@@ -69,9 +69,9 @@ public class PiObjectiveController {
     @ApiOperation("查询单个pi objective")
     @GetMapping
     public ResponseEntity<PiObjectiveDTO> queryPiObjective(@ApiParam(value = "项目id", required = true)
-                                                            @PathVariable(name = "project_id") Long projectId,
-                                                            @ApiParam(value = "pi objective id", required = true)
-                                                            @RequestParam Long id) {
+                                                           @PathVariable(name = "project_id") Long projectId,
+                                                           @ApiParam(value = "pi objective id", required = true)
+                                                           @RequestParam Long id) {
         return Optional.ofNullable(piObjectiveService.queryPiObjective(projectId, id))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.piObjective.get"));
