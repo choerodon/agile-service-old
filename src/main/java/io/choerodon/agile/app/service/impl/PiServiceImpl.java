@@ -1,11 +1,9 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.MoveIssueDTO;
-import io.choerodon.agile.api.dto.PiDTO;
-import io.choerodon.agile.api.dto.ProjectRelationshipDTO;
-import io.choerodon.agile.api.dto.WorkCalendarHolidayRefDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.PiValidator;
+import io.choerodon.agile.app.assembler.PiAssembler;
 import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
@@ -20,11 +18,10 @@ import io.choerodon.agile.domain.agile.repository.SprintRepository;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
-import io.choerodon.agile.infra.mapper.ArtMapper;
-import io.choerodon.agile.infra.mapper.IssueMapper;
-import io.choerodon.agile.infra.mapper.PiMapper;
-import io.choerodon.agile.infra.mapper.SprintMapper;
+import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
@@ -32,6 +29,7 @@ import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,6 +84,19 @@ public class PiServiceImpl implements PiService {
 
     @Autowired
     private SprintRepository sprintRepository;
+
+    @Autowired
+    private StateMachineFeignClient stateMachineFeignClient;
+
+    @Autowired
+    private IssueFeignClient issueFeignClient;
+
+    @Autowired
+    private PiAssembler piAssembler;
+
+    @Autowired
+    private IssueStatusMapper issueStatusMapper;
+
 
     /**
      * 获取当前年分
@@ -256,19 +267,32 @@ public class PiServiceImpl implements PiService {
         }
     }
 
+    private void setStatusIsCompleted(Long projectId, Map<Long, StatusMapDTO> statusMapDTOMap) {
+        IssueStatusDO issueStatusDO = new IssueStatusDO();
+        issueStatusDO.setProjectId(projectId);
+        Map<Long, Boolean> statusCompletedMap = issueStatusMapper.select(issueStatusDO).stream().collect(Collectors.toMap(IssueStatusDO::getStatusId, IssueStatusDO::getCompleted));
+        statusMapDTOMap.entrySet().forEach(entry -> entry.getValue().setCompleted(statusCompletedMap.getOrDefault(entry.getKey(), false)));
+    }
+
     @Override
-    public JSONObject queryBacklogAll(Long programId, Map<String, Object> searchParamMap) {
+    public JSONObject queryBacklogAll(Long programId, Long organizationId, Map<String, Object> searchParamMap) {
+        // return result by JSONObject
         JSONObject result = new JSONObject();
+        // get statusMap and issueTypeMap by organizationId
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        // set status completed
+        setStatusIsCompleted(programId, statusMapDTOMap);
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         // query backlog with all feature
         List<SubFeatureDO> backlogFeatures = piMapper.selectBacklogNoPiList(programId, StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)));
-        result.put("backlogAllFeatures",backlogFeatures);
+        result.put("backlogAllFeatures", backlogFeatures != null && !backlogFeatures.isEmpty() ? piAssembler.subFeatureDOTODTO(backlogFeatures, statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
         // query active art with all pi
         Long activeArtId = getActiveArt(programId);
         if (activeArtId == null) {
             return result;
         }
         List<PiWithFeatureDO> piWithFeatureDOList = piMapper.selectBacklogPiList(programId, activeArtId, StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)));
-        result.put("allPiList", piWithFeatureDOList);
+        result.put("allPiList", piWithFeatureDOList != null && !piWithFeatureDOList.isEmpty() ? piAssembler.piWithFeatureDOTODTO(piWithFeatureDOList, statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
         return result;
     }
 
