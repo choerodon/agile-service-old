@@ -29,7 +29,7 @@ import java.util.Map;
 public class ExcelUtil {
 
     public enum Mode {
-        SXSSF("SXSSF"), HSSF("HSSF"),XSSF("XSSF");
+        SXSSF("SXSSF"), HSSF("HSSF"), XSSF("XSSF");
         private String value;
 
         Mode(String value) {
@@ -132,7 +132,7 @@ public class ExcelUtil {
     /**
      * 通过类导出
      */
-    public static <T> void export(List<T> list, Class<T> clazz, String[] fieldsName, String[] fields, String sheetName, HttpServletResponse response) {
+    public static <T> void export(List<T> list, Class<T> clazz, String[] fieldsName, String[] fields, String sheetName, List<String> autoSizeColumn, HttpServletResponse response) {
         if (list != null && !list.isEmpty()) {
             //1、创建工作簿
             SXSSFWorkbook workbook = new SXSSFWorkbook();
@@ -145,19 +145,30 @@ public class ExcelUtil {
             SXSSFSheet sheet = workbook.createSheet(sheetName);
             //设置默认列宽
             sheet.setDefaultColumnWidth(13);
+            //创建标题列
             SXSSFRow row2 = sheet.createRow(0);
             row2.setHeight((short) 260);
+            for (int i = 0; i < fieldsName.length; i++) {
+                //3.3设置列标题
+                SXSSFCell cell2 = row2.createCell(i);
+                //加载单元格样式
+                cell2.setCellStyle(style2);
+                cell2.setCellValue(fieldsName[i]);
+            }
             for (int j = 0; j < list.size(); j++) {
                 SXSSFRow row = sheet.createRow(j + 1);
                 row.setHeight((short) 260);
                 for (int i = 0; i < fieldsName.length; i++) {
-                    //3.3设置列标题
-                    SXSSFCell cell2 = row2.createCell(i);
-                    //加载单元格样式
-                    cell2.setCellStyle(style2);
-                    cell2.setCellValue(fieldsName[i]);
+                    ;
                     //4、操作单元格；将数据写入excel
                     handleWriteCell(row, i, j, list, cellStyle, fields, clazz);
+                }
+            }
+            sheet.trackAllColumnsForAutoSizing();
+            for (int i = 0; i < fieldsName.length; i++) {
+                //设置列宽度自适应
+                if (autoSizeColumn.contains(fields[i])) {
+                    sheet.autoSizeColumn(i);
                 }
             }
             //5、输出
@@ -262,14 +273,14 @@ public class ExcelUtil {
     }
 
     /**
-     * @param wb HSSFWorkbook对象
-     * @param realSheet 需要操作的sheet对象
-     * @param datas 下拉的列表数据
-     * @param startRow 开始行
-     * @param endRow 结束行
-     * @param startCol 开始列
-     * @param endCol 结束列
-     * @param hiddenSheetName 隐藏的sheet名
+     * @param wb               HSSFWorkbook对象
+     * @param realSheet        需要操作的sheet对象
+     * @param datas            下拉的列表数据
+     * @param startRow         开始行
+     * @param endRow           结束行
+     * @param startCol         开始列
+     * @param endCol           结束列
+     * @param hiddenSheetName  隐藏的sheet名
      * @param hiddenSheetIndex 隐藏的sheet索引
      * @return
      * @throws Exception
