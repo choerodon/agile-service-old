@@ -54,8 +54,8 @@ public class ExcelUtil {
         ztFont.setColor(Font.COLOR_RED);
         ztStyle.setFont(ztFont);
         Row row = sheet.createRow(rowNum);
-        row.createCell(4).setCellValue(fieldName);
-        Cell cell = row.createCell(5);
+        row.createCell(0).setCellValue(fieldName);
+        Cell cell = row.createCell(1);
         cell.setCellValue(requestStr);
         if (hasStyle) {
             cell.setCellStyle(ztStyle);
@@ -64,16 +64,16 @@ public class ExcelUtil {
 
     public static void createGuideSheet(Workbook wb) {
         Sheet sheet = wb.createSheet("要求");
-        sheet.setColumnWidth(4, 5000);
-        sheet.setColumnWidth(5, 15000);
-        initGuideSheetByRow(wb, sheet, 6, "概要", "必输项，限制44个字符", true);
-        initGuideSheetByRow(wb, sheet, 7, "描述", "非必输", false);
-        initGuideSheetByRow(wb, sheet, 8, "优先级", "必输项", true);
-        initGuideSheetByRow(wb, sheet, 9, "问题类型", "必输项", true);
-        initGuideSheetByRow(wb, sheet, 10, "故事点", "非必输，仅支持3位整数或者0.5", false);
-        initGuideSheetByRow(wb, sheet, 11, "剩余时间", "非必输，仅支持3位整数或者0.5", false);
-        initGuideSheetByRow(wb, sheet, 12, "修复版本", "非必输", false);
-        initGuideSheetByRow(wb, sheet, 13, "史诗名称", "如果问题类型选择史诗，此项必填, 限制10个字符", true);
+        sheet.setColumnWidth(0, 5000);
+        sheet.setColumnWidth(1, 15000);
+        initGuideSheetByRow(wb, sheet, 0, "概要", "必输项，限制44个字符", true);
+        initGuideSheetByRow(wb, sheet, 1, "描述", "非必输", false);
+        initGuideSheetByRow(wb, sheet, 2, "优先级", "必输项", true);
+        initGuideSheetByRow(wb, sheet, 3, "问题类型", "必输项", true);
+        initGuideSheetByRow(wb, sheet, 4, "故事点", "非必输，仅支持3位整数或者0.5", false);
+        initGuideSheetByRow(wb, sheet, 5, "剩余时间", "非必输，仅支持3位整数或者0.5", false);
+        initGuideSheetByRow(wb, sheet, 6, "修复版本", "非必输", false);
+        initGuideSheetByRow(wb, sheet, 7, "史诗名称", "如果问题类型选择史诗，此项必填, 限制10个字符", true);
     }
 
     public static Workbook generateExcelAwesome(Workbook generateExcel, List<Integer> errorRows, Map<Integer, List<Integer>> errorMapList, String[] FIELDS_NAME, List<String> priorityList, List<String> issueTypeList, List<String> versionList, String sheetName) {
