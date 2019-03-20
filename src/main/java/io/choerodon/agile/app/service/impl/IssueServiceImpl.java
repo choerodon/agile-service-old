@@ -1291,7 +1291,7 @@ public class IssueServiceImpl implements IssueService {
                 issueLinkE.setLinkedIssueId(issueLinkE.getIn() ? linkIssueId : issueId);
                 issueLinkE.setProjectId(projectId);
                 issueLinkRule.verifyCreateData(issueLinkE);
-                if (issueLinkMapper.selectByPrimaryKey(issueLinkE) == null) {
+                if (issueLinkRule.checkUniqueLink(issueLinkE)) {
                     issueLinkRepository.create(issueLinkE);
                 }
             });
@@ -1729,7 +1729,9 @@ public class IssueServiceImpl implements IssueService {
                 }
                 copy.setLinkTypeId(issueLinkE.getLinkTypeId());
                 copy.setProjectId(projectId);
-                issueLinkRepository.create(copy);
+                if (issueLinkRule.checkUniqueLink(copy)) {
+                    issueLinkRepository.create(copy);
+                }
             });
         }
     }
@@ -1745,7 +1747,9 @@ public class IssueServiceImpl implements IssueService {
             issueLinkE.setLinkTypeId(issueLinkTypeDO.getLinkTypeId());
             issueLinkE.setIssueId(newIssueId);
             issueLinkE.setProjectId(projectId);
-            issueLinkRepository.create(issueLinkE);
+            if (issueLinkRule.checkUniqueLink(issueLinkE)) {
+                issueLinkRepository.create(issueLinkE);
+            }
         }
     }
 
