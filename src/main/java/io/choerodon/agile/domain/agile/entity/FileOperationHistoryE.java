@@ -17,6 +17,14 @@ public class FileOperationHistoryE {
         this.status = status;
     }
 
+    public FileOperationHistoryE(Long projectId, Long id, String action, String status, Long objectVersionNumber) {
+        this.projectId = projectId;
+        this.id = id;
+        this.action = action;
+        this.status = status;
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
     private Long id;
 
     private Long projectId;

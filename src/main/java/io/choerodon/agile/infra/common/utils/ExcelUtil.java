@@ -48,8 +48,38 @@ public class ExcelUtil {
     private static final String EXCEPTION = "Exception:{}";
     private static final String ERROR_IO_WORKBOOK_WRITE_OUTPUTSTREAM = "error.io.workbook.write.output.stream";
 
+    private static void initGuideSheetByRow(Workbook workbook, Sheet sheet, int rowNum, String fieldName, String requestStr, Boolean hasStyle) {
+        CellStyle ztStyle = workbook.createCellStyle();
+        Font ztFont = workbook.createFont();
+        ztFont.setColor(Font.COLOR_RED);
+        ztStyle.setFont(ztFont);
+        Row row = sheet.createRow(rowNum);
+        row.createCell(4).setCellValue(fieldName);
+        Cell cell = row.createCell(5);
+        cell.setCellValue(requestStr);
+        if (hasStyle) {
+            cell.setCellStyle(ztStyle);
+        }
+    }
+
+    public static void createGuideSheet(Workbook wb) {
+        Sheet sheet = wb.createSheet("要求");
+        sheet.setColumnWidth(4, 5000);
+        sheet.setColumnWidth(5, 15000);
+        initGuideSheetByRow(wb, sheet, 6, "概要", "必输项，限制44个字符", true);
+        initGuideSheetByRow(wb, sheet, 7, "描述", "非必输", false);
+        initGuideSheetByRow(wb, sheet, 8, "优先级", "必输项", true);
+        initGuideSheetByRow(wb, sheet, 9, "问题类型", "必输项", true);
+        initGuideSheetByRow(wb, sheet, 10, "故事点", "非必输，仅支持3位整数或者0.5", false);
+        initGuideSheetByRow(wb, sheet, 11, "剩余时间", "非必输，仅支持3位整数或者0.5", false);
+        initGuideSheetByRow(wb, sheet, 12, "修复版本", "非必输", false);
+        initGuideSheetByRow(wb, sheet, 13, "史诗名称", "如果问题类型选择史诗，此项必填, 限制10个字符", true);
+    }
+
     public static Workbook generateExcelAwesome(Workbook generateExcel, List<Integer> errorRows, Map<Integer, List<Integer>> errorMapList, String[] FIELDS_NAME, List<String> priorityList, List<String> issueTypeList, List<String> versionList, String sheetName) {
         XSSFWorkbook workbook = new XSSFWorkbook();
+        // create guide sheet
+        createGuideSheet(workbook);
         Sheet resultSheet = workbook.createSheet(sheetName);
         resultSheet.setDefaultColumnWidth(25);
         Row titleRow = resultSheet.createRow(0);
@@ -63,13 +93,13 @@ public class ExcelUtil {
         CatalogExcelUtil.initCell(titleRow.createCell(6), style, FIELDS_NAME[6]);
         CatalogExcelUtil.initCell(titleRow.createCell(7), style, FIELDS_NAME[7]);
 
-        workbook = dropDownList2007(workbook, resultSheet, priorityList, 1, 500, 2, 2, "hidden_priority", 1);
-        workbook = dropDownList2007(workbook, resultSheet, issueTypeList, 1, 500, 3, 3, "hidden_issue_type", 2);
+        workbook = dropDownList2007(workbook, resultSheet, priorityList, 1, 500, 2, 2, "hidden_priority", 2);
+        workbook = dropDownList2007(workbook, resultSheet, issueTypeList, 1, 500, 3, 3, "hidden_issue_type", 3);
         if (!versionList.isEmpty()) {
-            workbook = dropDownList2007(workbook, resultSheet, versionList, 1, 500, 6, 6, "hidden_fix_version", 3);
+            workbook = dropDownList2007(workbook, resultSheet, versionList, 1, 500, 6, 6, "hidden_fix_version", 4);
         }
 
-        Sheet sheet = generateExcel.getSheetAt(0);
+        Sheet sheet = generateExcel.getSheetAt(1);
         int size = sheet.getPhysicalNumberOfRows();
         XSSFCellStyle ztStyle = workbook.createCellStyle();
         Font ztFont = workbook.createFont();

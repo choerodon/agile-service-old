@@ -516,12 +516,12 @@ public class BoardServiceImpl implements BoardService {
             }
             String pioCode = (pio == null ? "" : pio.getProjectCode());
             if ("sub_task".equals(issueDO.getTypeCode())) {
-                IssueDO pIssue = issueMapper.selectByPrimaryKey(issueDO.getParentIssueId());
-                String num = "";
-                if (pIssue != null) {
-                    num = pIssue.getIssueNum();
-                }
-                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + pioCode + "-" + num + URL_TEMPLATE4 + issueDO.getParentIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
+//                IssueDO pIssue = issueMapper.selectByPrimaryKey(issueDO.getParentIssueId());
+//                String num = "";
+//                if (pIssue != null) {
+//                    num = pIssue.getIssueNum();
+//                }
+                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + pioCode + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getParentIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
             } else {
                 url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + pioCode + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
             }
