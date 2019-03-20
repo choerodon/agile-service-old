@@ -48,7 +48,7 @@ public class IssueLinkRule {
     public Boolean checkUniqueLink(IssueLinkE issueLinkE) {
         IssueLinkDO issueLinkDO = new IssueLinkDO();
         issueLinkDO.setIssueId(issueLinkE.getIssueId());
-        issueLinkDO.setIssueTypeId(issueLinkE.getLinkTypeId());
+        issueLinkDO.setLinkTypeId(issueLinkE.getLinkTypeId());
         issueLinkDO.setLinkedIssueId(issueLinkE.getLinkedIssueId());
         issueLinkDO.setProjectId(issueLinkE.getProjectId());
         List<IssueLinkDO> issueLinkDOList = issueLinkMapper.select(issueLinkDO);
