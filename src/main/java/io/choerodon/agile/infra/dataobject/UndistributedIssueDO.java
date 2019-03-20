@@ -8,6 +8,8 @@ package io.choerodon.agile.infra.dataobject;
 public class UndistributedIssueDO {
 
 
+    private Long issueId;
+
     private String issueNum;
 
     private String typeCode;
@@ -20,6 +22,13 @@ public class UndistributedIssueDO {
 
     private Long priorityId;
 
+    public void setIssueId(Long issueId) {
+        this.issueId = issueId;
+    }
+
+    public Long getIssueId() {
+        return issueId;
+    }
 
     public String getIssueNum() {
         return issueNum;

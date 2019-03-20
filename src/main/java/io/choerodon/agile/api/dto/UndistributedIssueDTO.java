@@ -7,6 +7,7 @@ package io.choerodon.agile.api.dto;
  */
 public class UndistributedIssueDTO {
 
+    private Long issueId;
 
     private String issueNum;
 
@@ -19,6 +20,14 @@ public class UndistributedIssueDTO {
     private IssueTypeDTO issueTypeDTO;
 
     private StatusMapDTO statusMapDTO;
+
+    public void setIssueId(Long issueId) {
+        this.issueId = issueId;
+    }
+
+    public Long getIssueId() {
+        return issueId;
+    }
 
     public String getIssueNum() {
         return issueNum;
