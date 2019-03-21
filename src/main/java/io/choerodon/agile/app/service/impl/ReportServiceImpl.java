@@ -842,6 +842,17 @@ public class ReportServiceImpl implements ReportService {
         if (issueAddDoneList != null && !issueAddDoneList.isEmpty()) {
             reportIssueEList.addAll(issueAddDoneList);
         }
+        // 如果有移动到done的issue，判断如果该issue之后有被移出冲刺，则移出时时间不再计算（置为false）
+        List<ReportIssueE> remove = reportIssueEList.stream().filter(x -> x.getType().equals("removeDuringSprint")).collect(Collectors.toList());
+        // 查看上一个resolution是完成，则移出时时间不再计算（置为false）
+        remove.forEach(x -> {
+            ReportIssueDO reportIssueDO = reportMapper.queryLastResolutionBeforeMoveOutSprint(x.getIssueId(), x.getDate());
+            if (reportIssueDO != null && reportIssueDO.getNewValue() != null) {
+                x.setStatistical(false);
+            }
+        });
+
+
     }
 
     private void handleChangeIssueValueDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueAllList, String field) {
