@@ -223,9 +223,9 @@ public class ExcelServiceImpl implements ExcelService {
         sendProcess(result, result.getUserId(), 1.0);
     }
 
-    private void setIssueTypeAndPriorityMap(Long organizationId, Map<String, IssueTypeDTO> issueTypeMap, Map<String, Long> priorityMap, List<String> issueTypeList, List<String> priorityList) {
+    private void setIssueTypeAndPriorityMap(Long organizationId, Long projectId, Map<String, IssueTypeDTO> issueTypeMap, Map<String, Long> priorityMap, List<String> issueTypeList, List<String> priorityList) {
         List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
-        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryByOrgId(organizationId).getBody();
+        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
         for (PriorityDTO priorityDTO : priorityDTOList) {
             if (priorityDTO.getEnable()) {
                 priorityMap.put(priorityDTO.getName(), priorityDTO.getId());
@@ -398,7 +398,7 @@ public class ExcelServiceImpl implements ExcelService {
         Map<String, Long> priorityMap = new HashMap<>();
         List<String> issueTypeList = new ArrayList<>();
         List<String> priorityList = new ArrayList<>();
-        setIssueTypeAndPriorityMap(organizationId, issueTypeMap, priorityMap, issueTypeList, priorityList);
+        setIssueTypeAndPriorityMap(organizationId, projectId, issueTypeMap, priorityMap, issueTypeList, priorityList);
         Long failCount = 0L;
         Long successcount = 0L;
         Integer processNum = 0;
