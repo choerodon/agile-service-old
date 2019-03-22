@@ -113,32 +113,32 @@
         and field in ('Epic Link', 'Epic Child', 'Fix Version', 'Component')
     </update>
 
-    <delete id="deleteDemoData">
-        delete from agile_board where project_id = #{projectId};
-        delete from agile_board_column where project_id = #{projectId};
-        delete from agile_board_column_status_rel where project_id = #{projectId};
-        delete from agile_component_issue_rel where project_id = #{projectId};
-        delete from agile_data_log where project_id = #{projectId};
-        delete from agile_issue_link_type where project_id = #{projectId};
-        delete from agile_issue_link where issue_id in (select ai.issue_id from agile_issue ai where ai.project_id = #{projectId});
-        delete from agile_issue where project_id = #{projectId};
-        delete from agile_issue_attachment where project_id = #{projectId};
-        delete from agile_issue_comment where project_id = #{projectId};
-        delete from agile_issue_component where project_id = #{projectId};
-        delete from agile_issue_label where project_id = #{projectId};
-        delete from agile_issue_sprint_rel where project_id = #{projectId};
-        delete from agile_label_issue_rel where project_id = #{projectId};
-        delete from agile_message_detail where project_id = #{projectId};
-        delete from agile_product_version where project_id = #{projectId};
-        delete from agile_project_info where project_id = #{projectId};
-        delete from agile_quick_filter where project_id = #{projectId};
-        delete from agile_sprint where project_id = #{projectId};
-        delete from agile_sprint_work_calendar_ref where project_id = #{projectId};
-        delete from agile_user_setting where project_id = #{projectId};
-        delete from agile_version_issue_rel where project_id = #{projectId};
-        delete from agile_wiki_relation where project_id = #{projectId};
-        delete from agile_work_log where project_id = #{projectId};
-    </delete>
+    <!--<delete id="deleteDemoData">-->
+        <!--delete from agile_board where project_id = #{projectId};-->
+        <!--delete from agile_board_column where project_id = #{projectId};-->
+        <!--delete from agile_board_column_status_rel where project_id = #{projectId};-->
+        <!--delete from agile_component_issue_rel where project_id = #{projectId};-->
+        <!--delete from agile_data_log where project_id = #{projectId};-->
+        <!--delete from agile_issue_link_type where project_id = #{projectId};-->
+        <!--delete from agile_issue_link where project_id = #{projectId} and issue_id in (select ai.issue_id from agile_issue ai where ai.project_id = #{projectId});-->
+        <!--delete from agile_issue where project_id = #{projectId};-->
+        <!--delete from agile_issue_attachment where project_id = #{projectId};-->
+        <!--delete from agile_issue_comment where project_id = #{projectId};-->
+        <!--delete from agile_issue_component where project_id = #{projectId};-->
+        <!--delete from agile_issue_label where project_id = #{projectId};-->
+        <!--delete from agile_issue_sprint_rel where project_id = #{projectId};-->
+        <!--delete from agile_label_issue_rel where project_id = #{projectId};-->
+        <!--delete from agile_message_detail where project_id = #{projectId};-->
+        <!--delete from agile_product_version where project_id = #{projectId};-->
+        <!--delete from agile_project_info where project_id = #{projectId};-->
+        <!--delete from agile_quick_filter where project_id = #{projectId};-->
+        <!--delete from agile_sprint where project_id = #{projectId};-->
+        <!--delete from agile_sprint_work_calendar_ref where project_id = #{projectId};-->
+        <!--delete from agile_user_setting where project_id = #{projectId};-->
+        <!--delete from agile_version_issue_rel where project_id = #{projectId};-->
+        <!--delete from agile_wiki_relation where project_id = #{projectId};-->
+        <!--delete from agile_work_log where project_id = #{projectId};-->
+    <!--</delete>-->
 
     <insert id="batchCreateChangePriorityLogByIssueDOs">
         INSERT INTO agile_data_log(project_id,field,old_value,old_string,new_value,new_string,issue_id,created_by)
