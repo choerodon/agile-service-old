@@ -851,8 +851,6 @@ public class ReportServiceImpl implements ReportService {
                 x.setStatistical(false);
             }
         });
-
-
     }
 
     private void handleChangeIssueValueDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueAllList, String field) {
