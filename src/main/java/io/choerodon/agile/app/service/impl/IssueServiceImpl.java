@@ -503,29 +503,31 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleOtherArgs(SearchDTO searchDTO) {
         Map<String, Object> otherArgs = searchDTO.getOtherArgs();
-        List<String> list = (List<String>) otherArgs.get("sprint");
-        if (list != null && list.contains("0")) {
-            otherArgs.put("sprintNull", true);
-        }
-        list = (List<String>) otherArgs.get("version");
-        if (list != null && list.contains("0")) {
-            otherArgs.put("versionNull", true);
-        }
-        list = (List<String>) otherArgs.get("component");
-        if (list != null && list.contains("0")) {
-            otherArgs.put("componentNull", true);
-        }
-        list = (List<String>) otherArgs.get("epic");
-        if (list != null && list.contains("0")) {
-            otherArgs.put("epicNull", true);
-        }
-        list = (List<String>) otherArgs.get("label");
-        if (list != null && list.contains("0")) {
-            otherArgs.put("labelNull", true);
-        }
-        list = (List<String>) otherArgs.get("assigneeId");
-        if (list != null && list.contains("0")) {
-            otherArgs.put("assigneeIdNull", true);
+        if(otherArgs!=null){
+            List<String> list = (List<String>) otherArgs.get("sprint");
+            if (list != null && list.contains("0")) {
+                otherArgs.put("sprintNull", true);
+            }
+            list = (List<String>) otherArgs.get("version");
+            if (list != null && list.contains("0")) {
+                otherArgs.put("versionNull", true);
+            }
+            list = (List<String>) otherArgs.get("component");
+            if (list != null && list.contains("0")) {
+                otherArgs.put("componentNull", true);
+            }
+            list = (List<String>) otherArgs.get("epic");
+            if (list != null && list.contains("0")) {
+                otherArgs.put("epicNull", true);
+            }
+            list = (List<String>) otherArgs.get("label");
+            if (list != null && list.contains("0")) {
+                otherArgs.put("labelNull", true);
+            }
+            list = (List<String>) otherArgs.get("assigneeId");
+            if (list != null && list.contains("0")) {
+                otherArgs.put("assigneeIdNull", true);
+            }
         }
     }
 
