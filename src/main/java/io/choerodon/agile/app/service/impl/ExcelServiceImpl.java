@@ -101,7 +101,9 @@ public class ExcelServiceImpl implements ExcelService {
         List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
         List<String> priorityList = new ArrayList<>();
         for (PriorityDTO priorityDTO : priorityDTOList) {
-            priorityList.add(priorityDTO.getName());
+            if (priorityDTO.getEnable()){
+                priorityList.add(priorityDTO.getName());
+            }
         }
         List<String> issueTypeList = new ArrayList<>();
         for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
@@ -225,8 +227,10 @@ public class ExcelServiceImpl implements ExcelService {
         List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
         List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryByOrgId(organizationId).getBody();
         for (PriorityDTO priorityDTO : priorityDTOList) {
-            priorityMap.put(priorityDTO.getName(), priorityDTO.getId());
-            priorityList.add(priorityDTO.getName());
+            if (priorityDTO.getEnable()) {
+                priorityMap.put(priorityDTO.getName(), priorityDTO.getId());
+                priorityList.add(priorityDTO.getName());
+            }
         }
         for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
             if (!SUB_TASK.equals(issueTypeDTO.getTypeCode())) {

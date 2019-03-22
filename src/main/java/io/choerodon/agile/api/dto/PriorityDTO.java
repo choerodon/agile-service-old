@@ -15,7 +15,15 @@ public class PriorityDTO implements Serializable {
     private Boolean isDefault;
     private Long objectVersionNumber;
     private BigDecimal sequence;
+    private Boolean enable;
 
+    public Boolean getEnable() {
+        return enable;
+    }
+
+    public void setEnable(Boolean enable) {
+        this.enable = enable;
+    }
 
     public BigDecimal getSequence() {
         return sequence;
