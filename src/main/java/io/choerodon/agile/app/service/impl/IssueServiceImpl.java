@@ -798,8 +798,8 @@ public class IssueServiceImpl implements IssueService {
         if (issueMapper.queryIssueIdsIsNotTest(projectId, issueIds) != issueIds.size()) {
             throw new CommonException("error.Issue.type.isNotIssueTest");
         }
-        List<Long> issueIdList = issueMapper.queryIssueSubListByIssueIds(projectId, issueIds);
-        issueIds.addAll(issueIdList);
+//        List<Long> issueIdList = issueMapper.queryIssueSubListByIssueIds(projectId, issueIds);
+//        issueIds.addAll(issueIdList);
         issueMapper.batchDeleteIssues(projectId, issueIds);
 //        issueIds.forEach(issueId -> deleteIssueInfo(issueId, projectId));
         dataLogRedisUtil.deleteByDeleteIssueInfo(projectId);
