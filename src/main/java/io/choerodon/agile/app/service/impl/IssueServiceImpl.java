@@ -801,7 +801,8 @@ public class IssueServiceImpl implements IssueService {
         List<Long> issueIdList = issueMapper.queryIssueSubListByIssueIds(projectId, issueIds);
         issueIds.addAll(issueIdList);
         issueMapper.batchDeleteIssues(projectId, issueIds);
-        issueIds.forEach(issueId -> deleteIssueInfo(issueId, projectId));
+//        issueIds.forEach(issueId -> deleteIssueInfo(issueId, projectId));
+        dataLogRedisUtil.deleteByDeleteIssueInfo(projectId);
     }
 
     @Override
@@ -813,6 +814,8 @@ public class IssueServiceImpl implements IssueService {
         issueIds.addAll(issueIdList);
         issueMapper.batchDeleteIssues(projectId, issueIds);
         issueIds.forEach(issueId -> deleteIssueInfo(issueId, projectId));
+        //delete cache
+        dataLogRedisUtil.deleteByDeleteIssueInfo(projectId);
     }
 
 
@@ -2273,8 +2276,6 @@ public class IssueServiceImpl implements IssueService {
         issuePayload.setIssueId(issueId);
         issuePayload.setProjectId(projectId);
         sagaClient.startSaga("agile-delete-issue", new StartInstanceDTO(JSON.toJSONString(issuePayload), "", "", ResourceLevel.PROJECT.value(), projectId));
-        //delete cache
-        dataLogRedisUtil.deleteByDeleteIssueInfo(projectId);
     }
 
     @Override
