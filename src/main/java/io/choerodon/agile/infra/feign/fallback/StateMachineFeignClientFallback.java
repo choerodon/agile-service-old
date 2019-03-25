@@ -35,11 +35,6 @@ public class StateMachineFeignClientFallback implements StateMachineFeignClient 
     }
 
     @Override
-    public ResponseEntity<Map<Long, List<Status>>> queryAllStatus() {
-        throw new CommonException("error.status.get");
-    }
-
-    @Override
     public ResponseEntity<Map<Long, Long>> queryInitStatusIds(Long organizationId, List<Long> stateMachineIds) {
         throw new CommonException("error.statusMap.queryInitStatusIds");
     }

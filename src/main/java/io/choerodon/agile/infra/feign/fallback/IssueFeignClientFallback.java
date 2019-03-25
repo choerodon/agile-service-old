@@ -39,22 +39,6 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity fixStateMachineScheme(List<StatusForMoveDataDO> statusForMoveDataDOList) {
-        throw new CommonException("error.status.init");
-    }
-
-
-    @Override
-    public ResponseEntity<Map<Long, Map<String, Long>>> queryPriorities() {
-        throw new CommonException("error.priority.get");
-    }
-
-    @Override
-    public ResponseEntity<Map<Long, Map<String, Long>>> queryIssueTypes() {
-        throw new CommonException("error.issueType.get");
-    }
-
-    @Override
     public ResponseEntity<Long> queryStateMachineId(Long projectId, String applyType, Long issueTypeId) {
         throw new CommonException("error.stateMachineId.get");
     }
