@@ -1,6 +1,5 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.app.service.IssueStatusService;
 import io.choerodon.agile.app.service.ReportService;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
@@ -9,7 +8,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,25 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FixDataController {
 
     @Autowired
-    private IssueStatusService issueStatusService;
-    @Autowired
     private ReportService reportService;
-
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR, InitRoleCode.SITE_DEVELOPER})
-    @ApiOperation("迁移数据，查询所有状态，执行1")
-    @GetMapping(value = "/move_status")
-    public ResponseEntity moveStatus() {
-        issueStatusService.moveStatus();
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR, InitRoleCode.SITE_DEVELOPER})
-    @ApiOperation("迁移数据，查询所有状态，执行2")
-    @GetMapping(value = "/update_all_data")
-    public ResponseEntity updateAllData() {
-        issueStatusService.updateAllData();
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR, InitRoleCode.SITE_DEVELOPER})
     @ApiOperation("修复累积流图脏数据")

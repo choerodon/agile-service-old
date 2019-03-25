@@ -36,16 +36,6 @@ public interface IssueFeignClient {
     ResponseEntity<IssueTypeDTO> queryIssueTypeById(@PathVariable("organization_id") Long organizationId,
                                                     @PathVariable("id") Long issueTypeId);
 
-    @PostMapping(value = "/v1/fix_data/state_machine_scheme")
-    ResponseEntity fixStateMachineScheme(@ApiParam(value = "敏捷状态数据", required = true)
-                                         @RequestBody List<StatusForMoveDataDO> statusForMoveDataDOList);
-
-    @GetMapping("/v1/fix_data/query_priorities")
-    ResponseEntity<Map<Long, Map<String, Long>>> queryPriorities();
-
-    @GetMapping("/v1/fix_data/query_issue_types")
-    ResponseEntity<Map<Long, Map<String, Long>>> queryIssueTypes();
-
     @GetMapping(value = "/v1/projects/{project_id}/schemes/query_state_machine_id")
     ResponseEntity<Long> queryStateMachineId(@PathVariable("project_id") Long projectId,
                                              @RequestParam("apply_type") String applyType,

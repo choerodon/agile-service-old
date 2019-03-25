@@ -27,25 +27,9 @@ class FixDataControllerTest extends Specification {
     @Shared
     def projectId = 1L
 
-    def 'moveStatus'() {
-        when: '迁移数据，查询所有状态，执行1'
-        def entity = restTemplate.getForEntity("/v1/fix_data/move_status",null)
-        then:
-        entity.statusCode.is2xxSuccessful()
-
-    }
-
-    def 'updateAllData'() {
-        when: '迁移数据，查询所有状态，执行2'
-        def entity = restTemplate.getForEntity("/v1/fix_data/update_all_data",null)
-        then:
-        entity.statusCode.is2xxSuccessful()
-
-    }
-
     def 'fixCumulativeFlowDiagram'() {
         when: '修复累积流图'
-        def entity = restTemplate.postForEntity('/v1/fix_data/fix_cumulative_flow_diagram', null,null, new HashMap<String, Object>())
+        def entity = restTemplate.postForEntity('/v1/fix_data/fix_cumulative_flow_diagram', null, null, new HashMap<String, Object>())
 
         then: '接口是否请求成功'
         entity.statusCode.is2xxSuccessful()

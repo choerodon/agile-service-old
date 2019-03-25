@@ -36,8 +36,4 @@ public interface IssueStatusService {
     List<IssueStatusDTO> queryIssueStatusList(Long projectId);
 
     IssueStatusDTO updateStatus(Long projectId, IssueStatusDTO issueStatusDTO);
-
-    void moveStatus();
-
-    void updateAllData();
 }
