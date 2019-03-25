@@ -95,4 +95,8 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
                                            @Param("boardId") Long boardId,
                                            @Param("activeSprintId") Long activeSprintId,
                                            @Param("columnConstraint") String columnConstraint);
+
+    List<ColumnAndIssueDO> selectBoardByProgram(@Param("projectId") Long projectId,
+                                                @Param("boardId") Long boardId,
+                                                @Param("activePiId") Long activePiId);
 }

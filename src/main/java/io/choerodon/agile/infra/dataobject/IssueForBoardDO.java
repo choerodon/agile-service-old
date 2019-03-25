@@ -45,6 +45,8 @@ public class IssueForBoardDO {
 
     private IssueTypeDTO issueTypeDTO;
 
+    private String featureType;
+
     public String getRank() {
         return rank;
     }
@@ -179,5 +181,13 @@ public class IssueForBoardDO {
 
     public Integer getStayDay() {
         return stayDay;
+    }
+
+    public void setFeatureType(String featureType) {
+        this.featureType = featureType;
+    }
+
+    public String getFeatureType() {
+        return featureType;
     }
 }

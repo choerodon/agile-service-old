@@ -231,5 +231,13 @@
         </choose>
     </select>
 
+    <select id="selectActivePi" resultType="io.choerodon.agile.infra.dataobject.PiDO">
+        select *
+        from agile_pi
+        where
+        program_id = #{programId}
+        and status_code = 'doing'
+    </select>
+
 
 </mapper>
