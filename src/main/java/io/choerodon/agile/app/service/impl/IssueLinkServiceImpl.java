@@ -37,7 +37,7 @@ public class IssueLinkServiceImpl implements IssueLinkService {
         issueLinkEList.forEach(issueLinkE -> {
             issueLinkE.setProjectId(projectId);
             issueLinkRule.verifyCreateData(issueLinkE);
-            if (issueLinkMapper.selectByPrimaryKey(issueLinkE) == null) {
+            if (issueLinkRule.checkUniqueLink(issueLinkE)) {
                 issueLinkRepository.create(issueLinkE);
             }
         });

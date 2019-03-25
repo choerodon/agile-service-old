@@ -10,6 +10,7 @@ public class SprintNameDTO {
     private String sprintName;
     private Date startDate;
     private Date endDate;
+    private String statusCode;
 
     public Long getSprintId() {
         return sprintId;
@@ -41,5 +42,13 @@ public class SprintNameDTO {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public String getStatusCode() {
+        return statusCode;
     }
 }

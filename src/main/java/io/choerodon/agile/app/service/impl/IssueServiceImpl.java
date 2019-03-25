@@ -345,7 +345,7 @@ public class IssueServiceImpl implements IssueService {
                 throw new CommonException(ERROR_PROJECT_NOTEXIST);
             }
             String projectName = convertProjectName(projectDTO);
-            String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId();
+            String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId();
             siteMsgUtil.issueCreate(userIds, userName, summary, url, result.getReporterId(), projectId);
             if (result.getAssigneeId() != null) {
                 List<Long> assigneeIds = new ArrayList<>();
@@ -420,9 +420,9 @@ public class IssueServiceImpl implements IssueService {
             String projectName = convertProjectName(projectDTO);
             StringBuilder url = new StringBuilder();
             if (SUB_TASK.equals(result.getTypeCode())) {
-                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getParentIssueNum() + URL_TEMPLATE4 + result.getParentIssueId() + URL_TEMPLATE5 + result.getIssueId());
+                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + result.getIssueNum() + URL_TEMPLATE4 + result.getParentIssueId() + URL_TEMPLATE5 + result.getIssueId());
             } else {
-                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId());
+                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId());
             }
             siteMsgUtil.issueAssignee(userIds, userName, summary, url.toString(), result.getAssigneeId(), projectId);
         }
@@ -445,9 +445,9 @@ public class IssueServiceImpl implements IssueService {
             String projectName = convertProjectName(projectDTO);
             StringBuilder url = new StringBuilder();
             if (SUB_TASK.equals(result.getTypeCode())) {
-                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getParentIssueNum() + URL_TEMPLATE4 + result.getParentIssueId() + URL_TEMPLATE5 + result.getIssueId());
+                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + result.getIssueNum() + URL_TEMPLATE4 + result.getParentIssueId() + URL_TEMPLATE5 + result.getIssueId());
             } else {
-                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId());
+                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId());
             }
             Long[] ids = new Long[1];
             ids[0] = result.getAssigneeId();
@@ -503,29 +503,31 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleOtherArgs(SearchDTO searchDTO) {
         Map<String, Object> otherArgs = searchDTO.getOtherArgs();
-        List<String> list = (List<String>) otherArgs.get("sprint");
-        if (list != null && list.contains("0")) {
-            otherArgs.put("sprintNull", true);
-        }
-        list = (List<String>) otherArgs.get("version");
-        if (list != null && list.contains("0")) {
-            otherArgs.put("versionNull", true);
-        }
-        list = (List<String>) otherArgs.get("component");
-        if (list != null && list.contains("0")) {
-            otherArgs.put("componentNull", true);
-        }
-        list = (List<String>) otherArgs.get("epic");
-        if (list != null && list.contains("0")) {
-            otherArgs.put("epicNull", true);
-        }
-        list = (List<String>) otherArgs.get("label");
-        if (list != null && list.contains("0")) {
-            otherArgs.put("labelNull", true);
-        }
-        list = (List<String>) otherArgs.get("assigneeId");
-        if (list != null && list.contains("0")) {
-            otherArgs.put("assigneeIdNull", true);
+        if(otherArgs!=null){
+            List<String> list = (List<String>) otherArgs.get("sprint");
+            if (list != null && list.contains("0")) {
+                otherArgs.put("sprintNull", true);
+            }
+            list = (List<String>) otherArgs.get("version");
+            if (list != null && list.contains("0")) {
+                otherArgs.put("versionNull", true);
+            }
+            list = (List<String>) otherArgs.get("component");
+            if (list != null && list.contains("0")) {
+                otherArgs.put("componentNull", true);
+            }
+            list = (List<String>) otherArgs.get("epic");
+            if (list != null && list.contains("0")) {
+                otherArgs.put("epicNull", true);
+            }
+            list = (List<String>) otherArgs.get("label");
+            if (list != null && list.contains("0")) {
+                otherArgs.put("labelNull", true);
+            }
+            list = (List<String>) otherArgs.get("assigneeId");
+            if (list != null && list.contains("0")) {
+                otherArgs.put("assigneeIdNull", true);
+            }
         }
     }
 
@@ -796,10 +798,11 @@ public class IssueServiceImpl implements IssueService {
         if (issueMapper.queryIssueIdsIsNotTest(projectId, issueIds) != issueIds.size()) {
             throw new CommonException("error.Issue.type.isNotIssueTest");
         }
-        List<Long> issueIdList = issueMapper.queryIssueSubListByIssueIds(projectId, issueIds);
-        issueIds.addAll(issueIdList);
+//        List<Long> issueIdList = issueMapper.queryIssueSubListByIssueIds(projectId, issueIds);
+//        issueIds.addAll(issueIdList);
         issueMapper.batchDeleteIssues(projectId, issueIds);
-        issueIds.forEach(issueId -> deleteIssueInfo(issueId, projectId));
+//        issueIds.forEach(issueId -> deleteIssueInfo(issueId, projectId));
+        dataLogRedisUtil.deleteByDeleteIssueInfo(projectId);
     }
 
     @Override
@@ -811,6 +814,8 @@ public class IssueServiceImpl implements IssueService {
         issueIds.addAll(issueIdList);
         issueMapper.batchDeleteIssues(projectId, issueIds);
         issueIds.forEach(issueId -> deleteIssueInfo(issueId, projectId));
+        //delete cache
+        dataLogRedisUtil.deleteByDeleteIssueInfo(projectId);
     }
 
 
@@ -1210,7 +1215,7 @@ public class IssueServiceImpl implements IssueService {
                 throw new CommonException(ERROR_PROJECT_NOTEXIST);
             }
             String projectName = convertProjectName(projectDTO);
-            String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + projectDTO.getCode() + "-" + result.getParentIssueNum() + URL_TEMPLATE4 + result.getParentIssueId() + URL_TEMPLATE5 + result.getIssueId();
+            String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + result.getIssueNum() + URL_TEMPLATE4 + result.getParentIssueId() + URL_TEMPLATE5 + result.getIssueId();
             siteMsgUtil.issueCreate(userIds, userName, summary, url, result.getReporterId(), projectId);
             if (result.getAssigneeId() != null) {
                 List<Long> assigneeIds = new ArrayList<>();
@@ -1291,7 +1296,7 @@ public class IssueServiceImpl implements IssueService {
                 issueLinkE.setLinkedIssueId(issueLinkE.getIn() ? linkIssueId : issueId);
                 issueLinkE.setProjectId(projectId);
                 issueLinkRule.verifyCreateData(issueLinkE);
-                if (issueLinkMapper.selectByPrimaryKey(issueLinkE) == null) {
+                if (issueLinkRule.checkUniqueLink(issueLinkE)) {
                     issueLinkRepository.create(issueLinkE);
                 }
             });
@@ -1579,9 +1584,9 @@ public class IssueServiceImpl implements IssueService {
                     exportIssue.setComponentName(componentName);
                 });
             }
-            ExcelUtil.export(exportIssues, ExportIssuesDTO.class, fieldNames, fieldCodes, project.getName(), response);
+            ExcelUtil.export(exportIssues, ExportIssuesDTO.class, fieldNames, fieldCodes, project.getName(), Arrays.asList("sprintName"), response);
         } else {
-            ExcelUtil.export(new ArrayList<>(), ExportIssuesDTO.class, fieldNames, fieldCodes, project.getName(), response);
+            ExcelUtil.export(new ArrayList<>(), ExportIssuesDTO.class, fieldNames, fieldCodes, project.getName(), Arrays.asList("sprintName"), response);
         }
     }
 
@@ -1729,7 +1734,9 @@ public class IssueServiceImpl implements IssueService {
                 }
                 copy.setLinkTypeId(issueLinkE.getLinkTypeId());
                 copy.setProjectId(projectId);
-                issueLinkRepository.create(copy);
+                if (issueLinkRule.checkUniqueLink(copy)) {
+                    issueLinkRepository.create(copy);
+                }
             });
         }
     }
@@ -1745,7 +1752,9 @@ public class IssueServiceImpl implements IssueService {
             issueLinkE.setLinkTypeId(issueLinkTypeDO.getLinkTypeId());
             issueLinkE.setIssueId(newIssueId);
             issueLinkE.setProjectId(projectId);
-            issueLinkRepository.create(issueLinkE);
+            if (issueLinkRule.checkUniqueLink(issueLinkE)) {
+                issueLinkRepository.create(issueLinkE);
+            }
         }
     }
 
@@ -2267,8 +2276,6 @@ public class IssueServiceImpl implements IssueService {
         issuePayload.setIssueId(issueId);
         issuePayload.setProjectId(projectId);
         sagaClient.startSaga("agile-delete-issue", new StartInstanceDTO(JSON.toJSONString(issuePayload), "", "", ResourceLevel.PROJECT.value(), projectId));
-        //delete cache
-        dataLogRedisUtil.deleteByDeleteIssueInfo(projectId);
     }
 
     @Override

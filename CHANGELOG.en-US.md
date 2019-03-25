@@ -1,6 +1,36 @@
 # Changelog
 All notable changes about agile-service will be documented in this file.
 
+## [0.15.0] - 2019-03-22
+
+### Added
+
+- Priorities are customized and arranged in actual order at the organizational level.
+- Advanced search function of issue Management.
+- Import and export issues.
+- Limitations in Work-in-Process in active sprint.
+- DEMO function addition.  
+
+### Changed
+
+- When searching for queries, display fields for fields in a list of values.
+- Issue management supports custom filter display fields.
+- Backlog scheduling and display performance optimization.
+- When creating subtasks in stories, story information is displayed on the page.
+- Issue details page, required tips for registering work log.
+- Only allow yourself and the project owner to modify the reporter.
+- Partial views style optimization. 
+- Partial report optimization. 
+
+### Fixed
+
+- Cancel collection function in no swimming lane board.
+- Backend SQL error reporting in search of quick search pages.
+- The same relationship of issue link can be associated with the same issue many times in issue details page.
+- Burn-out diagram does not correspond to the number of remaining issues/remaining time in backlog.
+- The issue counting bug of version in backlog.  
+
+
 ## [0.14.0] - 2019-02-22
 
 ### Added

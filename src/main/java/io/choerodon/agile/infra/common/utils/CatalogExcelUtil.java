@@ -93,7 +93,7 @@ public class CatalogExcelUtil {
      */
     public static CellStyle getHeadStyle(Workbook wb) {
         CellStyle style = wb.createCellStyle();
-        style.setFillForegroundColor(HSSFColor.LIGHT_ORANGE.index);
+        style.setFillForegroundColor(HSSFColor.PALE_BLUE.index);
         style.setFillPattern(CellStyle.SOLID_FOREGROUND);
         style.setBorderTop(HSSFCellStyle.BORDER_THIN);
         style.setBorderRight(HSSFCellStyle.BORDER_THIN);

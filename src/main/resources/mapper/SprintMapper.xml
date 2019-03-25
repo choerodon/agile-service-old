@@ -499,8 +499,11 @@
 
     <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
         SELECT
-        sprint_id, sprint_name,
-        start_date, end_date
+        sprint_id,
+        sprint_name,
+        start_date,
+        end_date,
+        status_code
         FROM agile_sprint
         WHERE project_id = #{projectId}
         <if test="sprintStatusCodes != null and sprintStatusCodes.size > 0">

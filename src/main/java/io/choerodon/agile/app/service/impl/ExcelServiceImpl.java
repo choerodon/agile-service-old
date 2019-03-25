@@ -65,6 +65,7 @@ public class ExcelServiceImpl implements ExcelService {
     private static final String HIDDEN_ISSUE_TYPE = "hidden_issue_type";
     private static final String HIDDEN_FIX_VERSION = "hidden_fix_version";
     private static final String RELATION_TYPE_FIX = "fix";
+    private static final String IMPORT_TEMPLATE_NAME = "导入模板";
 
     @Autowired
     private StateMachineService stateMachineService;
@@ -93,7 +94,6 @@ public class ExcelServiceImpl implements ExcelService {
     @Autowired
     private IssueMapper issueMapper;
 
-
     @Override
     public void download(Long projectId, Long organizationId, HttpServletRequest request, HttpServletResponse response) {
         List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
@@ -101,7 +101,9 @@ public class ExcelServiceImpl implements ExcelService {
         List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
         List<String> priorityList = new ArrayList<>();
         for (PriorityDTO priorityDTO : priorityDTOList) {
-            priorityList.add(priorityDTO.getName());
+            if (priorityDTO.getEnable()){
+                priorityList.add(priorityDTO.getName());
+            }
         }
         List<String> issueTypeList = new ArrayList<>();
         for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
@@ -116,7 +118,9 @@ public class ExcelServiceImpl implements ExcelService {
             }
         }
         Workbook wb = new XSSFWorkbook();
-        Sheet sheet = wb.createSheet("导入模板");
+        // create guide sheet
+        ExcelUtil.createGuideSheet(wb);
+        Sheet sheet = wb.createSheet(IMPORT_TEMPLATE_NAME);
         Row row = sheet.createRow(0);
         CellStyle style = CatalogExcelUtil.getHeadStyle(wb);
 
@@ -130,10 +134,10 @@ public class ExcelServiceImpl implements ExcelService {
         CatalogExcelUtil.initCell(row.createCell(7), style, FIELDS_NAME[7]);
 
         try {
-            wb = ExcelUtil.dropDownList2007(wb, sheet, priorityList, 1, 500, 2, 2, HIDDEN_PRIORITY, 1);
-            wb = ExcelUtil.dropDownList2007(wb, sheet, issueTypeList, 1, 500, 3, 3, HIDDEN_ISSUE_TYPE, 2);
+            wb = ExcelUtil.dropDownList2007(wb, sheet, priorityList, 1, 500, 2, 2, HIDDEN_PRIORITY, 2);
+            wb = ExcelUtil.dropDownList2007(wb, sheet, issueTypeList, 1, 500, 3, 3, HIDDEN_ISSUE_TYPE, 3);
             if (!versionList.isEmpty()) {
-                wb = ExcelUtil.dropDownList2007(wb, sheet, versionList, 1, 500, 6, 6, HIDDEN_FIX_VERSION, 3);
+                wb = ExcelUtil.dropDownList2007(wb, sheet, versionList, 1, 500, 6, 6, HIDDEN_FIX_VERSION, 4);
             }
             wb.write(response.getOutputStream());
         } catch (Exception e) {
@@ -219,12 +223,14 @@ public class ExcelServiceImpl implements ExcelService {
         sendProcess(result, result.getUserId(), 1.0);
     }
 
-    private void setIssueTypeAndPriorityMap(Long organizationId, Map<String, IssueTypeDTO> issueTypeMap, Map<String, Long> priorityMap, List<String> issueTypeList, List<String> priorityList) {
+    private void setIssueTypeAndPriorityMap(Long organizationId, Long projectId, Map<String, IssueTypeDTO> issueTypeMap, Map<String, Long> priorityMap, List<String> issueTypeList, List<String> priorityList) {
         List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
-        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryByOrgId(organizationId).getBody();
+        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
         for (PriorityDTO priorityDTO : priorityDTOList) {
-            priorityMap.put(priorityDTO.getName(), priorityDTO.getId());
-            priorityList.add(priorityDTO.getName());
+            if (priorityDTO.getEnable()) {
+                priorityMap.put(priorityDTO.getName(), priorityDTO.getId());
+                priorityList.add(priorityDTO.getName());
+            }
         }
         for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
             if (!SUB_TASK.equals(issueTypeDTO.getTypeCode())) {
@@ -376,10 +382,15 @@ public class ExcelServiceImpl implements ExcelService {
         String status = DOING;
         FileOperationHistoryE fileOperationHistoryE = fileOperationHistoryRepository.create(new FileOperationHistoryE(projectId, userId, UPLOAD_FILE, 0L, 0L, status));
         sendProcess(fileOperationHistoryE, userId, 0.0);
-        Sheet sheet = workbook.getSheetAt(0);
-        if (sheet == null) {
-            throw new CommonException("error.sheet.empty");
+        if (workbook.getActiveSheetIndex() < 1
+                || workbook.getSheetAt(1) == null
+                || workbook.getSheetAt(1).getSheetName() == null
+                || !IMPORT_TEMPLATE_NAME.equals(workbook.getSheetAt(1).getSheetName())) {
+            FileOperationHistoryE errorImport = fileOperationHistoryRepository.updateBySeletive(new FileOperationHistoryE(projectId, fileOperationHistoryE.getId(), UPLOAD_FILE, "template_error", fileOperationHistoryE.getObjectVersionNumber()));
+            sendProcess(errorImport, userId, 0.0);
+            throw new CommonException("error.sheet.import");
         }
+        Sheet sheet = workbook.getSheetAt(1);
         // 获取所有非空行
         Integer allRowCount = getRealRowCount(sheet);
         // 查询组织下的优先级与问题类型
@@ -387,7 +398,7 @@ public class ExcelServiceImpl implements ExcelService {
         Map<String, Long> priorityMap = new HashMap<>();
         List<String> issueTypeList = new ArrayList<>();
         List<String> priorityList = new ArrayList<>();
-        setIssueTypeAndPriorityMap(organizationId, issueTypeMap, priorityMap, issueTypeList, priorityList);
+        setIssueTypeAndPriorityMap(organizationId, projectId, issueTypeMap, priorityMap, issueTypeList, priorityList);
         Long failCount = 0L;
         Long successcount = 0L;
         Integer processNum = 0;
@@ -469,7 +480,7 @@ public class ExcelServiceImpl implements ExcelService {
         }
         if (!errorRows.isEmpty()) {
             LOGGER.info("导入数据有误");
-            Workbook result = ExcelUtil.generateExcelAwesome(workbook, errorRows, errorMapList, FIELDS_NAME, priorityList, issueTypeList, versionList, ConvertUtil.getName(projectId));
+            Workbook result = ExcelUtil.generateExcelAwesome(workbook, errorRows, errorMapList, FIELDS_NAME, priorityList, issueTypeList, versionList, IMPORT_TEMPLATE_NAME);
             String errorWorkBookUrl = uploadErrorExcel(result);
             fileOperationHistoryE.setFileUrl(errorWorkBookUrl);
             status = FAILED;

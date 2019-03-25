@@ -408,4 +408,6 @@ public interface ReportMapper {
      * @return IssueDO
      */
     Set<Long> queryRemoveIssueIds();
+
+    ReportIssueDO queryLastResolutionBeforeMoveOutSprint(@Param("issueId") Long issueId, @Param("outDate") Date outDate);
 }

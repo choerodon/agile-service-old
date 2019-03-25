@@ -51,7 +51,7 @@
         agile_quick_filter
         WHERE project_id = #{projectId}
         <if test='filterName != null and filterName != "" '>
-            and (name LIKE CONCAT(CONCAT('%', #{filterName}), '%')
+            and (name LIKE CONCAT(CONCAT('%', #{filterName}), '%'))
         </if>
         <if test='contents != null and contents.size != 0'>
             <foreach collection="contents" item="content" index="index">

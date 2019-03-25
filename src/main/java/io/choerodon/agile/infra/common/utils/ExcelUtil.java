@@ -29,7 +29,7 @@ import java.util.Map;
 public class ExcelUtil {
 
     public enum Mode {
-        SXSSF("SXSSF"), HSSF("HSSF"),XSSF("XSSF");
+        SXSSF("SXSSF"), HSSF("HSSF"), XSSF("XSSF");
         private String value;
 
         Mode(String value) {
@@ -48,8 +48,38 @@ public class ExcelUtil {
     private static final String EXCEPTION = "Exception:{}";
     private static final String ERROR_IO_WORKBOOK_WRITE_OUTPUTSTREAM = "error.io.workbook.write.output.stream";
 
+    private static void initGuideSheetByRow(Workbook workbook, Sheet sheet, int rowNum, String fieldName, String requestStr, Boolean hasStyle) {
+        CellStyle ztStyle = workbook.createCellStyle();
+        Font ztFont = workbook.createFont();
+        ztFont.setColor(Font.COLOR_RED);
+        ztStyle.setFont(ztFont);
+        Row row = sheet.createRow(rowNum);
+        row.createCell(0).setCellValue(fieldName);
+        Cell cell = row.createCell(1);
+        cell.setCellValue(requestStr);
+        if (hasStyle) {
+            cell.setCellStyle(ztStyle);
+        }
+    }
+
+    public static void createGuideSheet(Workbook wb) {
+        Sheet sheet = wb.createSheet("要求");
+        sheet.setColumnWidth(0, 5000);
+        sheet.setColumnWidth(1, 15000);
+        initGuideSheetByRow(wb, sheet, 0, "概要", "必输项，限制44个字符", true);
+        initGuideSheetByRow(wb, sheet, 1, "描述", "非必输", false);
+        initGuideSheetByRow(wb, sheet, 2, "优先级", "必输项", true);
+        initGuideSheetByRow(wb, sheet, 3, "问题类型", "必输项", true);
+        initGuideSheetByRow(wb, sheet, 4, "故事点", "非必输，仅支持3位整数或者0.5", false);
+        initGuideSheetByRow(wb, sheet, 5, "剩余时间", "非必输，仅支持3位整数或者0.5", false);
+        initGuideSheetByRow(wb, sheet, 6, "修复版本", "非必输", false);
+        initGuideSheetByRow(wb, sheet, 7, "史诗名称", "如果问题类型选择史诗，此项必填, 限制10个字符", true);
+    }
+
     public static Workbook generateExcelAwesome(Workbook generateExcel, List<Integer> errorRows, Map<Integer, List<Integer>> errorMapList, String[] FIELDS_NAME, List<String> priorityList, List<String> issueTypeList, List<String> versionList, String sheetName) {
         XSSFWorkbook workbook = new XSSFWorkbook();
+        // create guide sheet
+        createGuideSheet(workbook);
         Sheet resultSheet = workbook.createSheet(sheetName);
         resultSheet.setDefaultColumnWidth(25);
         Row titleRow = resultSheet.createRow(0);
@@ -63,13 +93,13 @@ public class ExcelUtil {
         CatalogExcelUtil.initCell(titleRow.createCell(6), style, FIELDS_NAME[6]);
         CatalogExcelUtil.initCell(titleRow.createCell(7), style, FIELDS_NAME[7]);
 
-        workbook = dropDownList2007(workbook, resultSheet, priorityList, 1, 500, 2, 2, "hidden_priority", 1);
-        workbook = dropDownList2007(workbook, resultSheet, issueTypeList, 1, 500, 3, 3, "hidden_issue_type", 2);
+        workbook = dropDownList2007(workbook, resultSheet, priorityList, 1, 500, 2, 2, "hidden_priority", 2);
+        workbook = dropDownList2007(workbook, resultSheet, issueTypeList, 1, 500, 3, 3, "hidden_issue_type", 3);
         if (!versionList.isEmpty()) {
-            workbook = dropDownList2007(workbook, resultSheet, versionList, 1, 500, 6, 6, "hidden_fix_version", 3);
+            workbook = dropDownList2007(workbook, resultSheet, versionList, 1, 500, 6, 6, "hidden_fix_version", 4);
         }
 
-        Sheet sheet = generateExcel.getSheetAt(0);
+        Sheet sheet = generateExcel.getSheetAt(1);
         int size = sheet.getPhysicalNumberOfRows();
         XSSFCellStyle ztStyle = workbook.createCellStyle();
         Font ztFont = workbook.createFont();
@@ -132,7 +162,7 @@ public class ExcelUtil {
     /**
      * 通过类导出
      */
-    public static <T> void export(List<T> list, Class<T> clazz, String[] fieldsName, String[] fields, String sheetName, HttpServletResponse response) {
+    public static <T> void export(List<T> list, Class<T> clazz, String[] fieldsName, String[] fields, String sheetName, List<String> autoSizeColumn, HttpServletResponse response) {
         if (list != null && !list.isEmpty()) {
             //1、创建工作簿
             SXSSFWorkbook workbook = new SXSSFWorkbook();
@@ -145,19 +175,30 @@ public class ExcelUtil {
             SXSSFSheet sheet = workbook.createSheet(sheetName);
             //设置默认列宽
             sheet.setDefaultColumnWidth(13);
+            //创建标题列
             SXSSFRow row2 = sheet.createRow(0);
             row2.setHeight((short) 260);
+            for (int i = 0; i < fieldsName.length; i++) {
+                //3.3设置列标题
+                SXSSFCell cell2 = row2.createCell(i);
+                //加载单元格样式
+                cell2.setCellStyle(style2);
+                cell2.setCellValue(fieldsName[i]);
+            }
             for (int j = 0; j < list.size(); j++) {
                 SXSSFRow row = sheet.createRow(j + 1);
                 row.setHeight((short) 260);
                 for (int i = 0; i < fieldsName.length; i++) {
-                    //3.3设置列标题
-                    SXSSFCell cell2 = row2.createCell(i);
-                    //加载单元格样式
-                    cell2.setCellStyle(style2);
-                    cell2.setCellValue(fieldsName[i]);
+                    ;
                     //4、操作单元格；将数据写入excel
                     handleWriteCell(row, i, j, list, cellStyle, fields, clazz);
+                }
+            }
+            sheet.trackAllColumnsForAutoSizing();
+            for (int i = 0; i < fieldsName.length; i++) {
+                //设置列宽度自适应
+                if (autoSizeColumn.contains(fields[i])) {
+                    sheet.autoSizeColumn(i);
                 }
             }
             //5、输出
@@ -262,14 +303,14 @@ public class ExcelUtil {
     }
 
     /**
-     * @param wb HSSFWorkbook对象
-     * @param realSheet 需要操作的sheet对象
-     * @param datas 下拉的列表数据
-     * @param startRow 开始行
-     * @param endRow 结束行
-     * @param startCol 开始列
-     * @param endCol 结束列
-     * @param hiddenSheetName 隐藏的sheet名
+     * @param wb               HSSFWorkbook对象
+     * @param realSheet        需要操作的sheet对象
+     * @param datas            下拉的列表数据
+     * @param startRow         开始行
+     * @param endRow           结束行
+     * @param startCol         开始列
+     * @param endCol           结束列
+     * @param hiddenSheetName  隐藏的sheet名
      * @param hiddenSheetIndex 隐藏的sheet索引
      * @return
      * @throws Exception

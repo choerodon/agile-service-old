@@ -10,6 +10,6 @@ public interface DemoService {
 
     OrganizationRegisterEventPayload demoInit(OrganizationRegisterEventPayload demoProjectPayload);
 
-    void demoDelete(Long projectId);
+//    void demoDelete(Long projectId);
 
 }

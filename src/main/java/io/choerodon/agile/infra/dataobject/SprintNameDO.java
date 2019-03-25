@@ -11,6 +11,7 @@ public class SprintNameDO {
     private Long issueId;
     private Date startDate;
     private Date endDate;
+    private String statusCode;
 
     public Long getSprintId() {
         return sprintId;
@@ -50,5 +51,13 @@ public class SprintNameDO {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public String getStatusCode() {
+        return statusCode;
     }
 }
