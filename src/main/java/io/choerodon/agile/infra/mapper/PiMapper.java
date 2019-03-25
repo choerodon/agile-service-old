@@ -34,4 +34,6 @@ public interface PiMapper extends BaseMapper<PiDO> {
     List<Long> queryFeatureIds(@Param("programId") Long programId, @Param("piId") Long piId);
 
     List<SubFeatureDO> selectFeatureIdByFeatureIds(@Param("programId") Long programId, @Param("featureIds") List<Long> featureIds);
+
+    PiDO selectActivePi(@Param("programId") Long programId);
 }

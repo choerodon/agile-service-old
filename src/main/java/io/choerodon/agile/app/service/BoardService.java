@@ -52,4 +52,6 @@ public interface BoardService {
     Boolean checkName(Long projectId, String boardName);
 
     void initBoardByProgram(Long projectId, String boardName, List<StatusPayload> statusPayloads);
+
+    JSONObject queryByOptionsInProgram(Long projectId, Long boardId, Long organizationId);
 }

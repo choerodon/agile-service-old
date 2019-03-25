@@ -125,6 +125,9 @@ public class BoardServiceImpl implements BoardService {
     @Autowired
     private IssueRepository issueRepository;
 
+    @Autowired
+    private PiMapper piMapper;
+
     @Override
     public void create(Long projectId, String boardName) {
         if (checkName(projectId, boardName)) {
@@ -443,37 +446,6 @@ public class BoardServiceImpl implements BoardService {
         boardColumnService.initBoardColumns(projectId, boardResult.getBoardId(), statusPayloads);
     }
 
-//    private void checkNumberContraint(BoardColumnCheckDO boardColumnCheckDO, BoardColumnCheckDO originBoardColumnCheckDO, Long currentStatusId, Long originStatusId) {
-//        Long currentMaxNum = boardColumnCheckDO.getMaxNum();
-//        Long currentIssueCount = boardColumnCheckDO.getIssueCount();
-//        Long originMinNum = originBoardColumnCheckDO.getMinNum();
-//        Long originIssueCount = originBoardColumnCheckDO.getIssueCount();
-//        if (originMinNum != null && !originStatusId.equals(currentStatusId) && originIssueCount <= originMinNum) {
-//            throw new CommonException("error.minNum.cannotReduce", originBoardColumnCheckDO.getName());
-//        }
-//        if (currentMaxNum != null && !originStatusId.equals(currentStatusId) && currentIssueCount >= currentMaxNum) {
-//            throw new CommonException("error.maxNum.cannotAdd", boardColumnCheckDO.getName());
-//        }
-//    }
-
-//    private void checkColumnContraint(Long projectId, IssueMoveDTO issueMoveDTO, String columnContraint, Long originStatusId) {
-//        Long statusId = issueMoveDTO.getStatusId();
-//        SprintDO activeSprint = getActiveSprint(projectId);
-//        Long activeSprintId = null;
-//        if (activeSprint != null) {
-//            activeSprintId = activeSprint.getSprintId();
-//        }
-//        if (columnContraint.equals(CONTRAINT_ISSUE)) {
-//            BoardColumnCheckDO boardColumnCheckDO = boardColumnMapper.selectColumnByColumnId(projectId, issueMoveDTO.getColumnId(), activeSprintId);
-//            BoardColumnCheckDO originBoardColumnCheckDO = boardColumnMapper.selectColumnByColumnId(projectId, issueMoveDTO.getOriginColumnId(), activeSprintId);
-//            checkNumberContraint(boardColumnCheckDO, originBoardColumnCheckDO, statusId, originStatusId);
-//        } else if (columnContraint.equals(CONTRAINT_ISSUE_WITHOUT_SUBTASK)) {
-//            BoardColumnCheckDO boardColumnCheckDO = boardColumnMapper.selectColumnByColumnIdWithoutSub(projectId, issueMoveDTO.getColumnId(), activeSprintId);
-//            BoardColumnCheckDO originBoardColumnCheckDO = boardColumnMapper.selectColumnByColumnIdWithoutSub(projectId, issueMoveDTO.getOriginColumnId(), activeSprintId);
-//            checkNumberContraint(boardColumnCheckDO, originBoardColumnCheckDO, statusId, originStatusId);
-//        }
-//    }
-
     private String convertProjectName(ProjectDTO projectDTO) {
         String projectName = projectDTO.getName();
         return projectName.replaceAll(" ", "%20");
@@ -481,10 +453,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public IssueMoveDTO move(Long projectId, Long issueId, Long transformId, IssueMoveDTO issueMoveDTO, Boolean isDemo) {
-//        Long boardId = issueMoveDTO.getBoardId();
         IssueDO issueDO = issueMapper.selectByPrimaryKey(issueMoveDTO.getIssueId());
-//        BoardDO boardDO = boardMapper.selectByPrimaryKey(boardId);
-//        checkColumnContraint(projectId, issueMoveDTO, boardDO.getColumnConstraint(), issueDO.getStatusId());
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
         //执行状态机转换
         if (isDemo) {
@@ -653,5 +622,19 @@ public class BoardServiceImpl implements BoardService {
     public void initBoardByProgram(Long projectId, String boardName, List<StatusPayload> statusPayloads) {
         BoardE boardResult = createBoard(projectId, boardName);
         boardColumnService.initBoardColumnsByProgram(projectId, boardResult.getBoardId(), statusPayloads);
+    }
+
+    @Override
+    public JSONObject queryByOptionsInProgram(Long projectId, Long boardId, Long organizationId) {
+        JSONObject result = new JSONObject(true);
+        PiDO piDO = piMapper.selectActivePi(projectId);
+        Long activePiId = null;
+        if (piDO != null) {
+            activePiId = piDO.getId();
+        }
+        List<ColumnAndIssueDO> columns = boardColumnMapper.selectBoardByProgram(projectId, boardId, activePiId);
+        result.put("columnsData", columns);
+        handleUserSetting(boardId, projectId);
+        return result;
     }
 }

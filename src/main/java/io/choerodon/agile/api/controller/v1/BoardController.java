@@ -165,4 +165,18 @@ public class BoardController {
 
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("all board data for program")
+    @GetMapping(value = "/{boardId}/all_data_program/{organization_id}")
+    public ResponseEntity<JSONObject> queryByOptionsInProgram(@ApiParam(value = "项目id", required = true)
+                                                              @PathVariable(name = "project_id") Long projectId,
+                                                              @ApiParam(value = "agile board id", required = true)
+                                                              @PathVariable Long boardId,
+                                                              @ApiParam(value = "组织id", required = true)
+                                                              @PathVariable(name = "organization_id") Long organizationId) {
+        return Optional.ofNullable(boardService.queryByOptionsInProgram(projectId, boardId, organizationId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.programBoard.get"));
+    }
+
 }
