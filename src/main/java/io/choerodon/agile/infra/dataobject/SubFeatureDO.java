@@ -30,6 +30,8 @@ public class SubFeatureDO {
     @Transient
     private Long piId;
 
+    private String featureType;
+
     public void setIssueId(Long issueId) {
         this.issueId = issueId;
     }
@@ -108,5 +110,13 @@ public class SubFeatureDO {
 
     public Long getPiId() {
         return piId;
+    }
+
+    public void setFeatureType(String featureType) {
+        this.featureType = featureType;
+    }
+
+    public String getFeatureType() {
+        return featureType;
     }
 }

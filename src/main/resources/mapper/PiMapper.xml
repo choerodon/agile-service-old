@@ -120,9 +120,11 @@
             ai.issue_type_id,
             ai.type_code,
             ai.rank,
-            ai.object_version_number
+            ai.object_version_number,
+            af.feature_type
         FROM
             agile_issue ai
+        left join agile_feature af on ai.issue_id = af.issue_id
         WHERE
             ai.program_id = #{programId} and ai.type_code = 'feature'
             AND ai.issue_id NOT IN (
@@ -237,6 +239,14 @@
         where
         program_id = #{programId}
         and status_code = 'doing'
+    </select>
+
+    <select id="selectNotDonePi" resultType="io.choerodon.agile.infra.dataobject.PiDO">
+        select *
+        from agile_pi
+        where program_id = #{programId}
+        and art_id = #{artId}
+        and status_code != 'done'
     </select>
 
 

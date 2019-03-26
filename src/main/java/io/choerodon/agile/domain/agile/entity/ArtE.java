@@ -35,7 +35,7 @@ public class ArtE {
 
     private Date endDate;
 
-    private Long ipWorkdays;
+    private Long ipWeeks;
 
     private String piCodePrefix;
 
@@ -46,6 +46,10 @@ public class ArtE {
     private Long interationWeeks;
 
     private Long programId;
+
+    private Long piCount;
+
+    private String statusCode;
 
     private Long objectVersionNumber;
 
@@ -121,12 +125,12 @@ public class ArtE {
         this.endDate = endDate;
     }
 
-    public Long getIpWorkdays() {
-        return ipWorkdays;
+    public void setIpWeeks(Long ipWeeks) {
+        this.ipWeeks = ipWeeks;
     }
 
-    public void setIpWorkdays(Long ipWorkdays) {
-        this.ipWorkdays = ipWorkdays;
+    public Long getIpWeeks() {
+        return ipWeeks;
     }
 
     public String getPiCodePrefix() {
@@ -169,11 +173,27 @@ public class ArtE {
         this.programId = programId;
     }
 
+    public void setPiCount(Long piCount) {
+        this.piCount = piCount;
+    }
+
+    public Long getPiCount() {
+        return piCount;
+    }
+
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
     }
 
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public String getStatusCode() {
+        return statusCode;
     }
 }

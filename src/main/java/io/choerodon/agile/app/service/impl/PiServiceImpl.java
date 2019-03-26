@@ -44,10 +44,12 @@ import java.util.stream.Collectors;
 @Service
 public class PiServiceImpl implements PiService {
 
-    public static final String PI_TODO = "todo";
+    private static final String PI_TODO = "todo";
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String YYYY_MM_DD = "yyyy-MM-dd";
     private static final String YYYY = "yyyy";
+    private static final String ART_DOING = "doing";
+    private static final String ART_DONE = "done";
 
     @Autowired
     private PiRepository piRepository;
@@ -200,23 +202,15 @@ public class PiServiceImpl implements PiService {
     }
 
     private Long getPiWorkDays(ArtDO artDO) {
-        Long ipWorkdays = artDO.getIpWorkdays();
+        Long ipWeeks = artDO.getIpWeeks();
         Long interationCount = artDO.getInterationCount();
         Long interationWeeks = artDO.getInterationWeeks();
-        return interationCount * interationWeeks * 7 + ipWorkdays;
+        return interationCount * interationWeeks * 7 + ipWeeks * 7;
     }
 
-    private void setPiStartAndEndDate(Long programId, Long artId, PiE piE, Long piWorkDays) {
-        PiDO lastPi = piMapper.selectLastPi(programId, artId);
-        Date startDate = null;
-        Date endDate = null;
-        if (lastPi == null) {
-            startDate = formatDate(new Date());
-            endDate = getSpecifyTimeByOneTime(new Date(), piWorkDays.intValue());
-        } else {
-            startDate = formatDate(lastPi.getEndDate());
-            endDate = getSpecifyTimeByOneTime(lastPi.getEndDate(), piWorkDays.intValue());
-        }
+    private void setPiStartAndEndDate(PiE piE, Long piWorkDays, Date startDate) {
+        startDate = formatDate(startDate);
+        Date endDate = getSpecifyTimeByOneTime(startDate, piWorkDays.intValue());
         piE.setStartDate(startDate);
         piE.setEndDate(endDate);
     }
@@ -234,10 +228,10 @@ public class PiServiceImpl implements PiService {
     }
 
     @Override
-    public void createPi(Long programId, Long piNumber, ArtDO artDO) {
+    public void createPi(Long programId, ArtDO artDO, Date startDate) {
         Long piCodeNumber = artDO.getPiCodeNumber();
         Long piWorkDays = getPiWorkDays(artDO);
-        for (int i = 0;i < piNumber; i++) {
+        for (int i = 0; i < artDO.getPiCount(); i++) {
             PiE piE = new PiE();
             piE.setCode(artDO.getPiCodePrefix());
             piE.setName(piCodeNumber.toString());
@@ -245,10 +239,11 @@ public class PiServiceImpl implements PiService {
             piE.setArtId(artDO.getId());
             piE.setStatusCode(PI_TODO);
             piE.setProgramId(programId);
-            setPiStartAndEndDate(programId, artDO.getId(), piE, piWorkDays);
+            setPiStartAndEndDate(piE, piWorkDays, startDate);
             PiE piRes = piRepository.create(piE);
             // create sprint template
             createSprintTemplate(programId, piRes, artDO);
+            startDate = piE.getEndDate();
         }
         updateArtPiCodeNumber(programId, artDO.getId(), piCodeNumber, artDO.getObjectVersionNumber());
     }
@@ -258,12 +253,12 @@ public class PiServiceImpl implements PiService {
         return ConvertHelper.convert(piRepository.updateBySelective(ConvertHelper.convert(piDTO, PiE.class)), PiDTO.class);
     }
 
-    private Long getActiveArt(Long programId) {
+    private ArtDO getActiveArt(Long programId) {
         ArtDO artDO = artMapper.selectActiveArt(programId);
         if (artDO == null) {
             return null;
         } else {
-            return artDO.getId();
+            return artDO;
         }
     }
 
@@ -287,11 +282,11 @@ public class PiServiceImpl implements PiService {
         List<SubFeatureDO> backlogFeatures = piMapper.selectBacklogNoPiList(programId, StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)));
         result.put("backlogAllFeatures", backlogFeatures != null && !backlogFeatures.isEmpty() ? piAssembler.subFeatureDOTODTO(backlogFeatures, statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
         // query active art with all pi
-        Long activeArtId = getActiveArt(programId);
-        if (activeArtId == null) {
+        ArtDO activeArt = getActiveArt(programId);
+        if (activeArt == null || !activeArt.getEnabled() || ART_DONE.equals(activeArt.getStatusCode())) {
             return result;
         }
-        List<PiWithFeatureDO> piWithFeatureDOList = piMapper.selectBacklogPiList(programId, activeArtId, StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)));
+        List<PiWithFeatureDO> piWithFeatureDOList = piMapper.selectBacklogPiList(programId, activeArt.getId(), StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)));
         result.put("allPiList", piWithFeatureDOList != null && !piWithFeatureDOList.isEmpty() ? piAssembler.piWithFeatureDOTODTO(piWithFeatureDOList, statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
         return result;
     }
@@ -333,6 +328,22 @@ public class PiServiceImpl implements PiService {
         }
     }
 
+    private void changeArtToDoing(Long artId) {
+        ArtDO artDO = artMapper.selectByPrimaryKey(artId);
+        if (artDO == null) {
+            throw new CommonException("error.art.null");
+        }
+        if (ART_DOING.equals(artDO.getStatusCode())) {
+            return;
+        }
+        ArtE artE = new ArtE();
+        artE.setProgramId(artDO.getProgramId());
+        artE.setObjectVersionNumber(artDO.getObjectVersionNumber());
+        artE.setId(artId);
+        artE.setStatusCode(ART_DOING);
+        artRepository.updateBySelective(artE);
+    }
+
     @Override
     public PiDTO startPi(Long programId, PiDTO piDTO) {
         piValidator.checkPiStart(piDTO);
@@ -344,7 +355,10 @@ public class PiServiceImpl implements PiService {
         piE.setId(piDTO.getId());
         piE.setStatusCode(piDTO.getStatusCode());
         piE.setObjectVersionNumber(piDTO.getObjectVersionNumber());
-        return ConvertHelper.convert(piRepository.updateBySelective(piE), PiDTO.class);
+        PiE result = piRepository.updateBySelective(piE);
+        // change art' status_code to 'doing'
+        changeArtToDoing(piDTO.getArtId());
+        return ConvertHelper.convert(result, PiDTO.class);
     }
 
     private void beforeRankInProgram(Long programId, Long targetSprintId, List<MoveIssueDO> moveIssueDOS, List<Long> moveIssueIds) {
@@ -475,7 +489,6 @@ public class PiServiceImpl implements PiService {
         } else {
             return new ArrayList<>();
         }
-
     }
 
     @Override

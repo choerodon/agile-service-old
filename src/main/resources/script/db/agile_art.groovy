@@ -28,4 +28,15 @@ databaseChangeLog(logicalFilePath: 'agile_art.groovy') {
             column(name: "last_update_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
     }
+
+    changeSet(id: '2019-03-26-agile-art-add-column', author: 'fuqianghuang01@gmail.com') {
+        addColumn(tableName: 'agile_art') {
+            column(name: 'pi_count', type: 'BIGINT UNSIGNED', remarks: 'pi count')
+            column(name: 'status_code', type: 'VARCHAR(255)', remarks: 'status code')
+        }
+    }
+
+    changeSet(id: '2019-03-26-agile-art-rename-column', author: 'fuqianghuang01@gmail.com') {
+        renameColumn(columnDataType: 'BIGINT UNSIGNED', newColumnName: 'ip_weeks', oldColumnName: 'ip_workdays', remarks: 'ip weeks', tableName: 'agile_art')
+    }
 }

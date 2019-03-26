@@ -1,9 +1,7 @@
 package io.choerodon.agile.app.service;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.BoardDTO;
-import io.choerodon.agile.api.dto.IssueMoveDTO;
-import io.choerodon.agile.api.dto.UserSettingDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.event.StatusPayload;
 
 import java.util.List;
@@ -27,6 +25,8 @@ public interface BoardService {
     void initBoard(Long projectId, String boardName, List<StatusPayload> statusPayloads);
 
     IssueMoveDTO move(Long projectId, Long issueId, Long transformId, IssueMoveDTO issueMoveDTO, Boolean isDemo);
+
+    FeatureMoveDTO moveByProgram(Long projectId, Long issueId, Long transformId, FeatureMoveDTO featureMoveDTO);
 
     List<BoardDTO> queryByProjectId(Long projectId);
 

@@ -2,6 +2,7 @@ package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.BoardDTO;
+import io.choerodon.agile.api.dto.FeatureMoveDTO;
 import io.choerodon.agile.api.dto.IssueMoveDTO;
 import io.choerodon.agile.api.dto.UserSettingDTO;
 import io.choerodon.agile.app.service.BoardService;
@@ -92,6 +93,22 @@ public class BoardController {
         return Optional.ofNullable(boardService.move(projectId, issueId, transformId, issueMoveDTO, false))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.update"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("移动feature")
+    @PostMapping(value = "/feature/{issueId}/move")
+    public ResponseEntity<FeatureMoveDTO> moveByProgram(@ApiParam(value = "项目id", required = true)
+                                                      @PathVariable(name = "project_id") Long projectId,
+                                                        @ApiParam(value = "issue id", required = true)
+                                                      @PathVariable Long issueId,
+                                                        @ApiParam(value = "转换id", required = true)
+                                                      @RequestParam Long transformId,
+                                                        @ApiParam(value = "feature move object", required = true)
+                                                      @RequestBody FeatureMoveDTO featureMoveDTO) {
+        return Optional.ofNullable(boardService.moveByProgram(projectId, issueId, transformId, featureMoveDTO))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.feature.move"));
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
