@@ -1,10 +1,12 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.ArtDTO;
+import io.choerodon.agile.api.dto.PiCreateDTO;
 import io.choerodon.agile.infra.dataobject.PiCalendarDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,7 +25,9 @@ public interface ArtService {
 
     ArtDTO queryArt(Long programId, Long id);
 
-    ArtDTO releaseArt(Long programId, Long artId, Long piNumber);
+    void createOtherPi(Long programId, PiCreateDTO piCreateDTO);
 
     List<PiCalendarDO> queryArtCalendar(Long programId, Long artId);
+
+    Boolean beforeComplete(Long programId, Long id);
 }

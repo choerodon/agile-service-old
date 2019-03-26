@@ -27,7 +27,7 @@ public class PiAssembler {
         subFeatureDOList.forEach(subFeatureDO -> {
             SubFeatureDTO subFeatureDTO = new SubFeatureDTO();
             BeanUtils.copyProperties(subFeatureDO, subFeatureDTO);
-            subFeatureDTO.setStatusDTO(statusMapDTOMap.get(subFeatureDO.getStatusId()));
+            subFeatureDTO.setStatusMapDTO(statusMapDTOMap.get(subFeatureDO.getStatusId()));
             subFeatureDTO.setIssueTypeDTO(issueTypeDTOMap.get(subFeatureDO.getIssueTypeId()));
             subFeatureDTOList.add(subFeatureDTO);
         });

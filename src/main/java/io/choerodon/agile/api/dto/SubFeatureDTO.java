@@ -34,7 +34,7 @@ public class SubFeatureDTO {
     private IssueTypeDTO issueTypeDTO;
 
     @Transient
-    private StatusMapDTO statusDTO;
+    private StatusMapDTO statusMapDTO;
 
     public void setIssueId(Long issueId) {
         this.issueId = issueId;
@@ -124,11 +124,11 @@ public class SubFeatureDTO {
         return issueTypeDTO;
     }
 
-    public void setStatusDTO(StatusMapDTO statusDTO) {
-        this.statusDTO = statusDTO;
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
     }
 
-    public StatusMapDTO getStatusDTO() {
-        return statusDTO;
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
     }
 }

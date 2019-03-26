@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.choerodon.agile.infra.mapper.PiFeatureMapper">
+
+    <select id="selectExistByOptions" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(1) = 0, FALSE, TRUE)
+        FROM agile_pi_feature apf, agile_pi ap
+        WHERE ap.id = apf.pi_id
+        AND ap.status_code != 'done'
+        AND apf.issue_id = #{issueId}
+        AND apf.program_id = #{programId}
+    </select>
+
+    <select id="selectGivenExistByOptions" resultType="java.lang.Boolean">
+        SELECT IF(COUNT(1) = 0, FALSE, TRUE)
+        FROM agile_pi_feature apf
+        WHERE apf.issue_id = #{issueId}
+        AND apf.program_id = #{programId}
+        AND apf.pi_id = #{piId}
+    </select>
+
+    <delete id="deletePfRelationByOptions">
+        DELETE FROM agile_pi_feature
+        WHERE issue_id = #{issueId}
+        AND program_id = #{programId}
+        AND pi_id NOT IN (
+           SELECT id FROM agile_pi WHERE status_code != 'done'
+        )
+    </delete>
+
+</mapper>

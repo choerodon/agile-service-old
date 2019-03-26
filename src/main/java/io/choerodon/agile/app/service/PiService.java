@@ -8,6 +8,7 @@ import io.choerodon.agile.infra.dataobject.SubFeatureDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ import java.util.Map;
  */
 public interface PiService {
 
-    void createPi(Long programId, Long piNumber, ArtDO artDO);
+    void createPi(Long programId, ArtDO artDO, Date startDate);
 
     PiDTO updatePi(Long programId, PiDTO piDTO);
 

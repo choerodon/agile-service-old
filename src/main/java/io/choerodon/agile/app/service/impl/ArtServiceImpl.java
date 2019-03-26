@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.ArtDTO;
+import io.choerodon.agile.api.dto.PiCreateDTO;
 import io.choerodon.agile.api.validator.ArtValidator;
 import io.choerodon.agile.app.assembler.ArtAssembler;
 import io.choerodon.agile.app.service.ArtService;
@@ -9,7 +10,9 @@ import io.choerodon.agile.domain.agile.entity.ArtE;
 import io.choerodon.agile.domain.agile.repository.ArtRepository;
 import io.choerodon.agile.infra.dataobject.ArtDO;
 import io.choerodon.agile.infra.dataobject.PiCalendarDO;
+import io.choerodon.agile.infra.dataobject.PiDO;
 import io.choerodon.agile.infra.mapper.ArtMapper;
+import io.choerodon.agile.infra.mapper.PiMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
@@ -18,6 +21,7 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,6 +30,8 @@ import java.util.List;
  */
 @Service
 public class ArtServiceImpl implements ArtService {
+
+    private static final String ART_TODO = "todo";
 
     @Autowired
     private ArtRepository artRepository;
@@ -42,11 +48,17 @@ public class ArtServiceImpl implements ArtService {
     @Autowired
     private PiService piService;
 
+    @Autowired
+    private PiMapper piMapper;
+
     @Override
     public ArtDTO createArt(Long programId, ArtDTO artDTO) {
         artValidator.checkHasArt(programId);
         artValidator.checkArtCreate(artDTO);
-        return ConvertHelper.convert(artRepository.create(ConvertHelper.convert(artDTO, ArtE.class)), ArtDTO.class);
+        artDTO.setStatusCode(ART_TODO);
+        ArtE artE = artRepository.create(ConvertHelper.convert(artDTO, ArtE.class));
+        piService.createPi(programId, ConvertHelper.convert(artE, ArtDO.class), new Date());
+        return ConvertHelper.convert(artE, ArtDTO.class);
     }
 
     @Override
@@ -86,18 +98,25 @@ public class ArtServiceImpl implements ArtService {
     }
 
     @Override
-    public ArtDTO releaseArt(Long programId, Long artId, Long piNumber) {
+    public void createOtherPi(Long programId, PiCreateDTO piCreateDTO) {
+        Long artId = piCreateDTO.getArtId();
+        Date startDate = piCreateDTO.getStartDate();
         // auto create pi with piNumber
         ArtDO artDO = artMapper.selectByPrimaryKey(artId);
-        piService.createPi(programId, piNumber, artDO);
-        // release art
-        ArtDO artDORe = artMapper.selectByPrimaryKey(artId);
-        ArtE artE = new ArtE(programId, artId, true, artDORe.getObjectVersionNumber());
-        return ConvertHelper.convert(artRepository.updateBySelective(artE), ArtDTO.class);
+        piService.createPi(programId, artDO, startDate);
     }
 
     @Override
     public List<PiCalendarDO> queryArtCalendar(Long programId, Long artId) {
         return artMapper.selectArtCalendar(programId, artId);
+    }
+
+    @Override
+    public Boolean beforeComplete(Long programId, Long id) {
+        List<PiDO> piDOList = piMapper.selectNotDonePi(programId, id);
+        if (piDOList != null && !piDOList.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 }

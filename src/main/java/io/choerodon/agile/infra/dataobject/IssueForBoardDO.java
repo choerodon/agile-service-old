@@ -47,6 +47,8 @@ public class IssueForBoardDO {
 
     private String featureType;
 
+    private Long piId;
+
     public String getRank() {
         return rank;
     }
@@ -189,5 +191,13 @@ public class IssueForBoardDO {
 
     public String getFeatureType() {
         return featureType;
+    }
+
+    public void setPiId(Long piId) {
+        this.piId = piId;
+    }
+
+    public Long getPiId() {
+        return piId;
     }
 }

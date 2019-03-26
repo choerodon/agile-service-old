@@ -5,10 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.BoardValidator;
 import io.choerodon.agile.app.service.*;
-import io.choerodon.agile.domain.agile.entity.BoardE;
-import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
-import io.choerodon.agile.domain.agile.entity.IssueE;
-import io.choerodon.agile.domain.agile.entity.UserSettingE;
+import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.domain.agile.event.StatusPayload;
 import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
@@ -127,6 +124,12 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private PiMapper piMapper;
+
+    @Autowired
+    private PiFeatureRepository piFeatureRepository;
+
+    @Autowired
+    private PiFeatureMapper piFeatureMapper;
 
     @Override
     public void create(Long projectId, String boardName) {
@@ -485,11 +488,6 @@ public class BoardServiceImpl implements BoardService {
             }
             String pioCode = (pio == null ? "" : pio.getProjectCode());
             if ("sub_task".equals(issueDO.getTypeCode())) {
-//                IssueDO pIssue = issueMapper.selectByPrimaryKey(issueDO.getParentIssueId());
-//                String num = "";
-//                if (pIssue != null) {
-//                    num = pIssue.getIssueNum();
-//                }
                 url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + pioCode + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getParentIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
             } else {
                 url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + pioCode + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
@@ -502,6 +500,72 @@ public class BoardServiceImpl implements BoardService {
             siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), issueDO.getAssigneeId(), projectId);
         }
         return result;
+    }
+
+    @Override
+    public FeatureMoveDTO moveByProgram(Long projectId, Long issueId, Long transformId, FeatureMoveDTO featureMoveDTO) {
+        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
+        stateMachineService.executeTransform(projectId, issueId, transformId, featureMoveDTO.getObjectVersionNumber(),
+                SchemeApplyType.PROGRAM, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleFeatureMoveRank(projectId, featureMoveDTO, issueDO))));
+        issueDO = issueMapper.selectByPrimaryKey(issueId);
+        // deal pi of feature
+        if (featureMoveDTO.getPiChange() != null && featureMoveDTO.getPiChange()) {
+            Long piId = featureMoveDTO.getPiId();
+            if (piId != null && piId != 0) {
+                if (piFeatureMapper.selectExistByOptions(projectId, issueId)) {
+                    piFeatureMapper.deletePfRelationByOptions(projectId, issueId);
+                }
+                if (!piFeatureMapper.selectGivenExistByOptions(projectId, issueId, piId)) {
+                    piFeatureRepository.create(new PiFeatureE(issueId, piId, projectId));
+                }
+            }
+        }
+        return ConvertHelper.convert(issueDO, FeatureMoveDTO.class);
+    }
+
+    private JSONObject handleFeatureMoveRank(Long projectId, FeatureMoveDTO featureMoveDTO, IssueDO issueDO) {
+        JSONObject jsonObject = new JSONObject();
+        if (featureMoveDTO.getRank()) {
+            String rank = null;
+            if (featureMoveDTO.getBefore()) {
+                if (featureMoveDTO.getOutsetIssueId() == null || Objects.equals(featureMoveDTO.getOutsetIssueId(), 0L)) {
+                    String minRank = piMapper.queryPiMinRank(projectId, featureMoveDTO.getPiId());
+                    if (minRank == null) {
+                        rank = RankUtil.mid();
+                    } else {
+                        rank = RankUtil.genPre(minRank);
+                    }
+                } else {
+                    String rightRank = issueMapper.queryRankByProgram(projectId, featureMoveDTO.getOutsetIssueId());
+                    if (rightRank == null) {
+                        //处理子任务没有rank的旧数据
+                        rightRank = handleSubIssueNotRank(projectId, featureMoveDTO.getOutsetIssueId(), featureMoveDTO.getPiId());
+                    }
+                    String leftRank = issueMapper.queryLeftRankByProgram(projectId, featureMoveDTO.getPiId(), rightRank);
+                    if (leftRank == null) {
+                        rank = RankUtil.genPre(rightRank);
+                    } else {
+                        rank = RankUtil.between(leftRank, rightRank);
+                    }
+                }
+            } else {
+                String leftRank = issueMapper.queryRankByProgram(projectId, featureMoveDTO.getOutsetIssueId());
+                if (leftRank == null) {
+                    leftRank = handleSubIssueNotRank(projectId, featureMoveDTO.getOutsetIssueId(), featureMoveDTO.getPiId());
+                }
+                String rightRank = issueMapper.queryRightRankByProgram(projectId, featureMoveDTO.getPiId(), leftRank);
+                if (rightRank == null) {
+                    rank = RankUtil.genNext(leftRank);
+                } else {
+                    rank = RankUtil.between(leftRank, rightRank);
+                }
+            }
+            jsonObject.put(RANK, rank);
+        } else {
+            jsonObject.put(RANK, issueDO.getRank());
+        }
+        jsonObject.put(PROJECT_ID, projectId);
+        return jsonObject;
     }
 
     private JSONObject handleIssueMoveRank(Long projectId, IssueMoveDTO issueMoveDTO) {
@@ -624,6 +688,20 @@ public class BoardServiceImpl implements BoardService {
         boardColumnService.initBoardColumnsByProgram(projectId, boardResult.getBoardId(), statusPayloads);
     }
 
+    private void setColumnDeatil(List<ColumnAndIssueDO> columns, Map<Long, StatusMapDTO> statusMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+        for (ColumnAndIssueDO column : columns) {
+            List<SubStatus> subStatuses = column.getSubStatuses();
+            fillStatusData(subStatuses, statusMap);
+            for (SubStatus subStatus : subStatuses) {
+                List<IssueForBoardDO> issueForBoardDOS = subStatus.getIssues();
+                for (IssueForBoardDO issueForBoardDO : issueForBoardDOS) {
+                    issueForBoardDO.setIssueTypeDTO(issueTypeDTOMap.get(issueForBoardDO.getIssueTypeId()));
+                }
+            }
+            Collections.sort(subStatuses, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
+        }
+    }
+
     @Override
     public JSONObject queryByOptionsInProgram(Long projectId, Long boardId, Long organizationId) {
         JSONObject result = new JSONObject(true);
@@ -633,7 +711,13 @@ public class BoardServiceImpl implements BoardService {
             activePiId = piDO.getId();
         }
         List<ColumnAndIssueDO> columns = boardColumnMapper.selectBoardByProgram(projectId, boardId, activePiId);
+        // get status map from organization
+        Map<Long, StatusMapDTO> statusMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        // reset status info
+        setColumnDeatil(columns, statusMap, issueTypeDTOMap);
         result.put("columnsData", columns);
+        result.put("activePi", piDO);
         handleUserSetting(boardId, projectId);
         return result;
     }

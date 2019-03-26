@@ -40,7 +40,7 @@ public class ArtDO extends AuditDomain {
 
     private Date endDate;
 
-    private Long ipWorkdays;
+    private Long ipWeeks;
 
     private String piCodePrefix;
 
@@ -51,6 +51,10 @@ public class ArtDO extends AuditDomain {
     private Long interationWeeks;
 
     private Long programId;
+
+    private Long piCount;
+
+    private String statusCode;
 
     public Long getId() {
         return id;
@@ -124,12 +128,12 @@ public class ArtDO extends AuditDomain {
         this.endDate = endDate;
     }
 
-    public Long getIpWorkdays() {
-        return ipWorkdays;
+    public void setIpWeeks(Long ipWeeks) {
+        this.ipWeeks = ipWeeks;
     }
 
-    public void setIpWorkdays(Long ipWorkdays) {
-        this.ipWorkdays = ipWorkdays;
+    public Long getIpWeeks() {
+        return ipWeeks;
     }
 
     public String getPiCodePrefix() {
@@ -170,5 +174,21 @@ public class ArtDO extends AuditDomain {
 
     public void setProgramId(Long programId) {
         this.programId = programId;
+    }
+
+    public void setPiCount(Long piCount) {
+        this.piCount = piCount;
+    }
+
+    public Long getPiCount() {
+        return piCount;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public String getStatusCode() {
+        return statusCode;
     }
 }

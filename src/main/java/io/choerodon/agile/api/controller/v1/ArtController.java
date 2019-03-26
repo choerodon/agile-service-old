@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.ArtDTO;
+import io.choerodon.agile.api.dto.PiCreateDTO;
 import io.choerodon.agile.app.service.ArtService;
 import io.choerodon.agile.infra.dataobject.PiCalendarDO;
 import io.choerodon.core.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,17 +96,14 @@ public class ArtController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("发布art")
-    @PostMapping("/release_art")
-    public ResponseEntity<ArtDTO> releaseArt(@ApiParam(value = "项目id", required = true)
-                                             @PathVariable(name = "project_id") Long projectId,
-                                             @ApiParam(value = "art id", required = true)
-                                             @RequestParam Long artId,
-                                             @ApiParam(value = "pi number", required = true)
-                                             @RequestParam Long piNumber) {
-        return Optional.ofNullable(artService.releaseArt(projectId, artId, piNumber))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
-                .orElseThrow(() -> new CommonException("error.art.release"));
+    @ApiOperation("创建art pi")
+    @PostMapping("/create_other_pi")
+    public ResponseEntity createOtherPi(@ApiParam(value = "项目id", required = true)
+                                        @PathVariable(name = "project_id") Long projectId,
+                                        @ApiParam(value = "pi create dto", required = true)
+                                        @RequestBody PiCreateDTO piCreateDTO) {
+        artService.createOtherPi(projectId, piCreateDTO);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
@@ -117,6 +116,18 @@ public class ArtController {
         return Optional.ofNullable(artService.queryArtCalendar(projectId, id))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.artCalendar.get"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("完成art之前调用")
+    @GetMapping("/before_complete")
+    public ResponseEntity<Boolean> beforeComplete(@ApiParam(value = "项目id", required = true)
+                                                  @PathVariable(name = "project_id") Long projectId,
+                                                  @ApiParam(value = "art id")
+                                                  @RequestParam Long id) {
+        return Optional.ofNullable(artService.beforeComplete(projectId, id))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.beforeComplete.get"));
     }
 
 }

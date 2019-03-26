@@ -373,7 +373,8 @@
             ai.type_code AS ai_type_code,
             ai.rank AS ai_rank,
             ai.object_version_number AS ai_object_version_number,
-            ai.feature_type AS ai_feature_type
+            ai.feature_type AS ai_feature_type,
+            pi_info.pi_id as ai_pi_id
         FROM agile_board_column abc
         LEFT JOIN agile_board_column_status_rel abcsr ON abc.column_id = abcsr.column_id
         LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.status_id AND ais.project_id = abc.project_id
@@ -393,6 +394,14 @@
                   AND ai1.issue_id = af.issue_id
                   AND ai1.program_id = #{projectId}
         ) ai ON ai.status_id = ais.status_id
+        left join (
+           select
+              apf.pi_id, apf.issue_id
+           from agile_pi_feature apf, agile_pi ap
+           where ap.program_id = #{projectId}
+           and ap.status_code != 'done'
+           and ap.id = apf.pi_id
+        ) pi_info on pi_info.issue_id = ai.issue_id
         LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
         LEFT JOIN agile_lookup_value alv1 ON abc.color_code = alv1.value_code
         WHERE
@@ -420,7 +429,8 @@
             ai.type_code AS ai_type_code,
             ai.rank AS ai_rank,
             ai.object_version_number AS ai_object_version_number,
-            ai.feature_type AS ai_feature_type
+            ai.feature_type AS ai_feature_type,
+            pi_info.pi_id as ai_pi_id
         FROM agile_board_column abc
         LEFT JOIN agile_board_column_status_rel abcsr ON abc.column_id = abcsr.column_id
         LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.status_id AND ais.project_id = abc.project_id
@@ -442,6 +452,14 @@
                 AND ai1.issue_id = af.issue_id
                 AND ai1.program_id = #{projectId}
         ) ai ON ai.status_id = ais.status_id
+        LEFT JOIN (
+           select
+              apf.pi_id, apf.issue_id
+           from agile_pi_feature apf, agile_pi ap
+           where ap.program_id = #{projectId}
+           and ap.status_code != 'done'
+           and ap.id = apf.pi_id
+        ) pi_info on pi_info.issue_id = ai.issue_id
         LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
         LEFT JOIN agile_lookup_value alv1 ON abc.color_code = alv1.value_code
         WHERE
