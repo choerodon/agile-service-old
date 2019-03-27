@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.persistence.Transient;
 import java.math.BigDecimal;
 
@@ -9,30 +11,42 @@ import java.math.BigDecimal;
  */
 public class SubFeatureDTO {
 
+    @ApiModelProperty(value = "问题主键id")
     private Long issueId;
 
+    @ApiModelProperty(value = "问题编号")
     private Long issueNum;
 
+    @ApiModelProperty(value = "问题概要")
     private String summary;
 
+    @ApiModelProperty(value = "问题状态id")
     private Long statusId;
 
+    @ApiModelProperty(value = "故事点")
     private BigDecimal storyPoints;
 
+    @ApiModelProperty(value = "问题类型id")
     private Long issueTypeId;
 
+    @ApiModelProperty(value = "问题类型code")
     private String typeCode;
 
+    @ApiModelProperty(value = "排序字段")
     private String rank;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "pi主键id")
     @Transient
     private Long piId;
 
+    @ApiModelProperty(value = "问题类型DTO")
     @Transient
     private IssueTypeDTO issueTypeDTO;
 
+    @ApiModelProperty(value = "状态DTO")
     @Transient
     private StatusMapDTO statusMapDTO;
 

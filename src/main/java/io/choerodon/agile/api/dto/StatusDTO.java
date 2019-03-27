@@ -1,23 +1,32 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/6/26.
  * Email: fuqianghuang01@gmail.com
  */
 public class StatusDTO {
 
+    @ApiModelProperty(value = "状态主键id")
     private Long id;
 
+    @ApiModelProperty(value = "状态名称")
     private String name;
 
+    @ApiModelProperty(value = "项目名称")
     private Long projectId;
 
+    @ApiModelProperty(value = "状态类别")
     private String categoryCode;
 
+    @ApiModelProperty(value = "状态类别名称")
     private String categoryName;
 
+    @ApiModelProperty(value = "问题数量统计")
     private Integer issueNumCount;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
     public Long getId() {

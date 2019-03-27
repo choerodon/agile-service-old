@@ -2,6 +2,7 @@ package io.choerodon.agile.api.dto;
 
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/16.
@@ -9,18 +10,25 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class IssueAttachmentDTO {
 
+    @ApiModelProperty(value = "附件主键id")
     private Long attachmentId;
 
+    @ApiModelProperty(value = "问题id")
     private Long issueId;
 
+    @ApiModelProperty(value = "评论id")
     private Long commentId;
 
+    @ApiModelProperty(value = "附件url")
     private String url;
 
+    @ApiModelProperty(value = "文件名称")
     private String fileName;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
     public Long getAttachmentId() {

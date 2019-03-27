@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 import java.util.List;
 
@@ -9,16 +11,22 @@ import java.util.List;
  */
 public class PiWithFeatureDTO {
 
+    @ApiModelProperty(value = "pi主键id")
     private Long id;
 
+    @ApiModelProperty(value = "pi名称")
     private String name;
 
+    @ApiModelProperty(value = "pi状态")
     private String statusCode;
 
+    @ApiModelProperty(value = "pi开始时间")
     private Date startDate;
 
+    @ApiModelProperty(value = "pi结束时间")
     private Date endDate;
 
+    @ApiModelProperty(value = "pi下的feature列表")
     private List<SubFeatureDTO> subFeatureDTOList;
 
     public Long getId() {

@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.NotNull;
 
 /**
@@ -8,27 +10,35 @@ import javax.validation.constraints.NotNull;
  */
 public class BoardDTO {
 
+    @ApiModelProperty(value = "看板id")
     private Long boardId;
 
+    @ApiModelProperty(value = "看板名称")
     private String name;
 
+    @ApiModelProperty(value = "项目id")
     @NotNull(message = "项目id不能为空")
     private Long projectId;
 
+    @ApiModelProperty(value = "管理员id")
     private Long administratorId;
 
+    @ApiModelProperty(value = "列约束")
     private String columnConstraint;
 
     private Boolean dayInColumn;
 
+    @ApiModelProperty(value = "泳道")
     private String swimlaneBasedCode;
 
     private String estimationStatistic;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
     private Boolean userDefault;
 
+    @ApiModelProperty(value = "用户默认看板")
     private String userDefaultBoard;
 
     public Long getBoardId() {

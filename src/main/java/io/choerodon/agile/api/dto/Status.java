@@ -1,16 +1,23 @@
 package io.choerodon.agile.api.dto;
 
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class Status {
 
+    @ApiModelProperty(value = "状态主键id")
     private Long id;
 
+    @ApiModelProperty(value = "状态名称")
     private String name;
 
+    @ApiModelProperty(value = "状态描述")
     private String description;
 
+    @ApiModelProperty(value = "状态类别")
     private String type;
 
+    @ApiModelProperty(value = "组织id")
     private Long organizationId;
 
     public Long getId() {
