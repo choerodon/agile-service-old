@@ -1,31 +1,44 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/3/25.
  * Email: fuqianghuang01@gmail.com
  */
 public class FeatureMoveDTO {
 
+    @ApiModelProperty(value = "问题主键id")
     private Long issueId;
 
+    @ApiModelProperty(value = "状态id")
     private Long statusId;
 
+    @ApiModelProperty(value = "pi主键id")
     private Long piId;
 
+    @ApiModelProperty(value = "看板主键id")
     private Long boardId;
 
+    @ApiModelProperty(value = "新列id")
     private Long columnId;
 
+    @ApiModelProperty(value = "原始列id")
     private Long originColumnId;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "true：表示放在某个问题之前；false：表示放在某个问题之后")
     private Boolean before;
 
+    @ApiModelProperty(value = "与before一起用，以该问题为参照物")
     private Long outsetIssueId;
 
+    @ApiModelProperty(value = "排序字段")
     private Boolean rank;
 
+    @ApiModelProperty(value = "true：表示移动的feature需要与pi关联；false反之")
     private Boolean piChange;
 
     public Boolean getRank() {

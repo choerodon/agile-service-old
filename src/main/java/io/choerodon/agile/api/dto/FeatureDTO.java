@@ -1,23 +1,32 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/3/13.
  * Email: fuqianghuang01@gmail.com
  */
 public class FeatureDTO {
 
+    @ApiModelProperty(value = "主键id")
     private Long id;
 
+    @ApiModelProperty(value = "问题id")
     private Long issueId;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "特性价值")
     private String benfitHypothesis;
 
+    @ApiModelProperty(value = "验收标准")
     private String acceptanceCritera;
 
+    @ApiModelProperty(value = "特性类型")
     private String featureType;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
     public void setId(Long id) {

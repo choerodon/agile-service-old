@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
 /**
@@ -9,32 +11,46 @@ import java.util.Date;
 
 public class DataLogDTO {
 
+    @ApiModelProperty(value = "日志主键id")
     private Long logId;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "问题字段")
     private String field;
 
+    @ApiModelProperty(value = "日志旧值")
     private String oldValue;
 
+    @ApiModelProperty(value = "日志旧值")
     private String oldString;
 
+    @ApiModelProperty(value = "日志新值")
     private String newValue;
 
+    @ApiModelProperty(value = "日志新值")
     private String newString;
 
+    @ApiModelProperty(value = "问题主键id")
     private Long issueId;
 
+    @ApiModelProperty(value = "最后更新用户id")
     private Long lastUpdatedBy;
 
+    @ApiModelProperty(value = "最后更新日期")
     private Date lastUpdateDate;
 
+    @ApiModelProperty(value = "用户名")
     private String name;
 
+    @ApiModelProperty(value = "用户头像url")
     private String imageUrl;
 
+    @ApiModelProperty(value = "状态类别")
     private String categoryCode;
 
+    @ApiModelProperty(value = "用户email地址")
     private String email;
 
     public Long getLogId() {

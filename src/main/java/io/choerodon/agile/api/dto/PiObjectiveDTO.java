@@ -1,29 +1,41 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/3/11.
  * Email: fuqianghuang01@gmail.com
  */
 public class PiObjectiveDTO {
 
+    @ApiModelProperty(value = "主键id")
     private Long id;
 
+    @ApiModelProperty(value = "pi目标名称")
     private String name;
 
+    @ApiModelProperty(value = "计划商业价值")
     private Long planBv;
 
+    @ApiModelProperty(value = "实际商业价值")
     private Long actualBv;
 
+    @ApiModelProperty(value = "是否延伸")
     private Boolean stretch;
 
+    @ApiModelProperty(value = "level编码")
     private String levelCode;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "pi主键id")
     private Long piId;
 
+    @ApiModelProperty(value = "项目群id")
     private Long programId;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
     public Long getId() {

@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.NotNull;
 
 /**
@@ -8,23 +10,31 @@ import javax.validation.constraints.NotNull;
  */
 public class IssueStatusDTO {
 
+    @ApiModelProperty(value = "主键id")
     private Long id;
 
+    @ApiModelProperty(value = "状态名称")
     @NotNull(message = "状态名称不能为空")
     private String name;
 
+    @ApiModelProperty(value = "项目id")
     @NotNull(message = "项目id不能为空")
     private Long projectId;
 
+    @ApiModelProperty(value = "暂时没用")
     private Boolean enable;
 
+    @ApiModelProperty(value = "状态类别")
     @NotNull(message = "类别code不能为空")
     private String categoryCode;
 
+    @ApiModelProperty(value = "是否已完成")
     private Boolean completed;
 
+    @ApiModelProperty(value = "状态真实id")
     private Long statusId;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
     public void setId(Long id) {

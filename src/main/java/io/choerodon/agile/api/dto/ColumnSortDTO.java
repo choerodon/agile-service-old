@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.NotNull;
 
 /**
@@ -8,18 +10,23 @@ import javax.validation.constraints.NotNull;
  */
 public class ColumnSortDTO {
 
+    @ApiModelProperty(value = "项目id")
     @NotNull(message = "项目id不能为空")
     private Long projectId;
 
+    @ApiModelProperty(value = "看板id")
     @NotNull(message = "board id不能为空")
     private Long boardId;
 
+    @ApiModelProperty(value = "列id")
     @NotNull(message = "列id不能为空")
     private Long columnId;
 
+    @ApiModelProperty(value = "列顺序")
     @NotNull(message = "列序号不能为空")
     private Integer sequence;
 
+    @ApiModelProperty(value = "版本号")
     @NotNull(message = "数据版本序号不能为空")
     private Long objectVersionNumber;
 
