@@ -69,7 +69,7 @@ class IssueStatusControllerSpec extends Specification {
         StatusInfoDTO statusInfoDTO = new StatusInfoDTO()
         statusInfoDTO.setId(10001L)
         statusInfoDTO.setName(statusName)
-        Mockito.when(issueFeignClient.createStatusForAgile(Matchers.anyLong(), Matchers.any(StatusInfoDTO.class))).thenReturn(new ResponseEntity<>(statusInfoDTO, HttpStatus.OK));
+        Mockito.when(issueFeignClient.createStatusForAgile(Matchers.anyLong(), Matchers.anyString(), Matchers.any(StatusInfoDTO.class))).thenReturn(new ResponseEntity<>(statusInfoDTO, HttpStatus.OK));
     }
 
     def 'createStatus'() {
@@ -82,7 +82,7 @@ class IssueStatusControllerSpec extends Specification {
 
         when:
         HttpEntity<IssueStatusDTO> issueStatusDTOHttpEntity = new HttpEntity<>(issueStatusDTO)
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status?applyType=agile",
                 HttpMethod.POST,
                 issueStatusDTOHttpEntity,
                 IssueStatusDTO.class,
@@ -98,7 +98,7 @@ class IssueStatusControllerSpec extends Specification {
     def 'listUnCorrespondStatus'() {
 
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status/list_by_options?boardId={boardId}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status/list_by_options?boardId={boardId}&applyType=agile",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 List.class,
@@ -239,7 +239,7 @@ class IssueStatusControllerSpec extends Specification {
     def 'deleteStatus'() {
 
         when: '删除未对应的状态'
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status/{id}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status/{id}?applyType=agile",
                 HttpMethod.DELETE,
                 new HttpEntity<>(),
                 ResponseEntity.class,

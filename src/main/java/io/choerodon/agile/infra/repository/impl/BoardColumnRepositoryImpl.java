@@ -74,6 +74,21 @@ public class BoardColumnRepositoryImpl implements BoardColumnRepository {
     }
 
     @Override
+    public void columnSortByProgram(Long projectId, Long boardId, BoardColumnE boardColumnE) {
+        BoardColumnDO originColumn = boardColumnMapper.selectByPrimaryKey(boardColumnE.getColumnId());
+        try {
+            if (originColumn.getSequence() > boardColumnE.getSequence()) {
+                boardColumnMapper.columnSort(boardId, boardColumnE.getSequence(), originColumn.getSequence());
+            } else if (originColumn.getSequence() < boardColumnE.getSequence()) {
+                boardColumnMapper.columnSortDesc(boardId, boardColumnE.getSequence(), originColumn.getSequence());
+            }
+            update(boardColumnE);
+        } catch (Exception e) {
+            throw new CommonException(e.getMessage());
+        }
+    }
+
+    @Override
     public BoardColumnE updateMaxAndMinNum(ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO) {
         try {
             boardColumnMapper.updateMaxAndMinNum(columnWithMaxMinNumDTO);

@@ -295,6 +295,13 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         boardColumnRepository.columnSort(projectId, columnSortDTO.getBoardId(), boardColumnE);
     }
 
+    @Override
+    public void columnSortByProgram(Long projectId, ColumnSortDTO columnSortDTO) {
+        BoardColumnValidator.checkColumnSort(projectId, columnSortDTO);
+        BoardColumnE boardColumnE = ConvertHelper.convert(columnSortDTO, BoardColumnE.class);
+        boardColumnRepository.columnSortByProgram(projectId, columnSortDTO.getBoardId(), boardColumnE);
+    }
+
     private void relate(Long projectId, Long boardId, String name, String categoryCode, Integer sequence, List<ColumnWithStatusRelDO> columnWithStatusRelDOList, String colorCode) {
         BoardColumnE column = new BoardColumnE();
         column.setBoardId(boardId);

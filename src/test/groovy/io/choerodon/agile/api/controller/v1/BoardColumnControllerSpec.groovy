@@ -78,7 +78,7 @@ class BoardColumnControllerSpec extends Specification {
 
         when:
         HttpEntity<BoardColumnDTO> boardColumnDTOHttpEntity = new HttpEntity<>(boardColumnDTO)
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/board_column?categoryCode={categoryCode}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/board_column?categoryCode={categoryCode}&applyType=agile",
                 HttpMethod.POST,
                 boardColumnDTOHttpEntity,
                 BoardColumnDTO.class,
