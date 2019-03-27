@@ -1,6 +1,11 @@
 package io.choerodon.agile.app.service;
 
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.alibaba.fastjson.JSONObject;
+
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
@@ -8,10 +13,6 @@ import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  * 敏捷开发Issue
@@ -123,6 +124,8 @@ public interface IssueService {
      * @return IssueEpicDTO
      */
     List<IssueEpicDTO> listEpicSelectData(Long projectId);
+
+    List<IssueFeatureDTO> listFeatureSelectData(Long projectId, Long epicId);
 
     List<IssueEpicDTO> listEpicSelectProgramData(Long programId);
 

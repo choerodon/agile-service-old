@@ -68,6 +68,8 @@ public class IssueUpdateDTO {
 
     private FeatureDTO featureDTO;
 
+    private Long featureId;
+
     public String getRank() {
         return rank;
     }
@@ -282,6 +284,14 @@ public class IssueUpdateDTO {
 
     public FeatureDTO getFeatureDTO() {
         return featureDTO;
+    }
+
+    public Long getFeatureId() {
+        return featureId;
+    }
+
+    public void setFeatureId(Long featureId) {
+        this.featureId = featureId;
     }
 
     @Override

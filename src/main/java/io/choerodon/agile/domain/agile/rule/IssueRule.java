@@ -1,20 +1,27 @@
 package io.choerodon.agile.domain.agile.rule;
 
-import io.choerodon.agile.api.dto.*;
+import java.util.Objects;
+
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.IssueService;
-import io.choerodon.agile.domain.agile.entity.*;
+import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
+import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.domain.agile.entity.LabelIssueRelE;
+import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.EnumUtil;
-import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.dataobject.ComponentIssueRelDO;
+import io.choerodon.agile.infra.dataobject.IssueDO;
+import io.choerodon.agile.infra.dataobject.LabelIssueRelDO;
+import io.choerodon.agile.infra.dataobject.VersionIssueRelDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.exception.CommonException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Objects;
 
 /**
  * @author dinghuang123@gmail.com
@@ -45,9 +52,12 @@ public class IssueRule {
     private static final String ISSUE_EPIC = "issue_epic";
     private static final String SUB_TASK = "sub_task";
     private static final String STORY = "story";
+    private static final String FEATURE = "feature";
     private static final String STATUS_ID = "status_id";
     private static final String ERROR_ISSUE_ID_NOT_FOUND = "error.IssueRule.issueId";
     private static final String AGILE = "agile";
+    private static final String EPIC_ID = "epicId";
+    private static final String FEATURE_ID = "featureId";
 
     public void verifyCreateData(IssueCreateDTO issueCreateDTO, Long projectId, String applyType) {
         issueCreateDTO.setProjectId(projectId);
@@ -100,6 +110,48 @@ public class IssueRule {
         if (issueUpdate.get(STATUS_ID) != null && issueStatusMapper.selectByPrimaryKey(Long.parseLong(issueUpdate.get(STATUS_ID).toString())) == null) {
             throw new CommonException("error.IssueRule.statusId");
         }
+        //不是故事无法修改feature
+        if (issueUpdate.get(FEATURE_ID) != null && !STORY.equals(issueDO.getTypeCode())) {
+            throw new CommonException("error.issue.type");
+        } else if (issueUpdate.get(EPIC_ID) != null
+                && Long.parseLong(issueUpdate.get(EPIC_ID).toString()) != 0
+                && issueUpdate.get(FEATURE_ID) != null
+                && Long.parseLong(issueUpdate.get(FEATURE_ID).toString()) != 0) {
+            IssueDO issue = new IssueDO();
+            issue.setProjectId(projectId);
+            issue.setTypeCode(FEATURE);
+            issue.setEpicId(Long.parseLong(issueUpdate.get(EPIC_ID).toString()));
+            issue.setIssueId(Long.parseLong(issueUpdate.get(FEATURE_ID).toString()));
+            if (issueMapper.selectByPrimaryKey(issue) == null) {
+                throw new CommonException("error.featureId.of.epic");
+            }
+        } else if (issueUpdate.get(EPIC_ID) != null
+                && Long.parseLong(issueUpdate.get(EPIC_ID).toString()) != 0
+                && STORY.equals(issueDO.getTypeCode())
+                && issueDO.getFeatureId() != null
+                && issueDO.getFeatureId() != 0) {
+            IssueDO issue = new IssueDO();
+            issue.setProjectId(projectId);
+            issue.setTypeCode(FEATURE);
+            issue.setEpicId(Long.parseLong(issueUpdate.get(EPIC_ID).toString()));
+            issue.setIssueId(issueDO.getFeatureId());
+            if (issueMapper.selectByPrimaryKey(issue) == null) {
+                issueUpdate.put("featureId", 0);
+            }
+        } else if (issueUpdate.get(FEATURE_ID) != null
+                && Long.parseLong(issueUpdate.get(FEATURE_ID).toString()) != 0
+                && issueDO.getEpicId() != null
+                && issueDO.getEpicId() != 0) {
+            IssueDO issue = new IssueDO();
+            issue.setProjectId(projectId);
+            issue.setTypeCode(FEATURE);
+            issue.setEpicId(issueDO.getEpicId());
+            issue.setIssueId(Long.parseLong(issueUpdate.get(FEATURE_ID).toString()));
+            if (issueMapper.selectByPrimaryKey(issue) == null) {
+                throw new CommonException("error.featureId.of.epic");
+            }
+        }
+
     }
 
     public void verifySubCreateData(IssueSubCreateDTO issueSubCreateDTO, Long projectId) {

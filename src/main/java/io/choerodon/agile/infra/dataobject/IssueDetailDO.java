@@ -1,13 +1,13 @@
 package io.choerodon.agile.infra.dataobject;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
 import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.infra.common.utils.StringUtil;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author dinghuang123@gmail.com
@@ -93,6 +93,10 @@ public class IssueDetailDO {
     private String issueTypeCode;
 
     private FeatureDO featureDO;
+
+    private Long featureId;
+
+    private String featureName;
 
     public String getIssueTypeCode() {
         return issueTypeCode;
@@ -412,6 +416,22 @@ public class IssueDetailDO {
 
     public FeatureDO getFeatureDO() {
         return featureDO;
+    }
+
+    public Long getFeatureId() {
+        return featureId;
+    }
+
+    public void setFeatureId(Long featureId) {
+        this.featureId = featureId;
+    }
+
+    public String getFeatureName() {
+        return featureName;
+    }
+
+    public void setFeatureName(String featureName) {
+        this.featureName = featureName;
     }
 
     @Override
