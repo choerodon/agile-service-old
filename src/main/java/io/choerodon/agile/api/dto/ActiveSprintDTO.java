@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
 /**
@@ -8,14 +10,19 @@ import java.util.Date;
  */
 public class ActiveSprintDTO {
 
+    @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
 
+    @ApiModelProperty(value = "冲刺名称")
     private String sprintName;
 
+    @ApiModelProperty(value = "冲刺开始时间")
     private Date startDate;
 
+    @ApiModelProperty(value = "冲刺结束时间")
     private Date endDate;
 
+    @ApiModelProperty(value = "冲刺剩余时间")
     private Integer dayRemain;
 
     public Long getSprintId() {

@@ -35,9 +35,11 @@ public class BoardColumnController {
                                                             @PathVariable(name = "project_id") Long projectId,
                                                             @ApiParam(value = "category code", required = true)
                                                             @RequestParam String categoryCode,
+                                                            @ApiParam(value = "apply type", required = true)
+                                                            @RequestParam String applyType,
                                                             @ApiParam(value = "board column对象", required = true)
                                                             @RequestBody BoardColumnDTO boardColumnDTO) {
-        return Optional.ofNullable(boardColumnService.create(projectId, categoryCode, boardColumnDTO))
+        return Optional.ofNullable(boardColumnService.create(projectId, categoryCode, applyType, boardColumnDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.BoardColumn.create"));
     }

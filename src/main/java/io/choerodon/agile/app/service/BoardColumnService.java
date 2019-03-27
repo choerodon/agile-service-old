@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface BoardColumnService {
 
-    BoardColumnDTO create(Long projectId, String categoryCode, BoardColumnDTO boardColumnDTO);
+    BoardColumnDTO create(Long projectId, String categoryCode, String applyType, BoardColumnDTO boardColumnDTO);
 
     BoardColumnDTO update(Long projectId, Long columnId, Long boardId, BoardColumnDTO boardColumnDTO);
 

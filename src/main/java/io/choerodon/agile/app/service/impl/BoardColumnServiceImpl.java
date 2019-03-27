@@ -145,14 +145,14 @@ public class BoardColumnServiceImpl implements BoardColumnService {
 
 
     @Override
-    public BoardColumnDTO create(Long projectId, String categoryCode, BoardColumnDTO boardColumnDTO) {
+    public BoardColumnDTO create(Long projectId, String categoryCode, String applyType, BoardColumnDTO boardColumnDTO) {
         BoardColumnValidator.checkCreateBoardColumnDTO(projectId, boardColumnDTO);
         // 创建列
         createCheck(boardColumnDTO);
         StatusInfoDTO statusInfoDTO = new StatusInfoDTO();
         statusInfoDTO.setType(categoryCode);
         statusInfoDTO.setName(boardColumnDTO.getName());
-        ResponseEntity<StatusInfoDTO> responseEntity = issueFeignClient.createStatusForAgile(projectId, statusInfoDTO);
+        ResponseEntity<StatusInfoDTO> responseEntity = issueFeignClient.createStatusForAgile(projectId, applyType, statusInfoDTO);
         if (responseEntity.getStatusCode().value() == 200 && responseEntity.getBody() != null && responseEntity.getBody().getId() != null) {
             Long statusId = responseEntity.getBody().getId();
             Boolean checkStatus = checkColumnStatusExist(projectId, statusId);

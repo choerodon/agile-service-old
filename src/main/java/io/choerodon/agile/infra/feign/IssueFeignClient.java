@@ -1,7 +1,6 @@
 package io.choerodon.agile.infra.feign;
 
 import io.choerodon.agile.api.dto.*;
-import io.choerodon.agile.infra.dataobject.StatusForMoveDataDO;
 import io.choerodon.agile.infra.feign.fallback.IssueFeignClientFallback;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.netflix.feign.FeignClient;
@@ -46,6 +45,7 @@ public interface IssueFeignClient {
 
     @PostMapping(value = "/v1/projects/{project_id}/schemes/create_status_for_agile")
     ResponseEntity<StatusInfoDTO> createStatusForAgile(@PathVariable("project_id") Long projectId,
+                                                       @RequestParam("applyType") String applyType,
                                                        @RequestBody StatusInfoDTO statusInfoDTO);
 
     @GetMapping(value = "/v1/projects/{project_id}/schemes/query_status_by_project_id")
@@ -57,7 +57,8 @@ public interface IssueFeignClient {
 
     @DeleteMapping(value = "/v1/projects/{project_id}/schemes/remove_status_for_agile")
     ResponseEntity removeStatusForAgile(@PathVariable("project_id") Long projectId,
-                                        @RequestParam("status_id") Long statusId);
+                                        @RequestParam("status_id") Long statusId,
+                                        @RequestParam("applyType") String applyType);
 
     @PutMapping(value = "/v1/organizations/{organization_id}/state_machine_scheme/update_deploy_progress/{scheme_id}")
     ResponseEntity<Boolean> updateDeployProgress(@PathVariable("organization_id") Long organizationId,

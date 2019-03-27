@@ -1404,7 +1404,7 @@
 
     <select id="queryRightRankByProgram" resultType="java.lang.String">
         SELECT
-        MAX(ai.rank)
+        MIN(ai.rank)
         FROM
         agile_issue ai
         WHERE

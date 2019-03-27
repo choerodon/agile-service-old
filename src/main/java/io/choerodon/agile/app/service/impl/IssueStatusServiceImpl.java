@@ -69,12 +69,12 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     private QuickFilterMapper quickFilterMapper;
 
     @Override
-    public IssueStatusDTO create(Long projectId, IssueStatusDTO issueStatusDTO) {
+    public IssueStatusDTO create(Long projectId, String applyType, IssueStatusDTO issueStatusDTO) {
         IssueStatusValidator.checkCreateStatus(projectId, issueStatusDTO);
         StatusInfoDTO statusInfoDTO = new StatusInfoDTO();
         statusInfoDTO.setType(issueStatusDTO.getCategoryCode());
         statusInfoDTO.setName(issueStatusDTO.getName());
-        ResponseEntity<StatusInfoDTO> responseEntity = issueFeignClient.createStatusForAgile(projectId, statusInfoDTO);
+        ResponseEntity<StatusInfoDTO> responseEntity = issueFeignClient.createStatusForAgile(projectId, applyType, statusInfoDTO);
         if (responseEntity.getStatusCode().value() == 200 && responseEntity.getBody() != null && responseEntity.getBody().getId() != null) {
             Long statusId = responseEntity.getBody().getId();
             if (issueStatusMapper.selectByStatusId(projectId, statusId) != null) {
@@ -152,8 +152,8 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     }
 
     @Override
-    public List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId) {
-        List<StatusMapDTO> statusMapDTOList = issueFeignClient.queryStatusByProjectId(projectId, "agile").getBody();
+    public List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId, String applyType) {
+        List<StatusMapDTO> statusMapDTOList = issueFeignClient.queryStatusByProjectId(projectId, applyType).getBody();
         List<Long> realStatusIds = new ArrayList<>();
         for (StatusMapDTO statusMapDTO : statusMapDTOList) {
             realStatusIds.add(statusMapDTO.getId());
@@ -202,11 +202,11 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     }
 
     @Override
-    public void deleteStatus(Long projectId, Long statusId) {
+    public void deleteStatus(Long projectId, Long statusId, String applyType) {
         checkIssueNumOfStatus(projectId, statusId);
         checkStatusExist(projectId, statusId);
         try {
-            issueFeignClient.removeStatusForAgile(projectId, statusId);
+            issueFeignClient.removeStatusForAgile(projectId, statusId, applyType);
         } catch (Exception e) {
             throw new CommonException("error.status.delete");
         }
