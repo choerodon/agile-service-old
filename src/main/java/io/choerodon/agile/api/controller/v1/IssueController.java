@@ -1,13 +1,24 @@
 package io.choerodon.agile.api.controller.v1;
 
+import java.util.List;
+import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonObject;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
-import io.choerodon.agile.domain.agile.entity.FeatureE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
@@ -21,18 +32,6 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * 敏捷开发Issue
@@ -359,10 +358,22 @@ public class IssueController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("查询当前项目下的feature，提供给列表下拉")
+    @GetMapping(value = "/feature/select_data")
+    public ResponseEntity<List<IssueFeatureDTO>> listFeatureSelectData(@ApiParam(value = "项目id", required = true)
+                                                                       @PathVariable(name = "project_id") Long projectId,
+                                                                       @ApiParam(value = "史诗id")
+                                                                       @RequestParam Long epicId) {
+        return Optional.ofNullable(issueService.listFeatureSelectData(projectId, epicId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.Issue.queryIssueFeatureList"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询项目群下的epic，提供给列表下拉")
     @GetMapping(value = "/epics/select_program_data")
     public ResponseEntity<List<IssueEpicDTO>> listEpicSelectProgramData(@ApiParam(value = "项目id", required = true)
-                                                                 @PathVariable(name = "project_id") Long projectId) {
+                                                                        @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(issueService.listEpicSelectProgramData(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.queryProgramIssueEpicList"));

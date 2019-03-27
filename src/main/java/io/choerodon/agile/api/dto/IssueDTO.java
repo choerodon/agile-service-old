@@ -1,10 +1,11 @@
 package io.choerodon.agile.api.dto;
 
 
-import io.choerodon.agile.infra.common.utils.StringUtil;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+
+import io.choerodon.agile.infra.common.utils.StringUtil;
 
 /**
  * 敏捷开发Issue
@@ -103,6 +104,8 @@ public class IssueDTO {
     private String createrEmail;
 
     private FeatureDTO featureDTO;
+
+    private String featureName;
 
     public String getCreaterEmail() {
         return createrEmail;
@@ -462,6 +465,14 @@ public class IssueDTO {
 
     public FeatureDTO getFeatureDTO() {
         return featureDTO;
+    }
+
+    public String getFeatureName() {
+        return featureName;
+    }
+
+    public void setFeatureName(String featureName) {
+        this.featureName = featureName;
     }
 
     @Override

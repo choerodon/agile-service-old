@@ -1,13 +1,14 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.api.dto.SearchDTO;
-import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.mybatis.common.BaseMapper;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+
+import io.choerodon.agile.api.dto.SearchDTO;
+import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.mybatis.common.BaseMapper;
 
 
 /**
@@ -46,6 +47,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @return IssueDO
      */
     List<IssueDO> queryIssueEpicSelectList(@Param("projectId") Long projectId);
+
+    List<IssueDO> queryIssueFeatureSelectList(@Param("projectId") Long projectId, @Param("epicId") Long epicId);
 
     List<IssueDO> listEpicSelectProgramData(@Param("programId") Long programId);
 
@@ -523,5 +526,5 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<Long> selectIssueIdWhenJoinProgram(@Param("projectId") Long projectId);
 
-    void updateFeatureAndEpicWhenJoinProgram(@Param("programId")Long programId, @Param("projectId") Long projectId, @Param("initStatusId") Long initStatusId, @Param("updateIds") List<Long> updateIds);
+    void updateFeatureAndEpicWhenJoinProgram(@Param("programId") Long programId, @Param("projectId") Long projectId, @Param("initStatusId") Long initStatusId, @Param("updateIds") List<Long> updateIds);
 }

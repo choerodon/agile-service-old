@@ -1,8 +1,25 @@
 package io.choerodon.agile.app.service.impl;
 
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
+
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.assembler.*;
@@ -36,24 +53,6 @@ import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * 敏捷开发Issue
@@ -394,6 +393,15 @@ public class IssueServiceImpl implements IssueService {
                 issue.setFeatureDO(res);
             }
         }
+        if (STORY_TYPE.equals(issue.getTypeCode()) && issue.getFeatureId() != null) {
+            IssueDO issueDO = new IssueDO();
+            issueDO.setIssueId(issue.getFeatureId());
+            issueDO.setTypeCode(ISSUE_TYPE_FEATURE);
+            IssueDO issueInfo = issueMapper.selectByPrimaryKey(issueDO);
+            if (issueInfo != null) {
+                issue.setFeatureName(issueInfo.getSummary());
+            }
+        }
         Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
@@ -404,6 +412,15 @@ public class IssueServiceImpl implements IssueService {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
+        }
+        if (STORY_TYPE.equals(issue.getTypeCode()) && issue.getFeatureId() != null) {
+            IssueDO issueDO = new IssueDO();
+            issueDO.setIssueId(issue.getFeatureId());
+            issueDO.setTypeCode(ISSUE_TYPE_FEATURE);
+            IssueDO issueInfo = issueMapper.selectByPrimaryKey(issueDO);
+            if (issueInfo != null) {
+                issue.setFeatureName(issueInfo.getSummary());
+            }
         }
         Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
@@ -503,7 +520,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleOtherArgs(SearchDTO searchDTO) {
         Map<String, Object> otherArgs = searchDTO.getOtherArgs();
-        if(otherArgs!=null){
+        if (otherArgs != null) {
             List<String> list = (List<String>) otherArgs.get("sprint");
             if (list != null && list.contains("0")) {
                 otherArgs.put("sprintNull", true);
@@ -1177,6 +1194,11 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public List<IssueEpicDTO> listEpicSelectData(Long projectId) {
         return issueAssembler.toTargetList(issueMapper.queryIssueEpicSelectList(projectId), IssueEpicDTO.class);
+    }
+
+    @Override
+    public List<IssueFeatureDTO> listFeatureSelectData(Long projectId, Long epicId) {
+        return issueAssembler.toTargetList(issueMapper.queryIssueFeatureSelectList(projectId,epicId), IssueFeatureDTO.class);
     }
 
     @Override
