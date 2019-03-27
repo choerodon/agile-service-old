@@ -8,6 +8,7 @@ import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
 import io.choerodon.agile.domain.agile.entity.FeatureE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.domain.agile.entity.PiFeatureE;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.domain.agile.event.CreateIssuePayload;
 import io.choerodon.agile.domain.agile.event.CreateSubIssuePayload;
@@ -15,6 +16,7 @@ import io.choerodon.agile.domain.agile.event.ProjectConfig;
 import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue;
 import io.choerodon.agile.domain.agile.repository.FeatureRepository;
 import io.choerodon.agile.domain.agile.repository.IssueRepository;
+import io.choerodon.agile.domain.agile.repository.PiFeatureRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.common.utils.EnumUtil;
@@ -88,7 +90,8 @@ public class StateMachineServiceImpl implements StateMachineService {
     private StateMachineFeignClient stateMachineFeignClient;
     @Autowired
     private FeatureRepository featureRepository;
-
+    @Autowired
+    private PiFeatureRepository piFeatureRepository;
     /**
      * 创建issue，用于敏捷和测试
      *
@@ -135,6 +138,9 @@ public class StateMachineServiceImpl implements StateMachineService {
             featureDTO.setIssueId(issueId);
             featureDTO.setProjectId(issueCreateDTO.getProjectId());
             featureRepository.create(ConvertHelper.convert(featureDTO, FeatureE.class));
+            if (issueCreateDTO.getPiId() != null && issueCreateDTO.getPiId() != 0L) {
+                piFeatureRepository.create(new PiFeatureE(issueId, issueCreateDTO.getPiId(), projectId));
+            }
         }
 
         CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE);
