@@ -221,7 +221,7 @@ public class FeignConfigure {
         StatusInfoDTO statusInfoDTO = new StatusInfoDTO();
         statusInfoDTO.setId(10000L);
         statusInfoDTO.setName("statusName");
-        Mockito.when(issueFeignClient.createStatusForAgile(Matchers.anyLong(), Matchers.any(StatusInfoDTO.class))).thenReturn(new ResponseEntity<>(statusInfoDTO, HttpStatus.OK));
+        Mockito.when(issueFeignClient.createStatusForAgile(Matchers.anyLong(),Matchers.anyString(),  Matchers.any(StatusInfoDTO.class))).thenReturn(new ResponseEntity<>(statusInfoDTO, HttpStatus.OK));
         List<StatusMapDTO> statusMapDTOList = new ArrayList<>();
         StatusMapDTO statusMapDTO1 = new StatusMapDTO();
         statusMapDTO1.setOrganizationId(1L);

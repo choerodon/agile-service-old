@@ -49,7 +49,7 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity<StatusInfoDTO> createStatusForAgile(Long projectId, StatusInfoDTO statusInfoDTO) {
+    public ResponseEntity<StatusInfoDTO> createStatusForAgile(Long projectId, String applyType, StatusInfoDTO statusInfoDTO) {
         throw new CommonException("error.status.create");
     }
 
@@ -64,7 +64,7 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity removeStatusForAgile(Long projectId, Long statusId) {
+    public ResponseEntity removeStatusForAgile(Long projectId, Long statusId, String applyType) {
         throw new CommonException("error.status.remove");
     }
 

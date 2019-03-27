@@ -36,9 +36,11 @@ public class IssueStatusController {
     @PostMapping
     public ResponseEntity<IssueStatusDTO> createStatus(@ApiParam(value = "项目id", required = true)
                                                        @PathVariable(name = "project_id") Long projectId,
+                                                       @ApiParam(value = "apply type", required = true)
+                                                       @RequestParam String applyType,
                                                        @ApiParam(value = "issue status object", required = true)
                                                        @RequestBody IssueStatusDTO issueStatusDTO) {
-        return Optional.ofNullable(issueStatusService.create(projectId, issueStatusDTO))
+        return Optional.ofNullable(issueStatusService.create(projectId, applyType, issueStatusDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.status.create"));
     }
@@ -49,8 +51,10 @@ public class IssueStatusController {
     public ResponseEntity deleteStatus(@ApiParam(value = "项目id", required = true)
                                        @PathVariable(name = "project_id") Long projectId,
                                        @ApiParam(value = "status id", required = true)
-                                       @PathVariable Long statusId) {
-        issueStatusService.deleteStatus(projectId, statusId);
+                                       @PathVariable Long statusId,
+                                       @ApiParam(value = "apply type", required = true)
+                                       @RequestParam String applyType) {
+        issueStatusService.deleteStatus(projectId, statusId, applyType);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -72,8 +76,10 @@ public class IssueStatusController {
     public ResponseEntity<List<StatusAndIssuesDTO>> listUnCorrespondStatus(@ApiParam(value = "项目id", required = true)
                                                                            @PathVariable(name = "project_id") Long projectId,
                                                                            @ApiParam(value = "board id", required = true)
-                                                                           @RequestParam Long boardId) {
-        return Optional.ofNullable(issueStatusService.queryUnCorrespondStatus(projectId, boardId))
+                                                                           @RequestParam Long boardId,
+                                                                           @ApiParam(value = "apply type", required = true)
+                                                                           @RequestParam String applyType) {
+        return Optional.ofNullable(issueStatusService.queryUnCorrespondStatus(projectId, boardId, applyType))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(ERROR_STATUS_GET));
     }

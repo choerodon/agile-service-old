@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.persistence.Transient;
 import java.util.Date;
 
@@ -9,42 +11,61 @@ import java.util.Date;
  */
 public class ArtDTO {
 
+    @ApiModelProperty(value = "主键id")
     private Long id;
 
+    @ApiModelProperty(value = "art编码")
     private String code;
 
+    @ApiModelProperty(value = "art名称")
     private String name;
 
+    @ApiModelProperty(value = "art描述")
     private String description;
 
+    @ApiModelProperty(value = "art起始编号")
     private String seqNumber;
 
+    @ApiModelProperty(value = "是否启用，true表示启用，false表示未启用")
     private Boolean enabled;
 
+    @ApiModelProperty(value = "发布火车工程师用户id")
     private Long rteId;
 
+    @ApiModelProperty(value = "开始时间")
     private Date startDate;
 
+    @ApiModelProperty(value = "结束时间")
     private Date endDate;
 
+    @ApiModelProperty(value = "ip周数")
     private Long ipWeeks;
 
+    @ApiModelProperty(value = "pi编码前缀")
     private String piCodePrefix;
 
+    @ApiModelProperty(value = "art编码")
     private Long piCodeNumber;
 
+    @ApiModelProperty(value = "迭代数量")
     private Long interationCount;
 
+    @ApiModelProperty(value = "迭代周数")
     private Long interationWeeks;
 
+    @ApiModelProperty(value = "项目群id")
     private Long programId;
 
+    @ApiModelProperty(value = "pi数量")
     private Long piCount;
 
+    @ApiModelProperty(value = "art状态code：todo、doing、done")
     private String statusCode;
 
+    @ApiModelProperty(value = "数据库表版本号控制")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "发布火车工程师名称")
     @Transient
     private String rteName;
 

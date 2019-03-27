@@ -13,17 +13,17 @@ import java.util.List;
  */
 public interface IssueStatusService {
 
-    IssueStatusDTO create(Long projectId, IssueStatusDTO issueStatusDTO);
+    IssueStatusDTO create(Long projectId, String applyType, IssueStatusDTO issueStatusDTO);
 
     IssueStatusDTO createStatusByStateMachine(Long projectId, IssueStatusDTO issueStatusDTO);
 
     IssueStatusDTO moveStatusToColumn(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO);
 
-    List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId);
+    List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId, String applyType);
 
     IssueStatusDTO moveStatusToUnCorrespond(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO);
 
-    void deleteStatus(Long projectId, Long statusId);
+    void deleteStatus(Long projectId, Long statusId, String applyType);
 
     void consumDeleteStatus(StatusPayload statusPayload);
 
