@@ -72,6 +72,17 @@ public class BoardColumnController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("调整项目群列的顺序")
+    @PostMapping(value = "/program/column_sort")
+    public ResponseEntity columnSortByProgram(@ApiParam(value = "项目id", required = true)
+                                              @PathVariable(name = "project_id") Long projectId,
+                                              @ApiParam(value = "ColumnSort DTO", required = true)
+                                              @RequestBody ColumnSortDTO columnSortDTO) {
+        boardColumnService.columnSortByProgram(projectId, columnSortDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("删除BoardColumn")
     @DeleteMapping(value = "/{columnId}")
     public ResponseEntity deleteBoardColumn(@ApiParam(value = "项目id", required = true)

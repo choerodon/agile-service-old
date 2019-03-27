@@ -26,6 +26,8 @@ public interface BoardColumnService {
 
     void columnSort(Long projectId, ColumnSortDTO columnSortDTO);
 
+    void columnSortByProgram(Long projectId, ColumnSortDTO columnSortDTO);
+
     void createColumnWithRelateStatus(BoardE boardResult);
 
     BoardColumnDTO updateColumnContraint(Long projectId, Long columnId, ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO);

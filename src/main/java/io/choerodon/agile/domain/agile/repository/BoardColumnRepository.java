@@ -21,6 +21,8 @@ public interface BoardColumnRepository {
 
     void columnSort(Long projectId, Long boardId, BoardColumnE boardColumnE);
 
+    void columnSortByProgram(Long projectId, Long boardId, BoardColumnE boardColumnE);
+
     BoardColumnE updateMaxAndMinNum(ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO);
 
     void updateSequenceWhenDelete(Long projectId, BoardColumnDO boardColumnDO);
