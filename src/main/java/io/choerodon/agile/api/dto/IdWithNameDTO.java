@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class IdWithNameDTO {
 
     public IdWithNameDTO(Long userId, String name) {
@@ -7,8 +9,10 @@ public class IdWithNameDTO {
         this.name = name;
     }
 
+    @ApiModelProperty(value = "用户id")
     private Long userId;
 
+    @ApiModelProperty(value = "名称")
     private String name;
 
     public Long getUserId() {

@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/2/25.
  * Email: fuqianghuang01@gmail.com
@@ -7,22 +9,31 @@ package io.choerodon.agile.api.dto;
 
 public class FileOperationHistoryDTO {
 
+    @ApiModelProperty(value = "主键id")
     private Long id;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "用户id")
     private Long userId;
 
+    @ApiModelProperty(value = "导入动作：upload_file")
     private String action;
 
+    @ApiModelProperty(value = "导入成功数量")
     private Long successCount;
 
+    @ApiModelProperty(value = "导入失败数量")
     private Long failCount;
 
+    @ApiModelProperty(value = "状态")
     private String status;
 
+    @ApiModelProperty(value = "导入失败后，上传错误文件url")
     private String fileUrl;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
     public Long getId() {

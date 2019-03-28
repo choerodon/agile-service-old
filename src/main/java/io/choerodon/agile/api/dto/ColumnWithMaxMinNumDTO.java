@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.NotNull;
 
 /**
@@ -8,18 +10,24 @@ import javax.validation.constraints.NotNull;
  */
 public class ColumnWithMaxMinNumDTO {
 
+    @ApiModelProperty(value = "项目id")
     @NotNull(message = "项目id不能为空")
     private Long projectId;
 
+    @ApiModelProperty(value = "看板id")
     private Long boardId;
 
+    @ApiModelProperty(value = "列id")
     @NotNull(message = "列id不能为空")
     private Long columnId;
 
+    @ApiModelProperty(value = "列问题数量最大值")
     private Long maxNum;
 
+    @ApiModelProperty(value = "列问题数量最小值")
     private Long minNum;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
     public Long getProjectId() {

@@ -8,12 +8,16 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class ColumnStatusRelDTO {
 
+    @ApiModelProperty(value = "状态位置字段")
     private Integer position;
 
+    @ApiModelProperty(value = "状态id")
     private Long statusId;
 
+    @ApiModelProperty(value = "列id")
     private Long columnId;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
     public Integer getPosition() {

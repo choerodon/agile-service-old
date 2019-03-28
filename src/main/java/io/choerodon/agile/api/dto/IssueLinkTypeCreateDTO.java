@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author dinghuang123@gmail.com
@@ -8,12 +9,16 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class IssueLinkTypeCreateDTO {
 
+    @ApiModelProperty(value = "问题链接名称")
     private String linkName;
 
+    @ApiModelProperty(value = "链入描述")
     private String inWard;
 
+    @ApiModelProperty(value = "链出描述")
     private String outWard;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
     public String getLinkName() {
