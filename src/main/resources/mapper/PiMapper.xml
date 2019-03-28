@@ -90,11 +90,13 @@
             ai.issue_type_id as ai_issue_type_id,
             ai.type_code as ai_type_code,
             ai.rank as ai_rank,
-            ai.object_version_number as ai_object_version_number
+            ai.object_version_number as ai_object_version_number,
+            af.feature_type as ai_feature_type
         FROM
             agile_pi ap
             LEFT JOIN agile_pi_feature apf ON ap.id = apf.pi_id AND apf.program_id = #{programId}
             LEFT JOIN agile_issue ai ON apf.issue_id = ai.issue_id and ai.type_code = 'feature'
+            LEFT JOIN agile_feature af ON ai.issue_id = af.issue_id
         WHERE
             ap.program_id = #{programId}
             AND ap.art_id = #{artId}
@@ -123,10 +125,9 @@
             ai.object_version_number,
             af.feature_type
         FROM
-            agile_issue ai
-        left join agile_feature af on ai.issue_id = af.issue_id
+            agile_issue ai, agile_feature af
         WHERE
-            ai.program_id = #{programId} and ai.type_code = 'feature'
+            ai.program_id = #{programId} and ai.type_code = 'feature' and ai.issue_id = af.issue_id
             AND ai.issue_id NOT IN (
               SELECT apf.issue_id
               FROM agile_pi_feature apf

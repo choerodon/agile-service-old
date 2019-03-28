@@ -44,6 +44,8 @@ public class PiAssembler {
             if (piWithFeatureDO.getSubFeatureDOList() != null && !piWithFeatureDO.getSubFeatureDOList().isEmpty()) {
                 List<SubFeatureDO> subFeatureDOList = piWithFeatureDO.getSubFeatureDOList();
                 piWithFeatureDTO.setSubFeatureDTOList(subFeatureDOTODTO(subFeatureDOList, statusMapDTOMap, issueTypeDTOMap));
+            } else {
+                piWithFeatureDTO.setSubFeatureDTOList(new ArrayList<>());
             }
             piWithFeatureDTOList.add(piWithFeatureDTO);
         });
