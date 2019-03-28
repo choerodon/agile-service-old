@@ -2429,9 +2429,20 @@
     </select>
 
     <select id="queryIssueIdsByOptions" resultType="java.lang.Long">
-        select ai.issue_id
-        from agile_issue ai
-        where 1=1
+        SELECT search.issue_issue_id from (
+        SELECT
+        ai.issue_id as issue_issue_id,
+        ai.summary,
+        CONCAT(api.project_code,'-', ai.issue_num) as issue_num,
+        ai.reporter_id,
+        ai.last_update_date,
+        ai.priority_id,
+        ai.assignee_id,
+        ai.issue_type_id,
+        ai.status_id
+        FROM agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        WHERE ai.project_id = #{projectId}
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.priorityId != null and advancedSearchArgs.priorityId.size > 0'>
                 AND ai.priority_id IN
@@ -2473,9 +2484,6 @@
                     #{issueId}
                 </foreach>
             </if>
-            <if test='otherArgs.issueNum != null and otherArgs.issueNum != ""'>
-                AND position(#{otherArgs.issueNum} IN ai.issue_num)
-            </if>
             <if test='otherArgs.summary != null and otherArgs.summary != ""'>
                 AND position(#{otherArgs.summary} IN ai.summary)
             </if>
@@ -2486,6 +2494,12 @@
                          close=")">
                     #{id}
                 </foreach>)
+            </if>
+        </if>
+        )search where 1=1
+        <if test='otherArgs != null'>
+            <if test='otherArgs.issueNum != null and otherArgs.issueNum != ""'>
+                AND position(#{otherArgs.issueNum} IN search.issue_num)
             </if>
         </if>
     </select>
