@@ -53,7 +53,6 @@ public class ArtServiceImpl implements ArtService {
 
     @Override
     public ArtDTO createArt(Long programId, ArtDTO artDTO) {
-        artValidator.checkHasArt(programId);
         artValidator.checkArtCreate(artDTO);
         artDTO.setStatusCode(ART_TODO);
         ArtE artE = artRepository.create(ConvertHelper.convert(artDTO, ArtE.class));
@@ -114,9 +113,6 @@ public class ArtServiceImpl implements ArtService {
     @Override
     public Boolean beforeComplete(Long programId, Long id) {
         List<PiDO> piDOList = piMapper.selectNotDonePi(programId, id);
-        if (piDOList != null && !piDOList.isEmpty()) {
-            return false;
-        }
-        return true;
+        return piDOList == null || piDOList.isEmpty();
     }
 }

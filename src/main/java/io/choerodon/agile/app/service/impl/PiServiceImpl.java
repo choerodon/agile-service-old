@@ -29,7 +29,6 @@ import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +47,6 @@ public class PiServiceImpl implements PiService {
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String YYYY_MM_DD = "yyyy-MM-dd";
     private static final String YYYY = "yyyy";
-    private static final String ART_DOING = "doing";
     private static final String ART_DONE = "done";
 
     @Autowired
@@ -328,21 +326,21 @@ public class PiServiceImpl implements PiService {
         }
     }
 
-    private void changeArtToDoing(Long artId) {
-        ArtDO artDO = artMapper.selectByPrimaryKey(artId);
-        if (artDO == null) {
-            throw new CommonException("error.art.null");
-        }
-        if (ART_DOING.equals(artDO.getStatusCode())) {
-            return;
-        }
-        ArtE artE = new ArtE();
-        artE.setProgramId(artDO.getProgramId());
-        artE.setObjectVersionNumber(artDO.getObjectVersionNumber());
-        artE.setId(artId);
-        artE.setStatusCode(ART_DOING);
-        artRepository.updateBySelective(artE);
-    }
+//    private void changeArtToDoing(Long artId) {
+//        ArtDO artDO = artMapper.selectByPrimaryKey(artId);
+//        if (artDO == null) {
+//            throw new CommonException("error.art.null");
+//        }
+//        if (ART_DOING.equals(artDO.getStatusCode())) {
+//            return;
+//        }
+//        ArtE artE = new ArtE();
+//        artE.setProgramId(artDO.getProgramId());
+//        artE.setObjectVersionNumber(artDO.getObjectVersionNumber());
+//        artE.setId(artId);
+//        artE.setStatusCode(ART_DOING);
+//        artRepository.updateBySelective(artE);
+//    }
 
     @Override
     public PiDTO startPi(Long programId, PiDTO piDTO) {
@@ -356,8 +354,8 @@ public class PiServiceImpl implements PiService {
         piE.setStatusCode(piDTO.getStatusCode());
         piE.setObjectVersionNumber(piDTO.getObjectVersionNumber());
         PiE result = piRepository.updateBySelective(piE);
-        // change art' status_code to 'doing'
-        changeArtToDoing(piDTO.getArtId());
+//        // change art' status_code to 'doing'
+//        changeArtToDoing(piDTO.getArtId());
         return ConvertHelper.convert(result, PiDTO.class);
     }
 

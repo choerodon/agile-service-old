@@ -48,7 +48,6 @@ public class BoardServiceImpl implements BoardService {
     private static final String URL_TEMPLATE4 = "&paramIssueId=";
     private static final String URL_TEMPLATE5 = "&paramOpenIssueId=";
     private static final String URL_TEMPLATE6 = "&organizationId=";
-    private static final String RANK_INDEX = "rankIndex";
     private static final String PROJECT_ID = "projectId";
     private static final String RANK = "rank";
     private static final String UPDATE_STATUS_MOVE = "updateStatusMove";
@@ -456,7 +455,6 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public IssueMoveDTO move(Long projectId, Long issueId, Long transformId, IssueMoveDTO issueMoveDTO, Boolean isDemo) {
-        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueMoveDTO.getIssueId());
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
         //执行状态机转换
         if (isDemo) {
@@ -466,7 +464,7 @@ public class BoardServiceImpl implements BoardService {
             stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber(),
                     SchemeApplyType.AGILE, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleIssueMoveRank(projectId, issueMoveDTO))));
         }
-        issueDO = issueMapper.selectByPrimaryKey(issueId);
+        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
         IssueMoveDTO result = ConvertHelper.convert(issueDO, IssueMoveDTO.class);
 
         // 发送消息
@@ -506,7 +504,7 @@ public class BoardServiceImpl implements BoardService {
     public FeatureMoveDTO moveByProgram(Long projectId, Long issueId, Long transformId, FeatureMoveDTO featureMoveDTO) {
         IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
         stateMachineService.executeTransform(projectId, issueId, transformId, featureMoveDTO.getObjectVersionNumber(),
-                SchemeApplyType.PROGRAM, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleFeatureMoveRank(projectId, featureMoveDTO, issueDO))));
+                SchemeApplyType.PROGRAM, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleFeatureMoveRank(projectId, issueDO))));
         issueDO = issueMapper.selectByPrimaryKey(issueId);
         // deal pi of feature
         if (featureMoveDTO.getPiChange() != null && featureMoveDTO.getPiChange()) {
@@ -523,47 +521,48 @@ public class BoardServiceImpl implements BoardService {
         return ConvertHelper.convert(issueDO, FeatureMoveDTO.class);
     }
 
-    private JSONObject handleFeatureMoveRank(Long projectId, FeatureMoveDTO featureMoveDTO, IssueDO issueDO) {
+    private JSONObject handleFeatureMoveRank(Long projectId, IssueDO issueDO) {
         JSONObject jsonObject = new JSONObject();
-        if (featureMoveDTO.getRank()) {
-            String rank = null;
-            if (featureMoveDTO.getBefore()) {
-                if (featureMoveDTO.getOutsetIssueId() == null || Objects.equals(featureMoveDTO.getOutsetIssueId(), 0L)) {
-                    String minRank = piMapper.queryPiMinRank(projectId, featureMoveDTO.getPiId());
-                    if (minRank == null) {
-                        rank = RankUtil.mid();
-                    } else {
-                        rank = RankUtil.genPre(minRank);
-                    }
-                } else {
-                    String rightRank = issueMapper.queryRankByProgram(projectId, featureMoveDTO.getOutsetIssueId());
-                    if (rightRank == null) {
-                        //处理子任务没有rank的旧数据
-                        rightRank = handleSubIssueNotRank(projectId, featureMoveDTO.getOutsetIssueId(), featureMoveDTO.getPiId());
-                    }
-                    String leftRank = issueMapper.queryLeftRankByProgram(projectId, featureMoveDTO.getPiId(), rightRank);
-                    if (leftRank == null) {
-                        rank = RankUtil.genPre(rightRank);
-                    } else {
-                        rank = RankUtil.between(leftRank, rightRank);
-                    }
-                }
-            } else {
-                String leftRank = issueMapper.queryRankByProgram(projectId, featureMoveDTO.getOutsetIssueId());
-                if (leftRank == null) {
-                    leftRank = handleSubIssueNotRank(projectId, featureMoveDTO.getOutsetIssueId(), featureMoveDTO.getPiId());
-                }
-                String rightRank = issueMapper.queryRightRankByProgram(projectId, featureMoveDTO.getPiId(), leftRank);
-                if (rightRank == null) {
-                    rank = RankUtil.genNext(leftRank);
-                } else {
-                    rank = RankUtil.between(leftRank, rightRank);
-                }
-            }
-            jsonObject.put(RANK, rank);
-        } else {
-            jsonObject.put(RANK, issueDO.getRank());
-        }
+//        if (featureMoveDTO.getRank()) {
+//            String rank = null;
+//            if (featureMoveDTO.getBefore()) {
+//                if (featureMoveDTO.getOutsetIssueId() == null || Objects.equals(featureMoveDTO.getOutsetIssueId(), 0L)) {
+//                    String minRank = piMapper.queryPiMinRank(projectId, featureMoveDTO.getPiId());
+//                    if (minRank == null) {
+//                        rank = RankUtil.mid();
+//                    } else {
+//                        rank = RankUtil.genPre(minRank);
+//                    }
+//                } else {
+//                    String rightRank = issueMapper.queryRankByProgram(projectId, featureMoveDTO.getOutsetIssueId());
+//                    if (rightRank == null) {
+//                        //处理子任务没有rank的旧数据
+//                        rightRank = handleSubIssueNotRank(projectId, featureMoveDTO.getOutsetIssueId(), featureMoveDTO.getPiId());
+//                    }
+//                    String leftRank = issueMapper.queryLeftRankByProgram(projectId, featureMoveDTO.getPiId(), rightRank);
+//                    if (leftRank == null) {
+//                        rank = RankUtil.genPre(rightRank);
+//                    } else {
+//                        rank = RankUtil.between(leftRank, rightRank);
+//                    }
+//                }
+//            } else {
+//                String leftRank = issueMapper.queryRankByProgram(projectId, featureMoveDTO.getOutsetIssueId());
+//                if (leftRank == null) {
+//                    leftRank = handleSubIssueNotRank(projectId, featureMoveDTO.getOutsetIssueId(), featureMoveDTO.getPiId());
+//                }
+//                String rightRank = issueMapper.queryRightRankByProgram(projectId, featureMoveDTO.getPiId(), leftRank);
+//                if (rightRank == null) {
+//                    rank = RankUtil.genNext(leftRank);
+//                } else {
+//                    rank = RankUtil.between(leftRank, rightRank);
+//                }
+//            }
+//            jsonObject.put(RANK, rank);
+//        } else {
+//            jsonObject.put(RANK, issueDO.getRank());
+//        }
+        jsonObject.put(RANK, issueDO.getRank());
         jsonObject.put(PROJECT_ID, projectId);
         return jsonObject;
     }

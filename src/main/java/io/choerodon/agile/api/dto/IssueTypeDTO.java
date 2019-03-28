@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 
 /**
@@ -7,14 +9,32 @@ import java.io.Serializable;
  * Email: fuqianghuang01@gmail.com
  */
 public class IssueTypeDTO implements Serializable {
+
+    @ApiModelProperty(value = "主键id")
     private Long id;
+
+    @ApiModelProperty(value = "问题类型名称")
     private String name;
+
+    @ApiModelProperty(value = "问题类型图标")
     private String icon;
+
+    @ApiModelProperty(value = "描述")
     private String description;
+
+    @ApiModelProperty(value = "组织id")
     private Long organizationId;
+
+    @ApiModelProperty(value = "问题类型颜色")
     private String colour;
+
+    @ApiModelProperty(value = "问题类型code")
     private String typeCode;
+
+    @ApiModelProperty(value = "是否初始化")
     private Boolean initialize;
+
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
     public Long getId() {

@@ -405,7 +405,7 @@
         LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
         LEFT JOIN agile_lookup_value alv1 ON abc.color_code = alv1.value_code
         WHERE
-          abc.project_id = #{projectId} AND abc.board_id = #{boardId} AND abc.category_code = 'prepare'
+          abc.project_id = #{projectId} AND abc.board_id = #{boardId} AND abc.category_code in ('prepare', 'todo')
         ORDER BY abc.sequence)
         UNION ALL
         (SELECT
@@ -463,7 +463,7 @@
         LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
         LEFT JOIN agile_lookup_value alv1 ON abc.color_code = alv1.value_code
         WHERE
-          abc.project_id = #{projectId} AND abc.board_id = #{boardId} AND abc.category_code != 'prepare'
+          abc.project_id = #{projectId} AND abc.board_id = #{boardId} AND abc.category_code not in ('prepare', 'todo')
         ORDER BY abc.sequence)
     </select>
 

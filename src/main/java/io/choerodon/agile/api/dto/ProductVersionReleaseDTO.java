@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -10,11 +12,18 @@ public class ProductVersionReleaseDTO {
     private static final String PROJECT_ID_NULL_ERROR = "error.projectId.NotNull";
     private static final String VERSION_ID_NULL_ERROR = "error.versionId.NotNull";
 
+    @ApiModelProperty(value = "项目id")
     @NotNull(message = PROJECT_ID_NULL_ERROR)
     private Long projectId;
+
+    @ApiModelProperty(value = "当前版本id")
     @NotNull(message = VERSION_ID_NULL_ERROR)
     private Long versionId;
+
+    @ApiModelProperty(value = "目标版本id")
     private Long targetVersionId;
+
+    @ApiModelProperty(value = "发布时间")
     private Date releaseDate;
 
     public Long getProjectId() {

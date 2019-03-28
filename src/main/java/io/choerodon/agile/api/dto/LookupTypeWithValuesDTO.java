@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -8,14 +10,19 @@ import java.util.List;
  */
 public class LookupTypeWithValuesDTO {
 
+    @ApiModelProperty(value = "快码类型code")
     private String typeCode;
 
+    @ApiModelProperty(value = "快码类型名称")
     private String name;
 
+    @ApiModelProperty(value = "描述")
     private String description;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "快码类型下的快码数据列表")
     private List<LookupValueDTO> lookupValues;
 
     public String getTypeCode() {

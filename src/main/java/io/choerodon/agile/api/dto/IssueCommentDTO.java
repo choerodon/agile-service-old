@@ -2,6 +2,7 @@ package io.choerodon.agile.api.dto;
 
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
 import java.util.List;
@@ -14,24 +15,34 @@ import java.util.List;
  */
 public class IssueCommentDTO {
 
+    @ApiModelProperty(value = "主键id")
     private Long commentId;
 
+    @ApiModelProperty(value = "用户id")
     private Long userId;
 
+    @ApiModelProperty(value = "问题id")
     private Long issueId;
 
+    @ApiModelProperty(value = "评论内容")
     private String commentText;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "用户名称")
     private String userName;
 
+    @ApiModelProperty(value = "用户图标")
     private String userImageUrl;
 
+    @ApiModelProperty(value = "最后更新时间")
     private Date lastUpdateDate;
 
+    @ApiModelProperty(value = "附件列表")
     private List<IssueAttachmentDTO> issueAttachmentDTOList;
 
     public Long getCommentId() {

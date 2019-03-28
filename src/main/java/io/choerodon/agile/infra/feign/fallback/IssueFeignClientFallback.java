@@ -1,7 +1,6 @@
 package io.choerodon.agile.infra.feign.fallback;
 
 import io.choerodon.agile.api.dto.*;
-import io.choerodon.agile.infra.dataobject.StatusForMoveDataDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.http.ResponseEntity;

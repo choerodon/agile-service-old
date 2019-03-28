@@ -2,6 +2,7 @@ package io.choerodon.agile.api.dto;
 
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * 敏捷开发code键值
@@ -11,14 +12,19 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class LookupValueDTO {
 
+    @ApiModelProperty(value = "快码值")
     private String valueCode;
 
+    @ApiModelProperty(value = "快码类型")
     private String typeCode;
 
+    @ApiModelProperty(value = "快码名称")
     private String name;
 
+    @ApiModelProperty(value = "描述")
     private String description;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
     public String getValueCode() {

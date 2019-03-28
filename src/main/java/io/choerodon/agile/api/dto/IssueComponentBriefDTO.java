@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 
@@ -10,8 +11,10 @@ import java.io.Serializable;
  */
 public class IssueComponentBriefDTO implements Serializable {
 
+    @ApiModelProperty(value = "模块主键id")
     private Long componentId;
 
+    @ApiModelProperty(value = "模块名称")
     private String name;
 
 
