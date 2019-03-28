@@ -7,7 +7,6 @@
           aa.id,
           aa.code,
           aa.name,
-          aa.is_enabled as enabled,
           aa.start_date,
           aa.program_id,
           aa.pi_count,
@@ -20,7 +19,6 @@
     <select id="selectActiveArt" resultType="io.choerodon.agile.infra.dataobject.ArtDO">
         select
          id,
-         is_enabled as enabled,
          status_code
         from agile_art
         where is_enabled = 1

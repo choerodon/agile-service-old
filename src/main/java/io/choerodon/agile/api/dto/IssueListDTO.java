@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -12,56 +13,82 @@ import java.util.List;
  */
 public class IssueListDTO implements Serializable {
 
+    @ApiModelProperty(value = "问题主键id")
     private Long issueId;
 
+    @ApiModelProperty(value = "问题编号")
     private String issueNum;
 
+    @ApiModelProperty(value = "问题类型code")
     private String typeCode;
 
+    @ApiModelProperty(value = "问题概要")
     private String summary;
 
+    @ApiModelProperty(value = "经办人id")
     private Long assigneeId;
 
+    @ApiModelProperty(value = "报告人id")
     private Long reporterId;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "问题类型id")
     private Long issueTypeId;
 
+    @ApiModelProperty(value = "经办人名称")
     private String assigneeName;
 
+    @ApiModelProperty(value = "报告人名称")
     private String reporterName;
 
+    @ApiModelProperty(value = "报告人图标")
     private String reporterImageUrl;
 
+    @ApiModelProperty(value = "经办人图标")
     private String assigneeImageUrl;
 
+    @ApiModelProperty(value = "史诗名称")
     private String epicName;
 
+    @ApiModelProperty(value = "史诗id")
     private Long epicId;
 
+    @ApiModelProperty(value = "史诗颜色")
     private String epicColor;
 
+    @ApiModelProperty(value = "故事点")
     private BigDecimal storyPoints;
 
+    @ApiModelProperty(value = "是否添加问题")
     private Boolean addIssue;
 
+    @ApiModelProperty(value = "剩余时间")
     private BigDecimal remainingTime;
 
+    @ApiModelProperty(value = "优先级DTO")
     private PriorityDTO priorityDTO;
 
+    @ApiModelProperty(value = "状态DTO")
     private StatusMapDTO statusMapDTO;
 
+    @ApiModelProperty(value = "问题类型DTO")
     private IssueTypeDTO issueTypeDTO;
 
+    @ApiModelProperty(value = "最后更新时间")
     private Date lastUpdateDate;
 
+    @ApiModelProperty(value = "关联的版本")
     private List<VersionIssueRelDTO> versionIssueRelDTOS;
 
+    @ApiModelProperty(value = "关联的标签")
     private List<LabelIssueRelDTO> labelIssueRelDTOS;
 
+    @ApiModelProperty(value = "冲刺列表")
     private List<IssueSprintDTO> issueSprintDTOS;
 
+    @ApiModelProperty(value = "评论列表")
     private List<IssueComponentBriefDTO> issueComponentBriefDTOS;
 
     public List<IssueSprintDTO> getIssueSprintDTOS() {

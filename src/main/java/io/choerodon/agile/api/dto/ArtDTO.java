@@ -26,8 +26,8 @@ public class ArtDTO {
     @ApiModelProperty(value = "art起始编号")
     private String seqNumber;
 
-    @ApiModelProperty(value = "是否启用，true表示启用，false表示未启用")
-    private Boolean enabled;
+//    @ApiModelProperty(value = "是否启用，true表示启用，false表示未启用")
+//    private Boolean enabled;
 
     @ApiModelProperty(value = "发布火车工程师用户id")
     private Long rteId;
@@ -109,13 +109,13 @@ public class ArtDTO {
         this.seqNumber = seqNumber;
     }
 
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
+//    public Boolean getEnabled() {
+//        return enabled;
+//    }
+//
+//    public void setEnabled(Boolean enabled) {
+//        this.enabled = enabled;
+//    }
 
     public Long getRteId() {
         return rteId;

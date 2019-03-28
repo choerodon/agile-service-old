@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotNull;
 
@@ -10,19 +11,26 @@ import javax.validation.constraints.NotNull;
  */
 public class IssueComponentDTO {
 
+    @ApiModelProperty(value = "主键id")
     private Long componentId;
 
+    @ApiModelProperty(value = "项目id")
     @NotNull(message = "项目id不能为空")
     private Long projectId;
 
+    @ApiModelProperty(value = "模块名称")
     private String name;
 
+    @ApiModelProperty(value = "模块描述")
     private String description;
 
+    @ApiModelProperty(value = "负责人id")
     private Long managerId;
 
+    @ApiModelProperty(value = "默认经办人")
     private String defaultAssigneeRole;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
     public void setComponentId(Long componentId) {

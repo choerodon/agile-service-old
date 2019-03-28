@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
 /**
@@ -7,14 +9,32 @@ import java.util.Date;
  */
 
 public class ProductVersionDetailDTO {
+
+    @ApiModelProperty(value = "版本主键id")
     private Long versionId;
+
+    @ApiModelProperty(value = "版本名称")
     private String name;
+
+    @ApiModelProperty(value = "版本描述")
     private String description;
+
+    @ApiModelProperty(value = "版本开始时间")
     private Date startDate;
+
+    @ApiModelProperty(value = "版本预计发布时间")
     private Date expectReleaseDate;
+
+    @ApiModelProperty(value = "发布时间")
     private Date releaseDate;
+
+    @ApiModelProperty(value = "状态")
     private String statusCode;
+
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
+
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
     public Long getVersionId() {

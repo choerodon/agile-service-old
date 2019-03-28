@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author dinghuang123@gmail.com
@@ -8,16 +9,22 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class ProjectDTO {
 
+    @ApiModelProperty(value = "项目主键id")
     private Long id;
 
+    @ApiModelProperty(value = "项目名称")
     private String name;
 
+    @ApiModelProperty(value = "组织id")
     private Long organizationId;
 
+    @ApiModelProperty(value = "项目code")
     private String code;
 
+    @ApiModelProperty(value = "项目是否启用")
     private Boolean enabled;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
     public Long getId() {

@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -9,20 +11,28 @@ import java.math.BigDecimal;
  */
 public class VelocitySprintDTO implements Serializable {
 
+    @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
 
+    @ApiModelProperty(value = "冲刺名称")
     private String sprintName;
 
+    @ApiModelProperty(value = "预估问题数")
     private int committedIssueCount;
 
+    @ApiModelProperty(value = "完成问题数")
     private int completedIssueCount;
 
+    @ApiModelProperty(value = "预估故事点")
     private BigDecimal committedStoryPoints;
 
+    @ApiModelProperty(value = "完成故事点")
     private BigDecimal completedStoryPoints;
 
+    @ApiModelProperty(value = "预估剩余时间")
     private BigDecimal committedRemainTime;
 
+    @ApiModelProperty(value = "完成剩余时间")
     private BigDecimal completedRemainTime;
 
 
