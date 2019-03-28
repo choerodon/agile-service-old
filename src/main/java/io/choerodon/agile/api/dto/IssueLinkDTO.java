@@ -2,6 +2,7 @@ package io.choerodon.agile.api.dto;
 
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * 敏捷开发Issue链接
@@ -11,36 +12,51 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class IssueLinkDTO {
 
+    @ApiModelProperty(value = "问题id")
     private Long issueId;
 
+    @ApiModelProperty(value = "问题链接类型id")
     private Long linkTypeId;
 
+    @ApiModelProperty(value = "被链接的问题id")
     private Long linkedIssueId;
 
+    @ApiModelProperty(value = "问题链接类型名称")
     private String linkTypeName;
 
     private String ward;
 
+    @ApiModelProperty(value = "问题编号")
     private String issueNum;
 
+    @ApiModelProperty(value = "问题概要")
     private String summary;
 
+    @ApiModelProperty(value = "问题类型code")
     private String typeCode;
 
+    @ApiModelProperty(value = "问题链接id")
     private Long linkId;
 
+    @ApiModelProperty(value = "经办人id")
     private Long assigneeId;
 
+    @ApiModelProperty(value = "经办人名称")
     private String assigneeName;
 
+    @ApiModelProperty(value = "经办人图片")
     private String imageUrl;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "问题类型DTO")
     private IssueTypeDTO issueTypeDTO;
 
+    @ApiModelProperty(value = "状态DTO")
     private StatusMapDTO statusMapDTO;
 
+    @ApiModelProperty(value = "优先级DTO")
     private PriorityDTO priorityDTO;
 
     public Long getProjectId() {

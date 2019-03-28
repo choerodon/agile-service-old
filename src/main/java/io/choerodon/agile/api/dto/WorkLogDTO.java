@@ -1,6 +1,8 @@
 package io.choerodon.agile.api.dto;
 
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -10,28 +12,40 @@ import java.util.Date;
  */
 public class WorkLogDTO {
 
+    @ApiModelProperty(value = "工作日志主键id")
     private Long logId;
 
+    @ApiModelProperty(value = "工作时间")
     private BigDecimal workTime;
 
+    @ApiModelProperty(value = "开始时间")
     private Date startDate;
 
+    @ApiModelProperty(value = "描述")
     private String description;
 
+    @ApiModelProperty(value = "问题id")
     private Long issueId;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "剩余的估计类别字段")
     private String residualPrediction;
 
+    @ApiModelProperty(value = "预估时间")
     private BigDecimal predictionTime;
 
+    @ApiModelProperty(value = "用户id")
     private Long userId;
 
+    @ApiModelProperty(value = "用户名称")
     private String userName;
 
+    @ApiModelProperty(value = "最后更新时间")
     private Date lastUpdateDate;
 
     public Long getLogId() {

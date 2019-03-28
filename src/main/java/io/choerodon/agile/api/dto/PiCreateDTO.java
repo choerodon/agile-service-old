@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
 /**
@@ -8,8 +10,10 @@ import java.util.Date;
  */
 public class PiCreateDTO {
 
+    @ApiModelProperty(value = "art主键id")
     private Long artId;
 
+    @ApiModelProperty(value = "开始时间")
     private Date startDate;
 
     public void setArtId(Long artId) {
