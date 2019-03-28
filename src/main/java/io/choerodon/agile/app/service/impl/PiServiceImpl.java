@@ -47,6 +47,7 @@ public class PiServiceImpl implements PiService {
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String YYYY_MM_DD = "yyyy-MM-dd";
     private static final String YYYY = "yyyy";
+    private static final String ART_DOING = "doing";
     private static final String ART_DONE = "done";
 
     @Autowired
@@ -281,7 +282,7 @@ public class PiServiceImpl implements PiService {
         result.put("backlogAllFeatures", backlogFeatures != null && !backlogFeatures.isEmpty() ? piAssembler.subFeatureDOTODTO(backlogFeatures, statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
         // query active art with all pi
         ArtDO activeArt = getActiveArt(programId);
-        if (activeArt == null || !activeArt.getEnabled() || ART_DONE.equals(activeArt.getStatusCode())) {
+        if (activeArt == null) {
             return result;
         }
         List<PiWithFeatureDO> piWithFeatureDOList = piMapper.selectBacklogPiList(programId, activeArt.getId(), StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)));
