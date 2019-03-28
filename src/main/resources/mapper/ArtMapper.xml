@@ -21,7 +21,7 @@
          id,
          status_code
         from agile_art
-        where is_enabled = 1
+        where status_code = 'doing'
         and program_id = #{programId}
     </select>
 
