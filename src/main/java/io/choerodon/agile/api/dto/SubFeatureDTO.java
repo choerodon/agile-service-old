@@ -50,6 +50,8 @@ public class SubFeatureDTO {
     @Transient
     private StatusMapDTO statusMapDTO;
 
+    private String featureType;
+
     public void setIssueId(Long issueId) {
         this.issueId = issueId;
     }
@@ -144,5 +146,13 @@ public class SubFeatureDTO {
 
     public StatusMapDTO getStatusMapDTO() {
         return statusMapDTO;
+    }
+
+    public void setFeatureType(String featureType) {
+        this.featureType = featureType;
+    }
+
+    public String getFeatureType() {
+        return featureType;
     }
 }
