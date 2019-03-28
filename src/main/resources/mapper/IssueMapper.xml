@@ -2442,7 +2442,7 @@
         ai.status_id
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE ai.project_id = #{projectId} AND ai.apply_type = 'test'
+        WHERE ai.project_id = #{projectId}
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.priorityId != null and advancedSearchArgs.priorityId.size > 0'>
                 AND ai.priority_id IN
