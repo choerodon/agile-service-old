@@ -45,7 +45,7 @@ public interface PiMapper extends BaseMapper<PiDO> {
 
     List<PiTodoDO> selectTodoPi(@Param("programId") Long programId, @Param("artId") Long artId);
 
-    Long selectPiCountByOptions(@Param("programId") Long programId, @RequestParam("artId") Long artId, @Param("statusCode") String statusCode);
+    Long selectPiCountByOptions(@Param("programId") Long programId, @Param("artId") Long artId, @Param("statusCode") String statusCode);
 
-    Long selectRelatedFeatureCount(@Param("programId") Long programId, @RequestParam("artId") Long artId);
+    Long selectRelatedFeatureCount(@Param("programId") Long programId, @Param("artId") Long artId);
 }
