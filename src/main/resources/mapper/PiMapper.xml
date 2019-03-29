@@ -138,21 +138,22 @@
             agile_issue ai
         LEFT JOIN agile_issue epic_info on ai.epic_id = epic_info.issue_id
         LEFT JOIN agile_lookup_value alv on epic_info.color_code = alv.value_code,
-        agile_feature af
+        agile_feature af, agile_issue_status ais
         WHERE
             ai.program_id = #{programId} and ai.type_code = 'feature' and ai.issue_id = af.issue_id
+            and ai.status_id = ais.status_id and ais.project_id = #{programId} and ais.is_completed != 1
             AND ai.issue_id NOT IN (
               SELECT apf.issue_id
-              FROM agile_pi_feature apf
-              WHERE apf.program_id = #{programId} )
-              <if test='advancedSearchArgs != null'>
-                  <if test='advancedSearchArgs.epicId != null'>
-                      AND ai.epic_id = #{advancedSearchArgs.epicId}
-                  </if>
-                  <if test='advancedSearchArgs.noEpic != "" and advancedSearchArgs.noEpic == "true"'>
-                      AND (ai.epic_id IS NULL OR ai.epic_id = 0)
-                  </if>
-              </if>
+              FROM agile_pi_feature apf, agile_pi ap
+              WHERE apf.program_id = #{programId} and apf.pi_id = ap.id and ap.status_code != 'done')
+            <if test='advancedSearchArgs != null'>
+                <if test='advancedSearchArgs.epicId != null'>
+                    AND ai.epic_id = #{advancedSearchArgs.epicId}
+                </if>
+                <if test='advancedSearchArgs.noEpic != "" and advancedSearchArgs.noEpic == "true"'>
+                    AND (ai.epic_id IS NULL OR ai.epic_id = 0)
+                </if>
+            </if>
     </select>
 
     <select id="selectFeatureIdByFeatureIds" resultType="io.choerodon.agile.infra.dataobject.SubFeatureDO">
