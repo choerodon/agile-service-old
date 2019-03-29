@@ -196,7 +196,7 @@
     <select id="selectPiList" resultType="io.choerodon.agile.infra.dataobject.PiDO">
         select *
         from agile_pi
-        where program_id = #{programId}
+        where program_id = #{programId} and art_id = #{artId}
     </select>
 
     <select id="queryFeatureIdOrderByRankDesc" resultType="java.lang.Long">
@@ -252,15 +252,16 @@
         from agile_pi
         where
         program_id = #{programId}
+        and art_id = #{artId}
         and status_code = 'doing'
     </select>
 
-    <select id="selectNotDonePi" resultType="io.choerodon.agile.infra.dataobject.PiDO">
+    <select id="selectTodoPiDOList" resultType="io.choerodon.agile.infra.dataobject.PiDO">
         select *
         from agile_pi
         where program_id = #{programId}
         and art_id = #{artId}
-        and status_code != 'done'
+        and status_code = 'todo'
     </select>
 
     <select id="selectTodoPi" resultType="io.choerodon.agile.infra.dataobject.PiTodoDO">
@@ -284,6 +285,37 @@
             <if test="isCompleted == false">
                 and ais.is_completed = 0
             </if>
+    </select>
+
+    <select id="selectPiCountByOptions" resultType="java.lang.Long">
+        select COUNT(id)
+        from agile_pi
+        where program_id = #{programId}
+        and art_id = #{artId}
+        <if test="statusCode == 'done'">
+            and status_code = 'done'
+        </if>
+        <if test="statusCode == 'todo'">
+            and status_code = 'todo'
+        </if>
+    </select>
+
+    <select id="selectRelatedFeatureCount" resultType="java.lang.Long">
+        SELECT
+         COUNT( DISTINCT ( apf.issue_id ) )
+        FROM
+         agile_pi_feature apf
+        WHERE
+         apf.program_id = #{programId}
+         AND apf.pi_id IN (
+        SELECT
+         id
+        FROM
+         agile_pi
+        WHERE
+         program_id = #{programId}
+         AND art_id = #{artId}
+         )
     </select>
 
 

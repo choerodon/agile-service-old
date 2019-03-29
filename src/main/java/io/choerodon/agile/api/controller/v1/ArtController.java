@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.ArtDTO;
+import io.choerodon.agile.api.dto.ArtStopDTO;
 import io.choerodon.agile.api.dto.PiCreateDTO;
 import io.choerodon.agile.app.service.ArtService;
 import io.choerodon.agile.infra.dataobject.PiCalendarDO;
@@ -44,6 +45,30 @@ public class ArtController {
         return Optional.ofNullable(artService.createArt(projectId, artDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.art.create"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("开始art")
+    @PostMapping("/start")
+    public ResponseEntity<ArtDTO> startArt(@ApiParam(value = "项目id", required = true)
+                                            @PathVariable(name = "project_id") Long projectId,
+                                            @ApiParam(value = "art dto", required = true)
+                                            @RequestBody ArtDTO artDTO) {
+        return Optional.ofNullable(artService.startArt(projectId, artDTO))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.art.start"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("stop art")
+    @PostMapping("/stop")
+    public ResponseEntity<ArtDTO> stopArt(@ApiParam(value = "项目id", required = true)
+                                           @PathVariable(name = "project_id") Long projectId,
+                                           @ApiParam(value = "art dto", required = true)
+                                           @RequestBody ArtDTO artDTO) {
+        return Optional.ofNullable(artService.stopArt(projectId, artDTO))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.art.stop"));
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
@@ -119,12 +144,12 @@ public class ArtController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("完成art之前调用")
-    @GetMapping("/before_complete")
-    public ResponseEntity<Boolean> beforeComplete(@ApiParam(value = "项目id", required = true)
+    @GetMapping("/before_stop")
+    public ResponseEntity<ArtStopDTO> beforeStop(@ApiParam(value = "项目id", required = true)
                                                   @PathVariable(name = "project_id") Long projectId,
-                                                  @ApiParam(value = "art id")
+                                                 @ApiParam(value = "art id")
                                                   @RequestParam Long id) {
-        return Optional.ofNullable(artService.beforeComplete(projectId, id))
+        return Optional.ofNullable(artService.beforeStop(projectId, id))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.beforeComplete.get"));
     }

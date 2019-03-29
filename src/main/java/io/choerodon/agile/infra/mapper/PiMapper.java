@@ -6,6 +6,7 @@ import io.choerodon.agile.infra.dataobject.PiWithFeatureDO;
 import io.choerodon.agile.infra.dataobject.SubFeatureDO;
 import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public interface PiMapper extends BaseMapper<PiDO> {
 
     PiDO selectLastPi(@Param("programId") Long programId, @Param("artId") Long artId);
 
-    List<PiDO> selectPiList(@Param("programId") Long programId);
+    List<PiDO> selectPiList(@Param("programId") Long programId, @Param("artId") Long artId);
 
     List<Long> queryFeatureIdOrderByRankDesc(@Param("programId") Long programId, @Param("piId") Long piId);
 
@@ -36,11 +37,15 @@ public interface PiMapper extends BaseMapper<PiDO> {
 
     List<SubFeatureDO> selectFeatureIdByFeatureIds(@Param("programId") Long programId, @Param("featureIds") List<Long> featureIds);
 
-    PiDO selectActivePi(@Param("programId") Long programId);
+    PiDO selectActivePi(@Param("programId") Long programId, @Param("artId") Long artId);
 
-    List<PiDO> selectNotDonePi(@Param("programId") Long programId, @Param("artId") Long artId);
+    List<PiDO> selectTodoPiDOList(@Param("programId") Long programId, @Param("artId") Long artId);
 
     Long selectFeatureCount(@Param("programId") Long programId, @Param("piId") Long piId, @Param("isCompleted") Boolean isCompleted);
 
     List<PiTodoDO> selectTodoPi(@Param("programId") Long programId, @Param("artId") Long artId);
+
+    Long selectPiCountByOptions(@Param("programId") Long programId, @RequestParam("artId") Long artId, @Param("statusCode") String statusCode);
+
+    Long selectRelatedFeatureCount(@Param("programId") Long programId, @RequestParam("artId") Long artId);
 }

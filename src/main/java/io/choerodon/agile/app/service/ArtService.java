@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.ArtDTO;
+import io.choerodon.agile.api.dto.ArtStopDTO;
 import io.choerodon.agile.api.dto.PiCreateDTO;
 import io.choerodon.agile.infra.dataobject.PiCalendarDO;
 import io.choerodon.core.domain.Page;
@@ -16,6 +17,10 @@ public interface ArtService {
 
     ArtDTO createArt(Long programId, ArtDTO artDTO);
 
+    ArtDTO startArt(Long programId, ArtDTO artDTO);
+
+    ArtDTO stopArt(Long programId, ArtDTO artDTO);
+
     ArtDTO updateArt(Long programId, ArtDTO artDTO);
 
     void deleteArt(Long programId, Long id);
@@ -28,5 +33,5 @@ public interface ArtService {
 
     List<PiCalendarDO> queryArtCalendar(Long programId, Long artId);
 
-    Boolean beforeComplete(Long programId, Long id);
+    ArtStopDTO beforeStop(Long programId, Long id);
 }

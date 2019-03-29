@@ -26,7 +26,7 @@ public interface PiService {
 
     JSONObject queryBacklogAll(Long programId, Long organizationId, Map<String, Object> searchParamMap);
 
-    Page<PiDTO> queryAll(Long programId, PageRequest pageRequest);
+    Page<PiDTO> queryAll(Long programId, Long artId, PageRequest pageRequest);
 
     PiDTO startPi(Long programId, PiDTO piDTO);
 

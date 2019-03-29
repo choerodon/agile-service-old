@@ -68,10 +68,12 @@ public class PiController {
     @GetMapping("/list")
     public ResponseEntity<Page<PiDTO>> queryAll(@ApiParam(value = "项目id", required = true)
                                                 @PathVariable(name = "project_id") Long projectId,
+                                                @ApiParam(value = "art id", required = true)
+                                                @RequestParam Long artId,
                                                 @ApiParam(value = "分页信息", required = true)
                                                 @SortDefault(value = "id", direction = Sort.Direction.DESC)
                                                 @ApiIgnore PageRequest pageRequest) {
-        return Optional.ofNullable(piService.queryAll(projectId, pageRequest))
+        return Optional.ofNullable(piService.queryAll(projectId, artId, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.piDTO.get"));
     }
