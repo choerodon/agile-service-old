@@ -60,7 +60,7 @@ public class ArtValidator {
         }
     }
 
-    public void checkArtUpdate(Long programId, ArtDTO artDTO) {
+    public void checkArtUpdate(ArtDTO artDTO) {
         if (artDTO.getId() == null) {
             throw new CommonException("error.artId.null");
         }

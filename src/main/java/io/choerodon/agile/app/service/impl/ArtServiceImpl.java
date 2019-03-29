@@ -97,7 +97,7 @@ public class ArtServiceImpl implements ArtService {
 
     @Override
     public ArtDTO updateArt(Long programId, ArtDTO artDTO) {
-        artValidator.checkArtUpdate(programId, artDTO);
+        artValidator.checkArtUpdate(artDTO);
         ArtE result = artRepository.updateBySelective(ConvertHelper.convert(artDTO, ArtE.class));
         result.setCode(projectInfoMapper.selectProjectCodeByProjectId(programId));
         return ConvertHelper.convert(result, ArtDTO.class);
