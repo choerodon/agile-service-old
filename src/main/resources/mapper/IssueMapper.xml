@@ -1529,7 +1529,7 @@
 
     <insert id="featureToDestinationByIdsClosePi">
         INSERT IGNORE INTO agile_pi_feature
-        (issue_id, pi_id, programId, creation_date, last_update_date, created_by, last_updated_by) VALUES
+        (issue_id, pi_id, program_id, creation_date, last_update_date, created_by, last_updated_by) VALUES
         <foreach collection="issueIds" item="issueId" index="index"
                  separator=",">
             (#{issueId}, #{piId}, #{programId}, #{date}, #{date}, #{userId}, #{userId})
