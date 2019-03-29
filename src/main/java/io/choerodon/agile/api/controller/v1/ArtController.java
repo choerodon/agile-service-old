@@ -143,12 +143,12 @@ public class ArtController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
-    @ApiOperation("完成art之前调用")
+    @ApiOperation("stop art之前调用")
     @GetMapping("/before_stop")
     public ResponseEntity<ArtStopDTO> beforeStop(@ApiParam(value = "项目id", required = true)
-                                                  @PathVariable(name = "project_id") Long projectId,
+                                                 @PathVariable(name = "project_id") Long projectId,
                                                  @ApiParam(value = "art id")
-                                                  @RequestParam Long id) {
+                                                 @RequestParam Long id) {
         return Optional.ofNullable(artService.beforeStop(projectId, id))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.beforeComplete.get"));
