@@ -2162,7 +2162,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<Long> queryIssueIdsByOptions(Long projectId, SearchDTO searchDTO) {
-        return issueMapper.queryIssueIdsByOptions(projectId, searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs());
+        return issueMapper.queryIssueIdsByOptions(projectId, searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContents());
     }
 
     @Override

@@ -2502,6 +2502,13 @@
                 AND position(#{otherArgs.issueNum} IN search.issue_num)
             </if>
         </if>
+        <if test='contents != null and contents.size != 0'>
+            <foreach collection="contents" item="content" index="index">
+                AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE
+                CONCAT(CONCAT('%',
+                #{content}), '%'))
+            </foreach>
+        </if>
     </select>
 
     <select id="queryUnDistributedIssues" resultType="io.choerodon.agile.infra.dataobject.UndistributedIssueDO">
