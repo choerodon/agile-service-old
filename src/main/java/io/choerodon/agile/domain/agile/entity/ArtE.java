@@ -10,10 +10,10 @@ public class ArtE {
 
     public ArtE() {}
 
-    public ArtE(Long programId, Long artId, Boolean enabled, Long objectVersionNumber) {
+    public ArtE(Long programId, Long artId, String statusCode, Long objectVersionNumber) {
         this.programId = programId;
         this.id = artId;
-        this.enabled = enabled;
+        this.statusCode = statusCode;
         this.objectVersionNumber = objectVersionNumber;
     }
 

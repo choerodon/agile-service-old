@@ -5,7 +5,7 @@
     <select id="selectArtList" resultType="io.choerodon.agile.infra.dataobject.ArtDO">
         select
           aa.id,
-          api.project_code,
+          api.project_code as code,
           aa.name,
           aa.start_date,
           aa.program_id,

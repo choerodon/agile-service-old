@@ -1,7 +1,9 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.ArtDTO;
+import io.choerodon.agile.api.dto.ArtStopDTO;
 import io.choerodon.agile.api.dto.PiCreateDTO;
+import io.choerodon.agile.api.dto.PiDTO;
 import io.choerodon.agile.api.validator.ArtValidator;
 import io.choerodon.agile.app.assembler.ArtAssembler;
 import io.choerodon.agile.app.service.ArtService;
@@ -34,6 +36,8 @@ import java.util.List;
 public class ArtServiceImpl implements ArtService {
 
     private static final String ART_TODO = "todo";
+    private static final String ART_DOING = "doing";
+    private static final String ART_STOP = "stop";
 
     @Autowired
     private ArtRepository artRepository;
@@ -61,8 +65,33 @@ public class ArtServiceImpl implements ArtService {
         artValidator.checkArtCreate(artDTO);
         artDTO.setStatusCode(projectInfoMapper.selectProjectCodeByProjectId(programId));
         artDTO.setCode(ConvertUtil.getCode(programId));
+        artDTO.setStatusCode(ART_TODO);
         ArtE artE = artRepository.create(ConvertHelper.convert(artDTO, ArtE.class));
-        piService.createPi(programId, ConvertHelper.convert(artE, ArtDO.class), new Date());
+//        piService.createPi(programId, ConvertHelper.convert(artE, ArtDO.class), new Date());
+        return ConvertHelper.convert(artE, ArtDTO.class);
+    }
+
+    @Override
+    public ArtDTO startArt(Long programId, ArtDTO artDTO) {
+        artValidator.checkArtStart(artDTO);
+        artRepository.updateBySelective(new ArtE(programId, artDTO.getId(), ART_DOING, artDTO.getObjectVersionNumber()));
+        ArtDO artDO = artMapper.selectByPrimaryKey(artDTO.getId());
+        piService.createPi(programId, artDO, artDO.getStartDate());
+        return ConvertHelper.convert(artDO, ArtDTO.class);
+    }
+
+    @Override
+    public ArtDTO stopArt(Long programId, ArtDTO artDTO) {
+        artValidator.checkArtStop(artDTO);
+        ArtE artE = artRepository.updateBySelective(new ArtE(programId, artDTO.getId(), ART_STOP, artDTO.getObjectVersionNumber()));
+        List<PiDO> piDOList = piMapper.selectTodoPiDOList(programId, artDTO.getId());
+        if (piDOList != null) {
+            piDOList.forEach(piDO -> {
+                PiDTO piDTO = ConvertHelper.convert(piDO, PiDTO.class);
+                piDTO.setTargetPiId(0L);
+                piService.closePi(programId, piDTO);
+            });
+        }
         return ConvertHelper.convert(artE, ArtDTO.class);
     }
 
@@ -120,8 +149,12 @@ public class ArtServiceImpl implements ArtService {
     }
 
     @Override
-    public Boolean beforeComplete(Long programId, Long id) {
-        List<PiDO> piDOList = piMapper.selectNotDonePi(programId, id);
-        return piDOList == null || piDOList.isEmpty();
+    public ArtStopDTO beforeStop(Long programId, Long id) {
+        ArtStopDTO result = new ArtStopDTO();
+        result.setActivePiDTO(ConvertHelper.convert(piMapper.selectActivePi(programId, id), PiDTO.class));
+        result.setCompletedPiCount(piMapper.selectPiCountByOptions(programId, id, "done"));
+        result.setTodoPiCount(piMapper.selectPiCountByOptions(programId, id, "todo"));
+        result.setRelatedFeatureCount(piMapper.selectRelatedFeatureCount(programId, id));
+        return result;
     }
 }

@@ -45,7 +45,7 @@ public class PiValidator {
         if (artDO == null || !ART_DOING.equals(artDO.getStatusCode())) {
             throw new CommonException("error.art.nullOrNoActive");
         }
-        PiDO activePi = piMapper.selectActivePi(piDTO.getProgramId());
+        PiDO activePi = piMapper.selectActivePi(piDTO.getProgramId(), piDTO.getArtId());
         if (activePi != null) {
             throw new CommonException("error.activePi.exist");
         }

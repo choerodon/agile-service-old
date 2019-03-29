@@ -31,6 +31,33 @@ public class ArtValidator {
         if (artDTO.getProgramId() == null) {
             throw new CommonException("error.programId.null");
         }
+        if (artDTO.getPiCount() == null) {
+            throw new CommonException("error.piCount.null");
+        }
+    }
+
+    public void checkArtStart(ArtDTO artDTO) {
+        if (artDTO.getProgramId() == null) {
+            throw new CommonException("error.programId.null");
+        }
+        if (artDTO.getId() == null) {
+            throw new CommonException("error.artId.null");
+        }
+        if (artDTO.getObjectVersionNumber() == null) {
+            throw new CommonException("error.artObjectVersionNumber.null");
+        }
+    }
+
+    public void checkArtStop(ArtDTO artDTO) {
+        if (artDTO.getProgramId() == null) {
+            throw new CommonException("error.programId.null");
+        }
+        if (artDTO.getId() == null) {
+            throw new CommonException("error.artId.null");
+        }
+        if (artDTO.getObjectVersionNumber() == null) {
+            throw new CommonException("error.artObjectVersionNumber.null");
+        }
     }
 
     public void checkArtUpdate(Long programId, ArtDTO artDTO) {
@@ -39,15 +66,6 @@ public class ArtValidator {
         }
         if (artDTO.getObjectVersionNumber() == null) {
             throw new CommonException("error.objectVersionNumber.null");
-        }
-        if (artDTO.getStatusCode() != null && ART_DOING.equals(artDTO.getStatusCode())) {
-            ArtDO check = new ArtDO();
-            check.setProgramId(programId);
-            check.setStatusCode(ART_DOING);
-            List<ArtDO> artDOList = artMapper.select(check);
-            if (artDOList != null && !artDOList.isEmpty()) {
-                throw new CommonException("error.artDoing.moreOne");
-            }
         }
     }
 }

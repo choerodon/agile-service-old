@@ -293,9 +293,9 @@ public class PiServiceImpl implements PiService {
     }
 
     @Override
-    public Page<PiDTO> queryAll(Long programId, PageRequest pageRequest) {
+    public Page<PiDTO> queryAll(Long programId, Long artId, PageRequest pageRequest) {
         Page<PiDO> piDOPage = PageHelper.doPageAndSort(pageRequest, () ->
-                piMapper.selectPiList(programId));
+                piMapper.selectPiList(programId, artId));
         Page<PiDTO> dtoPage = new Page<>();
         dtoPage.setNumber(piDOPage.getNumber());
         dtoPage.setSize(piDOPage.getSize());

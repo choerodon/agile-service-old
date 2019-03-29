@@ -130,6 +130,9 @@ public class BoardServiceImpl implements BoardService {
     @Autowired
     private PiFeatureMapper piFeatureMapper;
 
+    @Autowired
+    private ArtMapper artMapper;
+
     @Override
     public void create(Long projectId, String boardName) {
         if (checkName(projectId, boardName)) {
@@ -704,7 +707,11 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public JSONObject queryByOptionsInProgram(Long projectId, Long boardId, Long organizationId) {
         JSONObject result = new JSONObject(true);
-        PiDO piDO = piMapper.selectActivePi(projectId);
+        ArtDO activeArtDO = artMapper.selectActiveArt(projectId);
+        PiDO piDO = null;
+        if (activeArtDO != null) {
+            piDO = piMapper.selectActivePi(projectId, activeArtDO.getId());
+        }
         Long activePiId = null;
         if (piDO != null) {
             activePiId = piDO.getId();
