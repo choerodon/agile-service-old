@@ -344,7 +344,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<Long> queryIssueIdsByOptions(@Param("projectId") Long projectId,
                                       @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
-                                      @Param("otherArgs") Map<String, Object> otherArgs);
+                                      @Param("otherArgs") Map<String, Object> otherArgs,
+                                      @Param("contents") List<String> contents);
 
     List<UndistributedIssueDO> queryUnDistributedIssues(Long projectId);
 
