@@ -71,6 +71,8 @@
         <id property="statusCode" column="pi_status_code"/>
         <id property="startDate" column="pi_start_date"/>
         <id property="endDate" column="pi_end_date"/>
+        <id property="artId" column="pi_art_id"/>
+        <id property="objectVersionNumber" column="pi_object_version_number"/>
         <collection property="subFeatureDOList" autoMapping="true" columnPrefix="ai_"
                     ofType="io.choerodon.agile.infra.dataobject.SubFeatureDO"/>
     </resultMap>
@@ -82,6 +84,8 @@
             ap.status_code as pi_status_code,
             ap.start_date as pi_start_date,
             ap.end_date as pi_end_date,
+            ap.art_id as pi_art_id,
+            ap.object_version_number as pi_object_version_number,
             ai.issue_id as ai_issue_id,
             ai.issue_num as ai_issue_num,
             ai.summary as ai_summary,
@@ -91,11 +95,15 @@
             ai.type_code as ai_type_code,
             ai.rank as ai_rank,
             ai.object_version_number as ai_object_version_number,
-            af.feature_type as ai_feature_type
+            af.feature_type as ai_feature_type,
+            epic_info.epic_name as ai_epic_name,
+            alv.name as ai_epic_color
         FROM
             agile_pi ap
             LEFT JOIN agile_pi_feature apf ON ap.id = apf.pi_id AND apf.program_id = #{programId}
             LEFT JOIN agile_issue ai ON apf.issue_id = ai.issue_id and ai.type_code = 'feature'
+            LEFT JOIN agile_issue epic_info on ai.epic_id = epic_info.issue_id
+            LEFT JOIN agile_lookup_value alv on epic_info.color_code = alv.value_code
             LEFT JOIN agile_feature af ON ai.issue_id = af.issue_id
         WHERE
             ap.program_id = #{programId}
@@ -123,9 +131,14 @@
             ai.type_code,
             ai.rank,
             ai.object_version_number,
-            af.feature_type
+            af.feature_type,
+            epic_info.epic_name,
+            alv.name as epic_color
         FROM
-            agile_issue ai, agile_feature af
+            agile_issue ai
+        LEFT JOIN agile_issue epic_info on ai.epic_id = epic_info.issue_id
+        LEFT JOIN agile_lookup_value alv on epic_info.color_code = alv.value_code,
+        agile_feature af
         WHERE
             ai.program_id = #{programId} and ai.type_code = 'feature' and ai.issue_id = af.issue_id
             AND ai.issue_id NOT IN (
@@ -248,6 +261,29 @@
         where program_id = #{programId}
         and art_id = #{artId}
         and status_code != 'done'
+    </select>
+
+    <select id="selectTodoPi" resultType="io.choerodon.agile.infra.dataobject.PiTodoDO">
+        select id, code, name
+        from agile_pi
+        where program_id = #{programId}
+        and art_id = #{artId}
+        and status_code = 'todo'
+    </select>
+
+    <select id="selectFeatureCount" resultType="java.lang.Long">
+        select COUNT(apf.issue_id)
+        from agile_pi_feature apf, agile_issue ai, agile_issue_status ais
+        where apf.program_id = #{programId}
+            and apf.pi_id = #{piId}
+            and apf.issue_id = ai.issue_id
+            and ai.status_id = ais.status_id and ais.project_id = #{programId}
+            <if test="isCompleted == true">
+                and ais.is_completed = 1
+            </if>
+            <if test="isCompleted == false">
+                and ais.is_completed = 0
+            </if>
     </select>
 
 

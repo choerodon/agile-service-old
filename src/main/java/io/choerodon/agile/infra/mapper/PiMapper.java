@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.infra.dataobject.PiDO;
+import io.choerodon.agile.infra.dataobject.PiTodoDO;
 import io.choerodon.agile.infra.dataobject.PiWithFeatureDO;
 import io.choerodon.agile.infra.dataobject.SubFeatureDO;
 import io.choerodon.mybatis.common.BaseMapper;
@@ -38,4 +39,8 @@ public interface PiMapper extends BaseMapper<PiDO> {
     PiDO selectActivePi(@Param("programId") Long programId);
 
     List<PiDO> selectNotDonePi(@Param("programId") Long programId, @Param("artId") Long artId);
+
+    Long selectFeatureCount(@Param("programId") Long programId, @Param("piId") Long piId, @Param("isCompleted") Boolean isCompleted);
+
+    List<PiTodoDO> selectTodoPi(@Param("programId") Long programId, @Param("artId") Long artId);
 }

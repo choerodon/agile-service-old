@@ -44,6 +44,8 @@ import java.util.stream.Collectors;
 public class PiServiceImpl implements PiService {
 
     private static final String PI_TODO = "todo";
+    private static final String PI_DOING = "doing";
+    private static final String PI_DONE = "done";
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String YYYY_MM_DD = "yyyy-MM-dd";
     private static final String YYYY = "yyyy";
@@ -327,37 +329,24 @@ public class PiServiceImpl implements PiService {
         }
     }
 
-//    private void changeArtToDoing(Long artId) {
-//        ArtDO artDO = artMapper.selectByPrimaryKey(artId);
-//        if (artDO == null) {
-//            throw new CommonException("error.art.null");
-//        }
-//        if (ART_DOING.equals(artDO.getStatusCode())) {
-//            return;
-//        }
-//        ArtE artE = new ArtE();
-//        artE.setProgramId(artDO.getProgramId());
-//        artE.setObjectVersionNumber(artDO.getObjectVersionNumber());
-//        artE.setId(artId);
-//        artE.setStatusCode(ART_DOING);
-//        artRepository.updateBySelective(artE);
-//    }
-
     @Override
     public PiDTO startPi(Long programId, PiDTO piDTO) {
         piValidator.checkPiStart(piDTO);
         // create sprint in each project
         createSprintWhenStartPi(programId, piDTO.getId());
         // update pi status: doing
-        PiE piE = new PiE();
-        piE.setProgramId(programId);
-        piE.setId(piDTO.getId());
-        piE.setStatusCode(piDTO.getStatusCode());
-        piE.setObjectVersionNumber(piDTO.getObjectVersionNumber());
+        PiE piE = new PiE(programId, piDTO.getId(), PI_DOING, piDTO.getObjectVersionNumber());
         PiE result = piRepository.updateBySelective(piE);
-//        // change art' status_code to 'doing'
-//        changeArtToDoing(piDTO.getArtId());
         return ConvertHelper.convert(result, PiDTO.class);
+    }
+
+    @Override
+    public PiCompleteCountDTO beforeClosePi(Long programId, Long piId, Long artId) {
+        PiCompleteCountDTO result = new PiCompleteCountDTO();
+        result.setCompletedCount(piMapper.selectFeatureCount(programId, piId, true));
+        result.setUnCompletedCount(piMapper.selectFeatureCount(programId, piId, false));
+        result.setPiTodoDTOList(ConvertHelper.convertList(piMapper.selectTodoPi(programId, artId), PiTodoDTO.class));
+        return result;
     }
 
     private void beforeRankInProgram(Long programId, Long targetSprintId, List<MoveIssueDO> moveIssueDOS, List<Long> moveIssueIds) {
@@ -400,11 +389,7 @@ public class PiServiceImpl implements PiService {
         // deal uncomplete feature to target pi
         dealUnCompleteFeature(piDTO.getProgramId(), piDTO.getId(), piDTO.getTargetPiId());
         // update pi status: done
-        PiE piE = new PiE();
-        piE.setProgramId(programId);
-        piE.setId(piDTO.getId());
-        piE.setStatusCode(piDTO.getStatusCode());
-        return ConvertHelper.convert(piRepository.updateBySelective(piE), PiDTO.class);
+        return ConvertHelper.convert(piRepository.updateBySelective(new PiE(programId, piDTO.getId(), PI_DONE, piDTO.getObjectVersionNumber())), PiDTO.class);
     }
 
     private void noOutsetBeforeRank(Long programId, Long piId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {

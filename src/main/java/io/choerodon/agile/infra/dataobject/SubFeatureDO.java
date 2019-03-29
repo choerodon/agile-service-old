@@ -32,6 +32,10 @@ public class SubFeatureDO {
 
     private String featureType;
 
+    private String epicName;
+
+    private String epicColor;
+
     public void setIssueId(Long issueId) {
         this.issueId = issueId;
     }
@@ -118,5 +122,21 @@ public class SubFeatureDO {
 
     public String getFeatureType() {
         return featureType;
+    }
+
+    public void setEpicColor(String epicColor) {
+        this.epicColor = epicColor;
+    }
+
+    public String getEpicColor() {
+        return epicColor;
+    }
+
+    public void setEpicName(String epicName) {
+        this.epicName = epicName;
+    }
+
+    public String getEpicName() {
+        return epicName;
     }
 }

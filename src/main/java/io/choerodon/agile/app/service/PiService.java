@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.MoveIssueDTO;
+import io.choerodon.agile.api.dto.PiCompleteCountDTO;
 import io.choerodon.agile.api.dto.PiDTO;
 import io.choerodon.agile.infra.dataobject.ArtDO;
 import io.choerodon.agile.infra.dataobject.SubFeatureDO;
@@ -28,6 +29,8 @@ public interface PiService {
     Page<PiDTO> queryAll(Long programId, PageRequest pageRequest);
 
     PiDTO startPi(Long programId, PiDTO piDTO);
+
+    PiCompleteCountDTO beforeClosePi(Long programId, Long piId, Long artId);
 
     PiDTO closePi(Long programId, PiDTO piDTO);
 

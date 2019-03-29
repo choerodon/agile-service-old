@@ -5,15 +5,15 @@
     <select id="selectArtList" resultType="io.choerodon.agile.infra.dataobject.ArtDO">
         select
           aa.id,
-          aa.code,
+          api.project_code,
           aa.name,
           aa.start_date,
           aa.program_id,
           aa.pi_count,
           aa.status_code,
           aa.object_version_number
-        from agile_art aa
-        where aa.program_id = #{programId}
+        from agile_art aa, agile_project_info api
+        where aa.program_id = #{programId} and api.project_id = #{programId}
     </select>
 
     <select id="selectActiveArt" resultType="io.choerodon.agile.infra.dataobject.ArtDO">

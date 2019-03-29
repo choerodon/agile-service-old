@@ -2,6 +2,7 @@ package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.MoveIssueDTO;
+import io.choerodon.agile.api.dto.PiCompleteCountDTO;
 import io.choerodon.agile.api.dto.PiDTO;
 import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.infra.dataobject.SubFeatureDO;
@@ -85,6 +86,20 @@ public class PiController {
         return Optional.ofNullable(piService.startPi(projectId, piDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.pi.start"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("关闭pi之前统计数量")
+    @GetMapping("/before_close")
+    public ResponseEntity<PiCompleteCountDTO> beforeClosePi(@ApiParam(value = "项目id", required = true)
+                                                            @PathVariable(name = "project_id") Long projectId,
+                                                            @ApiParam(value = "pi id", required = true)
+                                                            @RequestParam Long piId,
+                                                            @ApiParam(value = "art id", required = true)
+                                                            @RequestParam Long artId) {
+        return Optional.ofNullable(piService.beforeClosePi(projectId, piId, artId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.pi.beforeClose"));
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})

@@ -19,6 +19,10 @@ public class PiWithFeatureDO {
 
     private Date endDate;
 
+    private Long ArtId;
+
+    private Long objectVersionNumber;
+
     private List<SubFeatureDO> subFeatureDOList;
 
     public Long getId() {
@@ -59,6 +63,22 @@ public class PiWithFeatureDO {
 
     public Date getEndDate() {
         return endDate;
+    }
+
+    public void setArtId(Long artId) {
+        ArtId = artId;
+    }
+
+    public Long getArtId() {
+        return ArtId;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
     }
 
     public List<SubFeatureDO> getSubFeatureDOList() {
