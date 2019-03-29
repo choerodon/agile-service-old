@@ -8,11 +8,13 @@ import io.choerodon.agile.app.service.ArtService;
 import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.domain.agile.entity.ArtE;
 import io.choerodon.agile.domain.agile.repository.ArtRepository;
+import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.ArtDO;
 import io.choerodon.agile.infra.dataobject.PiCalendarDO;
 import io.choerodon.agile.infra.dataobject.PiDO;
 import io.choerodon.agile.infra.mapper.ArtMapper;
 import io.choerodon.agile.infra.mapper.PiMapper;
+import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
@@ -51,10 +53,14 @@ public class ArtServiceImpl implements ArtService {
     @Autowired
     private PiMapper piMapper;
 
+    @Autowired
+    private ProjectInfoMapper projectInfoMapper;
+
     @Override
     public ArtDTO createArt(Long programId, ArtDTO artDTO) {
         artValidator.checkArtCreate(artDTO);
-        artDTO.setStatusCode(ART_TODO);
+        artDTO.setStatusCode(projectInfoMapper.selectProjectCodeByProjectId(programId));
+        artDTO.setCode(ConvertUtil.getCode(programId));
         ArtE artE = artRepository.create(ConvertHelper.convert(artDTO, ArtE.class));
         piService.createPi(programId, ConvertHelper.convert(artE, ArtDO.class), new Date());
         return ConvertHelper.convert(artE, ArtDTO.class);
@@ -63,7 +69,9 @@ public class ArtServiceImpl implements ArtService {
     @Override
     public ArtDTO updateArt(Long programId, ArtDTO artDTO) {
         artValidator.checkArtUpdate(programId, artDTO);
-        return ConvertHelper.convert(artRepository.updateBySelective(ConvertHelper.convert(artDTO, ArtE.class)), ArtDTO.class);
+        ArtE result = artRepository.updateBySelective(ConvertHelper.convert(artDTO, ArtE.class));
+        result.setCode(projectInfoMapper.selectProjectCodeByProjectId(programId));
+        return ConvertHelper.convert(result, ArtDTO.class);
     }
 
     @Override
@@ -93,6 +101,7 @@ public class ArtServiceImpl implements ArtService {
         if (artDO == null) {
             throw new CommonException("error.art.select");
         }
+        artDO.setCode(projectInfoMapper.selectProjectCodeByProjectId(programId));
         return artAssembler.artDOTODTO(artDO);
     }
 

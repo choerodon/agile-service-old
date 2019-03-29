@@ -8,6 +8,15 @@ import java.util.Date;
  */
 public class PiE {
 
+    public PiE() {}
+
+    public PiE(Long programId, Long id, String statusCode, Long objectVersionNumber) {
+        this.programId = programId;
+        this.id = id;
+        this.statusCode = statusCode;
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
     private Long id;
 
     private String code;

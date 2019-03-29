@@ -22,9 +22,6 @@ public class ArtValidator {
     private ArtMapper artMapper;
 
     public void checkArtCreate(ArtDTO artDTO) {
-        if (artDTO.getCode() == null) {
-            throw new CommonException("error.code.null");
-        }
         if (artDTO.getName() == null) {
             throw new CommonException("error.name.null");
         }

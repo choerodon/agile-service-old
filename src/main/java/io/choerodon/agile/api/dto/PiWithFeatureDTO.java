@@ -26,6 +26,12 @@ public class PiWithFeatureDTO {
     @ApiModelProperty(value = "pi结束时间")
     private Date endDate;
 
+    @ApiModelProperty(value = "pi所属的artId")
+    private Long artId;
+
+    @ApiModelProperty(value = "pi版本号")
+    private Long objectVersionNumber;
+
     @ApiModelProperty(value = "pi下的feature列表")
     private List<SubFeatureDTO> subFeatureDTOList;
 
@@ -67,6 +73,22 @@ public class PiWithFeatureDTO {
 
     public Date getEndDate() {
         return endDate;
+    }
+
+    public void setArtId(Long artId) {
+        this.artId = artId;
+    }
+
+    public Long getArtId() {
+        return artId;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
     }
 
     public void setSubFeatureDTOList(List<SubFeatureDTO> subFeatureDTOList) {

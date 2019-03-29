@@ -14,4 +14,10 @@
         update agile_issue set creation_date = #{creationDate2}, last_update_date = #{creationDate2} where project_id = #{projectId};
     </update>
 
+    <select id="selectProjectCodeByProjectId" resultType="java.lang.String">
+        select project_code
+        from agile_project_info
+        where project_id = #{projectId}
+    </select>
+
 </mapper>

@@ -50,7 +50,14 @@ public class SubFeatureDTO {
     @Transient
     private StatusMapDTO statusMapDTO;
 
+    @ApiModelProperty(value = "feature的类型")
     private String featureType;
+
+    @ApiModelProperty(value = "feature所属史诗名称")
+    private String epicName;
+
+    @ApiModelProperty(value = "feature所属史诗颜色")
+    private String epicColor;
 
     public void setIssueId(Long issueId) {
         this.issueId = issueId;
@@ -154,5 +161,21 @@ public class SubFeatureDTO {
 
     public String getFeatureType() {
         return featureType;
+    }
+
+    public void setEpicName(String epicName) {
+        this.epicName = epicName;
+    }
+
+    public String getEpicName() {
+        return epicName;
+    }
+
+    public void setEpicColor(String epicColor) {
+        this.epicColor = epicColor;
+    }
+
+    public String getEpicColor() {
+        return epicColor;
     }
 }
