@@ -1,13 +1,17 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/7/16.
  * Email: fuqianghuang01@gmail.com
  */
 public class IssueCreationNumDTO {
 
+    @ApiModelProperty(value = "创建时间")
     private String creationDay;
 
+    @ApiModelProperty(value = "问题数量")
     private Integer issueCount;
 
     public void setCreationDay(String creationDay) {

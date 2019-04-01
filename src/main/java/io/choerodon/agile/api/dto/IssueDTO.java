@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * 敏捷开发Issue
@@ -15,96 +16,142 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class IssueDTO {
 
+    @ApiModelProperty(value = "问题主键id")
     private Long issueId;
 
+    @ApiModelProperty(value = "问题编号")
     private String issueNum;
 
+    @ApiModelProperty(value = "问题类型code")
     private String typeCode;
 
+    @ApiModelProperty(value = "状态id")
     private Long statusId;
 
+    @ApiModelProperty(value = "问题概要")
     private String summary;
 
+    @ApiModelProperty(value = "报告人id")
     private Long reporterId;
 
+    @ApiModelProperty(value = "报告人名称")
     private String reporterName;
 
+    @ApiModelProperty(value = "描述")
     private String description;
 
+    @ApiModelProperty(value = "经办人id")
     private Long assigneeId;
 
+    @ApiModelProperty(value = "经办人名称")
     private String assigneeName;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "史诗id")
     private Long epicId;
 
+    @ApiModelProperty(value = "父任务id")
     private Long parentIssueId;
 
+    @ApiModelProperty(value = "故事点")
     private BigDecimal storyPoints;
 
+    @ApiModelProperty(value = "关联的版本列表")
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
+    @ApiModelProperty(value = "活跃冲刺")
     private SprintNameDTO activeSprint;
 
+    @ApiModelProperty(value = "已关闭的冲刺列表")
     private List<SprintNameDTO> closeSprint;
 
+    @ApiModelProperty(value = "关联的标签列表")
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
+    @ApiModelProperty(value = "关联的模块列表")
     private List<ComponentIssueRelDTO> componentIssueRelDTOList;
 
+    @ApiModelProperty(value = "评论列表")
     private List<IssueCommentDTO> issueCommentDTOList;
 
+    @ApiModelProperty(value = "附件列表")
     private List<IssueAttachmentDTO> issueAttachmentDTOList;
 
+    @ApiModelProperty(value = "子任务列表")
     private List<IssueSubListDTO> subIssueDTOList;
 
+    @ApiModelProperty(value = "问题版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "创建时间")
     private Date creationDate;
 
+    @ApiModelProperty(value = "最后更新时间")
     private Date lastUpdateDate;
 
+    @ApiModelProperty(value = "预估时间")
     private BigDecimal estimateTime;
 
+    @ApiModelProperty(value = "剩余时间")
     private BigDecimal remainingTime;
 
+    @ApiModelProperty(value = "史诗名称")
     private String epicName;
 
+    @ApiModelProperty(value = "史诗颜色")
     private String color;
 
+    @ApiModelProperty(value = "史诗颜色")
     private String epicColor;
 
+    @ApiModelProperty(value = "冲刺名称")
     private String sprintName;
 
+    @ApiModelProperty(value = "父任务的问题编码")
     private String parentIssueNum;
 
+    @ApiModelProperty(value = "经办人图标")
     private String assigneeImageUrl;
 
+    @ApiModelProperty(value = "报告人图标")
     private String reporterImageUrl;
 
+    @ApiModelProperty(value = "创建人图标")
     private String createrImageUrl;
 
+    @ApiModelProperty(value = "创建人名称")
     private String createrName;
 
+    @ApiModelProperty(value = "优先级id")
     private Long priorityId;
 
+    @ApiModelProperty(value = "问题类型id")
     private Long issueTypeId;
 
+    @ApiModelProperty(value = "优先级DTO")
     private PriorityDTO priorityDTO;
 
+    @ApiModelProperty(value = "问题类型DTO")
     private IssueTypeDTO issueTypeDTO;
 
+    @ApiModelProperty(value = "状态DTO")
     private StatusMapDTO statusMapDTO;
 
+    @ApiModelProperty(value = "创建人id")
     private Long createdBy;
 
+    @ApiModelProperty(value = "业务类型：agile、test等")
     private String applyType;
 
+    @ApiModelProperty(value = "创建人邮箱")
     private String createrEmail;
 
+    @ApiModelProperty(value = "featureDTO")
     private FeatureDTO featureDTO;
 
+    @ApiModelProperty(value = "feature名称")
     private String featureName;
 
     public String getCreaterEmail() {

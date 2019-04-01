@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/31.
@@ -10,22 +11,31 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class ComponentForListDTO {
 
+    @ApiModelProperty(value = "模块id")
     private Long componentId;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "模块名称")
     private String name;
 
+    @ApiModelProperty(value = "描述")
     private String description;
 
+    @ApiModelProperty(value = "负责人id")
     private Long managerId;
 
+    @ApiModelProperty(value = "默认经办人")
     private String defaultAssigneeRole;
 
+    @ApiModelProperty(value = "模块关联的问题数量")
     private Integer issueCount;
 
+    @ApiModelProperty(value = "负责人名称")
     private String managerName;
 
+    @ApiModelProperty(value = "图标")
     private String imageUrl;
 
     public Long getComponentId() {

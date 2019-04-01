@@ -2,6 +2,7 @@ package io.choerodon.agile.api.dto;
 
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * 敏捷开发Issue标签
@@ -11,10 +12,13 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class IssueLabelDTO {
 
+    @ApiModelProperty(value = "标签id")
     private Long labelId;
 
+    @ApiModelProperty(value = "标签名称")
     private String labelName;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
     public Long getLabelId() {

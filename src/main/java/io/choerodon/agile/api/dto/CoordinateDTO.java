@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -11,8 +12,10 @@ import java.util.Date;
  */
 public class CoordinateDTO implements Serializable {
 
+    @ApiModelProperty(value = "日期")
     private Date date;
 
+    @ApiModelProperty(value = "问题数量")
     private Integer issueCount;
 
     public Date getDate() {

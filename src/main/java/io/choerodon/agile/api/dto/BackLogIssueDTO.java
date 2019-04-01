@@ -1,12 +1,18 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
  * Created by jian_zhang02@163.com on 2018/5/18.
  */
 public class BackLogIssueDTO {
+
+    @ApiModelProperty(value = "待办问题数量")
     private Integer backlogIssueCount;
+
+    @ApiModelProperty(value = "待办问题列表")
     private List<IssueSearchDTO> backLogIssue;
 
     public BackLogIssueDTO(){}
