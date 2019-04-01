@@ -1,19 +1,26 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/8/27.
  * Email: fuqianghuang01@gmail.com
  */
 public class VersionIssueCountDTO {
 
+    @ApiModelProperty(value = "版本id")
     private Long versionId;
 
+    @ApiModelProperty(value = "版本名称")
     private String name;
 
+    @ApiModelProperty(value = "版本下已完成的问题数量")
     private Integer doneIssueCount;
 
+    @ApiModelProperty(value = "版本下进行中的问题数量")
     private Integer doingIssueCount;
 
+    @ApiModelProperty(value = "版本下待处理的问题数量")
     private Integer todoIssueCount;
 
     public Long getVersionId() {

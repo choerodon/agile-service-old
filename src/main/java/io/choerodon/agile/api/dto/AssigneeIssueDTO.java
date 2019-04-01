@@ -1,20 +1,42 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.math.BigDecimal;
 
 /**
  * Created by jian_zhang02@163.com on 2018/6/2.
  */
 public class AssigneeIssueDTO {
+
+    @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
+
+    @ApiModelProperty(value = "经办人id")
     private Long assigneeId;
+
+    @ApiModelProperty(value = "经办人名称")
     private String assigneeName;
+
+    @ApiModelProperty(value = "经办人图标")
     private String imageUrl;
+
+    @ApiModelProperty(value = "总剩余时间")
     private BigDecimal totalRemainingTime;
+
+    @ApiModelProperty(value = "总故事点")
     private BigDecimal totalStoryPoints;
+
+    @ApiModelProperty(value = "总问题数量")
     private Integer issueCount;
+
+    @ApiModelProperty(value = "剩余故事点")
     private BigDecimal remainingStoryPoints;
+
+    @ApiModelProperty(value = "剩余问题数量")
     private Integer remainingIssueCount;
+
+    @ApiModelProperty(value = "剩余时间")
     private BigDecimal remainingTime;
 
     public Long getSprintId() {

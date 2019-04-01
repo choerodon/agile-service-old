@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
@@ -10,8 +11,10 @@ import java.util.List;
  */
 public class IssueProjectDTO {
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "该项目下的问题id集合")
     private List<Long> issueIdList;
 
     public Long getProjectId() {
