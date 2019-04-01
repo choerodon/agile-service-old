@@ -1,17 +1,23 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/16.
  * Email: fuqianghuang01@gmail.com
  */
 public class StatusMoveDTO {
 
+    @ApiModelProperty(value = "状态位置")
     private Integer position;
 
+    @ApiModelProperty(value = "目标列的id")
     private Long columnId;
 
+    @ApiModelProperty(value = "原始列的id")
     private Long originColumnId;
 
+    @ApiModelProperty(value = "版本号")
     private Long statusObjectVersionNumber;
 
     public Integer getPosition() {

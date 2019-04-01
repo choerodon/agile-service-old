@@ -1,15 +1,27 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
 /**
  * Created by jian_zhang02@163.com on 2018/5/17.
  */
 public class SprintNameDTO {
+
+    @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
+
+    @ApiModelProperty(value = "冲刺名称")
     private String sprintName;
+
+    @ApiModelProperty(value = "冲刺开始时间")
     private Date startDate;
+
+    @ApiModelProperty(value = "冲刺结束时间")
     private Date endDate;
+
+    @ApiModelProperty(value = "冲刺状态")
     private String statusCode;
 
     public Long getSprintId() {

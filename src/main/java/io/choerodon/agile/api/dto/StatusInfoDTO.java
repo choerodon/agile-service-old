@@ -2,6 +2,10 @@ package io.choerodon.agile.api.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
+/**
+ * Created by HuangFuqiang@choerodon.io on 2018/10/26.
+ * Email: fuqianghuang01@gmail.com
+ */
 public class StatusInfoDTO {
 
     @ApiModelProperty(value = "状态主键id")

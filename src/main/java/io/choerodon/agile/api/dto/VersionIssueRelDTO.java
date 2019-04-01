@@ -2,6 +2,7 @@ package io.choerodon.agile.api.dto;
 
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 
@@ -11,16 +12,22 @@ import java.io.Serializable;
  */
 public class VersionIssueRelDTO implements Serializable {
 
+    @ApiModelProperty(value = "版本id")
     private Long versionId;
 
+    @ApiModelProperty(value = "问题id")
     private Long issueId;
 
+    @ApiModelProperty(value = "版本名称")
     private String name;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "版本关系：fix、influence")
     private String relationType;
 
+    @ApiModelProperty(value = "版本状态")
     private String statusCode;
 
     public Long getVersionId() {

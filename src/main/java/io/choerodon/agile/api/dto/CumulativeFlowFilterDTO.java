@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
 import java.util.List;
@@ -11,14 +12,19 @@ import java.util.List;
  */
 public class CumulativeFlowFilterDTO {
 
+    @ApiModelProperty(value = "开始时间")
     private Date startDate;
 
+    @ApiModelProperty(value = "结束时间")
     private Date endDate;
 
+    @ApiModelProperty(value = "看板id")
     private Long boardId;
 
+    @ApiModelProperty(value = "快速搜索传值")
     private List<Long> quickFilterIds;
 
+    @ApiModelProperty(value = "看板列id集合")
     private List<Long> columnIds;
 
     public List<Long> getQuickFilterIds() {

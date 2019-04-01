@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -11,54 +12,79 @@ import java.util.List;
  */
 public class IssueCreateDTO {
 
+    @ApiModelProperty(value = "问题类型code")
     private String typeCode;
 
+    @ApiModelProperty(value = "问题概要")
     private String summary;
 
+    @ApiModelProperty(value = "优先级code")
     private String priorityCode;
 
+    @ApiModelProperty(value = "描述")
     private String description;
 
+    @ApiModelProperty(value = "经办人id")
     private Long assigneeId;
 
+    @ApiModelProperty(value = "报告人id")
     private Long reporterId;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "史诗id")
     private Long epicId;
 
+    @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
 
+    @ApiModelProperty(value = "优先级id")
     private Long priorityId;
 
+    @ApiModelProperty(value = "问题类型id")
     private Long issueTypeId;
 
+    @ApiModelProperty(value = "关联的版本列表")
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
+    @ApiModelProperty(value = "关联的标签列表")
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
+    @ApiModelProperty(value = "关联的问题链接列表")
     private List<IssueLinkCreateDTO> issueLinkCreateDTOList;
 
+    @ApiModelProperty(value = "关联的模块列表")
     private List<ComponentIssueRelDTO> componentIssueRelDTOList;
 
+    @ApiModelProperty(value = "剩余时间")
     private BigDecimal remainingTime;
 
+    @ApiModelProperty(value = "预估时间")
     private BigDecimal estimateTime;
 
+    @ApiModelProperty(value = "史诗名称")
     private String epicName;
 
+    @ApiModelProperty(value = "故事点")
     private BigDecimal storyPoints;
 
+    @ApiModelProperty(value = "featureId")
     private Long featureId;
 
+    @ApiModelProperty(value = "feature开始时间")
     private Date startDate;
 
+    @ApiModelProperty(value = "feature结束时间")
     private Date endDate;
 
+    @ApiModelProperty(value = "feature所属项目群id")
     private Long programId;
 
+    @ApiModelProperty(value = "问题所属pi")
     private Long piId;
 
+    @ApiModelProperty(value = "featureDTO")
     private FeatureDTO featureDTO;
 
     public List<IssueLinkCreateDTO> getIssueLinkCreateDTOList() {
