@@ -15,6 +15,7 @@ import io.choerodon.agile.domain.agile.repository.ArtRepository;
 import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.domain.agile.repository.PiRepository;
 import io.choerodon.agile.domain.agile.repository.SprintRepository;
+import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.*;
@@ -313,7 +314,7 @@ public class PiServiceImpl implements PiService {
         sprintDO.setProjectId(programId);
         sprintDO.setPiId(piId);
         List<SprintDO> sprintDOList = sprintMapper.select(sprintDO);
-        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(programId).getBody();
+        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId).getBody();
         for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
             Long projectId = projectRelationshipDTO.getProjectId();
             for (SprintDO sprint : sprintDOList) {

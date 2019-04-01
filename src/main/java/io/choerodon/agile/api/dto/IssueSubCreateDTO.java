@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -11,36 +12,52 @@ import java.util.List;
  */
 public class IssueSubCreateDTO {
 
+    @ApiModelProperty(value = "问题编号")
     private String issueNum;
 
+    @ApiModelProperty(value = "问题概要")
     private String summary;
 
+    @ApiModelProperty(value = "优先级id")
     private Long priorityId;
 
+    @ApiModelProperty(value = "优先级code")
     private String priorityCode;
 
+    @ApiModelProperty(value = "描述")
     private String description;
 
+    @ApiModelProperty(value = "经办人id")
     private Long assigneeId;
 
+    @ApiModelProperty(value = "报告人id")
     private Long reporterId;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
 
+    @ApiModelProperty(value = "父任务id")
     private Long parentIssueId;
 
+    @ApiModelProperty(value = "问题类型id")
     private Long issueTypeId;
 
+    @ApiModelProperty(value = "剩余时间")
     private BigDecimal remainingTime;
 
+    @ApiModelProperty(value = "关联的版本列表")
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
+    @ApiModelProperty(value = "关联的标签列表")
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
+    @ApiModelProperty(value = "关联的模块列表")
     private List<ComponentIssueRelDTO> componentIssueRelDTOList;
 
+    @ApiModelProperty(value = "关联的问题链接列表")
     private List<IssueLinkCreateDTO> issueLinkCreateDTOList;
 
     public List<IssueLinkCreateDTO> getIssueLinkCreateDTOList() {

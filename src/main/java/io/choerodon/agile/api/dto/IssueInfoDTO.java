@@ -1,13 +1,17 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/7/11.
  * Email: fuqianghuang01@gmail.com
  */
 public class IssueInfoDTO {
 
+    @ApiModelProperty(value = "问题主键id")
     private Long issueId;
 
+    @ApiModelProperty(value = "问题编号")
     private String issueNum;
 
     public Long getIssueId() {

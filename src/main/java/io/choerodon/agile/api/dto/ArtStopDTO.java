@@ -1,17 +1,23 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/3/29.
  * Email: fuqianghuang01@gmail.com
  */
 public class ArtStopDTO {
 
+    @ApiModelProperty(value = "活跃pi")
     private PiDTO activePiDTO;
 
+    @ApiModelProperty(value = "完成的pi数量")
     private Long completedPiCount;
 
+    @ApiModelProperty(value = "未开启的pi数量")
     private Long todoPiCount;
 
+    @ApiModelProperty(value = "所有pi关联的feature数量")
     private Long relatedFeatureCount;
 
     public PiDTO getActivePiDTO() {

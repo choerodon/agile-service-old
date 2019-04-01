@@ -2,6 +2,7 @@ package io.choerodon.agile.api.dto;
 
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author dinghuang123@gmail.com
@@ -9,14 +10,19 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class ComponentIssueRelDTO {
 
+    @ApiModelProperty(value = "模块id")
     private Long componentId;
 
+    @ApiModelProperty(value = "问题id")
     private Long issueId;
 
+    @ApiModelProperty(value = "模块名称")
     private String name;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
     public Long getComponentId() {

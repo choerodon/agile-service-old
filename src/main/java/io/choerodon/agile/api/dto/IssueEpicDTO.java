@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author dinghuang123@gmail.com
@@ -8,8 +9,10 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class IssueEpicDTO {
 
+    @ApiModelProperty(value = "史诗id")
     private Long issueId;
 
+    @ApiModelProperty(value = "史诗名称")
     private String epicName;
 
     public Long getIssueId() {
