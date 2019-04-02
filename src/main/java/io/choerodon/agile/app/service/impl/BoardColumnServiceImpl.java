@@ -53,6 +53,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     private static final String COLUMN_COLOR_DONE = "column_color_done";
     private static final String COLUMN_COLOR_NO_STATUS = "column_color_no_status";
     private static final String COLUMN_COLOR_PREPARE = "column_color_prepare";
+    private static final String APPLY_TYPE_PROGRAM = "program";
 
     @Autowired
     private BoardColumnRepository boardColumnRepository;
@@ -148,7 +149,9 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     public BoardColumnDTO create(Long projectId, String categoryCode, String applyType, BoardColumnDTO boardColumnDTO) {
         BoardColumnValidator.checkCreateBoardColumnDTO(projectId, boardColumnDTO);
         // 创建列
-        createCheck(boardColumnDTO);
+        if (!APPLY_TYPE_PROGRAM.equals(applyType)) {
+            createCheck(boardColumnDTO);
+        }
         StatusInfoDTO statusInfoDTO = new StatusInfoDTO();
         statusInfoDTO.setType(categoryCode);
         statusInfoDTO.setName(boardColumnDTO.getName());
