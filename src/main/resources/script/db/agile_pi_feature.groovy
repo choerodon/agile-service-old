@@ -25,7 +25,6 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_pi_feature.groovy') {
         createIndex(tableName: 'agile_pi_feature', indexName: 'uk_pi_feature', unique: true) {
             column(name: 'issue_id')
             column(name: 'pi_id')
-            column(name: 'program_id')
         }
     }
 
