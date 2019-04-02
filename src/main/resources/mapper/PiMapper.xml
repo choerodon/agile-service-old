@@ -87,7 +87,7 @@
             ap.art_id as pi_art_id,
             ap.object_version_number as pi_object_version_number,
             ai.issue_id as ai_issue_id,
-            ai.issue_num as ai_issue_num,
+            IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) AS ai_issue_num,
             ai.summary as ai_summary,
             ai.status_id as ai_status_id,
             ai.story_points as ai_story_points,
@@ -105,6 +105,7 @@
             LEFT JOIN agile_issue epic_info on ai.epic_id = epic_info.issue_id
             LEFT JOIN agile_lookup_value alv on epic_info.color_code = alv.value_code
             LEFT JOIN agile_feature af ON ai.issue_id = af.issue_id
+            LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
         WHERE
             ap.program_id = #{programId}
             AND ap.art_id = #{artId}
@@ -123,7 +124,7 @@
     <select id="selectBacklogNoPiList" resultType="io.choerodon.agile.infra.dataobject.SubFeatureDO">
         SELECT
             ai.issue_id,
-            ai.issue_num,
+            IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) AS ai_issue_num,
             ai.summary,
             ai.status_id,
             ai.story_points,
@@ -137,7 +138,8 @@
         FROM
             agile_issue ai
         LEFT JOIN agile_issue epic_info on ai.epic_id = epic_info.issue_id
-        LEFT JOIN agile_lookup_value alv on epic_info.color_code = alv.value_code,
+        LEFT JOIN agile_lookup_value alv on epic_info.color_code = alv.value_code
+        LEFT JOIN agile_project_info api ON api.project_id = ai.project_id,
         agile_feature af, agile_issue_status ais
         WHERE
             ai.program_id = #{programId} and ai.type_code = 'feature' and ai.issue_id = af.issue_id
