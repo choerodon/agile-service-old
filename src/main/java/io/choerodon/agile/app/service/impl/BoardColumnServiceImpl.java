@@ -119,6 +119,9 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     private void setColumnColor(BoardColumnDTO boardColumnDTO, Boolean checkStatus) {
         if (!checkStatus) {
             switch (boardColumnDTO.getCategoryCode()) {
+                case PREPARE_CODE:
+                    boardColumnDTO.setCategoryCode(COLUMN_COLOR_PREPARE);
+                    break;
                 case TODO_CODE:
                     boardColumnDTO.setColorCode(COLUMN_COLOR_TODO);
                     break;
