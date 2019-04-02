@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -8,24 +10,34 @@ import java.util.List;
  */
 public class QuickFilterDTO {
 
+    @ApiModelProperty(value = "主键id")
     private Long filterId;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "快速搜索名称")
     private String name;
 
+    @ApiModelProperty(value = "快速搜索表达式")
     private String expressQuery;
 
+    @ApiModelProperty(value = "快速搜索创建传值")
     private List<QuickFilterValueDTO> quickFilterValueDTOList;
 
+    @ApiModelProperty(value = "多个表达式之间的关系")
     private List<String> relationOperations;
 
+    @ApiModelProperty(value = "是否包含子任务")
     private Boolean childIncluded;
 
+    @ApiModelProperty(value = "描述")
     private String description;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "排序字段")
     private Integer sequence;
 
     public Integer getSequence() {

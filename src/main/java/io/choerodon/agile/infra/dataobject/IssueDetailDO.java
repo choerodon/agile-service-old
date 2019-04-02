@@ -56,6 +56,10 @@ public class IssueDetailDO {
 
     private List<SprintNameDO> closeSprint;
 
+    private PiNameDO activePi;
+
+    private List<PiNameDO> closePi;
+
     private List<IssueCommentDO> issueCommentDOList;
 
     private List<IssueAttachmentDO> issueAttachmentDOList;
@@ -432,6 +436,22 @@ public class IssueDetailDO {
 
     public void setFeatureName(String featureName) {
         this.featureName = featureName;
+    }
+
+    public void setActivePi(PiNameDO activePi) {
+        this.activePi = activePi;
+    }
+
+    public PiNameDO getActivePi() {
+        return activePi;
+    }
+
+    public void setClosePi(List<PiNameDO> closePi) {
+        this.closePi = closePi;
+    }
+
+    public List<PiNameDO> getClosePi() {
+        return closePi;
     }
 
     @Override

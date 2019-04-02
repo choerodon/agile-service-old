@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
@@ -10,8 +11,10 @@ import java.util.List;
  */
 public class QuickFilterSearchDTO {
 
+    @ApiModelProperty(value = "搜索名称")
     private String filterName;
 
+    @ApiModelProperty(value = "搜索内容")
     private List<String> contents;
 
     public String getFilterName() {

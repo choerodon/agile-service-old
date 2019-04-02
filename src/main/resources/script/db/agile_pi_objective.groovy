@@ -22,4 +22,13 @@ databaseChangeLog(logicalFilePath: 'agile_pi_objective.groovy') {
             column(name: "last_update_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
     }
+
+    changeSet(id: '2019-04-02-agile-pi-objective-add-index', author: 'fuqianghuang01@gmail.com') {
+        createIndex(tableName: "agile_pi_objective", indexName: "idx_project_id") {
+            column(name: "project_id")
+        }
+        createIndex(tableName: "agile_pi_objective", indexName: "idx_program_id") {
+            column(name: "program_id")
+        }
+    }
 }
