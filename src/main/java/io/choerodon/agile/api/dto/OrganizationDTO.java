@@ -1,20 +1,27 @@
 package io.choerodon.agile.api.dto;
 
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/12/06.
  * Email: fuqianghuang01@gmail.com
  */
 public class OrganizationDTO {
 
+    @ApiModelProperty(value = "组织id")
     private Long id;
 
+    @ApiModelProperty(value = "组织名称")
     private String name;
 
+    @ApiModelProperty(value = "组织编码")
     private String code;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
-    
+
+    @ApiModelProperty(value = "是否启用")
     private Boolean enabled;
 
     public Long getId() {

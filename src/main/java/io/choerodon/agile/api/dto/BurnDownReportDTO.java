@@ -2,6 +2,7 @@ package io.choerodon.agile.api.dto;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
@@ -11,10 +12,13 @@ import java.util.List;
  */
 public class BurnDownReportDTO {
 
+    @ApiModelProperty(value = "冲刺列表")
     private List<SprintBurnDownReportDTO> sprintBurnDownReportDTOS;
 
+    @ApiModelProperty(value = "未完成的问题列表")
     private List<IssueBurnDownReportDTO> incompleteIssues;
 
+    @ApiModelProperty(value = "史诗或版本的字段信息")
     private JSONObject jsonObject;
 
     public JSONObject getJsonObject() {

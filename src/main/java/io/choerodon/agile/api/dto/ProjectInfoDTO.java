@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
 
@@ -10,20 +11,28 @@ import java.util.Date;
  */
 public class ProjectInfoDTO {
 
+    @ApiModelProperty(value = "主键id")
     private Long infoId;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "项目code")
     private String projectCode;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "默认的经办人id")
     private Long defaultAssigneeId;
 
+    @ApiModelProperty(value = "默认的经办人类型")
     private String defaultAssigneeType;
 
+    @ApiModelProperty(value = "默认的优先级code")
     private String defaultPriorityCode;
 
+    @ApiModelProperty(value = "创建时间")
     private Date creationDate;
 
     public Long getInfoId() {

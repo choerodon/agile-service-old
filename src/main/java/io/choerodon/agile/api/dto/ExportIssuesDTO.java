@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -7,39 +9,104 @@ import java.util.Date;
  * Created by jian_zhang02@163.com on 2018/6/12.
  */
 public class ExportIssuesDTO {
+
+    @ApiModelProperty(value = "问题id")
     private Long issueId;
+
+    @ApiModelProperty(value = "问题编号")
     private String issueNum;
+
+    @ApiModelProperty(value = "未完成的问题列表")
     private String summary;
+
+    @ApiModelProperty(value = "问题类型名称")
     private String typeName;
+
+    @ApiModelProperty(value = "项目编码")
     private String projectCode;
+
+    @ApiModelProperty(value = "经办人id")
     private Long assigneeId;
+
+    @ApiModelProperty(value = "经办人名称")
     private String assigneeName;
+
+    @ApiModelProperty(value = "经办人真实名称")
     private String assigneeRealName;
+
+    @ApiModelProperty(value = "报告人id")
     private Long reporterId;
+
+    @ApiModelProperty(value = "报告人名称")
     private String reporterName;
+
+    @ApiModelProperty(value = "报告人真实名称")
     private String reporterRealName;
+
+    @ApiModelProperty(value = "状态名称")
     private String statusName;
+
+    @ApiModelProperty(value = "描述")
     private String description;
+
+    @ApiModelProperty(value = "冲刺名称")
     private String sprintName;
+
+    @ApiModelProperty(value = "关闭冲刺的名称")
     private String closeSprintName;
+
+    @ApiModelProperty(value = "创建时间")
     private Date creationDate;
+
+    @ApiModelProperty(value = "最后更新时间")
     private Date lastUpdateDate;
+
+    @ApiModelProperty(value = "优先级名称")
     private String priorityName;
+
+    @ApiModelProperty(value = "子任务")
     private String subTask;
+
+    @ApiModelProperty(value = "预估时间")
     private BigDecimal estimateTime;
+
+    @ApiModelProperty(value = "剩余时间")
     private BigDecimal remainingTime;
+
+    @ApiModelProperty(value = "修复版本名称")
     private String fixVersionName;
+
+    @ApiModelProperty(value = "影响版本名称")
     private String influenceVersionName;
+
+    @ApiModelProperty(value = "项目名称")
     private String projectName;
+
+    @ApiModelProperty(value = "修复版本和影响版本的名称")
     private String versionName;
 
+    @ApiModelProperty(value = "solution")
     private String solution;
+
+    @ApiModelProperty(value = "预估时间总和")
     private BigDecimal sumEstimateTime;
+
+    @ApiModelProperty(value = "剩余时间总和")
     private BigDecimal sumRemainingTime;
+
+    @ApiModelProperty(value = "史诗名称")
     private String epicName;
+
+    @ApiModelProperty(value = "故事点")
     private BigDecimal storyPoints;
+
+    @ApiModelProperty(value = "模块名称")
     private String componentName;
+
+    @ApiModelProperty(value = "标签名称")
     private String labelName;
+
+    @ApiModelProperty(value = "resolution")
     private String resolution;
 
     public String getAssigneeRealName() {

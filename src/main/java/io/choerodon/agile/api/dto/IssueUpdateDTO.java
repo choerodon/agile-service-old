@@ -3,6 +3,7 @@ package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.annotation.Update;
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -13,61 +14,89 @@ import java.util.List;
  */
 public class IssueUpdateDTO {
 
+    @ApiModelProperty(value = "问题主键id")
     private Long issueId;
 
+    @ApiModelProperty(value = "问题编号")
     private String issueNum;
 
+    @ApiModelProperty(value = "状态id")
     private Long statusId;
 
+    @ApiModelProperty(value = "问题概要")
     private String summary;
 
+    @ApiModelProperty(value = "优先级code")
     private String priorityCode;
 
+    @ApiModelProperty(value = "报告人id")
     private Long reporterId;
 
+    @ApiModelProperty(value = "描述")
     private String description;
 
+    @ApiModelProperty(value = "经办人id")
     private Long assigneeId;
 
+    @ApiModelProperty(value = "史诗id")
     private Long epicId;
 
+    @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
 
+    @ApiModelProperty(value = "父任务id")
     private Long parentIssueId;
 
+    @ApiModelProperty(value = "故事点")
     private BigDecimal storyPoints;
 
+    @ApiModelProperty(value = "问题排序字段")
     private String rank;
 
+    @ApiModelProperty(value = "版本类型：fix、influence")
     @Update(temp = true)
     private String versionType;
 
+    @ApiModelProperty(value = "关联的版本列表")
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
+    @ApiModelProperty(value = "关联的标签列表")
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
+    @ApiModelProperty(value = "关联的模块列表")
     private List<ComponentIssueRelDTO> componentIssueRelDTOList;
 
+    @ApiModelProperty(value = "关联的问题链接列表")
     private List<IssueLinkDTO> issueLinkDTOList;
 
+    @ApiModelProperty(value = "关联的附件列表")
     private List<IssueAttachmentDTO> issueAttachmentDTOList;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "预估时间")
     private BigDecimal estimateTime;
 
+    @ApiModelProperty(value = "剩余时间")
     private BigDecimal remainingTime;
 
+    @ApiModelProperty(value = "史诗颜色")
     private String colorCode;
 
+    @ApiModelProperty(value = "史诗名称")
     private String epicName;
 
+    @ApiModelProperty(value = "优先级id")
     private Long priorityId;
 
+    @ApiModelProperty(value = "停留时间")
     private Date stayDate;
 
+    @ApiModelProperty(value = "关联的featureDTO")
     private FeatureDTO featureDTO;
 
+    @ApiModelProperty(value = "关联的featureId")
     private Long featureId;
 
     public String getRank() {

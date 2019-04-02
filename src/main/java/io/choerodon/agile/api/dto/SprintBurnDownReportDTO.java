@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
 import java.util.List;
@@ -11,16 +12,22 @@ import java.util.List;
  */
 public class SprintBurnDownReportDTO {
 
+    @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
 
+    @ApiModelProperty(value = "冲刺名称")
     private String sprintName;
 
+    @ApiModelProperty(value = "冲刺状态")
     private String statusCode;
 
+    @ApiModelProperty(value = "开始时间")
     private Date startDate;
 
+    @ApiModelProperty(value = "结束时间")
     private Date endDate;
 
+    @ApiModelProperty(value = "已完成的问题列表")
     private List<IssueBurnDownReportDTO> completeIssues;
 
     public Long getSprintId() {

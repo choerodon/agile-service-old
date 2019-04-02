@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author dinghuang123@gmail.com
@@ -8,10 +9,13 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class IssueTypeDistributionChartDTO {
 
+    @ApiModelProperty(value = "问题类型名称")
     private String name;
 
+    @ApiModelProperty(value = "问题类型DTO")
     private IssueTypeDTO issueTypeDTO;
 
+    @ApiModelProperty(value = "状态DTO")
     private StatusMapDTO statusMapDTO;
 
     public IssueTypeDTO getIssueTypeDTO() {

@@ -1,28 +1,44 @@
 package io.choerodon.agile.api.dto;
 
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
+/**
+ * Created by HuangFuqiang@choerodon.io on 2019/3/13.
+ * Email: fuqianghuang01@gmail.com
+ */
 public class ProjectRelationshipDTO {
 
+    @ApiModelProperty(value = "主键id")
     private Long id;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "项目code")
     private String projCode;
 
+    @ApiModelProperty(value = "项目名称")
     private String projName;
 
+    @ApiModelProperty(value = "所属的项目群id")
     private Long parentId;
 
+    @ApiModelProperty(value = "项目群id")
     private Long programId;
 
+    @ApiModelProperty(value = "开始时间")
     private Date startDate;
 
+    @ApiModelProperty(value = "结束时间")
     private Date endDate;
 
+    @ApiModelProperty(value = "是否启用")
     private Boolean enabled;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
     public Long getId() {

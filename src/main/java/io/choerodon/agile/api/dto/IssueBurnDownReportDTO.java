@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.math.BigDecimal;
 
@@ -10,30 +11,43 @@ import java.math.BigDecimal;
  */
 public class IssueBurnDownReportDTO {
 
+    @ApiModelProperty(value = "问题id")
     private Long issueId;
 
+    @ApiModelProperty(value = "问题编码")
     private String issueNum;
 
+    @ApiModelProperty(value = "问题类型code")
     private String typeCode;
 
+    @ApiModelProperty(value = "状态id")
     private Long statusId;
 
+    @ApiModelProperty(value = "问题概要")
     private String summary;
 
+    @ApiModelProperty(value = "经办人id")
     private Long assigneeId;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "史诗或版本id")
     private Long id;
 
+    @ApiModelProperty(value = "故事点")
     private BigDecimal storyPoints;
 
+    @ApiModelProperty(value = "优先级id")
     private Long priorityId;
 
+    @ApiModelProperty(value = "优先级DTO")
     private PriorityDTO priorityDTO;
 
+    @ApiModelProperty(value = "状态DTO")
     private StatusMapDTO statusMapDTO;
 
+    @ApiModelProperty(value = "问题类型DTO")
     private IssueTypeDTO issueTypeDTO;
 
     public IssueTypeDTO getIssueTypeDTO() {

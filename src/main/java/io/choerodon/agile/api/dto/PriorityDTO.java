@@ -6,7 +6,10 @@ import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-
+/**
+ * Created by HuangFuqiang@choerodon.io on 2018/10/25.
+ * Email: fuqianghuang01@gmail.com
+ */
 public class PriorityDTO implements Serializable {
 
     @ApiModelProperty(value = "优先级主键id")

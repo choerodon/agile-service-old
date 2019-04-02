@@ -2,6 +2,7 @@ package io.choerodon.agile.api.dto;
 
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 
@@ -13,14 +14,19 @@ import java.io.Serializable;
  */
 public class LabelIssueRelDTO implements Serializable {
 
+    @ApiModelProperty(value = "问题主键id")
     private Long issueId;
 
+    @ApiModelProperty(value = "标签id")
     private Long labelId;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "标签名称")
     private String labelName;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
     public Long getIssueId() {
