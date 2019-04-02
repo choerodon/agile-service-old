@@ -3,6 +3,7 @@ package io.choerodon.agile.api.dto;
 import java.util.List;
 
 import io.choerodon.agile.infra.dataobject.IssueStatus;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Creator: ChangpingShi0213@gmail.com
@@ -10,8 +11,11 @@ import io.choerodon.agile.infra.dataobject.IssueStatus;
  * Description:
  */
 public class IssueTypeDistributeDTO {
+
+    @ApiModelProperty(value = "问题类型code")
     private String typeCode;
 
+    @ApiModelProperty(value = "该问题类型下的状态类别")
     private List<IssueStatus> issueStatus;
 
     public String getTypeCode() {

@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.List;
@@ -11,14 +12,19 @@ import java.util.List;
  */
 public class CumulativeFlowDiagramDTO implements Serializable {
 
+    @ApiModelProperty(value = "列id")
     private Long columnId;
 
+    @ApiModelProperty(value = "列颜色")
     private String color;
 
+    @ApiModelProperty(value = "列名称")
     private String name;
 
+    @ApiModelProperty(value = "列类别")
     private String categoryCode;
 
+    @ApiModelProperty(value = "该列的坐标信息，包含时间和问题计数")
     private List<CoordinateDTO> coordinateDTOList;
 
     public Long getColumnId() {

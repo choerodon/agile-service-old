@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author dinghuang123@gmail.com
@@ -8,18 +9,25 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class IssueTransformTask {
 
+    @ApiModelProperty(value = "问题主键id")
     private Long issueId;
 
+    @ApiModelProperty(value = "史诗名称")
     private String epicName;
 
+    @ApiModelProperty(value = "问题类型code")
     private String typeCode;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "问题类型id")
     private Long issueTypeId;
 
+    @ApiModelProperty(value = "状态id")
     private Long statusId;
 
     public Long getStatusId() {

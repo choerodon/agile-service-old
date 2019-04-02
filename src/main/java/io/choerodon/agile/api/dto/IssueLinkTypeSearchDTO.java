@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
@@ -10,8 +11,10 @@ import java.util.List;
  */
 public class IssueLinkTypeSearchDTO {
 
+    @ApiModelProperty(value = "搜索内容，传字符串集合")
     private List<String> contents;
 
+    @ApiModelProperty(value = "链接名称")
     private String linkName;
 
     public List<String> getContents() {

@@ -1,16 +1,21 @@
 package io.choerodon.agile.api.dto;
 
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/10/9.
  * Email: fuqianghuang01@gmail.com
  */
 public class RoleDTO {
 
+    @ApiModelProperty(value = "角色id")
     private Long id;
 
+    @ApiModelProperty(value = "角色名称")
     private String name;
 
+    @ApiModelProperty(value = "角色code")
     private String code;
 
 

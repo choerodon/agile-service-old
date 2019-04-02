@@ -2564,8 +2564,6 @@
             aaa.type_code,
             aaa.status_id,
             aaa.issue_type_id,
---             aaa.status_name,
---             aaa.status_code,
             aaa.completed,
             aaa.summary,
             aaa.priority_id,

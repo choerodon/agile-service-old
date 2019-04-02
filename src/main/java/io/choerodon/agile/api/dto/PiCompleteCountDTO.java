@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -8,10 +10,13 @@ import java.util.List;
  */
 public class PiCompleteCountDTO {
 
+    @ApiModelProperty(value = "已完成的问题计数")
     private Long completedCount;
 
+    @ApiModelProperty(value = "未完成的问题计数")
     private Long unCompletedCount;
 
+    @ApiModelProperty(value = "未开启pi列表")
     private List<PiTodoDTO> piTodoDTOList;
 
     public Long getCompletedCount() {

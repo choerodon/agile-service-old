@@ -1,16 +1,21 @@
 package io.choerodon.agile.api.dto;
 
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/9/4.
  * Email: fuqianghuang01@gmail.com
  */
 public class PriorityDistributeDTO {
 
+    @ApiModelProperty(value = "完成的问题总和")
     private Integer completedNum;
 
+    @ApiModelProperty(value = "总问题数")
     private Integer totalNum;
 
+    @ApiModelProperty(value = "优先级DTO")
     private PriorityDTO priorityDTO;
 
     public Integer getCompletedNum() {
