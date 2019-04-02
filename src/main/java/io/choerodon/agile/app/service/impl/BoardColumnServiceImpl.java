@@ -120,7 +120,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         if (!checkStatus) {
             switch (boardColumnDTO.getCategoryCode()) {
                 case PREPARE_CODE:
-                    boardColumnDTO.setCategoryCode(COLUMN_COLOR_PREPARE);
+                    boardColumnDTO.setColor(COLUMN_COLOR_PREPARE);
                     break;
                 case TODO_CODE:
                     boardColumnDTO.setColorCode(COLUMN_COLOR_TODO);
