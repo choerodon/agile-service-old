@@ -11,7 +11,7 @@ public class SubFeatureDO {
 
     private Long issueId;
 
-    private Long issueNum;
+    private String issueNum;
 
     private String summary;
 
@@ -44,12 +44,12 @@ public class SubFeatureDO {
         return issueId;
     }
 
-    public Long getIssueNum() {
-        return issueNum;
+    public void setIssueNum(String issueNum) {
+        this.issueNum = issueNum;
     }
 
-    public void setIssueNum(Long issueNum) {
-        this.issueNum = issueNum;
+    public String getIssueNum() {
+        return issueNum;
     }
 
     public String getSummary() {
