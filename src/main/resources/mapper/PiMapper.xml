@@ -117,7 +117,7 @@
                     AND (ai.epic_id IS NULL OR ai.epic_id = 0)
                 </if>
             </if>
-            order by ap.id
+            order by ap.id, ai.rank
     </select>
 
     <select id="selectBacklogNoPiList" resultType="io.choerodon.agile.infra.dataobject.SubFeatureDO">
@@ -154,6 +154,7 @@
                     AND (ai.epic_id IS NULL OR ai.epic_id = 0)
                 </if>
             </if>
+        ORDER BY ai.rank
     </select>
 
     <select id="selectFeatureIdByFeatureIds" resultType="io.choerodon.agile.infra.dataobject.SubFeatureDO">
