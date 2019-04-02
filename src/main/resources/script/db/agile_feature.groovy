@@ -19,4 +19,16 @@ databaseChangeLog(logicalFilePath: 'agile_feature.groovy') {
             column(name: "last_update_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
     }
+
+    changeSet(id: '2019-04-02-agile-feature-add-uk-index', author: 'fuqianghuang01@gmail.com') {
+        createIndex(tableName: 'agile_feature', indexName: 'uk_issue_id', unique: true) {
+            column(name: 'issue_id')
+        }
+    }
+
+    changeSet(id: '2019-04-02-agile-feature-add-index', author: 'fuqianghuang01@gmail.com') {
+        createIndex(tableName: "agile_feature", indexName: "idx_issue_id") {
+            column(name: "issue_id")
+        }
+    }
 }

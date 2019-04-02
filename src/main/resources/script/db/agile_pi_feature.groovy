@@ -20,4 +20,24 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_pi_feature.groovy') {
             column(name: "last_update_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
     }
+
+    changeSet(id: '2019-04-02-agile-pi-feature-add-uk-index', author: 'fuqianghuang01@gmail.com') {
+        createIndex(tableName: 'agile_pi_feature', indexName: 'uk_pi_feature', unique: true) {
+            column(name: 'issue_id')
+            column(name: 'pi_id')
+            column(name: 'program_id')
+        }
+    }
+
+    changeSet(id: '2019-04-02-agile-pi-feature-add-index', author: 'fuqianghuang01@gmail.com') {
+        createIndex(tableName: "agile_pi_feature", indexName: "idx_issue_id") {
+            column(name: "issue_id")
+        }
+        createIndex(tableName: "agile_pi_feature", indexName: "idx_pi_id") {
+            column(name: "pi_id")
+        }
+        createIndex(tableName: "agile_pi_feature", indexName: "idx_program_id") {
+            column(name: "program_id")
+        }
+    }
 }

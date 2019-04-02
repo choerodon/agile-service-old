@@ -27,7 +27,6 @@ public class PiCalendarDO {
 
     List<SprintCalendarDO> sprintCalendarDOList;
 
-
     public Long getId() {
         return id;
     }

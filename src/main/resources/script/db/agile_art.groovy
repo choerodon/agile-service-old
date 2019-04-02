@@ -39,4 +39,10 @@ databaseChangeLog(logicalFilePath: 'agile_art.groovy') {
     changeSet(id: '2019-03-26-agile-art-rename-column', author: 'fuqianghuang01@gmail.com') {
         renameColumn(columnDataType: 'BIGINT UNSIGNED', newColumnName: 'ip_weeks', oldColumnName: 'ip_workdays', remarks: 'ip weeks', tableName: 'agile_art')
     }
+
+    changeSet(id: '2019-04-02-agile-art-add-index', author: 'fuqianghuang01@gmail.com') {
+        createIndex(tableName: "agile_art", indexName: "idx_program_id") {
+            column(name: "program_id")
+        }
+    }
 }
