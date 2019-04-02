@@ -15,7 +15,7 @@ public class SubFeatureDTO {
     private Long issueId;
 
     @ApiModelProperty(value = "问题编号")
-    private Long issueNum;
+    private String issueNum;
 
     @ApiModelProperty(value = "问题概要")
     private String summary;
@@ -67,12 +67,12 @@ public class SubFeatureDTO {
         return issueId;
     }
 
-    public Long getIssueNum() {
-        return issueNum;
+    public void setIssueNum(String issueNum) {
+        this.issueNum = issueNum;
     }
 
-    public void setIssueNum(Long issueNum) {
-        this.issueNum = issueNum;
+    public String getIssueNum() {
+        return issueNum;
     }
 
     public String getSummary() {
