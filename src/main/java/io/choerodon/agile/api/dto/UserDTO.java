@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.core.exception.CommonException;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author dinghuang123@gmail.com
@@ -8,36 +9,52 @@ import io.choerodon.core.exception.CommonException;
  */
 public class UserDTO {
 
+    @ApiModelProperty(value = "用户id")
     private Long id;
 
+    @ApiModelProperty(value = "组织id")
     private Long organizationId;
 
+    @ApiModelProperty(value = "登录名")
     private String loginName;
 
+    @ApiModelProperty(value = "邮箱")
     private String email;
 
+    @ApiModelProperty(value = "真实名称")
     private String realName;
 
+    @ApiModelProperty(value = "手机号")
     private String phone;
 
+    @ApiModelProperty(value = "图标")
     private String imageUrl;
 
+    @ApiModelProperty(value = "语言")
     private String language;
 
+    @ApiModelProperty(value = "时区")
     private String timeZone;
 
+    @ApiModelProperty(value = "是否被锁")
     private Boolean locked;
 
+    @ApiModelProperty(value = "ldap")
     private Boolean ldap;
 
+    @ApiModelProperty(value = "是否启用")
     private Boolean enabled;
 
+    @ApiModelProperty(value = "密码")
     private String password;
 
+    @ApiModelProperty(value = "是否管理员")
     private Boolean admin;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "param")
     private String param;
 
     public String getParam() {

@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotNull;
 
@@ -17,15 +18,19 @@ public class EpicSequenceDTO {
     private static final String AFTER_SEQUENCE_NULL_ERROR = "error.afterSequence.NotNull";
 
 
+    @ApiModelProperty(value = "史诗id")
     @NotNull(message = EPIC_ID_NOT_NULL_ERROR)
     private Long epicId;
 
+    @ApiModelProperty(value = "版本号")
     @NotNull(message = OBJECT_VERSION_NUMBER_NULL_ERROR)
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "排在前面的序号")
     @NotNull(message = BEFORE_SEQUENCE_NULL_ERROR)
     private Integer beforeSequence;
 
+    @ApiModelProperty(value = "排在后面的序号")
     @NotNull(message = AFTER_SEQUENCE_NULL_ERROR)
     private Integer afterSequence;
 

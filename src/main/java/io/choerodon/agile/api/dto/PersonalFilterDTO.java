@@ -1,19 +1,32 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * @author shinan.chen
  * @since 2019/2/25
  */
 public class PersonalFilterDTO {
 
+    @ApiModelProperty(value = "主键id")
     private Long filterId;
+
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
+
+    @ApiModelProperty(value = "用户id")
     private Long userId;
+
+    @ApiModelProperty(value = "过滤名称")
     private String name;
+
+    @ApiModelProperty(value = "搜索条件")
     private String filterJson;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "搜索条件")
     private PersonalFilterSearchDTO personalFilterSearchDTO;
 
     public PersonalFilterSearchDTO getPersonalFilterSearchDTO() {

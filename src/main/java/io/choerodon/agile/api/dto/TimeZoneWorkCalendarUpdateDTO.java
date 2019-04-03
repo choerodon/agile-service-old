@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author dinghuang123@gmail.com
@@ -8,18 +9,25 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class TimeZoneWorkCalendarUpdateDTO {
 
+    @ApiModelProperty(value = "地区编码")
     private String areaCode;
 
+    @ApiModelProperty(value = "时区编码")
     private String timeZoneCode;
 
+    @ApiModelProperty(value = "workTypeCode")
     private String workTypeCode;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "是否使用法定节假日")
     private Boolean useHoliday;
 
+    @ApiModelProperty(value = "所有的周六是否上班")
     private Boolean saturdayWork;
 
+    @ApiModelProperty(value = "所有的周日是否上班")
     private Boolean sundayWork;
 
     public Boolean getUseHoliday() {

@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -8,24 +10,34 @@ import java.util.List;
  */
 public class StoryMapMoveDTO {
 
+    @ApiModelProperty(value = "是否放在某个问题之前，true表示放前面，false表示放后面")
     private Boolean isBefore;
 
+    @ApiModelProperty(value = "位置参照物")
     private Long outsetIssueId;
 
+    @ApiModelProperty(value = "是否记录排序日志")
     private Boolean rankIndex;
 
+    @ApiModelProperty(value = "要关联的史诗id")
     private Long epicId;
 
+    @ApiModelProperty(value = "要关联的冲刺id")
     private Long sprintId;
 
+    @ApiModelProperty(value = "要关联的版本id")
     private Long versionId;
 
+    @ApiModelProperty(value = "要移动的问题id列表")
     private List<Long> issueIds;
 
+    @ApiModelProperty(value = "问题id列表，移动到史诗，配合epicId使用")
     private List<Long> epicIssueIds;
 
+    @ApiModelProperty(value = "问题id列表，移动到冲刺，配合sprintId使用")
     private List<Long> sprintIssueIds;
 
+    @ApiModelProperty(value = "问题id列表，移动到版本，配合versionId使用")
     private List<Long> versionIssueIds;
 
     public void setEpicId(Long epicId) {

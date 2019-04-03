@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Objects;
 
@@ -10,8 +11,10 @@ import java.util.Objects;
  */
 public class TimeZoneWorkCalendarRefCreateDTO {
 
+    @ApiModelProperty(value = "日期")
     private String workDay;
 
+    @ApiModelProperty(value = "状态，0为放假，1为补班")
     private Integer status;
 
     public Integer getStatus() {

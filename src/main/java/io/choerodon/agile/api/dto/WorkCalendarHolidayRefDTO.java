@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Objects;
 
@@ -10,15 +11,19 @@ import java.util.Objects;
  */
 public class WorkCalendarHolidayRefDTO {
 
+    @ApiModelProperty(value = "主键id")
     private Long calendarId;
 
+    @ApiModelProperty(value = "节假日名称")
     private String name;
 
+    @ApiModelProperty(value = "节假日日期")
     private String holiday;
 
     /**
      * 状态，0为放假，1为补班
      */
+    @ApiModelProperty(value = "状态，0为放假，1为补班")
     private Integer status;
 
     public Long getCalendarId() {

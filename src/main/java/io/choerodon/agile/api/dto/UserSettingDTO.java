@@ -1,15 +1,20 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/7/4
  */
 public class UserSettingDTO {
 
+    @ApiModelProperty(value = "设置主键id")
     private Long settingId;
 
+    @ApiModelProperty(value = "用户泳道类型")
     private String swimlaneBasedCode;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
     public Long getSettingId() {

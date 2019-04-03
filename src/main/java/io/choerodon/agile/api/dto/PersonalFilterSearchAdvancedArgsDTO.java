@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -7,10 +9,20 @@ import java.util.List;
  * @since 2019/2/25
  */
 public class PersonalFilterSearchAdvancedArgsDTO {
+
+    @ApiModelProperty(value = "问题类型id集合")
     private List<Long> issueTypeId;
+
+    @ApiModelProperty(value = "状态id集合")
     private List<Long> statusId;
+
+    @ApiModelProperty(value = "优先级id集合")
     private List<Long> priorityId;
+
+    @ApiModelProperty(value = "经办人id集合")
     private List<Long> assigneeIds;
+
+    @ApiModelProperty(value = "报告人id集合")
     private List<Long> reporterIds;
 
     public List<Long> getReporterIds() {

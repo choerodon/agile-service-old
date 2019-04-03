@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
 /**
@@ -8,20 +10,43 @@ import java.util.Date;
  */
 public class PersonalFilterSearchArgsDTO {
 
+    @ApiModelProperty(value = "概要")
     private String summary;
+
+    @ApiModelProperty(value = "问题编号")
     private String issueNum;
+
+    @ApiModelProperty(value = "故事点")
     private String storyPoints;
+
+    @ApiModelProperty(value = "剩余时间")
     private String remainingTime;
 
+    @ApiModelProperty(value = "经办人")
     private String assignee;
+
+    @ApiModelProperty(value = "报告人")
     private String reporter;
+
+    @ApiModelProperty(value = "模块")
     private String component;
+
+    @ApiModelProperty(value = "史诗")
     private String epic;
+
+    @ApiModelProperty(value = "冲刺")
     private String sprint;
+
+    @ApiModelProperty(value = "版本")
     private String version;
+
+    @ApiModelProperty(value = "标签")
     private String label;
 
+    @ApiModelProperty(value = "创建时间的开始点")
     private Date createStartDate;
+
+    @ApiModelProperty(value = "创建时间的结束点")
     private Date createEndDate;
 
     public String getStoryPoints() {
