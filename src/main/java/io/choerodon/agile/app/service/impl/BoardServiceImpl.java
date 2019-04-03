@@ -722,7 +722,7 @@ public class BoardServiceImpl implements BoardService {
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         // reset status info
         setColumnDeatil(columns, statusMap, issueTypeDTOMap);
-        Collections.sort(columns, (o1, o2) -> o1.getSequence() - o2.getSequence());
+        columns.sort(Comparator.comparing(ColumnAndIssueDO::getSequence));
         result.put("columnsData", columns);
         result.put("activePi", piDO);
         handleUserSetting(boardId, projectId);
