@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -11,16 +12,22 @@ import java.util.Date;
  */
 public class ColumnChangeDTO implements Serializable {
 
+    @ApiModelProperty(value = "问题主键id")
     private Long issueId;
 
+    @ApiModelProperty(value = "问题编号")
     private String issueNum;
 
+    @ApiModelProperty(value = "起始列")
     private String columnFrom;
 
+    @ApiModelProperty(value = "目标列")
     private String columnTo;
 
+    @ApiModelProperty(value = "目标状态")
     private String statusTo;
 
+    @ApiModelProperty(value = "日期")
     private Date date;
 
     public Long getIssueId() {

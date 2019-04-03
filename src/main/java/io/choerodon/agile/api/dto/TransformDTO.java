@@ -1,15 +1,26 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/01/07.
  * Email: fuqianghuang01@gmail.com
  */
 public class TransformDTO {
+
+    @ApiModelProperty(value = "转换id")
     private Long id;
+
+    @ApiModelProperty(value = "转换名称")
     private String name;
+
+    @ApiModelProperty(value = "转换所属状态机id")
     private Long stateMachineId;
+
+    @ApiModelProperty(value = "终点状态")
     private Long endStatusId;
 
+    @ApiModelProperty(value = "状态DTO")
     private StatusDTO statusDTO;
 
     public Long getId() {

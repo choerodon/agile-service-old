@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author dinghuang123@gmail.com
@@ -8,10 +9,13 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  */
 public class SprintWorkCalendarRefDTO {
 
+    @ApiModelProperty(value = "日历主键id")
     private Long calendarId;
 
+    @ApiModelProperty(value = "日期")
     private String workDay;
 
+    @ApiModelProperty(value = "状态，0为放假，1为补班")
     private Integer status;
 
     public Long getCalendarId() {

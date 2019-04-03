@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -11,19 +13,23 @@ public class PersonalFilterSearchDTO {
     /**
      * 搜索参数
      */
+    @ApiModelProperty(value = "搜索参数")
     private PersonalFilterSearchArgsDTO searchArgs;
     /**
      * 高级搜索，issue的必填字段的对应id值，在sql中用in匹配
      */
+    @ApiModelProperty(value = "高级搜索，issue的必填字段的对应id值，在sql中用in匹配")
     private PersonalFilterSearchAdvancedArgsDTO advancedSearchArgs;
     /**
      * 其他搜索，issue的非必填字段的对应id值，在sql中用in匹配
      */
+    @ApiModelProperty(value = "其他搜索，issue的非必填字段的对应id值，在sql中用in匹配")
     private PersonalFilterSearchOtherArgsDTO otherArgs;
 
     /**
      * 全局搜索：目前仅包括issueNum和summery
      */
+    @ApiModelProperty(value = "全局搜索：目前仅包括issueNum和summery")
     private List<String> contents;
 
     public List<String> getContents() {

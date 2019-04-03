@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -14,15 +15,28 @@ import java.util.List;
 public class SprintUpdateDTO {
     private static final String OBJECT_VERSION_NUMBER_NULL_ERROR = "error.objectVersionNumber.NotNull";
 
+    @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
+
+    @ApiModelProperty(value = "冲刺名称")
     private String sprintName;
+
+    @ApiModelProperty(value = "冲刺目标")
     private String sprintGoal;
+
+    @ApiModelProperty(value = "冲刺开始时间 ")
     private Date startDate;
+
+    @ApiModelProperty(value = "冲刺结束时间")
     private Date endDate;
+
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "冲刺下的日历变更")
     private List<SprintWorkCalendarRefDTO> workDates;
 
+    @ApiModelProperty(value = "版本号")
     @NotNull(message = OBJECT_VERSION_NUMBER_NULL_ERROR)
     private Long objectVersionNumber;
 

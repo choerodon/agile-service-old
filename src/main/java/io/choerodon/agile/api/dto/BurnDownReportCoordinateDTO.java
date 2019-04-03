@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -22,18 +23,25 @@ public class BurnDownReportCoordinateDTO implements Serializable {
         this.endDate = endDate;
     }
 
+    @ApiModelProperty(value = "开始的故事点之和")
     private BigDecimal start;
 
+    @ApiModelProperty(value = "增加的故事点之和")
     private BigDecimal add;
 
+    @ApiModelProperty(value = "完成的故事点之和")
     private BigDecimal done;
 
+    @ApiModelProperty(value = "剩余的故事点之和")
     private BigDecimal left;
 
+    @ApiModelProperty(value = "横坐标的名称")
     private String name;
 
+    @ApiModelProperty(value = "开始时间")
     private Date startDate;
 
+    @ApiModelProperty(value = "结束时间")
     private Date endDate;
 
     public void setStart(BigDecimal start) {

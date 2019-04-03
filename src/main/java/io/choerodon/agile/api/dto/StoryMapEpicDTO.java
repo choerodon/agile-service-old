@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.math.BigDecimal;
 
 /**
@@ -7,22 +9,56 @@ import java.math.BigDecimal;
  * Email: fuqianghuang01@gmail.com
  */
 public class StoryMapEpicDTO {
+
+    @ApiModelProperty(value = "问题主键id")
     private Long issueId;
+
+    @ApiModelProperty(value = "问题概要")
     private String summary;
+
+    @ApiModelProperty(value = "描述")
     private String description;
+
+    @ApiModelProperty(value = "史诗名称")
     private String epicName;
+
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
+
+    @ApiModelProperty(value = "问题数量")
     private Integer issueCount;
+
+    @ApiModelProperty(value = "已完成的问题数量")
     private Integer doneIssueCount;
+
+    @ApiModelProperty(value = "未预估的故事数量")
     private Integer notEstimate;
+
+    @ApiModelProperty(value = "总的预估故事点")
     private BigDecimal totalEstimate;
+
+    @ApiModelProperty(value = "史诗颜色")
     private String color;
+
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
+
+    @ApiModelProperty(value = "史诗排序字段")
     private Integer epicSequence;
+
+    @ApiModelProperty(value = "状态id")
     private Long statusId;
+
+    @ApiModelProperty(value = "状态DTO")
     private StatusMapDTO statusMapDTO;
+
+    @ApiModelProperty(value = "问题类型id")
     private Long issueTypeId;
+
+    @ApiModelProperty(value = "问题类型DTO")
     private IssueTypeDTO issueTypeDTO;
+
+    @ApiModelProperty(value = "问题编号")
     private String issueNum;
 
     public Integer getEpicSequence() {

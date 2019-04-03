@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
 /**
@@ -7,14 +9,25 @@ import java.util.List;
  * @since 2019/2/25
  */
 public class PersonalFilterSearchOtherArgsDTO {
+
+    @ApiModelProperty(value = "冲刺id集合")
     private List<Long> sprint;
+
+    @ApiModelProperty(value = "版本id集合")
     private List<Long> version;
+
+    @ApiModelProperty(value = "模块id集合")
     private List<Long> component;
+
+    @ApiModelProperty(value = "史诗id集合")
     private List<Long> epic;
+
+    @ApiModelProperty(value = "标签id集合")
     private List<Long> label;
     /**
      * 只用于未分配的经办人，即assigneeId=[0]
      */
+    @ApiModelProperty(value = "只用于未分配的经办人，即assigneeId=[0]")
     private List<Long> assigneeId;
 
     public List<Long> getAssigneeId() {

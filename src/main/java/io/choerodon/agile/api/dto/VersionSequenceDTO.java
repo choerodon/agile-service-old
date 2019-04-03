@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.dto;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotNull;
 
@@ -15,14 +16,18 @@ public class VersionSequenceDTO {
     private static final String OBJECT_VERSION_NUMBER_NULL_ERROR = "error.objectVersionNumber.NotNull";
 
 
+    @ApiModelProperty(value = "版本主键id")
     @NotNull(message = VERSION_ID_NOT_NULL_ERROR)
     private Long versionId;
 
+    @ApiModelProperty(value = "版本号")
     @NotNull(message = OBJECT_VERSION_NUMBER_NULL_ERROR)
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "排在前面的序号")
     private Integer beforeSequence;
 
+    @ApiModelProperty(value = "排在后面的序号")
     private Integer afterSequence;
 
     public Long getVersionId() {
