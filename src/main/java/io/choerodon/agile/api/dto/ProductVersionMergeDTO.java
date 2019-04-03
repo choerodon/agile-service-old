@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -10,8 +12,11 @@ public class ProductVersionMergeDTO {
     private static final String SOURCE_VERSION_ERROR = "error.sourceVersionIds.notNull";
     private static final String TARGET_VERSION_ERROR = "error.targetVersionId.notNull";
 
+    @ApiModelProperty(value = "将要被合并的版本id集合")
     @NotNull(message = SOURCE_VERSION_ERROR)
     private List<Long> sourceVersionIds;
+
+    @ApiModelProperty(value = "目标版本id")
     @NotNull(message = TARGET_VERSION_ERROR)
     private Long targetVersionId;
 
