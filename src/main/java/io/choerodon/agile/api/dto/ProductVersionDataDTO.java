@@ -1,24 +1,54 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
 /**
  * Created by jian_zhang02@163.com on 2018/5/16.
  */
 public class ProductVersionDataDTO {
+
+    @ApiModelProperty(value = "版本id")
     private Long versionId;
+
+    @ApiModelProperty(value = "版本名称")
     private String name;
+
+    @ApiModelProperty(value = "版本描述")
     private String description;
+
+    @ApiModelProperty(value = "版本开始时间")
     private Date startDate;
+
+    @ApiModelProperty(value = "版本预计发布时间")
     private Date expectReleaseDate;
+
+    @ApiModelProperty(value = "版本发布时间")
     private Date releaseDate;
+
+    @ApiModelProperty(value = "版本状态code")
     private String statusCode;
+
+    @ApiModelProperty(value = "版本下的问题计数")
     private Integer issueCount;
+
+    @ApiModelProperty(value = "版本下的已完成故事计数")
     private Integer doneIssueCount;
+
+    @ApiModelProperty(value = "版本下的未预估故事计数")
     private Integer notEstimate;
+
+    @ApiModelProperty(value = "版本下的故事点总和")
     private Integer totalEstimate;
+
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
+
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
+
+    @ApiModelProperty(value = "版本排序字段")
     private Integer sequence;
 
     public Long getVersionId() {

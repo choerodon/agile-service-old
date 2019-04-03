@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -7,37 +9,89 @@ import java.util.List;
  * Created by jian_zhang02@163.com on 2018/5/16.
  */
 public class IssueSearchDTO {
+
+    @ApiModelProperty(value = "问题主键id")
     private Long issueId;
+
+    @ApiModelProperty(value = "问题编号")
     private String issueNum;
+
+    @ApiModelProperty(value = "问题类型code")
     private String typeCode;
+
+    @ApiModelProperty(value = "问题概要")
     private String summary;
+
+    @ApiModelProperty(value = "报告人id")
     private Long reporterId;
+
+    @ApiModelProperty(value = "描述")
     private String description;
+
+    @ApiModelProperty(value = "经办人id")
     private Long assigneeId;
+
+    @ApiModelProperty(value = "经办人名称")
     private String assigneeName;
+
+    @ApiModelProperty(value = "图标")
     private String imageUrl;
+
+    @ApiModelProperty(value = "项目id")
     private Long projectId;
+
+    @ApiModelProperty(value = "状态id")
     private Long statusId;
+
+    @ApiModelProperty(value = "状态类别")
     private String categoryCode;
+
+    @ApiModelProperty(value = "状态名称")
     private String statusName;
+
+    @ApiModelProperty(value = "史诗id")
     private Long epicId;
+
+    @ApiModelProperty(value = "史诗名称")
     private String epicName;
+
+    @ApiModelProperty(value = "优先级code")
     private String priorityCode;
+
+    @ApiModelProperty(value = "优先级名称")
     private String priorityName;
+
+    @ApiModelProperty(value = "版本id集合")
     private List<Long> versionIds;
+
+    @ApiModelProperty(value = "版本名称集合")
     private List<String> versionNames;
+
+    @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
+
+    @ApiModelProperty(value = "故事点")
     private BigDecimal storyPoints;
+
+    @ApiModelProperty(value = "史诗颜色")
     private String color;
+
+    @ApiModelProperty(value = "状态颜色")
     private String statusColor;
+
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "优先级DTO")
     private PriorityDTO priorityDTO;
 
+    @ApiModelProperty(value = "状态DTO")
     private StatusMapDTO statusMapDTO;
 
+    @ApiModelProperty(value = "问题类型DTO")
     private IssueTypeDTO issueTypeDTO;
 
+    @ApiModelProperty(value = "优先级id")
     private Long priorityId;
 
     public Long getIssueId() {
