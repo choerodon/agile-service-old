@@ -18,12 +18,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Order(1)
 class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Bean
-    @Override
-    AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean()
-    }
-
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().ignoringAntMatchers("/h2-console/**")

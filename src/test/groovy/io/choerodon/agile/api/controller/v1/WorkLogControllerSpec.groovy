@@ -151,7 +151,7 @@ class WorkLogControllerSpec extends Specification {
         def resultFailure = restTemplate.getForEntity("/v1/projects/$projectId/work_log/${Integer.MAX_VALUE}", String)
         assert resultFailure.statusCode.is5xxServerError()
         JSONObject exceptionInfo = JSONObject.parse(resultFailure.body)
-        assert exceptionInfo.get("exception").toString() == "java.lang.NullPointerException"
+        assert exceptionInfo.get("error").toString() == "Internal Server Error"
 
         when:
         def resultSuccess = restTemplate.getForEntity("/v1/projects/$projectId/work_log/${workLog.logId}", WorkLogDTO)
