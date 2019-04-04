@@ -17,7 +17,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <powermock.version>2.0.0-beta.5</powermock.version>
         <choerodon.starters.version>0.10.0.RELEASE</choerodon.starters.version>
     </properties>
 
@@ -183,70 +182,6 @@
             <artifactId>modelmapper</artifactId>
             <version>2.1.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito2</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-classloading-xstream</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4-rule</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4-rule-agent</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-            <version>3.24.0-GA</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
-        <!--<dependency>-->
-            <!--<groupId>org.powermock</groupId>-->
-            <!--<artifactId>powermock-module-junit4</artifactId>-->
-            <!--<version>1.7.4</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito &ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>org.powermock</groupId>-->
-            <!--<artifactId>powermock-api-mockito</artifactId>-->
-            <!--<version>1.7.4</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4-rule &ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>org.powermock</groupId>-->
-            <!--<artifactId>powermock-module-junit4-rule</artifactId>-->
-            <!--<version>1.7.4</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.mockito/mockito-core &ndash;&gt;-->
-        <!--<dependency>-->
-            <!--<groupId>org.mockito</groupId>-->
-            <!--<artifactId>mockito-core</artifactId>-->
-            <!--<version>2.7.22</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-        <!-- https://mvnrepository.com/artifact/org.powermock/powermock-classloading-xstream -->
     </dependencies>
 
     <build>
