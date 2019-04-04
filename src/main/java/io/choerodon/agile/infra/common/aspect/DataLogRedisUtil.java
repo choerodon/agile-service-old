@@ -23,7 +23,7 @@ import java.util.List;
 @Component
 public class DataLogRedisUtil {
 
-    private static final String AGILE = "Agile:";
+    private static final String AGILE = "Agile::";
     private static final String COLON = ":";
     private static final String POINTER = "*";
     private static final String VELOCITY_CHART = AGILE + "VelocityChart";
