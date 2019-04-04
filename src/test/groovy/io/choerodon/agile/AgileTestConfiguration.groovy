@@ -185,7 +185,7 @@ class AgileTestConfiguration {
             }
         }])
         initProjectData()
-        initUserDetail()
+//        initUserDetail()
     }
 
     void initUserDetail() {
