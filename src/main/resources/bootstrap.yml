@@ -13,7 +13,9 @@ spring:
       uri: localhost:8010
       enabled: false
 management:
-  servlet:
+  server:
     port: 8379
-    security:
-      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: '*'
