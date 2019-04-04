@@ -13,6 +13,7 @@ spring:
       uri: localhost:8010
       enabled: false
 management:
-  port: 8379
-  security:
-    enabled: false
+  servlet:
+    port: 8379
+    security:
+      enabled: false

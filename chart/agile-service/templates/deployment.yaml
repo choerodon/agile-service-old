@@ -35,7 +35,7 @@ spec:
               protocol: TCP
           readinessProbe:
             exec:
-              command: ["/bin/sh","-c","curl -s localhost:{{ .Values.deployment.managementPort }}/health --fail && nc -z localhost {{ .Values.service.port }}"]
+              command: ["/bin/sh","-c","curl -s localhost:{{ .Values.deployment.managementPort }}/actuator/health --fail && nc -z localhost {{ .Values.service.port }}"]
             failureThreshold: 3
             initialDelaySeconds: 120
             periodSeconds: 10

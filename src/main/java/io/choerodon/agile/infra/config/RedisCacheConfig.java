@@ -1,9 +1,12 @@
 package io.choerodon.agile.infra.config;
 
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,6 +17,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.time.Duration;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -87,14 +91,23 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
         return redisTemplate.opsForValue();
     }
 
+//    @Bean
+//    public RedisCacheManager cacheManager(RedisTemplate redisTemplate) {
+//        RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate);
+//        redisCacheManager.setTransactionAware(true);
+//        redisCacheManager.setLoadRemoteCachesOnStartup(true);
+//        redisCacheManager.setUsePrefix(true);
+//        redisCacheManager.setDefaultExpiration(86400);
+//        return redisCacheManager;
+//    }
+
     @Bean
-    public RedisCacheManager cacheManager(RedisTemplate redisTemplate) {
-        RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate);
-        redisCacheManager.setTransactionAware(true);
-        redisCacheManager.setLoadRemoteCachesOnStartup(true);
-        redisCacheManager.setUsePrefix(true);
-        redisCacheManager.setDefaultExpiration(86400);
-        return redisCacheManager;
+    public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofHours(24)); // 设置缓存有效期一小时
+        return RedisCacheManager
+                .builder(RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory))
+                .cacheDefaults(redisCacheConfiguration).transactionAware().build();
     }
 
     /**
