@@ -5,7 +5,7 @@ import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.infra.feign.fallback.StateMachineFeignClientFallback;
 import io.choerodon.statemachine.dto.StateMachineTransformDTO;
 import io.swagger.annotations.ApiParam;
-import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

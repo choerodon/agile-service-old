@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.feign;
 
 import io.choerodon.agile.infra.config.FeignMultipartSupportConfig;
 import io.choerodon.agile.infra.feign.fallback.FileFeignClientFallback;
-import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -3,7 +3,7 @@ package io.choerodon.agile.infra.feign;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.infra.feign.fallback.IssueFeignClientFallback;
 import io.swagger.annotations.ApiParam;
-import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

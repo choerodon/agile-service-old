@@ -3,7 +3,7 @@ spring:
     url: jdbc:mysql://localhost:3306/agile_service?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true
     username: choerodon
     password: 123456
-  http:
+  servlet:
     encoding:
       charset: UTF-8
       force: true
@@ -38,10 +38,6 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8000/eureka/
     registryFetchIntervalSeconds: 1
-security:
-  basic:
-    enabled: false
-  ignored: /v2/api-docs
 mybatis:
   mapperLocations: classpath*:/mapper/*.xml
   configuration:

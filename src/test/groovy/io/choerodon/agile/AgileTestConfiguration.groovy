@@ -99,9 +99,6 @@ class AgileTestConfiguration {
     private IssueMapper issueMapper
 
     @Autowired
-    private AuthenticationManager authenticationManager
-
-    @Autowired
     private IssueSprintRelMapper issueSprintRelMapper
 
     @Autowired
@@ -185,15 +182,15 @@ class AgileTestConfiguration {
             }
         }])
         initProjectData()
-        initUserDetail()
+//        initUserDetail()
     }
 
-    void initUserDetail() {
-        //手动设置一个userDetail
-        def authRequest = new UsernamePasswordAuthenticationToken("admin", "admin")
-        def authentication = authenticationManager.authenticate(authRequest)
-        SecurityContextHolder.getContext().setAuthentication(authentication)
-    }
+//    void initUserDetail() {
+//        //手动设置一个userDetail
+//        def authRequest = new UsernamePasswordAuthenticationToken("admin", "admin")
+//        def authentication = authenticationManager.authenticate(authRequest)
+//        SecurityContextHolder.getContext().setAuthentication(authentication)
+//    }
 
     static String createJWT(final String key, final ObjectMapper objectMapper) {
         Signer signer = new MacSigner(key)

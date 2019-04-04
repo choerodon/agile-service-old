@@ -1,8 +1,10 @@
-package io.choerodon.agile.configure;
+package io.choerodon.agile.configure
 
-
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
+import org.springframework.core.annotation.Order
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
@@ -21,4 +23,5 @@ class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.csrf().ignoringAntMatchers("/h2-console/**")
                 .and().headers().frameOptions().disable()
     }
+
 }
