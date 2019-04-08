@@ -961,8 +961,8 @@ public class IssueServiceImpl implements IssueService {
             if (sprintId != null && !Objects.equals(sprintId, 0L)) {
                 issueRepository.issueToDestinationByIds(projectId, sprintId, moveIssueIdsFilter, new Date(), customUserDetails.getUserId());
             }
-            //如果移动冲刺不是活跃冲刺，则状态回到默认状态
-            batchHandleIssueStatus(projectId, moveIssueIdsFilter, sprintId);
+//            //如果移动冲刺不是活跃冲刺，则状态回到默认状态
+//            batchHandleIssueStatus(projectId, moveIssueIdsFilter, sprintId);
             List<Long> assigneeIds = issueSearchDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDO::getAssigneeId).distinct().collect(Collectors.toList());
             Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
             return issueSearchAssembler.doListToDTO(issueSearchDOList, usersMap, new HashMap<>(), new HashMap<>(), new HashMap<>());
