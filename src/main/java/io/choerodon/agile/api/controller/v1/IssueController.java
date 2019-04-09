@@ -690,4 +690,18 @@ public class IssueController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.issue.queryIssueTestGroupByProject"));
     }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("查询feature列表")
+    @PostMapping(value = "/program")
+    public ResponseEntity<Page<FeatureCommonDTO>> queryFeatureList(@ApiParam(value = "项目id", required = true)
+                                                                   @PathVariable(name = "project_id") Long projectId,
+                                                                   @ApiParam(value = "分页信息", required = true)
+                                                                   @ApiIgnore PageRequest pageRequest,
+                                                                   @ApiParam(value = "搜索DTO", required = true)
+                                                                   @RequestBody SearchDTO searchDTO) {
+        return Optional.ofNullable(issueService.queryFeatureList(projectId, pageRequest, searchDTO))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.issue.queryFeatureList"));
+    }
 }

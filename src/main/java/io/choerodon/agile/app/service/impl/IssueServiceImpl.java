@@ -173,6 +173,9 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private FeatureRepository featureRepository;
 
+    @Autowired
+    private FeatureCommonAssembler featureCommonAssembler;
+
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
     private static final String COPY = "Copy";
@@ -2333,5 +2336,20 @@ public class IssueServiceImpl implements IssueService {
             throw new CommonException("error.initStatusId.null");
         }
         issueRepository.updateFeatureAndEpicWhenJoinProgram(programId, projectId, initStatusId);
+    }
+
+    @Override
+    public Page<FeatureCommonDTO> queryFeatureList(Long programId, PageRequest pageRequest, SearchDTO searchDTO) {
+        Page<FeatureCommonDO> featureCommonDOPage = PageHelper.doPageAndSort(pageRequest, () ->
+                issueMapper.selectFeatureList(programId, searchDTO)
+        );
+        Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(programId);
+        Page<FeatureCommonDTO> result = new Page<>();
+        result.setNumberOfElements(featureCommonDOPage.getNumberOfElements());
+        result.setNumber(featureCommonDOPage.getNumber());
+        result.setContent(featureCommonAssembler.featureCommonDOToDTO(featureCommonDOPage.getContent(), statusMapDTOMap));
+        result.setTotalPages(featureCommonDOPage.getTotalPages());
+        result.setSize(featureCommonDOPage.getSize());
+        return result;
     }
 }
