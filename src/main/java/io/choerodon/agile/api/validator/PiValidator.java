@@ -76,7 +76,7 @@ public class PiValidator {
         if (result == null) {
             throw new CommonException("error.PI.null");
         }
-        if (!PI_TODO.equals(result.getCode())) {
+        if (!PI_TODO.equals(result.getStatusCode())) {
             throw new CommonException("error.unTodoPI.cannotdelete");
         }
     }
