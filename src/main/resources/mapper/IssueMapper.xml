@@ -3096,4 +3096,84 @@
         </foreach>
     </update>
 
+    <resultMap id="featureListMap" type="io.choerodon.agile.infra.dataobject.FeatureCommonDO">
+        <id property="issueId" column="ai_issue_id"/>
+        <id property="issueNum" column="ai_issue_num"/>
+        <id property="typeCode" column="ai_type_code"/>
+        <id property="summary" column="ai_summary"/>
+        <id property="statusId" column="ai_status_id"/>
+        <id property="storyPoints" column="ai_story_points"/>
+        <id property="featureType" column="ai_feature_type"/>
+        <id property="benfitHypothesis" column="ai_benfit_hypothesis"/>
+        <id property="acceptanceCritera" column="ai_acceptance_critera"/>
+        <collection property="piNameDOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.PiNameDO">
+            <id property="id" column="ap_pi_id"/>
+            <id property="name" column="ap_pi_name"/>
+        </collection>
+        <collection property="versionNameDOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.VersionNameDO">
+            <id property="versionId" column="apv_version_id"/>
+            <id property="name" column="apv_version_name"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectFeatureList" resultMap="featureListMap">
+        select
+           ai.issue_id as ai_issue_id,
+           CONCAT_WS('-', api.project_code, ai.issue_num) AS ai_issue_num,
+           ai.type_code as ai_type_code,
+           ai.summary as ai_summary,
+           ai.status_id as ai_status_id,
+           ai.story_points as ai_story_points,
+           af.feature_type as ai_feature_type,
+           af.benfit_hypothesis as ai_benfit_hypothesis,
+           af.acceptance_critera as ai_acceptance_critera,
+           apf.pi_id as ap_pi_id,
+           ap.name as ap_pi_name,
+           avir.version_id as apv_version_id,
+           apv.name as apv_version_name
+        from agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.program_id = api.project_id
+        left join agile_feature af on ai.issue_id = af.issue_id
+        left join agile_pi_feature apf on ai.issue_id = apf.issue_id
+        left join agile_pi ap on apf.pi_id = ap.id
+        LEFT JOIN agile_version_issue_rel avir on avir.issue_id = ai.issue_id and avir.relation_type = 'fix'
+        left join agile_product_version apv on avir.version_id = apv.version_id
+        where ai.program_id = #{programId} and ai.type_code = 'feature'
+        <if test='searchDTO.advancedSearchArgs != null'>
+            <if test='searchDTO.advancedSearchArgs.statusList != null and searchDTO.advancedSearchArgs.statusList.size > 0'>
+                and ai.status_id in
+                <foreach collection="searchDTO.advancedSearchArgs.statusList" item="statusId" open="(" separator=","
+                         close=")">
+                    #{statusId}
+                </foreach>
+            </if>
+            <if test='searchDTO.advancedSearchArgs.reporterList != null and searchDTO.advancedSearchArgs.reporterList.size > 0'>
+                AND ai.reporter_id IN
+                <foreach collection="searchDTO.advancedSearchArgs.reporterList" item="reporterId" open="(" separator=","
+                         close=")">
+                    #{reporterId}
+                </foreach>
+            </if>
+            <if test="searchDTO.advancedSearchArgs.epicList != null and searchDTO.advancedSearchArgs.epicList.size > 0">
+                and ai.epic_id in
+                <foreach collection="searchDTO.advancedSearchArgs.epicList" item="epicId" open="(" separator=","
+                         close=")">
+                    #{epicId}
+                </foreach>
+            </if>
+        </if>
+        <if test='searchDTO.otherArgs != null'>
+            <if test='searchDTO.otherArgs.piList != null and searchDTO.otherArgs.piList.size > 0 '>
+                AND ai.issue_id in (
+                SELECT issue_id from agile_pi_feature apf where pi_id in
+                <foreach collection="searchDTO.otherArgs.piList" item="piId" open="(" separator=","
+                         close=")">
+                    #{piId}
+                </foreach>
+                )
+            </if>
+        </if>
+        order by ai.issue_id desc
+    </select>
+
 </mapper>

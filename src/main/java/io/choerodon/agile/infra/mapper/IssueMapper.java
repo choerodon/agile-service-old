@@ -528,4 +528,6 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     List<Long> selectIssueIdWhenJoinProgram(@Param("projectId") Long projectId);
 
     void updateFeatureAndEpicWhenJoinProgram(@Param("programId") Long programId, @Param("projectId") Long projectId, @Param("initStatusId") Long initStatusId, @Param("updateIds") List<Long> updateIds);
+
+    List<FeatureCommonDO> selectFeatureList(@Param("programId") Long programId, @Param("searchDTO") SearchDTO searchDTO);
 }
