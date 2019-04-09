@@ -448,11 +448,11 @@ public class DemoServiceImpl implements DemoService {
         Long organizationId = projectDTO.getOrganizationId();
 
         // 创建第一个冲刺
-        SprintDetailDTO sprintDetailDTO = sprintService.createSprint(projectId, null, null, null);
+        SprintDetailDTO sprintDetailDTO = sprintService.createSprint(projectId);
         Long sprintId1 = sprintDetailDTO.getSprintId();
 
         // 创建第二个冲刺
-        SprintDetailDTO sprintDetailDTO2 = sprintService.createSprint(projectId, null, null, null);
+        SprintDetailDTO sprintDetailDTO2 = sprintService.createSprint(projectId);
         Long sprintId2 = sprintDetailDTO2.getSprintId();
 
         // 更新冲刺名称

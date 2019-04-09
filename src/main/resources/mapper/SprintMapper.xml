@@ -797,4 +797,14 @@
         where project_id = #{projectId} and pi_id = #{piId}
     </select>
 
+    <update id="updateSprintNameByBatch">
+        update agile_sprint
+        set sprint_name = concat('PI-', pi_id, ':SPRINT-', sprint_id)
+        where project_id = #{projectId} and sprint_id in
+        <foreach collection="sprintIds" item="sprintId" open="("
+                 separator="," close=")">
+            #{sprintId}
+        </foreach>
+    </update>
+
 </mapper>

@@ -11,6 +11,8 @@ import io.choerodon.agile.infra.mapper.SprintMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * Created by jian_zhang02@163.com on 2018/5/15.
  */
@@ -66,5 +68,10 @@ public class SprintRepositoryImpl implements SprintRepository {
     @Override
     public void deleteByPiBatch(Long projectId, Long piId) {
         sprintMapper.deleteByPiBatch(projectId, piId);
+    }
+
+    @Override
+    public void updateSprintNameByBatch(Long programId, List<Long> sprintIds) {
+        sprintMapper.updateSprintNameByBatch(programId, sprintIds);
     }
 }

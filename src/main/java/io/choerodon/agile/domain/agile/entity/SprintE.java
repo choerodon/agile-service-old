@@ -10,6 +10,18 @@ import java.util.Date;
  */
 
 public class SprintE {
+
+    public SprintE() {}
+
+    public SprintE(Long projectId, String sprintName, Date startDate, Date endDate, String statusCode, Long piId) {
+        this.projectId = projectId;
+        this.sprintName = sprintName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.statusCode = statusCode;
+        this.piId = piId;
+    }
+
     private Long sprintId;
     private String sprintName;
     private String sprintGoal;
