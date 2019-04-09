@@ -39,4 +39,14 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_work_calendar_holiday_ref.gr
                     "DELETE FROM agile_work_calendar_holiday_ref WHERE holiday = '2019-4-30';"
         }
     }
+    changeSet(id: '2019-04-09-delete-5.1-dirty-date-data', author: 'shinan.chenX@gmail.com') {
+        sql(stripComments: true, splitStatements: true, endDelimiter: ';') {
+            "INSERT INTO agile_work_calendar_holiday_ref(name,holiday,status,year) " +
+            "values (null,'2019-4-28',1,2019)," +
+                    "(null,'2019-5-2',0,2019)," +
+                    "(null,'2019-5-3',0,2019)," +
+                    "(null,'2019-5-4',0,2019)," +
+                    "(null,'2019-5-5',1,2019);"
+        }
+    }
 }
