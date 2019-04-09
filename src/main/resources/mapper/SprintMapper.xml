@@ -793,7 +793,7 @@
     </delete>
 
     <select id="selectByPiId" resultType="java.lang.Long">
-        select id from agile_sprint
+        select sprint_id from agile_sprint
         where project_id = #{projectId} and pi_id = #{piId}
     </select>
 
