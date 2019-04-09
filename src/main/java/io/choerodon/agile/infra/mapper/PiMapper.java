@@ -48,4 +48,10 @@ public interface PiMapper extends BaseMapper<PiDO> {
     Long selectPiCountByOptions(@Param("programId") Long programId, @Param("artId") Long artId, @Param("statusCode") String statusCode);
 
     Long selectRelatedFeatureCount(@Param("programId") Long programId, @Param("artId") Long artId);
+
+    PiDO selectArtFirstPi(@Param("programId") Long programId, @Param("artId") Long artId);
+
+    PiDO selectNextPi(@Param("programId") Long programId, @Param("artId") Long artId, @Param("piId") Long piId);
+
+    List<Long> selectNextListPi(@Param("programId") Long programId, @Param("artId") Long artId, @Param("piId") Long piId);
 }

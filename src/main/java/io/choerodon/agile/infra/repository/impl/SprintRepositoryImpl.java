@@ -62,4 +62,9 @@ public class SprintRepositoryImpl implements SprintRepository {
         dataLogRedisUtil.deleteByUpdateSprint(sprintE);
         return true;
     }
+
+    @Override
+    public void deleteByPiBatch(Long projectId, Long piId) {
+        sprintMapper.deleteByPiBatch(projectId, piId);
+    }
 }

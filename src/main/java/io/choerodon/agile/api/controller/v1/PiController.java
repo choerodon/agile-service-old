@@ -71,7 +71,7 @@ public class PiController {
                                                 @ApiParam(value = "art id", required = true)
                                                 @RequestParam Long artId,
                                                 @ApiParam(value = "分页信息", required = true)
-                                                @SortDefault(value = "id", direction = Sort.Direction.DESC)
+                                                @SortDefault(value = "id", direction = Sort.Direction.ASC)
                                                 @ApiIgnore PageRequest pageRequest) {
         return Optional.ofNullable(piService.queryAll(projectId, artId, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -142,5 +142,18 @@ public class PiController {
         return Optional.ofNullable(piService.batchFeatureToEpic(projectId, epicId, featureIds))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.feature.batchToEpic"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("删除PI")
+    @DeleteMapping(value = "/{piId}")
+    public ResponseEntity deleteById(@ApiParam(value = "项目id", required = true)
+                                     @PathVariable(name = "project_id") Long projectId,
+                                     @ApiParam(value = "pi id", required = true)
+                                     @PathVariable Long piId,
+                                     @ApiParam(value = "art id", required = true)
+                                     @RequestParam Long artId) {
+        piService.deleteById(projectId, piId, artId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

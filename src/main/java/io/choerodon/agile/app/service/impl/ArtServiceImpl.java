@@ -71,12 +71,26 @@ public class ArtServiceImpl implements ArtService {
         return ConvertHelper.convert(artE, ArtDTO.class);
     }
 
+    private void startArtFirstPI(Long programId, Long artId) {
+        PiDO piDO = piMapper.selectArtFirstPi(programId, artId);
+        if (piDO != null) {
+            PiDTO piDTO = new PiDTO();
+            piDTO.setProgramId(programId);
+            piDTO.setArtId(artId);
+            piDTO.setId(piDO.getId());
+            piDTO.setObjectVersionNumber(piDO.getObjectVersionNumber());
+            piService.startPi(programId, piDTO);
+        }
+    }
+
     @Override
     public ArtDTO startArt(Long programId, ArtDTO artDTO) {
         artValidator.checkArtStart(artDTO);
         artRepository.updateBySelective(new ArtE(programId, artDTO.getId(), ART_DOING, artDTO.getObjectVersionNumber()));
         ArtDO artDO = artMapper.selectByPrimaryKey(artDTO.getId());
         piService.createPi(programId, artDO, artDO.getStartDate());
+        // 开启ART第一个PI
+        startArtFirstPI(programId, artDO.getId());
         return ConvertHelper.convert(artDO, ArtDTO.class);
     }
 

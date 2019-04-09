@@ -36,4 +36,15 @@ public class PiRepositoryImpl implements PiRepository {
         }
         return ConvertHelper.convert(piMapper.selectByPrimaryKey(piDO.getId()), PiE.class);
     }
+
+    @Override
+    public void delete(Long piId) {
+        PiDO piDO = piMapper.selectByPrimaryKey(piId);
+        if (piDO == null) {
+            throw new CommonException("error.PI.null");
+        }
+        if (piMapper.delete(piDO) != 1) {
+            throw new CommonException("error.PI.delete");
+        }
+    }
 }

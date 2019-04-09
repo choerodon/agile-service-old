@@ -322,5 +322,23 @@
          )
     </select>
 
+    <select id="selectArtFirstPi" resultType="io.choerodon.agile.infra.dataobject.PiDO">
+        select * from agile_pi
+        where program_id = #{programId} and art_id = #{artId}
+        order by id
+        limit 1
+    </select>
+
+    <select id="selectNextPi" resultType="io.choerodon.agile.infra.dataobject.PiDO">
+        select * from agile_pi
+        where program_id = #{programId} and art_id = #{artId} and id > #{piId}
+        order by id
+        limit 1
+    </select>
+
+    <select id="selectNextListPi" resultType="java.lang.Long">
+        select id from agile_pi
+        where program_id = #{programId} and art_id = #{artId} and id >= #{piId}
+    </select>
 
 </mapper>

@@ -11,4 +11,6 @@ public interface PiRepository {
     PiE create(PiE piE);
 
     PiE updateBySelective(PiE piE);
+
+    void delete(Long piId);
 }
