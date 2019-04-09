@@ -172,7 +172,7 @@ class ReportControllerSpec extends Specification {
 
     def 'createSprintToStart'() {
         given: '创建一个冲刺'
-        SprintDetailDTO sprintDetailDTO = sprintService.createSprint(1, null, null, null)
+        SprintDetailDTO sprintDetailDTO = sprintService.createSprint(1)
         sprintId = sprintDetailDTO.sprintId
 
         and: '将issue加入到冲刺中'

@@ -216,13 +216,14 @@ public class PiServiceImpl implements PiService {
         piE.setEndDate(endDate);
     }
 
-    private void createSprintTemplate(Long programId, PiE piRes, ArtDO artDO) {
+    private void createSprintTemplate(Long programId, PiE piRes, ArtDO artDO, List<Long> sprintIds) {
         Date startDate = piRes.getStartDate();
         Long interationCount = artDO.getInterationCount();
         Long interationWeeks = artDO.getInterationWeeks();
         Date endDate = getSpecifyTimeByOneTime(startDate, interationWeeks.intValue() * 7);
         for (int i = 0; i < interationCount; i++) {
-            sprintService.createSprint(programId, piRes.getId(), startDate, endDate);
+            SprintE temp = sprintRepository.createSprint(new SprintE(programId, String.valueOf(System.currentTimeMillis()), startDate, endDate, "sprint_planning", piRes.getId()));
+            sprintIds.add(temp.getSprintId());
             startDate = endDate;
             endDate = getSpecifyTimeByOneTime(startDate, interationWeeks.intValue() * 7);
         }
@@ -232,6 +233,7 @@ public class PiServiceImpl implements PiService {
     public void createPi(Long programId, ArtDO artDO, Date startDate) {
         Long piCodeNumber = artDO.getPiCodeNumber();
         Long piWorkDays = getPiWorkDays(artDO);
+        List<Long> sprintIds = new ArrayList<>();
         for (int i = 0; i < artDO.getPiCount(); i++) {
             PiE piE = new PiE();
             piE.setCode(artDO.getPiCodePrefix());
@@ -243,9 +245,10 @@ public class PiServiceImpl implements PiService {
             setPiStartAndEndDate(piE, piWorkDays, startDate);
             PiE piRes = piRepository.create(piE);
             // create sprint template
-            createSprintTemplate(programId, piRes, artDO);
+            createSprintTemplate(programId, piRes, artDO, sprintIds);
             startDate = piE.getEndDate();
         }
+        sprintRepository.updateSprintNameByBatch(programId, sprintIds);
         updateArtPiCodeNumber(programId, artDO.getId(), piCodeNumber, artDO.getObjectVersionNumber());
     }
 
@@ -317,14 +320,7 @@ public class PiServiceImpl implements PiService {
         for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
             Long projectId = projectRelationshipDTO.getProjectId();
             for (SprintDO sprint : sprintDOList) {
-                SprintE sprintE = new SprintE();
-                sprintE.setPiId(sprint.getPiId());
-                sprintE.setStartDate(sprint.getStartDate());
-                sprintE.setEndDate(sprint.getEndDate());
-                sprintE.setSprintName(sprint.getSprintName());
-                sprintE.setProjectId(projectId);
-                sprintE.setStatusCode(sprint.getStatusCode());
-                sprintRepository.createSprint(sprintE);
+                sprintRepository.createSprint(new SprintE(projectId, sprint.getSprintName(), sprint.getStartDate(), sprint.getEndDate(), sprint.getStatusCode(), sprint.getPiId()));
             }
         }
     }

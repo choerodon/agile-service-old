@@ -115,7 +115,7 @@ public class SprintServiceImpl implements SprintService {
     private static final String STATUS_SPRINT_PLANNING_CODE = "sprint_planning";
 
     @Override
-    public synchronized SprintDetailDTO createSprint(Long projectId, Long piId, Date startDate, Date endDate) {
+    public synchronized SprintDetailDTO createSprint(Long projectId) {
         ProjectInfoDO projectInfo = new ProjectInfoDO();
         projectInfo.setProjectId(projectId);
         projectInfo = projectInfoMapper.selectOne(projectInfo);
@@ -129,11 +129,6 @@ public class SprintServiceImpl implements SprintService {
         } else {
             SprintE sprintE = sprintCreateAssembler.toTarget(sprintDO, SprintE.class);
             sprint.createSprint(sprintE);
-        }
-        if (piId != null) {
-            sprint.setPiId(piId);
-            sprint.setStartDate(startDate);
-            sprint.setEndDate(endDate);
         }
         return sprintCreateAssembler.toTarget(sprintRepository.createSprint(sprint), SprintDetailDTO.class);
     }
