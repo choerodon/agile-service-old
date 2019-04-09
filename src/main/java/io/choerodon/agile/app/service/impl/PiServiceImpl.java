@@ -101,7 +101,6 @@ public class PiServiceImpl implements PiService {
     @Autowired
     private IssueStatusMapper issueStatusMapper;
 
-
     /**
      * 获取当前年分
      *
@@ -221,11 +220,11 @@ public class PiServiceImpl implements PiService {
         Date startDate = piRes.getStartDate();
         Long interationCount = artDO.getInterationCount();
         Long interationWeeks = artDO.getInterationWeeks();
-        Date enddate = getSpecifyTimeByOneTime(startDate, interationWeeks.intValue() * 7);
+        Date endDate = getSpecifyTimeByOneTime(startDate, interationWeeks.intValue() * 7);
         for (int i = 0; i < interationCount; i++) {
-            sprintService.createSprint(programId, piRes.getId(), startDate, enddate);
-            startDate = enddate;
-            enddate = getSpecifyTimeByOneTime(startDate, interationWeeks.intValue() * 7);
+            sprintService.createSprint(programId, piRes.getId(), startDate, endDate);
+            startDate = endDate;
+            endDate = getSpecifyTimeByOneTime(startDate, interationWeeks.intValue() * 7);
         }
     }
 
@@ -384,13 +383,41 @@ public class PiServiceImpl implements PiService {
         issueRepository.batchUpdateFeatureRank(programId, moveIssueDOS);
     }
 
+    private void completeProjectsSprints(Long programId, Long piId) {
+        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId).getBody();
+        for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
+            Long projectId = projectRelationshipDTO.getProjectId();
+            List<Long> sprintIds = sprintMapper.selectByPiId(projectId, piId);
+            for (Long sprintId : sprintIds) {
+                SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO();
+                sprintCompleteDTO.setProjectId(projectId);
+                sprintCompleteDTO.setSprintId(sprintId);
+                sprintCompleteDTO.setIncompleteIssuesDestination(0L);
+                sprintService.completeSprint(projectId, sprintCompleteDTO);
+            }
+        }
+    }
+
     @Override
     public PiDTO closePi(Long programId, PiDTO piDTO) {
         piValidator.checkPiClose(piDTO);
         // deal uncomplete feature to target pi
         dealUnCompleteFeature(piDTO.getProgramId(), piDTO.getId(), piDTO.getTargetPiId());
+        // deal projects' sprints complete
+        completeProjectsSprints(programId, piDTO.getId());
         // update pi status: done
-        return ConvertHelper.convert(piRepository.updateBySelective(new PiE(programId, piDTO.getId(), PI_DONE, piDTO.getObjectVersionNumber())), PiDTO.class);
+        PiE piE = piRepository.updateBySelective(new PiE(programId, piDTO.getId(), PI_DONE, piDTO.getObjectVersionNumber()));
+        // auto start next PI
+        PiDO nextPi = piMapper.selectNextPi(programId, piDTO.getArtId(), piDTO.getId());
+        if (nextPi != null) {
+            PiDTO nextStartPi = new PiDTO();
+            nextStartPi.setProgramId(programId);
+            nextStartPi.setArtId(piDTO.getArtId());
+            nextStartPi.setId(nextPi.getId());
+            nextStartPi.setObjectVersionNumber(nextPi.getObjectVersionNumber());
+            startPi(programId, nextStartPi);
+        }
+        return ConvertHelper.convert(piE, PiDTO.class);
     }
 
     private void noOutsetBeforeRank(Long programId, Long piId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
@@ -480,5 +507,16 @@ public class PiServiceImpl implements PiService {
     public List<SubFeatureDO> batchFeatureToEpic(Long programId, Long epicId, List<Long> featureIds) {
         issueRepository.batchFeatureToEpic(programId, epicId, featureIds);
         return piMapper.selectFeatureIdByFeatureIds(programId, featureIds);
+    }
+
+    @Override
+    public void deleteById(Long programId, Long piId, Long artId) {
+        piValidator.checkDelete(programId, artId, piId);
+        List<Long> piIds = piMapper.selectNextListPi(programId, artId, piId);
+        for (Long id : piIds) {
+            dealUnCompleteFeature(programId, id, 0L);
+            sprintRepository.deleteByPiBatch(programId, id);
+            piRepository.delete(id);
+        }
     }
 }

@@ -11,4 +11,6 @@ public interface SprintRepository {
     SprintE updateSprint(SprintE sprintE);
 
     Boolean deleteSprint(SprintE sprintE);
+
+    void deleteByPiBatch(Long projectId, Long piId);
 }

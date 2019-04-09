@@ -787,4 +787,14 @@
         AND ai.type_code != 'sub_task' and ai.type_code != 'issue_epic' and ai.apply_type = 'agile'
     </select>
 
+    <delete id="deleteByPiBatch">
+        delete from agile_sprint
+        where project_id = #{projectId} and pi_id = #{piId}
+    </delete>
+
+    <select id="selectByPiId" resultType="java.lang.Long">
+        select id from agile_sprint
+        where project_id = #{projectId} and pi_id = #{piId}
+    </select>
+
 </mapper>

@@ -23,6 +23,7 @@ public class PiValidator {
 
     public static final String PI_DOING = "doing";
     public static final String PI_DONE = "done";
+    public static final String PI_TODO = "todo";
     public static final String ART_DOING = "doing";
 
     @Autowired
@@ -58,8 +59,25 @@ public class PiValidator {
         if (piDTO.getProgramId() == null) {
             throw new CommonException("error.programId.null");
         }
+        if (piDTO.getArtId() == null) {
+            throw new CommonException("error.artId.null");
+        }
         if (piDTO.getObjectVersionNumber() == null) {
             throw new CommonException("error.objectCersionNumber.null");
+        }
+    }
+
+    public void checkDelete(Long programId, Long artId, Long piId) {
+        PiDO piDO = new PiDO();
+        piDO.setProgramId(programId);
+        piDO.setArtId(artId);
+        piDO.setId(piId);
+        PiDO result = piMapper.selectOne(piDO);
+        if (result == null) {
+            throw new CommonException("error.PI.null");
+        }
+        if (!PI_TODO.equals(result.getCode())) {
+            throw new CommonException("error.unTodoPI.cannotdelete");
         }
     }
 

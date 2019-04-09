@@ -37,4 +37,6 @@ public interface PiService {
     List<SubFeatureDO> batchFeatureToPi(Long programId, Long piId, MoveIssueDTO moveIssueDTO);
 
     List<SubFeatureDO> batchFeatureToEpic(Long programId, Long epicId, List<Long> featureIds);
+
+    void deleteById(Long programId, Long piId, Long artId);
 }
