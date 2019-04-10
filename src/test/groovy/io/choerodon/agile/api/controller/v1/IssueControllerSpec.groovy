@@ -1278,16 +1278,16 @@ class IssueControllerSpec extends Specification {
 
     def 'queryUnDistributedIssues'() {
         when: '查询未分配的问题，类型为story,task,bug'
-        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/undistributed", List, projectId, 1L)
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/undistributed", Page, projectId, 1L)
 
         then:
         entity.statusCode.is2xxSuccessful()
 
         and:
-        List<UnfinishedIssueDTO> result = entity.body
+        Page<UnfinishedIssueDTO> result = entity.body
 
         expect:
-        result.size() == 1
+        result.getContent().size() == 1
     }
 
     def 'queryUnfinishedIssues'() {
