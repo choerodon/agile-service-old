@@ -637,9 +637,11 @@ public class IssueController {
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询未分配的问题，类型为story,task,bug")
     @GetMapping(value = "/undistributed")
-    public ResponseEntity<List<UndistributedIssueDTO>> queryUnDistributedIssues(@ApiParam(value = "项目id", required = true)
-                                                                                @PathVariable(name = "project_id") Long projectId) {
-        return Optional.ofNullable(issueService.queryUnDistributedIssues(projectId))
+    public ResponseEntity<Page<UndistributedIssueDTO>> queryUnDistributedIssues(@ApiParam(value = "项目id", required = true)
+                                                                                @PathVariable(name = "project_id") Long projectId,
+                                                                                @ApiParam(value = "分页信息", required = true)
+                                                                                @ApiIgnore PageRequest pageRequest) {
+        return Optional.ofNullable(issueService.queryUnDistributedIssues(projectId, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.UndistributedIssueList.get"));
     }

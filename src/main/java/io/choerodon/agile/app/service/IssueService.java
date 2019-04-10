@@ -259,7 +259,7 @@ public interface IssueService {
 
     List<Long> queryIssueIdsByOptions(Long projectId, SearchDTO searchDTO);
 
-    List<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId);
+    Page<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId, PageRequest pageRequest);
 
     List<UnfinishedIssueDTO> queryUnfinishedIssues(Long projectId, Long assigneeId);
 

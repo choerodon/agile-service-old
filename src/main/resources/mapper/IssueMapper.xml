@@ -2547,7 +2547,6 @@
         and ai.type_code in ('story','task','bug')
         and (ai.assignee_id is null or ai.assignee_id = 0)
         order by ai.issue_id desc
-        limit 6
     </select>
 
     <select id="queryUnfinishedIssues" resultType="io.choerodon.agile.infra.dataobject.UnfinishedIssueDO">
