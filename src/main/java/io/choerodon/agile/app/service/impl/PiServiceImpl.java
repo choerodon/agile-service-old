@@ -298,9 +298,9 @@ public class PiServiceImpl implements PiService {
     }
 
     @Override
-    public Page<PiDTO> queryAll(Long programId, Long artId, PageRequest pageRequest) {
+    public Page<PiDTO> queryArtAll(Long programId, Long artId, PageRequest pageRequest) {
         Page<PiDO> piDOPage = PageHelper.doPageAndSort(pageRequest, () ->
-                piMapper.selectPiList(programId, artId));
+                piMapper.selectPiListInArt(programId, artId));
         Page<PiDTO> dtoPage = new Page<>();
         dtoPage.setNumber(piDOPage.getNumber());
         dtoPage.setSize(piDOPage.getSize());
@@ -516,5 +516,11 @@ public class PiServiceImpl implements PiService {
             sprintRepository.deleteByPiBatch(programId, id);
             piRepository.delete(id);
         }
+    }
+
+    @Override
+    public List<PiNameDTO> queryAllOfProgram(Long programId) {
+        List<PiNameDO> piNameDOList = piMapper.selectAllOfProgram(programId);
+        return ConvertHelper.convertList(piNameDOList, PiNameDTO.class);
     }
 }

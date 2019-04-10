@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.MoveIssueDTO;
 import io.choerodon.agile.api.dto.PiCompleteCountDTO;
 import io.choerodon.agile.api.dto.PiDTO;
+import io.choerodon.agile.api.dto.PiNameDTO;
 import io.choerodon.agile.infra.dataobject.ArtDO;
 import io.choerodon.agile.infra.dataobject.SubFeatureDO;
 import io.choerodon.core.domain.Page;
@@ -26,7 +27,7 @@ public interface PiService {
 
     JSONObject queryBacklogAll(Long programId, Long organizationId, Map<String, Object> searchParamMap);
 
-    Page<PiDTO> queryAll(Long programId, Long artId, PageRequest pageRequest);
+    Page<PiDTO> queryArtAll(Long programId, Long artId, PageRequest pageRequest);
 
     PiDTO startPi(Long programId, PiDTO piDTO);
 
@@ -39,4 +40,6 @@ public interface PiService {
     List<SubFeatureDO> batchFeatureToEpic(Long programId, Long epicId, List<Long> featureIds);
 
     void deleteById(Long programId, Long piId, Long artId);
+
+    List<PiNameDTO> queryAllOfProgram(Long programId);
 }

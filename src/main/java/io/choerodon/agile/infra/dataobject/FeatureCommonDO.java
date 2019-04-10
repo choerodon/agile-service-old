@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,6 +21,18 @@ public class FeatureCommonDO {
     private Long statusId;
 
     private BigDecimal storyPoints;
+
+    private Long epicId;
+
+    private String epicName;
+
+    private String epicColor;
+
+    private Long reporterId;
+
+    private Date creationDate;
+
+    private Date lastUpdateDate;
 
     private String featureType;
 
@@ -117,5 +130,53 @@ public class FeatureCommonDO {
 
     public List<VersionNameDO> getVersionNameDOList() {
         return versionNameDOList;
+    }
+
+    public Long getEpicId() {
+        return epicId;
+    }
+
+    public void setEpicId(Long epicId) {
+        this.epicId = epicId;
+    }
+
+    public String getEpicName() {
+        return epicName;
+    }
+
+    public void setEpicName(String epicName) {
+        this.epicName = epicName;
+    }
+
+    public String getEpicColor() {
+        return epicColor;
+    }
+
+    public void setEpicColor(String epicColor) {
+        this.epicColor = epicColor;
+    }
+
+    public Long getReporterId() {
+        return reporterId;
+    }
+
+    public void setReporterId(Long reporterId) {
+        this.reporterId = reporterId;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
+    public void setLastUpdateDate(Date lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
     }
 }

@@ -165,6 +165,7 @@
     <select id="queryClosePiNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.PiNameDO">
         SELECT
             ap.id,
+            ap.code,
             ap.name
         FROM agile_pi_feature apf, agile_pi ap
         WHERE apf.issue_id = #{issueId} AND apf.pi_id = ap.id AND ap.status_code = 'closed'
@@ -201,6 +202,7 @@
     <select id="queryActivePiNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.PiNameDO">
         SELECT
             ap.id,
+            ap.code,
             ap.name
         FROM agile_pi_feature apf, agile_pi ap
         WHERE apf.issue_id = #{issueId} AND apf.pi_id = ap.id AND ap.status_code != 'done'
@@ -3102,11 +3104,18 @@
         <id property="summary" column="ai_summary"/>
         <id property="statusId" column="ai_status_id"/>
         <id property="storyPoints" column="ai_story_points"/>
+        <id property="epicId" column="ai_epic_id"/>
+        <id property="epicName" column="ai_epic_name"/>
+        <id property="epicColor" column="ai_epic_color"/>
+        <id property="reporterId" column="ai_reporter_id"/>
+        <id property="creationDate" column="ai_creation_date"/>
+        <id property="lastUpdateDate" column="ai_last_update_date"/>
         <id property="featureType" column="ai_feature_type"/>
         <id property="benfitHypothesis" column="ai_benfit_hypothesis"/>
         <id property="acceptanceCritera" column="ai_acceptance_critera"/>
         <collection property="piNameDOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.PiNameDO">
             <id property="id" column="ap_pi_id"/>
+            <id property="code" column="ap_pi_code"/>
             <id property="name" column="ap_pi_name"/>
         </collection>
         <collection property="versionNameDOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.VersionNameDO">
@@ -3123,16 +3132,25 @@
            ai.summary as ai_summary,
            ai.status_id as ai_status_id,
            ai.story_points as ai_story_points,
+           ai.epic_id as ai_epic_id,
+           ai2.epic_name as ai_epic_name,
+           alv.name as ai_epic_color,
+           ai.reporter_id as ai_reporter_id,
+           ai.creation_date as ai_creation_date,
+           ai.last_update_date as ai_last_update_date,
            af.feature_type as ai_feature_type,
            af.benfit_hypothesis as ai_benfit_hypothesis,
            af.acceptance_critera as ai_acceptance_critera,
            apf.pi_id as ap_pi_id,
+           ap.code as ap_pi_code,
            ap.name as ap_pi_name,
            avir.version_id as apv_version_id,
            apv.name as apv_version_name
         from agile_issue ai
         LEFT JOIN agile_project_info api ON ai.program_id = api.project_id
         left join agile_feature af on ai.issue_id = af.issue_id
+        left join agile_issue ai2 on ai.epic_id = ai2.issue_id
+        left join agile_lookup_value alv on ai2.color_code = alv.value_code
         left join agile_pi_feature apf on ai.issue_id = apf.issue_id
         left join agile_pi ap on apf.pi_id = ap.id
         LEFT JOIN agile_version_issue_rel avir on avir.issue_id = ai.issue_id and avir.relation_type = 'fix'

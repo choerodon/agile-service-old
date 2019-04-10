@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.MoveIssueDTO;
 import io.choerodon.agile.api.dto.PiCompleteCountDTO;
 import io.choerodon.agile.api.dto.PiDTO;
+import io.choerodon.agile.api.dto.PiNameDTO;
 import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.infra.dataobject.SubFeatureDO;
 import io.choerodon.core.domain.Page;
@@ -64,18 +65,18 @@ public class PiController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
-    @ApiOperation("pi页面查询所有pi简要列表")
+    @ApiOperation("pi页面查询art下所有pi简要列表")
     @GetMapping("/list")
-    public ResponseEntity<Page<PiDTO>> queryAll(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<Page<PiDTO>> queryArtAll(@ApiParam(value = "项目id", required = true)
                                                 @PathVariable(name = "project_id") Long projectId,
                                                 @ApiParam(value = "art id", required = true)
                                                 @RequestParam Long artId,
                                                 @ApiParam(value = "分页信息", required = true)
                                                 @SortDefault(value = "id", direction = Sort.Direction.ASC)
                                                 @ApiIgnore PageRequest pageRequest) {
-        return Optional.ofNullable(piService.queryAll(projectId, artId, pageRequest))
+        return Optional.ofNullable(piService.queryArtAll(projectId, artId, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.piDTO.get"));
+                .orElseThrow(() -> new CommonException("error.artPiDTOList.get"));
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
@@ -155,5 +156,15 @@ public class PiController {
                                      @RequestParam Long artId) {
         piService.deleteById(projectId, piId, artId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("pi页面查询项目群下所有pi")
+    @GetMapping(value = "/all")
+    public ResponseEntity<List<PiNameDTO>> queryAllOfProgram(@ApiParam(value = "项目id", required = true)
+                                                             @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(piService.queryAllOfProgram(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.programPiDTOList.get"));
     }
 }
