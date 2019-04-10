@@ -142,7 +142,7 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.artCalendar.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("stop art之前调用")
     @GetMapping("/before_stop")
     public ResponseEntity<ArtStopDTO> beforeStop(@ApiParam(value = "项目id", required = true)
