@@ -2360,6 +2360,7 @@ public class IssueServiceImpl implements IssueService {
         result.setContent(featureCommonAssembler.featureCommonDOToDTO(featureCommonDOPage.getContent(), statusMapDTOMap));
         result.setTotalPages(featureCommonDOPage.getTotalPages());
         result.setSize(featureCommonDOPage.getSize());
+        result.setTotalElements(featureCommonDOPage.getTotalElements());
         return result;
     }
 }
