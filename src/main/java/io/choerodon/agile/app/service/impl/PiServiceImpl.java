@@ -334,6 +334,7 @@ public class PiServiceImpl implements PiService {
         createSprintWhenStartPi(programId, piDTO.getId());
         // update pi status: doing
         PiE piE = new PiE(programId, piDTO.getId(), PI_DOING, piDTO.getObjectVersionNumber());
+        piE.setActualStartDate(new Date());
         PiE result = piRepository.updateBySelective(piE);
         return ConvertHelper.convert(result, PiDTO.class);
     }
@@ -404,7 +405,9 @@ public class PiServiceImpl implements PiService {
         // deal projects' sprints complete
         completeProjectsSprints(programId, piDTO.getId());
         // update pi status: done
-        PiE piE = piRepository.updateBySelective(new PiE(programId, piDTO.getId(), PI_DONE, piDTO.getObjectVersionNumber()));
+        PiE update = new PiE(programId, piDTO.getId(), PI_DONE, piDTO.getObjectVersionNumber());
+        update.setActualEndDate(new Date());
+        PiE piE = piRepository.updateBySelective(update);
         // auto start next PI
         PiDO nextPi = piMapper.selectNextPi(programId, piDTO.getArtId(), piDTO.getId());
         if (nextPi != null) {

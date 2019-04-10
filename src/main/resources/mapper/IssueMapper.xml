@@ -3118,10 +3118,6 @@
             <id property="code" column="ap_pi_code"/>
             <id property="name" column="ap_pi_name"/>
         </collection>
-        <collection property="versionNameDOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.VersionNameDO">
-            <id property="versionId" column="apv_version_id"/>
-            <id property="name" column="apv_version_name"/>
-        </collection>
     </resultMap>
 
     <select id="selectFeatureList" resultMap="featureListMap">
@@ -3143,9 +3139,7 @@
            af.acceptance_critera as ai_acceptance_critera,
            apf.pi_id as ap_pi_id,
            ap.code as ap_pi_code,
-           ap.name as ap_pi_name,
-           avir.version_id as apv_version_id,
-           apv.name as apv_version_name
+           ap.name as ap_pi_name
         from agile_issue ai
         LEFT JOIN agile_project_info api ON ai.program_id = api.project_id
         left join agile_feature af on ai.issue_id = af.issue_id

@@ -42,8 +42,6 @@ public class FeatureCommonDO {
 
     private List<PiNameDO> piNameDOList;
 
-    private List<VersionNameDO> versionNameDOList;
-
     public Long getIssueId() {
         return issueId;
     }
@@ -122,14 +120,6 @@ public class FeatureCommonDO {
 
     public void setPiNameDOList(List<PiNameDO> piNameDOList) {
         this.piNameDOList = piNameDOList;
-    }
-
-    public void setVersionNameDOList(List<VersionNameDO> versionNameDOList) {
-        this.versionNameDOList = versionNameDOList;
-    }
-
-    public List<VersionNameDO> getVersionNameDOList() {
-        return versionNameDOList;
     }
 
     public Long getEpicId() {
