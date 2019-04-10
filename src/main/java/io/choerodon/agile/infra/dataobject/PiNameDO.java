@@ -8,6 +8,8 @@ public class PiNameDO {
 
     private Long id;
 
+    private String code;
+
     private String name;
 
     public Long getId() {
@@ -16,6 +18,14 @@ public class PiNameDO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
     }
 
     public String getName() {

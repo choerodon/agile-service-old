@@ -197,7 +197,7 @@
         limit 1
     </select>
 
-    <select id="selectPiList" resultType="io.choerodon.agile.infra.dataobject.PiDO">
+    <select id="selectPiListInArt" resultType="io.choerodon.agile.infra.dataobject.PiDO">
         select *
         from agile_pi
         where program_id = #{programId} and art_id = #{artId}
@@ -339,6 +339,16 @@
     <select id="selectNextListPi" resultType="java.lang.Long">
         select id from agile_pi
         where program_id = #{programId} and art_id = #{artId} and id >= #{piId}
+    </select>
+
+    <select id="selectAllOfProgram" resultType="io.choerodon.agile.infra.dataobject.PiNameDO">
+        select
+           ap.id,
+           ap.code,
+           ap.name
+        from agile_pi ap
+        where ap.program_id = #{programId}
+        order by ap.id desc
     </select>
 
 </mapper>

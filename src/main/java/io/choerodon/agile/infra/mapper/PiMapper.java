@@ -1,9 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.infra.dataobject.PiDO;
-import io.choerodon.agile.infra.dataobject.PiTodoDO;
-import io.choerodon.agile.infra.dataobject.PiWithFeatureDO;
-import io.choerodon.agile.infra.dataobject.SubFeatureDO;
+import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,7 +26,7 @@ public interface PiMapper extends BaseMapper<PiDO> {
 
     PiDO selectLastPi(@Param("programId") Long programId, @Param("artId") Long artId);
 
-    List<PiDO> selectPiList(@Param("programId") Long programId, @Param("artId") Long artId);
+    List<PiDO> selectPiListInArt(@Param("programId") Long programId, @Param("artId") Long artId);
 
     List<Long> queryFeatureIdOrderByRankDesc(@Param("programId") Long programId, @Param("piId") Long piId);
 
@@ -54,4 +51,6 @@ public interface PiMapper extends BaseMapper<PiDO> {
     PiDO selectNextPi(@Param("programId") Long programId, @Param("artId") Long artId, @Param("piId") Long piId);
 
     List<Long> selectNextListPi(@Param("programId") Long programId, @Param("artId") Long artId, @Param("piId") Long piId);
+
+    List<PiNameDO> selectAllOfProgram(@Param("programId") Long programId);
 }

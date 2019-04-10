@@ -11,6 +11,9 @@ public class PiNameDTO {
     @ApiModelProperty(value = "pi主键id")
     private Long id;
 
+    @ApiModelProperty(value = "pi编码")
+    private String code;
+
     @ApiModelProperty(value = "pi名称")
     private String name;
 
@@ -28,5 +31,13 @@ public class PiNameDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
     }
 }
