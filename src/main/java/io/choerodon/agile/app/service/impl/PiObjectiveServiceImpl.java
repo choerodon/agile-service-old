@@ -12,6 +12,7 @@ import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -20,6 +21,7 @@ import java.util.*;
  * Email: fuqianghuang01@gmail.com
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class PiObjectiveServiceImpl implements PiObjectiveService {
 
     @Autowired
