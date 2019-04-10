@@ -31,4 +31,11 @@ databaseChangeLog(logicalFilePath: 'agile_pi.groovy') {
             column(name: "art_id")
         }
     }
+
+    changeSet(id: '2019-04-10-agile-pi-add-column', author: 'fuqianghuang01@gmail.com') {
+        addColumn(tableName: 'agile_pi') {
+            column(name: 'actual_start_date', type: 'DATETIME', remarks: 'actual start date')
+            column(name: 'actual_end_date', type: 'DATETIME', remarks: 'actual end date')
+        }
+    }
 }

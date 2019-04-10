@@ -48,8 +48,6 @@ public class FeatureCommonDTO {
 
     private List<PiNameDTO> piNameDTOList;
 
-    private List<VersionNameDTO> versionNameDTOList;
-
     public Long getIssueId() {
         return issueId;
     }
@@ -128,14 +126,6 @@ public class FeatureCommonDTO {
 
     public List<PiNameDTO> getPiNameDTOList() {
         return piNameDTOList;
-    }
-
-    public void setVersionNameDTOList(List<VersionNameDTO> versionNameDTOList) {
-        this.versionNameDTOList = versionNameDTOList;
-    }
-
-    public List<VersionNameDTO> getVersionNameDTOList() {
-        return versionNameDTOList;
     }
 
     public void setStatusMapDTO(StatusMapDTO statusMapDTO) {

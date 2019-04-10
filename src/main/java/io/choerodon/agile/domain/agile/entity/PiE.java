@@ -31,6 +31,10 @@ public class PiE {
 
     private Date endDate;
 
+    private Date actualStartDate;
+
+    private Date actualEndDate;
+
     private Long artId;
 
     private Long programId;
@@ -115,5 +119,21 @@ public class PiE {
 
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
+    }
+
+    public void setActualStartDate(Date actualStartDate) {
+        this.actualStartDate = actualStartDate;
+    }
+
+    public Date getActualStartDate() {
+        return actualStartDate;
+    }
+
+    public void setActualEndDate(Date actualEndDate) {
+        this.actualEndDate = actualEndDate;
+    }
+
+    public Date getActualEndDate() {
+        return actualEndDate;
     }
 }
