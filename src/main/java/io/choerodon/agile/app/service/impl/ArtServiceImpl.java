@@ -24,6 +24,7 @@ import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.List;
  * Email: fuqianghuang01@gmail.com
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class ArtServiceImpl implements ArtService {
 
     private static final String ART_TODO = "todo";
