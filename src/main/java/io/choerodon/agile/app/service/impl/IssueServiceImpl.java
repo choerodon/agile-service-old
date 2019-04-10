@@ -2169,8 +2169,18 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public List<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId) {
-        return issueAssembler.undistributedIssueDOToDto(issueMapper.queryUnDistributedIssues(projectId), projectId);
+    public Page<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId, PageRequest pageRequest) {
+        Page<UndistributedIssueDO> undistributedIssueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
+                issueMapper.queryUnDistributedIssues(projectId)
+        );
+        Page<UndistributedIssueDTO> result = new Page<>();
+        result.setTotalPages(undistributedIssueDOPage.getTotalPages());
+        result.setSize(undistributedIssueDOPage.getSize());
+        result.setContent(issueAssembler.undistributedIssueDOToDto(undistributedIssueDOPage.getContent(), projectId));
+        result.setNumber(undistributedIssueDOPage.getNumber());
+        result.setNumberOfElements(undistributedIssueDOPage.getNumberOfElements());
+        result.setTotalElements(undistributedIssueDOPage.getTotalElements());
+        return result;
     }
 
     @Override
