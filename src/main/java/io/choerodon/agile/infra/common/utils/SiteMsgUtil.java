@@ -19,7 +19,7 @@ import java.util.Map;
 @Component
 public class SiteMsgUtil {
 
-    public static Logger LOGGER = LoggerFactory.getLogger(SiteMsgUtil.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(SiteMsgUtil.class);
 
     private static final String ASSIGNEENAME = "assigneeName";
     private static final String SUMMARY = "summary";

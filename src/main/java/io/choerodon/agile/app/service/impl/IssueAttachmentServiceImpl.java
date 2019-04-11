@@ -10,6 +10,8 @@ import io.choerodon.agile.domain.agile.repository.IssueAttachmentRepository;
 import io.choerodon.agile.infra.dataobject.IssueAttachmentDO;
 import io.choerodon.agile.infra.feign.FileFeignClient;
 import io.choerodon.agile.infra.mapper.IssueAttachmentMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -34,6 +36,8 @@ import java.util.List;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class IssueAttachmentServiceImpl implements IssueAttachmentService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(IssueAttachmentServiceImpl.class);
 
     private static final String BACKETNAME = "agile-service";
 
@@ -102,17 +106,15 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
         if (issueAttachmentE == null) {
             throw new CommonException("error.attachment.get");
         }
+        Boolean result = issueAttachmentRepository.deleteById(issueAttachmentE.getAttachmentId());
         String url = null;
         try {
             url = URLDecoder.decode(issueAttachmentE.getUrl(), "UTF-8");
-        } catch (IOException i) {
-            throw new CommonException(i.getMessage());
+            fileFeignClient.deleteFile(BACKETNAME, attachmentUrl + url);
+        } catch (Exception e) {
+            LOGGER.error("error.attachment.delete", e);
         }
-        ResponseEntity<String> response = fileFeignClient.deleteFile(BACKETNAME, attachmentUrl + url);
-        if (response == null || response.getStatusCode() != HttpStatus.OK) {
-            throw new CommonException("error.attachment.delete");
-        }
-        return issueAttachmentRepository.deleteById(issueAttachmentE.getAttachmentId());
+        return result;
     }
 
     @Override
