@@ -93,6 +93,17 @@ public class BoardColumnController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("项目群删除BoardColumn")
+    @DeleteMapping(value = "/program/{columnId}")
+    public ResponseEntity deleteProgramBoardColumn(@ApiParam(value = "项目id", required = true)
+                                                   @PathVariable(name = "project_id") Long projectId,
+                                                   @ApiParam(value = "column id", required = true)
+                                                   @PathVariable Long columnId) {
+        boardColumnService.deleteProgramBoardColumn(projectId, columnId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据id查询BoardColumn")
     @GetMapping(value = "/{columnId}")

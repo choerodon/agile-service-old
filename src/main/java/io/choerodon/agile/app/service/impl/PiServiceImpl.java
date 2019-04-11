@@ -7,10 +7,7 @@ import io.choerodon.agile.app.assembler.PiAssembler;
 import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
-import io.choerodon.agile.domain.agile.entity.ArtE;
-import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
-import io.choerodon.agile.domain.agile.entity.PiE;
-import io.choerodon.agile.domain.agile.entity.SprintE;
+import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.domain.agile.repository.ArtRepository;
 import io.choerodon.agile.domain.agile.repository.IssueRepository;
 import io.choerodon.agile.domain.agile.repository.PiRepository;
@@ -54,6 +51,7 @@ public class PiServiceImpl implements PiService {
     private static final String YYYY = "yyyy";
     private static final String ART_DOING = "doing";
     private static final String ART_DONE = "done";
+    private static final String STATUS_ID = "statusId";
 
     @Autowired
     private PiRepository piRepository;
@@ -102,6 +100,9 @@ public class PiServiceImpl implements PiService {
 
     @Autowired
     private IssueStatusMapper issueStatusMapper;
+
+    @Autowired
+    private ColumnStatusRelMapper columnStatusRelMapper;
 
     /**
      * 获取当前年分
@@ -336,6 +337,21 @@ public class PiServiceImpl implements PiService {
         PiE piE = new PiE(programId, piDTO.getId(), PI_DOING, piDTO.getObjectVersionNumber());
         piE.setActualStartDate(new Date());
         PiE result = piRepository.updateBySelective(piE);
+        // update issue status
+        List<IssueDO> issueDOList = issueMapper.selectStatusChangeIssueByPiId(programId, piDTO.getId());
+        Long updateStatusId = columnStatusRelMapper.selectOneStatusIdByCategory(programId, "todo");
+        if (updateStatusId == null) {
+            throw new CommonException("error.updateStatusId.get");
+        }
+        if (issueDOList != null && !issueDOList.isEmpty()) {
+            for (IssueDO issueDO : issueDOList) {
+                IssueE issueE = new IssueE();
+                issueE.setIssueId(issueDO.getIssueId());
+                issueE.setStatusId(updateStatusId);
+                issueE.setObjectVersionNumber(issueDO.getObjectVersionNumber());
+                issueRepository.update(issueE, new String[]{STATUS_ID});
+            }
+        }
         return ConvertHelper.convert(result, PiDTO.class);
     }
 
@@ -376,6 +392,8 @@ public class PiServiceImpl implements PiService {
             return;
         }
         List<Long> moveFeatureIds = piMapper.queryFeatureIds(programId, piId);
+        // batch update status
+        batchUpdateStatus(programId, targetPiId, moveFeatureIds);
         if (targetPiId != null && !Objects.equals(targetPiId, 0L)) {
             issueRepository.featureToDestinationByIdsClosePi(programId, targetPiId, moveFeatureIds, new Date(), customUserDetails.getUserId());
         }
@@ -479,6 +497,45 @@ public class PiServiceImpl implements PiService {
         }
     }
 
+    private void batchUpdateStatus(Long programId, Long piId, List<Long> moveIssueIdsFilter) {
+        Long updateStatusId = null;
+        String categoryCode = null;
+        if (Objects.equals(piId, 0L)) {
+            categoryCode = "prepare";
+            updateStatusId = columnStatusRelMapper.selectOneStatusIdByCategory(programId, categoryCode);
+        } else {
+            PiDO piDO = piMapper.selectByPrimaryKey(piId);
+            switch (piDO.getStatusCode()) {
+                case "todo":
+                    categoryCode = "prepare";
+                    updateStatusId = columnStatusRelMapper.selectOneStatusIdByCategory(programId, categoryCode);
+                    break;
+                case "doing":
+                    categoryCode = "todo";
+                    updateStatusId = columnStatusRelMapper.selectOneStatusIdByCategory(programId, categoryCode);
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (updateStatusId == null) {
+            throw new CommonException("error.updateStatusId.get");
+        }
+        List<IssueDO> moveIssues = issueMapper.selectFeatureByMoveIssueIds(programId, moveIssueIdsFilter, categoryCode, piId);
+        if (moveIssues == null || moveIssues.isEmpty()) {
+            return;
+        }
+        for (IssueDO issueDO : moveIssues) {
+            if (!Objects.equals(issueDO.getStatusId(), updateStatusId)) {
+                IssueE issueE = new IssueE();
+                issueE.setIssueId(issueDO.getIssueId());
+                issueE.setObjectVersionNumber(issueDO.getObjectVersionNumber());
+                issueE.setStatusId(updateStatusId);
+                issueRepository.update(issueE, new String[]{STATUS_ID});
+            }
+        }
+    }
+
     @Override
     public List<SubFeatureDO> batchFeatureToPi(Long programId, Long piId, MoveIssueDTO moveIssueDTO) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
@@ -493,6 +550,8 @@ public class PiServiceImpl implements PiService {
         List<SubFeatureDO> featureDOList = piMapper.selectFeatureIdByFeatureIds(programId, moveIssueIds).stream().filter(subFeatureDO -> subFeatureDO.getPiId() == null ? piId != 0 : !subFeatureDO.getPiId().equals(piId)).collect(Collectors.toList());
         if (featureDOList != null && !featureDOList.isEmpty()) {
             List<Long> moveIssueIdsFilter = featureDOList.stream().map(SubFeatureDO::getIssueId).collect(Collectors.toList());
+            // batch update status
+            batchUpdateStatus(programId, piId, moveIssueIdsFilter);
             BatchRemovePiE batchRemovePiE = new BatchRemovePiE(programId, piId, moveIssueIdsFilter);
             issueRepository.removeFeatureFromPiByIssueIds(batchRemovePiE);
             if (piId != null && !Objects.equals(piId, 0L)) {
