@@ -20,4 +20,6 @@ public interface ColumnStatusRelMapper extends BaseMapper<ColumnStatusRelDO> {
      * @return ColumnStatusRelDO
      */
     List<ColumnStatusRelDO> queryByIssueIdAndColumnIds(@Param("statusToNullIssueIds") List<Long> statusToNullIssueIds, @Param("columnIds") List<Long> columnIds);
+
+    Long selectOneStatusIdByCategory(@Param("programId") Long programId, @Param("categoryCode") String categoryCode);
 }

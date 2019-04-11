@@ -222,6 +222,19 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     }
 
     @Override
+    public void deleteProgramBoardColumn(Long projectId, Long columnId) {
+        BoardColumnDO boardColumnDO = boardColumnMapper.selectByPrimaryKey(columnId);
+        BoardColumnValidator.checkDeleteColumn(boardColumnDO);
+        // 删除列
+        boardColumnRepository.delete(columnId);
+        // 取消列下的状态关联，状态归为未对应的状态
+        ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
+        columnStatusRelE.setColumnId(columnId);
+        columnStatusRelE.setProjectId(projectId);
+        columnStatusRelRepository.delete(columnStatusRelE);
+    }
+
+    @Override
     public BoardColumnDTO queryBoardColumnById(Long projectId, Long columnId) {
         BoardColumnDO boardColumnDO = new BoardColumnDO();
         boardColumnDO.setProjectId(projectId);

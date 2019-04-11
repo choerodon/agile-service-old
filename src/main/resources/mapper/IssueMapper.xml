@@ -3187,4 +3187,29 @@
         order by ai.issue_id desc
     </select>
 
+    <select id="selectFeatureByMoveIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        select ai.*
+        from agile_issue ai, agile_issue_status ais
+        where ai.program_id = #{programId}
+        and ai.issue_id in
+        <foreach collection="moveIssueIdsFilter" item="moveIssueId" open="(" separator=","
+                 close=")">
+            #{moveIssueId}
+        </foreach>
+        and ai.issue_id not in (
+            select apf.issue_id from agile_pi_feature apf
+            where apf.program_id = #{programId} and apf.pi_id = #{piId}
+        )
+        and ai.status_id = ais.status_id and ais.project_id = #{programId} and ais.category_code != #{categoryCode}
+        and ai.type_code = 'feature'
+    </select>
+
+    <select id="selectStatusChangeIssueByPiId" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        select ai.*
+        from agile_issue ai, agile_pi_feature apf, agile_issue_status ais
+        where apf.program_id = #{programId} and apf.pi_id = #{piId}
+        and apf.issue_id = ai.issue_id
+        and ai.status_id = ais.status_id and ais.project_id = #{programId} and ais.category_code != 'todo'
+    </select>
+
 </mapper>

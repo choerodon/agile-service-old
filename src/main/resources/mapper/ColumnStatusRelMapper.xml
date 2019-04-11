@@ -20,4 +20,16 @@
         </foreach>
     </select>
 
+    <select id="selectOneStatusIdByCategory" resultType="java.lang.Long">
+        select abcsr.status_id
+        from agile_board_column_status_rel abcsr, agile_issue_status ais, agile_board_column abc
+        where abcsr.project_id = #{programId}
+              and abcsr.status_id = ais.status_id
+              and ais.project_id = #{programId}
+              and ais.category_code = #{categoryCode}
+              and abcsr.column_id = abc.column_id
+         order by abcsr.status_id
+        limit 1
+    </select>
+
 </mapper>
