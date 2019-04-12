@@ -268,6 +268,14 @@
         and status_code = 'todo'
     </select>
 
+    <select id="selectUnDonePiDOList" resultType="io.choerodon.agile.infra.dataobject.PiDO">
+        select *
+        from agile_pi
+        where program_id = #{programId}
+        and art_id = #{artId}
+        and status_code != 'done'
+    </select>
+
     <select id="selectTodoPi" resultType="io.choerodon.agile.infra.dataobject.PiTodoDO">
         select id, code, name
         from agile_pi
@@ -349,6 +357,19 @@
         from agile_pi ap
         where ap.program_id = #{programId}
         order by ap.id desc
+    </select>
+
+    <select id="selectclosePiListByIssueId" resultType="io.choerodon.agile.infra.dataobject.PiNameDO">
+        select ap.id, ap.code, ap.name
+        from agile_pi ap, agile_pi_feature apf
+        where apf.program_id = #{programId} and apf.issue_id = #{issueId} and apf.pi_id = ap.id and ap.status_code = 'done'
+        order by ap.id
+    </select>
+
+    <select id="selectCurrentPiListByIssueId" resultType="io.choerodon.agile.infra.dataobject.PiNameDO">
+        select ap.id, ap.code, ap.name
+        from agile_pi ap, agile_pi_feature apf
+        where apf.program_id = #{programId} and apf.issue_id = #{issueId} and apf.pi_id = ap.id and ap.status_code != 'done'
     </select>
 
 </mapper>

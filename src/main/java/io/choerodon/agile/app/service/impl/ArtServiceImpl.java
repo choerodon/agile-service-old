@@ -9,7 +9,9 @@ import io.choerodon.agile.app.assembler.ArtAssembler;
 import io.choerodon.agile.app.service.ArtService;
 import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.domain.agile.entity.ArtE;
+import io.choerodon.agile.domain.agile.entity.PiE;
 import io.choerodon.agile.domain.agile.repository.ArtRepository;
+import io.choerodon.agile.domain.agile.repository.PiRepository;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.ArtDO;
 import io.choerodon.agile.infra.dataobject.PiCalendarDO;
@@ -40,6 +42,7 @@ public class ArtServiceImpl implements ArtService {
     private static final String ART_TODO = "todo";
     private static final String ART_DOING = "doing";
     private static final String ART_STOP = "stop";
+    private static final String PI_DONE = "done";
 
     @Autowired
     private ArtRepository artRepository;
@@ -61,6 +64,9 @@ public class ArtServiceImpl implements ArtService {
 
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
+
+    @Autowired
+    private PiRepository piRepository;
 
     @Override
     public ArtDTO createArt(Long programId, ArtDTO artDTO) {
@@ -100,12 +106,18 @@ public class ArtServiceImpl implements ArtService {
     public ArtDTO stopArt(Long programId, ArtDTO artDTO) {
         artValidator.checkArtStop(artDTO);
         ArtE artE = artRepository.updateBySelective(new ArtE(programId, artDTO.getId(), ART_STOP, artDTO.getObjectVersionNumber()));
-        List<PiDO> piDOList = piMapper.selectTodoPiDOList(programId, artDTO.getId());
+        List<PiDO> piDOList = piMapper.selectUnDonePiDOList(programId, artDTO.getId());
         if (piDOList != null) {
             piDOList.forEach(piDO -> {
-                PiDTO piDTO = ConvertHelper.convert(piDO, PiDTO.class);
-                piDTO.setTargetPiId(0L);
-                piService.closePi(programId, piDTO);
+                // deal uncomplete feature to target pi
+                piService.dealUnCompleteFeature(programId, piDO.getId(), 0L);
+                // deal projects' sprints complete
+                piService.completeProjectsSprints(programId, piDO.getId());
+                // update pi status: done
+                PiE update = new PiE(programId, piDO.getId(), PI_DONE, piDO.getObjectVersionNumber());
+                update.setActualStartDate(new Date());
+                update.setActualEndDate(new Date());
+                piRepository.updateBySelective(update);
             });
         }
         return ConvertHelper.convert(artE, ArtDTO.class);

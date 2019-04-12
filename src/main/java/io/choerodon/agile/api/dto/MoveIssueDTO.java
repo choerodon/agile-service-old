@@ -21,6 +21,26 @@ public class MoveIssueDTO {
     @ApiModelProperty(value = "是否生成移动日志")
     private Boolean rankIndex;
 
+    private Long updateStatusId;
+
+    private String statusCategoryCode;
+
+    public void setUpdateStatusId(Long updateStatusId) {
+        this.updateStatusId = updateStatusId;
+    }
+
+    public Long getUpdateStatusId() {
+        return updateStatusId;
+    }
+
+    public void setStatusCategoryCode(String statusCategoryCode) {
+        this.statusCategoryCode = statusCategoryCode;
+    }
+
+    public String getStatusCategoryCode() {
+        return statusCategoryCode;
+    }
+
     public Boolean getRankIndex() {
         return rankIndex;
     }

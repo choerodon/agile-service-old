@@ -45,6 +45,28 @@ public class PiDTO {
     @Transient
     private Long targetPiId;
 
+    @ApiModelProperty(value = "转换的目标状态")
+    private Long updateStatusId;
+
+    @ApiModelProperty(value = "转换目标状态的类别")
+    private String statusCategoryCode;
+
+    public void setUpdateStatusId(Long updateStatusId) {
+        this.updateStatusId = updateStatusId;
+    }
+
+    public Long getUpdateStatusId() {
+        return updateStatusId;
+    }
+
+    public void setStatusCategoryCode(String statusCategoryCode) {
+        this.statusCategoryCode = statusCategoryCode;
+    }
+
+    public String getStatusCategoryCode() {
+        return statusCategoryCode;
+    }
+
     public Long getId() {
         return id;
     }

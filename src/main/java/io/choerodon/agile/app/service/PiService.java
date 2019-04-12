@@ -35,11 +35,15 @@ public interface PiService {
 
     PiDTO closePi(Long programId, PiDTO piDTO);
 
+    void dealUnCompleteFeature(Long programId, Long piId, Long targetPiId);
+
+    void completeProjectsSprints(Long programId, Long piId);
+
     List<SubFeatureDO> batchFeatureToPi(Long programId, Long piId, MoveIssueDTO moveIssueDTO);
 
     List<SubFeatureDO> batchFeatureToEpic(Long programId, Long epicId, List<Long> featureIds);
 
-    void deleteById(Long programId, Long piId, Long artId);
+//    void deleteById(Long programId, Long piId, Long artId);
 
     List<PiNameDTO> queryAllOfProgram(Long programId);
 }
