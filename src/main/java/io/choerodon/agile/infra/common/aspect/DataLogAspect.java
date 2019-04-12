@@ -45,6 +45,7 @@ public class DataLogAspect {
     private static final String ISSUE = "issue";
     private static final String ISSUE_CREATE = "issueCreate";
     private static final String SPRINT = "sprint";
+    private static final String PI = "pi";
     private static final String VERSION_CREATE = "versionCreate";
     private static final String COMPONENT_CREATE = "componentCreate";
     private static final String COMPONENT_DELETE = "componentDelete";
@@ -61,8 +62,10 @@ public class DataLogAspect {
     private static final String BATCH_TO_VERSION = "batchToVersion";
     private static final String BATCH_REMOVE_VERSION = "batchRemoveVersion";
     private static final String BATCH_REMOVE_SPRINT_TO_TARGET = "batchRemoveSprintToTarget";
+    private static final String BATCH_REMOVE_PI_TO_TARGET = "batchRemovePiToTarget";
     private static final String BATCH_TO_EPIC = "batchToEpic";
     private static final String BATCH_REMOVE_SPRINT = "batchRemoveSprint";
+    private static final String BATCH_REMOVE_PI = "batchRemovePi";
     private static final String BATCH_REMOVE_SPRINT_BY_SPRINT_ID = "batchRemoveSprintBySprintId";
     private static final String BATCH_DELETE_LABEL = "batchDeleteLabel";
     private static final String BATCH_UPDATE_ISSUE_STATUS = "batchUpdateIssueStatus";
@@ -87,6 +90,7 @@ public class DataLogAspect {
     private static final String REPORTER_ID_FIELD = "reporterId";
     private static final String FIELD_REPORTER = "reporter";
     private static final String FIELD_SPRINT = "Sprint";
+    private static final String FIELD_PI = "Pi";
     private static final String STORY_POINTS_FIELD = "storyPoints";
     private static final String EPIC_ID_FIELD = "epicId";
     private static final String FIELD_STORY_POINTS = "Story Points";
@@ -159,6 +163,8 @@ public class DataLogAspect {
     private DataLogRedisUtil dataLogRedisUtil;
     @Autowired
     private WorkLogMapper workLogMapper;
+    @Autowired
+    private PiMapper piMapper;
 
     /**
      * 定义拦截规则：拦截Spring管理的后缀为RepositoryImpl的bean中带有@DataLog注解的方法。
@@ -189,6 +195,8 @@ public class DataLogAspect {
                     case SPRINT:
                         handleSprintDataLog(args);
                         break;
+                    case PI:
+                        handlePiDataLog(args);
                     case VERSION_CREATE:
                         handleVersionCreateDataLog(args);
                         break;
@@ -248,8 +256,14 @@ public class DataLogAspect {
                     case BATCH_REMOVE_SPRINT:
                         batchRemoveSprintDataLog(args);
                         break;
+                    case BATCH_REMOVE_PI:
+                        batchRemovePiDataLog(args);
+                        break;
                     case BATCH_REMOVE_SPRINT_TO_TARGET:
                         batchRemoveSprintToTarget(args);
+                        break;
+                    case BATCH_REMOVE_PI_TO_TARGET:
+                        batchRemovePiToTarget(args);
                         break;
                     case BATCH_DELETE_LABEL:
                         batchDeleteLabelDataLog(args);
@@ -389,6 +403,45 @@ public class DataLogAspect {
                 handleBatchCreateDataLogForSpring(sprintNames, sprintNameDO, newSprintNameStr, newSprintIdStr, sprintDO, projectId, issueId);
             }
             dataLogRedisUtil.deleteByBatchRemoveSprintToTarget(sprintId, projectId, null);
+        }
+    }
+
+    private void batchRemovePiToTarget(Object[] args) {
+        Long programId = (Long) args[0];
+        Long piId = (Long) args[1];
+        List<Long> issueIds = (List<Long>) args[2];
+        if (programId != null && piId != null && issueIds != null && !issueIds.isEmpty()) {
+            for (Long issueId : issueIds) {
+                List<PiNameDO> piNameDOList = piMapper.selectclosePiListByIssueId(programId, issueId);
+                PiNameDO currentPiNameDO = piMapper.selectCurrentPiListByIssueId(programId, issueId);
+                PiDO targetPi = piMapper.selectByPrimaryKey(piId);
+                String oldString = "";
+                String oldvalue = "";
+                String newString = "";
+                String newValue = "";
+                if (piNameDOList != null && !piNameDOList.isEmpty()) {
+                    oldString += piNameDOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
+                    oldvalue += piNameDOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
+                    newString += piNameDOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
+                    newValue += piNameDOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
+                }
+                if (currentPiNameDO != null) {
+                    oldString = oldString + ("".equals(oldString) ? currentPiNameDO.getCode() + "-" + currentPiNameDO.getName() : "," + currentPiNameDO.getCode() + "-" + currentPiNameDO.getName());
+                    oldvalue = oldvalue + ("".equals(oldvalue) ? currentPiNameDO.getId().toString() : "," + currentPiNameDO.getId().toString());
+                    newString = newString + ("".equals(newString) ? currentPiNameDO.getCode() + "-" + currentPiNameDO.getName() : "," + currentPiNameDO.getCode() + "-" + currentPiNameDO.getName());
+                    newValue = newValue + ("".equals(newValue) ? currentPiNameDO.getId().toString() : "," + currentPiNameDO.getId().toString());
+                }
+                if (targetPi != null) {
+                    newString = newString + ("".equals(newString) ? targetPi.getCode() + "-" + targetPi.getName() : "," + targetPi.getCode() + "-" + targetPi.getName());
+                    newValue = newValue + ("".equals(newValue) ? targetPi.getId() : "," + targetPi.getId().toString());
+                }
+                createDataLog(programId, issueId, FIELD_PI,
+                        "".equals(oldString) ? null : oldString,
+                        "".equals(newString) ? null : newString,
+                        "".equals(oldvalue) ? null : oldvalue,
+                        "".equals(newValue) ? null : newValue);
+            }
+
         }
     }
 
@@ -749,6 +802,47 @@ public class DataLogAspect {
         }
     }
 
+    private void batchRemovePiDataLog(Object[] args) {
+        BatchRemovePiE batchRemovePiE = null;
+        for (Object arg : args) {
+            if (arg instanceof BatchRemovePiE) {
+                batchRemovePiE = (BatchRemovePiE) arg;
+            }
+        }
+        if (batchRemovePiE != null) {
+            Long programId = batchRemovePiE.getProgramId();
+            Long piId = batchRemovePiE.getPiId();
+            for (Long issueId : batchRemovePiE.getIssueIds()) {
+                List<PiNameDO> piNameDOList = piMapper.selectclosePiListByIssueId(programId, issueId);
+                PiNameDO currentPiNameDO = piMapper.selectCurrentPiListByIssueId(programId, issueId);
+                PiDO targetPi = piMapper.selectByPrimaryKey(piId);
+                String oldString = "";
+                String oldvalue = "";
+                String newString = "";
+                String newValue = "";
+                if (piNameDOList != null && !piNameDOList.isEmpty()) {
+                    oldString += piNameDOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
+                    oldvalue += piNameDOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
+                    newString += piNameDOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
+                    newValue += piNameDOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
+                }
+                if (currentPiNameDO != null) {
+                    oldString = oldString + ("".equals(oldString) ? currentPiNameDO.getCode() + "-" + currentPiNameDO.getName() : "," + currentPiNameDO.getCode() + "-" + currentPiNameDO.getName());
+                    oldvalue = oldvalue + ("".equals(oldvalue) ? currentPiNameDO.getId().toString() : "," + currentPiNameDO.getId().toString());
+                }
+                if (targetPi != null) {
+                    newString = newString + ("".equals(newString) ? targetPi.getCode() + "-" + targetPi.getName() : "," + targetPi.getCode() + "-" + targetPi.getName());
+                    newValue = newValue + ("".equals(newValue) ? targetPi.getId() : "," + targetPi.getId().toString());
+                }
+                createDataLog(programId, issueId, FIELD_PI,
+                        "".equals(oldString) ? null : oldString,
+                        "".equals(newString) ? null : newString,
+                        "".equals(oldvalue) ? null : oldvalue,
+                        "".equals(newValue) ? null : newValue);
+            }
+        }
+    }
+
     private void handleBatchRemoveSprint(Long projectId, List<Long> issueIds, Long sprintId) {
         SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
         for (Long issueId : issueIds) {
@@ -1010,6 +1104,43 @@ public class DataLogAspect {
             createDataLog(issueSprintRelE.getProjectId(), issueSprintRelE.getIssueId(),
                     FIELD_SPRINT, null, sprintDO.getSprintName(), null, issueSprintRelE.getSprintId().toString());
             dataLogRedisUtil.deleteByHandleSprintDataLog(sprintDO);
+        }
+    }
+
+    private void handlePiDataLog(Object[] args) {
+        PiFeatureE piFeatureE = null;
+        for (Object arg : args) {
+            if (arg instanceof PiFeatureE) {
+                piFeatureE = (PiFeatureE) arg;
+            }
+        }
+        if (piFeatureE != null) {
+            List<PiNameDO> piNameDOList = piMapper.selectclosePiListByIssueId(piFeatureE.getProgramId(), piFeatureE.getIssueId());
+            PiNameDO currentPiNameDO = piMapper.selectCurrentPiListByIssueId(piFeatureE.getProgramId(), piFeatureE.getIssueId());
+            PiDO targetPi = piMapper.selectByPrimaryKey(piFeatureE.getPiId());
+            String oldString = "";
+            String oldvalue = "";
+            String newString = "";
+            String newValue = "";
+            if (piNameDOList != null && !piNameDOList.isEmpty()) {
+                oldString += piNameDOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
+                oldvalue += piNameDOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
+                newString += piNameDOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
+                newValue += piNameDOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
+            }
+            if (currentPiNameDO != null) {
+                oldString = oldString + ("".equals(oldString) ? currentPiNameDO.getCode() + "-" + currentPiNameDO.getName() : "," + currentPiNameDO.getCode() + "-" + currentPiNameDO.getName());
+                oldvalue = oldvalue + ("".equals(oldvalue) ? currentPiNameDO.getId().toString() : "," + currentPiNameDO.getId().toString());
+            }
+            if (targetPi != null) {
+                newString = newString + ("".equals(newString) ? targetPi.getCode() + "-" + targetPi.getName() : "," + targetPi.getCode() + "-" + targetPi.getName());
+                newValue = newValue + ("".equals(newValue) ? targetPi.getId() : "," + targetPi.getId().toString());
+            }
+            createDataLog(piFeatureE.getProgramId(), piFeatureE.getIssueId(), FIELD_PI,
+                    "".equals(oldString) ? null : oldString,
+                    "".equals(newString) ? null : newString,
+                    "".equals(oldvalue) ? null : oldvalue,
+                    "".equals(newValue) ? null : newValue);
         }
     }
 

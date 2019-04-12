@@ -2,6 +2,7 @@ package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.PiFeatureE;
 import io.choerodon.agile.domain.agile.repository.PiFeatureRepository;
+import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.PiFeatureDO;
 import io.choerodon.agile.infra.mapper.PiFeatureMapper;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -20,6 +21,7 @@ public class PiFeatureRepositoryImpl implements PiFeatureRepository {
     private PiFeatureMapper piFeatureMapper;
 
     @Override
+    @DataLog(type = "pi")
     public PiFeatureE create(PiFeatureE piFeatureE) {
         PiFeatureDO piFeatureDO = ConvertHelper.convert(piFeatureE, PiFeatureDO.class);
         if (piFeatureMapper.insert(piFeatureDO) != 1) {

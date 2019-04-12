@@ -148,6 +148,7 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
+    @DataLog(type = "batchRemovePi", single = false)
     public int removeFeatureFromPiByIssueIds(BatchRemovePiE batchRemovePiE) {
         return issueMapper.removeFeatureFromPiByIssueIds(batchRemovePiE.getProgramId(), batchRemovePiE.getIssueIds());
     }
@@ -178,6 +179,8 @@ public class IssueRepositoryImpl implements IssueRepository {
         return issueMapper.issueToDestinationByIds(projectId, targetSprintId, issueIds, date, userId);
     }
 
+    @Override
+    @DataLog(type = "batchRemovePiToTarget", single = false)
     public int featureToDestinationByIdsClosePi(Long programId, Long targetPiId, List<Long> issueIds, Date date, Long userId) {
         return issueMapper.featureToDestinationByIdsClosePi(programId, targetPiId, issueIds, date, userId);
     }

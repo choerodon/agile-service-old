@@ -38,6 +38,8 @@ public interface PiMapper extends BaseMapper<PiDO> {
 
     List<PiDO> selectTodoPiDOList(@Param("programId") Long programId, @Param("artId") Long artId);
 
+    List<PiDO> selectUnDonePiDOList(@Param("programId") Long programId, @Param("artId") Long artId);
+
     Long selectFeatureCount(@Param("programId") Long programId, @Param("piId") Long piId, @Param("isCompleted") Boolean isCompleted);
 
     List<PiTodoDO> selectTodoPi(@Param("programId") Long programId, @Param("artId") Long artId);
@@ -53,4 +55,8 @@ public interface PiMapper extends BaseMapper<PiDO> {
     List<Long> selectNextListPi(@Param("programId") Long programId, @Param("artId") Long artId, @Param("piId") Long piId);
 
     List<PiNameDO> selectAllOfProgram(@Param("programId") Long programId);
+
+    List<PiNameDO> selectclosePiListByIssueId(@Param("programId") Long programId, @Param("issueId") Long issueId);
+
+    PiNameDO selectCurrentPiListByIssueId(@Param("programId") Long programId, @Param("issueId") Long issueId);
 }
