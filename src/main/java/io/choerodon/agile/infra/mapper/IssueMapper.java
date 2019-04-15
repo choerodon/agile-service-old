@@ -544,4 +544,10 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     List<IssueCountDO> selectUnEstimateStoryCountByIds(@Param("projectId") Long projectId, @Param("ids") List<Long> ids);
 
     List<IssueCountDO> selectTotalStoryPointsByIds(@Param("projectId") Long projectId, @Param("ids") List<Long> ids);
+
+    void updateStatusIdBatch(@Param("programId") Long programId,
+                             @Param("updateStatusId") Long updateStatusId,
+                             @Param("issueIds") List<Long> issueIds,
+                             @Param("lastUpdatedBy") Long lastUpdatedBy,
+                             @Param("lastUpdateDate") Date lastUpdateDate);
 }

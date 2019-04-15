@@ -3274,4 +3274,14 @@
         and ai.status_id = ais.status_id and ais.project_id = #{programId} and ais.category_code != 'todo'
     </select>
 
+    <update id="updateStatusIdBatch">
+        update agile_issue set status_id = #{updateStatusId}, last_updated_by = #{lastUpdatedBy}, last_update_date = #{lastUpdateDate}
+        where program_Id = #{programId} and type_code = 'feature' and apply_type = 'program'
+        and issue_id in
+        <foreach collection="issueIds" item="issueId" open="(" separator=","
+                 close=")">
+            #{issueId}
+        </foreach>
+    </update>
+
 </mapper>

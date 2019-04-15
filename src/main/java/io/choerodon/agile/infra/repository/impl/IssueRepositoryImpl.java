@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -220,6 +221,13 @@ public class IssueRepositoryImpl implements IssueRepository {
         if (updateIds != null && !updateIds.isEmpty()) {
             issueMapper.updateFeatureAndEpicWhenJoinProgram(programId, projectId, initStatusId, updateIds);
         }
+    }
+
+    @Override
+    @DataLog(type = "batchUpdateStatusId", single = false)
+    public void updateStatusIdBatch(Long programId, Long updateStatusId, List<IssueDO> issueDOList, Long lastUpdatedBy, Date lastUpdateDate) {
+        List<Long> issueIds = issueDOList.stream().map(IssueDO::getIssueId).collect(Collectors.toList());
+        issueMapper.updateStatusIdBatch(programId, updateStatusId, issueIds, lastUpdatedBy, lastUpdateDate);
     }
 
 }

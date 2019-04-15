@@ -128,6 +128,7 @@ public class DataLogAspect {
     private static final String BURN_DOWN_COORDINATE_BY_TYPE = AGILE + "BurnDownCoordinateByType";
     private static final String VERSION = "Version";
     private static final String EPIC = "Epic";
+    private static final String BATCH_UPDATE_STATUS_ID = "batchUpdateStatusId";
 
     @Autowired
     private IssueStatusMapper issueStatusMapper;
@@ -301,6 +302,9 @@ public class DataLogAspect {
                     case BATCH_UPDATE_ISSUE_PRIORITY:
                         batchUpdateIssuePriority(args);
                         break;
+                    case BATCH_UPDATE_STATUS_ID:
+                        batchUpdateIssueStatusId(args);
+                        break;
                     default:
                         break;
                 }
@@ -333,6 +337,20 @@ public class DataLogAspect {
             }
         }
         return null;
+    }
+
+    private void batchUpdateIssueStatusId(Object[] args) {
+        Long programId = (Long) args[0];
+        Long updateStatusId = (Long) args[1];
+        List<IssueDO> issueDOList = (List<IssueDO>) args[2];
+        if (programId != null && updateStatusId != null && issueDOList != null && !issueDOList.isEmpty()) {
+            Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(ConvertUtil.getOrganizationId(programId)).getBody();
+            StatusMapDTO newStatus = statusMapDTOMap.get(updateStatusId);
+            for (IssueDO issueDO : issueDOList) {
+                StatusMapDTO oldStatus = statusMapDTOMap.get(issueDO.getStatusId());
+                createDataLog(programId, issueDO.getIssueId(), FIELD_STATUS, oldStatus.getName(), newStatus.getName(), oldStatus.getId().toString(), newStatus.getId().toString());
+            }
+        }
     }
 
     private void batchUpdateIssueStatusToOtherDataLog(Object[] args) {
