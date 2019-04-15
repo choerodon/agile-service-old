@@ -48,7 +48,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      */
     List<IssueDO> queryIssueEpicSelectList(@Param("projectId") Long projectId);
 
-    List<IssueDO> queryIssueFeatureSelectList(@Param("projectId") Long projectId, @Param("epicId") Long epicId);
+    List<IssueDO> queryIssueFeatureSelectList(@Param("programId") Long programId, @Param("epicId") Long epicId);
 
     List<IssueDO> listEpicSelectProgramData(@Param("programId") Long programId);
 
@@ -529,9 +529,19 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     void updateFeatureAndEpicWhenJoinProgram(@Param("programId") Long programId, @Param("projectId") Long projectId, @Param("initStatusId") Long initStatusId, @Param("updateIds") List<Long> updateIds);
 
-    List<FeatureCommonDO> selectFeatureList(@Param("programId") Long programId, @Param("searchDTO") SearchDTO searchDTO);
+    List<FeatureCommonDO> selectFeatureList(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
+
+    List<Long> selectFeatureIdsByPage(@Param("programId") Long programId, @Param("searchDTO") SearchDTO searchDTO);
 
     List<IssueDO> selectFeatureByMoveIssueIds(@Param("programId") Long programId, @Param("moveIssueIdsFilter") List<Long> moveIssueIdsFilter, @Param("categoryCode") String categoryCode, @Param("piId") Long piId);
 
     List<IssueDO> selectStatusChangeIssueByPiId(@Param("programId") Long programId, @Param("piId") Long piId);
+
+    List<IssueCountDO> selectStoryCountByIds(@Param("projectId") Long projectId, @Param("ids") List<Long> ids);
+
+    List<IssueCountDO> selectCompletedStoryCountByIds(@Param("projectId") Long projectId, @Param("ids") List<Long> ids);
+
+    List<IssueCountDO> selectUnEstimateStoryCountByIds(@Param("projectId") Long projectId, @Param("ids") List<Long> ids);
+
+    List<IssueCountDO> selectTotalStoryPointsByIds(@Param("projectId") Long projectId, @Param("ids") List<Long> ids);
 }

@@ -397,10 +397,7 @@ public class IssueServiceImpl implements IssueService {
             }
         }
         if (STORY_TYPE.equals(issue.getTypeCode()) && issue.getFeatureId() != null) {
-            IssueDO issueDO = new IssueDO();
-            issueDO.setIssueId(issue.getFeatureId());
-            issueDO.setTypeCode(ISSUE_TYPE_FEATURE);
-            IssueDO issueInfo = issueMapper.selectByPrimaryKey(issueDO);
+            IssueDO issueInfo = issueMapper.selectByPrimaryKey(issue.getFeatureId());
             if (issueInfo != null) {
                 issue.setFeatureName(issueInfo.getSummary());
             }
@@ -417,10 +414,7 @@ public class IssueServiceImpl implements IssueService {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
         if (STORY_TYPE.equals(issue.getTypeCode()) && issue.getFeatureId() != null) {
-            IssueDO issueDO = new IssueDO();
-            issueDO.setIssueId(issue.getFeatureId());
-            issueDO.setTypeCode(ISSUE_TYPE_FEATURE);
-            IssueDO issueInfo = issueMapper.selectByPrimaryKey(issueDO);
+            IssueDO issueInfo = issueMapper.selectByPrimaryKey(issue.getFeatureId());
             if (issueInfo != null) {
                 issue.setFeatureName(issueInfo.getSummary());
             }
@@ -649,6 +643,12 @@ public class IssueServiceImpl implements IssueService {
                 calculationRank(projectId, issueE);
                 fieldList.add(RANK_FIELD);
                 issueE.setOriginSprintId(originIssue.getSprintId());
+            }
+        }
+        if (fieldList.contains("featureId") && fieldList.contains("epicId")) {
+            IssueDO featureUpdate = issueMapper.selectByPrimaryKey(issueE.getFeatureId());
+            if (featureUpdate != null && !Objects.equals(issueE.getEpicId(), featureUpdate.getEpicId())) {
+                issueE.setEpicId(featureUpdate.getEpicId());
             }
         }
         issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
@@ -1200,8 +1200,37 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public List<IssueFeatureDTO> listFeatureSelectData(Long projectId, Long epicId) {
-        return issueAssembler.toTargetList(issueMapper.queryIssueFeatureSelectList(projectId,epicId), IssueFeatureDTO.class);
+    public List<IssueFeatureDTO> listFeatureSelectData(Long projectId, Long organizationId, Long epicId) {
+        ProjectDTO program = userFeignClient.getGroupInfoByEnableProject(organizationId, projectId).getBody();
+        if (program != null) {
+            return issueAssembler.toTargetList(issueMapper.queryIssueFeatureSelectList(program.getId(), epicId), IssueFeatureDTO.class);
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<IssueFeatureDTO> listFeature(Long projectId, Long organizationId) {
+        ProjectDTO program = userFeignClient.getGroupInfoByEnableProject(organizationId, projectId).getBody();
+        if (program != null) {
+            List<IssueFeatureDTO> issueFeatureDTOList = issueAssembler.toTargetList(issueMapper.queryIssueFeatureSelectList(program.getId(),null), IssueFeatureDTO.class);
+            if (issueFeatureDTOList != null && !issueFeatureDTOList.isEmpty()) {
+                List<Long> ids = issueFeatureDTOList.stream().map(IssueFeatureDTO::getIssueId).collect(Collectors.toList());
+                Map<Long, Integer> storyCountMap = issueMapper.selectStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+                Map<Long, Integer> completedStoryCountMap = issueMapper.selectCompletedStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+                Map<Long, Integer> unestimateStoryCountMap = issueMapper.selectUnEstimateStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+                Map<Long, BigDecimal> totalStoryPointsMap = issueMapper.selectTotalStoryPointsByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getStoryPointCount));
+                issueFeatureDTOList.forEach(issueFeatureDTO -> {
+                    issueFeatureDTO.setStoryCount(storyCountMap.get(issueFeatureDTO.getIssueId()) == null ? 0 : storyCountMap.get(issueFeatureDTO.getIssueId()));
+                    issueFeatureDTO.setStoryCompletedCount(completedStoryCountMap.get(issueFeatureDTO.getIssueId()) == null ? 0 : completedStoryCountMap.get(issueFeatureDTO.getIssueId()));
+                    issueFeatureDTO.setUnEstimateStoryCount(unestimateStoryCountMap.get(issueFeatureDTO.getIssueId()) == null ? 0 : unestimateStoryCountMap.get(issueFeatureDTO.getIssueId()));
+                    issueFeatureDTO.setTotalStoryPoints(totalStoryPointsMap.get(issueFeatureDTO.getIssueId()) == null ? new BigDecimal(0) : totalStoryPointsMap.get(issueFeatureDTO.getIssueId()));
+                });
+            }
+            return issueFeatureDTOList;
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     @Override
@@ -2350,14 +2379,14 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public Page<FeatureCommonDTO> queryFeatureList(Long programId, PageRequest pageRequest, SearchDTO searchDTO) {
-        Page<FeatureCommonDO> featureCommonDOPage = PageHelper.doPageAndSort(pageRequest, () ->
-                issueMapper.selectFeatureList(programId, searchDTO)
+        Page<Long> featureCommonDOPage = PageHelper.doPage(pageRequest, () ->
+                issueMapper.selectFeatureIdsByPage(programId, searchDTO)
         );
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(programId);
         Page<FeatureCommonDTO> result = new Page<>();
         result.setNumberOfElements(featureCommonDOPage.getNumberOfElements());
         result.setNumber(featureCommonDOPage.getNumber());
-        result.setContent(featureCommonAssembler.featureCommonDOToDTO(featureCommonDOPage.getContent(), statusMapDTOMap));
+        result.setContent(featureCommonAssembler.featureCommonDOToDTO(issueMapper.selectFeatureList(programId, featureCommonDOPage.getContent()), statusMapDTOMap));
         result.setTotalPages(featureCommonDOPage.getTotalPages());
         result.setSize(featureCommonDOPage.getSize());
         result.setTotalElements(featureCommonDOPage.getTotalElements());

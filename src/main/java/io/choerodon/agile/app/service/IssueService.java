@@ -126,7 +126,9 @@ public interface IssueService {
      */
     List<IssueEpicDTO> listEpicSelectData(Long projectId);
 
-    List<IssueFeatureDTO> listFeatureSelectData(Long projectId, Long epicId);
+    List<IssueFeatureDTO> listFeatureSelectData(Long projectId, Long organizationId, Long epicId);
+
+    List<IssueFeatureDTO> listFeature(Long projectId, Long organizationId);
 
     List<IssueEpicDTO> listEpicSelectProgramData(Long programId);
 
