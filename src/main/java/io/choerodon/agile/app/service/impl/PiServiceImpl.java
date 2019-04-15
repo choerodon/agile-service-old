@@ -105,9 +105,6 @@ public class PiServiceImpl implements PiService {
     private IssueStatusMapper issueStatusMapper;
 
     @Autowired
-    private ColumnStatusRelMapper columnStatusRelMapper;
-
-    @Autowired
     private InstanceFeignClient instanceFeignClient;
 
 
@@ -429,6 +426,9 @@ public class PiServiceImpl implements PiService {
     @Override
     public void completeProjectsSprints(Long programId, Long piId) {
         List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId).getBody();
+        if (projectRelationshipDTOList == null || projectRelationshipDTOList.isEmpty()) {
+            return;
+        }
         for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
             Long projectId = projectRelationshipDTO.getProjectId();
             List<Long> sprintIds = sprintMapper.selectByPiId(projectId, piId);
@@ -458,8 +458,8 @@ public class PiServiceImpl implements PiService {
                 piE.setCode(artDO.getPiCodePrefix());
                 piE.setName(piCodeNumber.toString());
                 piCodeNumber++;
-                piE.setArtId(artDO.getId());
                 piE.setStatusCode(PI_TODO);
+                piE.setArtId(artDO.getId());
                 piE.setProgramId(programId);
                 setPiStartAndEndDate(piE, piWorkDays, startDate);
                 PiE piRes = piRepository.create(piE);
@@ -557,26 +557,6 @@ public class PiServiceImpl implements PiService {
     }
 
     private void batchUpdateStatus(Long programId, Long piId, List<Long> moveIssueIdsFilter, Long updateStatusId, String categoryCode) {
-//        Long updateStatusId = null;
-//        String categoryCode = null;
-//        if (Objects.equals(piId, 0L)) {
-//            categoryCode = "prepare";
-//            updateStatusId = columnStatusRelMapper.selectOneStatusIdByCategory(programId, categoryCode);
-//        } else {
-//            PiDO piDO = piMapper.selectByPrimaryKey(piId);
-//            switch (piDO.getStatusCode()) {
-//                case "todo":
-//                    categoryCode = "prepare";
-//                    updateStatusId = columnStatusRelMapper.selectOneStatusIdByCategory(programId, categoryCode);
-//                    break;
-//                case "doing":
-//                    categoryCode = "todo";
-//                    updateStatusId = columnStatusRelMapper.selectOneStatusIdByCategory(programId, categoryCode);
-//                    break;
-//                default:
-//                    break;
-//            }
-//        }
         List<IssueDO> moveIssues = issueMapper.selectFeatureByMoveIssueIds(programId, moveIssueIdsFilter, categoryCode, piId);
         if (moveIssues == null || moveIssues.isEmpty()) {
             return;
