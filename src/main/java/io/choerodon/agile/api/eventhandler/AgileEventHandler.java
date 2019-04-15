@@ -84,6 +84,7 @@ public class AgileEventHandler {
             issueLinkTypeService.initIssueLinkType(projectEvent.getProjectId());
         } else if (PROJECT_CATEGORY_PROGRAM.equals(projectEvent.getProjectCategory())) {
             projectInfoService.initializationProjectInfo(projectEvent);
+            issueLinkTypeService.initIssueLinkType(projectEvent.getProjectId());
         }
         LOGGER.info("接受项目创建消息{}", message);
         return message;
