@@ -346,13 +346,15 @@ public class PiServiceImpl implements PiService {
         Long updateStatusId = piDTO.getUpdateStatusId();
         if (updateStatusId != null) {
             if (issueDOList != null && !issueDOList.isEmpty()) {
-                for (IssueDO issueDO : issueDOList) {
-                    IssueE issueE = new IssueE();
-                    issueE.setIssueId(issueDO.getIssueId());
-                    issueE.setStatusId(updateStatusId);
-                    issueE.setObjectVersionNumber(issueDO.getObjectVersionNumber());
-                    issueRepository.update(issueE, new String[]{STATUS_ID});
-                }
+//                for (IssueDO issueDO : issueDOList) {
+//                    IssueE issueE = new IssueE();
+//                    issueE.setIssueId(issueDO.getIssueId());
+//                    issueE.setStatusId(updateStatusId);
+//                    issueE.setObjectVersionNumber(issueDO.getObjectVersionNumber());
+//                    issueRepository.update(issueE, new String[]{STATUS_ID});
+//                }
+                CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
+                issueRepository.updateStatusIdBatch(programId, updateStatusId, issueDOList, customUserDetails.getUserId(), new Date());
             }
         }
         return ConvertHelper.convert(result, PiDTO.class);
@@ -416,7 +418,7 @@ public class PiServiceImpl implements PiService {
         if (initStatusId == null) {
             throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
         }
-        batchUpdateStatus(programId, targetPiId, moveFeatureIds, initStatusId, "prepare");
+        batchUpdateStatus(programId, targetPiId, moveFeatureIds, initStatusId, "prepare", customUserDetails.getUserId());
         if (targetPiId != null && !Objects.equals(targetPiId, 0L)) {
             issueRepository.featureToDestinationByIdsClosePi(programId, targetPiId, moveFeatureIds, new Date(), customUserDetails.getUserId());
         }
@@ -556,20 +558,21 @@ public class PiServiceImpl implements PiService {
         }
     }
 
-    private void batchUpdateStatus(Long programId, Long piId, List<Long> moveIssueIdsFilter, Long updateStatusId, String categoryCode) {
+    private void batchUpdateStatus(Long programId, Long piId, List<Long> moveIssueIdsFilter, Long updateStatusId, String categoryCode, Long userId) {
         List<IssueDO> moveIssues = issueMapper.selectFeatureByMoveIssueIds(programId, moveIssueIdsFilter, categoryCode, piId);
         if (moveIssues == null || moveIssues.isEmpty()) {
             return;
         }
-        for (IssueDO issueDO : moveIssues) {
-            if (!Objects.equals(issueDO.getStatusId(), updateStatusId)) {
-                IssueE issueE = new IssueE();
-                issueE.setIssueId(issueDO.getIssueId());
-                issueE.setObjectVersionNumber(issueDO.getObjectVersionNumber());
-                issueE.setStatusId(updateStatusId);
-                issueRepository.update(issueE, new String[]{STATUS_ID});
-            }
-        }
+//        for (IssueDO issueDO : moveIssues) {
+//            if (!Objects.equals(issueDO.getStatusId(), updateStatusId)) {
+//                IssueE issueE = new IssueE();
+//                issueE.setIssueId(issueDO.getIssueId());
+//                issueE.setObjectVersionNumber(issueDO.getObjectVersionNumber());
+//                issueE.setStatusId(updateStatusId);
+//                issueRepository.update(issueE, new String[]{STATUS_ID});
+//            }
+//        }
+        issueRepository.updateStatusIdBatch(programId, updateStatusId, moveIssues, userId, new Date());
     }
 
     @Override
@@ -588,7 +591,7 @@ public class PiServiceImpl implements PiService {
             List<Long> moveIssueIdsFilter = featureDOList.stream().map(SubFeatureDO::getIssueId).collect(Collectors.toList());
             // batch update status
             if (moveIssueDTO.getUpdateStatusId() != null) {
-                batchUpdateStatus(programId, piId, moveIssueIdsFilter, moveIssueDTO.getUpdateStatusId(), moveIssueDTO.getStatusCategoryCode());
+                batchUpdateStatus(programId, piId, moveIssueIdsFilter, moveIssueDTO.getUpdateStatusId(), moveIssueDTO.getStatusCategoryCode(), customUserDetails.getUserId());
             }
             BatchRemovePiE batchRemovePiE = new BatchRemovePiE(programId, piId, moveIssueIdsFilter);
             issueRepository.removeFeatureFromPiByIssueIds(batchRemovePiE);
