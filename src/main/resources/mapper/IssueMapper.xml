@@ -25,6 +25,7 @@
         <id column="priority_id" property="priorityId"/>
         <id column="issue_type_id" property="issueTypeId"/>
         <id column="apply_type" property="applyType"/>
+        <id column="feature_id" property="featureId"/>
         <association property="activeSprint" column="issue_id" select="queryActiveSprintNameByIssueId"/>
         <association property="activePi" column="issue_id" select="queryActivePiNameByIssueId"/>
         <collection property="versionIssueRelDOList" column="issue_id"
@@ -1254,17 +1255,65 @@
 
     <select id="queryIssueFeatureSelectList" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
         SELECT
-        issue_id,
-        summary
+        ai.issue_id,
+        ai.summary,
+        ai.epic_id
         FROM
-        agile_issue
+        agile_issue ai, agile_issue_status ais
         WHERE
-        project_id = #{projectId}
-        AND type_code = 'feature'
+        ai.program_id = #{programId}
+        AND ai.type_code = 'feature' and ai.status_id = ais.status_id and ais.project_id = #{programId} and ais.category_code in ('todo', 'doing')
         <if test='epicId != null'>
-            AND   epic_id = #{epicId}
+            AND ai.epic_id = #{epicId}
         </if>
-        ORDER BY issue_id DESC
+        ORDER BY ai.issue_id DESC
+    </select>
+    
+    <select id="selectStoryCountByIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+        select ai.feature_id as id, IFNULL(COUNT(ai.issue_id), 0) as issue_count
+        from agile_issue ai
+        where ai.project_id = #{projectId} and ai.type_code = 'story' and ai.feature_id in
+        <foreach collection="ids" item="id" open="("
+                 separator="," close=")">
+            #{id}
+        </foreach>
+        group by ai.feature_id
+    </select>
+
+    <select id="selectCompletedStoryCountByIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+        select ai.feature_id as id, IFNULL(COUNT(ai.issue_id), 0) as issue_count
+        from agile_issue ai, agile_issue_status ais
+        where ai.project_id = #{projectId} and ai.type_code = 'story' and ai.status_id = ais.status_id and ais.project_id = #{projectId} and ais.is_completed = 1
+        and ai.feature_id in
+        <foreach collection="ids" item="id" open="("
+                 separator="," close=")">
+            #{id}
+        </foreach>
+        group by ai.feature_id
+    </select>
+
+    <select id="selectUnEstimateStoryCountByIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+        select ai.feature_id as id, IFNULL(COUNT(ai.issue_id), 0) as issue_count
+        from agile_issue ai
+        where ai.project_id = #{projectId} and ai.type_code = 'story' and ai.story_points is null
+        and ai.feature_id in
+        <foreach collection="ids" item="id" open="("
+                 separator="," close=")">
+            #{id}
+        </foreach>
+        group by ai.feature_id
+    </select>
+
+    <select id="selectTotalStoryPointsByIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+        select ai.feature_id as id, IFNULL(SUM(ai.story_points), 0) as story_point_count
+        from agile_issue ai
+        where ai.project_id = #{projectId} and ai.type_code = 'story'
+        and ai.feature_id in
+        <foreach collection="ids" item="id" open="("
+                 separator="," close=")">
+            #{id}
+        </foreach>
+        group by ai.feature_id
     </select>
 
     <select id="listEpicSelectProgramData" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
@@ -3120,36 +3169,11 @@
         </collection>
     </resultMap>
 
-    <select id="selectFeatureList" resultMap="featureListMap">
+    <select id="selectFeatureIdsByPage" resultType="java.lang.Long">
         select
-           ai.issue_id as ai_issue_id,
-           CONCAT_WS('-', api.project_code, ai.issue_num) AS ai_issue_num,
-           ai.type_code as ai_type_code,
-           ai.summary as ai_summary,
-           ai.status_id as ai_status_id,
-           ai.story_points as ai_story_points,
-           ai.epic_id as ai_epic_id,
-           ai2.epic_name as ai_epic_name,
-           alv.name as ai_epic_color,
-           ai.reporter_id as ai_reporter_id,
-           ai.creation_date as ai_creation_date,
-           ai.last_update_date as ai_last_update_date,
-           af.feature_type as ai_feature_type,
-           af.benfit_hypothesis as ai_benfit_hypothesis,
-           af.acceptance_critera as ai_acceptance_critera,
-           apf.pi_id as ap_pi_id,
-           ap.code as ap_pi_code,
-           ap.name as ap_pi_name
+        ai.issue_id
         from agile_issue ai
-        LEFT JOIN agile_project_info api ON ai.program_id = api.project_id
-        left join agile_feature af on ai.issue_id = af.issue_id
-        left join agile_issue ai2 on ai.epic_id = ai2.issue_id
-        left join agile_lookup_value alv on ai2.color_code = alv.value_code
-        left join agile_pi_feature apf on ai.issue_id = apf.issue_id
-        left join agile_pi ap on apf.pi_id = ap.id
-        LEFT JOIN agile_version_issue_rel avir on avir.issue_id = ai.issue_id and avir.relation_type = 'fix'
-        left join agile_product_version apv on avir.version_id = apv.version_id
-        where ai.program_id = #{programId} and ai.type_code = 'feature'
+        where ai.program_id = #{programId} and ai.type_code in ('feature', 'issue_epic')
         <if test='searchDTO.advancedSearchArgs != null'>
             <if test='searchDTO.advancedSearchArgs.statusList != null and searchDTO.advancedSearchArgs.statusList.size > 0'>
                 and ai.status_id in
@@ -3184,6 +3208,44 @@
                 )
             </if>
         </if>
+        order by ai.issue_id desc
+    </select>
+
+    <select id="selectFeatureList" resultMap="featureListMap">
+        select
+           ai.issue_id as ai_issue_id,
+           CONCAT_WS('-', api.project_code, ai.issue_num) AS ai_issue_num,
+           ai.type_code as ai_type_code,
+           ai.summary as ai_summary,
+           ai.status_id as ai_status_id,
+           ai.story_points as ai_story_points,
+           ai.epic_id as ai_epic_id,
+           ai2.epic_name as ai_epic_name,
+           alv.name as ai_epic_color,
+           ai.reporter_id as ai_reporter_id,
+           ai.creation_date as ai_creation_date,
+           ai.last_update_date as ai_last_update_date,
+           af.feature_type as ai_feature_type,
+           af.benfit_hypothesis as ai_benfit_hypothesis,
+           af.acceptance_critera as ai_acceptance_critera,
+           apf.pi_id as ap_pi_id,
+           ap.code as ap_pi_code,
+           ap.name as ap_pi_name
+        from agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.program_id = api.project_id
+        left join agile_feature af on ai.issue_id = af.issue_id
+        left join agile_issue ai2 on ai.epic_id = ai2.issue_id
+        left join agile_lookup_value alv on ai2.color_code = alv.value_code
+        left join agile_pi_feature apf on ai.issue_id = apf.issue_id
+        left join agile_pi ap on apf.pi_id = ap.id
+        LEFT JOIN agile_version_issue_rel avir on avir.issue_id = ai.issue_id and avir.relation_type = 'fix'
+        left join agile_product_version apv on avir.version_id = apv.version_id
+        where ai.program_id = #{programId} and ai.type_code in ('feature', 'issue_epic')
+        and ai.issue_id in
+        <foreach collection="issueIds" item="issueId" open="(" separator=","
+                 close=")">
+            #{issueId}
+        </foreach>
         order by ai.issue_id desc
     </select>
 

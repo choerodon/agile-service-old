@@ -362,11 +362,25 @@ public class IssueController {
     @GetMapping(value = "/feature/select_data")
     public ResponseEntity<List<IssueFeatureDTO>> listFeatureSelectData(@ApiParam(value = "项目id", required = true)
                                                                        @PathVariable(name = "project_id") Long projectId,
-                                                                       @ApiParam(value = "史诗id")
-                                                                       @RequestParam Long epicId) {
-        return Optional.ofNullable(issueService.listFeatureSelectData(projectId, epicId))
+                                                                       @ApiParam(value = "组织id", required = true)
+                                                                       @RequestParam Long organizationId,
+                                                                       @ApiParam(value = "史诗id", required = false)
+                                                                       @RequestParam(required = false) Long epicId) {
+        return Optional.ofNullable(issueService.listFeatureSelectData(projectId, organizationId, epicId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssueFeatureList"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("查询当前项目下的feature，包括详细统计信息")
+    @GetMapping(value = "/feature")
+    public ResponseEntity<List<IssueFeatureDTO>> listFeature(@ApiParam(value = "项目id", required = true)
+                                                             @PathVariable(name = "project_id") Long projectId,
+                                                             @ApiParam(value = "组织id", required = true)
+                                                             @RequestParam Long organizationId) {
+        return Optional.ofNullable(issueService.listFeature(projectId, organizationId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.listFeature.get"));
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
