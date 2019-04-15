@@ -77,7 +77,7 @@ public interface UserFeignClient {
     ResponseEntity<List<ProjectRelationshipDTO>> getProjUnderGroup(@PathVariable(name = "organization_id") Long orgId,
                                                                    @PathVariable(name = "parent_id") Long id);
 
-    @GetMapping(value = "/v1/organizations/{organization_id}/projects/{project_id}")
+    @GetMapping(value = "/v1/organizations/{organization_id}/projects/{project_id}/program")
     ResponseEntity<ProjectDTO> getGroupInfoByEnableProject(@PathVariable(name = "organization_id") Long organizationId,
                                                            @PathVariable(name = "project_id") Long projectId);
 }
