@@ -20,6 +20,8 @@ public class FeatureCommonDO {
 
     private Long statusId;
 
+    private Long issueTypeId;
+
     private BigDecimal storyPoints;
 
     private Long epicId;
@@ -80,6 +82,14 @@ public class FeatureCommonDO {
 
     public void setStatusId(Long statusId) {
         this.statusId = statusId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
     }
 
     public BigDecimal getStoryPoints() {

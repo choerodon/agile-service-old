@@ -34,4 +34,6 @@ public interface ArtService {
     List<PiCalendarDO> queryArtCalendar(Long programId, Long artId);
 
     ArtStopDTO beforeStop(Long programId, Long id);
+
+    Boolean checkName(Long programId, String artName);
 }

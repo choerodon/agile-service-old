@@ -712,11 +712,13 @@ public class IssueController {
     @PostMapping(value = "/program")
     public ResponseEntity<Page<FeatureCommonDTO>> queryFeatureList(@ApiParam(value = "项目id", required = true)
                                                                    @PathVariable(name = "project_id") Long projectId,
+                                                                   @ApiParam(value = "组织id", required = true)
+                                                                   @RequestParam Long organizationId,
                                                                    @ApiParam(value = "分页信息", required = true)
                                                                    @ApiIgnore PageRequest pageRequest,
                                                                    @ApiParam(value = "搜索DTO", required = true)
                                                                    @RequestBody SearchDTO searchDTO) {
-        return Optional.ofNullable(issueService.queryFeatureList(projectId, pageRequest, searchDTO))
+        return Optional.ofNullable(issueService.queryFeatureList(projectId, organizationId, pageRequest, searchDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.issue.queryFeatureList"));
     }

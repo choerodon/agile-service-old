@@ -20,6 +20,8 @@ public class FeatureCommonDTO {
 
     private Long statusId;
 
+    private Long issuetypeId;
+
     private BigDecimal storyPoints;
 
     private Long epicId;
@@ -45,6 +47,8 @@ public class FeatureCommonDTO {
     private String acceptanceCritera;
 
     private StatusMapDTO statusMapDTO;
+
+    private IssueTypeDTO issueTypeDTO;
 
     private List<PiNameDTO> piNameDTOList;
 
@@ -198,5 +202,21 @@ public class FeatureCommonDTO {
 
     public String getReporterImageUrl() {
         return reporterImageUrl;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
+    }
+
+    public void setIssuetypeId(Long issuetypeId) {
+        this.issuetypeId = issuetypeId;
+    }
+
+    public Long getIssuetypeId() {
+        return issuetypeId;
     }
 }

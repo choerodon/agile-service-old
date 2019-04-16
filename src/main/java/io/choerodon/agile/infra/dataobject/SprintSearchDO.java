@@ -15,6 +15,7 @@ public class SprintSearchDO {
     private String statusCode;
     private List<AssigneeIssueDO> assigneeIssueDOList;
     private String objectVersionNumber;
+    private Long piId;
     private List<IssueSearchDO> issueSearchDOList;
 
     public List<IssueSearchDO> getIssueSearchDOList() {
@@ -87,5 +88,13 @@ public class SprintSearchDO {
 
     public void setObjectVersionNumber(String objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public void setPiId(Long piId) {
+        this.piId = piId;
+    }
+
+    public Long getPiId() {
+        return piId;
     }
 }

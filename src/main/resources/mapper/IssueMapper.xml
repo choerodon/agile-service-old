@@ -3171,6 +3171,7 @@
         <id property="reporterId" column="ai_reporter_id"/>
         <id property="creationDate" column="ai_creation_date"/>
         <id property="lastUpdateDate" column="ai_last_update_date"/>
+        <id property="issueTypeId" column="ai_issue_type_id"/>
         <id property="featureType" column="ai_feature_type"/>
         <id property="benfitHypothesis" column="ai_benfit_hypothesis"/>
         <id property="acceptanceCritera" column="ai_acceptance_critera"/>
@@ -3237,6 +3238,7 @@
            ai.reporter_id as ai_reporter_id,
            ai.creation_date as ai_creation_date,
            ai.last_update_date as ai_last_update_date,
+           ai.issue_type_id as ai_issue_type_id,
            af.feature_type as ai_feature_type,
            af.benfit_hypothesis as ai_benfit_hypothesis,
            af.acceptance_critera as ai_acceptance_critera,

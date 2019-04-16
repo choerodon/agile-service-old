@@ -2378,15 +2378,16 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public Page<FeatureCommonDTO> queryFeatureList(Long programId, PageRequest pageRequest, SearchDTO searchDTO) {
+    public Page<FeatureCommonDTO> queryFeatureList(Long programId, Long organizationId, PageRequest pageRequest, SearchDTO searchDTO) {
         Page<Long> featureCommonDOPage = PageHelper.doPage(pageRequest, () ->
                 issueMapper.selectFeatureIdsByPage(programId, searchDTO)
         );
-        Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(programId);
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         Page<FeatureCommonDTO> result = new Page<>();
         result.setNumberOfElements(featureCommonDOPage.getNumberOfElements());
         result.setNumber(featureCommonDOPage.getNumber());
-        result.setContent(featureCommonAssembler.featureCommonDOToDTO(issueMapper.selectFeatureList(programId, featureCommonDOPage.getContent()), statusMapDTOMap));
+        result.setContent(featureCommonAssembler.featureCommonDOToDTO(issueMapper.selectFeatureList(programId, featureCommonDOPage.getContent()), statusMapDTOMap, issueTypeDTOMap));
         result.setTotalPages(featureCommonDOPage.getTotalPages());
         result.setSize(featureCommonDOPage.getSize());
         result.setTotalElements(featureCommonDOPage.getTotalElements());
