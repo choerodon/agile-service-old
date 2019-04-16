@@ -989,6 +989,12 @@
             <if test='advancedSearchArgs.noEpic != "" and advancedSearchArgs.noEpic == "true"'>
                 AND (ai.epic_id IS NULL OR ai.epic_id = 0)
             </if>
+            <if test='advancedSearchArgs.featureId != null'>
+                and ai.type_code = 'story' AND ai.feature_id = #{advancedSearchArgs.featureId}
+            </if>
+            <if test='advancedSearchArgs.noFeature != "" and advancedSearchArgs.noFeature == "true"'>
+                and ai.type_code = 'story' AND (ai.feature_id IS NULL OR ai.feature_id = 0)
+            </if>
             <if test='advancedSearchArgs.ownIssue != "" and advancedSearchArgs.ownIssue == "true"'>
                 AND ai.assignee_id = #{userId}
             </if>
@@ -1028,6 +1034,12 @@
             </if>
             <if test='advancedSearchArgs.noEpic != "" and advancedSearchArgs.noEpic == "true"'>
                 AND (ai.epic_id IS NULL OR ai.epic_id = 0)
+            </if>
+            <if test='advancedSearchArgs.featureId != null'>
+                and ai.type_code = 'story' AND ai.feature_id = #{advancedSearchArgs.featureId}
+            </if>
+            <if test='advancedSearchArgs.noFeature != "" and advancedSearchArgs.noFeature == "true"'>
+                and ai.type_code = 'story' AND (ai.feature_id IS NULL OR ai.feature_id = 0)
             </if>
             <if test='advancedSearchArgs.ownIssue != "" and advancedSearchArgs.ownIssue == "true"'>
                 AND ai.assignee_id = #{userId}
