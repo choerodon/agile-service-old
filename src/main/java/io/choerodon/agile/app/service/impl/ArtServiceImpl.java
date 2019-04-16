@@ -123,9 +123,24 @@ public class ArtServiceImpl implements ArtService {
         return ConvertHelper.convert(artE, ArtDTO.class);
     }
 
+    private Boolean checkArtNameUpdate(Long programId, Long artId, String artName) {
+        ArtDO artDO = artMapper.selectByPrimaryKey(artId);
+        if (artName.equals(artDO.getName())) {
+            return false;
+        }
+        ArtDO check = new ArtDO();
+        check.setProgramId(programId);
+        check.setName(artName);
+        List<ArtDO> artDOList = artMapper.select(check);
+        return artDOList != null && !artDOList.isEmpty();
+    }
+
     @Override
     public ArtDTO updateArt(Long programId, ArtDTO artDTO) {
         artValidator.checkArtUpdate(artDTO);
+        if (artDTO.getName() != null && checkArtNameUpdate(programId, artDTO.getId(), artDTO.getName())) {
+            throw new CommonException("error.artName.exist");
+        }
         ArtE result = artRepository.updateBySelective(ConvertHelper.convert(artDTO, ArtE.class));
         result.setCode(projectInfoMapper.selectProjectCodeByProjectId(programId));
         return ConvertHelper.convert(result, ArtDTO.class);
@@ -184,5 +199,14 @@ public class ArtServiceImpl implements ArtService {
         result.setTodoPiCount(piMapper.selectPiCountByOptions(programId, id, "todo"));
         result.setRelatedFeatureCount(piMapper.selectRelatedFeatureCount(programId, id));
         return result;
+    }
+
+    @Override
+    public Boolean checkName(Long programId, String artName) {
+        ArtDO artDO = new ArtDO();
+        artDO.setProgramId(programId);
+        artDO.setName(artName);
+        List<ArtDO> artDOList = artMapper.select(artDO);
+        return artDOList != null && !artDOList.isEmpty();
     }
 }

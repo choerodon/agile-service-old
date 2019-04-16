@@ -150,7 +150,8 @@
         sp.sprint_id, sp.sprint_name,
         sp.sprint_goal, start_date,
         sp.end_date, status_code,
-        sp.object_version_number
+        sp.object_version_number,
+        sp.pi_id
         FROM agile_sprint sp
         WHERE sp.project_id = #{projectId} AND sp.status_code = 'started'
     </sql>
@@ -421,7 +422,8 @@
         sp.sprint_id, sp.sprint_name,
         sp.sprint_goal, start_date,
         sp.end_date, status_code,
-        sp.object_version_number
+        sp.object_version_number,
+        sp.pi_id
         FROM agile_sprint sp
         WHERE sp.project_id = #{projectId} AND sp.status_code = 'sprint_planning'
     </sql>
@@ -798,9 +800,9 @@
     </select>
 
     <update id="updateSprintNameByBatch">
-        update agile_sprint
-        set sprint_name = concat('PI-', pi_id, ':SPRINT-', sprint_id)
-        where project_id = #{projectId} and sprint_id in
+        update agile_sprint asp, agile_pi ap
+        set asp.sprint_name = concat('PI-', ap.name, ':SPRINT-', asp.sprint_id)
+        where asp.project_id = #{projectId} and asp.pi_id = ap.id and asp.sprint_id in
         <foreach collection="sprintIds" item="sprintId" open="("
                  separator="," close=")">
             #{sprintId}

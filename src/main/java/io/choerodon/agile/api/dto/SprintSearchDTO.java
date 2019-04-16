@@ -21,6 +21,7 @@ public class SprintSearchDTO {
     private List<IssueSearchDTO> issueSearchDTOList;
     private List<AssigneeIssueDTO> assigneeIssues;
     private String objectVersionNumber;
+    private Long piId;
 
     public Long getSprintId() {
         return sprintId;
@@ -124,5 +125,13 @@ public class SprintSearchDTO {
 
     public void setDoneStoryPoint(BigDecimal doneStoryPoint) {
         this.doneStoryPoint = doneStoryPoint;
+    }
+
+    public void setPiId(Long piId) {
+        this.piId = piId;
+    }
+
+    public Long getPiId() {
+        return piId;
     }
 }
