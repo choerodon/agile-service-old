@@ -10,6 +10,7 @@
         <id column="end_date" property="endDate"/>
         <id column="status_code" property="statusCode"/>
         <id column="object_version_number" property="objectVersionNumber"/>
+        <id column="pi_id" property="piId"/>
         <collection property="assigneeIssueDOList" ofType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
             <result property="sprintId" column="asi_sprint_id"/>
             <result property="assigneeId" column="asi_assignee_id"/>
@@ -32,6 +33,7 @@
         <id column="end_date" property="endDate"/>
         <id column="status_code" property="statusCode"/>
         <id column="object_version_number" property="objectVersionNumber"/>
+        <id column="pi_id" property="piId"/>
         <collection property="assigneeIssueDOList" ofType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
             <result property="sprintId" column="asi_sprint_id"/>
             <result property="assigneeId" column="asi_assignee_id"/>
@@ -455,6 +457,7 @@
         spa.end_date,
         spa.status_code,
         spa.object_version_number,
+        spa.pi_id,
         qais.asi_sprint_id,
         qais.asi_assignee_id,
         qais.total_story_points,
