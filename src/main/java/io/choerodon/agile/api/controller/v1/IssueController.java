@@ -373,7 +373,7 @@ public class IssueController {
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询当前项目下的feature，包括详细统计信息")
-    @GetMapping(value = "/feature")
+    @GetMapping(value = "/features")
     public ResponseEntity<List<IssueFeatureDTO>> listFeature(@ApiParam(value = "项目id", required = true)
                                                              @PathVariable(name = "project_id") Long projectId,
                                                              @ApiParam(value = "组织id", required = true)
