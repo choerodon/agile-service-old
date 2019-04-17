@@ -157,6 +157,9 @@ public class IssueDTO {
     @ApiModelProperty(value = "featureDTO")
     private FeatureDTO featureDTO;
 
+    @ApiModelProperty(value = "featureId")
+    private Long featureId;
+
     @ApiModelProperty(value = "feature名称")
     private String featureName;
 
@@ -542,6 +545,14 @@ public class IssueDTO {
 
     public List<PiNameDTO> getClosePi() {
         return closePi;
+    }
+
+    public void setFeatureId(Long featureId) {
+        this.featureId = featureId;
+    }
+
+    public Long getFeatureId() {
+        return featureId;
     }
 
     @Override
