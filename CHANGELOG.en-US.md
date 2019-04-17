@@ -14,7 +14,8 @@ All notable changes about agile-service will be documented in this file.
 - Add PI objective of program, including list and card, supports creating, modifying, deleting and querying PI objective.
 - Stories in team of program can associate features of States to be processed or processed.
 - After PI is turned on in the program, sprint is generated synchronously for each team in the program, and no new sprint is allowed to be deleted or created.
-  
+- Create Issue/Edit Issue Page，loading custom field list，to adapt to the style of width，save and update field value.
+
 ### Changed
 
 - Project members can view the burnout chart on the project home page.
@@ -27,6 +28,7 @@ All notable changes about agile-service will be documented in this file.
 
 - Data display in different dimensions of epic report.
 - Incorrect search by name in problem management.
+- Repair the 5.1 holiday adjustment
   
 
 ## [0.15.0] - 2019-03-22
