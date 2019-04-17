@@ -2351,31 +2351,31 @@ public class IssueServiceImpl implements IssueService {
         return issueDOList != null && !issueDOList.isEmpty();
     }
 
-    @Override
-    public void dealFeatureAndEpicWhenJoinProgram(Long programId, Long projectId) {
-        Long organizationId = ConvertUtil.getOrganizationId(projectId);
-        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(programId, "program").getBody();
-        Long issueTypeEpicId = null;
-        for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-            if (ISSUE_EPIC.equals(issueTypeDTO.getTypeCode())) {
-                issueTypeEpicId = issueTypeDTO.getId();
-            }
-        }
-        if (issueTypeEpicId == null) {
-            throw new CommonException("error.issueTypeFeatureId.null");
-        }
-        //获取状态机id
-        Long stateMachineId = issueFeignClient.queryStateMachineId(programId, "program", issueTypeEpicId).getBody();
-        if (stateMachineId == null) {
-            throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
-        }
-        //获取初始状态
-        Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
-        if (initStatusId == null) {
-            throw new CommonException("error.initStatusId.null");
-        }
-        issueRepository.updateFeatureAndEpicWhenJoinProgram(programId, projectId, initStatusId);
-    }
+//    @Override
+//    public void dealFeatureAndEpicWhenJoinProgram(Long programId, Long projectId) {
+//        Long organizationId = ConvertUtil.getOrganizationId(projectId);
+//        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(programId, "program").getBody();
+//        Long issueTypeEpicId = null;
+//        for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
+//            if (ISSUE_EPIC.equals(issueTypeDTO.getTypeCode())) {
+//                issueTypeEpicId = issueTypeDTO.getId();
+//            }
+//        }
+//        if (issueTypeEpicId == null) {
+//            throw new CommonException("error.issueTypeFeatureId.null");
+//        }
+//        //获取状态机id
+//        Long stateMachineId = issueFeignClient.queryStateMachineId(programId, "program", issueTypeEpicId).getBody();
+//        if (stateMachineId == null) {
+//            throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
+//        }
+//        //获取初始状态
+//        Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
+//        if (initStatusId == null) {
+//            throw new CommonException("error.initStatusId.null");
+//        }
+//        issueRepository.updateFeatureAndEpicWhenJoinProgram(programId, projectId, initStatusId);
+//    }
 
     @Override
     public Page<FeatureCommonDTO> queryFeatureList(Long programId, Long organizationId, PageRequest pageRequest, SearchDTO searchDTO) {
