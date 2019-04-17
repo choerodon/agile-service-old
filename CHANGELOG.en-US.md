@@ -27,6 +27,7 @@ All notable changes about agile-service will be documented in this file.
 
 - Data display in different dimensions of epic report.
 - Incorrect search by name in problem management.
+- Repair the 5.1 holiday adjustment
   
 
 ## [0.15.0] - 2019-03-22
