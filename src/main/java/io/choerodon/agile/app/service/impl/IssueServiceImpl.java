@@ -645,13 +645,13 @@ public class IssueServiceImpl implements IssueService {
                 issueE.setOriginSprintId(originIssue.getSprintId());
             }
         }
-        if (fieldList.contains("featureId")) {
-            IssueDO featureUpdate = issueMapper.selectByPrimaryKey(issueE.getFeatureId());
-            if (featureUpdate != null && !((issueE.getEpicId() == null || issueE.getEpicId() == 0) && (featureUpdate.getEpicId() == null || featureUpdate.getEpicId() == 0)) && !Objects.equals(issueE.getEpicId(), featureUpdate.getEpicId())) {
-                fieldList.add("epicId");
-                issueE.setEpicId(featureUpdate.getEpicId());
-            }
-        }
+//        if (fieldList.contains("featureId")) {
+//            IssueDO featureUpdate = issueMapper.selectByPrimaryKey(issueE.getFeatureId());
+//            if (featureUpdate != null && !((issueE.getEpicId() == null || issueE.getEpicId() == 0) && (featureUpdate.getEpicId() == null || featureUpdate.getEpicId() == 0)) && !Objects.equals(issueE.getEpicId(), featureUpdate.getEpicId())) {
+//                ull
+//                issueE.setEpicId(featureUpdate.getEpicId());
+//            }
+//        }
         issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
         if (issueUpdateDTO.getFeatureDTO() != null && issueUpdateDTO.getFeatureDTO().getIssueId() != null) {
             FeatureDTO featureDTO = issueUpdateDTO.getFeatureDTO();
