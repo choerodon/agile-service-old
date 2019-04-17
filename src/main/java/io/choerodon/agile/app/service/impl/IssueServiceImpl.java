@@ -645,9 +645,10 @@ public class IssueServiceImpl implements IssueService {
                 issueE.setOriginSprintId(originIssue.getSprintId());
             }
         }
-        if (fieldList.contains("featureId") && fieldList.contains("epicId")) {
+        if (fieldList.contains("featureId")) {
             IssueDO featureUpdate = issueMapper.selectByPrimaryKey(issueE.getFeatureId());
-            if (featureUpdate != null && !Objects.equals(issueE.getEpicId(), featureUpdate.getEpicId())) {
+            if (featureUpdate != null && !((issueE.getEpicId() == null || issueE.getEpicId() == 0) && (featureUpdate.getEpicId() == null || featureUpdate.getEpicId() == 0)) && !Objects.equals(issueE.getEpicId(), featureUpdate.getEpicId())) {
+                fieldList.add("epicId");
                 issueE.setEpicId(featureUpdate.getEpicId());
             }
         }
@@ -1709,6 +1710,9 @@ public class IssueServiceImpl implements IssueService {
                         featureDTO.setProjectId(projectId);
                         issueCreateDTO.setFeatureDTO(featureDTO);
                     }
+                }
+                if ("program".equals(applyType)) {
+                    issueCreateDTO.setProgramId(projectId);
                 }
                 IssueDTO newIssue = stateMachineService.createIssue(issueCreateDTO, applyType);
                 newIssueId = newIssue.getIssueId();
