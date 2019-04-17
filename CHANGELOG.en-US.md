@@ -17,7 +17,7 @@ All notable changes about agile-service will be documented in this file.
   
 ### Changed
 
-- Project members can view the burnout chart on the project home page
+- Project members can view the burnout chart on the project home page.
 - Project members can view unassigned tasks on the project home page and it supports paging.
 - When a subtask in a story is moved to the next sprint, remember the previous state.
 - Partial views style optimization. 
@@ -25,8 +25,8 @@ All notable changes about agile-service will be documented in this file.
 
 ### Fixed
 
-- Data display in different dimensions of epic report
-- Incorrect search by name in problem management
+- Data display in different dimensions of epic report.
+- Incorrect search by name in problem management.
   
 
 ## [0.15.0] - 2019-03-22
