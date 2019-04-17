@@ -648,7 +648,7 @@ public class IssueServiceImpl implements IssueService {
 //        if (fieldList.contains("featureId")) {
 //            IssueDO featureUpdate = issueMapper.selectByPrimaryKey(issueE.getFeatureId());
 //            if (featureUpdate != null && !((issueE.getEpicId() == null || issueE.getEpicId() == 0) && (featureUpdate.getEpicId() == null || featureUpdate.getEpicId() == 0)) && !Objects.equals(issueE.getEpicId(), featureUpdate.getEpicId())) {
-//                ull
+//                fieldList.add("epicId");
 //                issueE.setEpicId(featureUpdate.getEpicId());
 //            }
 //        }
