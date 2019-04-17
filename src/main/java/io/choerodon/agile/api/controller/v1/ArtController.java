@@ -94,7 +94,7 @@ public class ArtController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询art列表")
     @GetMapping("/list")
     public ResponseEntity<Page<ArtDTO>> queryArtList(@ApiParam(value = "项目id", required = true)
@@ -107,7 +107,7 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.artList.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询单个art")
     @GetMapping
     public ResponseEntity<ArtDTO> queryArt(@ApiParam(value = "项目id", required = true)
@@ -154,7 +154,7 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.beforeComplete.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("ART重名校验")
     @GetMapping(value = "/check_name")
     public ResponseEntity<Boolean> checkName(@ApiParam(value = "项目id", required = true)
