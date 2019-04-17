@@ -640,7 +640,7 @@ public class SprintServiceImpl implements SprintService {
         if (res != null) {
             SprintDO sprintDO = new SprintDO();
             sprintDO.setProjectId(programId);
-            sprintDO.setPiId(piDO.getId());
+            sprintDO.setPiId(res.getId());
             List<SprintDO> sprintDOList = sprintMapper.select(sprintDO);
             for (SprintDO sprint : sprintDOList) {
                 SprintE sprintE = new SprintE();

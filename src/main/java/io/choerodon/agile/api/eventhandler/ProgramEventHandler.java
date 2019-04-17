@@ -1,7 +1,6 @@
 package io.choerodon.agile.api.eventhandler;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.domain.agile.event.ProjectRelationshipInsertPayload;
 import io.choerodon.asgard.saga.annotation.SagaTask;
@@ -21,9 +20,6 @@ public class ProgramEventHandler {
     private static final String IAM_ADD_PROJECT_RELATIONSHIP = "iam-add-project-relationships";
 
     @Autowired
-    private IssueService issueService;
-
-    @Autowired
     private SprintService sprintService;
 
     @SagaTask(code = JOIN_PROGRAM_EVENT,
@@ -36,7 +32,6 @@ public class ProgramEventHandler {
         List<ProjectRelationshipInsertPayload.ProjectRelationship> relationships = projectRelationshipInsertPayload.getRelationships();
         for (ProjectRelationshipInsertPayload.ProjectRelationship projectRelationship : relationships) {
             Long projectId = projectRelationship.getId();
-            issueService.dealFeatureAndEpicWhenJoinProgram(programId, projectId);
             sprintService.addSprintsWhenJoinProgram(programId, projectId);
         }
         return message;
