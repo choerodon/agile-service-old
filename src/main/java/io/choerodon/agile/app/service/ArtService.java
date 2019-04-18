@@ -38,4 +38,6 @@ public interface ArtService {
     Boolean checkName(Long programId, String artName);
 
     List<ArtDTO> queryAllArtList(Long programId);
+
+    ArtDTO queryActiveArt(Long programId);
 }

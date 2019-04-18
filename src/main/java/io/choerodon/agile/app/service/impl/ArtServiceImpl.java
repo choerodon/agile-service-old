@@ -219,4 +219,14 @@ public class ArtServiceImpl implements ArtService {
             return new ArrayList<>();
         }
     }
+
+    @Override
+    public ArtDTO queryActiveArt(Long programId) {
+        ArtDO artDO = artMapper.selectActiveArt(programId);
+        if (artDO != null) {
+            return ConvertHelper.convert(artDO, ArtDTO.class);
+        } else {
+            return new ArtDTO();
+        }
+    }
 }

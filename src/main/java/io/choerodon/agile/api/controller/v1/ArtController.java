@@ -176,4 +176,14 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.allArtList.get"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("查询当前活跃art")
+    @GetMapping("/active")
+    public ResponseEntity<ArtDTO> queryActiveArt(@ApiParam(value = "项目id", required = true)
+                                                 @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(artService.queryActiveArt(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.activeArt.get"));
+    }
+
 }
