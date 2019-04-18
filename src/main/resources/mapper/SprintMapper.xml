@@ -445,7 +445,7 @@
         from
         (<include refid="queryPlanSprintSql"/>)spa
         left join(<include refid="querySprintIssueByIssueIds"/>)qsii on qsii.is_sprint_id = spa.sprint_id
-        left join (<include refid="queryAssigneeIssueByPlanSprintId"/>)qais on spa.sprint_id = qais.asi_sprint_id order by spa.sprint_id ASC,qsii.rank ASC
+        left join (<include refid="queryAssigneeIssueByPlanSprintId"/>)qais on spa.sprint_id = qais.asi_sprint_id order by spa.sprint_id DESC,qsii.rank ASC
     </select>
 
     <select id="queryPlanSprintNoIssueIds" resultMap="SprintSearchNoIssueDO">
@@ -468,7 +468,7 @@
         qais.remaining_issue_count
         from
         (<include refid="queryPlanSprintSql"/>)spa
-        left join (<include refid="queryAssigneeIssueByPlanSprintId"/>)qais on spa.sprint_id = qais.asi_sprint_id order by spa.sprint_id ASC
+        left join (<include refid="queryAssigneeIssueByPlanSprintId"/>)qais on spa.sprint_id = qais.asi_sprint_id order by spa.sprint_id DESC
     </select>
 
     <select id="queryNotCloseSprintIdByIssueId" resultType="java.lang.Long">
