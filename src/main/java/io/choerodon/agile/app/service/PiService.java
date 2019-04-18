@@ -46,4 +46,6 @@ public interface PiService {
 //    void deleteById(Long programId, Long piId, Long artId);
 
     List<PiNameDTO> queryAllOfProgram(Long programId);
+
+    List<PiNameDTO> queryUnfinishedOfProgram(Long programId);
 }

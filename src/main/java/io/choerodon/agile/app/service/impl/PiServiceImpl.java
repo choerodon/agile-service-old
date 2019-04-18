@@ -624,6 +624,24 @@ public class PiServiceImpl implements PiService {
     @Override
     public List<PiNameDTO> queryAllOfProgram(Long programId) {
         List<PiNameDO> piNameDOList = piMapper.selectAllOfProgram(programId);
-        return ConvertHelper.convertList(piNameDOList, PiNameDTO.class);
+        if (piNameDOList != null && !piNameDOList.isEmpty()) {
+            return ConvertHelper.convertList(piNameDOList, PiNameDTO.class);
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<PiNameDTO> queryUnfinishedOfProgram(Long programId) {
+        ArtDO activeArt = artMapper.selectActiveArt(programId);
+        if (activeArt == null) {
+            return new ArrayList<>();
+        }
+        List<PiDO> piDOList = piMapper.selectUnDonePiDOList(programId, activeArt.getId());
+        if (piDOList != null && !piDOList.isEmpty())  {
+            return ConvertHelper.convertList(piDOList, PiNameDTO.class);
+        } else {
+            return new ArrayList<>();
+        }
     }
 }

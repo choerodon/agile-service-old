@@ -167,4 +167,14 @@ public class PiController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.programPiDTOList.get"));
     }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("查询ART下的非完成的PI列表")
+    @GetMapping(value = "/unfinished")
+    public ResponseEntity<List<PiNameDTO>> queryUnfinishedOfProgram(@ApiParam(value = "项目id", required = true)
+                                                                @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(piService.queryUnfinishedOfProgram(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.unfinishedPiDTOList.get"));
+    }
 }
