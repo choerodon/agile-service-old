@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -208,5 +209,15 @@ public class ArtServiceImpl implements ArtService {
         artDO.setName(artName);
         List<ArtDO> artDOList = artMapper.select(artDO);
         return artDOList != null && !artDOList.isEmpty();
+    }
+
+    @Override
+    public List<ArtDTO> queryAllArtList(Long programId) {
+        List<ArtDO> artDOList = artMapper.selectArtList(programId);
+        if (artDOList != null && !artDOList.isEmpty()) {
+            return ConvertHelper.convertList(artDOList, ArtDTO.class);
+        } else {
+            return new ArrayList<>();
+        }
     }
 }

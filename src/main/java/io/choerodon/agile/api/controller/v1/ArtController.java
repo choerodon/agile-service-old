@@ -166,4 +166,14 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.artName.check"));
     }
 
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("查询art列表,不分页")
+    @GetMapping("/all")
+    public ResponseEntity<List<ArtDTO>> queryAllArtList(@ApiParam(value = "项目id", required = true)
+                                                        @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(artService.queryAllArtList(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.allArtList.get"));
+    }
+
 }

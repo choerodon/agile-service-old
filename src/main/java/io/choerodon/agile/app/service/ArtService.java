@@ -36,4 +36,6 @@ public interface ArtService {
     ArtStopDTO beforeStop(Long programId, Long id);
 
     Boolean checkName(Long programId, String artName);
+
+    List<ArtDTO> queryAllArtList(Long programId);
 }
