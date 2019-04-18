@@ -346,13 +346,6 @@ public class PiServiceImpl implements PiService {
         Long updateStatusId = piDTO.getUpdateStatusId();
         if (updateStatusId != null) {
             if (issueDOList != null && !issueDOList.isEmpty()) {
-//                for (IssueDO issueDO : issueDOList) {
-//                    IssueE issueE = new IssueE();
-//                    issueE.setIssueId(issueDO.getIssueId());
-//                    issueE.setStatusId(updateStatusId);
-//                    issueE.setObjectVersionNumber(issueDO.getObjectVersionNumber());
-//                    issueRepository.update(issueE, new String[]{STATUS_ID});
-//                }
                 CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
                 issueRepository.updateStatusIdBatch(programId, updateStatusId, issueDOList, customUserDetails.getUserId(), new Date());
             }
@@ -563,15 +556,6 @@ public class PiServiceImpl implements PiService {
         if (moveIssues == null || moveIssues.isEmpty()) {
             return;
         }
-//        for (IssueDO issueDO : moveIssues) {
-//            if (!Objects.equals(issueDO.getStatusId(), updateStatusId)) {
-//                IssueE issueE = new IssueE();
-//                issueE.setIssueId(issueDO.getIssueId());
-//                issueE.setObjectVersionNumber(issueDO.getObjectVersionNumber());
-//                issueE.setStatusId(updateStatusId);
-//                issueRepository.update(issueE, new String[]{STATUS_ID});
-//            }
-//        }
         issueRepository.updateStatusIdBatch(programId, updateStatusId, moveIssues, userId, new Date());
     }
 

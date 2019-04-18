@@ -76,7 +76,6 @@ public class ArtServiceImpl implements ArtService {
         artDTO.setCode(ConvertUtil.getCode(programId));
         artDTO.setStatusCode(ART_TODO);
         ArtE artE = artRepository.create(ConvertHelper.convert(artDTO, ArtE.class));
-//        piService.createPi(programId, ConvertHelper.convert(artE, ArtDO.class), new Date());
         return ConvertHelper.convert(artE, ArtDTO.class);
     }
 
