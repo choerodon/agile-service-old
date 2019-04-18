@@ -663,7 +663,7 @@
         WHERE sprint_id = (
                 SELECT MAX(sprint_id)
                 FROM agile_sprint
-                WHERE project_id = #{projectId}
+                WHERE project_id = #{projectId} and pi_id is null
             )
     </select>
 
