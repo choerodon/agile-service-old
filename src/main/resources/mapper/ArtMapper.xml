@@ -17,9 +17,7 @@
     </select>
 
     <select id="selectActiveArt" resultType="io.choerodon.agile.infra.dataobject.ArtDO">
-        select
-         id,
-         status_code
+        select *
         from agile_art
         where status_code = 'doing'
         and program_id = #{programId}
