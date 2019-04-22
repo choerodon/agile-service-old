@@ -9,6 +9,7 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -64,5 +65,10 @@ public class UserFeignClientFallback implements UserFeignClient {
     @Override
     public ResponseEntity<ProjectDTO> getGroupInfoByEnableProject(Long organizationId, Long projectId) {
         throw new CommonException("error.groupInfo.get");
+    }
+
+    @Override
+    public ResponseEntity<Page<UserWithRoleDTO>> pagingQueryUsersWithProjectLevelRoles(int page, int size, Long sourceId, @Valid RoleAssignmentSearchDTO roleAssignmentSearchDTO, boolean doPage) {
+        throw new CommonException("error.usersWithRoles.get");
     }
 }
