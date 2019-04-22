@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.ProjectInfoDTO;
 import io.choerodon.agile.api.dto.ProjectRelationshipDTO;
+import io.choerodon.agile.api.dto.RoleAssignmentSearchDTO;
 import io.choerodon.agile.api.dto.UserWithRoleDTO;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
@@ -68,7 +69,7 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
         List<ProjectRelationshipDTO> projectRelationshipDTOs = userFeignClient.getProjUnderGroup(organizationId, projectId).getBody();
         for (ProjectRelationshipDTO relationshipDTO : projectRelationshipDTOs) {
-            Page<UserWithRoleDTO> users = userFeignClient.pagingQueryUsersWithProjectLevelRoles(0, 0, projectId, null, false).getBody();
+            Page<UserWithRoleDTO> users = userFeignClient.pagingQueryUsersWithProjectLevelRoles(0, 0, projectId, new RoleAssignmentSearchDTO(), false).getBody();
             relationshipDTO.setUserCount(users.getSize());
         }
         return projectRelationshipDTOs;
