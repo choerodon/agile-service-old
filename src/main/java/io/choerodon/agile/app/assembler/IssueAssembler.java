@@ -121,12 +121,17 @@ public class IssueAssembler extends AbstractAssembler {
         List<Long> assigneeIds = issueDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         issueDOList.forEach(issueDO -> {
-            String assigneeName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getName() : null;
-            String imageUrl = assigneeName != null ? usersMap.get(issueDO.getAssigneeId()).getImageUrl() : null;
+            UserMessageDO userMessageDO = usersMap.get(issueDO.getAssigneeId());
+            String assigneeName = userMessageDO != null ? userMessageDO.getName() : null;
+            String imageUrl = userMessageDO != null ? userMessageDO.getImageUrl() : null;
+            String loginName = userMessageDO != null ? userMessageDO.getLoginName() : null;
+            String realName = userMessageDO != null ? userMessageDO.getRealName() : null;
             IssueSubListDTO subIssueDTO = new IssueSubListDTO();
             BeanUtils.copyProperties(issueDO, subIssueDTO);
             subIssueDTO.setAssigneeName(assigneeName);
             subIssueDTO.setImageUrl(imageUrl);
+            subIssueDTO.setLoginName(loginName);
+            subIssueDTO.setRealName(realName);
             subIssueDTO.setPriorityDTO(priorityDTOMap.get(issueDO.getPriorityId()));
             subIssueDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
             subIssueDTO.setStatusMapDTO(statusMapDTOMap.get(issueDO.getStatusId()));
