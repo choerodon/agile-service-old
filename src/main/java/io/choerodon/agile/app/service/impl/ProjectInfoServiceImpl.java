@@ -1,16 +1,23 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.ProjectInfoDTO;
+import io.choerodon.agile.api.dto.ProjectRelationshipDTO;
+import io.choerodon.agile.api.dto.UserWithRoleDTO;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.domain.agile.event.ProjectEvent;
 import io.choerodon.agile.domain.agile.repository.ProjectInfoRepository;
+import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
+import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.core.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author dinghuang123@gmail.com
@@ -24,6 +31,8 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
     private ProjectInfoRepository projectInfoRepository;
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
+    @Autowired
+    private UserFeignClient userFeignClient;
 
     @Override
     public void initializationProjectInfo(ProjectEvent projectEvent) {
@@ -54,4 +63,14 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
         return ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoDTO.class);
     }
 
+    @Override
+    public List<ProjectRelationshipDTO> queryProgramTeamInfo(Long projectId) {
+        Long organizationId = ConvertUtil.getOrganizationId(projectId);
+        List<ProjectRelationshipDTO> projectRelationshipDTOs = userFeignClient.getProjUnderGroup(organizationId, projectId).getBody();
+        for (ProjectRelationshipDTO relationshipDTO : projectRelationshipDTOs) {
+            Page<UserWithRoleDTO> users = userFeignClient.pagingQueryUsersWithProjectLevelRoles(0, 0, projectId, null, false).getBody();
+            relationshipDTO.setUserCount(users.getSize());
+        }
+        return projectRelationshipDTOs;
+    }
 }

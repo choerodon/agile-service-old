@@ -4,11 +4,14 @@ import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback;
 import io.choerodon.core.domain.Page;
+import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.choerodon.mybatis.pagehelper.domain.Sort;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -18,7 +21,7 @@ import java.util.List;
  * @since 2018/5/24
  */
 @Component
-@FeignClient(value = "iam-service",fallback = UserFeignClientFallback.class)
+@FeignClient(value = "iam-service", fallback = UserFeignClientFallback.class)
 public interface UserFeignClient {
 
     /**
@@ -80,5 +83,13 @@ public interface UserFeignClient {
     @GetMapping(value = "/v1/organizations/{organization_id}/projects/{project_id}/program")
     ResponseEntity<ProjectDTO> getGroupInfoByEnableProject(@PathVariable(name = "organization_id") Long organizationId,
                                                            @PathVariable(name = "project_id") Long projectId);
+
+    @PostMapping(value = "/v1/projects/{project_id}/role_members/users/roles")
+    ResponseEntity<Page<UserWithRoleDTO>> pagingQueryUsersWithProjectLevelRoles(
+            @RequestParam(name = "page") int page,
+            @RequestParam(name = "size") int size,
+            @PathVariable(name = "project_id") Long sourceId,
+            @RequestBody(required = false) @Valid RoleAssignmentSearchDTO roleAssignmentSearchDTO,
+            @RequestParam(name = "doPage") boolean doPage);
 }
 
