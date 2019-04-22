@@ -163,6 +163,14 @@ public class IssueDTO {
     @ApiModelProperty(value = "feature名称")
     private String featureName;
 
+    private String assigneeLoginName;
+
+    private String assigneeRealName;
+
+    private String reporterLoginName;
+
+    private String reporterRealName;
+
     public String getCreaterEmail() {
         return createrEmail;
     }
@@ -553,6 +561,38 @@ public class IssueDTO {
 
     public Long getFeatureId() {
         return featureId;
+    }
+
+    public String getAssigneeLoginName() {
+        return assigneeLoginName;
+    }
+
+    public void setAssigneeLoginName(String assigneeLoginName) {
+        this.assigneeLoginName = assigneeLoginName;
+    }
+
+    public String getAssigneeRealName() {
+        return assigneeRealName;
+    }
+
+    public void setAssigneeRealName(String assigneeRealName) {
+        this.assigneeRealName = assigneeRealName;
+    }
+
+    public String getReporterLoginName() {
+        return reporterLoginName;
+    }
+
+    public void setReporterLoginName(String reporterLoginName) {
+        this.reporterLoginName = reporterLoginName;
+    }
+
+    public String getReporterRealName() {
+        return reporterRealName;
+    }
+
+    public void setReporterRealName(String reporterRealName) {
+        this.reporterRealName = reporterRealName;
     }
 
     @Override

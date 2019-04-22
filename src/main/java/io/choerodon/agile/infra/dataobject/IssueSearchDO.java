@@ -38,6 +38,8 @@ public class IssueSearchDO {
 
     private Long issueTypeId;
     private IssueTypeDTO issueTypeDTO;
+    private String assigneeLoginName;
+    private String assigneeRealName;
 
     public Long getIssueId() {
         return issueId;
@@ -229,5 +231,21 @@ public class IssueSearchDO {
 
     public IssueTypeDTO getIssueTypeDTO() {
         return issueTypeDTO;
+    }
+
+    public String getAssigneeLoginName() {
+        return assigneeLoginName;
+    }
+
+    public void setAssigneeLoginName(String assigneeLoginName) {
+        this.assigneeLoginName = assigneeLoginName;
+    }
+
+    public String getAssigneeRealName() {
+        return assigneeRealName;
+    }
+
+    public void setAssigneeRealName(String assigneeRealName) {
+        this.assigneeRealName = assigneeRealName;
     }
 }

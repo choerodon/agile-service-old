@@ -21,10 +21,15 @@ public class IssueSearchAssembler extends AbstractAssembler {
         if (issueSearchDOList != null && !issueSearchDOList.isEmpty()) {
             List<IssueSearchDTO> issueSearchDTOList = new ArrayList<>(issueSearchDOList.size());
             issueSearchDOList.forEach(issueSearch -> {
-                String assigneeName = usersMap.get(issueSearch.getAssigneeId()) != null ? usersMap.get(issueSearch.getAssigneeId()).getName() : null;
-                String imageUrl = assigneeName != null ? usersMap.get(issueSearch.getAssigneeId()).getImageUrl() : null;
+                UserMessageDO userMessageDO = usersMap.get(issueSearch.getAssigneeId());
+                String assigneeName = userMessageDO != null ? userMessageDO.getName() : null;
+                String imageUrl = assigneeName != null ? userMessageDO.getImageUrl() : null;
+                String assigneeLoginName = userMessageDO != null ? userMessageDO.getLoginName() : null;
+                String assigneeRealName = userMessageDO != null ? userMessageDO.getRealName() : null;
                 issueSearch.setAssigneeName(assigneeName);
                 issueSearch.setImageUrl(imageUrl);
+                issueSearch.setAssigneeLoginName(assigneeLoginName);
+                issueSearch.setAssigneeRealName(assigneeRealName);
                 issueSearch.setPriorityDTO(priorityMap.get(issueSearch.getPriorityId()));
                 issueSearch.setStatusMapDTO(statusMapDTOMap.get(issueSearch.getStatusId()));
                 issueSearch.setIssueTypeDTO(issueTypeDTOMap.get(issueSearch.getIssueTypeId()));
@@ -40,11 +45,16 @@ public class IssueSearchAssembler extends AbstractAssembler {
         if (assigneeIssueDOList != null && !assigneeIssueDOList.isEmpty()) {
             List<AssigneeIssueDTO> assigneeIssues = new ArrayList<>(assigneeIssueDOList.size());
             assigneeIssueDOList.forEach(assigneeIssueDO -> {
-                String assigneeName = usersMap.get(assigneeIssueDO.getAssigneeId()) != null ? usersMap.get(assigneeIssueDO.getAssigneeId()).getName() : null;
-                String imageUrl = assigneeName != null ? usersMap.get(assigneeIssueDO.getAssigneeId()).getImageUrl() : null;
+                UserMessageDO userMessageDO = usersMap.get(assigneeIssueDO.getAssigneeId());
+                String assigneeName = userMessageDO != null ? userMessageDO.getName() : null;
+                String assigneeLoginName = userMessageDO != null ? userMessageDO.getLoginName() : null;
+                String assigneeRealName = userMessageDO != null ? userMessageDO.getRealName() : null;
+                String imageUrl = assigneeName != null ? userMessageDO.getImageUrl() : null;
                 AssigneeIssueDTO assigneeIssueDTO = new AssigneeIssueDTO();
                 BeanUtils.copyProperties(assigneeIssueDO, assigneeIssueDTO);
                 assigneeIssueDTO.setAssigneeName(assigneeName);
+                assigneeIssueDTO.setAssigneeLoginName(assigneeLoginName);
+                assigneeIssueDTO.setAssigneeRealName(assigneeRealName);
                 assigneeIssueDTO.setImageUrl(imageUrl);
                 assigneeIssues.add(assigneeIssueDTO);
             });
