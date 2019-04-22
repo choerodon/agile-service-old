@@ -323,7 +323,7 @@ public class PiServiceImpl implements PiService {
         sprintDO.setProjectId(programId);
         sprintDO.setPiId(piId);
         List<SprintDO> sprintDOList = sprintMapper.select(sprintDO);
-        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId).getBody();
+        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
         for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
             Long projectId = projectRelationshipDTO.getProjectId();
             for (SprintDO sprint : sprintDOList) {
@@ -420,7 +420,7 @@ public class PiServiceImpl implements PiService {
 
     @Override
     public void completeProjectsSprints(Long programId, Long piId) {
-        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId).getBody();
+        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
         if (projectRelationshipDTOList == null || projectRelationshipDTOList.isEmpty()) {
             return;
         }

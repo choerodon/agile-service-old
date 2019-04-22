@@ -67,7 +67,7 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
     @Override
     public List<ProjectRelationshipDTO> queryProgramTeamInfo(Long projectId) {
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
-        List<ProjectRelationshipDTO> projectRelationshipDTOs = userFeignClient.getProjUnderGroup(organizationId, projectId).getBody();
+        List<ProjectRelationshipDTO> projectRelationshipDTOs = userFeignClient.getProjUnderGroup(organizationId, projectId, true).getBody();
         for (ProjectRelationshipDTO relationshipDTO : projectRelationshipDTOs) {
             Page<UserWithRoleDTO> users = userFeignClient.pagingQueryUsersWithProjectLevelRoles(0, 0, relationshipDTO.getProjectId(), new RoleAssignmentSearchDTO(), false).getBody();
             relationshipDTO.setUserCount(users.getSize());
