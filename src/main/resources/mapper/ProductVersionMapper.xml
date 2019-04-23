@@ -180,7 +180,7 @@
         WHERE apv.project_id = #{projectId} AND apv.version_id = #{versionId}
     </select>
 
-    <resultMap id="versionDeatil" type="io.choerodon.agile.infra.dataobject.IssueDO">
+    <resultMap id="versionDeatilMap" type="io.choerodon.agile.infra.dataobject.IssueDO">
         <id column="issue_id" property="issueId"/>
         <id column="issue_num" property="issueNum"/>
         <id column="type_code" property="typeCode"/>
@@ -197,7 +197,7 @@
         </collection>
     </resultMap>
 
-    <select id="queryIssueByVersionIdAndStatusCode" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+    <select id="queryIssueByVersionIdAndStatusCode" resultMap="versionDeatilMap">
         select search.* from (
         SELECT
         ai.issue_id,
@@ -208,9 +208,9 @@
         ai.priority_id,
         ai.issue_type_id,
         ai.assignee_id,
-        ai.project_id
+        ai.project_id,
         acir.component_id,
-        acir.name
+        aic.name
         FROM agile_issue ai
         left join agile_component_issue_rel acir on acir.project_id = #{projectId} and ai.issue_id = acir.issue_id
         left join agile_issue_component aic on acir.component_id = aic.component_id

@@ -1982,7 +1982,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public Page<IssueNumDTO> queryIssueByOptionForAgile(Long projectId, Long issueId, String issueNum, Boolean self, String content, PageRequest pageRequest) {
-        pageRequest.resetOrder("ai", new HashMap<>());
+        pageRequest.resetOrder("search", new HashMap<>());
         IssueNumDO issueNumDO = null;
         if (self) {
             issueNumDO = issueMapper.queryIssueByIssueNumOrIssueId(projectId, issueId, issueNum);
