@@ -44,6 +44,12 @@ public class DataLogDTO {
     @ApiModelProperty(value = "用户名")
     private String name;
 
+    @ApiModelProperty(value = "登录名")
+    private String loginName;
+
+    @ApiModelProperty(value = "真实名")
+    private String realName;
+
     @ApiModelProperty(value = "用户头像url")
     private String imageUrl;
 
@@ -163,5 +169,21 @@ public class DataLogDTO {
 
     public String getEmail() {
         return email;
+    }
+
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
+    }
+
+    public String getLoginName() {
+        return loginName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
+    public String getRealName() {
+        return realName;
     }
 }

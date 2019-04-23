@@ -13,6 +13,10 @@ public class PieChartDTO implements Serializable {
 
     private String name;
 
+    private String loginName;
+
+    private String realName;
+
     private String typeName;
 
     private Integer value;
@@ -69,6 +73,22 @@ public class PieChartDTO implements Serializable {
 
     public PriorityDTO getPriorityDTO() {
         return priorityDTO;
+    }
+
+    public String getLoginName() {
+        return loginName;
+    }
+
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
     @Override

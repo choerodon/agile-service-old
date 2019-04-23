@@ -34,9 +34,13 @@ public class DataLogAssembler {
             BeanUtils.copyProperties(dataLogDO, dataLogDTO);
             UserMessageDO userMessageDO = usersMap.get(dataLogDO.getCreatedBy());
             String name = userMessageDO != null ? userMessageDO.getName() : null;
+            String loginName = userMessageDO != null ? userMessageDO.getLoginName() : null;
+            String realName = userMessageDO != null ? userMessageDO.getRealName() : null;
             String imageUrl = userMessageDO != null ? userMessageDO.getImageUrl() : null;
             String email = userMessageDO != null ? userMessageDO.getEmail() : null;
             dataLogDTO.setName(name);
+            dataLogDTO.setLoginName(loginName);
+            dataLogDTO.setRealName(realName);
             dataLogDTO.setImageUrl(imageUrl);
             dataLogDTO.setEmail(email);
             if ("status".equals(dataLogDO.getField())) {

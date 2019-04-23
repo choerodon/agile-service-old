@@ -1159,10 +1159,15 @@ public class ReportServiceImpl implements ReportService {
             pieChartDTOList.parallelStream().forEach(pieChartDTO -> {
                 JSONObject jsonObject = new JSONObject();
                 if (pieChartDTO.getTypeName() != null && usersMap.get(Long.parseLong(pieChartDTO.getTypeName())) != null) {
-                    String assigneeName = usersMap.get(Long.parseLong(pieChartDTO.getTypeName())).getName();
-                    String assigneeImageUrl = usersMap.get(Long.parseLong(pieChartDTO.getTypeName())).getImageUrl();
-                    String email = usersMap.get(Long.parseLong(pieChartDTO.getTypeName())).getEmail();
+                    UserMessageDO userMessageDO = usersMap.get(Long.parseLong(pieChartDTO.getTypeName()));
+                    String assigneeName = userMessageDO.getName();
+                    String assigneeLoginName = userMessageDO.getLoginName();
+                    String assigneeRealName = userMessageDO.getRealName();
+                    String assigneeImageUrl = userMessageDO.getImageUrl();
+                    String email = userMessageDO.getEmail();
                     pieChartDTO.setName(assigneeName);
+                    pieChartDTO.setLoginName(assigneeLoginName);
+                    pieChartDTO.setRealName(assigneeRealName);
                     jsonObject.put("assigneeImageUrl", assigneeImageUrl);
                     jsonObject.put("email", email);
                 } else {

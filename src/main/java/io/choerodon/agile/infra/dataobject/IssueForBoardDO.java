@@ -27,6 +27,10 @@ public class IssueForBoardDO {
 
     private String assigneeName;
 
+    private String assigneeLoginName;
+
+    private String assigneeRealName;
+
     private String imageUrl;
 
     private Long epicId;
@@ -199,5 +203,21 @@ public class IssueForBoardDO {
 
     public Long getPiId() {
         return piId;
+    }
+
+    public String getAssigneeLoginName() {
+        return assigneeLoginName;
+    }
+
+    public void setAssigneeLoginName(String assigneeLoginName) {
+        this.assigneeLoginName = assigneeLoginName;
+    }
+
+    public String getAssigneeRealName() {
+        return assigneeRealName;
+    }
+
+    public void setAssigneeRealName(String assigneeRealName) {
+        this.assigneeRealName = assigneeRealName;
     }
 }
