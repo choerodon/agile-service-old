@@ -18,6 +18,7 @@ public class ProgramEventHandler {
 
     private static final String JOIN_PROGRAM_EVENT = "join-program-event";
     private static final String IAM_ADD_PROJECT_RELATIONSHIP = "iam-add-project-relationships";
+    private static final String ADD = "add";
 
     @Autowired
     private SprintService sprintService;
@@ -31,8 +32,10 @@ public class ProgramEventHandler {
         Long programId = projectRelationshipInsertPayload.getParentId();
         List<ProjectRelationshipInsertPayload.ProjectRelationship> relationships = projectRelationshipInsertPayload.getRelationships();
         for (ProjectRelationshipInsertPayload.ProjectRelationship projectRelationship : relationships) {
-            Long projectId = projectRelationship.getId();
-            sprintService.addSprintsWhenJoinProgram(programId, projectId);
+            if (ADD.equals(projectRelationship.getStatus())) {
+                Long projectId = projectRelationship.getId();
+                sprintService.addSprintsWhenJoinProgram(programId, projectId);
+            }
         }
         return message;
     }

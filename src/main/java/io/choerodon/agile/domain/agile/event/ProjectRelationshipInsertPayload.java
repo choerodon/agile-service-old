@@ -50,6 +50,7 @@ public class ProjectRelationshipInsertPayload {
         private Date startDate;
         private Date endDate;
         private Boolean enabled;
+        private String status;
 
         public Long getId() {
             return id;
@@ -89,6 +90,14 @@ public class ProjectRelationshipInsertPayload {
 
         public void setEnabled(Boolean enabled) {
             this.enabled = enabled;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+
+        public String getStatus() {
+            return status;
         }
     }
 }
