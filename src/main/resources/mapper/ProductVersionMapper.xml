@@ -180,16 +180,40 @@
         WHERE apv.project_id = #{projectId} AND apv.version_id = #{versionId}
     </select>
 
+    <resultMap id="versionDeatil" type="io.choerodon.agile.infra.dataobject.IssueDO">
+        <id column="issue_id" property="issueId"/>
+        <id column="issue_num" property="issueNum"/>
+        <id column="type_code" property="typeCode"/>
+        <id column="status_id" property="statusId"/>
+        <id column="summary" property="summary"/>
+        <id column="priority_id" property="priorityId"/>
+        <id column="issue_type_id" property="issueTypeId"/>
+        <id column="assignee_id" property="assigneeId"/>
+        <id column="project_id" property="projectId"/>
+        <id column="project_id" property="projectId"/>
+        <collection property="issueComponentBriefDOS" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.IssueComponentBriefDO">
+            <id column="component_id" property="componentId"/>
+            <id column="name" property="name"/>
+        </collection>
+    </resultMap>
+
     <select id="queryIssueByVersionIdAndStatusCode" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
         select search.* from (
         SELECT
-        ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
-        ai.type_code, ai.status_id,
+        ai.issue_id,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+        ai.type_code,
+        ai.status_id,
         ai.summary,
         ai.priority_id,
         ai.issue_type_id,
-        ai.assignee_id, ai.project_id
+        ai.assignee_id,
+        ai.project_id
+        acir.component_id,
+        acir.name
         FROM agile_issue ai
+        left join agile_component_issue_rel acir on acir.project_id = #{projectId} and ai.issue_id = acir.issue_id
+        left join agile_issue_component aic on acir.component_id = aic.component_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         , agile_version_issue_rel avir
         WHERE ai.project_id = #{projectId} AND avir.version_id = #{versionId} AND avir.relation_type = 'fix'

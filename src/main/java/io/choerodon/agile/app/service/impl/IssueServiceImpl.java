@@ -2391,7 +2391,7 @@ public class IssueServiceImpl implements IssueService {
         Page<FeatureCommonDTO> result = new Page<>();
         result.setNumberOfElements(featureCommonDOPage.getNumberOfElements());
         result.setNumber(featureCommonDOPage.getNumber());
-        result.setContent(featureCommonAssembler.featureCommonDOToDTO(issueMapper.selectFeatureList(programId, featureCommonDOPage.getContent()), statusMapDTOMap, issueTypeDTOMap));
+        result.setContent(featureCommonDOPage.getContent() != null && !featureCommonDOPage.getContent().isEmpty() ? featureCommonAssembler.featureCommonDOToDTO(issueMapper.selectFeatureList(programId, featureCommonDOPage.getContent()), statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
         result.setTotalPages(featureCommonDOPage.getTotalPages());
         result.setSize(featureCommonDOPage.getSize());
         result.setTotalElements(featureCommonDOPage.getTotalElements());
