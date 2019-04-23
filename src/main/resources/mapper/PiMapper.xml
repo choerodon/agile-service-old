@@ -372,4 +372,36 @@
         where apf.program_id = #{programId} and apf.issue_id = #{issueId} and apf.pi_id = ap.id and ap.status_code != 'done'
     </select>
 
+    <select id="selectRoadMapPiList" resultMap="programPiMap">
+        SELECT
+            ap.id as pi_id,
+            CONCAT_WS( '-', ap.CODE, ap.NAME ) AS pi_name,
+            ap.status_code as pi_status_code,
+            ap.start_date as pi_start_date,
+            ap.end_date as pi_end_date,
+            ap.art_id as pi_art_id,
+            ap.object_version_number as pi_object_version_number,
+            ai.issue_id as ai_issue_id,
+            IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) AS ai_issue_num,
+            ai.summary as ai_summary,
+            ai.status_id as ai_status_id,
+            ai.story_points as ai_story_points,
+            ai.issue_type_id as ai_issue_type_id,
+            ai.type_code as ai_type_code,
+            ai.rank as ai_rank,
+            ai.object_version_number as ai_object_version_number,
+            af.feature_type as ai_feature_type
+        FROM
+        agile_pi ap
+        LEFT JOIN agile_pi_feature apf ON ap.id = apf.pi_id AND apf.program_id = #{programId}
+        LEFT JOIN agile_issue ai ON apf.issue_id = ai.issue_id and ai.type_code = 'feature'
+        LEFT JOIN agile_feature af ON ai.issue_id = af.issue_id
+        LEFT JOIN agile_project_info api ON api.project_id = ai.program_id
+        WHERE
+        ap.program_id = #{programId}
+        AND ap.art_id = #{artId}
+        and ap.status_code != 'done'
+        order by ap.id, ai.rank
+    </select>
+
 </mapper>

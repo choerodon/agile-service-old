@@ -163,6 +163,8 @@ public interface IssueService {
 
     void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response, Long organizationId);
 
+    void exportProgramIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response, Long organizationId);
+
     /**
      * 根据issueId复制一个issue
      *

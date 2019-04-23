@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service.impl;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -203,6 +204,8 @@ public class IssueServiceImpl implements IssueService {
     private static final String INFLUENCE_RELATION_TYPE = "influence";
     private static final String[] FIELDS_NAME = {"任务编号", "概要", "描述", "类型", "所属项目", "经办人", "经办人名称", "报告人", "报告人名称", "解决状态", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本", "史诗", "标签", "故事点", "模块"};
     private static final String[] FIELDS = {"issueNum", "summary", "description", "typeName", "projectName", "assigneeName", "assigneeRealName", "reporterName", "reporterRealName", "resolution", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", REMAIN_TIME_FIELD, "versionName", "epicName", "labelName", "storyPoints", "componentName"};
+    private static final String[] FIELDS_IN_PROGRAM = {"issueNum", "summary", "typeName", "projectName", "statusName", "piName", "creationDate", "lastUpdateDate", "epicName", "storyPoints", "benfitHypothesis", "acceptanceCritera"};
+    private static final String[] FIELDS_NAME_IN_PROGRAM = {"任务编号", "概要", "类型", "所属项目", "状态", "PI", "创建时间", "最后更新时间", "史诗", "故事点", "特性价值", "验收标准"};
     private static final String PROJECT_ERROR = "error.project.notFound";
     private static final String ERROR_ISSUE_NOT_FOUND = "error.Issue.queryIssue";
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
@@ -1645,6 +1648,37 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
+    @Override
+    public void exportProgramIssues(Long programId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response, Long organizationId) {
+        ProjectDTO project = userRepository.queryProject(programId);
+        if (project == null) {
+            throw new CommonException(PROJECT_ERROR);
+        }
+        Map<String, String[]> fieldMap = handleExportFieldsInProgram(searchDTO.getExportFieldCodes());
+        String[] fieldCodes = fieldMap.get(FIELD_CODES);
+        String[] fieldNames = fieldMap.get(FIELD_NAMES);
+        List<Long> exportIssueIds = issueMapper.selectExportIssueIdsInProgram(programId, searchDTO);
+        List<FeatureExportDO> featureExportDOList = issueMapper.selectExportIssuesInProgram(programId, exportIssueIds);
+        List<FeatureExportDTO> featureExportDTOList = (featureExportDOList != null && !featureExportDOList.isEmpty() ? ConvertHelper.convertList(featureExportDOList, FeatureExportDTO.class) : null);
+        if (featureExportDTOList != null && !featureExportDTOList.isEmpty()) {
+            Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+            Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+            Map<Long, List<PiExportNameDO>> closePiIssueMap = issueMapper.queryPiNameByIssueIds(programId, exportIssueIds).stream().collect(Collectors.groupingBy(PiExportNameDO::getIssueId));
+            Map<Long, PiExportNameDO> activePiIssueMap = issueMapper.queryActivePiNameByIssueIds(programId, exportIssueIds).stream().collect(Collectors.toMap(PiExportNameDO::getIssueId, Function.identity()));
+            featureExportDTOList.forEach(featureExportDTO -> {
+                String closePiName = closePiIssueMap.get(featureExportDTO.getIssueId()) != null ? closePiIssueMap.get(featureExportDTO.getIssueId()).stream().map(PiExportNameDO::getPiCodeName).collect(Collectors.joining(",")) : "";
+                String activePiName = activePiIssueMap.get(featureExportDTO.getIssueId()) != null ? activePiIssueMap.get(featureExportDTO.getIssueId()).getPiCodeName() : "";
+                featureExportDTO.setPiName(exportIssuesPiName(closePiName, activePiName));
+                featureExportDTO.setProjectName(project.getName());
+                featureExportDTO.setStatusName(statusMapDTOMap.get(featureExportDTO.getStatusId()).getName());
+                featureExportDTO.setTypeName(issueTypeDTOMap.get(featureExportDTO.getIssuetypeId()).getName());
+            });
+            ExcelUtil.export(featureExportDTOList, FeatureExportDTO.class, fieldNames, fieldCodes, project.getName(), Arrays.asList("piName"), response);
+        } else {
+            ExcelUtil.export(new ArrayList<>(), FeatureExportDTO.class, fieldNames, fieldCodes, project.getName(), Arrays.asList("piName"), response);
+        }
+    }
+
     /**
      * 处理根据界面筛选结果导出的字段
      *
@@ -1674,6 +1708,33 @@ public class IssueServiceImpl implements IssueService {
         } else {
             fieldMap.put(FIELD_CODES, FIELDS);
             fieldMap.put(FIELD_NAMES, FIELDS_NAME);
+        }
+        return fieldMap;
+    }
+
+    private Map<String, String[]> handleExportFieldsInProgram(List<String> exportFieldCodes) {
+        Map<String, String[]> fieldMap = new HashMap<>(2);
+        if (exportFieldCodes != null && exportFieldCodes.size() != 0) {
+            Map<String, String> data = new HashMap<>(FIELDS_IN_PROGRAM.length);
+            for (int i = 0; i < FIELDS_IN_PROGRAM.length; i++) {
+                data.put(FIELDS_IN_PROGRAM[i], FIELDS_NAME_IN_PROGRAM[i]);
+            }
+            List<String> fieldCodes = new ArrayList<>(exportFieldCodes.size());
+            List<String> fieldNames = new ArrayList<>(exportFieldCodes.size());
+            exportFieldCodes.stream().forEach(code -> {
+                String name = data.get(code);
+                if (name != null) {
+                    fieldCodes.add(code);
+                    fieldNames.add(name);
+                } else {
+                    throw new CommonException("error.issue.exportFieldIllegal");
+                }
+            });
+            fieldMap.put(FIELD_CODES, fieldCodes.stream().toArray(String[]::new));
+            fieldMap.put(FIELD_NAMES, fieldNames.stream().toArray(String[]::new));
+        } else {
+            fieldMap.put(FIELD_CODES, FIELDS_IN_PROGRAM);
+            fieldMap.put(FIELD_NAMES, FIELDS_NAME_IN_PROGRAM);
         }
         return fieldMap;
     }
@@ -1927,6 +1988,12 @@ public class IssueServiceImpl implements IssueService {
         StringBuilder sprintName = new StringBuilder(exportIssuesDTO.getSprintName() != null ? "正在使用冲刺:" + exportIssuesDTO.getSprintName() + "\r\n" : "");
         sprintName.append(!Objects.equals(exportIssuesDTO.getCloseSprintName(), "") ? "已关闭冲刺:" + exportIssuesDTO.getCloseSprintName() : "");
         return sprintName.toString();
+    }
+
+    private String exportIssuesPiName(String closePiName, String activePiName) {
+        StringBuilder piName = new StringBuilder(activePiName != null ? "正在使用PI:" + activePiName + "\r\n" : "");
+        piName.append(!Objects.equals(closePiName, "") ? "已关闭PI:" + closePiName : "");
+        return piName.toString();
     }
 
     private IssueDO queryIssueByIssueIdAndProjectId(Long projectId, Long issueId) {

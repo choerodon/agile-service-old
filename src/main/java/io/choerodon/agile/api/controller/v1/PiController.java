@@ -1,10 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.MoveIssueDTO;
-import io.choerodon.agile.api.dto.PiCompleteCountDTO;
-import io.choerodon.agile.api.dto.PiDTO;
-import io.choerodon.agile.api.dto.PiNameDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.infra.dataobject.SubFeatureDO;
 import io.choerodon.core.domain.Page;
@@ -163,5 +160,17 @@ public class PiController {
         return Optional.ofNullable(piService.queryUnfinishedOfProgram(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.unfinishedPiDTOList.get"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("查询PI路线图")
+    @GetMapping(value = "/road_map")
+    public ResponseEntity<List<PiWithFeatureDTO>> queryRoadMapOfProgram(@ApiParam(value = "项目id", required = true)
+                                                                        @PathVariable(name = "project_id") Long projectId,
+                                                                        @ApiParam(value = "组织id", required = true)
+                                                                        @RequestParam Long organizationId) {
+        return Optional.ofNullable(piService.queryRoadMapOfProgram(projectId, organizationId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.roadMap.get"));
     }
 }

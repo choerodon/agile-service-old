@@ -617,4 +617,21 @@ public class PiServiceImpl implements PiService {
             return new ArrayList<>();
         }
     }
+
+    @Override
+    public List<PiWithFeatureDTO> queryRoadMapOfProgram(Long programId, Long organizationId) {
+        ArtDO activeArt = getActiveArt(programId);
+        if (activeArt == null) {
+            return new ArrayList<>();
+        }
+        List<PiWithFeatureDO> piWithFeatureDOList = piMapper.selectRoadMapPiList(programId, activeArt.getId());
+        if (piWithFeatureDOList != null && !piWithFeatureDOList.isEmpty()) {
+            Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+            setStatusIsCompleted(programId, statusMapDTOMap);
+            Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+            return piAssembler.piWithFeatureDOTODTO(piWithFeatureDOList, statusMapDTOMap, issueTypeDTOMap);
+        } else {
+            return new ArrayList<>();
+        }
+    }
 }
