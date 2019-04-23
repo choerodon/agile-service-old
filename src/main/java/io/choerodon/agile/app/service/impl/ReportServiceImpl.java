@@ -949,7 +949,9 @@ public class ReportServiceImpl implements ReportService {
         //过滤并排序
         List<ColumnChangeDTO> columnChangeDTOList = result.stream().filter(columnChangeDTO ->
                 columnChangeDTO.getColumnTo() != null && columnChangeDTO.getColumnFrom() != null && !columnChangeDTO.getColumnFrom().equals(columnChangeDTO.getColumnTo()))
-                .sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList());
+                .filter(columnChangeDTO ->
+                (columnChangeDTO.getDate().before(cumulativeFlowFilterDTO.getEndDate()) || columnChangeDTO.getDate().equals(cumulativeFlowFilterDTO.getEndDate()))
+                        && (columnChangeDTO.getDate().after(cumulativeFlowFilterDTO.getStartDate()) || columnChangeDTO.getDate().equals(cumulativeFlowFilterDTO.getStartDate()))).sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList());
         //对传入时间点的数据给与坐标
         List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(columnIds));
         cumulativeFlowDiagramDTOList.parallelStream().forEachOrdered(cumulativeFlowDiagramDTO -> {
