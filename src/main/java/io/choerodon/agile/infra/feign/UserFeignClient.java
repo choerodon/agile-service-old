@@ -79,7 +79,7 @@ public interface UserFeignClient {
     @GetMapping(value = "/v1/organizations/{organization_id}/project_relations/{parent_id}")
     ResponseEntity<List<ProjectRelationshipDTO>> getProjUnderGroup(@PathVariable(name = "organization_id") Long orgId,
                                                                    @PathVariable(name = "parent_id") Long id,
-                                                                   @RequestParam(name = "onlySelectEnable") Boolean onlySelectEnable);
+                                                                   @RequestParam(name = "only_select_enable") Boolean onlySelectEnable);
 
     @GetMapping(value = "/v1/organizations/{organization_id}/projects/{project_id}/program")
     ResponseEntity<ProjectDTO> getGroupInfoByEnableProject(@PathVariable(name = "organization_id") Long organizationId,
