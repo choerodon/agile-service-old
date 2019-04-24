@@ -37,6 +37,8 @@ public interface PiService {
 
     void completeProjectsSprints(Long programId, Long piId);
 
+    void completeSprintsWithSelect(Long programId, Long piId, Long nextPiId, Long artId);
+
     List<SubFeatureDO> batchFeatureToPi(Long programId, Long piId, MoveIssueDTO moveIssueDTO);
 
     List<SubFeatureDO> batchFeatureToEpic(Long programId, Long epicId, List<Long> featureIds);

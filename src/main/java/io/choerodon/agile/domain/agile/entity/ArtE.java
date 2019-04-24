@@ -51,6 +51,8 @@ public class ArtE {
 
     private String statusCode;
 
+    private String sprintCompleteSetting;
+
     private Long objectVersionNumber;
 
     public Long getId() {
@@ -195,5 +197,13 @@ public class ArtE {
 
     public String getStatusCode() {
         return statusCode;
+    }
+
+    public void setSprintCompleteSetting(String sprintCompleteSetting) {
+        this.sprintCompleteSetting = sprintCompleteSetting;
+    }
+
+    public String getSprintCompleteSetting() {
+        return sprintCompleteSetting;
     }
 }

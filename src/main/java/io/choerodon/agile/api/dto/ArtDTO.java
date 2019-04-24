@@ -62,6 +62,9 @@ public class ArtDTO {
     @ApiModelProperty(value = "art状态code：todo、doing、done")
     private String statusCode;
 
+    @ApiModelProperty(value = "PI完成后的设置，移动到 待办 or 下个冲刺，values: backlog、nextSprint")
+    private String sprintCompleteSetting;
+
     @ApiModelProperty(value = "数据库表版本号控制")
     private Long objectVersionNumber;
 
@@ -219,5 +222,13 @@ public class ArtDTO {
 
     public String getStatusCode() {
         return statusCode;
+    }
+
+    public void setSprintCompleteSetting(String sprintCompleteSetting) {
+        this.sprintCompleteSetting = sprintCompleteSetting;
+    }
+
+    public String getSprintCompleteSetting() {
+        return sprintCompleteSetting;
     }
 }

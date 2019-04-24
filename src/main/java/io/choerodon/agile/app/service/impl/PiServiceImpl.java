@@ -54,6 +54,8 @@ public class PiServiceImpl implements PiService {
     private static final String STATUS_ID = "statusId";
     private static final String ERROR_ISSUE_STATE_MACHINE_NOT_FOUND = "error.issueStateMachine.notFound";
     private static final String ERROR_ISSUE_STATUS_NOT_FOUND = "error.createIssue.issueStatusNotFound";
+    private static final String SPRINT_COMPLETE_SETTING_BACKLOG = "backlog";
+    private static final String SPRINT_COMPLETE_SETTING_NEXT_SPRINT = "nextSprint";
 
     @Autowired
     private PiRepository piRepository;
@@ -442,6 +444,27 @@ public class PiServiceImpl implements PiService {
         }
     }
 
+    @Override
+    public void completeSprintsWithSelect(Long programId, Long piId, Long nextPiId, Long artId) {
+        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
+        if (projectRelationshipDTOList == null || projectRelationshipDTOList.isEmpty()) {
+            return;
+        }
+        ArtDO artDO = artMapper.selectByPrimaryKey(artId);
+        for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
+            Long projectId = projectRelationshipDTO.getProjectId();
+            List<Long> sprintIds = sprintMapper.selectByPiId(projectId, piId);
+            SprintDO newSprint = sprintMapper.selectFirstSprintByPiId(projectId, nextPiId);
+            for (Long sprintId : sprintIds) {
+                SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO();
+                sprintCompleteDTO.setProjectId(projectId);
+                sprintCompleteDTO.setSprintId(sprintId);
+                sprintCompleteDTO.setIncompleteIssuesDestination(SPRINT_COMPLETE_SETTING_NEXT_SPRINT.equals(artDO.getSprintCompleteSetting()) ? newSprint.getSprintId() : 0L);
+                sprintService.completeSprint(projectId, sprintCompleteDTO);
+            }
+        }
+    }
+
     private void autoCreatePi(Long programId, Long artId) {
         List<PiDO> restPi = piMapper.selectUnDonePiDOList(programId, artId);
         ArtDO artDO = artMapper.selectByPrimaryKey(artId);
@@ -517,8 +540,6 @@ public class PiServiceImpl implements PiService {
         piValidator.checkPiClose(piDTO);
         // deal uncomplete feature to target pi
         dealUnCompleteFeature(piDTO.getProgramId(), piDTO.getId(), piDTO.getTargetPiId());
-        // deal projects' sprints complete
-        completeProjectsSprints(programId, piDTO.getId());
         // update pi status: done
         PiE update = new PiE(programId, piDTO.getId(), PI_DONE, piDTO.getObjectVersionNumber());
         update.setActualEndDate(new Date());
@@ -534,6 +555,8 @@ public class PiServiceImpl implements PiService {
             nextStartPi.setUpdateStatusId(piDTO.getUpdateStatusId());
             startPi(programId, nextStartPi);
         }
+        // deal projects' sprints complete
+        completeSprintsWithSelect(programId, piDTO.getId(), nextPi.getId(), piDTO.getArtId());
         autoCreatePi(programId, piDTO.getArtId());
         sendPmAndEmailAfterPiComplete(programId, piE);
         return ConvertHelper.convert(piE, PiDTO.class);
