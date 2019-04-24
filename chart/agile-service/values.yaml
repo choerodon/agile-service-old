@@ -9,6 +9,11 @@ image:
   pullPolicy: IfNotPresent
 deployment:
   managementPort: 8379
+service:
+  enable: false
+  type: ClusterIP
+  port: 8378
+
 preJob:
   timeout: 300
   image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.6.2
