@@ -21,7 +21,7 @@ preJob:
     enable: true
     configFile: application.yml
     configType: k8s
-    registerHost: http://register-server:8000
+    registerHost: http://register-server.c7n-system:8000
     datasource:
       url: jdbc:mysql://localhost:3306/manager_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
       username: username
@@ -35,11 +35,11 @@ preJob:
 env:
   open:
     SPRING_CLOUD_CONFIG_ENABLED: true
-    SPRING_CLOUD_CONFIG_URI: http://register-server:8000
-    SPRING_DATASOURCE_URL: jdbc:mysql://localhost/agile_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    SPRING_CLOUD_CONFIG_URI: http://register-server.c7n-system:8000
+    SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/agile_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
     SPRING_DATASOURCE_USERNAME: username
     SPRING_DATASOURCE_PASSWORD: password
-    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://register-server.io-choerodon:8000/eureka/
+    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://register-server.c7n-system:8000/eureka/
     # 清理permission表中的旧接口和role_permission表中角色和权限层级不匹配的脏数据
     CHOERODON_CLEANPERMISSION: false
     # skywalking 代理端配置
