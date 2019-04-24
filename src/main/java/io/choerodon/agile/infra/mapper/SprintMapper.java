@@ -122,4 +122,6 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
     List<SprintDO> selectListByPiId(@Param("projectId") Long projectId, @Param("piId") Long PiId);
 
     SprintDO selectFirstSprintByPiId(@Param("projectId") Long projectId, @Param("piId") Long PiId);
+
+    List<SprintDO> getSprintByProjectId(@Param("projectId") Long projectId);
 }

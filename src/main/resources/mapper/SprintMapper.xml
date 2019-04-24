@@ -821,4 +821,15 @@
         limit 1
     </select>
 
+    <select id="getSprintByProjectId" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
+        SELECT
+          sprint_id,
+          status_code,
+          sprint_name
+        FROM
+            agile_sprint
+        WHERE
+            project_id = #{projectId}
+        order by sprint_id
+    </select>
 </mapper>

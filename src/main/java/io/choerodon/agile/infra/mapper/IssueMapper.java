@@ -171,6 +171,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<SprintNameDO> querySprintNameByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
+    List<VersionIssueRelDO> queryVersionIssueRelByIssueId(@Param("issueId") Long issueId);
+
     List<VersionIssueRelDO> queryVersionNameByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("relationType") String relationType);
 
     List<LabelIssueRelDO> queryLabelIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
