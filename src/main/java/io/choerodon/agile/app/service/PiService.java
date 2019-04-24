@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.domain.agile.entity.PiE;
 import io.choerodon.agile.infra.dataobject.ArtDO;
 import io.choerodon.agile.infra.dataobject.SubFeatureDO;
 import io.choerodon.core.domain.Page;
@@ -45,4 +46,6 @@ public interface PiService {
     List<PiNameDTO> queryUnfinishedOfProgram(Long programId);
 
     List<PiWithFeatureDTO> queryRoadMapOfProgram(Long programId, Long organizationId);
+
+    void sendPmAndEmailAfterPiComplete(Long programId, PiE piE);
 }

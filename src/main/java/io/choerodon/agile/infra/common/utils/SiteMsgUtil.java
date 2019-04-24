@@ -106,4 +106,26 @@ public class SiteMsgUtil {
         }
     }
 
+    public void piComplete(List<Long> userIds, Long fromUserId, Long projectId, Map<String, Object> params) {
+        NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
+        noticeSendDTO.setCode("pi-complete");
+        noticeSendDTO.setParams(params);
+        List<NoticeSendDTO.User> userList = new ArrayList<>();
+        for (Long id : userIds) {
+            NoticeSendDTO.User user = new NoticeSendDTO.User();
+            user.setId(id);
+            userList.add(user);
+        }
+        noticeSendDTO.setTargetUsers(userList);
+        NoticeSendDTO.User fromUser = new NoticeSendDTO.User();
+        fromUser.setId(fromUserId);
+        noticeSendDTO.setFromUser(fromUser);
+        noticeSendDTO.setSourceId(projectId);
+        try {
+            notifyFeignClient.postNotice(noticeSendDTO);
+        } catch (Exception e) {
+            LOGGER.error("完成PI消息、Email发送失败", e);
+        }
+    }
+
 }

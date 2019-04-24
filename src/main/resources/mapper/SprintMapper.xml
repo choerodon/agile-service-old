@@ -807,4 +807,10 @@
         </foreach>
     </update>
 
+    <select id="selectListByPiId" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
+        select *
+        from agile_sprint
+        where project_id = #{projectId} and pi_id = #{piId}
+    </select>
+
 </mapper>
