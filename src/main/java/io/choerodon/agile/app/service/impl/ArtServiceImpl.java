@@ -187,7 +187,7 @@ public class ArtServiceImpl implements ArtService {
     public List<PiCalendarDTO> queryArtCalendar(Long programId, Long artId) {
         List<PiCalendarDO> piCalendarDOList = artMapper.selectArtCalendar(programId, artId);
         if (piCalendarDOList != null && !piCalendarDOList.isEmpty()) {
-            return ConvertHelper.convertList(piCalendarDOList, PiCalendarDTO.class);
+            return artAssembler.piCalendarDOToDTO(piCalendarDOList);
         } else {
             return new ArrayList<>();
         }

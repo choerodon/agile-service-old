@@ -1,6 +1,5 @@
 package io.choerodon.agile.api.dto;
 
-import io.choerodon.agile.infra.dataobject.SprintCalendarDO;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
@@ -37,7 +36,7 @@ public class PiCalendarDTO {
     private Long programId;
 
     @ApiModelProperty(value = "PI下的冲刺信息")
-    List<SprintCalendarDO> sprintCalendarDOList;
+    List<SprintCalendarDTO> sprintCalendarDTOList;
 
     public Long getId() {
         return id;
@@ -103,11 +102,11 @@ public class PiCalendarDTO {
         this.programId = programId;
     }
 
-    public List<SprintCalendarDO> getSprintCalendarDOList() {
-        return sprintCalendarDOList;
+    public List<SprintCalendarDTO> getSprintCalendarDTOList() {
+        return sprintCalendarDTOList;
     }
 
-    public void setSprintCalendarDOList(List<SprintCalendarDO> sprintCalendarDOList) {
-        this.sprintCalendarDOList = sprintCalendarDOList;
+    public void setSprintCalendarDTOList(List<SprintCalendarDTO> sprintCalendarDTOList) {
+        this.sprintCalendarDTOList = sprintCalendarDTOList;
     }
 }

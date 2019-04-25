@@ -1,10 +1,14 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.dto.ArtDTO;
+import io.choerodon.agile.api.dto.PiCalendarDTO;
+import io.choerodon.agile.api.dto.SprintCalendarDTO;
 import io.choerodon.agile.domain.agile.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.ArtDO;
+import io.choerodon.agile.infra.dataobject.PiCalendarDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.core.convertor.ConvertHelper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,5 +43,18 @@ public class ArtAssembler {
         String rteName = userMessageDO != null ? userMessageDO.getLoginName() + userMessageDO.getName() : null;
         artDTO.setRteName(rteName);
         return artDTO;
+    }
+
+    public List<PiCalendarDTO> piCalendarDOToDTO(List<PiCalendarDO> piCalendarDOList) {
+        List<PiCalendarDTO> result = new ArrayList<>();
+        piCalendarDOList.forEach(piCalendarDO -> {
+            PiCalendarDTO piCalendarDTO = new PiCalendarDTO();
+            BeanUtils.copyProperties(piCalendarDO, piCalendarDTO);
+            if (piCalendarDO.getSprintCalendarDOList() != null && !piCalendarDO.getSprintCalendarDOList().isEmpty()) {
+                piCalendarDTO.setSprintCalendarDTOList(ConvertHelper.convertList(piCalendarDO.getSprintCalendarDOList(), SprintCalendarDTO.class));
+            }
+            result.add(piCalendarDTO);
+        });
+        return result;
     }
 }
