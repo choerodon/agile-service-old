@@ -638,19 +638,25 @@ public class SprintServiceImpl implements SprintService {
         piDO.setStatusCode("doing");
         PiDO res = piMapper.selectOne(piDO);
         if (res != null) {
-            SprintDO sprintDO = new SprintDO();
-            sprintDO.setProjectId(programId);
-            sprintDO.setPiId(res.getId());
-            List<SprintDO> sprintDOList = sprintMapper.select(sprintDO);
-            for (SprintDO sprint : sprintDOList) {
-                SprintE sprintE = new SprintE();
-                sprintE.setPiId(sprint.getPiId());
-                sprintE.setEndDate(sprint.getEndDate());
-                sprintE.setStartDate(sprint.getStartDate());
-                sprintE.setSprintName(sprint.getSprintName());
-                sprintE.setProjectId(projectId);
-                sprintE.setStatusCode(sprint.getStatusCode());
-                sprintRepository.createSprint(sprintE);
+            SprintDO existSprint = new SprintDO();
+            existSprint.setProjectId(projectId);
+            existSprint.setPiId(res.getId());
+            List<SprintDO> existList = sprintMapper.select(existSprint);
+            if (existList == null || existList.isEmpty()) {
+                SprintDO sprintDO = new SprintDO();
+                sprintDO.setProjectId(programId);
+                sprintDO.setPiId(res.getId());
+                List<SprintDO> sprintDOList = sprintMapper.select(sprintDO);
+                for (SprintDO sprint : sprintDOList) {
+                    SprintE sprintE = new SprintE();
+                    sprintE.setPiId(sprint.getPiId());
+                    sprintE.setEndDate(sprint.getEndDate());
+                    sprintE.setStartDate(sprint.getStartDate());
+                    sprintE.setSprintName(sprint.getSprintName());
+                    sprintE.setProjectId(projectId);
+                    sprintE.setStatusCode(sprint.getStatusCode());
+                    sprintRepository.createSprint(sprintE);
+                }
             }
         }
     }
