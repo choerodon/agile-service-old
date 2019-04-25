@@ -426,7 +426,7 @@ public class PiServiceImpl implements PiService {
         }
         for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
             Long projectId = projectRelationshipDTO.getProjectId();
-            List<Long> sprintIds = sprintMapper.selectByPiId(projectId, piId);
+            List<Long> sprintIds = sprintMapper.selectNotDoneByPiId(projectId, piId);
             for (Long sprintId : sprintIds) {
                 SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO();
                 sprintCompleteDTO.setProjectId(projectId);

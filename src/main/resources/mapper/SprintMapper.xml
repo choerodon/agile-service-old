@@ -797,7 +797,7 @@
         where project_id = #{projectId} and pi_id = #{piId}
     </delete>
 
-    <select id="selectByPiId" resultType="java.lang.Long">
+    <select id="selectNotDoneByPiId" resultType="java.lang.Long">
         select sprint_id from agile_sprint
         where project_id = #{projectId} and pi_id = #{piId} and status_code != 'done'
     </select>
