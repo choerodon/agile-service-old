@@ -1,9 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.ArtDTO;
-import io.choerodon.agile.api.dto.ArtStopDTO;
-import io.choerodon.agile.api.dto.PiCreateDTO;
-import io.choerodon.agile.api.dto.PiDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.ArtValidator;
 import io.choerodon.agile.app.assembler.ArtAssembler;
 import io.choerodon.agile.app.service.ArtService;
@@ -187,8 +184,13 @@ public class ArtServiceImpl implements ArtService {
     }
 
     @Override
-    public List<PiCalendarDO> queryArtCalendar(Long programId, Long artId) {
-        return artMapper.selectArtCalendar(programId, artId);
+    public List<PiCalendarDTO> queryArtCalendar(Long programId, Long artId) {
+        List<PiCalendarDO> piCalendarDOList = artMapper.selectArtCalendar(programId, artId);
+        if (piCalendarDOList != null && !piCalendarDOList.isEmpty()) {
+            return ConvertHelper.convertList(piCalendarDOList, PiCalendarDTO.class);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     @Override

@@ -59,6 +59,7 @@
         from agile_pi ap
         left join agile_sprint asp on ap.id = asp.pi_id and asp.project_id = #{programId}
         where ap.art_id = #{artId} and ap.program_id = #{programId}
+        order by ap.id
     </select>
 
 
