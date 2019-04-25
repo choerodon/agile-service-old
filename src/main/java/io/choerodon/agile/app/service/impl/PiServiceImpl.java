@@ -594,17 +594,6 @@ public class PiServiceImpl implements PiService {
         return piMapper.selectFeatureIdByFeatureIds(programId, featureIds);
     }
 
-//    @Override
-//    public void deleteById(Long programId, Long piId, Long artId) {
-//        piValidator.checkDelete(programId, artId, piId);
-//        List<Long> piIds = piMapper.selectNextListPi(programId, artId, piId);
-//        for (Long id : piIds) {
-//            dealUnCompleteFeature(programId, id, 0L);
-//            sprintRepository.deleteByPiBatch(programId, id);
-//            piRepository.delete(id);
-//        }
-//    }
-
     @Override
     public List<PiNameDTO> queryAllOfProgram(Long programId) {
         List<PiNameDO> piNameDOList = piMapper.selectAllOfProgram(programId);
