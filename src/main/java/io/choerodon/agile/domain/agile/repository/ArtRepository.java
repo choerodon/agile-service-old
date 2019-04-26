@@ -12,5 +12,4 @@ public interface ArtRepository {
 
     ArtE updateBySelective(ArtE artE);
 
-    void delete(Long id);
 }

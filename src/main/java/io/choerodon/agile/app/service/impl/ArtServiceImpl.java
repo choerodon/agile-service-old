@@ -143,10 +143,6 @@ public class ArtServiceImpl implements ArtService {
         return ConvertHelper.convert(result, ArtDTO.class);
     }
 
-    @Override
-    public void deleteArt(Long programId, Long id) {
-        artRepository.delete(id);
-    }
 
     @Override
     public Page<ArtDTO> queryArtList(Long programId, PageRequest pageRequest) {

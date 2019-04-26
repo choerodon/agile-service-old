@@ -83,16 +83,6 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.art.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("删除art")
-    @DeleteMapping("/{id}")
-    public ResponseEntity deleteArt(@ApiParam(value = "项目id", required = true)
-                                    @PathVariable(name = "project_id") Long projectId,
-                                    @ApiParam(value = "art id", required = true)
-                                    @PathVariable Long id) {
-        artService.deleteArt(projectId, id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询art列表")

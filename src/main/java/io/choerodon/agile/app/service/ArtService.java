@@ -23,8 +23,6 @@ public interface ArtService {
 
     ArtDTO updateArt(Long programId, ArtDTO artDTO);
 
-    void deleteArt(Long programId, Long id);
-
     Page<ArtDTO> queryArtList(Long programId, PageRequest pageRequest);
 
     ArtDTO queryArt(Long programId, Long id);
