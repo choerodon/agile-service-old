@@ -55,7 +55,7 @@ public class PiServiceImpl implements PiService {
     private static final String ERROR_ISSUE_STATE_MACHINE_NOT_FOUND = "error.issueStateMachine.notFound";
     private static final String ERROR_ISSUE_STATUS_NOT_FOUND = "error.createIssue.issueStatusNotFound";
     private static final String SPRINT_COMPLETE_SETTING_BACKLOG = "backlog";
-    private static final String SPRINT_COMPLETE_SETTING_NEXT_SPRINT = "nextSprint";
+    private static final String SPRINT_COMPLETE_SETTING_NEXT_SPRINT = "next_sprint";
 
     @Autowired
     private PiRepository piRepository;
