@@ -816,7 +816,7 @@
     <select id="selectFirstSprintByPiId" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
         select *
         from agile_sprint
-        where project_id = #{projectId} and pi_id = #{piId} and status_code != 'done'
+        where project_id = #{projectId} and pi_id = #{piId} and status_code != 'closed'
         order by sprint_id
         limit 1
     </select>
