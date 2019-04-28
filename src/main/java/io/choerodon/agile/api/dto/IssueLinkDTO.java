@@ -59,6 +59,9 @@ public class IssueLinkDTO {
     @ApiModelProperty(value = "优先级DTO")
     private PriorityDTO priorityDTO;
 
+    @ApiModelProperty(value = "关联issue的应用类型")
+    private String applyType;
+
     public Long getProjectId() {
         return projectId;
     }
@@ -185,6 +188,14 @@ public class IssueLinkDTO {
 
     public String getImageUrl() {
         return imageUrl;
+    }
+
+    public String getApplyType() {
+        return applyType;
+    }
+
+    public void setApplyType(String applyType) {
+        this.applyType = applyType;
     }
 
     @Override
