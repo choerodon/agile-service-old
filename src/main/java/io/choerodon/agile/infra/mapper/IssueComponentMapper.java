@@ -51,4 +51,6 @@ public interface IssueComponentMapper extends BaseMapper<IssueComponentDO> {
 
     List<ComponentForListDO> queryComponentWithIssueNum(@Param("projectId") Long projectId, @Param("componentId") Long componentId,
                                                         @Param("noIssueTest") Boolean noIssueTest);
+
+    List<IssueComponentDO> selectByProjectId(@Param("projectId") Long projectId);
 }

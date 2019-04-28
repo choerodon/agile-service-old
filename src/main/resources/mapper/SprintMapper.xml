@@ -832,4 +832,12 @@
             project_id = #{projectId}
         order by sprint_id
     </select>
+
+    <select id="selectNotDoneByProjectId" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
+        select *
+        from agile_sprint
+        where project_id = #{projectId} and status_code != 'closed'
+        order by sprint_id
+    </select>
+
 </mapper>

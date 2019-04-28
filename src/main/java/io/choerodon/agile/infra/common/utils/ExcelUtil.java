@@ -1,8 +1,10 @@
 package io.choerodon.agile.infra.common.utils;
 
 import io.choerodon.core.exception.CommonException;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.streaming.SXSSFCell;
 import org.apache.poi.xssf.streaming.SXSSFRow;
@@ -62,6 +64,20 @@ public class ExcelUtil {
         }
     }
 
+    private static void initGuideSheetRemind(Workbook workbook, Sheet sheet, String remindInfo) {
+        CellStyle ztStyle = workbook.createCellStyle();
+        Font ztFont = workbook.createFont();
+        ztFont.setColor(Font.COLOR_RED);
+        ztStyle.setFont(ztFont);
+        ztStyle.setAlignment(CellStyle.ALIGN_CENTER);
+        ztStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
+        sheet.addMergedRegion(new CellRangeAddress(0, 9, 2, 4));
+        Row row = sheet.getRow(0);
+        Cell cell = row.createCell(2);
+        cell.setCellValue(remindInfo);
+        cell.setCellStyle(ztStyle);
+    }
+
     public static void createGuideSheet(Workbook wb) {
         Sheet sheet = wb.createSheet("要求");
         sheet.setColumnWidth(0, 5000);
@@ -74,14 +90,20 @@ public class ExcelUtil {
         initGuideSheetByRow(wb, sheet, 5, "剩余时间", "非必输，仅支持3位整数或者0.5", false);
         initGuideSheetByRow(wb, sheet, 6, "修复版本", "非必输", false);
         initGuideSheetByRow(wb, sheet, 7, "史诗名称", "如果问题类型选择史诗，此项必填, 限制10个字符", true);
+        initGuideSheetByRow(wb, sheet, 8, "模块", "非必输", false);
+        initGuideSheetByRow(wb, sheet, 9, "冲刺", "非必输", false);
+        sheet.setColumnWidth(2, 3000);
+        initGuideSheetRemind(wb, sheet, "请至下一页，填写信息");
     }
 
-    public static Workbook generateExcelAwesome(Workbook generateExcel, List<Integer> errorRows, Map<Integer, List<Integer>> errorMapList, String[] FIELDS_NAME, List<String> priorityList, List<String> issueTypeList, List<String> versionList, String sheetName) {
+    public static Workbook generateExcelAwesome(Workbook generateExcel, List<Integer> errorRows, Map<Integer, List<Integer>> errorMapList, String[] FIELDS_NAME, List<String> priorityList, List<String> issueTypeList, List<String> versionList, String sheetName, List<String> componentList, List<String> sprintList) {
         XSSFWorkbook workbook = new XSSFWorkbook();
         // create guide sheet
         createGuideSheet(workbook);
         Sheet resultSheet = workbook.createSheet(sheetName);
-        resultSheet.setDefaultColumnWidth(25);
+        for (int i = 0; i < 10; i++) {
+            resultSheet.setColumnWidth(i, 3500);
+        }
         Row titleRow = resultSheet.createRow(0);
         CellStyle style = CatalogExcelUtil.getHeadStyle(workbook);
         CatalogExcelUtil.initCell(titleRow.createCell(0), style, FIELDS_NAME[0]);
@@ -92,13 +114,20 @@ public class ExcelUtil {
         CatalogExcelUtil.initCell(titleRow.createCell(5), style, FIELDS_NAME[5]);
         CatalogExcelUtil.initCell(titleRow.createCell(6), style, FIELDS_NAME[6]);
         CatalogExcelUtil.initCell(titleRow.createCell(7), style, FIELDS_NAME[7]);
+        CatalogExcelUtil.initCell(titleRow.createCell(8), style, FIELDS_NAME[8]);
+        CatalogExcelUtil.initCell(titleRow.createCell(9), style, FIELDS_NAME[9]);
 
         workbook = dropDownList2007(workbook, resultSheet, priorityList, 1, 500, 2, 2, "hidden_priority", 2);
         workbook = dropDownList2007(workbook, resultSheet, issueTypeList, 1, 500, 3, 3, "hidden_issue_type", 3);
         if (!versionList.isEmpty()) {
             workbook = dropDownList2007(workbook, resultSheet, versionList, 1, 500, 6, 6, "hidden_fix_version", 4);
         }
-
+        if (!componentList.isEmpty()) {
+            workbook = dropDownList2007(workbook, resultSheet, componentList, 1, 500, 8, 8, "hidden_component", 5);
+        }
+        if (!sprintList.isEmpty()) {
+            workbook = dropDownList2007(workbook, resultSheet, sprintList, 1, 500, 9, 9, "hidden_sprint", 6);
+        }
         Sheet sheet = generateExcel.getSheetAt(1);
         int size = sheet.getPhysicalNumberOfRows();
         XSSFCellStyle ztStyle = workbook.createCellStyle();
