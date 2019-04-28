@@ -48,7 +48,7 @@ databaseChangeLog(logicalFilePath: 'agile_art.groovy') {
 
     changeSet(id: '2019-04-24-agile-art-add-column', author: 'fuqianghuang01@gmail.com') {
         addColumn(tableName: 'agile_art') {
-            column(name: 'sprint_complete_setting', type: 'VARCHAR(255)', remarks: 'spring complete setting')
+            column(name: 'sprint_complete_setting', type: 'VARCHAR(255)', remarks: 'sprint complete setting')
         }
     }
 }
