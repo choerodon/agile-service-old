@@ -453,7 +453,7 @@ public class PiServiceImpl implements PiService {
         ArtDO artDO = artMapper.selectByPrimaryKey(artId);
         for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
             Long projectId = projectRelationshipDTO.getProjectId();
-            List<Long> sprintIds = sprintMapper.selectByPiId(projectId, piId);
+            List<Long> sprintIds = sprintMapper.selectNotDoneByPiId(projectId, piId);
             SprintDO newSprint = sprintMapper.selectFirstSprintByPiId(projectId, nextPiId);
             for (Long sprintId : sprintIds) {
                 SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO();
