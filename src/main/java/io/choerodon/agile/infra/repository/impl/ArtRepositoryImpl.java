@@ -37,14 +37,4 @@ public class ArtRepositoryImpl implements ArtRepository {
         return ConvertHelper.convert(artMapper.selectByPrimaryKey(artDO.getId()), ArtE.class);
     }
 
-    @Override
-    public void delete(Long id) {
-        ArtDO artDO = artMapper.selectByPrimaryKey(id);
-        if (artDO == null) {
-            throw new CommonException("error.art.exist");
-        }
-        if (artMapper.delete(artDO) != 1) {
-            throw new CommonException("error.art.delete");
-        }
-    }
 }

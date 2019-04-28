@@ -35,6 +35,12 @@ public class ComponentForListDTO {
     @ApiModelProperty(value = "负责人名称")
     private String managerName;
 
+    @ApiModelProperty(value = "负责人登录名称")
+    private String managerLoginName;
+
+    @ApiModelProperty(value = "负责人真实名称")
+    private String managerRealName;
+
     @ApiModelProperty(value = "图标")
     private String imageUrl;
 
@@ -108,6 +114,22 @@ public class ComponentForListDTO {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getManagerLoginName() {
+        return managerLoginName;
+    }
+
+    public void setManagerLoginName(String managerLoginName) {
+        this.managerLoginName = managerLoginName;
+    }
+
+    public String getManagerRealName() {
+        return managerRealName;
+    }
+
+    public void setManagerRealName(String managerRealName) {
+        this.managerRealName = managerRealName;
     }
 
     @Override

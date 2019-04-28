@@ -2,9 +2,9 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.ArtDTO;
 import io.choerodon.agile.api.dto.ArtStopDTO;
+import io.choerodon.agile.api.dto.PiCalendarDTO;
 import io.choerodon.agile.api.dto.PiCreateDTO;
 import io.choerodon.agile.app.service.ArtService;
-import io.choerodon.agile.infra.dataobject.PiCalendarDO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
@@ -83,18 +83,8 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.art.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("删除art")
-    @DeleteMapping("/{id}")
-    public ResponseEntity deleteArt(@ApiParam(value = "项目id", required = true)
-                                    @PathVariable(name = "project_id") Long projectId,
-                                    @ApiParam(value = "art id", required = true)
-                                    @PathVariable Long id) {
-        artService.deleteArt(projectId, id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询art列表")
     @GetMapping("/list")
     public ResponseEntity<Page<ArtDTO>> queryArtList(@ApiParam(value = "项目id", required = true)
@@ -107,7 +97,7 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.artList.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询单个art")
     @GetMapping
     public ResponseEntity<ArtDTO> queryArt(@ApiParam(value = "项目id", required = true)
@@ -133,10 +123,10 @@ public class ArtController {
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询art日历")
     @GetMapping("/art_calendar")
-    public ResponseEntity<List<PiCalendarDO>> queryArtCalendar(@ApiParam(value = "项目id", required = true)
-                                                               @PathVariable(name = "project_id") Long projectId,
-                                                               @ApiParam(value = "art id")
-                                                               @RequestParam Long id) {
+    public ResponseEntity<List<PiCalendarDTO>> queryArtCalendar(@ApiParam(value = "项目id", required = true)
+                                                                @PathVariable(name = "project_id") Long projectId,
+                                                                @ApiParam(value = "art id")
+                                                                @RequestParam Long id) {
         return Optional.ofNullable(artService.queryArtCalendar(projectId, id))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.artCalendar.get"));
@@ -154,7 +144,7 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.beforeComplete.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("ART重名校验")
     @GetMapping(value = "/check_name")
     public ResponseEntity<Boolean> checkName(@ApiParam(value = "项目id", required = true)
@@ -164,6 +154,26 @@ public class ArtController {
         return Optional.ofNullable(artService.checkName(projectId, artName))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.artName.check"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("查询art列表,不分页")
+    @GetMapping("/all")
+    public ResponseEntity<List<ArtDTO>> queryAllArtList(@ApiParam(value = "项目id", required = true)
+                                                        @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(artService.queryAllArtList(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.allArtList.get"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("查询当前活跃art")
+    @GetMapping("/active")
+    public ResponseEntity<ArtDTO> queryActiveArt(@ApiParam(value = "项目id", required = true)
+                                                 @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(artService.queryActiveArt(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.activeArt.get"));
     }
 
 }

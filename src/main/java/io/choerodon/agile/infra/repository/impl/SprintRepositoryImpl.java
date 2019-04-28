@@ -66,11 +66,6 @@ public class SprintRepositoryImpl implements SprintRepository {
     }
 
     @Override
-    public void deleteByPiBatch(Long projectId, Long piId) {
-        sprintMapper.deleteByPiBatch(projectId, piId);
-    }
-
-    @Override
     public void updateSprintNameByBatch(Long programId, List<Long> sprintIds) {
         sprintMapper.updateSprintNameByBatch(programId, sprintIds);
     }

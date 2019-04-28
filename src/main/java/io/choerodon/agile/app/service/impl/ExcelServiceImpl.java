@@ -57,6 +57,7 @@ public class ExcelServiceImpl implements ExcelService {
     private static final String WEBSOCKET_IMPORT_CODE = "agile-import-issues";
     private static final String STORY = "story";
     private static final String ISSUE_EPIC = "issue_epic";
+    private static final String FEATURE = "feature";
     private static final String FILE_NAME = "error.xlsx";
     private static final String MULTIPART_NAME = "file";
     private static final String ORIGINAL_FILE_NAME = ".xlsx";
@@ -107,7 +108,7 @@ public class ExcelServiceImpl implements ExcelService {
         }
         List<String> issueTypeList = new ArrayList<>();
         for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-            if (!SUB_TASK.equals(issueTypeDTO.getTypeCode())) {
+            if (!SUB_TASK.equals(issueTypeDTO.getTypeCode()) && !FEATURE.equals(issueTypeDTO.getTypeCode())) {
                 issueTypeList.add(issueTypeDTO.getName());
             }
         }
@@ -233,7 +234,7 @@ public class ExcelServiceImpl implements ExcelService {
             }
         }
         for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-            if (!SUB_TASK.equals(issueTypeDTO.getTypeCode())) {
+            if (!SUB_TASK.equals(issueTypeDTO.getTypeCode()) && !FEATURE.equals(issueTypeDTO.getTypeCode())) {
                 issueTypeMap.put(issueTypeDTO.getName(), issueTypeDTO);
                 issueTypeList.add(issueTypeDTO.getName());
             }

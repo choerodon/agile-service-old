@@ -949,7 +949,9 @@ public class ReportServiceImpl implements ReportService {
         //过滤并排序
         List<ColumnChangeDTO> columnChangeDTOList = result.stream().filter(columnChangeDTO ->
                 columnChangeDTO.getColumnTo() != null && columnChangeDTO.getColumnFrom() != null && !columnChangeDTO.getColumnFrom().equals(columnChangeDTO.getColumnTo()))
-                .sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList());
+                .filter(columnChangeDTO ->
+                (columnChangeDTO.getDate().before(cumulativeFlowFilterDTO.getEndDate()) || columnChangeDTO.getDate().equals(cumulativeFlowFilterDTO.getEndDate()))
+                        && (columnChangeDTO.getDate().after(cumulativeFlowFilterDTO.getStartDate()) || columnChangeDTO.getDate().equals(cumulativeFlowFilterDTO.getStartDate()))).sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList());
         //对传入时间点的数据给与坐标
         List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(columnIds));
         cumulativeFlowDiagramDTOList.parallelStream().forEachOrdered(cumulativeFlowDiagramDTO -> {
@@ -1159,10 +1161,15 @@ public class ReportServiceImpl implements ReportService {
             pieChartDTOList.parallelStream().forEach(pieChartDTO -> {
                 JSONObject jsonObject = new JSONObject();
                 if (pieChartDTO.getTypeName() != null && usersMap.get(Long.parseLong(pieChartDTO.getTypeName())) != null) {
-                    String assigneeName = usersMap.get(Long.parseLong(pieChartDTO.getTypeName())).getName();
-                    String assigneeImageUrl = usersMap.get(Long.parseLong(pieChartDTO.getTypeName())).getImageUrl();
-                    String email = usersMap.get(Long.parseLong(pieChartDTO.getTypeName())).getEmail();
+                    UserMessageDO userMessageDO = usersMap.get(Long.parseLong(pieChartDTO.getTypeName()));
+                    String assigneeName = userMessageDO.getName();
+                    String assigneeLoginName = userMessageDO.getLoginName();
+                    String assigneeRealName = userMessageDO.getRealName();
+                    String assigneeImageUrl = userMessageDO.getImageUrl();
+                    String email = userMessageDO.getEmail();
                     pieChartDTO.setName(assigneeName);
+                    pieChartDTO.setLoginName(assigneeLoginName);
+                    pieChartDTO.setRealName(assigneeRealName);
                     jsonObject.put("assigneeImageUrl", assigneeImageUrl);
                     jsonObject.put("email", email);
                 } else {

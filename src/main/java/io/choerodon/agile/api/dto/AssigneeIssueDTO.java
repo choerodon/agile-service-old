@@ -39,6 +39,12 @@ public class AssigneeIssueDTO {
     @ApiModelProperty(value = "剩余时间")
     private BigDecimal remainingTime;
 
+    @ApiModelProperty(value = "经办人登录名称")
+    private String assigneeLoginName;
+
+    @ApiModelProperty(value = "经办人真实名称")
+    private String assigneeRealName;
+
     public Long getSprintId() {
         return sprintId;
     }
@@ -117,5 +123,21 @@ public class AssigneeIssueDTO {
 
     public BigDecimal getRemainingStoryPoints() {
         return remainingStoryPoints;
+    }
+
+    public String getAssigneeLoginName() {
+        return assigneeLoginName;
+    }
+
+    public void setAssigneeLoginName(String assigneeLoginName) {
+        this.assigneeLoginName = assigneeLoginName;
+    }
+
+    public String getAssigneeRealName() {
+        return assigneeRealName;
+    }
+
+    public void setAssigneeRealName(String assigneeRealName) {
+        this.assigneeRealName = assigneeRealName;
     }
 }

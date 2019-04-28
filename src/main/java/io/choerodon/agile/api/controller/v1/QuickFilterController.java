@@ -90,14 +90,10 @@ public class QuickFilterController {
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询quick filter列表")
     @PostMapping(value = "/query_all")
-    public ResponseEntity<Page<QuickFilterDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<QuickFilterDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
                                                                 @PathVariable(name = "project_id") Long projectId,
-                                                                @RequestBody(required = false) QuickFilterSearchDTO quickFilterSearchDTO,
-                                                                @ApiIgnore
-                                                                @ApiParam(value = "分页信息", required = true)
-                                                                @SortDefault(value = "sequence", direction = Sort.Direction.DESC)
-                                                                        PageRequest pageRequest) {
-        return Optional.ofNullable(quickFilterService.listByProjectId(projectId, quickFilterSearchDTO, pageRequest))
+                                                                @RequestBody(required = false) QuickFilterSearchDTO quickFilterSearchDTO) {
+        return Optional.ofNullable(quickFilterService.listByProjectId(projectId, quickFilterSearchDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.quickFilter.list"));
     }

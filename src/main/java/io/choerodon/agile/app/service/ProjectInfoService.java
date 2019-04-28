@@ -1,7 +1,10 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.ProjectInfoDTO;
+import io.choerodon.agile.api.dto.ProjectRelationshipDTO;
 import io.choerodon.agile.domain.agile.event.ProjectEvent;
+
+import java.util.List;
 
 /**
  * @author dinghuang123@gmail.com
@@ -40,4 +43,11 @@ public interface ProjectInfoService {
      */
     ProjectInfoDTO queryProjectInfoByProjectId(Long projectId);
 
+    /**
+     * 获取项目群关联的团队项目信息
+     *
+     * @param projectId
+     * @return
+     */
+    List<ProjectRelationshipDTO> queryProgramTeamInfo(Long projectId);
 }

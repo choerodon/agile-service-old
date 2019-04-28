@@ -6,56 +6,54 @@ replicaCount: 1
 
 image:
   repository: registry.cn-hangzhou.aliyuncs.com/choerodon-agile/agile-service
-  pullPolicy: Always
-
+  pullPolicy: IfNotPresent
 deployment:
   managementPort: 8379
-
 service:
   enable: false
   type: ClusterIP
   port: 8378
 
 preJob:
-  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.6.1
+  timeout: 300
+  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.6.2
   preConfig:
     enable: true
     configFile: application.yml
-    mysql:
-      host: kanban-mysql.db.svc
-      port: 3308
-      database: manager_service
-      username: root
-      password: choerodon
+    configType: k8s
+    registerHost: http://register-server.c7n-system:8000
+    datasource:
+      url: jdbc:mysql://localhost:3306/manager_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
+      username: username
+      password: password
   preInitDB:
     enable: true
-    mysql:
-      host: kanban-mysql.db.svc
-      port: 3308
-      database: agile_service
-      username: root
-      password: choerodon
-
+    datasource:
+      url: jdbc:mysql://localhost:3306/agile_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
+      username: username
+      password: password
 env:
   open:
-    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://register-server.io-choerodon:8000/eureka/
-    SPRING_DATASOURCE_URL: jdbc:mysql://kanban-mysql.db.svc:3308/agile_service?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true
+    SPRING_CLOUD_CONFIG_ENABLED: true
+    SPRING_CLOUD_CONFIG_URI: http://register-server.c7n-system:8000
+    SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/agile_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
     SPRING_DATASOURCE_USERNAME: username
     SPRING_DATASOURCE_PASSWORD: password
-    SPRING_CLOUD_CONFIG_URI: http://config-server.io-choerodon:8010/
-    SERVICES_ATTACHMENT_URL: example.com
-    SPRING_CLOUD_CONFIG_ENABLED: true
+    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://register-server.c7n-system:8000/eureka/
+    # 清理permission表中的旧接口和role_permission表中角色和权限层级不匹配的脏数据
+    CHOERODON_CLEANPERMISSION: false
+    # skywalking 代理端配置
+#    SKYWALKING_OPTS: >-
+#      -javaagent:/agent/skywalking-agent.jar
+#      -Dskywalking.agent.application_code=iam-service
+#      -Dskywalking.agent.sample_n_per_3_secs=-1
+#      -Dskywalking.collector.backend_service=oap.skywalking:11800
     SPRING_REDIS_HOST: redis.tools
     SPRING_REDIS_PORT: 6379
     WORKH_TYPE: juhe
     WORKH_APIKEY: dc135fefba469b4e48d07f7100af31e2
     WORKH_ENABLED: true
     WORKH_CRON: 59 59 23 15 12 *
-    SKYWALKING_OPTS: >-
-          -javaagent:/agent/skywalking-agent.jar
-          -Dskywalking.agent.application_code=agile-service
-          -Dskywalking.agent.sample_n_per_3_secs=1
-          -Dskywalking.collector.backend_service=oap.skywalking:11800
     SERVICES_WIKI_HOST: example.com
     SERVICES_WIKI_TOKEN: token
 
@@ -66,20 +64,14 @@ metrics:
 logs:
   parser: spring-boot
 
-resources: 
+resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # resources,such as Minikube. If you do want to specify resources,uncomment the following
+  # lines,adjust them as necessary,and remove the curly braces after 'resources:'.
   limits:
-  #  cpu: 100m
-   memory: 3072Mi
+    # cpu: 100m
+    memory: 3Gi
   requests:
-  #  cpu: 100m
-   memory: 2048Mi
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
+    # cpu: 100m
+    memory: 2Gi

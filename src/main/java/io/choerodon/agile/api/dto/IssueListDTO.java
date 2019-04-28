@@ -40,8 +40,20 @@ public class IssueListDTO implements Serializable {
     @ApiModelProperty(value = "经办人名称")
     private String assigneeName;
 
+    @ApiModelProperty(value = "经办人登录名称")
+    private String assigneeLoginName;
+
+    @ApiModelProperty(value = "经办人真实名称")
+    private String assigneeRealName;
+
     @ApiModelProperty(value = "报告人名称")
     private String reporterName;
+
+    @ApiModelProperty(value = "报告人登录名称")
+    private String reporterLoginName;
+
+    @ApiModelProperty(value = "报告人真实名称")
+    private String reporterRealName;
 
     @ApiModelProperty(value = "报告人图标")
     private String reporterImageUrl;
@@ -298,6 +310,38 @@ public class IssueListDTO implements Serializable {
 
     public IssueTypeDTO getIssueTypeDTO() {
         return issueTypeDTO;
+    }
+
+    public String getAssigneeLoginName() {
+        return assigneeLoginName;
+    }
+
+    public void setAssigneeLoginName(String assigneeLoginName) {
+        this.assigneeLoginName = assigneeLoginName;
+    }
+
+    public String getAssigneeRealName() {
+        return assigneeRealName;
+    }
+
+    public void setAssigneeRealName(String assigneeRealName) {
+        this.assigneeRealName = assigneeRealName;
+    }
+
+    public String getReporterLoginName() {
+        return reporterLoginName;
+    }
+
+    public void setReporterLoginName(String reporterLoginName) {
+        this.reporterLoginName = reporterLoginName;
+    }
+
+    public String getReporterRealName() {
+        return reporterRealName;
+    }
+
+    public void setReporterRealName(String reporterRealName) {
+        this.reporterRealName = reporterRealName;
     }
 
     @Override

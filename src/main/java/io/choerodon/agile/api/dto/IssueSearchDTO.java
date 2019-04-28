@@ -94,6 +94,12 @@ public class IssueSearchDTO {
     @ApiModelProperty(value = "优先级id")
     private Long priorityId;
 
+    @ApiModelProperty(value = "经办人登录名称")
+    private String assigneeLoginName;
+
+    @ApiModelProperty(value = "经办人真实名称")
+    private String assigneeRealName;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -316,5 +322,21 @@ public class IssueSearchDTO {
 
     public IssueTypeDTO getIssueTypeDTO() {
         return issueTypeDTO;
+    }
+
+    public String getAssigneeLoginName() {
+        return assigneeLoginName;
+    }
+
+    public void setAssigneeLoginName(String assigneeLoginName) {
+        this.assigneeLoginName = assigneeLoginName;
+    }
+
+    public String getAssigneeRealName() {
+        return assigneeRealName;
+    }
+
+    public void setAssigneeRealName(String assigneeRealName) {
+        this.assigneeRealName = assigneeRealName;
     }
 }

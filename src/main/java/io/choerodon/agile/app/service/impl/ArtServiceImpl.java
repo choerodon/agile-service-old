@@ -1,9 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.ArtDTO;
-import io.choerodon.agile.api.dto.ArtStopDTO;
-import io.choerodon.agile.api.dto.PiCreateDTO;
-import io.choerodon.agile.api.dto.PiDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.ArtValidator;
 import io.choerodon.agile.app.assembler.ArtAssembler;
 import io.choerodon.agile.app.service.ArtService;
@@ -28,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -75,7 +73,6 @@ public class ArtServiceImpl implements ArtService {
         artDTO.setCode(ConvertUtil.getCode(programId));
         artDTO.setStatusCode(ART_TODO);
         ArtE artE = artRepository.create(ConvertHelper.convert(artDTO, ArtE.class));
-//        piService.createPi(programId, ConvertHelper.convert(artE, ArtDO.class), new Date());
         return ConvertHelper.convert(artE, ArtDTO.class);
     }
 
@@ -146,10 +143,6 @@ public class ArtServiceImpl implements ArtService {
         return ConvertHelper.convert(result, ArtDTO.class);
     }
 
-    @Override
-    public void deleteArt(Long programId, Long id) {
-        artRepository.delete(id);
-    }
 
     @Override
     public Page<ArtDTO> queryArtList(Long programId, PageRequest pageRequest) {
@@ -187,8 +180,13 @@ public class ArtServiceImpl implements ArtService {
     }
 
     @Override
-    public List<PiCalendarDO> queryArtCalendar(Long programId, Long artId) {
-        return artMapper.selectArtCalendar(programId, artId);
+    public List<PiCalendarDTO> queryArtCalendar(Long programId, Long artId) {
+        List<PiCalendarDO> piCalendarDOList = artMapper.selectArtCalendar(programId, artId);
+        if (piCalendarDOList != null && !piCalendarDOList.isEmpty()) {
+            return artAssembler.piCalendarDOToDTO(piCalendarDOList);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     @Override
@@ -208,5 +206,25 @@ public class ArtServiceImpl implements ArtService {
         artDO.setName(artName);
         List<ArtDO> artDOList = artMapper.select(artDO);
         return artDOList != null && !artDOList.isEmpty();
+    }
+
+    @Override
+    public List<ArtDTO> queryAllArtList(Long programId) {
+        List<ArtDO> artDOList = artMapper.selectArtList(programId);
+        if (artDOList != null && !artDOList.isEmpty()) {
+            return ConvertHelper.convertList(artDOList, ArtDTO.class);
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public ArtDTO queryActiveArt(Long programId) {
+        ArtDO artDO = artMapper.selectActiveArt(programId);
+        if (artDO != null) {
+            return ConvertHelper.convert(artDO, ArtDTO.class);
+        } else {
+            return new ArtDTO();
+        }
     }
 }

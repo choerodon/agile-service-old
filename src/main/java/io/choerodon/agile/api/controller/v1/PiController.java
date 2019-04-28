@@ -145,19 +145,6 @@ public class PiController {
                 .orElseThrow(() -> new CommonException("error.feature.batchToEpic"));
     }
 
-//    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-//    @ApiOperation("删除PI")
-//    @DeleteMapping(value = "/{piId}")
-//    public ResponseEntity deleteById(@ApiParam(value = "项目id", required = true)
-//                                     @PathVariable(name = "project_id") Long projectId,
-//                                     @ApiParam(value = "pi id", required = true)
-//                                     @PathVariable Long piId,
-//                                     @ApiParam(value = "art id", required = true)
-//                                     @RequestParam Long artId) {
-//        piService.deleteById(projectId, piId, artId);
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
-
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("pi页面查询项目群下所有pi")
     @GetMapping(value = "/all")
@@ -166,5 +153,15 @@ public class PiController {
         return Optional.ofNullable(piService.queryAllOfProgram(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.programPiDTOList.get"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("查询ART下的非完成的PI列表")
+    @GetMapping(value = "/unfinished")
+    public ResponseEntity<List<PiNameDTO>> queryUnfinishedOfProgram(@ApiParam(value = "项目id", required = true)
+                                                                @PathVariable(name = "project_id") Long projectId) {
+        return Optional.ofNullable(piService.queryUnfinishedOfProgram(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.unfinishedPiDTOList.get"));
     }
 }

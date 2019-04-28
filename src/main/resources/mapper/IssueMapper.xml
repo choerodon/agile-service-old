@@ -689,23 +689,25 @@
     </select>
 
     <select id="queryIssueByOptionForAgile" resultType="io.choerodon.agile.infra.dataobject.IssueNumDO">
-        SELECT
-        ai.issue_id, ai.summary,
-        ai.project_id, ai.type_code,
-        ai.issue_type_id,
-        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
-        FROM agile_issue ai
-        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE ai.project_id = #{projectId} AND ai.type_code != 'issue_epic'
-        AND ai.type_code != 'sub_task' AND ai.apply_type = 'agile'
-        <if test="issueId != null">
-            AND ai.issue_id != #{issueId}
-        </if>
-        <if test="issueNum != null">
-            AND ai.issue_num != #{issueNum}
-        </if>
+        select search.* from (
+            SELECT
+            ai.issue_id, ai.summary,
+            ai.project_id, ai.type_code,
+            ai.issue_type_id,
+            CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
+            FROM agile_issue ai
+            LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+            WHERE ai.project_id = #{projectId} AND ai.type_code != 'issue_epic'
+            AND ai.type_code != 'sub_task' AND ai.apply_type = 'agile'
+            <if test="issueId != null">
+                AND ai.issue_id != #{issueId}
+            </if>
+            <if test="issueNum != null">
+                AND ai.issue_num != #{issueNum}
+            </if>
+        ) search where 1=1
         <if test='content != null'>
-            AND (ai.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR ai.summary LIKE CONCAT(CONCAT('%',
+            AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE CONCAT(CONCAT('%',
             #{content}), '%'))
         </if>
     </select>
@@ -3143,20 +3145,20 @@
         </foreach>
     </select>
 
-    <select id="selectIssueIdWhenJoinProgram" resultType="java.lang.Long">
-        select ai.issue_id
-        from agile_issue ai
-        where ai.project_id = #{projectId} and ai.type_code = 'issue_epic'
-    </select>
+    <!--<select id="selectIssueIdWhenJoinProgram" resultType="java.lang.Long">-->
+        <!--select ai.issue_id-->
+        <!--from agile_issue ai-->
+        <!--where ai.project_id = #{projectId} and ai.type_code = 'issue_epic'-->
+    <!--</select>-->
 
-    <update id="updateFeatureAndEpicWhenJoinProgram">
-        update agile_issue set program_id = #{programId}, status_id = #{initStatusId}
-        where project_id = #{projectId} and issue_id in
-        <foreach collection="updateIds" item="updateId" open="("
-                 separator="," close=")">
-            #{updateId}
-        </foreach>
-    </update>
+    <!--<update id="updateFeatureAndEpicWhenJoinProgram">-->
+        <!--update agile_issue set program_id = #{programId}, status_id = #{initStatusId}-->
+        <!--where project_id = #{projectId} and issue_id in-->
+        <!--<foreach collection="updateIds" item="updateId" open="("-->
+                 <!--separator="," close=")">-->
+            <!--#{updateId}-->
+        <!--</foreach>-->
+    <!--</update>-->
 
     <resultMap id="featureListMap" type="io.choerodon.agile.infra.dataobject.FeatureCommonDO">
         <id property="issueId" column="ai_issue_id"/>
@@ -3252,8 +3254,6 @@
         left join agile_lookup_value alv on ai2.color_code = alv.value_code
         left join agile_pi_feature apf on ai.issue_id = apf.issue_id
         left join agile_pi ap on apf.pi_id = ap.id
-        LEFT JOIN agile_version_issue_rel avir on avir.issue_id = ai.issue_id and avir.relation_type = 'fix'
-        left join agile_product_version apv on avir.version_id = apv.version_id
         where ai.program_id = #{programId} and ai.type_code in ('feature', 'issue_epic')
         and ai.issue_id in
         <foreach collection="issueIds" item="issueId" open="(" separator=","

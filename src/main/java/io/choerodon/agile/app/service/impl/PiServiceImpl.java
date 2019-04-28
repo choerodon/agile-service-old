@@ -323,7 +323,7 @@ public class PiServiceImpl implements PiService {
         sprintDO.setProjectId(programId);
         sprintDO.setPiId(piId);
         List<SprintDO> sprintDOList = sprintMapper.select(sprintDO);
-        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId).getBody();
+        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
         for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
             Long projectId = projectRelationshipDTO.getProjectId();
             for (SprintDO sprint : sprintDOList) {
@@ -346,13 +346,6 @@ public class PiServiceImpl implements PiService {
         Long updateStatusId = piDTO.getUpdateStatusId();
         if (updateStatusId != null) {
             if (issueDOList != null && !issueDOList.isEmpty()) {
-//                for (IssueDO issueDO : issueDOList) {
-//                    IssueE issueE = new IssueE();
-//                    issueE.setIssueId(issueDO.getIssueId());
-//                    issueE.setStatusId(updateStatusId);
-//                    issueE.setObjectVersionNumber(issueDO.getObjectVersionNumber());
-//                    issueRepository.update(issueE, new String[]{STATUS_ID});
-//                }
                 CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
                 issueRepository.updateStatusIdBatch(programId, updateStatusId, issueDOList, customUserDetails.getUserId(), new Date());
             }
@@ -427,13 +420,13 @@ public class PiServiceImpl implements PiService {
 
     @Override
     public void completeProjectsSprints(Long programId, Long piId) {
-        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId).getBody();
+        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
         if (projectRelationshipDTOList == null || projectRelationshipDTOList.isEmpty()) {
             return;
         }
         for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
             Long projectId = projectRelationshipDTO.getProjectId();
-            List<Long> sprintIds = sprintMapper.selectByPiId(projectId, piId);
+            List<Long> sprintIds = sprintMapper.selectNotDoneByPiId(projectId, piId);
             for (Long sprintId : sprintIds) {
                 SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO();
                 sprintCompleteDTO.setProjectId(projectId);
@@ -563,15 +556,6 @@ public class PiServiceImpl implements PiService {
         if (moveIssues == null || moveIssues.isEmpty()) {
             return;
         }
-//        for (IssueDO issueDO : moveIssues) {
-//            if (!Objects.equals(issueDO.getStatusId(), updateStatusId)) {
-//                IssueE issueE = new IssueE();
-//                issueE.setIssueId(issueDO.getIssueId());
-//                issueE.setObjectVersionNumber(issueDO.getObjectVersionNumber());
-//                issueE.setStatusId(updateStatusId);
-//                issueRepository.update(issueE, new String[]{STATUS_ID});
-//            }
-//        }
         issueRepository.updateStatusIdBatch(programId, updateStatusId, moveIssues, userId, new Date());
     }
 
@@ -610,20 +594,27 @@ public class PiServiceImpl implements PiService {
         return piMapper.selectFeatureIdByFeatureIds(programId, featureIds);
     }
 
-//    @Override
-//    public void deleteById(Long programId, Long piId, Long artId) {
-//        piValidator.checkDelete(programId, artId, piId);
-//        List<Long> piIds = piMapper.selectNextListPi(programId, artId, piId);
-//        for (Long id : piIds) {
-//            dealUnCompleteFeature(programId, id, 0L);
-//            sprintRepository.deleteByPiBatch(programId, id);
-//            piRepository.delete(id);
-//        }
-//    }
-
     @Override
     public List<PiNameDTO> queryAllOfProgram(Long programId) {
         List<PiNameDO> piNameDOList = piMapper.selectAllOfProgram(programId);
-        return ConvertHelper.convertList(piNameDOList, PiNameDTO.class);
+        if (piNameDOList != null && !piNameDOList.isEmpty()) {
+            return ConvertHelper.convertList(piNameDOList, PiNameDTO.class);
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<PiNameDTO> queryUnfinishedOfProgram(Long programId) {
+        ArtDO activeArt = artMapper.selectActiveArt(programId);
+        if (activeArt == null) {
+            return new ArrayList<>();
+        }
+        List<PiDO> piDOList = piMapper.selectUnDonePiDOList(programId, activeArt.getId());
+        if (piDOList != null && !piDOList.isEmpty())  {
+            return ConvertHelper.convertList(piDOList, PiNameDTO.class);
+        } else {
+            return new ArrayList<>();
+        }
     }
 }

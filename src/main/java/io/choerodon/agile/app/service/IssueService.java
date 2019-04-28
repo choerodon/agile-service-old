@@ -311,7 +311,7 @@ public interface IssueService {
 
     Boolean checkEpicName(Long projectId, String epicName);
 
-    void dealFeatureAndEpicWhenJoinProgram(Long programId, Long projectId);
+//    void dealFeatureAndEpicWhenJoinProgram(Long programId, Long projectId);
 
     Page<FeatureCommonDTO> queryFeatureList(Long programId, Long organizationId, PageRequest pageRequest, SearchDTO searchDTO);
 

@@ -115,9 +115,7 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
      */
     Set<Long> queryBacklogSprintAssigneeIds(@Param("projectId")Long projectId);
 
-    void deleteByPiBatch(@Param("projectId") Long projectId, @Param("piId")Long piId);
-
-    List<Long> selectByPiId(@Param("projectId") Long projectId, @Param("piId")Long piId);
+    List<Long> selectNotDoneByPiId(@Param("projectId") Long projectId, @Param("piId")Long piId);
 
     void updateSprintNameByBatch(@Param("projectId") Long projectId, @Param("sprintIds") List<Long> sprintIds);
 }

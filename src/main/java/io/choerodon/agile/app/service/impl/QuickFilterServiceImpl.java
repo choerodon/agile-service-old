@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -232,8 +233,13 @@ public class QuickFilterServiceImpl implements QuickFilterService {
     }
 
     @Override
-    public Page<QuickFilterDTO> listByProjectId(Long projectId, QuickFilterSearchDTO quickFilterSearchDTO, PageRequest pageRequest) {
-        return PageHelper.doPageAndSort(pageRequest, () -> quickFilterMapper.queryFiltersByProjectId(projectId, quickFilterSearchDTO.getFilterName(), quickFilterSearchDTO.getContents()));
+    public List<QuickFilterDTO> listByProjectId(Long projectId, QuickFilterSearchDTO quickFilterSearchDTO) {
+        List<QuickFilterDO> quickFilterDOList = quickFilterMapper.queryFiltersByProjectId(projectId, quickFilterSearchDTO.getFilterName(), quickFilterSearchDTO.getContents());
+        if (quickFilterDOList != null && !quickFilterDOList.isEmpty()) {
+            return ConvertHelper.convertList(quickFilterDOList, QuickFilterDTO.class);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     @Override

@@ -645,12 +645,13 @@ public class IssueServiceImpl implements IssueService {
                 issueE.setOriginSprintId(originIssue.getSprintId());
             }
         }
-        if (fieldList.contains("featureId") && fieldList.contains("epicId")) {
-            IssueDO featureUpdate = issueMapper.selectByPrimaryKey(issueE.getFeatureId());
-            if (featureUpdate != null && !Objects.equals(issueE.getEpicId(), featureUpdate.getEpicId())) {
-                issueE.setEpicId(featureUpdate.getEpicId());
-            }
-        }
+//        if (fieldList.contains("featureId")) {
+//            IssueDO featureUpdate = issueMapper.selectByPrimaryKey(issueE.getFeatureId());
+//            if (featureUpdate != null && !((issueE.getEpicId() == null || issueE.getEpicId() == 0) && (featureUpdate.getEpicId() == null || featureUpdate.getEpicId() == 0)) && !Objects.equals(issueE.getEpicId(), featureUpdate.getEpicId())) {
+//                fieldList.add("epicId");
+//                issueE.setEpicId(featureUpdate.getEpicId());
+//            }
+//        }
         issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
         if (issueUpdateDTO.getFeatureDTO() != null && issueUpdateDTO.getFeatureDTO().getIssueId() != null) {
             FeatureDTO featureDTO = issueUpdateDTO.getFeatureDTO();
@@ -1710,6 +1711,9 @@ public class IssueServiceImpl implements IssueService {
                         issueCreateDTO.setFeatureDTO(featureDTO);
                     }
                 }
+                if ("program".equals(applyType)) {
+                    issueCreateDTO.setProgramId(projectId);
+                }
                 IssueDTO newIssue = stateMachineService.createIssue(issueCreateDTO, applyType);
                 newIssueId = newIssue.getIssueId();
                 objectVersionNumber = newIssue.getObjectVersionNumber();
@@ -1978,7 +1982,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public Page<IssueNumDTO> queryIssueByOptionForAgile(Long projectId, Long issueId, String issueNum, Boolean self, String content, PageRequest pageRequest) {
-        pageRequest.resetOrder("ai", new HashMap<>());
+        pageRequest.resetOrder("search", new HashMap<>());
         IssueNumDO issueNumDO = null;
         if (self) {
             issueNumDO = issueMapper.queryIssueByIssueNumOrIssueId(projectId, issueId, issueNum);
@@ -2351,31 +2355,31 @@ public class IssueServiceImpl implements IssueService {
         return issueDOList != null && !issueDOList.isEmpty();
     }
 
-    @Override
-    public void dealFeatureAndEpicWhenJoinProgram(Long programId, Long projectId) {
-        Long organizationId = ConvertUtil.getOrganizationId(projectId);
-        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(programId, "program").getBody();
-        Long issueTypeEpicId = null;
-        for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-            if (ISSUE_EPIC.equals(issueTypeDTO.getTypeCode())) {
-                issueTypeEpicId = issueTypeDTO.getId();
-            }
-        }
-        if (issueTypeEpicId == null) {
-            throw new CommonException("error.issueTypeFeatureId.null");
-        }
-        //获取状态机id
-        Long stateMachineId = issueFeignClient.queryStateMachineId(programId, "program", issueTypeEpicId).getBody();
-        if (stateMachineId == null) {
-            throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
-        }
-        //获取初始状态
-        Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
-        if (initStatusId == null) {
-            throw new CommonException("error.initStatusId.null");
-        }
-        issueRepository.updateFeatureAndEpicWhenJoinProgram(programId, projectId, initStatusId);
-    }
+//    @Override
+//    public void dealFeatureAndEpicWhenJoinProgram(Long programId, Long projectId) {
+//        Long organizationId = ConvertUtil.getOrganizationId(projectId);
+//        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(programId, "program").getBody();
+//        Long issueTypeEpicId = null;
+//        for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
+//            if (ISSUE_EPIC.equals(issueTypeDTO.getTypeCode())) {
+//                issueTypeEpicId = issueTypeDTO.getId();
+//            }
+//        }
+//        if (issueTypeEpicId == null) {
+//            throw new CommonException("error.issueTypeFeatureId.null");
+//        }
+//        //获取状态机id
+//        Long stateMachineId = issueFeignClient.queryStateMachineId(programId, "program", issueTypeEpicId).getBody();
+//        if (stateMachineId == null) {
+//            throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
+//        }
+//        //获取初始状态
+//        Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
+//        if (initStatusId == null) {
+//            throw new CommonException("error.initStatusId.null");
+//        }
+//        issueRepository.updateFeatureAndEpicWhenJoinProgram(programId, projectId, initStatusId);
+//    }
 
     @Override
     public Page<FeatureCommonDTO> queryFeatureList(Long programId, Long organizationId, PageRequest pageRequest, SearchDTO searchDTO) {
@@ -2387,7 +2391,7 @@ public class IssueServiceImpl implements IssueService {
         Page<FeatureCommonDTO> result = new Page<>();
         result.setNumberOfElements(featureCommonDOPage.getNumberOfElements());
         result.setNumber(featureCommonDOPage.getNumber());
-        result.setContent(featureCommonAssembler.featureCommonDOToDTO(issueMapper.selectFeatureList(programId, featureCommonDOPage.getContent()), statusMapDTOMap, issueTypeDTOMap));
+        result.setContent(featureCommonDOPage.getContent() != null && !featureCommonDOPage.getContent().isEmpty() ? featureCommonAssembler.featureCommonDOToDTO(issueMapper.selectFeatureList(programId, featureCommonDOPage.getContent()), statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
         result.setTotalPages(featureCommonDOPage.getTotalPages());
         result.setSize(featureCommonDOPage.getSize());
         result.setTotalElements(featureCommonDOPage.getTotalElements());

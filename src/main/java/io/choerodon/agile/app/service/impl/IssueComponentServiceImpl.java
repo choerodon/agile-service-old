@@ -139,9 +139,14 @@ public class IssueComponentServiceImpl implements IssueComponentService {
                         && !Objects.equals(componentForListDTO.getManagerId(), 0L)).map(ComponentForListDTO::getManagerId).distinct().collect(Collectors.toList());
                 Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
                 componentForListDTOPage.getContent().forEach(componentForListDTO -> {
-                    String assigneeName = usersMap.get(componentForListDTO.getManagerId()) != null ? usersMap.get(componentForListDTO.getManagerId()).getName() : null;
-                    String imageUrl = assigneeName != null ? usersMap.get(componentForListDTO.getManagerId()).getImageUrl() : null;
+                    UserMessageDO userMessageDO = usersMap.get(componentForListDTO.getManagerId());
+                    String assigneeName = userMessageDO != null ? userMessageDO.getName() : null;
+                    String assigneeLoginName = userMessageDO != null ? userMessageDO.getLoginName() : null;
+                    String assigneeRealName = userMessageDO != null ? userMessageDO.getRealName() : null;
+                    String imageUrl = userMessageDO != null ? userMessageDO.getImageUrl() : null;
                     componentForListDTO.setManagerName(assigneeName);
+                    componentForListDTO.setManagerLoginName(assigneeLoginName);
+                    componentForListDTO.setManagerRealName(assigneeRealName);
                     componentForListDTO.setImageUrl(imageUrl);
                 });
             }

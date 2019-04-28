@@ -224,14 +224,14 @@ class QuickFilterControllerSpec extends Specification {
         QuickFilterSearchDTO quickFilterSearchDTO = new QuickFilterSearchDTO()
 
         when: '发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/quick_filter/query_all', quickFilterSearchDTO, Page, projectId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/quick_filter/query_all', quickFilterSearchDTO, List, projectId)
 
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        List<QuickFilterDTO> result = entity.body.content
+        List<QuickFilterDTO> result = entity.body
 
         expect: '设置期望值'
         result.size() == 1

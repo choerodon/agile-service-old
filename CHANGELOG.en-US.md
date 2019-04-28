@@ -1,6 +1,36 @@
 # Changelog
 All notable changes about agile-service will be documented in this file.
 
+## [0.16.0] - 2019-04-19
+
+### Added
+
+- Add ART setting of program, which supports the creation, modification, opening, deactivation of ART, and display of PI lists under ART.
+- Add feature list of program, which includes two modes: plan mode and query mode, and supports feature creation.
+- Add program board, which supporting feature movement, display, etc.
+- Add setting of program board, including column and status configuration.
+- Add project setting of program, which supports the modification of project code.
+- Add ART calendar of program, which supports viewing in progress ART PI planning and sprint planning under PI.
+- Add PI objective of program, including list and card, supports creating, modifying, deleting and querying PI objective.
+- Stories in team of program can associate features of States to be processed or processed.
+- After PI is turned on in the program, sprint is generated synchronously for each team in the program, and no new sprint is allowed to be deleted or created.
+- Create Issue/Edit Issue Page，loading custom field list，to adapt to the style of width，save and update field value.
+
+### Changed
+
+- Project members can view the burnout chart on the project home page.
+- Project members can view unassigned tasks on the project home page and it supports paging.
+- When a subtask in a story is moved to the next sprint, remember the previous state.
+- Partial views style optimization. 
+- Partial report optimization.
+
+### Fixed
+
+- Data display in different dimensions of epic report.
+- Incorrect search by name in problem management.
+- Repair the 5.1 holiday adjustment
+  
+
 ## [0.15.0] - 2019-03-22
 
 ### Added

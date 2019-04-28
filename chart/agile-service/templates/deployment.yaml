@@ -33,6 +33,11 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          # readinessProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: {{ .Values.deployment.managementPort }}
+          #     scheme: HTTP
           readinessProbe:
             exec:
               command: ["/bin/sh","-c","curl -s localhost:{{ .Values.deployment.managementPort }}/actuator/health --fail && nc -z localhost {{ .Values.service.port }}"]
@@ -43,15 +48,3 @@ spec:
             timeoutSeconds: 10
           resources:
 {{ toYaml .Values.resources | indent 12 }}
-    {{- with .Values.nodeSelector }}
-      nodeSelector:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.affinity }}
-      affinity:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.tolerations }}
-      tolerations:
-{{ toYaml . | indent 8 }}
-    {{- end }}

@@ -445,7 +445,7 @@
         from
         (<include refid="queryPlanSprintSql"/>)spa
         left join(<include refid="querySprintIssueByIssueIds"/>)qsii on qsii.is_sprint_id = spa.sprint_id
-        left join (<include refid="queryAssigneeIssueByPlanSprintId"/>)qais on spa.sprint_id = qais.asi_sprint_id order by spa.sprint_id desc,qsii.rank ASC
+        left join (<include refid="queryAssigneeIssueByPlanSprintId"/>)qais on spa.sprint_id = qais.asi_sprint_id order by spa.sprint_id DESC,qsii.rank ASC
     </select>
 
     <select id="queryPlanSprintNoIssueIds" resultMap="SprintSearchNoIssueDO">
@@ -468,7 +468,7 @@
         qais.remaining_issue_count
         from
         (<include refid="queryPlanSprintSql"/>)spa
-        left join (<include refid="queryAssigneeIssueByPlanSprintId"/>)qais on spa.sprint_id = qais.asi_sprint_id order by spa.sprint_id desc
+        left join (<include refid="queryAssigneeIssueByPlanSprintId"/>)qais on spa.sprint_id = qais.asi_sprint_id order by spa.sprint_id DESC
     </select>
 
     <select id="queryNotCloseSprintIdByIssueId" resultType="java.lang.Long">
@@ -663,7 +663,7 @@
         WHERE sprint_id = (
                 SELECT MAX(sprint_id)
                 FROM agile_sprint
-                WHERE project_id = #{projectId}
+                WHERE project_id = #{projectId} and pi_id is null
             )
     </select>
 
@@ -792,14 +792,9 @@
         AND ai.type_code != 'sub_task' and ai.type_code != 'issue_epic' and ai.apply_type = 'agile'
     </select>
 
-    <delete id="deleteByPiBatch">
-        delete from agile_sprint
-        where project_id = #{projectId} and pi_id = #{piId}
-    </delete>
-
-    <select id="selectByPiId" resultType="java.lang.Long">
+    <select id="selectNotDoneByPiId" resultType="java.lang.Long">
         select sprint_id from agile_sprint
-        where project_id = #{projectId} and pi_id = #{piId}
+        where project_id = #{projectId} and pi_id = #{piId} and status_code != 'closed'
     </select>
 
     <update id="updateSprintNameByBatch">

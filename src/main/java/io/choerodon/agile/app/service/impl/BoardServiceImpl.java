@@ -399,9 +399,14 @@ public class BoardServiceImpl implements BoardService {
         Comparator<IssueForBoardDO> comparator = Comparator.comparing(IssueForBoardDO::getRank, nullsFirst(naturalOrder()));
         columns.forEach(columnAndIssueDO -> columnAndIssueDO.getSubStatuses().forEach(subStatus -> {
                     subStatus.getIssues().forEach(issueForBoardDO -> {
-                        String assigneeName = usersMap.get(issueForBoardDO.getAssigneeId()) != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getName() : null;
-                        String imageUrl = assigneeName != null ? usersMap.get(issueForBoardDO.getAssigneeId()).getImageUrl() : null;
+                        UserMessageDO userMessageDO = usersMap.get(issueForBoardDO.getAssigneeId());
+                        String assigneeName = userMessageDO != null ? userMessageDO.getName() : null;
+                        String assigneeLoginName = userMessageDO != null ? userMessageDO.getLoginName() : null;
+                        String assigneeRealName = userMessageDO != null ? userMessageDO.getRealName() : null;
+                        String imageUrl = userMessageDO != null ? userMessageDO.getImageUrl() : null;
                         issueForBoardDO.setAssigneeName(assigneeName);
+                        issueForBoardDO.setAssigneeLoginName(assigneeLoginName);
+                        issueForBoardDO.setAssigneeRealName(assigneeRealName);
                         issueForBoardDO.setImageUrl(imageUrl);
                     });
                     subStatus.getIssues().sort(comparator);

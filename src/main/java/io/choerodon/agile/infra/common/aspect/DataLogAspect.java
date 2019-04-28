@@ -198,6 +198,7 @@ public class DataLogAspect {
                         break;
                     case PI:
                         handlePiDataLog(args);
+                        break;
                     case VERSION_CREATE:
                         handleVersionCreateDataLog(args);
                         break;

@@ -41,6 +41,17 @@ public class ProjectRelationshipDTO {
     @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "人数")
+    private Integer userCount;
+
+    public Integer getUserCount() {
+        return userCount;
+    }
+
+    public void setUserCount(Integer userCount) {
+        this.userCount = userCount;
+    }
+
     public Long getId() {
         return id;
     }

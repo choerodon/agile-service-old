@@ -27,6 +27,12 @@ public class IssueSubListDTO {
     @ApiModelProperty(value = "报告人名称")
     private String reporterName;
 
+    @ApiModelProperty(value = "登录名称")
+    private String loginName;
+
+    @ApiModelProperty(value = "真实名称")
+    private String realName;
+
     @ApiModelProperty(value = "经办人名称")
     private String assigneeName;
 
@@ -163,6 +169,22 @@ public class IssueSubListDTO {
 
     public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
         this.statusMapDTO = statusMapDTO;
+    }
+
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
+    }
+
+    public String getLoginName() {
+        return loginName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
+    public String getRealName() {
+        return realName;
     }
 
     @Override

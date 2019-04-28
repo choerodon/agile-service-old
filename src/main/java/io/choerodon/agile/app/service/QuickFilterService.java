@@ -6,6 +6,8 @@ import io.choerodon.agile.api.dto.QuickFilterSequenceDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
+import java.util.List;
+
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/6/13.
@@ -26,10 +28,9 @@ public interface QuickFilterService {
      *
      * @param projectId            projectId
      * @param quickFilterSearchDTO quickFilterSearchDTO
-     * @param pageRequest          pageRequest
      * @return QuickFilterDTO
      */
-    Page<QuickFilterDTO> listByProjectId(Long projectId, QuickFilterSearchDTO quickFilterSearchDTO, PageRequest pageRequest);
+    List<QuickFilterDTO> listByProjectId(Long projectId, QuickFilterSearchDTO quickFilterSearchDTO);
 
     /**
      * 拖动排序

@@ -18,11 +18,14 @@
 
     <select id="selectActiveArt" resultType="io.choerodon.agile.infra.dataobject.ArtDO">
         select
-         id,
-         status_code
-        from agile_art
-        where status_code = 'doing'
-        and program_id = #{programId}
+         aa.id,
+         aa.code,
+         aa.name,
+         aa.start_date,
+         aa.status_code
+        from agile_art aa
+        where aa.status_code = 'doing'
+        and aa.program_id = #{programId}
     </select>
 
     <resultMap id="artCalendarMap" type="io.choerodon.agile.infra.dataobject.PiCalendarDO">
@@ -56,6 +59,7 @@
         from agile_pi ap
         left join agile_sprint asp on ap.id = asp.pi_id and asp.project_id = #{programId}
         where ap.art_id = #{artId} and ap.program_id = #{programId}
+        order by ap.id
     </select>
 
 
