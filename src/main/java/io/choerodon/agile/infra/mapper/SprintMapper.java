@@ -118,4 +118,8 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
     List<Long> selectNotDoneByPiId(@Param("projectId") Long projectId, @Param("piId")Long piId);
 
     void updateSprintNameByBatch(@Param("projectId") Long projectId, @Param("sprintIds") List<Long> sprintIds);
+
+    List<SprintDO> selectListByPiId(@Param("projectId") Long projectId, @Param("piId") Long PiId);
+
+    SprintDO selectFirstSprintByPiId(@Param("projectId") Long projectId, @Param("piId") Long PiId);
 }

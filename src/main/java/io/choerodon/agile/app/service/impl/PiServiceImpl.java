@@ -8,12 +8,10 @@ import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
 import io.choerodon.agile.domain.agile.entity.*;
-import io.choerodon.agile.domain.agile.repository.ArtRepository;
-import io.choerodon.agile.domain.agile.repository.IssueRepository;
-import io.choerodon.agile.domain.agile.repository.PiRepository;
-import io.choerodon.agile.domain.agile.repository.SprintRepository;
+import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.common.utils.RankUtil;
+import io.choerodon.agile.infra.common.utils.SiteMsgUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
@@ -29,6 +27,7 @@ import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +54,8 @@ public class PiServiceImpl implements PiService {
     private static final String STATUS_ID = "statusId";
     private static final String ERROR_ISSUE_STATE_MACHINE_NOT_FOUND = "error.issueStateMachine.notFound";
     private static final String ERROR_ISSUE_STATUS_NOT_FOUND = "error.createIssue.issueStatusNotFound";
+    private static final String SPRINT_COMPLETE_SETTING_BACKLOG = "backlog";
+    private static final String SPRINT_COMPLETE_SETTING_NEXT_SPRINT = "nextSprint";
 
     @Autowired
     private PiRepository piRepository;
@@ -106,6 +107,12 @@ public class PiServiceImpl implements PiService {
 
     @Autowired
     private InstanceFeignClient instanceFeignClient;
+
+    @Autowired
+    private SiteMsgUtil siteMsgUtil;
+
+    @Autowired
+    private UserRepository userRepository;
 
 
     /**
@@ -437,6 +444,27 @@ public class PiServiceImpl implements PiService {
         }
     }
 
+    @Override
+    public void completeSprintsWithSelect(Long programId, Long piId, Long nextPiId, Long artId) {
+        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
+        if (projectRelationshipDTOList == null || projectRelationshipDTOList.isEmpty()) {
+            return;
+        }
+        ArtDO artDO = artMapper.selectByPrimaryKey(artId);
+        for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
+            Long projectId = projectRelationshipDTO.getProjectId();
+            List<Long> sprintIds = sprintMapper.selectByPiId(projectId, piId);
+            SprintDO newSprint = sprintMapper.selectFirstSprintByPiId(projectId, nextPiId);
+            for (Long sprintId : sprintIds) {
+                SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO();
+                sprintCompleteDTO.setProjectId(projectId);
+                sprintCompleteDTO.setSprintId(sprintId);
+                sprintCompleteDTO.setIncompleteIssuesDestination(SPRINT_COMPLETE_SETTING_NEXT_SPRINT.equals(artDO.getSprintCompleteSetting()) ? newSprint.getSprintId() : 0L);
+                sprintService.completeSprint(projectId, sprintCompleteDTO);
+            }
+        }
+    }
+
     private void autoCreatePi(Long programId, Long artId) {
         List<PiDO> restPi = piMapper.selectUnDonePiDOList(programId, artId);
         ArtDO artDO = artMapper.selectByPrimaryKey(artId);
@@ -467,13 +495,51 @@ public class PiServiceImpl implements PiService {
         }
     }
 
+    private void getProjectOwnerByProjects(List<Long> projectIds, List<Long> result) {
+        RoleAssignmentSearchDTO roleAssignmentSearchDTO = new RoleAssignmentSearchDTO();
+        for (Long projectId : projectIds) {
+            Long roleId = null;
+            List<RoleDTO> roleDTOS = userRepository.listRolesWithUserCountOnProjectLevel(projectId, roleAssignmentSearchDTO);
+            for (RoleDTO roleDTO : roleDTOS) {
+                if ("role/project/default/project-owner".equals(roleDTO.getCode())) {
+                    roleId = roleDTO.getId();
+                    break;
+                }
+            }
+            if (roleId != null) {
+                Page<UserDTO> userDTOS = userRepository.pagingQueryUsersByRoleIdOnProjectLevel(0, 300, roleId, projectId, roleAssignmentSearchDTO);
+                for (UserDTO userDTO : userDTOS) {
+                    if (!result.contains(userDTO.getId())) {
+                        result.add(userDTO.getId());
+                    }
+                }
+            }
+        }
+    }
+
+    @Async
+    @Override
+    public void sendPmAndEmailAfterPiComplete(Long programId, PiE piE) {
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
+        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
+        List<Long> projectIds = (projectRelationshipDTOList != null && !projectRelationshipDTOList.isEmpty() ? projectRelationshipDTOList.stream().map(ProjectRelationshipDTO::getProjectId).collect(Collectors.toList()) : null);
+        if (projectIds == null) {
+            return;
+        }
+        List<Long> result = new ArrayList<>();
+        getProjectOwnerByProjects(projectIds, result);
+        List<SprintDO> sprintDOList = sprintMapper.selectListByPiId(programId, piE.getId());
+        Map<String, Object> params = new HashMap<>();
+        params.put("piName", piE.getCode() + "-" + piE.getName());
+        params.put("sprintNameList", sprintDOList != null && !sprintDOList.isEmpty() ? sprintDOList.stream().map(SprintDO::getSprintName).collect(Collectors.joining(",")) : "");
+        siteMsgUtil.piComplete(result, customUserDetails.getUserId(), programId, params);
+    }
+
     @Override
     public PiDTO closePi(Long programId, PiDTO piDTO) {
         piValidator.checkPiClose(piDTO);
         // deal uncomplete feature to target pi
         dealUnCompleteFeature(piDTO.getProgramId(), piDTO.getId(), piDTO.getTargetPiId());
-        // deal projects' sprints complete
-        completeProjectsSprints(programId, piDTO.getId());
         // update pi status: done
         PiE update = new PiE(programId, piDTO.getId(), PI_DONE, piDTO.getObjectVersionNumber());
         update.setActualEndDate(new Date());
@@ -489,7 +555,10 @@ public class PiServiceImpl implements PiService {
             nextStartPi.setUpdateStatusId(piDTO.getUpdateStatusId());
             startPi(programId, nextStartPi);
         }
+        // deal projects' sprints complete
+        completeSprintsWithSelect(programId, piDTO.getId(), nextPi.getId(), piDTO.getArtId());
         autoCreatePi(programId, piDTO.getArtId());
+        sendPmAndEmailAfterPiComplete(programId, piE);
         return ConvertHelper.convert(piE, PiDTO.class);
     }
 
@@ -613,6 +682,23 @@ public class PiServiceImpl implements PiService {
         List<PiDO> piDOList = piMapper.selectUnDonePiDOList(programId, activeArt.getId());
         if (piDOList != null && !piDOList.isEmpty())  {
             return ConvertHelper.convertList(piDOList, PiNameDTO.class);
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<PiWithFeatureDTO> queryRoadMapOfProgram(Long programId, Long organizationId) {
+        ArtDO activeArt = getActiveArt(programId);
+        if (activeArt == null) {
+            return new ArrayList<>();
+        }
+        List<PiWithFeatureDO> piWithFeatureDOList = piMapper.selectRoadMapPiList(programId, activeArt.getId());
+        if (piWithFeatureDOList != null && !piWithFeatureDOList.isEmpty()) {
+            Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+            setStatusIsCompleted(programId, statusMapDTOMap);
+            Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+            return piAssembler.piWithFeatureDOTODTO(piWithFeatureDOList, statusMapDTOMap, issueTypeDTOMap);
         } else {
             return new ArrayList<>();
         }

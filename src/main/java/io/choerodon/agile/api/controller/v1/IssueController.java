@@ -453,6 +453,21 @@ public class IssueController {
         issueService.exportIssues(projectId, searchDTO, request, response, organizationId);
     }
 
+    @ResponseBody
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("导出feature列表")
+    @PostMapping(value = "/program/export")
+    public void exportProgramIssues(@ApiParam(value = "项目id", required = true)
+                                    @PathVariable(name = "project_id") Long projectId,
+                                    @ApiParam(value = "组织id", required = true)
+                                    @RequestParam Long organizationId,
+                                    @ApiParam(value = "查询参数", required = true)
+                                    @RequestBody(required = false) SearchDTO searchDTO,
+                                    HttpServletRequest request,
+                                    HttpServletResponse response) {
+        issueService.exportProgramIssues(projectId, searchDTO, request, response, organizationId);
+    }
+
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("复制一个issue")
     @PostMapping("/{issueId}/clone_issue")

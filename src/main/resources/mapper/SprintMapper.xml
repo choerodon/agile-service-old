@@ -807,4 +807,18 @@
         </foreach>
     </update>
 
+    <select id="selectListByPiId" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
+        select *
+        from agile_sprint
+        where project_id = #{projectId} and pi_id = #{piId}
+    </select>
+
+    <select id="selectFirstSprintByPiId" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
+        select *
+        from agile_sprint
+        where project_id = #{projectId} and pi_id = #{piId} and status_code != 'done'
+        order by sprint_id
+        limit 1
+    </select>
+
 </mapper>

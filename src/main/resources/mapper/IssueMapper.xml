@@ -200,6 +200,32 @@
         WHERE aisr.issue_id = #{issueId} AND aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
     </select>
 
+    <select id="queryPiNameByIssueIds" resultType="io.choerodon.agile.infra.dataobject.PiExportNameDO">
+        SELECT
+            apf.issue_id,
+            CONCAT_WS('-', ap.code, ap.name) as pi_code_name
+        FROM agile_pi_feature apf, agile_pi ap
+        WHERE apf.program_id = #{programId} AND apf.pi_id = ap.id AND ap.status_code = 'done'
+        AND apf.issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+    </select>
+
+    <select id="queryActivePiNameByIssueIds" resultType="io.choerodon.agile.infra.dataobject.PiExportNameDO">
+        SELECT
+            apf.issue_id,
+            CONCAT_WS('-', ap.code, ap.name) as pi_code_name
+        FROM agile_pi_feature apf, agile_pi ap
+        WHERE apf.program_id = #{programId} AND apf.pi_id = ap.id AND ap.status_code != 'done'
+        AND apf.issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+    </select>
+
     <select id="queryActivePiNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.PiNameDO">
         SELECT
             ap.id,
@@ -397,6 +423,77 @@
             when #{issueId} then #{index}
         </foreach>
         END
+    </select>
+
+    <select id="selectExportIssueIdsInProgram" resultType="java.lang.Long">
+        select
+        ai.issue_id
+        from agile_issue ai
+        where ai.program_id = #{programId} and ai.type_code in ('feature', 'issue_epic')
+        <if test='searchDTO.advancedSearchArgs != null'>
+            <if test='searchDTO.advancedSearchArgs.statusList != null and searchDTO.advancedSearchArgs.statusList.size > 0'>
+                and ai.status_id in
+                <foreach collection="searchDTO.advancedSearchArgs.statusList" item="statusId" open="(" separator=","
+                         close=")">
+                    #{statusId}
+                </foreach>
+            </if>
+            <if test='searchDTO.advancedSearchArgs.reporterList != null and searchDTO.advancedSearchArgs.reporterList.size > 0'>
+                AND ai.reporter_id IN
+                <foreach collection="searchDTO.advancedSearchArgs.reporterList" item="reporterId" open="(" separator=","
+                         close=")">
+                    #{reporterId}
+                </foreach>
+            </if>
+            <if test="searchDTO.advancedSearchArgs.epicList != null and searchDTO.advancedSearchArgs.epicList.size > 0">
+                and ai.epic_id in
+                <foreach collection="searchDTO.advancedSearchArgs.epicList" item="epicId" open="(" separator=","
+                         close=")">
+                    #{epicId}
+                </foreach>
+            </if>
+        </if>
+        <if test='searchDTO.otherArgs != null'>
+            <if test='searchDTO.otherArgs.piList != null and searchDTO.otherArgs.piList.size > 0 '>
+                AND ai.issue_id in (
+                SELECT issue_id from agile_pi_feature apf where pi_id in
+                <foreach collection="searchDTO.otherArgs.piList" item="piId" open="(" separator=","
+                         close=")">
+                    #{piId}
+                </foreach>
+                )
+            </if>
+        </if>
+    </select>
+
+    <select id="selectExportIssuesInProgram" resultType="io.choerodon.agile.infra.dataobject.FeatureExportDO">
+        select
+        ai.issue_id,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+        ai.type_code,
+        ai.summary,
+        ai.status_id,
+        ai.story_points,
+        ai.epic_id,
+        ai2.epic_name,
+        ai.reporter_id,
+        ai.creation_date,
+        ai.last_update_date,
+        ai.issue_type_id,
+        af.feature_type,
+        af.benfit_hypothesis,
+        af.acceptance_critera
+        from agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.program_id = api.project_id
+        left join agile_feature af on ai.issue_id = af.issue_id
+        left join agile_issue ai2 on ai.epic_id = ai2.issue_id
+        where ai.program_id = #{programId} and ai.type_code in ('feature', 'issue_epic')
+        and ai.issue_id in
+        <foreach collection="issueIds" item="issueId" open="(" separator=","
+                 close=")">
+            #{issueId}
+        </foreach>
+        order by ai.issue_id desc
     </select>
 
     <select id="queryIssueIdsListWithSub" resultType="java.lang.Long">

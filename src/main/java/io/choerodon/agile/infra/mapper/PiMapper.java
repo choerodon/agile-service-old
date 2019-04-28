@@ -59,4 +59,6 @@ public interface PiMapper extends BaseMapper<PiDO> {
     List<PiNameDO> selectclosePiListByIssueId(@Param("programId") Long programId, @Param("issueId") Long issueId);
 
     PiNameDO selectCurrentPiListByIssueId(@Param("programId") Long programId, @Param("issueId") Long issueId);
+
+    List<PiWithFeatureDO> selectRoadMapPiList(@Param("programId") Long programId, @Param("artId") Long artId);
 }
