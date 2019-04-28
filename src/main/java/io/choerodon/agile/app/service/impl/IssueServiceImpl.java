@@ -1217,7 +1217,7 @@ public class IssueServiceImpl implements IssueService {
     public List<IssueFeatureDTO> listFeature(Long projectId, Long organizationId) {
         ProjectDTO program = userFeignClient.getGroupInfoByEnableProject(organizationId, projectId).getBody();
         if (program != null) {
-            List<IssueFeatureDTO> issueFeatureDTOList = issueAssembler.toTargetList(issueMapper.queryIssueFeatureSelectList(program.getId(),null), IssueFeatureDTO.class);
+            List<IssueFeatureDTO> issueFeatureDTOList = issueAssembler.toTargetList(issueMapper.queryIssueFeatureSelectList(program.getId(), null), IssueFeatureDTO.class);
             if (issueFeatureDTOList != null && !issueFeatureDTOList.isEmpty()) {
                 List<Long> ids = issueFeatureDTOList.stream().map(IssueFeatureDTO::getIssueId).collect(Collectors.toList());
                 Map<Long, Integer> storyCountMap = issueMapper.selectStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
@@ -2032,12 +2032,63 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public Page<IssueListTestDTO> listIssueWithLinkedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
+    public Page<IssueListTestWithSprintVersionDTO> listIssueWithLinkedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
         pageRequest.resetOrder(SEARCH, new HashMap<>());
         Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
                 issueMapper.listIssueWithLinkedIssues(projectId, searchDTO.getSearchArgs(),
                         searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContents()));
-        return handleIssueListTestDoToDto(issueDOPage, organizationId, projectId);
+        return handleILTDTOToILTWSVDTO(projectId, handleIssueListTestDoToDto(issueDOPage, organizationId, projectId));
+    }
+
+    private Page<IssueListTestWithSprintVersionDTO> handleILTDTOToILTWSVDTO(Long projectId, Page<IssueListTestDTO> issueListTestDTOSPage) {
+        Page<IssueListTestWithSprintVersionDTO> issueListTestWithSprintVersionDTOPage = new Page<>();
+        issueListTestWithSprintVersionDTOPage.setNumber(issueListTestDTOSPage.getNumber());
+        issueListTestWithSprintVersionDTOPage.setNumberOfElements(issueListTestDTOSPage.getNumberOfElements());
+        issueListTestWithSprintVersionDTOPage.setSize(issueListTestDTOSPage.getSize());
+        issueListTestWithSprintVersionDTOPage.setTotalElements(issueListTestDTOSPage.getTotalElements());
+        issueListTestWithSprintVersionDTOPage.setTotalPages(issueListTestDTOSPage.getTotalPages());
+
+//        Map<Long, ProductVersionDataDTO> versionIssueRelDTOMap = productVersionService
+//                .queryVersionByProjectId(projectId).stream().collect(
+//                        Collectors.toMap(ProductVersionDataDTO::getVersionId, x-> x));
+
+        Map<Long, SprintDO> sprintDoMap = sprintMapper.getSprintByProjectId(projectId).stream().collect(
+                Collectors.toMap(SprintDO::getSprintId, x-> x));;
+
+        List<IssueListTestWithSprintVersionDTO> issueListTestWithSprintVersionDTOS = new ArrayList<>();
+
+        for (int a = 0; a < issueListTestDTOSPage.size(); a++) {
+            IssueListTestWithSprintVersionDTO issueListTestWithSprintVersionDTO = new IssueListTestWithSprintVersionDTO(issueListTestDTOSPage.get(a));
+
+            List<VersionIssueRelDTO> versionList = new ArrayList<>();
+            List<IssueSprintDTO> sprintList = new ArrayList<>();
+
+            issueMapper.queryVersionIssueRelByIssueId(issueListTestWithSprintVersionDTO.getIssueId()).forEach(v -> {
+                VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
+                versionIssueRelDTO.setVersionId(v.getVersionId());
+                versionIssueRelDTO.setName(v.getName());
+
+                versionList.add(versionIssueRelDTO);
+            });
+
+            issueMapper.querySprintNameByIssueId(issueListTestWithSprintVersionDTO.getIssueId()).forEach(v -> {
+                SprintDO sprintDO = sprintDoMap.get(v.getSprintId());
+
+                IssueSprintDTO issueSprintDTO = new IssueSprintDTO();
+                issueSprintDTO.setSprintId(sprintDO.getSprintId());
+                issueSprintDTO.setSprintName(sprintDO.getSprintName());
+                issueSprintDTO.setStatusCode(sprintDO.getStatusCode());
+
+                sprintList.add(issueSprintDTO);
+            });
+
+            issueListTestWithSprintVersionDTO.setVersionDTOList(versionList);
+            issueListTestWithSprintVersionDTO.setSprintDTOList(sprintList);
+
+            issueListTestWithSprintVersionDTOS.add(issueListTestWithSprintVersionDTO);
+        }
+        issueListTestWithSprintVersionDTOPage.setContent(issueListTestWithSprintVersionDTOS);
+        return issueListTestWithSprintVersionDTOPage;
     }
 
     @Override
