@@ -104,6 +104,7 @@ public class CatalogExcelUtil {
         font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD); // 粗体
         style.setFont(font);
         style.setLocked(true);
+        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
         return style;
     }
 
