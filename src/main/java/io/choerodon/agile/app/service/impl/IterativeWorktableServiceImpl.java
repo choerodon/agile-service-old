@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
-import io.choerodon.agile.infra.mapper.SprintWorkCalendarRefMapper;
+import io.choerodon.agile.infra.mapper.WorkCalendarRefMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +45,7 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
     private DateUtil dateUtil;
 
     @Autowired
-    private SprintWorkCalendarRefMapper sprintWorkCalendarRefMapper;
+    private WorkCalendarRefMapper workCalendarRefMapper;
 
     @Autowired
     private IssueFeignClient issueFeignClient;
@@ -121,16 +121,16 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
                 startDate = result.getStartDate();
             }
             result.setDayRemain(dateUtil.getDaysBetweenDifferentDate(startDate, result.getEndDate(),
-                    sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(sprintId, projectId),
-                    sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(sprintId, projectId), organizationId));
+                    workCalendarRefMapper.queryHolidayBySprintIdAndProjectId(sprintId, projectId),
+                    workCalendarRefMapper.queryWorkBySprintIdAndProjectId(sprintId, projectId), organizationId));
         } else {
             result.setDayRemain(dateUtil.getDaysBetweenDifferentDate(result.getStartDate(), result.getEndDate(),
-                    sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(sprintId, projectId),
-                    sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(sprintId, projectId), organizationId));
+                    workCalendarRefMapper.queryHolidayBySprintIdAndProjectId(sprintId, projectId),
+                    workCalendarRefMapper.queryWorkBySprintIdAndProjectId(sprintId, projectId), organizationId));
         }
         result.setDayTotal(dateUtil.getDaysBetweenDifferentDate(result.getStartDate(), result.getEndDate(),
-                sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(sprintId, projectId),
-                sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(sprintId, projectId), organizationId));
+                workCalendarRefMapper.queryHolidayBySprintIdAndProjectId(sprintId, projectId),
+                workCalendarRefMapper.queryWorkBySprintIdAndProjectId(sprintId, projectId), organizationId));
         result.setIssueCount(sprintMapper.queryIssueCountInActiveBoard(projectId, sprintId));
         return result;
     }

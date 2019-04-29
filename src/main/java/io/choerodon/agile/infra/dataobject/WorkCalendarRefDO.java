@@ -15,8 +15,8 @@ import javax.persistence.Table;
  */
 @VersionAudit
 @ModifyAudit
-@Table(name = "agile_sprint_work_calendar_ref")
-public class SprintWorkCalendarRefDO extends AuditDomain {
+@Table(name = "agile_work_calendar_ref")
+public class WorkCalendarRefDO extends AuditDomain {
 
     @Id
     @GeneratedValue

@@ -1,21 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="io.choerodon.agile.infra.mapper.SprintWorkCalendarRefMapper">
+<mapper namespace="io.choerodon.agile.infra.mapper.WorkCalendarRefMapper">
 
     <select id="queryWorkBySprintIdAndProjectId"
             resultType="java.util.Date">
-        select work_day from agile_sprint_work_calendar_ref where sprint_id = #{sprintId} and project_id = #{projectId}
+        select work_day from agile_work_calendar_ref where sprint_id = #{sprintId} and project_id = #{projectId}
         and status = 1
     </select>
 
     <select id="queryHolidayBySprintIdAndProjectId"
             resultType="java.util.Date">
-        select work_day from agile_sprint_work_calendar_ref where sprint_id = #{sprintId} and project_id = #{projectId}
+        select work_day from agile_work_calendar_ref where sprint_id = #{sprintId} and project_id = #{projectId}
         and status = 0
     </select>
 
-    <select id="queryWithNextYearByYear" resultType="io.choerodon.agile.infra.dataobject.SprintWorkCalendarRefDO">
-        select * from agile_sprint_work_calendar_ref where sprint_id = #{sprintId} and project_id = #{projectId}
+    <select id="queryWithNextYearByYear" resultType="io.choerodon.agile.infra.dataobject.WorkCalendarRefDO">
+        select * from agile_work_calendar_ref where 1 = 1
+        <choose>
+            <when test="sprintId != null and sprintId != 0">
+                and sprint_id = #{sprintId}
+            </when>
+            <otherwise>
+                and sprint_id IS NULL
+            </otherwise>
+        </choose>
+        and project_id = #{projectId}
         and (year = #{year} or year = (#{year}+1))
     </select>
 

@@ -2,7 +2,6 @@ package io.choerodon.agile.app.service.impl;
 
 import com.google.common.collect.Ordering;
 import io.choerodon.agile.api.dto.*;
-import io.choerodon.agile.api.validator.WorkCalendarValidator;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.SprintService;
@@ -78,7 +77,7 @@ public class SprintServiceImpl implements SprintService {
     @Autowired
     private DateUtil dateUtil;
     @Autowired
-    private SprintWorkCalendarRefMapper sprintWorkCalendarRefMapper;
+    private WorkCalendarRefMapper workCalendarRefMapper;
     @Autowired
     private SprintWorkCalendarRefRepository sprintWorkCalendarRefRepository;
     @Autowired
@@ -313,18 +312,18 @@ public class SprintServiceImpl implements SprintService {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Calendar calendar = Calendar.getInstance();
             sprintUpdateDTO.getWorkDates().forEach(workDates -> {
-                SprintWorkCalendarRefDO sprintWorkCalendarRefDO = new SprintWorkCalendarRefDO();
-                sprintWorkCalendarRefDO.setSprintId(sprintE.getSprintId());
-                sprintWorkCalendarRefDO.setProjectId(sprintE.getProjectId());
-                sprintWorkCalendarRefDO.setWorkDay(workDates.getWorkDay());
+                WorkCalendarRefDO workCalendarRefDO = new WorkCalendarRefDO();
+                workCalendarRefDO.setSprintId(sprintE.getSprintId());
+                workCalendarRefDO.setProjectId(sprintE.getProjectId());
+                workCalendarRefDO.setWorkDay(workDates.getWorkDay());
                 try {
                     calendar.setTime(dateFormat.parse(workDates.getWorkDay()));
                 } catch (ParseException e) {
                     throw new CommonException("ParseException{}", e);
                 }
-                sprintWorkCalendarRefDO.setYear(calendar.get(Calendar.YEAR));
-                sprintWorkCalendarRefDO.setStatus(workDates.getStatus());
-                sprintWorkCalendarRefRepository.create(sprintWorkCalendarRefDO);
+                workCalendarRefDO.setYear(calendar.get(Calendar.YEAR));
+                workCalendarRefDO.setStatus(workDates.getStatus());
+                sprintWorkCalendarRefRepository.create(workCalendarRefDO);
             });
         }
         issueRepository.updateStayDate(projectId, sprintE.getSprintId(), new Date());
@@ -560,8 +559,8 @@ public class SprintServiceImpl implements SprintService {
                     startDate = result.getStartDate();
                 }
                 result.setDayRemain(dateUtil.getDaysBetweenDifferentDate(startDate, activeSprint.getEndDate(),
-                        sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()),
-                        sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()), organizationId));
+                        workCalendarRefMapper.queryHolidayBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()),
+                        workCalendarRefMapper.queryWorkBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()), organizationId));
             }
         }
         return result;
@@ -581,37 +580,10 @@ public class SprintServiceImpl implements SprintService {
         }
     }
 
-    @Override
-    public SprintWorkCalendarDTO querySprintWorkCalendarRefs(Long projectId, Integer year) {
-        SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
-        if (sprintSearchDO != null) {
-            SprintWorkCalendarDTO sprintWorkCalendarDTO = sprintSearchAssembler.toTarget(sprintSearchDO, SprintWorkCalendarDTO.class);
-            sprintWorkCalendarDTO.setSprintWorkCalendarRefDTOS(sprintCreateAssembler.toTargetList(sprintWorkCalendarRefMapper.queryWithNextYearByYear(projectId, sprintWorkCalendarDTO.getSprintId(), year), SprintWorkCalendarRefDTO.class));
-            return sprintWorkCalendarDTO;
-        } else {
-            return new SprintWorkCalendarDTO();
-        }
-
-    }
-
-    @Override
-    public SprintWorkCalendarRefDTO createSprintWorkCalendarRef(Long projectId, Long sprintId, SprintWorkCalendarRefCreateDTO sprintWorkCalendarRefCreateDTO) {
-        SprintWorkCalendarRefDO sprintWorkCalendarRefDO = sprintCreateAssembler.toTarget(sprintWorkCalendarRefCreateDTO, SprintWorkCalendarRefDO.class);
-        sprintWorkCalendarRefDO.setProjectId(projectId);
-        sprintWorkCalendarRefDO.setSprintId(sprintId);
-        sprintWorkCalendarRefDO.setYear(WorkCalendarValidator.checkWorkDayAndStatus(sprintWorkCalendarRefDO.getWorkDay(), sprintWorkCalendarRefDO.getStatus()));
-        return sprintSearchAssembler.toTarget(sprintWorkCalendarRefRepository.create(sprintWorkCalendarRefDO), SprintWorkCalendarRefDTO.class);
-    }
-
-    @Override
-    public void deleteSprintWorkCalendarRef(Long projectId, Long calendarId) {
-        sprintWorkCalendarRefRepository.delete(projectId, calendarId);
-    }
-
     private void handleSprintNonWorkdays(Set<Date> dates, SprintDO sprintDO, Long projectId) {
         Set<Date> remove = new HashSet<>(dates.size() << 1);
-        List<Date> workDays = sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(sprintDO.getSprintId(), projectId);
-        List<Date> holidays = sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(sprintDO.getSprintId(), projectId);
+        List<Date> workDays = workCalendarRefMapper.queryWorkBySprintIdAndProjectId(sprintDO.getSprintId(), projectId);
+        List<Date> holidays = workCalendarRefMapper.queryHolidayBySprintIdAndProjectId(sprintDO.getSprintId(), projectId);
         workDays.forEach(d -> dates.forEach(date -> {
             if (DateUtil.isSameDay(d, date)) {
                 remove.add(date);

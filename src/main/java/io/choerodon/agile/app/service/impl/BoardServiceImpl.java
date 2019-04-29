@@ -104,7 +104,7 @@ public class BoardServiceImpl implements BoardService {
     private DateUtil dateUtil;
 
     @Autowired
-    private SprintWorkCalendarRefMapper sprintWorkCalendarRefMapper;
+    private WorkCalendarRefMapper workCalendarRefMapper;
 
     @Autowired
     private StateMachineFeignClient stateMachineFeignClient;
@@ -312,8 +312,8 @@ public class BoardServiceImpl implements BoardService {
                     startDate = activeSprint.getStartDate();
                 }
                 boardSprintDTO.setDayRemain(dateUtil.getDaysBetweenDifferentDate(startDate, activeSprint.getEndDate(),
-                        sprintWorkCalendarRefMapper.queryHolidayBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()),
-                        sprintWorkCalendarRefMapper.queryWorkBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()), organizationId));
+                        workCalendarRefMapper.queryHolidayBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()),
+                        workCalendarRefMapper.queryWorkBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()), organizationId));
             }
             return boardSprintDTO;
         }

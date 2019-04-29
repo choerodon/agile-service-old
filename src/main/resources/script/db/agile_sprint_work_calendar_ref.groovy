@@ -43,4 +43,8 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_sprint_work_calendar_ref.gro
             }
         }
     }
+    changeSet(id: '2019-04-28-modify-table-agile-sprint-calendar-ref', author: 'shinan.chenX@gmail.com') {
+        renameTable(newTableName: "agile_work_calendar_ref", oldTableName: "agile_sprint_work_calendar_ref")
+        dropNotNullConstraint(columnName: 'sprint_id', columnDataType: 'BIGINT UNSIGNED', tableName: 'agile_work_calendar_ref')
+    }
 }
