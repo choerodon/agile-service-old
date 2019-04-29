@@ -460,10 +460,10 @@ public class BoardServiceImpl implements BoardService {
         boardColumnService.initBoardColumns(projectId, boardResult.getBoardId(), statusPayloads);
     }
 
-    private String convertProjectName(ProjectDTO projectDTO) {
-        String projectName = projectDTO.getName();
-        return projectName.replaceAll(" ", "%20");
-    }
+//    private String convertProjectName(ProjectDTO projectDTO) {
+//        String projectName = projectDTO.getName();
+//        return projectName.replaceAll(" ", "%20");
+//    }
 
     @Override
     public IssueMoveDTO move(Long projectId, Long issueId, Long transformId, IssueMoveDTO issueMoveDTO, Boolean isDemo) {
