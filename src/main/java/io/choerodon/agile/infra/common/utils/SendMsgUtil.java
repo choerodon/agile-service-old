@@ -230,10 +230,15 @@ public class SendMsgUtil {
         if (projectIds == null) {
             return;
         }
+        ProjectDTO projectDTO = userRepository.queryProject(programId);
+        if (projectDTO == null) {
+            throw new CommonException(ERROR_PROJECT_NOTEXIST);
+        }
         List<Long> result = new ArrayList<>();
         getProjectOwnerByProjects(projectIds, result);
         List<SprintDO> sprintDOList = sprintMapper.selectListByPiId(programId, piE.getId());
         Map<String, Object> params = new HashMap<>();
+        params.put("programName", projectDTO.getName());
         params.put("piName", piE.getCode() + "-" + piE.getName());
         params.put("sprintNameList", sprintDOList != null && !sprintDOList.isEmpty() ? sprintDOList.stream().map(SprintDO::getSprintName).collect(Collectors.joining(",")) : "");
         siteMsgUtil.piComplete(result, customUserDetails.getUserId(), programId, params);
