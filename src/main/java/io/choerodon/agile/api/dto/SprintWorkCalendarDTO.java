@@ -13,7 +13,7 @@ import java.util.List;
 public class SprintWorkCalendarDTO {
 
     @ApiModelProperty(value = "冲刺下的日历变更")
-    private List<SprintWorkCalendarRefDTO> sprintWorkCalendarRefDTOS;
+    private List<WorkCalendarRefDTO> workCalendarRefDTOS;
 
     @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
@@ -36,12 +36,12 @@ public class SprintWorkCalendarDTO {
     @ApiModelProperty(value = "冲刺状态")
     private String statusCode;
 
-    public List<SprintWorkCalendarRefDTO> getSprintWorkCalendarRefDTOS() {
-        return sprintWorkCalendarRefDTOS;
+    public List<WorkCalendarRefDTO> getWorkCalendarRefDTOS() {
+        return workCalendarRefDTOS;
     }
 
-    public void setSprintWorkCalendarRefDTOS(List<SprintWorkCalendarRefDTO> sprintWorkCalendarRefDTOS) {
-        this.sprintWorkCalendarRefDTOS = sprintWorkCalendarRefDTOS;
+    public void setWorkCalendarRefDTOS(List<WorkCalendarRefDTO> workCalendarRefDTOS) {
+        this.workCalendarRefDTOS = workCalendarRefDTOS;
     }
 
     public Long getSprintId() {

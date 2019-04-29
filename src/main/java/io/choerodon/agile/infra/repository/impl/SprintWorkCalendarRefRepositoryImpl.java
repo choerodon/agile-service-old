@@ -1,8 +1,8 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.repository.SprintWorkCalendarRefRepository;
-import io.choerodon.agile.infra.dataobject.SprintWorkCalendarRefDO;
-import io.choerodon.agile.infra.mapper.SprintWorkCalendarRefMapper;
+import io.choerodon.agile.infra.dataobject.WorkCalendarRefDO;
+import io.choerodon.agile.infra.mapper.WorkCalendarRefMapper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,22 +20,22 @@ public class SprintWorkCalendarRefRepositoryImpl implements SprintWorkCalendarRe
     private static final String DELETE_ERROR = "error.SprintWorkCalendarRef.delete";
 
     @Autowired
-    private SprintWorkCalendarRefMapper sprintWorkCalendarRefMapper;
+    private WorkCalendarRefMapper workCalendarRefMapper;
 
     @Override
-    public SprintWorkCalendarRefDO create(SprintWorkCalendarRefDO sprintWorkCalendarRefDO) {
-        if (sprintWorkCalendarRefMapper.insert(sprintWorkCalendarRefDO) != 1) {
+    public WorkCalendarRefDO create(WorkCalendarRefDO workCalendarRefDO) {
+        if (workCalendarRefMapper.insert(workCalendarRefDO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        return sprintWorkCalendarRefDO;
+        return workCalendarRefDO;
     }
 
     @Override
     public void delete(Long projectId, Long calendarId) {
-        SprintWorkCalendarRefDO sprintWorkCalendarRefDO = new SprintWorkCalendarRefDO();
-        sprintWorkCalendarRefDO.setProjectId(projectId);
-        sprintWorkCalendarRefDO.setCalendarId(calendarId);
-        if (sprintWorkCalendarRefMapper.delete(sprintWorkCalendarRefDO) != 1) {
+        WorkCalendarRefDO workCalendarRefDO = new WorkCalendarRefDO();
+        workCalendarRefDO.setProjectId(projectId);
+        workCalendarRefDO.setCalendarId(calendarId);
+        if (workCalendarRefMapper.delete(workCalendarRefDO) != 1) {
             throw new CommonException(DELETE_ERROR);
         }
     }

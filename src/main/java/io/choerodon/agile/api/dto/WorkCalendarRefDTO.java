@@ -5,15 +5,26 @@ import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author dinghuang123@gmail.com
- * @since 2018/10/18
+ * @since 2018/10/16
  */
-public class SprintWorkCalendarRefCreateDTO {
+public class WorkCalendarRefDTO {
+
+    @ApiModelProperty(value = "日历主键id")
+    private Long calendarId;
 
     @ApiModelProperty(value = "日期")
     private String workDay;
 
     @ApiModelProperty(value = "状态，0为放假，1为补班")
     private Integer status;
+
+    public Long getCalendarId() {
+        return calendarId;
+    }
+
+    public void setCalendarId(Long calendarId) {
+        this.calendarId = calendarId;
+    }
 
     public String getWorkDay() {
         return workDay;
@@ -30,7 +41,6 @@ public class SprintWorkCalendarRefCreateDTO {
     public void setStatus(Integer status) {
         this.status = status;
     }
-
 
     @Override
     public String toString() {

@@ -58,7 +58,6 @@ public class PersonalFilterServiceImpl implements PersonalFilterService {
         }
         personalFilterDTO.setUserId(userId);
         personalFilterDTO.setProjectId(projectId);
-        personalFilterDTO.setFilterJson(JSON.toJSONString(personalFilterDTO.getPersonalFilterSearchDTO()));
         PersonalFilterDO personalFilterDO = modelMapper.map(personalFilterDTO, PersonalFilterDO.class);
         if (personalFilterMapper.insert(personalFilterDO) != 1) {
             throw new CommonException(INSERT_ERROR);

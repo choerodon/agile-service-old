@@ -56,33 +56,6 @@ public interface SprintService {
      */
     List<String> queryNonWorkdays(Long projectId, Long sprintId, Long organizationId);
 
-    /**
-     * 查询冲刺工作日历设置
-     *
-     * @param projectId projectId
-     * @param year      year
-     * @return SprintWorkCalendarRefDTO
-     */
-    SprintWorkCalendarDTO querySprintWorkCalendarRefs(Long projectId, Integer year);
-
-    /**
-     * 创建冲刺工作日历
-     *
-     * @param projectId                      projectId
-     * @param sprintId                       sprintId
-     * @param sprintWorkCalendarRefCreateDTO sprintWorkCalendarRefCreateDTO
-     * @return SprintWorkCalendarRefDTO
-     */
-    SprintWorkCalendarRefDTO createSprintWorkCalendarRef(Long projectId, Long sprintId, SprintWorkCalendarRefCreateDTO sprintWorkCalendarRefCreateDTO);
-
-    /**
-     * 删除冲刺工作日历
-     *
-     * @param projectId  projectId
-     * @param calendarId calendarId
-     */
-    void deleteSprintWorkCalendarRef(Long projectId, Long calendarId);
-
     Boolean checkName(Long projectId, String sprinName);
 
     void addSprintsWhenJoinProgram(Long programId, Long projectId);

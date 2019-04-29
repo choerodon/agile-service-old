@@ -5,14 +5,14 @@ package db
  * @author dinghuang123@gmail.com
  * @since 2018/10/10
  */
-databaseChangeLog(logicalFilePath: 'script/db/agile_sprint_work_calendar_ref.groovy') {
+databaseChangeLog(logicalFilePath: 'script/db/agile_work_calendar_ref.groovy') {
     changeSet(id: '2018-10-14-agile-sprint-calendar-ref', author: 'dinghuang123@gmail.com') {
-        createTable(tableName: "agile_sprint_work_calendar_ref") {
+        createTable(tableName: "agile_work_calendar_ref") {
             column(name: 'calendar_id', type: 'BIGINT UNSIGNED', autoIncrement: true, remarks: '主键') {
                 constraints(primaryKey: true)
             }
             column(name: 'sprint_id', type: 'BIGINT UNSIGNED', remarks: '冲刺id') {
-                constraints(nullable: false)
+                constraints(nullable: true)
             }
             column(name: 'work_day', type: 'VARCHAR(11)', remarks: '加班日期') {
                 constraints(nullable: false)
