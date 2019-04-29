@@ -9,10 +9,7 @@ import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
 import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.domain.agile.repository.*;
-import io.choerodon.agile.infra.common.utils.ConvertUtil;
-import io.choerodon.agile.infra.common.utils.RankUtil;
-import io.choerodon.agile.infra.common.utils.SiteMsgUtil;
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
@@ -109,11 +106,7 @@ public class PiServiceImpl implements PiService {
     private InstanceFeignClient instanceFeignClient;
 
     @Autowired
-    private SiteMsgUtil siteMsgUtil;
-
-    @Autowired
-    private UserRepository userRepository;
-
+    private SendMsgUtil sendMsgUtil;
 
     /**
      * 获取当前年分
@@ -495,46 +488,6 @@ public class PiServiceImpl implements PiService {
         }
     }
 
-    private void getProjectOwnerByProjects(List<Long> projectIds, List<Long> result) {
-        RoleAssignmentSearchDTO roleAssignmentSearchDTO = new RoleAssignmentSearchDTO();
-        for (Long projectId : projectIds) {
-            Long roleId = null;
-            List<RoleDTO> roleDTOS = userRepository.listRolesWithUserCountOnProjectLevel(projectId, roleAssignmentSearchDTO);
-            for (RoleDTO roleDTO : roleDTOS) {
-                if ("role/project/default/project-owner".equals(roleDTO.getCode())) {
-                    roleId = roleDTO.getId();
-                    break;
-                }
-            }
-            if (roleId != null) {
-                Page<UserDTO> userDTOS = userRepository.pagingQueryUsersByRoleIdOnProjectLevel(0, 300, roleId, projectId, roleAssignmentSearchDTO);
-                for (UserDTO userDTO : userDTOS) {
-                    if (!result.contains(userDTO.getId())) {
-                        result.add(userDTO.getId());
-                    }
-                }
-            }
-        }
-    }
-
-    @Async
-    @Override
-    public void sendPmAndEmailAfterPiComplete(Long programId, PiE piE) {
-        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
-        List<Long> projectIds = (projectRelationshipDTOList != null && !projectRelationshipDTOList.isEmpty() ? projectRelationshipDTOList.stream().map(ProjectRelationshipDTO::getProjectId).collect(Collectors.toList()) : null);
-        if (projectIds == null) {
-            return;
-        }
-        List<Long> result = new ArrayList<>();
-        getProjectOwnerByProjects(projectIds, result);
-        List<SprintDO> sprintDOList = sprintMapper.selectListByPiId(programId, piE.getId());
-        Map<String, Object> params = new HashMap<>();
-        params.put("piName", piE.getCode() + "-" + piE.getName());
-        params.put("sprintNameList", sprintDOList != null && !sprintDOList.isEmpty() ? sprintDOList.stream().map(SprintDO::getSprintName).collect(Collectors.joining(",")) : "");
-        siteMsgUtil.piComplete(result, customUserDetails.getUserId(), programId, params);
-    }
-
     @Override
     public PiDTO closePi(Long programId, PiDTO piDTO) {
         piValidator.checkPiClose(piDTO);
@@ -558,7 +511,7 @@ public class PiServiceImpl implements PiService {
         // deal projects' sprints complete
         completeSprintsWithSelect(programId, piDTO.getId(), nextPi.getId(), piDTO.getArtId());
         autoCreatePi(programId, piDTO.getArtId());
-        sendPmAndEmailAfterPiComplete(programId, piE);
+        sendMsgUtil.sendPmAndEmailAfterPiComplete(programId, piE);
         return ConvertHelper.convert(piE, PiDTO.class);
     }
 
