@@ -51,4 +51,10 @@ databaseChangeLog(logicalFilePath: 'agile_art.groovy') {
             column(name: 'sprint_complete_setting', type: 'VARCHAR(255)', remarks: 'sprint complete setting')
         }
     }
+
+    changeSet(id: '2019-04-28-agile-art-update-sql', author: 'fuqianghuang01@gmail.com') {
+        sql(stripComments: true, splitStatements: false, endDelimiter: ';') {
+            "update agile_art set sprint_complete_setting = 'backlog' where sprint_complete_setting is null;"
+        }
+    }
 }
