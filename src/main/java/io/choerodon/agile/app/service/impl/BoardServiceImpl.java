@@ -11,6 +11,7 @@ import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.common.utils.RankUtil;
+import io.choerodon.agile.infra.common.utils.SendMsgUtil;
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
@@ -132,6 +133,9 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private ArtMapper artMapper;
+
+    @Autowired
+    private SendMsgUtil sendMsgUtil;
 
     @Override
     public void create(Long projectId, String boardName) {
@@ -475,36 +479,37 @@ public class BoardServiceImpl implements BoardService {
         IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
         IssueMoveDTO result = ConvertHelper.convert(issueDO, IssueMoveDTO.class);
 
-        // 发送消息
-        Boolean completed = issueStatusMapper.selectByStatusId(projectId, issueE.getStatusId()).getCompleted();
-        if (completed != null && completed && issueDO.getAssigneeId() != null && SchemeApplyType.AGILE.equals(issueDO.getApplyType())) {
-            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDO, IssueDTO.class));
-            ProjectDTO projectDTO = userRepository.queryProject(projectId);
-            if (projectDTO == null) {
-                throw new CommonException("error.project.notExist");
-            }
-            StringBuilder url = new StringBuilder();
-            String projectName = convertProjectName(projectDTO);
-            ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-            projectInfoDO.setProjectId(projectId);
-            List<ProjectInfoDO> pioList = projectInfoMapper.select(projectInfoDO);
-            ProjectInfoDO pio = null;
-            if (pioList != null && !pioList.isEmpty()) {
-                pio = pioList.get(0);
-            }
-            String pioCode = (pio == null ? "" : pio.getProjectCode());
-            if ("sub_task".equals(issueDO.getTypeCode())) {
-                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + pioCode + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getParentIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
-            } else {
-                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + pioCode + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
-            }
-            String summary = pioCode + "-" + issueDO.getIssueNum() + "-" + issueDO.getSummary();
-            Long[] ids = new Long[1];
-            ids[0] = issueDO.getAssigneeId();
-            List<UserDO> userDOList = userRepository.listUsersByIds(ids);
-            String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName() + userDOList.get(0).getRealName() : "";
-            siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), issueDO.getAssigneeId(), projectId);
-        }
+//        // 发送消息
+//        Boolean completed = issueStatusMapper.selectByStatusId(projectId, issueE.getStatusId()).getCompleted();
+//        if (completed != null && completed && issueDO.getAssigneeId() != null && SchemeApplyType.AGILE.equals(issueDO.getApplyType())) {
+//            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDO, IssueDTO.class));
+//            ProjectDTO projectDTO = userRepository.queryProject(projectId);
+//            if (projectDTO == null) {
+//                throw new CommonException("error.project.notExist");
+//            }
+//            StringBuilder url = new StringBuilder();
+//            String projectName = convertProjectName(projectDTO);
+//            ProjectInfoDO projectInfoDO = new ProjectInfoDO();
+//            projectInfoDO.setProjectId(projectId);
+//            List<ProjectInfoDO> pioList = projectInfoMapper.select(projectInfoDO);
+//            ProjectInfoDO pio = null;
+//            if (pioList != null && !pioList.isEmpty()) {
+//                pio = pioList.get(0);
+//            }
+//            String pioCode = (pio == null ? "" : pio.getProjectCode());
+//            if ("sub_task".equals(issueDO.getTypeCode())) {
+//                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + pioCode + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getParentIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
+//            } else {
+//                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + pioCode + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
+//            }
+//            String summary = pioCode + "-" + issueDO.getIssueNum() + "-" + issueDO.getSummary();
+//            Long[] ids = new Long[1];
+//            ids[0] = issueDO.getAssigneeId();
+//            List<UserDO> userDOList = userRepository.listUsersByIds(ids);
+//            String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName() + userDOList.get(0).getRealName() : "";
+//            siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), issueDO.getAssigneeId(), projectId);
+//        }
+        sendMsgUtil.sendMsgByIssueMoveComplete(projectId, issueE, issueDO);
         return result;
     }
 
