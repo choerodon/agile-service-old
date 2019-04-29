@@ -35,6 +35,6 @@ public class PiCompleteEmailTemplate implements EmailTemplate {
 
     @Override
     public String content() {
-        return "<p>您好，PI: ${piName} 已被完成。 此PI下的冲刺 ${sprintNameList} 已被自动完成。</p>";
+        return "<p>您好，项目群：${programName} 中, PI：${piName} 已被完成。 此PI下的冲刺 ${sprintNameList} 已被自动完成。</p>";
     }
 }
