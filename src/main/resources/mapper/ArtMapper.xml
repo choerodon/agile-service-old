@@ -11,7 +11,9 @@
           aa.program_id,
           aa.pi_count,
           aa.status_code,
-          aa.object_version_number
+          aa.object_version_number,
+          aa.creation_date,
+          aa.last_update_date
         from agile_art aa, agile_project_info api
         where aa.program_id = #{programId} and api.project_id = #{programId}
     </select>
