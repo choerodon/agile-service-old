@@ -170,4 +170,10 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue.groovy') {
             column(name: "program_id")
         }
     }
+
+    changeSet(id: '2019-04-30-agile-issue-add-column', author: 'fuqianghuang01@gmail.com') {
+        addColumn(tableName: 'agile_issue') {
+            column(name: 'relate_issue_id', type: 'BIGINT UNSIGNED', remarks: 'relate issue id')
+        }
+    }
 }

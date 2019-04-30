@@ -48,7 +48,8 @@
         ai.rank AS ai_rank,
         ai.epic_id AS ai_epic_id,
         ai.stay_date AS ai_stay_date,
-        ai.object_version_number AS ai_object_version_number
+        ai.object_version_number AS ai_object_version_number,
+        ai.relate_issue_id AS ai_relate_issue_id
         FROM
         agile_board_column abc
         LEFT JOIN agile_board_column_status_rel abcsr ON abc.column_id = abcsr.column_id

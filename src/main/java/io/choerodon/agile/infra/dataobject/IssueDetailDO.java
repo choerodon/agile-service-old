@@ -66,6 +66,8 @@ public class IssueDetailDO {
 
     private List<IssueDO> subIssueDOList;
 
+    private List<IssueDO> subBugDOList;
+
     private Date creationDate;
 
     private Date lastUpdateDate;
@@ -101,6 +103,10 @@ public class IssueDetailDO {
     private Long featureId;
 
     private String featureName;
+
+    private Long relateIssueId;
+
+    private String relateIssueNum;
 
     public String getIssueTypeCode() {
         return issueTypeCode;
@@ -452,6 +458,30 @@ public class IssueDetailDO {
 
     public List<PiNameDO> getClosePi() {
         return closePi;
+    }
+
+    public void setRelateIssueId(Long relateIssueId) {
+        this.relateIssueId = relateIssueId;
+    }
+
+    public Long getRelateIssueId() {
+        return relateIssueId;
+    }
+
+    public void setSubBugDOList(List<IssueDO> subBugDOList) {
+        this.subBugDOList = subBugDOList;
+    }
+
+    public List<IssueDO> getSubBugDOList() {
+        return subBugDOList;
+    }
+
+    public void setRelateIssueNum(String relateIssueNum) {
+        this.relateIssueNum = relateIssueNum;
+    }
+
+    public String getRelateIssueNum() {
+        return relateIssueNum;
     }
 
     @Override

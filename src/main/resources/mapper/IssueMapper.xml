@@ -26,6 +26,8 @@
         <id column="issue_type_id" property="issueTypeId"/>
         <id column="apply_type" property="applyType"/>
         <id column="feature_id" property="featureId"/>
+        <id column="relate_issue_id" property="relateIssueId"/>
+        <id column="relate_issue_num" property="relateIssueNum"/>
         <association property="activeSprint" column="issue_id" select="queryActiveSprintNameByIssueId"/>
         <association property="activePi" column="issue_id" select="queryActivePiNameByIssueId"/>
         <collection property="versionIssueRelDOList" column="issue_id"
@@ -52,6 +54,9 @@
         <collection property="subIssueDOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
                     select="querySubIssueByIssueId"/>
+        <collection property="subBugDOList" column="issue_id"
+                    ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
+                    select="querySubBugByIssueId"/>
     </resultMap>
 
     <resultMap id="issueSearch" type="io.choerodon.agile.infra.dataobject.IssueSearchDO">
@@ -120,12 +125,14 @@
             alv2.name                                                                        AS epic_color,
             alv3.name                                                                        AS color_value,
             IF(ai3.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai3.issue_num)) AS parent_issue_num,
+            IF(ai4.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai4.issue_num)) AS relate_issue_num,
             CONCAT_WS('-', api.project_code, ai.issue_num)                                   AS issue_num_splicing
         FROM agile_issue ai
             LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
             LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code
             LEFT JOIN agile_lookup_value alv3 ON ai.color_code = alv3.value_code
             LEFT JOIN agile_issue ai3 ON ai3.issue_id = ai.parent_issue_id
+            LEFT JOIN agile_issue ai4 ON ai4.issue_id = ai.relate_issue_id
             LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         WHERE ai.issue_id = #{issueId} AND ai.project_id = #{projectId}
     </select>
@@ -303,6 +310,22 @@
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         WHERE ai.parent_issue_id = #{issueId}
+    </select>
+
+    <select id="querySubBugByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT
+            ai.issue_id,
+            ai.summary,
+            ai.assignee_id,
+            ai.remaining_time,
+            ai.project_id,
+            ai.issue_type_id,
+            ai.status_id,
+            ai.priority_id,
+            CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num
+        FROM agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        WHERE ai.relate_issue_id = #{issueId}
     </select>
 
     <resultMap id="IssueWithSub" type="io.choerodon.agile.infra.dataobject.IssueDO">

@@ -88,6 +88,9 @@ public class IssueDTO {
     @ApiModelProperty(value = "子任务列表")
     private List<IssueSubListDTO> subIssueDTOList;
 
+    @ApiModelProperty(value = "子缺陷列表")
+    private List<IssueSubListDTO> subBugDTOList;
+
     @ApiModelProperty(value = "问题版本号")
     private Long objectVersionNumber;
 
@@ -170,6 +173,10 @@ public class IssueDTO {
     private String reporterLoginName;
 
     private String reporterRealName;
+
+    private Long relateIssueId;
+
+    private String relateIssueNum;
 
     public String getCreaterEmail() {
         return createrEmail;
@@ -593,6 +600,30 @@ public class IssueDTO {
 
     public void setReporterRealName(String reporterRealName) {
         this.reporterRealName = reporterRealName;
+    }
+
+    public void setRelateIssueId(Long relateIssueId) {
+        this.relateIssueId = relateIssueId;
+    }
+
+    public Long getRelateIssueId() {
+        return relateIssueId;
+    }
+
+    public void setRelateIssueNum(String relateIssueNum) {
+        this.relateIssueNum = relateIssueNum;
+    }
+
+    public String getRelateIssueNum() {
+        return relateIssueNum;
+    }
+
+    public void setSubBugDTOList(List<IssueSubListDTO> subBugDTOList) {
+        this.subBugDTOList = subBugDTOList;
+    }
+
+    public List<IssueSubListDTO> getSubBugDTOList() {
+        return subBugDTOList;
     }
 
     @Override

@@ -100,6 +100,8 @@ public class IssueE {
 
     private Long piId;
 
+    private Long relateIssueId;
+
     public Integer getEpicSequence() {
         return epicSequence;
     }
@@ -464,5 +466,13 @@ public class IssueE {
 
     public Long getPiId() {
         return piId;
+    }
+
+    public void setRelateIssueId(Long relateIssueId) {
+        this.relateIssueId = relateIssueId;
+    }
+
+    public Long getRelateIssueId() {
+        return relateIssueId;
     }
 }
