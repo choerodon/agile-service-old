@@ -261,4 +261,5 @@ public class ArtDTO {
     public Date getLastUpdateDate() {
         return lastUpdateDate;
     }
+
 }
