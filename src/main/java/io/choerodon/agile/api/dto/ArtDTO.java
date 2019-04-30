@@ -69,6 +69,12 @@ public class ArtDTO {
     @Transient
     private String rteName;
 
+    @ApiModelProperty(value = "创建时间")
+    private Date creationDate;
+
+    @ApiModelProperty(value = "最后更新时间")
+    private Date LastUpdateDate;
+
     public Long getId() {
         return id;
     }
@@ -219,5 +225,21 @@ public class ArtDTO {
 
     public String getStatusCode() {
         return statusCode;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getLastUpdateDate() {
+        return LastUpdateDate;
+    }
+
+    public void setLastUpdateDate(Date lastUpdateDate) {
+        LastUpdateDate = lastUpdateDate;
     }
 }
