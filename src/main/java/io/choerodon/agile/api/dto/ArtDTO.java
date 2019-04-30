@@ -76,7 +76,7 @@ public class ArtDTO {
     private Date creationDate;
 
     @ApiModelProperty(value = "最后更新时间")
-    private Date LastUpdateDate;
+    private Date lastUpdateDate;
 
     public Long getId() {
         return id;
@@ -246,11 +246,11 @@ public class ArtDTO {
         this.creationDate = creationDate;
     }
 
-    public Date getLastUpdateDate() {
-        return LastUpdateDate;
+    public void setLastUpdateDate(Date lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
     }
 
-    public void setLastUpdateDate(Date lastUpdateDate) {
-        LastUpdateDate = lastUpdateDate;
+    public Date getLastUpdateDate() {
+        return lastUpdateDate;
     }
 }
