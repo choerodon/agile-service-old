@@ -1680,9 +1680,9 @@ public class IssueServiceImpl implements IssueService {
                 featureExportDTO.setPiName(exportIssuesPiName(closePiName, activePiName));
                 featureExportDTO.setStatusName(statusMapDTOMap.get(featureExportDTO.getStatusId()).getName());
                 if (ISSUE_TYPE_FEATURE.equals(featureExportDTO.getTypeCode())) {
-                    featureExportDTO.setTypeName(issueTypeDTOMap.get(featureExportDTO.getIssuetypeId()).getName());
-                } else {
                     featureExportDTO.setTypeName(FEATURE_TYPE_BUSINESS.equals(featureExportDTO.getFeatureType()) ? "特性" : "使能");
+                } else {
+                    featureExportDTO.setTypeName(issueTypeDTOMap.get(featureExportDTO.getIssuetypeId()).getName());
                 }
             });
             ExcelUtil.export(featureExportDTOList, FeatureExportDTO.class, fieldNames, fieldCodes, project.getName(), Arrays.asList("piName"), response);
