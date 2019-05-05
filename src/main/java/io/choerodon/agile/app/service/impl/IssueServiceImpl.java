@@ -207,8 +207,8 @@ public class IssueServiceImpl implements IssueService {
     private static final String INFLUENCE_RELATION_TYPE = "influence";
     private static final String[] FIELDS_NAME = {"任务编号", "概要", "描述", "类型", "所属项目", "经办人", "经办人名称", "报告人", "报告人名称", "解决状态", "状态", "冲刺", "创建时间", "最后更新时间", "优先级", "是否子任务", "剩余预估", "版本", "史诗", "标签", "故事点", "模块"};
     private static final String[] FIELDS = {"issueNum", "summary", "description", "typeName", "projectName", "assigneeName", "assigneeRealName", "reporterName", "reporterRealName", "resolution", "statusName", "sprintName", "creationDate", "lastUpdateDate", "priorityName", "subTask", REMAIN_TIME_FIELD, "versionName", "epicName", "labelName", "storyPoints", "componentName"};
-    private static final String[] FIELDS_IN_PROGRAM = {"issueNum", "summary", "typeName", "projectName", "statusName", "piName", "creationDate", "lastUpdateDate", "epicName", "storyPoints", "benfitHypothesis", "acceptanceCritera"};
-    private static final String[] FIELDS_NAME_IN_PROGRAM = {"任务编号", "概要", "类型", "所属项目", "状态", "PI", "创建时间", "最后更新时间", "史诗", "故事点", "特性价值", "验收标准"};
+    private static final String[] FIELDS_IN_PROGRAM = {"issueNum", "summary", "typeName", "statusName", "piName", "creationDate", "lastUpdateDate", "epicName", "storyPoints", "benfitHypothesis", "acceptanceCritera"};
+    private static final String[] FIELDS_NAME_IN_PROGRAM = {"任务编号", "概要", "类型", "状态", "PI", "创建时间", "最后更新时间", "史诗", "故事点", "特性价值", "验收标准"};
     private static final String PROJECT_ERROR = "error.project.notFound";
     private static final String ERROR_ISSUE_NOT_FOUND = "error.Issue.queryIssue";
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
@@ -230,6 +230,8 @@ public class IssueServiceImpl implements IssueService {
     private static final String FIELD_NAMES = "fieldNames";
     private static final String ISSUE_TYPE_FEATURE = "feature";
     private static final String ERROR_PROJECT_NOTEXIST = "error.project.notExist";
+    private static final String FEATURE_TYPE_BUSINESS = "business";
+    private static final String FEATURE_TYPE_ENABLER = "enabler";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -1676,9 +1678,12 @@ public class IssueServiceImpl implements IssueService {
                 String closePiName = closePiIssueMap.get(featureExportDTO.getIssueId()) != null ? closePiIssueMap.get(featureExportDTO.getIssueId()).stream().map(PiExportNameDO::getPiCodeName).collect(Collectors.joining(",")) : "";
                 String activePiName = activePiIssueMap.get(featureExportDTO.getIssueId()) != null ? activePiIssueMap.get(featureExportDTO.getIssueId()).getPiCodeName() : "";
                 featureExportDTO.setPiName(exportIssuesPiName(closePiName, activePiName));
-                featureExportDTO.setProjectName(project.getName());
                 featureExportDTO.setStatusName(statusMapDTOMap.get(featureExportDTO.getStatusId()).getName());
-                featureExportDTO.setTypeName(issueTypeDTOMap.get(featureExportDTO.getIssuetypeId()).getName());
+                if (ISSUE_TYPE_FEATURE.equals(featureExportDTO.getTypeCode())) {
+                    featureExportDTO.setTypeName(issueTypeDTOMap.get(featureExportDTO.getIssuetypeId()).getName());
+                } else {
+                    featureExportDTO.setTypeName(FEATURE_TYPE_BUSINESS.equals(featureExportDTO.getFeatureType()) ? "特性" : "使能");
+                }
             });
             ExcelUtil.export(featureExportDTOList, FeatureExportDTO.class, fieldNames, fieldCodes, project.getName(), Arrays.asList("piName"), response);
         } else {
