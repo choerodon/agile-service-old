@@ -33,6 +33,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -109,6 +112,7 @@ public class ReportServiceImpl implements ReportService {
     private static final String START_DATE = "startDate";
     private static final String E_PIC = "Epic";
     private static final String ASC = "asc";
+    private static final ExecutorService pool = Executors.newFixedThreadPool(3);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportServiceImpl.class);
 
@@ -676,15 +680,25 @@ public class ReportServiceImpl implements ReportService {
     private void queryIssueCount(SprintE sprintE, List<ReportIssueE> reportIssueEList) {
         SprintDO sprintDO = sprintConverter.entityToDo(sprintE);
         //获取冲刺开启前的issue
-        List<Long> issueIdBeforeSprintList = reportMapper.queryIssueIdsBeforeSprintStart(sprintDO);
+        List<Long> issueIdBeforeSprintList;
+        //获取当前冲刺期间加入的issue
+        List<Long> issueIdAddList;
+        //获取当前冲刺期间移除的issue
+        List<Long> issueIdRemoveList;
+        //异步任务
+        CompletableFuture<List<Long>> task1 = CompletableFuture
+                .supplyAsync(() -> reportMapper.queryIssueIdsBeforeSprintStart(sprintDO), pool);
+        CompletableFuture<List<Long>> task2 = CompletableFuture
+                .supplyAsync(() -> reportMapper.queryAddIssueIdsDuringSprint(sprintDO), pool);
+        CompletableFuture<List<Long>> task3 = CompletableFuture
+                .supplyAsync(() -> reportMapper.queryRemoveIssueIdsDuringSprint(sprintDO), pool);
+        issueIdBeforeSprintList = task1.join();
+        issueIdAddList = task2.join();
+        issueIdRemoveList = task3.join();
         //获取冲刺开启前的issue统计
         handleIssueCountBeforeSprint(sprintDO, reportIssueEList, issueIdBeforeSprintList);
         //获取当前冲刺期间加入的issue
-        List<Long> issueIdAddList = reportMapper.queryAddIssueIdsDuringSprint(sprintDO);
-        //获取当前冲刺期间加入的issue
         handleAddIssueCountDuringSprint(sprintDO, reportIssueEList, issueIdAddList);
-        //获取当前冲刺期间移除的issue
-        List<Long> issueIdRemoveList = reportMapper.queryRemoveIssueIdsDuringSprint(sprintDO);
         //获取当前冲刺期间移除的issue
         handleRemoveCountDuringSprint(sprintDO, reportIssueEList, issueIdRemoveList);
         //获取冲刺结束时的issue
@@ -700,11 +714,21 @@ public class ReportServiceImpl implements ReportService {
     private void queryStoryPointsOrRemainingEstimatedTime(SprintE sprintE, List<ReportIssueE> reportIssueEList, String field) {
         SprintDO sprintDO = sprintConverter.entityToDo(sprintE);
         //获取冲刺开启前的issue
-        List<Long> issueIdBeforeSprintList = reportMapper.queryIssueIdsBeforeSprintStart(sprintDO);
+        List<Long> issueIdBeforeSprintList;
         //获取当前冲刺期间加入的issue
-        List<Long> issueIdAddList = reportMapper.queryAddIssueIdsDuringSprint(sprintDO);
+        List<Long> issueIdAddList;
         //获取当前冲刺期间移除的issue
-        List<Long> issueIdRemoveList = reportMapper.queryRemoveIssueIdsDuringSprint(sprintDO);
+        List<Long> issueIdRemoveList;
+        //异步任务
+        CompletableFuture<List<Long>> task1 = CompletableFuture
+                .supplyAsync(() -> reportMapper.queryIssueIdsBeforeSprintStart(sprintDO), pool);
+        CompletableFuture<List<Long>> task2 = CompletableFuture
+                .supplyAsync(() -> reportMapper.queryAddIssueIdsDuringSprint(sprintDO), pool);
+        CompletableFuture<List<Long>> task3 = CompletableFuture
+                .supplyAsync(() -> reportMapper.queryRemoveIssueIdsDuringSprint(sprintDO), pool);
+        issueIdBeforeSprintList = task1.join();
+        issueIdAddList = task2.join();
+        issueIdRemoveList = task3.join();
         //获取当前冲刺开启前的issue信息
         handleIssueValueBeforeSprint(sprintDO, reportIssueEList, issueIdBeforeSprintList, field);
         //获取当前冲刺期间加入的issue信息
@@ -950,8 +974,8 @@ public class ReportServiceImpl implements ReportService {
         List<ColumnChangeDTO> columnChangeDTOList = result.stream().filter(columnChangeDTO ->
                 columnChangeDTO.getColumnTo() != null && columnChangeDTO.getColumnFrom() != null && !columnChangeDTO.getColumnFrom().equals(columnChangeDTO.getColumnTo()))
                 .filter(columnChangeDTO ->
-                (columnChangeDTO.getDate().before(cumulativeFlowFilterDTO.getEndDate()) || columnChangeDTO.getDate().equals(cumulativeFlowFilterDTO.getEndDate()))
-                        && (columnChangeDTO.getDate().after(cumulativeFlowFilterDTO.getStartDate()) || columnChangeDTO.getDate().equals(cumulativeFlowFilterDTO.getStartDate()))).sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList());
+                        (columnChangeDTO.getDate().before(cumulativeFlowFilterDTO.getEndDate()) || columnChangeDTO.getDate().equals(cumulativeFlowFilterDTO.getEndDate()))
+                                && (columnChangeDTO.getDate().after(cumulativeFlowFilterDTO.getStartDate()) || columnChangeDTO.getDate().equals(cumulativeFlowFilterDTO.getStartDate()))).sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList());
         //对传入时间点的数据给与坐标
         List<CumulativeFlowDiagramDTO> cumulativeFlowDiagramDTOList = reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(columnIds));
         cumulativeFlowDiagramDTOList.parallelStream().forEachOrdered(cumulativeFlowDiagramDTO -> {
