@@ -171,6 +171,8 @@ public class IssueDO extends AuditDomain {
 
     private Long programId;
 
+    private Long relateIssueId;
+
     public List<LabelIssueRelDO> getLabelIssueRelDOS() {
         return labelIssueRelDOS;
     }
@@ -513,6 +515,14 @@ public class IssueDO extends AuditDomain {
 
     public void setProgramId(Long programId) {
         this.programId = programId;
+    }
+
+    public void setRelateIssueId(Long relateIssueId) {
+        this.relateIssueId = relateIssueId;
+    }
+
+    public Long getRelateIssueId() {
+        return relateIssueId;
     }
 
     @Override

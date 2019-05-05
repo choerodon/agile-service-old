@@ -45,6 +45,7 @@ public class IssueAssembler extends AbstractAssembler {
         issueDTO.setIssueAttachmentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueAttachmentDOList(), IssueAttachmentDTO.class));
         issueDTO.setIssueCommentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueCommentDOList(), IssueCommentDTO.class));
         issueDTO.setSubIssueDTOList(issueDoToSubIssueDto(issueDetailDO.getSubIssueDOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
+        issueDTO.setSubBugDTOList(issueDoToSubIssueDto(issueDetailDO.getSubBugDOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
         issueDTO.setPriorityDTO(priorityDTOMap.get(issueDTO.getPriorityId()));
         issueDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueDTO.getIssueTypeId()));
         issueDTO.setStatusMapDTO(statusMapDTOMap.get(issueDTO.getStatusId()));

@@ -53,6 +53,8 @@ public class IssueForBoardDO {
 
     private Long piId;
 
+    private Long relateIssueId;
+
     public String getRank() {
         return rank;
     }
@@ -219,5 +221,13 @@ public class IssueForBoardDO {
 
     public void setAssigneeRealName(String assigneeRealName) {
         this.assigneeRealName = assigneeRealName;
+    }
+
+    public void setRelateIssueId(Long relateIssueId) {
+        this.relateIssueId = relateIssueId;
+    }
+
+    public Long getRelateIssueId() {
+        return relateIssueId;
     }
 }

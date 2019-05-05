@@ -232,6 +232,14 @@ public class BoardServiceImpl implements BoardService {
             subtaskIds.add(issue.getIssueId());
             parentWithSubs.put(issue.getParentIssueId(), subtaskIds);
         }
+        if ("bug".equals(issue.getTypeCode()) && issue.getRelateIssueId() != null) {
+            List<Long> subBugIds = parentWithSubs.get(issue.getRelateIssueId());
+            if (subBugIds == null) {
+                subBugIds = new ArrayList<>();
+            }
+            subBugIds.add(issue.getIssueId());
+            parentWithSubs.put(issue.getRelateIssueId(), subBugIds);
+        }
         issue.setPriorityDTO(priorityMap.get(issue.getPriorityId()));
         issue.setIssueTypeDTO(issueTypeDTOMap.get(issue.getIssueTypeId()));
         if (issue.getStayDate() != null) {

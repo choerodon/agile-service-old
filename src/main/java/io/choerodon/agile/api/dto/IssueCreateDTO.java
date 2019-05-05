@@ -87,6 +87,8 @@ public class IssueCreateDTO {
     @ApiModelProperty(value = "featureDTO")
     private FeatureDTO featureDTO;
 
+    private Long relateIssueId;
+
     public List<IssueLinkCreateDTO> getIssueLinkCreateDTOList() {
         return issueLinkCreateDTOList;
     }
@@ -285,6 +287,14 @@ public class IssueCreateDTO {
 
     public FeatureDTO getFeatureDTO() {
         return featureDTO;
+    }
+
+    public void setRelateIssueId(Long relateIssueId) {
+        this.relateIssueId = relateIssueId;
+    }
+
+    public Long getRelateIssueId() {
+        return relateIssueId;
     }
 
     @Override
