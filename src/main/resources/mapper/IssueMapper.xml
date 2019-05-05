@@ -475,6 +475,15 @@
                     #{epicId}
                 </foreach>
             </if>
+            <if test="searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0">
+                and ai.issue_id in (
+                select af.issue_id from agile_feature af where af.feature_type in
+                <foreach collection="searchDTO.advancedSearchArgs.featureTypeList" item="featureType" open="(" separator=","
+                         close=")">
+                    #{featureType}
+                </foreach>
+                )
+            </if>
         </if>
         <if test='searchDTO.otherArgs != null'>
             <if test='searchDTO.otherArgs.piList != null and searchDTO.otherArgs.piList.size > 0 '>
@@ -3330,6 +3339,15 @@
                          close=")">
                     #{epicId}
                 </foreach>
+            </if>
+            <if test="searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0">
+                and ai.issue_id in (
+                    select af.issue_id from agile_feature af where af.feature_type in
+                    <foreach collection="searchDTO.advancedSearchArgs.featureTypeList" item="featureType" open="(" separator=","
+                             close=")">
+                        #{featureType}
+                    </foreach>
+                )
             </if>
         </if>
         <if test='searchDTO.otherArgs != null'>
