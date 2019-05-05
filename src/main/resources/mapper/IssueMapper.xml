@@ -484,6 +484,13 @@
                 </foreach>
                 )
             </if>
+            <if test='searchDTO.advancedSearchArgs.issueTypeList != null and searchDTO.advancedSearchArgs.issueTypeList.size > 0'>
+                AND ai.issue_type_id IN
+                <foreach collection="searchDTO.advancedSearchArgs.issueTypeList" item="issueTypeId" open="(" separator=","
+                         close=")">
+                    #{issueTypeId}
+                </foreach>
+            </if>
         </if>
         <if test='searchDTO.otherArgs != null'>
             <if test='searchDTO.otherArgs.piList != null and searchDTO.otherArgs.piList.size > 0 '>
@@ -3348,6 +3355,13 @@
                         #{featureType}
                     </foreach>
                 )
+            </if>
+            <if test='searchDTO.advancedSearchArgs.issueTypeList != null and searchDTO.advancedSearchArgs.issueTypeList.size > 0'>
+                AND ai.issue_type_id IN
+                <foreach collection="searchDTO.advancedSearchArgs.issueTypeList" item="issueTypeId" open="(" separator=","
+                         close=")">
+                    #{issueTypeId}
+                </foreach>
             </if>
         </if>
         <if test='searchDTO.otherArgs != null'>
