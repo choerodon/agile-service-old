@@ -475,21 +475,29 @@
                     #{epicId}
                 </foreach>
             </if>
-            <if test="searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0">
-                and ai.issue_id in (
-                select af.issue_id from agile_feature af where af.feature_type in
-                <foreach collection="searchDTO.advancedSearchArgs.featureTypeList" item="featureType" open="(" separator=","
-                         close=")">
-                    #{featureType}
-                </foreach>
+            <if test="(searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0) or (searchDTO.advancedSearchArgs.issueTypeList != null and searchDTO.advancedSearchArgs.issueTypeList.size > 0)">
+                and (
+                <if test="searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0">
+                    ai.issue_id in (
+                    select af.issue_id from agile_feature af where af.feature_type in
+                    <foreach collection="searchDTO.advancedSearchArgs.featureTypeList" item="featureType" open="("
+                             separator=","
+                             close=")">
+                        #{featureType}
+                    </foreach>
+                    )
+                </if>
+                <if test="searchDTO.advancedSearchArgs.issueTypeList != null and searchDTO.advancedSearchArgs.issueTypeList.size > 0">
+                    <if test="searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0">
+                        or
+                    </if>
+                    ai.issue_type_id IN
+                    <foreach collection="searchDTO.advancedSearchArgs.issueTypeList" item="issueTypeId" open="(" separator=","
+                             close=")">
+                        #{issueTypeId}
+                    </foreach>
+                </if>
                 )
-            </if>
-            <if test='searchDTO.advancedSearchArgs.issueTypeList != null and searchDTO.advancedSearchArgs.issueTypeList.size > 0'>
-                AND ai.issue_type_id IN
-                <foreach collection="searchDTO.advancedSearchArgs.issueTypeList" item="issueTypeId" open="(" separator=","
-                         close=")">
-                    #{issueTypeId}
-                </foreach>
             </if>
         </if>
         <if test='searchDTO.otherArgs != null'>
@@ -1780,6 +1788,12 @@
         SELECT issue_id
         FROM agile_issue
         WHERE project_id = #{projectId} AND parent_issue_id = #{issueId}
+    </select>
+
+    <select id="querySubBugIdsByIssueId" resultType="java.lang.Long">
+        SELECT issue_id
+        FROM agile_issue
+        WHERE project_id = #{projectId} AND relate_issue_id = #{issueId}
     </select>
 
     <select id="queryExportIssues" resultType="io.choerodon.agile.infra.dataobject.ExportIssuesDO">
@@ -3357,21 +3371,29 @@
                     #{epicId}
                 </foreach>
             </if>
-            <if test="searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0">
-                and ai.issue_id in (
-                    select af.issue_id from agile_feature af where af.feature_type in
-                    <foreach collection="searchDTO.advancedSearchArgs.featureTypeList" item="featureType" open="(" separator=","
-                             close=")">
-                        #{featureType}
-                    </foreach>
+            <if test="(searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0) or (searchDTO.advancedSearchArgs.issueTypeList != null and searchDTO.advancedSearchArgs.issueTypeList.size > 0)">
+                and (
+                    <if test="searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0">
+                        ai.issue_id in (
+                        select af.issue_id from agile_feature af where af.feature_type in
+                        <foreach collection="searchDTO.advancedSearchArgs.featureTypeList" item="featureType" open="("
+                                 separator=","
+                                 close=")">
+                            #{featureType}
+                        </foreach>
+                    )
+                    </if>
+                    <if test="searchDTO.advancedSearchArgs.issueTypeList != null and searchDTO.advancedSearchArgs.issueTypeList.size > 0">
+                        <if test="searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0">
+                            or
+                        </if>
+                        ai.issue_type_id IN
+                        <foreach collection="searchDTO.advancedSearchArgs.issueTypeList" item="issueTypeId" open="(" separator=","
+                                 close=")">
+                            #{issueTypeId}
+                        </foreach>
+                    </if>
                 )
-            </if>
-            <if test='searchDTO.advancedSearchArgs.issueTypeList != null and searchDTO.advancedSearchArgs.issueTypeList.size > 0'>
-                AND ai.issue_type_id IN
-                <foreach collection="searchDTO.advancedSearchArgs.issueTypeList" item="issueTypeId" open="(" separator=","
-                         close=")">
-                    #{issueTypeId}
-                </foreach>
             </if>
         </if>
         <if test='searchDTO.otherArgs != null'>
