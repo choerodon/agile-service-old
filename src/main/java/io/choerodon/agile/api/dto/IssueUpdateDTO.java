@@ -99,6 +99,9 @@ public class IssueUpdateDTO {
     @ApiModelProperty(value = "关联的featureId")
     private Long featureId;
 
+    @ApiModelProperty(value = "bug关联的故事id")
+    private Long relateIssueId;
+
     public String getRank() {
         return rank;
     }
@@ -321,6 +324,14 @@ public class IssueUpdateDTO {
 
     public void setFeatureId(Long featureId) {
         this.featureId = featureId;
+    }
+
+    public void setRelateIssueId(Long relateIssueId) {
+        this.relateIssueId = relateIssueId;
+    }
+
+    public Long getRelateIssueId() {
+        return relateIssueId;
     }
 
     @Override
