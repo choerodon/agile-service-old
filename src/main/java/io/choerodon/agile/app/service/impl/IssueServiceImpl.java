@@ -635,19 +635,23 @@ public class IssueServiceImpl implements IssueService {
             IssueE oldIssue = ConvertHelper.convert(originIssue, IssueE.class);
             //处理子任务的冲刺
             List<Long> issueIds = issueMapper.querySubIssueIdsByIssueId(projectId, issueE.getIssueId());
+            List<Long> subBugIds = issueMapper.querySubBugIdsByIssueId(projectId, issueE.getIssueId());
+            if (subBugIds != null && !subBugIds.isEmpty()) {
+                issueIds.addAll(subBugIds);
+            }
             Boolean exitSprint = issueE.getSprintId() != null && !Objects.equals(issueE.getSprintId(), 0L);
             Boolean condition = (!Objects.equals(oldIssue.getSprintId(), issueUpdateDTO.getSprintId()));
             issueIds.add(issueE.getIssueId());
             if (condition) {
                 BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, issueE.getSprintId(), issueIds);
                 issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
-                //不是活跃冲刺，修改冲刺状态回到第一个状态
-                handleIssueStatus(projectId, oldIssue, issueE, fieldList, issueIds);
+//                //不是活跃冲刺，修改冲刺状态回到第一个状态
+//                handleIssueStatus(projectId, oldIssue, issueE, fieldList, issueIds);
             }
             if (exitSprint) {
-                if (oldIssue.getSprintId() == null || oldIssue.getSprintId() == 0) {
-                    issueIds.add(issueE.getIssueId());
-                }
+//                if (oldIssue.getSprintId() == null || oldIssue.getSprintId() == 0) {
+//                    issueIds.add(issueE.getIssueId());
+//                }
                 issueRepository.issueToDestinationByIds(projectId, issueE.getSprintId(), issueIds, new Date(), customUserDetails.getUserId());
             }
             if (oldIssue.isIssueRank()) {
@@ -964,8 +968,15 @@ public class IssueServiceImpl implements IssueService {
         }
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
         List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
-        //处理子任务
-        moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
+        //处理子任务与子缺陷
+        List<Long> subTaskIds = issueMapper.querySubIssueIds(projectId, moveIssueIds);
+        List<Long> subBugIds = issueMapper.querySubBugIds(projectId, moveIssueIds);
+        if (subTaskIds != null && !subBugIds.isEmpty()) {
+            moveIssueIds.addAll(subTaskIds);
+        }
+        if (subBugIds != null && !subBugIds.isEmpty()) {
+            moveIssueIds.addAll(subBugIds);
+        }
         //把与现在冲刺与要移动的冲刺相同的issue排除掉
         List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds()).stream()
                 .filter(issueDO -> issueDO.getSprintId() == null ? sprintId != 0 : !issueDO.getSprintId().equals(sprintId)).collect(Collectors.toList());
@@ -1119,8 +1130,15 @@ public class IssueServiceImpl implements IssueService {
             dataLogRankInStoryMap(projectId, storyMapMoveDTO, RANK_HIGHER, sprintId);
         }
         List<Long> moveIssueIds = storyMapMoveDTO.getSprintIssueIds();
-        //处理子任务
-        moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
+        //处理子任务和子缺陷
+        List<Long> subTaskIds = issueMapper.querySubIssueIds(projectId, moveIssueIds);
+        List<Long> subBugIds = issueMapper.querySubBugIds(projectId, moveIssueIds);
+        if (subTaskIds != null && !subTaskIds.isEmpty()) {
+            moveIssueIds.addAll(subTaskIds);
+        }
+        if (subBugIds != null && !subBugIds.isEmpty()) {
+            moveIssueIds.addAll(subBugIds);
+        }
         BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, moveIssueIds);
         issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
         if (sprintId != null && !Objects.equals(sprintId, 0L)) {
