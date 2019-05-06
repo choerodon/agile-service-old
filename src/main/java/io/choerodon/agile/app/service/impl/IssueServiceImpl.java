@@ -964,8 +964,15 @@ public class IssueServiceImpl implements IssueService {
         }
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
         List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
-        //处理子任务
-        moveIssueIds.addAll(issueMapper.querySubIssueIds(projectId, moveIssueIds));
+        //处理子任务与子缺陷
+        List<Long> subTaskIds = issueMapper.querySubIssueIds(projectId, moveIssueIds);
+        List<Long> subBugIds = issueMapper.querySubBugIds(projectId, moveIssueIds);
+        if (subTaskIds != null && !subBugIds.isEmpty()) {
+            moveIssueIds.addAll(subTaskIds);
+        }
+        if (subBugIds != null && !subBugIds.isEmpty()) {
+            moveIssueIds.addAll(subBugIds);
+        }
         //把与现在冲刺与要移动的冲刺相同的issue排除掉
         List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds()).stream()
                 .filter(issueDO -> issueDO.getSprintId() == null ? sprintId != 0 : !issueDO.getSprintId().equals(sprintId)).collect(Collectors.toList());

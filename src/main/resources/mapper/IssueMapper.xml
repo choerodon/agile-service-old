@@ -1298,6 +1298,16 @@
         </foreach>
     </select>
 
+    <select id="querySubBugIds" resultType="java.lang.Long">
+        SELECT ai.issue_id
+        FROM agile_issue ai
+        WHERE ai.project_id = #{projectId} and ai.type_code = 'bug' AND ai.relate_issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+    </select>
+
     <select id="queryIssueByIssueIds" resultMap="issueSearch">
         SELECT
         ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,

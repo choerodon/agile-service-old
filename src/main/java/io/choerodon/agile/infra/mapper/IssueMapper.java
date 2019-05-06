@@ -560,4 +560,6 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     List<PiExportNameDO> queryPiNameByIssueIds(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
 
     List<PiExportNameDO> queryActivePiNameByIssueIds(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
+
+    List<Long> querySubBugIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 }
