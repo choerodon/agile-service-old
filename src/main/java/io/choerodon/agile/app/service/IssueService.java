@@ -9,7 +9,6 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
-import io.choerodon.agile.infra.dataobject.FeatureCommonDO;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.domain.Page;
@@ -312,8 +311,6 @@ public interface IssueService {
     Boolean handleSearchUser(SearchDTO searchDTO, Long projectId);
 
     Boolean checkEpicName(Long projectId, String epicName);
-
-//    void dealFeatureAndEpicWhenJoinProgram(Long programId, Long projectId);
 
     Page<FeatureCommonDTO> queryFeatureList(Long programId, Long organizationId, PageRequest pageRequest, SearchDTO searchDTO);
 
