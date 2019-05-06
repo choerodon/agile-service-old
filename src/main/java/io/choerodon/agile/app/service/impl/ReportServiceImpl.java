@@ -24,7 +24,6 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -273,7 +272,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-    @Cacheable(cacheNames = AGILE, key = "'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()")
+//    @Cacheable(cacheNames = AGILE, key = "'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()")
     public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
         //获取当前符合条件的所有issueIds
         String filterSql = null;
@@ -351,9 +350,18 @@ public class ReportServiceImpl implements ReportService {
     }
 
 
-    private void handleCumulativeFlowChangeDuringDate(Date startDate, Date endDate, List<Long> columnIds, List<Long> allIssueIds, List<ColumnChangeDTO> result) {
+    private void handleCumulativeFlowChangeDuringDate(Long projectId, Date startDate, Date endDate, List<Long> columnIds, List<Long> allIssueIds, List<ColumnChangeDTO> result) {
         List<ColumnChangeDTO> changeIssueDuringDate = reportAssembler.toTargetList
-                (reportMapper.queryChangeIssueDuringDate(startDate, endDate, allIssueIds, columnIds), ColumnChangeDTO.class);
+                (reportMapper.queryChangeIssueDuringDate(projectId, startDate, endDate, allIssueIds, columnIds), ColumnChangeDTO.class);
+        List<BoardColumnStatusRelDO> relDOs = boardColumnMapper.queryRelByColumnIds(columnIds);
+        Map<Long, Long> relMap = relDOs.stream().collect(Collectors.toMap(BoardColumnStatusRelDO::getStatusId, BoardColumnStatusRelDO::getColumnId));
+        changeIssueDuringDate.parallelStream().forEach(changeDto -> {
+            Long columnTo = relMap.get(changeDto.getNewValue());
+            Long columnFrom = relMap.get(changeDto.getOldValue());
+            changeDto.setColumnTo(columnTo == null ? "0" : columnTo + "");
+            changeDto.setColumnFrom(columnFrom == null ? "0" : columnFrom + "");
+        });
+        changeIssueDuringDate = changeIssueDuringDate.stream().filter(x -> x.getColumnFrom() != x.getColumnTo()).collect(Collectors.toList());
         if (changeIssueDuringDate != null && !changeIssueDuringDate.isEmpty()) {
             result.addAll(changeIssueDuringDate);
         }
@@ -654,8 +662,8 @@ public class ReportServiceImpl implements ReportService {
 
     }
 
-    private void handleCumulativeFlowAddDuringDate(List<Long> allIssueIds, List<ColumnChangeDTO> result, Date startDate, Date endDate, List<Long> columnIds) {
-        List<ColumnChangeDTO> addIssueDuringDate = reportAssembler.toTargetList(reportMapper.queryAddIssueDuringDate(startDate, endDate, allIssueIds, columnIds), ColumnChangeDTO.class);
+    private void handleCumulativeFlowAddDuringDate(Long projectId, List<Long> allIssueIds, List<ColumnChangeDTO> result, Date startDate, Date endDate, List<Long> columnIds) {
+        List<ColumnChangeDTO> addIssueDuringDate = reportAssembler.toTargetList(reportMapper.queryAddIssueDuringDate(projectId, startDate, endDate, allIssueIds, columnIds), ColumnChangeDTO.class);
         if (addIssueDuringDate != null && !addIssueDuringDate.isEmpty()) {
             //新创建的issue没有生成列变更日志，所以StatusTo字段为空，说明是新创建的issue，要进行处理
             List<Long> statusToNullIssueIds = addIssueDuringDate.stream().filter(columnChangeDTO -> columnChangeDTO.getStatusTo() == null).map(ColumnChangeDTO::getIssueId).collect(Collectors.toList());
@@ -870,7 +878,7 @@ public class ReportServiceImpl implements ReportService {
         List<ReportIssueE> remove = reportIssueEList.stream().filter(x -> x.getType().equals("removeDuringSprint")).collect(Collectors.toList());
         // 查看上一个resolution是完成，则移出时时间不再计算（置为false）
         remove.forEach(x -> {
-            ReportIssueDO reportIssueDO = reportMapper.queryLastResolutionBeforeMoveOutSprint(x.getIssueId(), x.getDate());
+            ReportIssueDO reportIssueDO = reportMapper.queryLastResolutionBeforeMoveOutSprint(sprintDO.getProjectId(), x.getIssueId(), x.getDate());
             if (reportIssueDO != null && reportIssueDO.getNewValue() != null) {
                 x.setStatistical(false);
             }
@@ -967,9 +975,9 @@ public class ReportServiceImpl implements ReportService {
         Date endDate = new Date();
         List<ColumnChangeDTO> result = new ArrayList<>();
         //所有在当前时间内创建的issue
-        handleCumulativeFlowAddDuringDate(allIssueIds, result, startDate, endDate, columnIds);
+        handleCumulativeFlowAddDuringDate(projectId, allIssueIds, result, startDate, endDate, columnIds);
         //所有在当前时间内状态改变的issue
-        handleCumulativeFlowChangeDuringDate(startDate, endDate, columnIds, allIssueIds, result);
+        handleCumulativeFlowChangeDuringDate(projectId, startDate, endDate, columnIds, allIssueIds, result);
         //过滤并排序
         List<ColumnChangeDTO> columnChangeDTOList = result.stream().filter(columnChangeDTO ->
                 columnChangeDTO.getColumnTo() != null && columnChangeDTO.getColumnFrom() != null && !columnChangeDTO.getColumnFrom().equals(columnChangeDTO.getColumnTo()))
@@ -1056,7 +1064,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = AGILE, key = "'VelocityChart' + #projectId + ':' + #type")
+//    @Cacheable(cacheNames = AGILE, key = "'VelocityChart' + #projectId + ':' + #type")
     public List<VelocitySprintDTO> queryVelocityChart(Long projectId, String type) {
         List<VelocitySprintDO> sprintDOList = reportMapper.selectAllSprint(projectId);
         if (sprintDOList.isEmpty()) {
@@ -1088,7 +1096,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = AGILE, key = "'PieChart' + #projectId + ':' + #fieldName + ':' + #startDate+ ':' + #endDate+ ':' + #sprintId+':' + #versionId")
+//    @Cacheable(cacheNames = AGILE, key = "'PieChart' + #projectId + ':' + #fieldName + ':' + #startDate+ ':' + #endDate+ ':' + #sprintId+':' + #versionId")
     public List<PieChartDTO> queryPieChart(Long projectId, String fieldName, Long organizationId, Date startDate, Date endDate, Long sprintId, Long versionId) {
         switch (fieldName) {
             case ASSIGNEE:
@@ -1310,7 +1318,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = AGILE, key = "'EpicChart' + #projectId + ':' + #epicId + ':' + #type")
+//    @Cacheable(cacheNames = AGILE, key = "'EpicChart' + #projectId + ':' + #epicId + ':' + #type")
     public List<GroupDataChartDO> queryEpicChart(Long projectId, Long epicId, String type) {
         List<GroupDataChartDO> result = null;
         switch (type) {
@@ -1356,7 +1364,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = AGILE, key = "'BurnDownCoordinate' + #projectId + ':' + #sprintId + ':' + #type")
+//    @Cacheable(cacheNames = AGILE, key = "'BurnDownCoordinate' + #projectId + ':' + #sprintId + ':' + #type")
     public JSONObject queryBurnDownCoordinate(Long projectId, Long sprintId, String type) {
         List<ReportIssueE> reportIssueEList = getBurnDownReport(projectId, sprintId, type);
         return handleSameDay(reportIssueEList.stream().filter(reportIssueE -> !"endSprint".equals(reportIssueE.getType())).
@@ -1383,7 +1391,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     @SuppressWarnings("unchecked")
-    @Cacheable(cacheNames = AGILE, key = "'BurnDownCoordinateByType' + #projectId + ':' + #type  + ':' + #id")
+//    @Cacheable(cacheNames = AGILE, key = "'BurnDownCoordinateByType' + #projectId + ':' + #type  + ':' + #id")
     public List<BurnDownReportCoordinateDTO> queryBurnDownCoordinateByType(Long projectId, Long id, String type) {
         List<IssueBurnDownReportDO> issueDOList = E_PIC.equals(type) ? issueMapper.queryIssueByEpicId(projectId, id) : issueMapper.queryIssueByVersionId(projectId, id);
         if (issueDOList != null && !issueDOList.isEmpty()) {
@@ -1595,7 +1603,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-    @Cacheable(cacheNames = AGILE, key = "'VersionChart' + #projectId + ':' + #versionId + ':' + #type")
+//    @Cacheable(cacheNames = AGILE, key = "'VersionChart' + #projectId + ':' + #versionId + ':' + #type")
     public List<GroupDataChartDO> queryVersionChart(Long projectId, Long versionId, String type) {
         List<GroupDataChartDO> result = null;
         switch (type) {

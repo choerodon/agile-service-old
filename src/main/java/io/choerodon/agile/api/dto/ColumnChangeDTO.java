@@ -30,6 +30,28 @@ public class ColumnChangeDTO implements Serializable {
     @ApiModelProperty(value = "日期")
     private Date date;
 
+    @ApiModelProperty(value = "旧值")
+    private String oldValue;
+
+    @ApiModelProperty(value = "新值")
+    private String newValue;
+
+    public String getOldValue() {
+        return oldValue;
+    }
+
+    public void setOldValue(String oldValue) {
+        this.oldValue = oldValue;
+    }
+
+    public String getNewValue() {
+        return newValue;
+    }
+
+    public void setNewValue(String newValue) {
+        this.newValue = newValue;
+    }
+
     public Long getIssueId() {
         return issueId;
     }

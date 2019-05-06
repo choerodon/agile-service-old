@@ -30,4 +30,11 @@ databaseChangeLog(logicalFilePath: 'agile_work_log.groovyoovy') {
     changeSet(id: '2019-02-26-modify-data-type', author: 'shinan.chenX@gmail.com') {
         modifyDataType(tableName: 'agile_work_log', columnName: 'work_time', newDataType: "DECIMAL(10,1)")
     }
+    changeSet(id: '2019-05-06-agile-work-log-add-index', author: 'shinan.chenX@gmail.com') {
+        createIndex(tableName: "agile_work_log", indexName: "idx_issueid_projectid_creationdate") {
+            column(name: 'project_id')
+            column(name: 'issue_id')
+            column(name: 'creation_date')
+        }
+    }
 }
