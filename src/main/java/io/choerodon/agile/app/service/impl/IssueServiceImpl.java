@@ -2003,8 +2003,8 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private String exportIssuesPiName(String closePiName, String activePiName) {
-        StringBuilder piName = new StringBuilder(activePiName != null ? "正在使用PI:" + activePiName + "\r\n" : "");
-        piName.append(!Objects.equals(closePiName, "") ? "已关闭PI:" + closePiName : "");
+        StringBuilder piName = new StringBuilder(activePiName != null && !Objects.equals(activePiName, "") ? "正在使用PI:" + activePiName + "\r\n" : "");
+        piName.append(closePiName != null && !Objects.equals(closePiName, "") ? "已关闭PI:" + closePiName : "");
         return piName.toString();
     }
 
