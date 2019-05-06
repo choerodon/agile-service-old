@@ -3305,21 +3305,6 @@
         </foreach>
     </select>
 
-    <!--<select id="selectIssueIdWhenJoinProgram" resultType="java.lang.Long">-->
-        <!--select ai.issue_id-->
-        <!--from agile_issue ai-->
-        <!--where ai.project_id = #{projectId} and ai.type_code = 'issue_epic'-->
-    <!--</select>-->
-
-    <!--<update id="updateFeatureAndEpicWhenJoinProgram">-->
-        <!--update agile_issue set program_id = #{programId}, status_id = #{initStatusId}-->
-        <!--where project_id = #{projectId} and issue_id in-->
-        <!--<foreach collection="updateIds" item="updateId" open="("-->
-                 <!--separator="," close=")">-->
-            <!--#{updateId}-->
-        <!--</foreach>-->
-    <!--</update>-->
-
     <resultMap id="featureListMap" type="io.choerodon.agile.infra.dataobject.FeatureCommonDO">
         <id property="issueId" column="ai_issue_id"/>
         <id property="issueNum" column="ai_issue_num"/>

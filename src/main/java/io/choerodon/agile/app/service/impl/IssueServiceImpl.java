@@ -100,8 +100,6 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private SprintMapper sprintMapper;
     @Autowired
-    private IssueStatusMapper issueStatusMapper;
-    @Autowired
     private IssueAttachmentService issueAttachmentService;
     @Autowired
     private IssueLabelMapper issueLabelMapper;
@@ -148,10 +146,6 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private IssueMapper issueMapper;
     @Autowired
-    private SiteMsgUtil siteMsgUtil;
-    @Autowired
-    private NoticeService noticeService;
-    @Autowired
     private UserFeignClient userFeignClient;
     @Autowired
     private IssueFeignClient issueFeignClient;
@@ -159,8 +153,6 @@ public class IssueServiceImpl implements IssueService {
     private StateMachineFeignClient stateMachineFeignClient;
     @Autowired
     private InstanceFeignClient instanceFeignClient;
-    @Autowired
-    private PlatformTransactionManager transactionManager;
     @Autowired
     private StateMachineService stateMachineService;
     @Autowired
@@ -329,12 +321,6 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-//    private String convertProjectName(ProjectDTO projectDTO) {
-//        String projectName = projectDTO.getName();
-//        String result = projectName.replaceAll(" ", "%20");
-//        return result;
-//    }
-
     @Override
     public IssueDTO queryIssueCreate(Long projectId, Long issueId) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
@@ -345,24 +331,6 @@ public class IssueServiceImpl implements IssueService {
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         IssueDTO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
-//        //发送消息
-//        if (SchemeApplyType.AGILE.equals(result.getApplyType())) {
-//            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", result);
-//            String summary = result.getIssueNum() + "-" + result.getSummary();
-//            String userName = result.getReporterName();
-//            ProjectDTO projectDTO = userRepository.queryProject(projectId);
-//            if (projectDTO == null) {
-//                throw new CommonException(ERROR_PROJECT_NOTEXIST);
-//            }
-//            String projectName = convertProjectName(projectDTO);
-//            String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId();
-//            siteMsgUtil.issueCreate(userIds, userName, summary, url, result.getReporterId(), projectId);
-//            if (result.getAssigneeId() != null) {
-//                List<Long> assigneeIds = new ArrayList<>();
-//                assigneeIds.add(result.getAssigneeId());
-//                siteMsgUtil.issueAssignee(assigneeIds, result.getAssigneeName(), summary, url, result.getAssigneeId(), projectId);
-//            }
-//        }
         sendMsgUtil.sendMsgByIssueCreate(projectId, result);
         return result;
     }
@@ -432,23 +400,6 @@ public class IssueServiceImpl implements IssueService {
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         IssueDTO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
-//        if (fieldList.contains("assigneeId") && result.getAssigneeId() != null && SchemeApplyType.AGILE.equals(result.getApplyType())) {
-//            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_assigneed", result);
-//            String summary = result.getIssueNum() + "-" + result.getSummary();
-//            String userName = result.getAssigneeName();
-//            ProjectDTO projectDTO = userRepository.queryProject(projectId);
-//            if (projectDTO == null) {
-//                throw new CommonException(ERROR_PROJECT_NOTEXIST);
-//            }
-//            String projectName = convertProjectName(projectDTO);
-//            StringBuilder url = new StringBuilder();
-//            if (SUB_TASK.equals(result.getTypeCode())) {
-//                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + result.getIssueNum() + URL_TEMPLATE4 + result.getParentIssueId() + URL_TEMPLATE5 + result.getIssueId());
-//            } else {
-//                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId());
-//            }
-//            siteMsgUtil.issueAssignee(userIds, userName, summary, url.toString(), result.getAssigneeId(), projectId);
-//        }
         sendMsgUtil.sendMsgByIssueAssignee(projectId, fieldList, result);
         // return feature extends table info
         if (ISSUE_TYPE_FEATURE.equals(result.getTypeCode())) {
@@ -459,27 +410,6 @@ public class IssueServiceImpl implements IssueService {
                 result.setFeatureDTO(ConvertHelper.convert(res, FeatureDTO.class));
             }
         }
-//        Boolean completed = issueStatusMapper.selectByStatusId(projectId, result.getStatusId()).getCompleted();
-//        if (fieldList.contains(STATUS_ID) && completed != null && completed && result.getAssigneeId() != null && SchemeApplyType.AGILE.equals(result.getApplyType())) {
-//            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", result);
-//            ProjectDTO projectDTO = userRepository.queryProject(projectId);
-//            if (projectDTO == null) {
-//                throw new CommonException(ERROR_PROJECT_NOTEXIST);
-//            }
-//            String projectName = convertProjectName(projectDTO);
-//            StringBuilder url = new StringBuilder();
-//            if (SUB_TASK.equals(result.getTypeCode())) {
-//                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + result.getIssueNum() + URL_TEMPLATE4 + result.getParentIssueId() + URL_TEMPLATE5 + result.getIssueId());
-//            } else {
-//                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + result.getIssueNum() + URL_TEMPLATE4 + result.getIssueId() + URL_TEMPLATE5 + result.getIssueId());
-//            }
-//            Long[] ids = new Long[1];
-//            ids[0] = result.getAssigneeId();
-//            List<UserDO> userDOList = userFeignClient.listUsersByIds(ids, false).getBody();
-//            String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName() + userDOList.get(0).getRealName() : "";
-//            String summary = result.getIssueNum() + "-" + result.getSummary();
-//            siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), result.getAssigneeId(), projectId);
-//        }
         sendMsgUtil.sendMsgByIssueComplete(projectId, fieldList, result);
         return result;
     }
@@ -1287,26 +1217,6 @@ public class IssueServiceImpl implements IssueService {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
         IssueSubDTO result = issueAssembler.issueDetailDoToIssueSubDto(issue);
-//        // 发送消息
-//        if (SchemeApplyType.AGILE.equals(result.getApplyType())) {
-//            IssueDTO issueDTO = new IssueDTO();
-//            issueDTO.setReporterId(result.getReporterId());
-//            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", issueDTO);
-//            String summary = result.getIssueNum() + "-" + result.getSummary();
-//            String userName = result.getReporterName();
-//            ProjectDTO projectDTO = userRepository.queryProject(projectId);
-//            if (projectDTO == null) {
-//                throw new CommonException(ERROR_PROJECT_NOTEXIST);
-//            }
-//            String projectName = convertProjectName(projectDTO);
-//            String url = URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + result.getIssueNum() + URL_TEMPLATE4 + result.getParentIssueId() + URL_TEMPLATE5 + result.getIssueId();
-//            siteMsgUtil.issueCreate(userIds, userName, summary, url, result.getReporterId(), projectId);
-//            if (result.getAssigneeId() != null) {
-//                List<Long> assigneeIds = new ArrayList<>();
-//                assigneeIds.add(result.getAssigneeId());
-//                siteMsgUtil.issueAssignee(assigneeIds, result.getAssigneeName(), summary, url, result.getAssigneeId(), projectId);
-//            }
-//        }
         sendMsgUtil.sendMsgBySubIssueCreate(projectId, result);
         return result;
     }
@@ -2502,32 +2412,6 @@ public class IssueServiceImpl implements IssueService {
         List<IssueDO> issueDOList = issueMapper.select(issueDO);
         return issueDOList != null && !issueDOList.isEmpty();
     }
-
-//    @Override
-//    public void dealFeatureAndEpicWhenJoinProgram(Long programId, Long projectId) {
-//        Long organizationId = ConvertUtil.getOrganizationId(projectId);
-//        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(programId, "program").getBody();
-//        Long issueTypeEpicId = null;
-//        for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-//            if (ISSUE_EPIC.equals(issueTypeDTO.getTypeCode())) {
-//                issueTypeEpicId = issueTypeDTO.getId();
-//            }
-//        }
-//        if (issueTypeEpicId == null) {
-//            throw new CommonException("error.issueTypeFeatureId.null");
-//        }
-//        //获取状态机id
-//        Long stateMachineId = issueFeignClient.queryStateMachineId(programId, "program", issueTypeEpicId).getBody();
-//        if (stateMachineId == null) {
-//            throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
-//        }
-//        //获取初始状态
-//        Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
-//        if (initStatusId == null) {
-//            throw new CommonException("error.initStatusId.null");
-//        }
-//        issueRepository.updateFeatureAndEpicWhenJoinProgram(programId, projectId, initStatusId);
-//    }
 
     @Override
     public Page<FeatureCommonDTO> queryFeatureList(Long programId, Long organizationId, PageRequest pageRequest, SearchDTO searchDTO) {

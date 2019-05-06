@@ -49,5 +49,4 @@ public interface PiService {
 
     List<PiWithFeatureDTO> queryRoadMapOfProgram(Long programId, Long organizationId);
 
-//    void sendPmAndEmailAfterPiComplete(Long programId, PiE piE);
 }

@@ -12,7 +12,6 @@ import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.common.utils.SendMsgUtil;
-import io.choerodon.agile.infra.common.utils.SiteMsgUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
@@ -88,18 +87,6 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private UserSettingRepository userSettingRepository;
-
-    @Autowired
-    private IssueStatusMapper issueStatusMapper;
-
-    @Autowired
-    private NoticeService noticeService;
-
-    @Autowired
-    private SiteMsgUtil siteMsgUtil;
-
-    @Autowired
-    private ProjectInfoMapper projectInfoMapper;
 
     @Autowired
     private DateUtil dateUtil;
@@ -468,11 +455,6 @@ public class BoardServiceImpl implements BoardService {
         boardColumnService.initBoardColumns(projectId, boardResult.getBoardId(), statusPayloads);
     }
 
-//    private String convertProjectName(ProjectDTO projectDTO) {
-//        String projectName = projectDTO.getName();
-//        return projectName.replaceAll(" ", "%20");
-//    }
-
     @Override
     public IssueMoveDTO move(Long projectId, Long issueId, Long transformId, IssueMoveDTO issueMoveDTO, Boolean isDemo) {
         IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
@@ -486,37 +468,6 @@ public class BoardServiceImpl implements BoardService {
         }
         IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
         IssueMoveDTO result = ConvertHelper.convert(issueDO, IssueMoveDTO.class);
-
-//        // 发送消息
-//        Boolean completed = issueStatusMapper.selectByStatusId(projectId, issueE.getStatusId()).getCompleted();
-//        if (completed != null && completed && issueDO.getAssigneeId() != null && SchemeApplyType.AGILE.equals(issueDO.getApplyType())) {
-//            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDO, IssueDTO.class));
-//            ProjectDTO projectDTO = userRepository.queryProject(projectId);
-//            if (projectDTO == null) {
-//                throw new CommonException("error.project.notExist");
-//            }
-//            StringBuilder url = new StringBuilder();
-//            String projectName = convertProjectName(projectDTO);
-//            ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-//            projectInfoDO.setProjectId(projectId);
-//            List<ProjectInfoDO> pioList = projectInfoMapper.select(projectInfoDO);
-//            ProjectInfoDO pio = null;
-//            if (pioList != null && !pioList.isEmpty()) {
-//                pio = pioList.get(0);
-//            }
-//            String pioCode = (pio == null ? "" : pio.getProjectCode());
-//            if ("sub_task".equals(issueDO.getTypeCode())) {
-//                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + pioCode + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getParentIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
-//            } else {
-//                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + pioCode + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
-//            }
-//            String summary = pioCode + "-" + issueDO.getIssueNum() + "-" + issueDO.getSummary();
-//            Long[] ids = new Long[1];
-//            ids[0] = issueDO.getAssigneeId();
-//            List<UserDO> userDOList = userRepository.listUsersByIds(ids);
-//            String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName() + userDOList.get(0).getRealName() : "";
-//            siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), issueDO.getAssigneeId(), projectId);
-//        }
         sendMsgUtil.sendMsgByIssueMoveComplete(projectId, issueE, issueDO);
         return result;
     }
@@ -544,45 +495,6 @@ public class BoardServiceImpl implements BoardService {
 
     private JSONObject handleFeatureMoveRank(Long projectId, IssueDO issueDO) {
         JSONObject jsonObject = new JSONObject();
-//        if (featureMoveDTO.getRank()) {
-//            String rank = null;
-//            if (featureMoveDTO.getBefore()) {
-//                if (featureMoveDTO.getOutsetIssueId() == null || Objects.equals(featureMoveDTO.getOutsetIssueId(), 0L)) {
-//                    String minRank = piMapper.queryPiMinRank(projectId, featureMoveDTO.getPiId());
-//                    if (minRank == null) {
-//                        rank = RankUtil.mid();
-//                    } else {
-//                        rank = RankUtil.genPre(minRank);
-//                    }
-//                } else {
-//                    String rightRank = issueMapper.queryRankByProgram(projectId, featureMoveDTO.getOutsetIssueId());
-//                    if (rightRank == null) {
-//                        //处理子任务没有rank的旧数据
-//                        rightRank = handleSubIssueNotRank(projectId, featureMoveDTO.getOutsetIssueId(), featureMoveDTO.getPiId());
-//                    }
-//                    String leftRank = issueMapper.queryLeftRankByProgram(projectId, featureMoveDTO.getPiId(), rightRank);
-//                    if (leftRank == null) {
-//                        rank = RankUtil.genPre(rightRank);
-//                    } else {
-//                        rank = RankUtil.between(leftRank, rightRank);
-//                    }
-//                }
-//            } else {
-//                String leftRank = issueMapper.queryRankByProgram(projectId, featureMoveDTO.getOutsetIssueId());
-//                if (leftRank == null) {
-//                    leftRank = handleSubIssueNotRank(projectId, featureMoveDTO.getOutsetIssueId(), featureMoveDTO.getPiId());
-//                }
-//                String rightRank = issueMapper.queryRightRankByProgram(projectId, featureMoveDTO.getPiId(), leftRank);
-//                if (rightRank == null) {
-//                    rank = RankUtil.genNext(leftRank);
-//                } else {
-//                    rank = RankUtil.between(leftRank, rightRank);
-//                }
-//            }
-//            jsonObject.put(RANK, rank);
-//        } else {
-//            jsonObject.put(RANK, issueDO.getRank());
-//        }
         jsonObject.put(RANK, issueDO.getRank());
         jsonObject.put(PROJECT_ID, projectId);
         return jsonObject;
