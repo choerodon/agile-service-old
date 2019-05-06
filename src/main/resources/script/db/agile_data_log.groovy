@@ -61,4 +61,11 @@ databaseChangeLog(logicalFilePath:'agile_data_log.groovy') {
                     "adl.old_string,adl.new_string,adl.issue_id) AS temp);"
         }
     }
+
+    changeSet(id: '2019-05-06-agile-data-log-add-index', author: 'shinan.chenX@gmail.com') {
+        createIndex(tableName: "agile_data_log", indexName: "idx_projectid_field") {
+            column(name: 'project_id')
+            column(name: 'field')
+        }
+    }
 }

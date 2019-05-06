@@ -84,12 +84,12 @@
 
     <select id="queryParentIssuesByIds" resultType="io.choerodon.agile.infra.dataobject.ParentIssueDO">
         select
-            ai.issue_id,
-            IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) AS issue_num,
-            ai.summary,
-            ai.status_id,
-            ai.issue_type_id,
-            ai.object_version_number
+        ai.issue_id,
+        IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) AS issue_num,
+        ai.summary,
+        ai.status_id,
+        ai.issue_type_id,
+        ai.object_version_number
         from agile_issue ai
         left join agile_project_info api ON api.project_id = ai.project_id
         where ai.project_id = #{projectId} and ai.issue_id in
@@ -297,7 +297,8 @@
         <foreach collection="removeStatusWithProjects" item="removeStatusWithProject" separator=";">
             DELETE ais,abcsr
             from agile_issue_status ais
-            left join agile_board_column_status_rel abcsr on ais.status_id = abcsr.status_id and ais.project_id = abcsr.project_id
+            left join agile_board_column_status_rel abcsr on ais.status_id = abcsr.status_id and ais.project_id =
+            abcsr.project_id
             WHERE ais.status_id in
             <foreach collection="removeStatusWithProject.deleteStatusIds" item="deleteStatusId"
                      open="(" close=")" separator=",">
@@ -310,15 +311,15 @@
 
     <select id="sortAndJudgeCompleted" resultType="java.lang.Long">
         select ai.issue_id
-        from agile_issue ai,  agile_issue_status ais
+        from agile_issue ai, agile_issue_status ais
         where ai.project_id = #{projectId}
         and ai.status_id = ais.status_id and ais.project_id = #{projectId} and ais.is_completed = 1
         and (
-            select count(ai2.issue_id)
-            from agile_issue ai2, agile_issue_status ais2
-            where ai2.project_id = #{projectId}
-            and ai2.parent_issue_id = ai.issue_id
-            and ai2.status_id = ais2.status_id and ais2.project_id = #{projectId} and ais2.is_completed = 0
+        select count(ai2.issue_id)
+        from agile_issue ai2, agile_issue_status ais2
+        where ai2.project_id = #{projectId}
+        and ai2.parent_issue_id = ai.issue_id
+        and ai2.status_id = ais2.status_id and ais2.project_id = #{projectId} and ais2.is_completed = 0
         ) = 0
         and ai.issue_id in
         <foreach collection="parentIds" item="parentId"
@@ -330,23 +331,23 @@
 
     <select id="getAllColumnNum" resultType="io.choerodon.agile.infra.dataobject.ColumnIssueNumDO">
         select
-           abc.column_id,
-           COUNT(ai.issue_id) AS issue_count
+        abc.column_id,
+        COUNT(ai.issue_id) AS issue_count
         from agile_board_column abc
         left join agile_board_column_status_rel abcsr on abc.column_id = abcsr.column_id
         left join agile_issue_status ais on abcsr.status_id = ais.status_id and ais.project_id = #{projectId}
         LEFT JOIN (SELECT
-                   ai1.issue_id,
-                   ai1.status_id
-                   FROM agile_issue ai1, agile_issue_sprint_rel aisr
-                   WHERE aisr.sprint_id = #{activeSprintId} AND ai1.issue_id = aisr.issue_id
-                   <if test="columnConstraint == 'issue'">
-                       and ai1.type_code != 'issue_epic' and ai1.apply_type = 'agile'
-                   </if>
-                   <if test="columnConstraint == 'issue_without_sub_task'">
-                       and ai1.type_code != 'issue_epic' and ai1.type_code != 'sub_task' and ai1.apply_type = 'agile'
-                   </if>
-                   ) ai ON ai.status_id = ais.status_id and ais.project_id = #{projectId}
+        ai1.issue_id,
+        ai1.status_id
+        FROM agile_issue ai1, agile_issue_sprint_rel aisr
+        WHERE aisr.sprint_id = #{activeSprintId} AND ai1.issue_id = aisr.issue_id
+        <if test="columnConstraint == 'issue'">
+            and ai1.type_code != 'issue_epic' and ai1.apply_type = 'agile'
+        </if>
+        <if test="columnConstraint == 'issue_without_sub_task'">
+            and ai1.type_code != 'issue_epic' and ai1.type_code != 'sub_task' and ai1.apply_type = 'agile'
+        </if>
+        ) ai ON ai.status_id = ais.status_id and ais.project_id = #{projectId}
         where abc.board_id = #{boardId}
         group by abc.column_id
     </select>
@@ -468,4 +469,12 @@
         )
     </select>
 
+    <select id="queryRelByColumnIds" resultType="io.choerodon.agile.infra.dataobject.BoardColumnStatusRelDO">
+        select * from agile_board_column_status_rel abcsr
+        where abcsr.column_id IN
+        <foreach collection="columnIds" item="columnId"
+                 open="(" close=")" separator=",">
+            #{columnId}
+        </foreach>
+    </select>
 </mapper>

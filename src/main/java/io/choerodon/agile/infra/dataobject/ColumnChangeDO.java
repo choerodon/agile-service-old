@@ -20,7 +20,27 @@ public class ColumnChangeDO {
 
     private String statusTo;
 
+    private String oldValue;
+
+    private String newValue;
+
     private Date date;
+
+    public String getOldValue() {
+        return oldValue;
+    }
+
+    public void setOldValue(String oldValue) {
+        this.oldValue = oldValue;
+    }
+
+    public String getNewValue() {
+        return newValue;
+    }
+
+    public void setNewValue(String newValue) {
+        this.newValue = newValue;
+    }
 
     public Long getIssueId() {
         return issueId;
@@ -69,6 +89,7 @@ public class ColumnChangeDO {
     public void setDate(Date date) {
         this.date = date;
     }
+
     @Override
     public String toString() {
         return StringUtil.getToString(this);

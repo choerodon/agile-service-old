@@ -99,4 +99,6 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
     List<ColumnAndIssueDO> selectBoardByProgram(@Param("projectId") Long projectId,
                                                 @Param("boardId") Long boardId,
                                                 @Param("activePiId") Long activePiId);
+
+    List<BoardColumnStatusRelDO> queryRelByColumnIds(@Param("columnIds") List<Long> columnIds);
 }

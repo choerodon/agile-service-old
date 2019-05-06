@@ -2,59 +2,22 @@ package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.BurnDownReportCoordinateDTO
-import io.choerodon.agile.api.dto.BurnDownReportDTO
-import io.choerodon.agile.api.dto.CumulativeFlowDiagramDTO
-import io.choerodon.agile.api.dto.CumulativeFlowFilterDTO
-import io.choerodon.agile.api.dto.IssueBurnDownReportDTO
-import io.choerodon.agile.api.dto.IssueCreateDTO
-import io.choerodon.agile.api.dto.IssueDTO
-import io.choerodon.agile.api.dto.IssueListDTO
-import io.choerodon.agile.api.dto.IssuePriorityDistributionChartDTO
-import io.choerodon.agile.api.dto.IssueTypeDistributionChartDTO
-import io.choerodon.agile.api.dto.IssueUpdateDTO
-import io.choerodon.agile.api.dto.PieChartDTO
-import io.choerodon.agile.api.dto.ProjectDTO
-import io.choerodon.agile.api.dto.ReportIssueDTO
-import io.choerodon.agile.api.dto.SprintBurnDownReportDTO
-import io.choerodon.agile.api.dto.SprintDetailDTO
-import io.choerodon.agile.api.dto.SprintUpdateDTO
-import io.choerodon.agile.api.dto.VelocitySprintDTO
-import io.choerodon.agile.api.dto.VersionIssueRelDTO
+import io.choerodon.agile.api.dto.*
 import io.choerodon.agile.app.service.IssueService
-import io.choerodon.agile.app.service.NoticeService
 import io.choerodon.agile.app.service.ReportService
 import io.choerodon.agile.app.service.SprintService
-import io.choerodon.agile.app.service.StateMachineService
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
-import io.choerodon.agile.domain.agile.entity.IssueE
-import io.choerodon.agile.domain.agile.entity.ProjectInfoE
-import io.choerodon.agile.domain.agile.event.CreateIssuePayload
 import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
-import io.choerodon.agile.infra.common.utils.SiteMsgUtil
-import io.choerodon.agile.infra.dataobject.GroupDataChartDO
-import io.choerodon.agile.infra.dataobject.GroupDataChartListDO
-import io.choerodon.agile.infra.dataobject.IssueChangeDO
-import io.choerodon.agile.infra.dataobject.SprintDO
-import io.choerodon.agile.infra.dataobject.UserDO
-import io.choerodon.agile.infra.dataobject.UserMessageDO
-import io.choerodon.agile.infra.dataobject.VersionIssueChangeDO
-import io.choerodon.agile.infra.mapper.BoardColumnMapper
-import io.choerodon.agile.infra.mapper.IssueMapper
-import io.choerodon.agile.infra.mapper.ReportMapper
-import io.choerodon.agile.infra.mapper.SprintMapper
-import io.choerodon.agile.infra.mapper.VersionIssueRelMapper
+import io.choerodon.agile.infra.dataobject.*
+import io.choerodon.agile.infra.mapper.*
 import io.choerodon.core.domain.Page
 import org.mockito.Matchers
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
-import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
-
-import static org.mockito.Matchers.anyString
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
@@ -64,6 +27,8 @@ import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
+
+import static org.mockito.Matchers.anyString
 
 /**
  *
