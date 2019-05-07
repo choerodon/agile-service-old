@@ -630,8 +630,8 @@ public class IssueServiceImpl implements IssueService {
             if (condition) {
                 BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, issueE.getSprintId(), issueIds);
                 issueRepository.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
-                //不是活跃冲刺，修改冲刺状态回到第一个状态
-                handleIssueStatus(projectId, oldIssue, issueE, fieldList, issueIds);
+//                //不是活跃冲刺，修改冲刺状态回到第一个状态
+//                handleIssueStatus(projectId, oldIssue, issueE, fieldList, issueIds);
             }
             if (exitSprint) {
                 if (oldIssue.getSprintId() == null || oldIssue.getSprintId() == 0) {
