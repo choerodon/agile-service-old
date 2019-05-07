@@ -100,7 +100,7 @@ public class ArtServiceImpl implements ArtService {
     }
 
     @Override
-    public ArtDTO stopArt(Long programId, ArtDTO artDTO) {
+    public ArtDTO stopArt(Long programId, ArtDTO artDTO, Boolean onlySelectEnable) {
         artValidator.checkArtStop(artDTO);
         ArtE artE = artRepository.updateBySelective(new ArtE(programId, artDTO.getId(), ART_STOP, artDTO.getObjectVersionNumber()));
         List<PiDO> piDOList = piMapper.selectUnDonePiDOList(programId, artDTO.getId());
@@ -109,7 +109,7 @@ public class ArtServiceImpl implements ArtService {
                 // deal uncomplete feature to target pi
                 piService.dealUnCompleteFeature(programId, piDO.getId(), 0L);
                 // deal projects' sprints complete
-                piService.completeProjectsSprints(programId, piDO.getId());
+                piService.completeProjectsSprints(programId, piDO.getId(), onlySelectEnable);
                 // update pi status: done
                 PiE update = new PiE(programId, piDO.getId(), PI_DONE, piDO.getObjectVersionNumber());
                 update.setActualStartDate(new Date());

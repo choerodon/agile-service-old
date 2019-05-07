@@ -19,7 +19,7 @@ public interface ArtService {
 
     ArtDTO startArt(Long programId, ArtDTO artDTO);
 
-    ArtDTO stopArt(Long programId, ArtDTO artDTO);
+    ArtDTO stopArt(Long programId, ArtDTO artDTO, Boolean onlySelectEnable);
 
     ArtDTO updateArt(Long programId, ArtDTO artDTO);
 

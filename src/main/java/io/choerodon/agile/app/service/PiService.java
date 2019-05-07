@@ -35,7 +35,7 @@ public interface PiService {
 
     void dealUnCompleteFeature(Long programId, Long piId, Long targetPiId);
 
-    void completeProjectsSprints(Long programId, Long piId);
+    void completeProjectsSprints(Long programId, Long piId, Boolean onlySelectEnable);
 
     void completeSprintsWithSelect(Long programId, Long piId, Long nextPiId, Long artId);
 

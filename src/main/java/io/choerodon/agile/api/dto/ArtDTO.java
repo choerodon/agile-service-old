@@ -11,6 +11,14 @@ import java.util.Date;
  */
 public class ArtDTO {
 
+    public ArtDTO () {}
+
+    public ArtDTO (Long programId, Long id, Long objectVersionNumber) {
+        this.programId = programId;
+        this.id = id;
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
     @ApiModelProperty(value = "主键id")
     private Long id;
 

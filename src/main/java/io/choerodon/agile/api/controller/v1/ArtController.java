@@ -66,7 +66,7 @@ public class ArtController {
                                            @PathVariable(name = "project_id") Long projectId,
                                            @ApiParam(value = "art dto", required = true)
                                            @RequestBody ArtDTO artDTO) {
-        return Optional.ofNullable(artService.stopArt(projectId, artDTO))
+        return Optional.ofNullable(artService.stopArt(projectId, artDTO, true))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.art.stop"));
     }
