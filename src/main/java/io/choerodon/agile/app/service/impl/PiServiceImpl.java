@@ -418,8 +418,8 @@ public class PiServiceImpl implements PiService {
     }
 
     @Override
-    public void completeProjectsSprints(Long programId, Long piId) {
-        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
+    public void completeProjectsSprints(Long programId, Long piId, Boolean onlySelectEnable) {
+        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, onlySelectEnable).getBody();
         if (projectRelationshipDTOList == null || projectRelationshipDTOList.isEmpty()) {
             return;
         }

@@ -26,6 +26,8 @@ public class ProjectEvent {
 
     private List<String> roleLabels;
 
+    private Long programId;
+
     public Long getProjectId() {
         return projectId;
     }
@@ -96,5 +98,13 @@ public class ProjectEvent {
 
     public String getProjectCategory() {
         return projectCategory;
+    }
+
+    public void setProgramId(Long programId) {
+        this.programId = programId;
+    }
+
+    public Long getProgramId() {
+        return programId;
     }
 }
