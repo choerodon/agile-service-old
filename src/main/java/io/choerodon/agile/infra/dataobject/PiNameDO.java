@@ -12,6 +12,8 @@ public class PiNameDO {
 
     private String name;
 
+    private String statusCode;
+
     public Long getId() {
         return id;
     }
@@ -34,5 +36,13 @@ public class PiNameDO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public String getStatusCode() {
+        return statusCode;
     }
 }
