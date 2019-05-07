@@ -24,7 +24,7 @@
         WHERE issue_id = #{issueId}
         AND program_id = #{programId}
         AND pi_id IN (
-           SELECT ap.id FROM agile_pi ap WHERE ap.program_id = #{programId} and ap.status_code != 'done'
+           SELECT ap.id FROM agile_pi ap WHERE ap.program_id = #{programId} AND ap.status_code != 'done'
         )
     </delete>
 
