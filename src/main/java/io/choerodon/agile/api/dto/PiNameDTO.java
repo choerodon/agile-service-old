@@ -17,6 +17,9 @@ public class PiNameDTO {
     @ApiModelProperty(value = "pi名称")
     private String name;
 
+    @ApiModelProperty(value = "pi状态")
+    private String statusCode;
+
     public Long getId() {
         return id;
     }
@@ -39,5 +42,13 @@ public class PiNameDTO {
 
     public String getCode() {
         return code;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public String getStatusCode() {
+        return statusCode;
     }
 }

@@ -23,8 +23,8 @@
         DELETE FROM agile_pi_feature
         WHERE issue_id = #{issueId}
         AND program_id = #{programId}
-        AND pi_id NOT IN (
-           SELECT id FROM agile_pi WHERE status_code != 'done'
+        AND pi_id IN (
+           SELECT ap.id FROM agile_pi ap WHERE ap.program_id = #{programId} AND ap.status_code != 'done'
         )
     </delete>
 
