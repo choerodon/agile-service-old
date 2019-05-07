@@ -237,7 +237,8 @@
         SELECT
             ap.id,
             ap.code,
-            ap.name
+            ap.name,
+            ap.status_code
         FROM agile_pi_feature apf, agile_pi ap
         WHERE apf.issue_id = #{issueId} AND apf.pi_id = ap.id AND ap.status_code != 'done'
     </select>
