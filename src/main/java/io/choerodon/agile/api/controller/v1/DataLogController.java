@@ -2,10 +2,10 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.DataLogDTO;
 import io.choerodon.agile.app.service.DataLogService;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class DataLogController {
     @Autowired
     private DataLogService dataLogService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建DataLog")
     @PostMapping
     public ResponseEntity<DataLogDTO> createDataLog(@ApiParam(value = "项目id", required = true)
@@ -39,7 +39,7 @@ public class DataLogController {
                 .orElseThrow(() -> new CommonException("error.dataLog.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询DataLog列表")
     @GetMapping
     public ResponseEntity<List<DataLogDTO>> listByIssueId(@ApiParam(value = "项目id", required = true)

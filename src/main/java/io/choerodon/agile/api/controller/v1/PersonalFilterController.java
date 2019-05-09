@@ -2,10 +2,10 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.PersonalFilterDTO;
 import io.choerodon.agile.app.service.PersonalFilterService;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class PersonalFilterController {
     @Autowired
     private PersonalFilterService personalFilterService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建我的筛选")
     @PostMapping
     public ResponseEntity<PersonalFilterDTO> create(@ApiParam(value = "项目id", required = true)
@@ -38,7 +38,7 @@ public class PersonalFilterController {
                 .orElseThrow(() -> new CommonException("error.personalFilter.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("修改我的筛选")
     @PutMapping(value = "/{filterId}")
     public ResponseEntity<PersonalFilterDTO> update(@ApiParam(value = "项目id", required = true)
@@ -52,7 +52,7 @@ public class PersonalFilterController {
                 .orElseThrow(() -> new CommonException("error.personalFilter.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("删除我的筛选")
     @DeleteMapping(value = "/{filterId}")
     public ResponseEntity<PersonalFilterDTO> deleteById(@ApiParam(value = "项目id", required = true)
@@ -63,7 +63,7 @@ public class PersonalFilterController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询我的筛选列表")
     @GetMapping(value = "/query_all/{userId}")
     public ResponseEntity<List<PersonalFilterDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
@@ -76,7 +76,7 @@ public class PersonalFilterController {
                 .orElseThrow(() -> new CommonException("error.personalFilter.list"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据id查询我的筛选")
     @GetMapping(value = "/{filterId}")
     public ResponseEntity<PersonalFilterDTO> queryById(@ApiParam(value = "项目id", required = true)
@@ -88,7 +88,7 @@ public class PersonalFilterController {
                 .orElseThrow(() -> new CommonException("error.personalFilter.queryById"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("我的筛选重名校验")
     @GetMapping(value = "/check_name")
     public ResponseEntity<Boolean> checkName(@ApiParam(value = "项目id", required = true)

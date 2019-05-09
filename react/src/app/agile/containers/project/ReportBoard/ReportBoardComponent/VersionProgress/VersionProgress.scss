@@ -1,0 +1,17 @@
+.c7n-reportBoard-versionProgress{
+    .c7n-versionProgress-content{
+        .c7n-versionProgress-loading{
+            display: flex;
+            height: 304px;
+            justify-content: center;
+            align-items: center;
+            .ant-spin-spinning{
+              margin-top: -67px;
+            }
+        }
+        .c7n-versionProgress-EmptyBlock{
+            height: 304px;
+            display: flex;
+        }
+    }
+}

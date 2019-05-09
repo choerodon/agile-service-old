@@ -1,0 +1,31 @@
+{
+  "name": "@choerodon/agile",
+  "routeName": "agile",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./react/src/app/agile/containers/AGILEIndex.js",
+  "dependencies": {
+    "@choerodon/boot": "0.1.x",
+    "@choerodon/master": "0.1.x"
+  },
+  "scripts": {
+    "start": "choerodon-front-boot start --config ./react/config.js",
+    "dist": "choerodon-front-boot dist --config ./react/config.js",
+    "lint-staged": "lint-staged",
+    "lint-staged:es": "eslint"
+  },
+  "author": "",
+  "license": "ISC",
+  "lint-staged": {
+    "react/**/*.{js,jsx}": [
+      "npm run lint-staged:es"
+    ],
+    "react/**/*.scss": "stylelint --syntax scss"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "peerDependencies": {}
+}

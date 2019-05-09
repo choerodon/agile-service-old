@@ -1,0 +1,37 @@
+.c7n-accumulation-filterBottom {
+    margin-top: 50px;
+    border-top: 1px solid black;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.c7n-accumulation-filterTime {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0 0 0;
+
+    .c7n-accumulation-filterTimeItem {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+    }
+}
+.ant-checkbox-wrapper + .ant-checkbox-wrapper {
+    margin-left: unset;
+}
+.c7n-accumulation-filter {
+    display: flex;
+    align-items: center;
+}
+
+.c7n-accumulation-sidebarP {
+    font-size: 18px;
+    margin: 16px 0;
+}
+
+.c7n-accumulation-nosprint {
+    margin: 24px !important;
+    flex-grow: 0 !important;
+}

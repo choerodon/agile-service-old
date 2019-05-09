@@ -1,0 +1,19 @@
+.c7n-agile-reportBoard-iterationSpeed {
+  .loading-wrap {
+    height: 434px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .switch {
+    position: absolute;
+    top: 25px;
+    left: 140px;
+    cursor: pointer;
+
+    .ant-dropdown {
+      min-width: unset !important;
+    }
+  }
+}

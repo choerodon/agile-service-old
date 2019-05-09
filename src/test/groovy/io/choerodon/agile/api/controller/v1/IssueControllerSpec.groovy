@@ -70,8 +70,8 @@ class IssueControllerSpec extends Specification {
     @Autowired
     IssueMapper issueMapper
 
-    @Autowired
-    SagaClient sagaClient
+//    @Autowired
+//    SagaClient sagaClient
 
     @Autowired
     private SprintMapper sprintMapper
@@ -133,8 +133,8 @@ class IssueControllerSpec extends Specification {
         issues = issueMapper.selectAll()
         issuesSize = issues.size()
 
-        and: 'mockSagaClient'
-        sagaClient.startSaga(_, _) >> null
+//        and: 'mockSagaClient'
+//        sagaClient.startSaga(_, _) >> null
 
         and:
         siteMsgUtil.issueCreate(*_) >> null

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="114px" height="113px" viewBox="0 0 114 113" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 5</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M8.32012448,48.3424274 C23.9015981,48.3424274 38.007975,54.634069 48.2189834,64.8062773 L8.32012448,104.553527 L8.32012448,48.3424274 Z" id="path-1"></path>
+        <path d="M8.37655602,8.37655602 C23.9580296,8.37655602 38.0644065,14.6681976 48.2754149,24.8404059 L8.37655602,64.5876556 L8.37655602,8.37655602 Z" id="path-2"></path>
+        <path d="M16.9294606,5.68434189e-14 C32.4788481,1.38566182e-13 46.5561765,6.30534891 56.746158,16.4997188 L16.9294606,56.3335639 L16.9294606,5.68434189e-14 Z" id="path-3"></path>
+        <path d="M56.7136929,0 C87.8799693,0 113.145228,25.2652589 113.145228,56.4315353 C113.145228,71.9429136 106.886952,85.9925934 96.7576452,96.1933299 L56.9958506,56.4315353 L56.7136929,56.4315353 L56.7136929,5.02429587e-15 Z" id="path-4"></path>
+        <path d="M28.4979253,67.7178423 C59.6642016,67.7178423 84.9294606,92.9831013 84.9294606,124.149378 L28.4979253,124.149378 L28.4979253,67.7178423 Z" id="path-5"></path>
+    </defs>
+    <g id="报告" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="报告－所有报表" transform="translate(-357.000000, -913.000000)">
+            <g id="Group-5" transform="translate(274.000000, 132.000000)">
+                <g transform="translate(83.000000, 781.000000)" id="Combined-Shape">
+                    <g transform="translate(28.269554, 76.447977) scale(-1, 1) rotate(-270.000000) translate(-28.269554, -76.447977) ">
+                        <use fill="#FAD352" fill-rule="evenodd" xlink:href="#path-1"></use>
+                        <path stroke="#FFFFFF" stroke-width="1" d="M8.82012448,48.8446101 L8.82012448,103.349662 L47.5089521,64.807846 C37.2411259,54.7590777 23.4966028,48.9731942 8.8201245,48.844617 Z"></path>
+                    </g>
+                    <g transform="translate(28.325985, 36.482106) scale(-1, -1) rotate(-270.000000) translate(-28.325985, -36.482106) ">
+                        <use fill="#45A3FC" fill-rule="evenodd" xlink:href="#path-2"></use>
+                        <path stroke="#FFFFFF" stroke-width="1" d="M8.87655602,8.87873868 L8.87655602,63.3837909 L47.5653836,24.8419746 C37.2975575,14.7932063 23.5530344,9.00732286 8.87655603,8.87874567 Z"></path>
+                    </g>
+                    <g transform="translate(36.837809, 28.166782) scale(-1, 1) translate(-36.837809, -28.166782) ">
+                        <use fill="#56CA77" fill-rule="evenodd" xlink:href="#path-3"></use>
+                        <path stroke="#FFFFFF" stroke-width="1" d="M17.4294606,0.502196589 L17.4294606,55.1260895 L56.0376419,16.501281 C45.791246,6.43012804 32.07534,0.631331178 17.4294606,0.502203615 Z"></path>
+                    </g>
+                    <g>
+                        <use fill="#9665E2" fill-rule="evenodd" xlink:href="#path-4"></use>
+                        <path stroke="#FFFFFF" stroke-width="1" d="M57.2136929,0.502188427 L57.2136929,55.9422708 L96.7548331,95.483411 C106.87395,85.1107511 112.645228,71.228176 112.645228,56.4315353 C112.645228,25.7082396 87.8735947,0.770668924 57.2136929,0.502188427 Z"></path>
+                    </g>
+                    <g transform="translate(56.713693, 95.933610) rotate(135.000000) translate(-56.713693, -95.933610) ">
+                        <use fill="#F7667F" fill-rule="evenodd" xlink:href="#path-5"></use>
+                        <path stroke="#FFFFFF" stroke-width="1" d="M28.9979253,68.2200308 L28.9979253,123.649378 L84.4272722,123.649378 C84.1602496,93.1559698 59.4913331,68.4870533 28.9979253,68.2200308 Z"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

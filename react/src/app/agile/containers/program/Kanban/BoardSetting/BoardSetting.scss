@@ -1,0 +1,42 @@
+.c7n-scrumsetting {
+  display: flex;
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+
+.wrapSpin {
+  height: 100%;
+}
+
+.ant-tabs-content {
+  flex-grow: 1;
+}
+
+.textDisplayOneColumn {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  margin-right: 5px;
+}
+
+.c7n-scrumboard {
+  .ant-tabs-tabpane {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  @-moz-document url-prefix() {
+    .ant-tabs {
+      overflow: auto;
+    }
+  }
+}
+
+.scrumBoardMask {
+
+  .ant-confirm-title {
+    font-size: 18px !important;
+  }
+}

@@ -1,0 +1,27 @@
+.text-overflow-hidden {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c7n-agile-changeParent-listWrap {
+  display: inline-flex;
+  width: 100%;
+  flex: 1;
+
+  .issueNum {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .issueSummary-wrap {
+    overflow: hidden;
+    flex: 1;
+
+    .issueSummary {
+      padding-right: 25px;
+      margin-bottom: 0;
+      max-width: unset;
+    }
+  }
+}

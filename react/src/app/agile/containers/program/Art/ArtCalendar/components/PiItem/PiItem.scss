@@ -1,0 +1,140 @@
+.PiItem {
+  padding: 10px 0;
+
+  &-pi {
+    position: relative;
+    z-index: 2;
+
+    &-title {
+      height: 30px;
+      line-height: 30px;
+      padding: 0 10px;
+      border: 1px solid #393E46;
+      border-left: none;
+      border-right: none;
+    }
+
+    &-sprints {
+      height: 24px;
+      line-height: 24px;
+      background: white;
+      display: flex;
+    }
+
+    &-sprint {
+      flex: 1;
+      height: 100%;
+      // padding: 0 10px;
+      border-left: 3px solid #C0C0C0;
+    }
+  }
+
+  .BorderLeft {
+    position: relative;
+
+    &:after {
+      content: "";
+      width: 0;
+      border-left: 3px solid currentColor;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .ant-popover-inner-content {
+      border-left: 3px solid currentColor;
+      height: 100%;
+      border-radius: 2px;
+    }
+  }
+
+  .BorderLeft.cancel {
+    position: relative;
+    &:after {
+      border-color: #393E46;
+    }
+  }
+
+  .BorderLeft.todo {
+    position: relative;
+    &:after {
+      border-color: #FFB100;
+    }
+    .ant-popover-inner-content {
+      position: relative;
+      border-color: #FFB100;
+    }
+  }
+
+  .BorderLeft.doing {
+    position: relative;
+
+    &:after {
+      border-color: #4D90FE;
+    }
+    .ant-popover-inner-content {
+      position: relative;
+      border-color: #4D90FE;
+    }
+  }
+
+  .BorderLeft.done {
+    position: relative;
+    &:after {
+      border-color: #00BFA5;
+    }
+    .ant-popover-inner-content {
+      position: relative;
+      border-color: #00BFA5;
+    }
+  }
+
+  .BorderRight {
+    position: relative;
+   &::before {
+      content: "";
+      width: 0;
+      border-left: 3px solid currentColor;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  }
+
+  .BorderRight.cancel {
+    position: relative;
+
+    &::before {
+      border-color: #393E46;
+    }
+  }
+
+  .BorderRight.todo {
+    position: relative;
+    &::before {
+      border-color: #FFB100;
+    }
+  }
+
+  .BorderRight.doing {
+    position: relative;
+    &::before {
+      border-color: #4D90FE;
+    }
+  }
+
+  .BorderRight.done {
+    position: relative;
+    &::before {
+      border-color: #00BFA5;
+    }
+  }
+}
+
+.PiItem-pi-sprintPopover, .PiItem-pi-piPopover {
+  z-index: 9999;
+  .ant-popover-inner-content {
+    padding: 24px 15px 15px;
+  }
+}

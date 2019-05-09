@@ -2,10 +2,10 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.LookupTypeWithValuesDTO;
 import io.choerodon.agile.app.service.LookupValueService;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class LookupValueController {
     @Autowired
     private LookupValueService lookupValueService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据type code查询其下的value值")
     @GetMapping(value = "/{typeCode}")
     public ResponseEntity<LookupTypeWithValuesDTO> queryLookupValueByCode(@ApiParam(value = "项目id", required = true)
@@ -40,7 +40,7 @@ public class LookupValueController {
                 .orElseThrow(() -> new CommonException("error.lookupValueList.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询列约束下的value值")
     @GetMapping(value = "/constraint/list")
     public ResponseEntity<LookupTypeWithValuesDTO> queryConstraintLookupValue(@ApiParam(value = "项目id", required = true)

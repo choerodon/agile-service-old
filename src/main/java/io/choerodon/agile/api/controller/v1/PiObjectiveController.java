@@ -3,10 +3,10 @@ package io.choerodon.agile.api.controller.v1;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.PiObjectiveDTO;
 import io.choerodon.agile.app.service.PiObjectiveService;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class PiObjectiveController {
     @Autowired
     private PiObjectiveService piObjectiveService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("创建pi objective")
     @PostMapping
     public ResponseEntity<PiObjectiveDTO> createPiObjective(@ApiParam(value = "项目id", required = true)
@@ -39,7 +39,7 @@ public class PiObjectiveController {
                 .orElseThrow(() -> new CommonException("error.piObjective.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("修改pi objective")
     @PutMapping
     public ResponseEntity<PiObjectiveDTO> updatePiObjective(@ApiParam(value = "项目id", required = true)
@@ -51,7 +51,7 @@ public class PiObjectiveController {
                 .orElseThrow(() -> new CommonException("error.piObjective.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("删除pi objective")
     @DeleteMapping("/{id}")
     public ResponseEntity deletePiObjective(@ApiParam(value = "项目id", required = true)
@@ -62,7 +62,7 @@ public class PiObjectiveController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询单个pi objective")
     @GetMapping
     public ResponseEntity<PiObjectiveDTO> queryPiObjective(@ApiParam(value = "项目id", required = true)
@@ -74,7 +74,7 @@ public class PiObjectiveController {
                 .orElseThrow(() -> new CommonException("error.piObjective.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询pi objective列表")
     @GetMapping("/list")
     public ResponseEntity<JSONObject> queryPiObjectiveList(@ApiParam(value = "项目id", required = true)

@@ -1,0 +1,116 @@
+.c7n-scrumboard-issue.shouldBackgroundColorChange {
+  background: #edeff6 !important;
+}
+.c7n-scrumboard-issue {
+  background: #fff;
+  border-width: unset;
+  border-style: unset;
+  border-color: unset;
+  border-radius: 2px;
+  visibility: visible;
+  height: 100%;
+  padding: 10px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  border-left: 1px solid rgba(0, 0, 0, 0.20);
+  border-right: 1px solid rgba(0, 0, 0, 0.20);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.20);
+  border-top: 1px solid rgba(0, 0, 0, 0.20);
+  min-height: 102px;
+
+  .c7n-scrumboard-issueSide {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(140, 158, 255, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .c7n-scrumboard-issueTop {
+    div.c7n-scrumboard-issueIcon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .rate-wrapper {
+      margin-right: 5px;
+    }
+    .ant-rate {
+      font-size: 12px !important;
+      min-width: 28px;
+      display: flex;
+      flex-direction: row-reverse;
+      float: left;
+    }
+    .emergency {
+      color: #f5222d !important;
+    }
+    .notEmergency {
+      color: #faad14 !important;
+    }
+    .ant-rate-star {
+      margin-right: 1px !important;
+      width: 6px;
+      .icon {
+        font-size: 16px !important;
+        transform: scale(0.3333333) !important;
+      }
+    }
+    .ant-rate-star-first .ant-rate-star-second {
+      font-size: 16px !important;
+      transform: scale(0.3333333) !important;
+    }
+  }
+
+  .c7n-issueType-icon {
+    color: white;
+    font-size: 16px;
+  }
+
+  .c7n-scrumboard-issueBottom {
+    margin-top: 8px;
+    width: 100%;
+    // margin-left: 26px;
+    .textDisplayTwoColumn {
+      flex-basis: 90%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 20px;
+      white-space: normal;
+      word-break: break-all;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      height: 40px;
+    }
+  }
+
+  .c7n-scrumboard-issueBorder {
+    width: 3px;
+    position: absolute;
+    height: 100%;
+    top: 0;
+    z-index: 20;
+    left: 0;
+  }
+}
+
+.c7n-itemBodyColumn .c7n-boardIssue:last-child .c7n-scrumboard-issue {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.20);
+}
+
+.clickBackground {
+  background: rgba(140, 158, 255, 0.08);
+}
+.c7n-agile-quickSearch-popover {
+  .ant-checkbox-group-item {
+    margin-bottom: 5px;
+  }
+}

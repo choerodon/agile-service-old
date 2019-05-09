@@ -4,10 +4,10 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.WikiMenuDTO;
 import io.choerodon.agile.api.dto.WikiRelationDTO;
 import io.choerodon.agile.app.service.WikiRelationService;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class WikiRelationController {
     @Autowired
     private WikiRelationService wikiRelationService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("添加wiki relation")
     @PostMapping
     public ResponseEntity create(@ApiParam(value = "项目id", required = true)
@@ -40,7 +40,7 @@ public class WikiRelationController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据issue id查询wiki relation")
     @GetMapping("/issue/{issueId}")
     public ResponseEntity<JSONObject> queryByIssueId(@ApiParam(value = "项目id", required = true)
@@ -52,7 +52,7 @@ public class WikiRelationController {
                 .orElseThrow(() -> new CommonException("error.wikiRelationList.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据id删除wiki relation")
     @DeleteMapping("/{id}")
     public ResponseEntity deleteById(@ApiParam(value = "项目id", required = true)
@@ -63,7 +63,7 @@ public class WikiRelationController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询wiki menus列表")
     @PostMapping("/menus")
     public ResponseEntity<String> queryWikiMenus(@ApiParam(value = "项目id", required = true)

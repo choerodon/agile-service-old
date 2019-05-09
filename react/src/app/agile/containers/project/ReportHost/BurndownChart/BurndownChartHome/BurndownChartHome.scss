@@ -1,0 +1,21 @@
+.c7n-chart-noSprint {
+    display: flex;
+    height: 60px;
+    align-items: center;
+    border: 1px solid #3572b0;
+
+    .c7n-chart-icon {
+        height: 100%;
+    width: 40px;
+    background: #3572b0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    }   
+}
+.textDisplayOverflow{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

@@ -1,0 +1,41 @@
+"agile": 敏捷管理
+'agile.issue': 问题管理
+'agile.release': 发布版本
+'agile.backlog':  待办事项
+'agile.scrumboard':  活跃冲刺
+'agile.component': 模块管理
+'agile.reporthost': 敏捷报表
+'agile.reportboard': 报告工作台
+'agile.projectsetting': 项目设置
+'agile.fastsearch': 快速搜索
+'agile.issuelink': 问题链接
+'agile.userStoryMap': 故事地图
+'agile.iterationBoard': 迭代控制台
+'agile.messageNotification': 通知设置
+
+'agile.feature': 特性列表
+'agile.artCalendar': ART日历
+'agile.pi': PI目标
+'agile.art': ART设置
+'agile.programSetting': 项目设置
+
+"program": 大规模敏捷
+'program.feature': 特性列表
+'program.artCalendar': ART日历
+'program.roadMap': 线路图
+'program.pi': PI目标
+'program.art': ART设置
+'program.programKanban': 项目群看板
+'program.programSetting': 项目设置
+
+"rentsetting": "组织设置"
+"rentsetting.workCalendar": "工作日历"
+"rentsetting.objectScheme-organization": "字段定义"
+"rentsetting.page-organization": "页面"
+
+"prosetting": 项目设置
+"prosetting.objectScheme-project": 字段定义
+"prosetting.page-project": 页面
+
+"platform-reports": "报表"
+"platform-reports.reportboard": "敏捷报表"

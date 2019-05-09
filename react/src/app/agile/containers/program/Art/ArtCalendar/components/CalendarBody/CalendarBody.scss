@@ -1,0 +1,79 @@
+.c7nagile-CalendarBody {
+  width: 100%;
+  height: calc(100% - 80px);
+  position: relative;
+
+  &-days {
+    min-width: 100%;
+    position: absolute;
+    height: 100%;
+    display: flex;
+    border-bottom: 1px solid #D6D6D6;
+  }
+
+  &-day {
+    flex: 1;
+    position: relative;
+
+    &:after {
+      content: "";
+      width: 0;
+      border-left: 1px dashed #D6D6D6;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    &:nth-child(7n+1) {
+      &:after {
+        border-left-style: solid;
+        border-left-color: #D6D6D6;
+      }
+    }
+
+    &.today {
+      &:before {
+        /* 做一个书签效果 */
+        position: absolute;
+        /* 必须 */
+        top: 0;
+        left: 0;
+        z-index: 1;
+        height: 0;
+        padding-right: 1px;
+        font-weight: bold;
+        line-height: 0;
+        color: #000;
+        border: 6px solid #CF3030;
+        border-right-color: transparent;
+        /* 右边框透明，变成空缺的角 */
+        content: '';
+      }
+
+      // 当前日期竖线
+      &:after {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        height: 100%;
+        width: 0;
+        border-left: 1px solid #CF3030;
+        content: '';
+      }
+    }
+  }
+
+  &-content {
+    width: 100%;
+    padding-top: 12px;
+    position: relative;
+  }
+
+  &-pis {
+    display: flex;
+    width: 100%;
+    background: #F4F4F4;
+  }
+}

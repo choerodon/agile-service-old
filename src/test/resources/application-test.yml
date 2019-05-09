@@ -24,7 +24,7 @@ logging:
   level:
     io.choerodon.agile.infra.mapper: info
 data:
-  dir: src/test/resources/db
+  dir: src/test/resources/
 eureka:
   client:
     enabled: false

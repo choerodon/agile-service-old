@@ -1,0 +1,151 @@
+.c7n-userMap-backlog {
+  width: 100%;
+  max-width: 350px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 12px 0 12px 12px;
+  background: #fff;
+  box-shadow: 0 5px 5px -3px rgba(0,0,0,0.20), 0 8px 10px 1px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12);
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  .ant-input-underline {
+    display: none;
+  }
+
+  .ant-input-wrapper {
+    margin-bottom: 0;
+  }
+
+  .ant-input-prefix {
+    color: #000;
+  }
+
+  .ant-input-rendered {
+    margin-left: 36px !important;
+  }
+
+  .ant-input-placeholder {
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  .icon-search {
+    font-size: 24px;
+    margin-top: -2px;
+  }
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    height: 38px;
+    padding-right: 20px;
+
+    .input {
+      width: 224px;
+      height: 38px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.20);
+      border-radius: 2px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      font-size: 13px;
+      line-height: 15px;
+      cursor: pointer;
+      color: #3f51b5;
+      height: 100%;
+      font-weight: bold;
+
+      .icon {
+        font-size: 16px;
+        margin-left: 6px;
+      }
+    }
+  }
+
+  .body {
+    flex: 1;
+    overflow: auto;
+
+    .issues {
+      padding-right: 12px;
+
+      .title {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-top: 20px;
+        padding-bottom: 3px;
+        border-bottom: 1px solid rgba(151, 151, 151, 0.2);
+
+        .word {
+          font-size: 14px;
+          line-height: 20px;
+        }
+      }
+
+      .issue-block {
+        min-height: 10px;
+        padding: 0;
+        margin: 0;
+
+        .issue {
+          display: flex;
+          flex-direction: row;
+          padding: 8px;
+          border: 1px solid rgba(151, 151, 151, 0.2);
+          border-top: none;
+
+          .type {
+            margin-right: 8px;
+          }
+
+          .summary {
+            flex: 1;
+          }
+
+          .issueNum {
+            color: #3f51b5;
+            text-align: right;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+}
+
+.c7n-backlog-popover {
+  background: #fff;
+  box-shadow:
+    0 5px 5px -3px rgba(0, 0, 0, 0.20), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  border-radius: 2px;
+
+  .ant-checkbox-wrapper + .ant-checkbox-wrapper {
+    margin-left: unset;
+  }
+
+  .ant-checkbox-wrapper {
+    margin-bottom: 20px;
+    margin-left: 0;
+  }
+
+  .ant-checkbox-wrapper:last-child {
+    margin-bottom: 0;
+  }
+
+  .ant-checkbox-inner {
+    border-color: rgba(0, 0, 0, 0.54);
+  }
+}

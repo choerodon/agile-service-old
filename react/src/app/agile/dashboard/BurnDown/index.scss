@@ -1,0 +1,34 @@
+.c7n-agile-dashboard-burndown {
+  width: 100%;
+  height: calc(100% - 69px);
+
+  .switch {
+    // position: absolute;
+    // top: 25px;
+    // right: 16px;
+
+    .ant-dropdown-link {
+      // color: #3F51B5;
+    }
+
+    .ant-dropdown {
+      min-width: unset !important;
+    }
+  }
+
+  .loading-wrap {
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.c7n-agile-dashboard-burndown-select {
+  display: inline-block;
+  align-items: center;
+  font-size: 13px;
+  line-height: 15px;
+  cursor: pointer;
+  color: #000 !important;
+}

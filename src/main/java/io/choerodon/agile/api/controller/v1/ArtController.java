@@ -5,14 +5,14 @@ import io.choerodon.agile.api.dto.ArtStopDTO;
 import io.choerodon.agile.api.dto.PiCalendarDTO;
 import io.choerodon.agile.api.dto.PiCreateDTO;
 import io.choerodon.agile.app.service.ArtService;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class ArtController {
     @Autowired
     private ArtService artService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建art")
     @PostMapping
     public ResponseEntity<ArtDTO> createArt(@ApiParam(value = "项目id", required = true)
@@ -47,7 +47,7 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.art.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("开始art")
     @PostMapping("/start")
     public ResponseEntity<ArtDTO> startArt(@ApiParam(value = "项目id", required = true)
@@ -59,7 +59,7 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.art.start"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("stop art")
     @PostMapping("/stop")
     public ResponseEntity<ArtDTO> stopArt(@ApiParam(value = "项目id", required = true)
@@ -71,7 +71,7 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.art.stop"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("修改art")
     @PutMapping
     public ResponseEntity<ArtDTO> updateArt(@ApiParam(value = "项目id", required = true)
@@ -84,7 +84,7 @@ public class ArtController {
     }
 
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询art列表")
     @GetMapping("/list")
     public ResponseEntity<Page<ArtDTO>> queryArtList(@ApiParam(value = "项目id", required = true)
@@ -97,7 +97,7 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.artList.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询单个art")
     @GetMapping
     public ResponseEntity<ArtDTO> queryArt(@ApiParam(value = "项目id", required = true)
@@ -109,7 +109,7 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.art.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建art pi")
     @PostMapping("/create_other_pi")
     public ResponseEntity createOtherPi(@ApiParam(value = "项目id", required = true)
@@ -120,7 +120,7 @@ public class ArtController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询art日历")
     @GetMapping("/art_calendar")
     public ResponseEntity<List<PiCalendarDTO>> queryArtCalendar(@ApiParam(value = "项目id", required = true)
@@ -132,7 +132,7 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.artCalendar.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("stop art之前调用")
     @GetMapping("/before_stop")
     public ResponseEntity<ArtStopDTO> beforeStop(@ApiParam(value = "项目id", required = true)
@@ -144,7 +144,7 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.beforeComplete.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("ART重名校验")
     @GetMapping(value = "/check_name")
     public ResponseEntity<Boolean> checkName(@ApiParam(value = "项目id", required = true)
@@ -156,7 +156,7 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.artName.check"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询art列表,不分页")
     @GetMapping("/all")
     public ResponseEntity<List<ArtDTO>> queryAllArtList(@ApiParam(value = "项目id", required = true)
@@ -166,7 +166,7 @@ public class ArtController {
                 .orElseThrow(() -> new CommonException("error.allArtList.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询当前活跃art")
     @GetMapping("/active")
     public ResponseEntity<ArtDTO> queryActiveArt(@ApiParam(value = "项目id", required = true)

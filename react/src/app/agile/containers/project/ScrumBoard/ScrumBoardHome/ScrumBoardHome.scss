@@ -1,0 +1,165 @@
+.c7n-scrumboard {
+  position: relative;
+  flex-grow: 1;
+  overflow: auto;
+  height: calc(100vh - 156px);
+  .c7n-scrumboard-header {
+    .greaterThanMax {
+      color: white;
+      background-color: #e43b3b !important;
+    }
+    .lessThanMin {
+      color: white;
+      background-color: #ffbb50 !important;
+    }
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #fff;
+    display: flex;
+    padding: 0 16px;
+    margin-right: 6px;
+  }
+
+  .c7n-scrumboard-content {
+    height: calc(100vh - 230px);
+    display: flex;
+    .c7n-scrumboard-container {
+      margin: 0 32px 0 16px !important;
+      padding-bottom: 83px;
+      display: flex;
+      flex: 1;
+      .ant-collapse.ant-collapse-borderless {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+      }
+      .ant-collapse > .ant-collapse-item > .ant-collapse-header .ant-collapse-expand-icon:before {
+        content: "\E313" !important;
+      }
+    }
+    .c7n-scrumboard-others {
+      padding: 0 24px;
+
+      .c7n-scrumboard-otherHeader {
+        padding: 12px 0;
+        display: flex;
+        align-items: center;
+        .c7n-scrumboard-otherHeader-issueCount {
+          padding-left: 11px;
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.54);
+        }
+      }
+
+      .c7n-scrumboard-otherContent {
+        display: flex;
+      }
+    }
+  }
+}
+// .ant-select-dropdown {
+//   top: 90px !important;
+// }
+
+.select-without-underline {
+  .ant-select-underline {
+    display: none;
+  }
+  .icon-arrow_drop_down {
+    color: #3f51b5;
+  }
+}
+
+.c7n-scrumTools {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  padding: 8px 24px;
+  flex-grow: unset !important;
+  height: 48px;
+  min-height: 47px;
+  overflow: hidden !important;
+  border-bottom: 1px solid #d3d3d3;
+  .ant-spin-container {
+    display: flex !important;
+  }
+  .c7n-scrumTools-left {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+
+    p {
+      white-space: nowrap;
+    }
+
+    .c7n-scrumTools-filter {
+      cursor: pointer;
+      padding: 3px 8px;
+      margin-right: 18px;
+    }
+  }
+
+  .c7n-scrumTools-right {
+    span {
+      margin-left: 30px;
+      white-space: nowrap;
+    }
+  }
+}
+
+.c7n-scrumboard-page {
+  .boardBtn {
+    text-transform: none !important;
+  }
+  .ant-select-selection__rendered {
+    padding-right: unset;
+    margin-bottom: unset;
+  }
+
+  .ant-select-arrow {
+    right: -15px !important;
+  }
+
+  .ant-select-selection-selected-value {
+    color: #3f51b5;
+  }
+
+  .page-head .ant-btn:not(.back-btn) {
+    //line-height: "";
+  }
+
+  p {
+    margin-bottom: 0;
+  }
+  .boardBtn.ant-btn-flat:hover {
+    background: #fff;
+    cursor: text;
+  }
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .textDisplayOneColumn {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    word-break: break-all;
+    -webkit-line-clamp: 1;
+    height: 20px;
+  }
+}
+
+@-moz-document url-prefix() {
+  .textDisplayOneColumn {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 20px;
+  }
+}
+.wrapSpin {
+  height: 100%;
+}

@@ -1,0 +1,58 @@
+dashboard:
+  - code: "BurnDown"
+    icon: burnout_map
+    title: "燃尽图"
+    description: "当前冲刺的完成情况"
+    level: project
+    sort: 2
+    enabled: false
+  - code: "UncompleteTask"
+    icon: outstanding_tasks
+    title: "当前项目未完成的任务数"
+    description: "展示当前项目未完成任务"
+    level: project
+    sort: 1
+    enabled: false
+  - code: "VersionProgress"
+    icon: menu
+    title: "版本进度"
+    description: "项目下版本中问题情况"
+    level: project
+    sort: 3
+    enabled: false
+  - code: "EpicProgress"
+    icon: sort
+    title: "史诗进度"
+    description: "各史诗的完成情况"
+    level: project
+    sort: 4
+    enabled: false
+  - code: "MineUnDone"
+    icon: unfinished_question
+    title: "我的未完成问题"
+    description: "用户自己未完成问题"
+    level: project
+    sort: 5
+    enabled: false
+  - code: "Undistributed"
+    icon: unallocated_question
+    title: "未分配的问题"
+    description: "项目下代办中未分配的问题"
+    level: project
+    sort: 6
+    position:
+      positionX: 8
+      positionY: 0
+      width: 4
+      height: 4
+  - code: "SprintProgress"
+    icon: directions_run
+    title: "活跃冲刺"
+    description: "活跃冲刺的工作量和剩余时间"
+    level: project
+    sort: 7
+    position:
+      positionX: 4
+      positionY: 0
+      width: 4
+      height: 2

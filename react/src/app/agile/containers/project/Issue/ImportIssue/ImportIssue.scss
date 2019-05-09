@@ -1,0 +1,33 @@
+.c7n-importIssue {
+  .page-content {
+    padding: 0;
+  }
+  &-fileName {
+    background-color: #F3F3F3;
+    border-radius: 2px;
+    height: 32px;
+    width: 148px;
+    display: inline-block;
+    padding: 7px 9px;
+    margin-right: 10px;
+    color: rgba(0,0,0,0.54);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  &-text {
+    margin-right: 10px;
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 7px;
+  }
+  &-progress {
+    width: 200px;
+    vertical-align: top;
+    margin-top: 7px;
+  }
+  &-icon {
+    vertical-align: sub;
+    margin-right: 5px;
+  }
+}

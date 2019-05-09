@@ -1,0 +1,164 @@
+.c7n-backlog-epic {
+  width: 200px;
+  border-right: 1px solid #d3d3d3;
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+  p {
+    margin-bottom: 0;
+  }
+
+  .c7n-backlog-epicHover {
+    &:hover {
+      background: #e9e9e9;
+    }
+  }
+  .c7n-backlog-epicContent {
+    padding: 8px 0;
+
+    .c7n-backlog-epicTitle {
+      display: flex;
+      font-size: 13px;
+      line-height: 20px;
+      padding: 0 12px 0 16px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      .c7n-backlog-epicRight {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .c7n-backlog-epicChoice {
+      margin-top: 12px;
+      font-size: 13px;
+      line-height: 20px;
+
+      .c7n-backlog-dragToEpic:hover {
+        border: 2px dashed green;
+      }
+
+      .c7n-backlog-epicItems {
+        background: white;
+        padding: 8px 8px 8px 0;
+        cursor: pointer;
+        &-first {
+          padding: 8px 6px 8px 16px;
+        }
+        &-last {
+          padding: 8px 6px 8px 16px !important;
+        }
+      }
+      .c7n-backlog-epicItems.onClickEpic {
+        background: rgba(140, 158, 255, 0.08) !important;
+      }
+
+      .c7n-backlog-epicItems:hover {
+        background: rgba(140, 158, 255, 0.08);
+      }
+
+      .c7n-backlog-epicItemTitle {
+        display: flex;
+        align-items: baseline;
+
+        span {
+          font-size: 12px;
+          margin-top: 3px;
+        }
+
+        i {
+          cursor: pointer;
+        }
+
+        div.c7n-backlog-epicItemsHead {
+          word-break: break-all;
+          flex-grow: 1;
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
+          .ant-input-underline{
+            display: none;
+          }
+          i {
+            cursor: pointer;
+          }
+        }
+      }
+
+      .c7n-backlog-epicItemDes {
+        margin-top: 12px;
+        color: rgba(0, 0, 0, 0.65);
+      }
+
+      .c7n-backlog-epicItemDetail {
+        margin-top: 8px;
+        // color: #3f51b5;
+        font-weight: 600;
+        color: rgba(0, 0, 0, 0.6);
+        padding-bottom: 2px;
+        border-bottom: 1px solid #d3d3d3;
+      }
+
+      .c7n-backlog-epicItemParams {
+        .c7n-backlog-epicItemParam {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 12px;
+
+          .c7n-backlog-epicItemParamKey {
+            color: rgba(0, 0, 0, 0.65);
+          }
+
+          .c7n-backlog-epicItemParamValue {
+            border-radius: 100px;
+            background: rgba(0, 0, 0, 0.08);
+            color: white;
+            min-width: 24px;
+            height: 16px;
+            text-align: center;
+            line-height: 16px;
+          }
+          .c7n-backlog-epicItemNotStoryPoint {
+            min-width: 31px;
+            text-align: center;
+            line-height: 16px;
+            color: #5a5a5a;
+          }
+        }
+      }
+    }
+  }
+}
+
+.c7n-backlog-epicColor {
+  display: flex;
+  margin: 15px 0 13px 0;
+
+  .c7n-backlog-epicColorItem {
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+
+  .c7n-backlog-epicColorItem:not(:first-child) {
+    margin-left: 9px;
+  }
+}
+
+.c7n-backlog-epicItemProgress {
+  width: 100%;
+  height: 5px;
+  display: flex;
+
+  .c7n-backlog-epicItemDone {
+    background: rgb(77, 144, 254);
+    height: 100%;
+  }
+
+  .c7n-backlog-epicItemTodo {
+    background: #e5e5e5;
+    height: 100%;
+  }
+}

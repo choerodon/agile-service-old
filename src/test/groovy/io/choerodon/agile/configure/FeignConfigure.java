@@ -1,6 +1,8 @@
 package io.choerodon.agile.configure;
 
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.app.service.impl.IssueServiceImpl;
+import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.NotifyFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
@@ -8,6 +10,10 @@ import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.feign.fallback.IssueFeignClientFallback;
 import io.choerodon.agile.infra.feign.fallback.NotifyFeignClientFallback;
 import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback;
+import io.choerodon.asgard.saga.dto.SagaInstanceDTO;
+import io.choerodon.asgard.saga.dto.StartInstanceDTO;
+import io.choerodon.asgard.saga.feign.SagaClient;
+import io.choerodon.core.convertor.ApplicationContextHelper;
 import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.dto.StateMachineTransformDTO;
@@ -250,5 +256,16 @@ public class FeignConfigure {
     NotifyFeignClient notifyFeignClient() {
         NotifyFeignClient notifyFeignClient = Mockito.mock(NotifyFeignClientFallback.class);
         return notifyFeignClient;
+    }
+
+    @Bean
+    SagaClient sagaClient() {
+        SagaClient sagaClient = Mockito.mock(SagaClient.class);
+        Mockito.when(sagaClient.startSaga(Matchers.anyString(), Matchers.any(StartInstanceDTO.class))).thenReturn(new SagaInstanceDTO());
+        IssueServiceImpl issueService = ApplicationContextHelper.getSpringFactory().getBean(IssueServiceImpl.class);
+        ProductVersionServiceImpl productVersionService = ApplicationContextHelper.getSpringFactory().getBean(ProductVersionServiceImpl.class);
+        issueService.setSagaClient(sagaClient);
+        productVersionService.setSagaClient(sagaClient);
+        return sagaClient;
     }
 }

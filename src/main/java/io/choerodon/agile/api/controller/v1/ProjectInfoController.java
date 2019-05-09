@@ -3,10 +3,10 @@ package io.choerodon.agile.api.controller.v1;
 import io.choerodon.agile.api.dto.ProjectInfoDTO;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.domain.agile.rule.ProjectInfoRule;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class ProjectInfoController {
     @Autowired
     private ProjectInfoRule projectInfoRule;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+    @Permission(type = ResourceType.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("更新projectInfo")
     @PutMapping
     public ResponseEntity<ProjectInfoDTO> updateProjectInfo(@ApiParam(value = "项目id", required = true)
@@ -42,7 +42,7 @@ public class ProjectInfoController {
                 .orElseThrow(() -> new CommonException("error.projectInfo.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据项目id查询projectInfo")
     @GetMapping
     public ResponseEntity<ProjectInfoDTO> queryProjectInfoByProjectId(@ApiParam(value = "项目id", required = true)

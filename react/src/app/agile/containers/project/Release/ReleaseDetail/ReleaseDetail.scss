@@ -1,0 +1,38 @@
+.c7n-release-issueClassify {
+  display: flex;
+  margin-top: 18px;
+
+  div {
+    height: 16px;
+  }
+}
+
+.c7n-release-tabTitle {
+  display: flex;
+
+  .c7n-release-titleNum {
+    font-size: 26px;
+    margin-right: 12px;
+  }
+}
+
+.c7n-versionTime {
+  display: flex;
+  align-items: center;
+
+  .c7n-version-timemoment {
+    margin-left: 8px;
+  }
+}
+
+.textDisplayOneColumn {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.c7n-versionDetail{
+  padding: 18px 24px;
+}

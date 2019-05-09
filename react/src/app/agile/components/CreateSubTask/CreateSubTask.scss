@@ -1,0 +1,65 @@
+.c7n-createSubIssue {
+  .ant-form-item {
+    margin-bottom: 12px !important;
+
+    .ant-input-length-info {
+      margin-bottom: -18px !important;
+    }
+  }
+
+  input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #fff inset;
+  }
+
+  .clear-p-mw {
+    margin-bottom: 20px;
+  }
+
+  .sign-upload {
+    .ant-upload {
+      display: flex !important;
+      margin-left: 40px;
+    }
+
+    .ant-btn {
+      color: #3f51b5;
+    }
+  }
+
+  .ant-upload-list-item {
+    display: inline-block;
+    .icon-close {
+      transform: none;
+      font-size: 14px;
+    }
+  }
+
+  .ant-upload-list-item-info {
+    padding-right: 20px;
+    max-width: 100%;
+  }
+
+  .fieldWith {
+    width: 520px;
+  }
+}
+
+.is-required {
+  .ant-radio-group-label:after {
+    display: inline-block;
+    margin-left: 4px;
+    content: "*";
+    line-height: 1;
+    font-size: 13px;
+    color: #d50000;
+  }
+
+  .ant-checkbox-group-label:after {
+    display: inline-block;
+    margin-left: 4px;
+    content: "*";
+    line-height: 1;
+    font-size: 13px;
+    color: #d50000;
+  }
+}

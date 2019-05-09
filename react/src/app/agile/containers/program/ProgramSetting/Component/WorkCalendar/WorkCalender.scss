@@ -1,0 +1,178 @@
+.c7n-workCalendar {
+  margin-left: 3px;
+  margin-bottom: 3px;
+  .legend-tag {
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  .legend-text {
+    margin-right: 30px;
+  }
+
+  .rc-calendar {
+    width: 512px;
+  }
+
+  .rc-calendar-footer-btn:after {
+    content: '';
+  }
+  .rc-calendar-date {
+    position: relative;
+    background-color: #fdf0ef;
+    border-radius: 2px;
+    margin-bottom: 10px;
+    width: 42px;
+    height: 42px;
+    line-height: 42px;
+    font-size: 14px;
+  }
+
+  .rc-calendar-header,
+  .rc-calendar-decade-panel-header {
+    height: 40px;
+    line-height: 40px;
+  }
+
+  .rc-calendar-month-panel-header,
+  .rc-calendar-year-panel-header {
+    height: 40px;
+  }
+
+  .rc-calendar-prev-month-btn,
+  .rc-calendar-next-month-btn,
+  .rc-calendar-prev-year-btn,
+  .rc-calendar-next-year-btn {
+    line-height: 40px;
+  }
+
+  .rc-calendar-body {
+    height: 397px;
+  }
+
+  .not-current-month {
+    background: transparent;
+    color: #ccc;
+  }
+
+  .before-today {
+    background: transparent;
+    color: #ccc;
+    cursor: not-allowed;
+  }
+
+  .rc-calendar-selected-date .rc-calendar-date:hover {
+    background: transparent;
+  }
+
+  .rc-calendar-selected-date .rc-calendar-date.restday:hover {
+    background: #fef3f2;
+  }
+
+  .rc-calendar-selected-date .rc-calendar-date.workday:hover {
+    background: #f6f6f6;
+  }
+
+  .tag {
+    position: absolute;
+    top: 0;
+    border-radius: 2px;
+    color: #fff;
+    font-size: 12px;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+    left: 0;
+    &-notwork {
+      color: #fff;
+      background: #e8101e;
+    }
+    &-work {
+      background: #000;
+      color: #efefef;
+    }
+  }
+
+  .des {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 12px;
+    line-height: 12px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 12px;
+    transform: scale(0.83);
+  }
+  .rc-calendar-year-select:hover,
+  .rc-calendar-month-select:hover {
+    color: #3f51b5;
+  }
+
+  .rc-calendar-column-header-inner,
+  .rc-calendar-year-panel-year,
+  .rc-calendar-decade-panel-decade,
+  .rc-calendar-month-panel-month,
+  .rc-calendar-year-select,
+  .rc-calendar-month-select,
+  .rc-calendar-year-panel-decade-select-content,
+  .rc-calendar-decade-panel-century,
+  .rc-calendar-month-panel-year-select-content {
+    font-size: 14px;
+  }
+
+  .rc-calendar-year-panel-decade-select-content:hover,
+  .rc-calendar-month-panel-year-select-content:hover,
+  .rc-calendar-month-panel-year-select:hover,
+  .rc-calendar-year-panel-decade-select:hover,
+  .rc-calendar-decade-panel-next-century-btn:hover,
+  .rc-calendar-decade-panel-prev-century-btn:hover,
+  .rc-calendar-year-panel-next-decade-btn:hover,
+  .rc-calendar-year-panel-prev-decade-btn:hover,
+  .rc-calendar-next-month-btn:hover,
+  .rc-calendar-prev-year-btn:hover,
+  .rc-calendar-next-year-btn:hover,
+  .rc-calendar-prev-month-btn:hover,
+  .rc-calendar-month-panel-next-year-btn:hover,
+  .rc-calendar-month-panel-prev-year-btn:hover {
+    color: #3f51b5;
+  }
+
+  .rc-calendar-column-header {
+    padding: 18px 0;
+  }
+
+  .rc-calendar-year-panel-selected-cell .rc-calendar-year-panel-year,
+  .rc-calendar-month-panel-selected-cell .rc-calendar-month-panel-month,
+  .rc-calendar-decade-panel-selected-cell .rc-calendar-decade-panel-decade,
+  .rc-calendar-year-panel-selected-cell .rc-calendar-year-panel-year:hover,
+  .rc-calendar-month-panel-selected-cell .rc-calendar-month-panel-month:hover,
+  .rc-calendar-decade-panel-selected-cell .rc-calendar-decade-panel-decade:hover {
+    background-color: #3f51b5;
+  }
+
+  .rc-calendar-year-panel-year:hover,
+  .rc-calendar-month-panel-month:hover,
+  .rc-calendar-decade-panel-decade:hover {
+    background-color: #e6f3fc;
+  }
+
+  .rc-calendar-today-btn {
+    color: #3f51b5;
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .rc-calendar-today-btn:hover {
+    color: #3f51b5;
+  }
+
+  .rc-calendar-today .rc-calendar-date {
+    box-shadow: 0 0 0 2px #3f51b5;
+    border: none;
+  }
+}

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
+    <title>baseline-directions_run-24px</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="报告" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="epic燃耗图-校准图表" transform="translate(-1219.000000, -538.000000)">
+            <g id="燃耗图" transform="translate(274.000000, 313.000000)">
+                <g id="chart" transform="translate(4.000000, 30.000000)">
+                    <g id="框线">
+                        <g id="Metrics/Graph/Card---Slim---Green">
+                            <g id="Group-13" transform="translate(863.000000, 67.000000)">
+                                <g id="Group-12" transform="translate(78.000000, 87.000000)">
+                                    <g id="冲刺速度" transform="translate(0.000000, 40.000000)">
+                                        <g id="baseline-directions_run-24px" transform="translate(0.000000, 1.000000)">
+                                            <circle id="Oval" fill="#FFB100" cx="9" cy="9" r="9"></circle>
+                                            <path d="M10.5838509,5.41860465 C11.2670807,5.41860465 11.826087,4.8744186 11.826087,4.20930233 C11.826087,3.54418605 11.2670807,3 10.5838509,3 C9.90062112,3 9.34161491,3.54418605 9.34161491,4.20930233 C9.34161491,4.8744186 9.90062112,5.41860465 10.5838509,5.41860465 Z M8.34782609,13.8232558 L8.9689441,11.1627907 L10.2732919,12.372093 L10.2732919,16 L11.515528,16 L11.515528,11.4651163 L10.2111801,10.255814 L10.5838509,8.44186047 C11.3913043,9.34883721 12.6335404,9.95348837 14,9.95348837 L14,8.74418605 C12.8198758,8.74418605 11.826087,8.13953488 11.3291925,7.29302326 L10.7080745,6.3255814 C10.4596273,5.9627907 10.0869565,5.72093023 9.65217391,5.72093023 C9.46583851,5.72093023 9.34161491,5.78139535 9.1552795,5.78139535 L5.92546584,7.11162791 L5.92546584,9.95348837 L7.16770186,9.95348837 L7.16770186,7.89767442 L8.28571429,7.4744186 L7.29192547,12.372093 L4.2484472,11.7674419 L4,12.9767442 L8.34782609,13.8232558 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero"></path>
+                                        </g>
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

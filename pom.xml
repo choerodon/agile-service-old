@@ -5,19 +5,21 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>agile-service</artifactId>
-    <version>0.8.0.RELEASE</version>
+    <version>0.17.0.RELEASE</version>
 
     <!--加parent-->
     <parent>
         <groupId>io.choerodon</groupId>
         <artifactId>choerodon-framework-parent</artifactId>
-        <version>0.9.0.RELEASE</version>
+        <version>0.11.0.RELEASE</version>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <choerodon.starters.version>0.10.0.RELEASE</choerodon.starters.version>
+        <choerodon.starters.version>0.11.0.RELEASE</choerodon.starters.version>
+        <choerodon.serviceBuild>true</choerodon.serviceBuild>
+        <choerodon.mainClass>io.choerodon.agile.AgileServiceApplication</choerodon.mainClass>
     </properties>
 
     <dependencies>
@@ -91,12 +93,6 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.47</version>
         </dependency>
-        <!-- test -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -121,7 +117,7 @@
         </dependency>
         <dependency>
             <groupId>io.choerodon</groupId>
-            <artifactId>choerodon-starter-hitoa</artifactId>
+            <artifactId>choerodon-starter-metric</artifactId>
             <version>${choerodon.starters.version}</version>
         </dependency>
         <dependency>

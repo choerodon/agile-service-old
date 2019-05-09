@@ -1,0 +1,30 @@
+.nodata-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 80px;
+
+  .nodata-img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+  }
+
+  .nodata-content {
+    margin-left: 40px;
+  }
+
+  .nodata-description {
+    margin-top: 10px;
+    font-size: 20px;
+    color: #002100;
+    letter-spacing: 1px;
+    line-height: 28px;
+  }
+
+  .nodata-text {
+    font-size: 14px;
+    color: rgba(0,0,0,0.65);
+    letter-spacing: 1px;
+  }
+}

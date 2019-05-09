@@ -1,0 +1,27 @@
+.c7n-sprintDashboard-remainDay{
+    .wrap {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-content: center;
+        // padding-top: 10px;
+        padding-bottom: 30px;
+
+        .progress {
+            margin: 0 20px;
+        }
+
+        .word{
+            font-size: 12px;
+            line-height: 110px;
+            color: rgba(0, 0, 0, 0.65);
+        }
+    }
+
+    .c7n-loadWrap{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 144px;
+    }
+}

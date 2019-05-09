@@ -1,11 +1,11 @@
 package io.choerodon.agile.api.controller.v1;
 
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.dto.IssueAttachmentDTO;
 import io.choerodon.agile.app.service.IssueAttachmentService;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class IssueAttachmentController {
     @Autowired
     private IssueAttachmentService issueAttachmentService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("上传附件")
     @PostMapping
     public ResponseEntity<List<IssueAttachmentDTO>> uploadAttachment(@ApiParam(value = "项目id", required = true)
@@ -41,7 +41,7 @@ public class IssueAttachmentController {
                 .orElseThrow(() -> new CommonException("error.attachment.upload"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("删除附件")
     @DeleteMapping(value = "/{issueAttachmentId}")
     public ResponseEntity deleteAttachment(@ApiParam(value = "项目id", required = true)
@@ -52,7 +52,7 @@ public class IssueAttachmentController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("上传附件，直接返回地址")
     @PostMapping(value = "/upload_for_address")
     public ResponseEntity<List<String>> uploadForAddress(@ApiParam(value = "project id", required = true)

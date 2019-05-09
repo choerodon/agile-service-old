@@ -4,10 +4,10 @@ import io.choerodon.agile.api.dto.SprintWorkCalendarDTO;
 import io.choerodon.agile.api.dto.WorkCalendarRefCreateDTO;
 import io.choerodon.agile.api.dto.WorkCalendarRefDTO;
 import io.choerodon.agile.app.service.WorkCalendarRefService;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class WorkCalendarRefController {
     @Autowired
     private WorkCalendarRefService workCalendarRefService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "创建冲刺工作日历")
     @PostMapping(value = "/sprint/{sprint_id}")
     public ResponseEntity<WorkCalendarRefDTO> createSprintWorkCalendarRef(@ApiParam(value = "项目id", required = true)
@@ -44,7 +44,7 @@ public class WorkCalendarRefController {
                 .orElseThrow(() -> new CommonException("error.workCalendarRef.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("获取冲刺工作日历设置")
     @GetMapping(value = "/sprint")
     public ResponseEntity<SprintWorkCalendarDTO> querySprintWorkCalendarRefs(@ApiParam(value = "项目id", required = true)
@@ -56,7 +56,7 @@ public class WorkCalendarRefController {
                 .orElseThrow(() -> new CommonException("error.workCalendarRef.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "创建项目工作日历")
     @PostMapping(value = "/project")
     public ResponseEntity<WorkCalendarRefDTO> createProjectWorkCalendarRef(@ApiParam(value = "项目id", required = true)
@@ -68,7 +68,7 @@ public class WorkCalendarRefController {
                 .orElseThrow(() -> new CommonException("error.workCalendarRef.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("获取项目工作日历设置")
     @GetMapping(value = "/project")
     public ResponseEntity<List<WorkCalendarRefDTO>> queryProjectWorkCalendarRefs(@ApiParam(value = "项目id", required = true)
@@ -80,7 +80,7 @@ public class WorkCalendarRefController {
                 .orElseThrow(() -> new CommonException("error.workCalendarRef.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("删除项目工作日历")
     @DeleteMapping(value = "/{calendar_id}")
     public ResponseEntity deleteProjectWorkCalendarRef(@ApiParam(value = "项目id", required = true)
