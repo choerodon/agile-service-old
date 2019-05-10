@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import {
   Modal, Form, Input, DatePicker, Icon,
 } from 'choerodon-ui';
-import { Content, stores, axios } from 'choerodon-front-boot';
+import { Content, stores, axios } from '@choerodon/boot';
 import moment from 'moment';
 import ReleaseStore from '../../../../../stores/project/release/ReleaseStore';
 // import this.props.store from "../../../../../stores/project/backlog/this.props.store";

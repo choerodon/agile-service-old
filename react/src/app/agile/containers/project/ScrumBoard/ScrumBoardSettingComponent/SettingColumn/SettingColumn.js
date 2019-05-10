@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
-import { stores, Permission } from 'choerodon-front-boot';
+import { stores, Permission } from '@choerodon/boot';
 import {
   Input, message, Icon, Modal,
 } from 'choerodon-ui';

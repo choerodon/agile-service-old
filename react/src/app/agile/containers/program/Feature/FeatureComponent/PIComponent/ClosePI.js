@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import {
   Modal, Select, Tooltip, Icon,
 } from 'choerodon-ui';
-import { Content, stores } from 'choerodon-front-boot';
+import { Content, stores } from '@choerodon/boot';
 import _ from 'lodash';
 import FeatureStore from '../../../../../stores/program/Feature/FeatureStore';
 

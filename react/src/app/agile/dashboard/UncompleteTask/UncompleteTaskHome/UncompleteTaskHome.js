@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { axios, stores } from 'choerodon-front-boot';
+import { axios, stores } from '@choerodon/boot';
 import './UncompleteTaskHome.scss';
 import { Spin } from 'choerodon-ui';
 import Progress from '../../../components/Progress';

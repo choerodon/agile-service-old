@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import _ from 'lodash';
 import {
   Page, Header, Content, stores, axios,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import {
   Button, DatePicker, Tabs, Table, Popover, Modal, Radio, Form, Select, Icon, Spin,
 } from 'choerodon-ui';

@@ -1,7 +1,7 @@
 import {
   observable, action, computed,
 } from 'mobx';
-import { store } from 'choerodon-front-boot';
+import { store } from '@choerodon/boot';
 
 @store('VisibleStore')
 class VisibleStore {

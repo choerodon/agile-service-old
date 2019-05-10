@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import {
   Button, Input, Dropdown, Menu, Icon,
 } from 'choerodon-ui';
-import { axios, stores } from 'choerodon-front-boot';
+import { axios, stores } from '@choerodon/boot';
 import IssueStore from '../../../../stores/project/sprint/IssueStore';
 import { createIssue, loadPriorities, createIssueField } from '../../../../api/NewIssueApi';
 import TypeTag from '../../../../components/TypeTag';

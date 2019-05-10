@@ -5,7 +5,7 @@ import {
 } from 'choerodon-ui';
 import {
   Page, Header, Content, stores, axios, Permission, 
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import CreateLink from './Component/CreateLink';
 import EditLink from './Component/EditLink';
 import DeleteLink from './Component/DeleteLink';

@@ -5,7 +5,7 @@ import {
 } from 'choerodon-ui';
 import {
   Page, Header, Content, stores, axios,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import Filter from './Component/Filter';
 import EditFilter from './Component/EditFilter';
 import DeleteFilter from './Component/DeleteFilter';

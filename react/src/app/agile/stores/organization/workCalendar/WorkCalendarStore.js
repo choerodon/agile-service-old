@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { observable, action, computed } from 'mobx';
-import { store, stores } from 'choerodon-front-boot';
+import { store, stores } from '@choerodon/boot';
 
 @store('WorkCalendarStore')
 class WorkCalendarStore {

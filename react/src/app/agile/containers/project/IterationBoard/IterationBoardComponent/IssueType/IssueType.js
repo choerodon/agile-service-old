@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { stores, axios } from 'choerodon-front-boot';
+import { stores, axios } from '@choerodon/boot';
 import ReactEcharts from 'echarts-for-react';
 import { Icon, Spin } from 'choerodon-ui';
 import pic from './no_issue.png';

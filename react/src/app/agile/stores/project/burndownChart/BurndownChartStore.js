@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { store, stores } from 'choerodon-front-boot';
+import { store, stores } from '@choerodon/boot';
 import {
   observable, action, computed, toJS, 
 } from 'mobx';

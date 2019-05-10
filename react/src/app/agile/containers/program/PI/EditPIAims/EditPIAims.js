@@ -5,7 +5,7 @@ import {
 } from 'choerodon-ui';
 import {
   stores,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import PIStore from '../../../../stores/program/PI/PIStore';
 import {
   getPIAims, upDatePIAmix, 

@@ -3,7 +3,7 @@ import {
   Menu, Dropdown, Icon, Spin, Tooltip,
 } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
-import { DashBoardNavBar, stores, axios, DashBoardToolBar } from 'choerodon-front-boot';
+import { DashBoardNavBar, stores, axios, DashBoardToolBar } from '@choerodon/boot';
 import ReactEcharts from 'echarts-for-react';
 import EmptyBlockDashboard from '../../../components/EmptyBlockDashboard';
 // import pic from './no_version.svg';

@@ -4,7 +4,7 @@ import {
   Modal, Form, Input, DatePicker,
 } from 'choerodon-ui';
 import moment from 'moment';
-import { Content, stores } from 'choerodon-front-boot';
+import { Content, stores } from '@choerodon/boot';
 import ReleaseStore from '../../../../stores/project/release/ReleaseStore';
 
 const { Sidebar } = Modal;

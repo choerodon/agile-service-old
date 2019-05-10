@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Input, Icon, Modal } from 'choerodon-ui';
-import { stores } from 'choerodon-front-boot';
+import { stores } from '@choerodon/boot';
 import { Draggable } from 'react-beautiful-dnd';
 import _ from 'lodash';
 import './IssueCard.scss';

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Page, Header, Content } from 'choerodon-front-boot';
+import { Page, Header, Content } from '@choerodon/boot';
 import { find } from 'lodash';
 import { Spin } from 'choerodon-ui';
 import moment from 'moment';

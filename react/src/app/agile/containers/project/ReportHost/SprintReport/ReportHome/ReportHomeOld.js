@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import ReactEcharts from 'echarts-for-react';
 import {
  Page, Header, Content, stores 
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import {
  Button, Tabs, Table, Select, Icon, Tooltip, Dropdown, Menu 
 } from 'choerodon-ui';

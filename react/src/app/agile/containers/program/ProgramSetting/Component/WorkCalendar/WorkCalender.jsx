@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
-import { axios, stores } from 'choerodon-front-boot';
+import { axios, stores } from '@choerodon/boot';
 import Calendar from 'choerodon-ui/lib/rc-components/calendar/';
 import _ from 'lodash';
 import moment from 'moment';

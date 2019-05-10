@@ -5,7 +5,7 @@ import {
 } from 'choerodon-ui';
 import {
   Page, Header, Content, stores,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import SortTable from '../Components/SortTable';
 
 const { AppState } = stores;

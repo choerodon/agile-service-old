@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { Spin, Select, Modal } from 'choerodon-ui';
 import {
   Header, Page,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { loadStatusList } from '../../../../../api/NewIssueApi';
 import FeatureStore from '../../../../../stores/program/Feature/FeatureStore';

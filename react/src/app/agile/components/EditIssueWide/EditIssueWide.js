@@ -1,7 +1,7 @@
 /* eslint-disable react/sort-comp */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { stores, axios } from 'choerodon-front-boot';
+import { stores, axios } from '@choerodon/boot';
 import { withRouter } from 'react-router-dom';
 import { Spin } from 'choerodon-ui';
 import '../EditIssueNarrow/EditIssueNarrow.scss';

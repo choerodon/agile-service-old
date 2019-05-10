@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { stores } from 'choerodon-front-boot';
+import { stores } from '@choerodon/boot';
 import { DeltaOperation } from 'react-quill';
 import { uploadImage, uploadFile } from '../api/FileApi';
 import { SERVICES_URL } from './Constant';

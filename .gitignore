@@ -29,3 +29,11 @@ application-default.yml
 
 init-local-database-csn.sh
 init-local-database.sh
+
+# frontend
+lib
+node_modules
+package-lock.json
+**/lib/dist/
+**/lib/assets/
+**/lib/fonts/

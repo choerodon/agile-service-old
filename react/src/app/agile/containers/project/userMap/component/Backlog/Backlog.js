@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { stores } from 'choerodon-front-boot';
+import { stores } from '@choerodon/boot';
 import { observer } from 'mobx-react';
 import {
   Input, Icon, Popover, Checkbox,

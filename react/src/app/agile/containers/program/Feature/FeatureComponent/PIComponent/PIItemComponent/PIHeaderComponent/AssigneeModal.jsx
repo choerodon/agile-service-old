@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { Modal, Table } from 'choerodon-ui';
 import _ from 'lodash';
-import { Content } from 'choerodon-front-boot';
+import { Content } from '@choerodon/boot';
 
 const { Sidebar } = Modal;
 

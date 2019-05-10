@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Row, Col } from 'choerodon-ui';
 import {
   Page, Header, Content, stores,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import VersionProgress from '../ReportBoardComponent/VersionProgress';
 import IssueType from '../ReportBoardComponent/IssueType';
 import IterationType from '../ReportBoardComponent/IterationType';

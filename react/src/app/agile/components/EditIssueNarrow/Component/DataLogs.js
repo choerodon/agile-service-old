@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Icon, Popconfirm, Button } from 'choerodon-ui';
-import { AppState } from 'choerodon-front-boot';
+import { AppState } from '@choerodon/boot';
 import _ from 'lodash';
 import UserHead from '../../UserHead';
 import WYSIWYGEditor from '../../WYSIWYGEditor';

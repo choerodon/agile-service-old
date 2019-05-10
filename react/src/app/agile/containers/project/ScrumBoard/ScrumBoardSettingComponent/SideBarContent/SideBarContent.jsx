@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import { Content, stores, axios } from 'choerodon-front-boot';
+import { Content, stores, axios } from '@choerodon/boot';
 import {
   Form, Modal, Input, Select, message,
 } from 'choerodon-ui';

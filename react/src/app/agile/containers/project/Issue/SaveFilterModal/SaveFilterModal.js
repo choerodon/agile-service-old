@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import {
   Modal, Form, Input,
 } from 'choerodon-ui';
-import { stores, axios } from 'choerodon-front-boot';
+import { stores, axios } from '@choerodon/boot';
 import _ from 'lodash';
 import IssueStore from '../../../../stores/project/sprint/IssueStore';
 

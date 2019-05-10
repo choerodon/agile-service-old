@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
-import { stores } from 'choerodon-front-boot';
+import { stores } from '@choerodon/boot';
 import {
   Modal, Form, Select, Button,
 } from 'choerodon-ui';

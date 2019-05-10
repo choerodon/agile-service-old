@@ -5,7 +5,7 @@ import {
 } from 'choerodon-ui';
 import {
   Header, Page,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import './FeatureList.scss';
 import FeatureDetail from '../FeatureComponent/FeatureDetail/FeatureDetail';
 import CreateFeature from '../FeatureComponent/CreateFeature/CreateFeature';

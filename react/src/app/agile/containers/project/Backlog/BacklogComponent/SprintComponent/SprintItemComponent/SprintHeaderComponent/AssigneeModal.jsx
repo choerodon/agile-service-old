@@ -4,7 +4,7 @@ import { Modal, Table } from 'choerodon-ui';
 import _ from 'lodash';
 import {
   Page, Header, Content, stores,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 
 const { Sidebar } = Modal;
 

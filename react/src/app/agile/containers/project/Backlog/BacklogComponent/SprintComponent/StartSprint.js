@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import {
   Form, Modal, Select, Input, DatePicker, Icon,
 } from 'choerodon-ui';
-import { Content, stores } from 'choerodon-front-boot';
+import { Content, stores } from '@choerodon/boot';
 import _ from 'lodash';
 import moment from 'moment';
 import WorkCalendar from '../../../../../components/WorkCalendar';

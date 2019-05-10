@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { stores } from 'choerodon-front-boot';
+import { stores } from '@choerodon/boot';
 import { Icon } from 'choerodon-ui';
 import { map } from 'lodash';
 import { injectIntl } from 'react-intl';

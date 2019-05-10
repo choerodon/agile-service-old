@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { Content } from 'choerodon-front-boot';
+import { Content } from '@choerodon/boot';
 import { Select } from 'choerodon-ui';
 import KanbanStore from '../../../../../../stores/program/Kanban/KanbanStore';
 

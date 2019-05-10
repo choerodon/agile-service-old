@@ -3,7 +3,7 @@ import {
 } from 'mobx';
 import axios from 'axios';
 import { find, findIndex } from 'lodash';
-import { stores } from 'choerodon-front-boot';
+import { stores } from '@choerodon/boot';
 import { loadBoardData, sortColumn, deleteColumn } from '../../../api/BoardApi';
 
 const { AppState } = stores;

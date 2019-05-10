@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
-import { stores, Permission } from 'choerodon-front-boot';
+import { stores, Permission } from '@choerodon/boot';
 import { Icon, Modal } from 'choerodon-ui';
 import StatusCard from '../StatusCard/StatusCard';
 import { STATUS } from '../../../../../../common/Constant';

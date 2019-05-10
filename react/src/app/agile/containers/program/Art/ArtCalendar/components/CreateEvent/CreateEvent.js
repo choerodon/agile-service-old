@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Form, Input, Select, Modal, DatePicker, Radio, Checkbox,
 } from 'choerodon-ui';
-import { Content } from 'choerodon-front-boot';
+import { Content } from '@choerodon/boot';
 
 const FormItem = Form.Item;
 const { Sidebar } = Modal;

@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { stores } from 'choerodon-front-boot';
+import { stores } from '@choerodon/boot';
 import PropTypes from 'prop-types';
 import {
   Input, Form, Icon, Popconfirm, 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { stores, axios, Content } from 'choerodon-front-boot';
+import { stores, axios, Content } from '@choerodon/boot';
 import {
   Modal, Form, Select, Input,
 } from 'choerodon-ui';

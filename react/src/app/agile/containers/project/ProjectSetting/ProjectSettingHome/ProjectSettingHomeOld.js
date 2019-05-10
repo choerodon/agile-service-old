@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { stores, axios, Page, Header, Content, Permission } from 'choerodon-front-boot';
+import { stores, axios, Page, Header, Content, Permission } from '@choerodon/boot';
 import { withRouter } from 'react-router-dom';
 import { Form, Input, Button, Icon } from 'choerodon-ui';
 

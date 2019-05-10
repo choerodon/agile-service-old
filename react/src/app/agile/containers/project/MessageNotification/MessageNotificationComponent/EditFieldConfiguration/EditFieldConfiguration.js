@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import {
   Page, Header, Content, stores, Permission, axios,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import {
   Table, Icon, 
 } from 'choerodon-ui';

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { axios, stores } from 'choerodon-front-boot';
+import { axios, stores } from '@choerodon/boot';
 import { Spin, Tooltip } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import EmptyBlockDashboard from '../../../../../components/EmptyBlockDashboard';

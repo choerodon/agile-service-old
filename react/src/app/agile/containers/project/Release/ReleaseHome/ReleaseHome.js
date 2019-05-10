@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import {
   Page, Header, Content, stores, Permission,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import {
   Button, Table, Menu, Dropdown, Icon, Modal, Radio, Select, Spin, Tooltip,
 } from 'choerodon-ui';
-import { Action, axios } from 'choerodon-front-boot';
+import { Action, axios } from '@choerodon/boot';
 import { withRouter } from 'react-router-dom';
 import _ from 'lodash';
 import DragSortingTable from '../ReleaseComponent/DragSortingTable';

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { Icon, Dropdown, Menu } from 'choerodon-ui';
-import { stores } from 'choerodon-front-boot';
+import { stores } from '@choerodon/boot';
 import classnames from 'classnames';
 import ClosePI from '../../ClosePI';
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import {
   Page, Header, Content, stores, axios,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import { observer } from 'mobx-react';
 import { Modal, Radio } from 'choerodon-ui';
 import FileSaver from 'file-saver';

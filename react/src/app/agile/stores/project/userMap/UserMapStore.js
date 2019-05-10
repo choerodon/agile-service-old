@@ -3,7 +3,7 @@ import {
 } from 'mobx';
 import axios from 'axios';
 import _ from 'lodash';
-import { store, stores } from 'choerodon-front-boot';
+import { store, stores } from '@choerodon/boot';
 
 const { AppState } = stores;
 

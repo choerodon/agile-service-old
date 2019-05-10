@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 // import { trace } from 'mobx';
 import {
   Page, Header, Content, stores, axios,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import {
   Button, Icon, Select, DatePicker, Modal, Input, Form, Tooltip,
 } from 'choerodon-ui';

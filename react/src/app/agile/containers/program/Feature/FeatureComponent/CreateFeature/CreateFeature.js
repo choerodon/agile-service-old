@@ -5,7 +5,7 @@ import {
   Checkbox, TimePicker, Row, Col, Radio, DatePicker, Spin,
 } from 'choerodon-ui';
 import moment from 'moment';
-import { stores, Content } from 'choerodon-front-boot';
+import { stores, Content } from '@choerodon/boot';
 import WYSIWYGEditor from '../../../../../components/WYSIWYGEditor';
 import FullEditor from '../../../../../components/FullEditor';
 import UploadButton from '../../../../../components/CommonComponent/UploadButton';

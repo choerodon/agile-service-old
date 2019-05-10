@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import {
  Modal, Form, Select, message
 } from 'choerodon-ui';
-import { stores, Content } from 'choerodon-front-boot';
+import { stores, Content } from '@choerodon/boot';
 import _ from 'lodash';
 import ReleaseStore from '../../../../stores/project/release/ReleaseStore';
 

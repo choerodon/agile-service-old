@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-state */
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import { Page, Header, stores } from 'choerodon-front-boot';
+import { Page, Header, stores } from '@choerodon/boot';
 import { DragDropContext } from 'react-beautiful-dnd';
 import {
   Button, Spin, Checkbox, Icon,

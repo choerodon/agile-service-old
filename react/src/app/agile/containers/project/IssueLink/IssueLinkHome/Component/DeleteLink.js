@@ -3,7 +3,7 @@ import React, { Component, Fragment } from 'react';
 import {
   Modal, Radio, Select, message, Icon,
 } from 'choerodon-ui';
-import { Content, stores, axios } from 'choerodon-front-boot';
+import { Content, stores, axios } from '@choerodon/boot';
 
 const { confirm } = Modal;
 const RadioGroup = Radio.Group;

@@ -1,4 +1,4 @@
-import { axios } from 'choerodon-front-boot';
+import { axios } from '@choerodon/boot';
 import { getProjectId, getOrganizationId } from '../common/utils';
 
 // eslint-disable-next-line import/prefer-default-export

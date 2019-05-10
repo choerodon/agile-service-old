@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Spin } from 'choerodon-ui';
-import { stores, axios } from 'choerodon-front-boot';
+import { stores, axios } from '@choerodon/boot';
 import ReactEcharts from 'echarts-for-react';
 import _ from 'lodash';
 import EmptyBlockDashboard from '../../../../../../components/EmptyBlockDashboard';

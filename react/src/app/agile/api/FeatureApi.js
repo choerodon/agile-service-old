@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { stores, axios } from 'choerodon-front-boot';
+import { stores, axios } from '@choerodon/boot';
 import { getProjectId, getOrganizationId } from '../common/utils';
 
 export function getFeatures(pagination, searchDTO) {

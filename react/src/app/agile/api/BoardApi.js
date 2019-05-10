@@ -1,4 +1,4 @@
-import { axios } from 'choerodon-front-boot';
+import { axios } from '@choerodon/boot';
 import { getProjectId, getOrganizationId } from '../common/utils';
 
 export function loadBoardData(boardId, quickSearchObj = {}) {

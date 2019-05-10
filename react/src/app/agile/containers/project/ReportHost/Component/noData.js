@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { stores } from 'choerodon-front-boot';
+import { stores } from '@choerodon/boot';
 import { withRouter } from 'react-router-dom';
 import './nodata.scss';
 

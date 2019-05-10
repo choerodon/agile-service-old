@@ -1,7 +1,7 @@
 import {
   observable, action, computed, toJS,
 } from 'mobx';
-import { store, stores, axios } from 'choerodon-front-boot';
+import { store, stores, axios } from '@choerodon/boot';
 import moment from 'moment';
 import _ from 'lodash';
 import { empty } from 'rxjs/Observer';

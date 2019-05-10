@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Content, stores, WSHandler } from 'choerodon-front-boot';
+import { Content, stores, WSHandler } from '@choerodon/boot';
 import {
   Modal, Button, Icon, Tag, Progress, Input, Tooltip,
 } from 'choerodon-ui';

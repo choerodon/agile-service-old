@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
   Page, Header, Content, stores, 
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import { Button, Spin, Icon } from 'choerodon-ui';
 import moment from 'moment';
 import { editArtLink } from '../../../../common/utils';

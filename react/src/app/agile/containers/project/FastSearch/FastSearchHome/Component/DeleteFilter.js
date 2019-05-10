@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Modal, Icon } from 'choerodon-ui';
-import { Content, stores, axios } from 'choerodon-front-boot';
+import { Content, stores, axios } from '@choerodon/boot';
 
 const confirm = Modal.confirm;
 const { AppState } = stores;

@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { toJS } from 'mobx';
 import {
   Page, Header, Content, Permission,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import {
   Button, Popover, Dropdown, Menu, Icon, Checkbox, Spin, message, Tooltip,
 } from 'choerodon-ui';

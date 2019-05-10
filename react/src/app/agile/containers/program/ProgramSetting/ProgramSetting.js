@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
   stores, Page, Header, Content, Permission,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import {

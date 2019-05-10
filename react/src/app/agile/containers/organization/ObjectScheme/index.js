@@ -3,7 +3,7 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
-import { asyncRouter, nomatch } from 'choerodon-front-boot';
+import { asyncRouter, nomatch } from '@choerodon/boot';
 
 const ObjectSchemeHome = asyncRouter(() => (import('./ObjectSchemeHome')), () => import('../../../stores/organization/ObjectScheme/ObjectSchemeStore'));
 const ObjectSchemeDetail = asyncRouter(() => (import('./ObjectSchemeDetail')), () => import('../../../stores/organization/ObjectScheme/ObjectSchemeStore'));

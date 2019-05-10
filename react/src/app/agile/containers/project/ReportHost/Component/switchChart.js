@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 import _ from 'lodash';
 import {
   Page, Header, Content, stores, 
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import {
   Dropdown, Button, Menu, Icon, 
 } from 'choerodon-ui';

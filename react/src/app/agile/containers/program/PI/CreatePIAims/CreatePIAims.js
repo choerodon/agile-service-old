@@ -5,7 +5,7 @@ import {
 } from 'choerodon-ui';
 import {
   stores,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import moment from 'moment';
 import PIStore from '../../../../stores/program/PI/PIStore';
 import { createPIAims, getPIList, getPIAims } from '../../../../api/PIApi';

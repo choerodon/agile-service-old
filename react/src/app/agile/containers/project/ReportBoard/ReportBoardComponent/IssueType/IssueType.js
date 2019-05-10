@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactEcharts from 'echarts-for-react';
-import { stores, axios } from 'choerodon-front-boot';
+import { stores, axios } from '@choerodon/boot';
 import { withRouter } from 'react-router-dom';
 import { Spin, Table } from 'choerodon-ui';
 import _ from 'lodash';

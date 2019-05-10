@@ -4,7 +4,7 @@ import { Draggable } from 'react-beautiful-dnd';
 import {
   Radio, Icon, Tooltip, Modal,
 } from 'choerodon-ui';
-import { stores, Permission } from 'choerodon-front-boot';
+import { stores, Permission } from '@choerodon/boot';
 import KanbanStore from '../../../../../../stores/program/Kanban/KanbanStore';
 import EditStatus from '../EditStatus/EditStatus';
 import './StatusCard.scss';

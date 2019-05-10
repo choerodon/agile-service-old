@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import {
   Page, Header, Content, stores,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import { Row, Col, Button } from 'choerodon-ui';
 import { loadSprint } from '../../../../api/NewIssueApi';
 import Assignee from '../IterationBoardComponent/Assignee';

@@ -8,7 +8,7 @@ import {
 import { injectIntl, FormattedMessage } from 'react-intl';
 import {
   Content, Header, Page, stores,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import moment from 'moment';
 import { randomString } from '../../../../common/utils';
 import './ObjectSchemeField.scss';

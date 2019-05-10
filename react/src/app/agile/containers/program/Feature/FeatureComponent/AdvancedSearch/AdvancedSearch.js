@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 import {
   Select, DatePicker, Button, Modal, Tooltip,
 } from 'choerodon-ui';
-import { stores, axios } from 'choerodon-front-boot';
+import { stores, axios } from '@choerodon/boot';
 import moment from 'moment';
 import { find, difference, unionBy } from 'lodash';
 import SelectFocusLoad from '../../../../../components/SelectFocusLoad';

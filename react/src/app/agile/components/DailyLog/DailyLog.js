@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { stores, axios } from 'choerodon-front-boot';
+import { stores, axios } from '@choerodon/boot';
 import moment from 'moment';
 import {
   Select, DatePicker, Button, Modal, Radio, message, Icon, InputNumber,

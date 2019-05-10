@@ -3,7 +3,7 @@ import _ from 'lodash';
 import {
   Modal, Table, Tooltip, Popover, Button, Icon, 
 } from 'choerodon-ui';
-import { stores, Content, axios } from 'choerodon-front-boot';
+import { stores, Content, axios } from '@choerodon/boot';
 import TimeAgo from 'timeago-react';
 
 const { AppState } = stores;

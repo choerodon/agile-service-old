@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Icon, Popconfirm, Tooltip } from 'choerodon-ui';
-import { stores, Permission } from 'choerodon-front-boot';
+import { stores, Permission } from '@choerodon/boot';
 import { withRouter } from 'react-router-dom';
 import { deleteIssue } from '../../../api/NewIssueApi';
 import PriorityTag from '../../PriorityTag';

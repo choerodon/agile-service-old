@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import {
   Modal, Form, Input, DatePicker, Icon,
 } from 'choerodon-ui';
-import { Content, stores, Permission } from 'choerodon-front-boot';
+import { Content, stores, Permission } from '@choerodon/boot';
 import { fromJS, is } from 'immutable';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';

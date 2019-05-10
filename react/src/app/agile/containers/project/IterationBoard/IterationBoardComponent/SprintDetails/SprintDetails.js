@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { stores } from 'choerodon-front-boot';
+import { stores } from '@choerodon/boot';
 import {
   Table, Tabs, Spin, Tooltip, Pagination,
 } from 'choerodon-ui';

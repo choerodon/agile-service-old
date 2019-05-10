@@ -2,7 +2,7 @@ import axios from 'axios';
 import {
   observable, action, computed, toJS,
 } from 'mobx';
-import { store, stores } from 'choerodon-front-boot';
+import { store, stores } from '@choerodon/boot';
 
 const { AppState } = stores;
 

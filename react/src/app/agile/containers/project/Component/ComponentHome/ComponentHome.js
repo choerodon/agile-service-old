@@ -7,7 +7,7 @@ import {
 } from 'choerodon-ui';
 import {
   Page, Header, Content, stores, Permission, 
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import './ComponentHome.scss';
 import pic from '../../../../assets/image/模块管理－空.png';
 import { loadComponents } from '../../../../api/ComponentApi';

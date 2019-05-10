@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { Modal, Form, Select, DatePicker } from 'choerodon-ui';
-import { Page, Header, Content, stores } from 'choerodon-front-boot';
+import { Page, Header, Content, stores } from '@choerodon/boot';
 import moment from 'moment';
 import _ from 'lodash';
 import AccumulationStore from '../../../../../../stores/project/accumulation/AccumulationStore';

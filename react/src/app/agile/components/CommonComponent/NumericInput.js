@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Input, Tooltip } from 'choerodon-ui';
-import { AppState } from 'choerodon-front-boot';
+import { AppState } from '@choerodon/boot';
 import './NumericInput.scss';
 
 class NumericInput extends Component {

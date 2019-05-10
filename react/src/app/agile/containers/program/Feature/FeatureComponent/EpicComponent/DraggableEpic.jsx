@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { stores, axios } from 'choerodon-front-boot';
+import { stores, axios } from '@choerodon/boot';
 import { observer } from 'mobx-react';
 import classnames from 'classnames';
 import { Droppable, Draggable } from 'react-beautiful-dnd';

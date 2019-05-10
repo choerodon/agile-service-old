@@ -8,7 +8,7 @@ import {
 } from 'choerodon-ui';
 import {
   DashBoardNavBar, stores, axios, DashBoardToolBar,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import EmptyBlockDashboard from '../../components/EmptyBlockDashboard';
 // import pic from './no_sprint.svg';
 import pic from '../../assets/image/emptyChart.svg';

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
   stores, axios, Page, Header, Content, Permission,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import { withRouter } from 'react-router-dom';
 import _ from 'lodash';
 import {

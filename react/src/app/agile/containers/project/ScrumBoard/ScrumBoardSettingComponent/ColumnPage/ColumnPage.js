@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { Content, stores, Permission } from 'choerodon-front-boot';
+import { Content, stores, Permission } from '@choerodon/boot';
 import {
   Button, Select, Icon, message,
 } from 'choerodon-ui';

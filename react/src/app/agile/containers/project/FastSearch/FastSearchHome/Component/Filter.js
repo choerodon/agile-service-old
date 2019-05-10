@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   Modal, Form, Input, Select, message, Icon, Button, DatePicker,
 } from 'choerodon-ui';
-import { Content, stores, axios } from 'choerodon-front-boot';
+import { Content, stores, axios } from '@choerodon/boot';
 import _ from 'lodash';
 import { NumericInput } from '../../../../../components/CommonComponent';
 import './Filter.scss';

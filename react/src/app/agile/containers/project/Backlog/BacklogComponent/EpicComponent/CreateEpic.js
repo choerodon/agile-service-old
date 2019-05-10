@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import {
   Modal, Form, Input,
 } from 'choerodon-ui';
-import { Content, stores, axios } from 'choerodon-front-boot';
+import { Content, stores, axios } from '@choerodon/boot';
 import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
 import { createIssueField } from '../../../../../api/NewIssueApi';
 

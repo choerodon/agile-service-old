@@ -4,7 +4,7 @@ import { toJS } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import {
   Page, Header, stores,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import { Button, Spin } from 'choerodon-ui';
 import { find } from 'lodash';
 import {

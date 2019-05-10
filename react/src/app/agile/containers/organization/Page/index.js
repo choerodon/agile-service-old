@@ -3,7 +3,7 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
-import { asyncRouter, nomatch } from 'choerodon-front-boot';
+import { asyncRouter, nomatch } from '@choerodon/boot';
 
 const PageHome = asyncRouter(() => (import('./PageHome')), () => import('../../../stores/organization/Page/PageStore'));
 const PageDetail = asyncRouter(() => (import('./PageDetail')), () => import('../../../stores/organization/Page/PageStore'));

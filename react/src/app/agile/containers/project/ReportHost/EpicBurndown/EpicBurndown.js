@@ -4,7 +4,7 @@ import ReactEcharts from 'echarts-for-react';
 import _ from 'lodash';
 import {
   Page, Header, Content, stores,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import {
   Button, Tabs, Table, Select, Icon, Tooltip, Spin, Checkbox,
 } from 'choerodon-ui';

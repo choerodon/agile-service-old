@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Input, message } from 'choerodon-ui';
-import { axios, stores } from 'choerodon-front-boot';
+import { axios, stores } from '@choerodon/boot';
 import { Draggable } from 'react-beautiful-dnd';
 import './EpicCard.scss';
 import StatusTag from '../../../../../components/StatusTag';

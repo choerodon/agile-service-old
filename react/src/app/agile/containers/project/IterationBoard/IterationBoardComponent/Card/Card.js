@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { stores } from 'choerodon-front-boot';
+import { stores } from '@choerodon/boot';
 import { Icon } from 'choerodon-ui';
 import './Card.scss';
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 import {
   Page, Header, Content,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import {
   Button, Spin, Tabs, Icon,
 } from 'choerodon-ui';

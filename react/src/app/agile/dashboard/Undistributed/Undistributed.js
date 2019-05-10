@@ -1,7 +1,7 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { DashBoardNavBar, stores, axios } from 'choerodon-front-boot';
+import { DashBoardNavBar, stores, axios } from '@choerodon/boot';
 import { Spin, Tooltip, Pagination } from 'choerodon-ui';
 import TypeTag from '../../components/TypeTag';
 import PriorityTag from '../../components/PriorityTag';

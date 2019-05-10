@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { stores, axios, Content } from 'choerodon-front-boot';
+import { stores, axios, Content } from '@choerodon/boot';
 import _ from 'lodash';
 import { Modal, Form, Select } from 'choerodon-ui';
 import { createLink, loadIssuesInLink } from '../../api/NewIssueApi';

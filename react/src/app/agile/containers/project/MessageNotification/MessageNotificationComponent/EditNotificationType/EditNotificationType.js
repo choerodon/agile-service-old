@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import {
   Page, Header, Content, stores, axios,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import _ from 'lodash';
 import {
   Button, Table, Checkbox, Select, Tooltip,

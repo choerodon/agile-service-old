@@ -5,7 +5,7 @@ import {
 } from 'choerodon-ui';
 import {
   Page, Header, Content, stores,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import './ObjectSchemeDetail.scss';
 import CreateField from '../Components/CreateField';
 

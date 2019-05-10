@@ -4,7 +4,7 @@
  * 由以下内容组成
  * cache：用于缓存用户请求内容的 Map，由
  * */
-import { axios, stores } from 'choerodon-front-boot';
+import { axios, stores } from '@choerodon/boot';
 import IssueStore from '../../../stores/project/sprint/IssueStore';
 import {
   loadIssueTypes, loadStatusList, loadPriorities, loadLabels, loadComponents, loadVersions, loadEpics, loadSprints, 

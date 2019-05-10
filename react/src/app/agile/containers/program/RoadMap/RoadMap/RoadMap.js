@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import {
   Page, Header, Content, stores,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import moment from 'moment';
 import { observer, inject } from 'mobx-react';
 import EditFeature from '../../Feature/FeatureComponent/FeatureDetail/EditFeature';

@@ -6,7 +6,7 @@ import { DragDropContext } from 'react-beautiful-dnd';
 import TypeTag from '../../../../../components/TypeTag';
 import StatusTag from '../../../../../components/StatusTag';
 import ScrumBoardStore from '../../../../../stores/project/scrumBoard/ScrumBoardStore';
-import SwimLaneHeader from './SwimLaneHeader.jsx';
+import SwimLaneHeader from './SwimLaneHeader.js';
 
 const { Panel } = Collapse;
 

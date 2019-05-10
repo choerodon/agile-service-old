@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import _ from 'lodash';
 import moment from 'moment';
-import { stores, Permission, axios } from 'choerodon-front-boot';
+import { stores, Permission, axios } from '@choerodon/boot';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 import {
   message, DatePicker, Icon, Dropdown, Menu, Input,

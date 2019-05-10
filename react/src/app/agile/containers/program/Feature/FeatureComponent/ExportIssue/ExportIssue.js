@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { stores } from 'choerodon-front-boot';
+import { stores } from '@choerodon/boot';
 import { Modal, Radio } from 'choerodon-ui';
 import FileSaver from 'file-saver';
 import { exportFeatures } from '../../../../../api/FeatureApi';

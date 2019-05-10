@@ -8,7 +8,7 @@ import 'echarts/lib/component/title';
 import 'echarts/lib/component/legend';
 import {
   Page, Header, Content, stores, axios,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import {
   Button, Select, Icon, Spin, Tooltip, DatePicker,
 } from 'choerodon-ui';

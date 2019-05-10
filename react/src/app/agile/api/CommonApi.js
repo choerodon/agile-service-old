@@ -1,4 +1,4 @@
-import { stores, axios } from 'choerodon-front-boot';
+import { stores, axios } from '@choerodon/boot';
 import { getProjectId, getOrganizationId } from '../common/utils';
 
 const { AppState } = stores;

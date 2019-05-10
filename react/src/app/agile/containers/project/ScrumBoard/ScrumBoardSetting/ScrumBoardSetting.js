@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import {
   Page, Header, Content, stores, axios, Permission,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import moment from 'moment';
 import {
   Button, Spin, Modal, Form, Input, Select, Tabs, message, Icon,

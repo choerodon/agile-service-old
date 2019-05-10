@@ -1,5 +1,5 @@
 import { observable, action, computed } from 'mobx';
-import { store, stores, axios } from 'choerodon-front-boot';
+import { store, stores, axios } from '@choerodon/boot';
 import _ from 'lodash';
 import {
   loadSprints, loadSprint, loadSprintIssues, loadChartData, 

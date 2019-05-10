@@ -6,7 +6,7 @@ import {
 } from 'choerodon-ui';
 import {
   Page, Header, Content, stores,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import ReactEcharts from 'echarts-for-react';
 import _ from 'lodash';
 import moment from 'moment';

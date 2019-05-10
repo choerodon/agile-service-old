@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import {
   Page, Header, Content, stores, axios,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import {
   Button, Table, Menu, Dropdown, Icon, Modal, Radio, Select,
 } from 'choerodon-ui';

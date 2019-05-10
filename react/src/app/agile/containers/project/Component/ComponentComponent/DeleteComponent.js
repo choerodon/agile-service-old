@@ -3,7 +3,7 @@ import React, { Component, Fragment } from 'react';
 import {
   Modal, Radio, Select, message, Icon,
 } from 'choerodon-ui';
-import { Content, stores } from 'choerodon-front-boot';
+import { Content, stores } from '@choerodon/boot';
 import { getUsers } from '../../../../api/CommonApi';
 import { createComponent } from '../../../../api/ComponentApi';
 import { loadComponents, deleteComponent } from '../../../../api/ComponentApi';

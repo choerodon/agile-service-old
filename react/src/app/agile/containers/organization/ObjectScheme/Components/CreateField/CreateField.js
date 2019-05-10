@@ -7,7 +7,7 @@ import {
 import { injectIntl, FormattedMessage } from 'react-intl';
 import {
   stores,
-} from 'choerodon-front-boot';
+} from '@choerodon/boot';
 import './CreateField.scss';
 import * as images from '../../../../../assets/image';
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import { axios } from 'choerodon-front-boot';
+import { axios } from '@choerodon/boot';
 import { Select } from 'choerodon-ui';
 import EventEmitter from 'wolfy87-eventemitter';
 

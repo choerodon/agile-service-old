@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { withRouter } from 'react-router-dom';
 import { Spin } from 'choerodon-ui';
-import { DashBoardNavBar, stores, axios } from 'choerodon-front-boot';
+import { DashBoardNavBar, stores, axios } from '@choerodon/boot';
 import EmptyBlockDashboard from '../../components/EmptyBlockDashboard';
 // import pic from './no_epic.svg';
 import pic from '../../assets/image/emptyChart.svg';
