@@ -83,6 +83,12 @@
             <artifactId>spring-cloud-starter-sleuth</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.choerodon</groupId>
+            <artifactId>choerodon-starter-actuator</artifactId>
+            <version>${choerodon.starters.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
