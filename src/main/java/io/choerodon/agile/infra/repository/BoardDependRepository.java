@@ -15,4 +15,6 @@ public interface BoardDependRepository {
     void update(BoardDependDO update);
 
     BoardDependDO queryById(Long projectId, Long boardDependId);
+
+    void checkId(Long projectId, Long boardDependId);
 }

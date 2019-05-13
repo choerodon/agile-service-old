@@ -6,18 +6,16 @@ import io.swagger.annotations.ApiModelProperty;
  * @author shinan.chen
  * @since 2019/5/13
  */
-public class BoardFeatureDTO {
+public class BoardDependDTO {
 
     @ApiModelProperty(value = "id")
     private Long id;
-    @ApiModelProperty(value = "特性id")
-    private Long featureId;
-    @ApiModelProperty(value = "冲刺id")
-    private Long sprintId;
+    @ApiModelProperty(value = "公告板特性id")
+    private Long boardFeatureId;
+    @ApiModelProperty(value = "依赖的公告板特性id")
+    private Long dependBoardFeatureId;
     @ApiModelProperty(value = "piid")
     private Long piId;
-    @ApiModelProperty(value = "团队项目id")
-    private Long teamProjectId;
     @ApiModelProperty(value = "项目群id")
     private Long programId;
     @ApiModelProperty(value = "乐观锁")
@@ -39,20 +37,20 @@ public class BoardFeatureDTO {
         this.id = id;
     }
 
-    public Long getFeatureId() {
-        return featureId;
+    public Long getBoardFeatureId() {
+        return boardFeatureId;
     }
 
-    public void setFeatureId(Long featureId) {
-        this.featureId = featureId;
+    public void setBoardFeatureId(Long boardFeatureId) {
+        this.boardFeatureId = boardFeatureId;
     }
 
-    public Long getSprintId() {
-        return sprintId;
+    public Long getDependBoardFeatureId() {
+        return dependBoardFeatureId;
     }
 
-    public void setSprintId(Long sprintId) {
-        this.sprintId = sprintId;
+    public void setDependBoardFeatureId(Long dependBoardFeatureId) {
+        this.dependBoardFeatureId = dependBoardFeatureId;
     }
 
     public Long getPiId() {
@@ -61,14 +59,6 @@ public class BoardFeatureDTO {
 
     public void setPiId(Long piId) {
         this.piId = piId;
-    }
-
-    public Long getTeamProjectId() {
-        return teamProjectId;
-    }
-
-    public void setTeamProjectId(Long teamProjectId) {
-        this.teamProjectId = teamProjectId;
     }
 
     public Long getProgramId() {

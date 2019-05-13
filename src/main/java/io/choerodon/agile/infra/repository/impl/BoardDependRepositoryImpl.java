@@ -55,4 +55,9 @@ public class BoardDependRepositoryImpl implements BoardDependRepository {
         }
         return boardDepend;
     }
+
+    @Override
+    public void checkId(Long projectId, Long boardDependId) {
+        queryById(projectId, boardDependId);
+    }
 }
