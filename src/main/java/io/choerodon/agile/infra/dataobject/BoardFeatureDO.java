@@ -24,7 +24,16 @@ public class BoardFeatureDO extends AuditDomain {
     private Long sprintId;
     private Long piId;
     private Long teamProjectId;
+    private String rank;
     private Long programId;
+
+    public String getRank() {
+        return rank;
+    }
+
+    public void setRank(String rank) {
+        this.rank = rank;
+    }
 
     public Long getId() {
         return id;

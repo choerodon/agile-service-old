@@ -17,6 +17,7 @@ databaseChangeLog(logicalFilePath:'script/db/agile_board_feature.groovy') {
             column(name: 'team_project_id', type: 'BIGINT UNSIGNED', remarks: '团队项目id') {
                 constraints(nullable: false)
             }
+            column(name: 'rank', type: 'VARCHAR(255)', remarks: 'rank值')
             column(name: 'program_id', type: 'BIGINT UNSIGNED', remarks: '项目群id') {
                 constraints(nullable: false)
             }

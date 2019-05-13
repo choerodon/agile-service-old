@@ -10,6 +10,12 @@ import javax.validation.constraints.NotNull;
  */
 public class BoardFeatureUpdateDTO {
 
+    @ApiModelProperty(value = "是否拖动到第一个")
+    @NotNull(message = "error.boardFeature.beforeNotNull")
+    private Boolean before;
+    @ApiModelProperty(value = "before：true，在当前移动的值之后，false，在当前移动的值之前，若为0L则为第一次创建")
+    @NotNull(message = "error.boardFeature.outsetIdNotNull")
+    private Long outsetId;
     @ApiModelProperty(value = "冲刺id")
     @NotNull(message = "error.boardFeature.sprintIdNotNull")
     private Long sprintId;
@@ -42,6 +48,22 @@ public class BoardFeatureUpdateDTO {
 
     public void setTeamProjectId(Long teamProjectId) {
         this.teamProjectId = teamProjectId;
+    }
+
+    public Boolean getBefore() {
+        return before;
+    }
+
+    public void setBefore(Boolean before) {
+        this.before = before;
+    }
+
+    public Long getOutsetId() {
+        return outsetId;
+    }
+
+    public void setOutsetId(Long outsetId) {
+        this.outsetId = outsetId;
     }
 }
 

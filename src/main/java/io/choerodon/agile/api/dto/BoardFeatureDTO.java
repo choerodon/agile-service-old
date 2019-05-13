@@ -18,6 +18,8 @@ public class BoardFeatureDTO {
     private Long piId;
     @ApiModelProperty(value = "团队项目id")
     private Long teamProjectId;
+    @ApiModelProperty(value = "rank值")
+    private String rank;
     @ApiModelProperty(value = "项目群id")
     private Long programId;
     @ApiModelProperty(value = "乐观锁")
@@ -25,6 +27,14 @@ public class BoardFeatureDTO {
 
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
+    }
+
+    public String getRank() {
+        return rank;
+    }
+
+    public void setRank(String rank) {
+        this.rank = rank;
     }
 
     public void setObjectVersionNumber(Long objectVersionNumber) {

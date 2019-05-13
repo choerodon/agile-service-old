@@ -4,6 +4,7 @@ import io.choerodon.agile.api.dto.BoardFeatureCreateDTO;
 import io.choerodon.agile.api.dto.BoardFeatureDTO;
 import io.choerodon.agile.api.dto.BoardFeatureUpdateDTO;
 import io.choerodon.agile.app.service.BoardFeatureService;
+import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.dataobject.BoardFeatureDO;
 import io.choerodon.agile.infra.mapper.BoardFeatureMapper;
 import io.choerodon.agile.infra.repository.BoardFeatureRepository;
@@ -35,6 +36,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         BoardFeatureDO boardFeatureDO = modelMapper.map(createDTO, BoardFeatureDO.class);
         boardFeatureDO.setProgramId(projectId);
         checkExist(boardFeatureDO);
+        handleRank(projectId, boardFeatureDO, createDTO.getBefore(), createDTO.getOutsetId());
         boardFeatureRepository.create(boardFeatureDO);
         return queryById(projectId, boardFeatureDO.getId());
     }
@@ -45,7 +47,11 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         BoardFeatureDO update = modelMapper.map(updateDTO, BoardFeatureDO.class);
         update.setId(boardFeatureId);
         update.setProgramId(projectId);
-        checkExist(update);
+        BoardFeatureDO select = boardFeatureMapper.selectOne(update);
+        if (select != null && !select.getId().equals(boardFeatureId)) {
+            throw new CommonException(EXIST_ERROR);
+        }
+        handleRank(projectId, update, updateDTO.getBefore(), updateDTO.getOutsetId());
         boardFeatureRepository.update(update);
         return queryById(projectId, boardFeatureId);
     }
@@ -58,6 +64,32 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     private void checkExist(BoardFeatureDO boardFeatureDO) {
         if (!boardFeatureMapper.select(boardFeatureDO).isEmpty()) {
             throw new CommonException(EXIST_ERROR);
+        }
+    }
+
+    /**
+     * 处理rank值
+     *
+     * @param projectId
+     * @param boardFeatureDO
+     * @param before
+     * @param outSetId
+     */
+    private void handleRank(Long projectId, BoardFeatureDO boardFeatureDO, Boolean before, Long outSetId) {
+        if (outSetId.equals(0L)) {
+            String rank = RankUtil.mid();
+            boardFeatureDO.setRank(rank);
+        } else if (before) {
+            String outSetRank = queryById(projectId, outSetId).getRank();
+            boardFeatureDO.setRank(RankUtil.genNext(outSetRank));
+        } else {
+            String outSetRank = queryById(projectId, outSetId).getRank();
+            String rightRank = boardFeatureMapper.queryRightRank(boardFeatureDO, outSetRank);
+            if (rightRank == null) {
+                boardFeatureDO.setRank(RankUtil.genPre(outSetRank));
+            } else {
+                boardFeatureDO.setRank(RankUtil.between(outSetRank, rightRank));
+            }
         }
     }
 
