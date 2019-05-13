@@ -20,6 +20,8 @@ public class FeatureE {
 
     private Long objectVersionNumber;
 
+    private Long programId;
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -74,5 +76,13 @@ public class FeatureE {
 
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
+    }
+
+    public void setProgramId(Long programId) {
+        this.programId = programId;
+    }
+
+    public Long getProgramId() {
+        return programId;
     }
 }

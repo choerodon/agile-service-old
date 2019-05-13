@@ -53,5 +53,5 @@ public interface BoardService {
 
     void initBoardByProgram(Long projectId, String boardName, List<StatusPayload> statusPayloads);
 
-    JSONObject queryByOptionsInProgram(Long projectId, Long boardId, Long organizationId);
+    JSONObject queryByOptionsInProgram(Long projectId, Long boardId, Long organizationId, SearchDTO searchDTO);
 }
