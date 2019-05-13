@@ -29,6 +29,9 @@ public class FeatureDTO {
     @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "项目群id")
+    private Long programId;
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -83,5 +86,13 @@ public class FeatureDTO {
 
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
+    }
+
+    public void setProgramId(Long programId) {
+        this.programId = programId;
+    }
+
+    public Long getProgramId() {
+        return programId;
     }
 }

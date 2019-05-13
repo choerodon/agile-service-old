@@ -31,6 +31,8 @@ public class FeatureDO extends AuditDomain {
 
     private String featureType;
 
+    private Long programId;
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -77,5 +79,13 @@ public class FeatureDO extends AuditDomain {
 
     public void setFeatureType(String featureType) {
         this.featureType = featureType;
+    }
+
+    public void setProgramId(Long programId) {
+        this.programId = programId;
+    }
+
+    public Long getProgramId() {
+        return programId;
     }
 }

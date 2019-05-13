@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
+import io.choerodon.agile.api.dto.SearchDTO;
 import io.choerodon.agile.domain.agile.event.RemoveStatusWithProject;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.BaseMapper;
@@ -98,7 +99,8 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
 
     List<ColumnAndIssueDO> selectBoardByProgram(@Param("projectId") Long projectId,
                                                 @Param("boardId") Long boardId,
-                                                @Param("activePiId") Long activePiId);
+                                                @Param("activePiId") Long activePiId,
+                                                @Param("searchDTO")SearchDTO searchDTO);
 
     List<BoardColumnStatusRelDO> queryRelByColumnIds(@Param("columnIds") List<Long> columnIds);
 }

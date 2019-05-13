@@ -480,7 +480,7 @@
                 and (
                 <if test="searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0">
                     ai.issue_id in (
-                    select af.issue_id from agile_feature af where af.feature_type in
+                    select af.issue_id from agile_feature af where af.program_id = #{programId} and af.feature_type in
                     <foreach collection="searchDTO.advancedSearchArgs.featureTypeList" item="featureType" open="("
                              separator=","
                              close=")">
@@ -3361,7 +3361,7 @@
                 and (
                     <if test="searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0">
                         ai.issue_id in (
-                        select af.issue_id from agile_feature af where af.feature_type in
+                        select af.issue_id from agile_feature af where af.program_id = #{programId} and af.feature_type in
                         <foreach collection="searchDTO.advancedSearchArgs.featureTypeList" item="featureType" open="("
                                  separator=","
                                  close=")">

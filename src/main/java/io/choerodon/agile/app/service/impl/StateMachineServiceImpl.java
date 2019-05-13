@@ -137,6 +137,9 @@ public class StateMachineServiceImpl implements StateMachineService {
             FeatureDTO featureDTO = issueCreateDTO.getFeatureDTO();
             featureDTO.setIssueId(issueId);
             featureDTO.setProjectId(issueCreateDTO.getProjectId());
+            if (issueCreateDTO.getProgramId() != null) {
+                featureDTO.setProgramId(issueCreateDTO.getProgramId());
+            }
             featureRepository.create(ConvertHelper.convert(featureDTO, FeatureE.class));
             if (issueCreateDTO.getPiId() != null && issueCreateDTO.getPiId() != 0L) {
                 piFeatureRepository.create(new PiFeatureE(issueId, issueCreateDTO.getPiId(), projectId));

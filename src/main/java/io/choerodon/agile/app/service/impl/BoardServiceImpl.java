@@ -637,7 +637,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public JSONObject queryByOptionsInProgram(Long projectId, Long boardId, Long organizationId) {
+    public JSONObject queryByOptionsInProgram(Long projectId, Long boardId, Long organizationId, SearchDTO searchDTO) {
         JSONObject result = new JSONObject(true);
         ArtDO activeArtDO = artMapper.selectActiveArt(projectId);
         PiDO piDO = null;
@@ -648,7 +648,7 @@ public class BoardServiceImpl implements BoardService {
         if (piDO != null) {
             activePiId = piDO.getId();
         }
-        List<ColumnAndIssueDO> columns = boardColumnMapper.selectBoardByProgram(projectId, boardId, activePiId);
+        List<ColumnAndIssueDO> columns = boardColumnMapper.selectBoardByProgram(projectId, boardId, activePiId, searchDTO);
         // get status map from organization
         Map<Long, StatusMapDTO> statusMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();

@@ -31,4 +31,13 @@ databaseChangeLog(logicalFilePath: 'agile_feature.groovy') {
             column(name: "issue_id")
         }
     }
+
+    changeSet(id: '2019-05-13-add-column-program-id', author: 'fuqianghuang01@gmail.com') {
+        addColumn(tableName: 'agile_feature') {
+            column(name: 'program_id', type: 'BIGINT UNSIGNED', remarks: 'program id')
+        }
+        sql(stripComments: true, splitStatements: false, endDelimiter: ';') {
+            "update agile_feature set program_id = project_id;"
+        }
+    }
 }
