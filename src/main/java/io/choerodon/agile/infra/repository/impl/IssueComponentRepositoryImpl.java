@@ -4,7 +4,7 @@ import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.IssueComponentE;
-import io.choerodon.agile.domain.agile.repository.IssueComponentRepository;
+import io.choerodon.agile.infra.repository.IssueComponentRepository;
 import io.choerodon.agile.infra.dataobject.IssueComponentDO;
 import io.choerodon.agile.infra.mapper.IssueComponentMapper;
 import org.springframework.beans.factory.annotation.Autowired;

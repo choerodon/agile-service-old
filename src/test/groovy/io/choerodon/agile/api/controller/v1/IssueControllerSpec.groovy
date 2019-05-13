@@ -6,10 +6,7 @@ import io.choerodon.agile.api.dto.*
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
-import io.choerodon.agile.domain.agile.entity.IssueE
-import io.choerodon.agile.domain.agile.entity.ProjectInfoE
-import io.choerodon.agile.domain.agile.event.CreateIssuePayload
-import io.choerodon.agile.domain.agile.repository.UserRepository
+import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.common.enums.SchemeApplyType
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.*
@@ -20,7 +17,6 @@ import io.choerodon.core.domain.Page
 import io.choerodon.mybatis.pagehelper.domain.PageRequest
 import org.mockito.Matchers
 import org.mockito.Mockito
-import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
@@ -33,8 +29,6 @@ import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
-
-import java.util.stream.Collectors
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 

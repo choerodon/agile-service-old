@@ -4,7 +4,7 @@ import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.NoticeService;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.PiE;
-import io.choerodon.agile.domain.agile.repository.UserRepository;
+import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDO;

@@ -3,7 +3,7 @@ package io.choerodon.agile.app.assembler;
 import io.choerodon.agile.api.dto.ArtDTO;
 import io.choerodon.agile.api.dto.PiCalendarDTO;
 import io.choerodon.agile.api.dto.SprintCalendarDTO;
-import io.choerodon.agile.domain.agile.repository.UserRepository;
+import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.ArtDO;
 import io.choerodon.agile.infra.dataobject.PiCalendarDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;

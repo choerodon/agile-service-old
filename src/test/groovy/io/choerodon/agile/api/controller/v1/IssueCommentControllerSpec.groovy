@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.IssueCommentCreateDTO
 import io.choerodon.agile.api.dto.IssueCommentDTO
-import io.choerodon.agile.domain.agile.repository.UserRepository
+import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.IssueCommentMapper

@@ -1,27 +1,18 @@
 package io.choerodon.agile.api.controller.v1
 
-import com.alibaba.fastjson.JSONObject
+
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.IssueCreateDTO
 import io.choerodon.agile.api.dto.IssueDTO
 import io.choerodon.agile.api.dto.ProjectDTO
-import io.choerodon.agile.api.eventhandler.AgileEventHandler
-import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
-import io.choerodon.agile.domain.agile.entity.IssueE
-import io.choerodon.agile.domain.agile.entity.ProjectInfoE
-import io.choerodon.agile.domain.agile.event.CreateIssuePayload
 import io.choerodon.agile.domain.agile.event.ProjectConfig
 import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue
-import io.choerodon.agile.domain.agile.repository.UserRepository
-import io.choerodon.agile.infra.common.utils.SiteMsgUtil
+import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.UserDO
-import io.choerodon.agile.infra.feign.IssueFeignClient
 import io.choerodon.agile.infra.mapper.*
-import io.choerodon.asgard.saga.feign.SagaClient
 import org.mockito.Matchers
 import org.mockito.Mockito
-import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest

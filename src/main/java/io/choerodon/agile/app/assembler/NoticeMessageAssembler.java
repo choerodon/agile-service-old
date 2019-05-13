@@ -2,7 +2,7 @@ package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.dto.IdWithNameDTO;
 import io.choerodon.agile.api.dto.MessageDTO;
-import io.choerodon.agile.domain.agile.repository.UserRepository;
+import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.MessageDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import org.springframework.beans.BeanUtils;

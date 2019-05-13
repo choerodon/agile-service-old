@@ -6,7 +6,7 @@ import io.choerodon.agile.app.service.ExcelService;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
 import io.choerodon.agile.domain.agile.entity.FileOperationHistoryE;
-import io.choerodon.agile.domain.agile.repository.FileOperationHistoryRepository;
+import io.choerodon.agile.infra.repository.FileOperationHistoryRepository;
 import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.FileFeignClient;

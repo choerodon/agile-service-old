@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.FileOperationHistoryE;
-import io.choerodon.agile.domain.agile.repository.FileOperationHistoryRepository;
+import io.choerodon.agile.infra.repository.FileOperationHistoryRepository;
 import io.choerodon.agile.infra.dataobject.FileOperationHistoryDO;
 import io.choerodon.agile.infra.mapper.FileOperationHistoryMapper;
 import io.choerodon.core.convertor.ConvertHelper;

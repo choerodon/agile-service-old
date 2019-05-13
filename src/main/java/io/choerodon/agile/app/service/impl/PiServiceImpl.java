@@ -7,14 +7,23 @@ import io.choerodon.agile.app.assembler.PiAssembler;
 import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
-import io.choerodon.agile.domain.agile.entity.*;
-import io.choerodon.agile.domain.agile.repository.*;
-import io.choerodon.agile.infra.common.utils.*;
+import io.choerodon.agile.domain.agile.entity.ArtE;
+import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
+import io.choerodon.agile.domain.agile.entity.PiE;
+import io.choerodon.agile.domain.agile.entity.SprintE;
+import io.choerodon.agile.infra.common.utils.ConvertUtil;
+import io.choerodon.agile.infra.common.utils.RankUtil;
+import io.choerodon.agile.infra.common.utils.SendMsgUtil;
+import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.agile.infra.repository.ArtRepository;
+import io.choerodon.agile.infra.repository.IssueRepository;
+import io.choerodon.agile.infra.repository.PiRepository;
+import io.choerodon.agile.infra.repository.SprintRepository;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
@@ -632,7 +641,7 @@ public class PiServiceImpl implements PiService {
             return new ArrayList<>();
         }
         List<PiDO> piDOList = piMapper.selectUnDonePiDOList(programId, activeArt.getId());
-        if (piDOList != null && !piDOList.isEmpty())  {
+        if (piDOList != null && !piDOList.isEmpty()) {
             return ConvertHelper.convertList(piDOList, PiNameDTO.class);
         } else {
             return new ArrayList<>();

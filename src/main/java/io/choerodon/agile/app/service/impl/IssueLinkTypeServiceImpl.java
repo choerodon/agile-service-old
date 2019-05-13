@@ -13,7 +13,7 @@ import io.choerodon.agile.api.dto.IssueLinkTypeDTO;
 import io.choerodon.agile.app.assembler.IssueLinkTypeAssembler;
 import io.choerodon.agile.app.service.IssueLinkTypeService;
 import io.choerodon.agile.domain.agile.entity.IssueLinkTypeE;
-import io.choerodon.agile.domain.agile.repository.IssueLinkTypeRepository;
+import io.choerodon.agile.infra.repository.IssueLinkTypeRepository;
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper;
 import io.choerodon.core.convertor.ConvertHelper;

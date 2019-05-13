@@ -3,16 +3,11 @@ package io.choerodon.agile.api.controller.v1
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.MessageDTO
-import io.choerodon.agile.api.dto.RoleDTO
-import io.choerodon.agile.api.dto.UserDTO
-import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.MessageDO
 import io.choerodon.agile.infra.mapper.NoticeDetailMapper
 import io.choerodon.agile.infra.mapper.NoticeMapper
 import io.choerodon.core.convertor.ConvertHelper
-import io.choerodon.core.domain.Page
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import

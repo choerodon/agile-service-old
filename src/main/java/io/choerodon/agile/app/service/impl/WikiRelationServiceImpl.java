@@ -6,7 +6,7 @@ import io.choerodon.agile.api.dto.WikiMenuDTO;
 import io.choerodon.agile.api.dto.WikiRelationDTO;
 import io.choerodon.agile.app.service.WikiRelationService;
 import io.choerodon.agile.domain.agile.entity.WikiRelationE;
-import io.choerodon.agile.domain.agile.repository.WikiRelationRepository;
+import io.choerodon.agile.infra.repository.WikiRelationRepository;
 import io.choerodon.agile.infra.common.utils.HttpRequestUtil;
 import io.choerodon.agile.infra.dataobject.WikiRelationDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;

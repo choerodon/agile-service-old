@@ -6,12 +6,8 @@ import io.choerodon.agile.api.dto.AssigneeDistributeDTO
 import io.choerodon.agile.api.dto.IssueTypeDistributeDTO
 import io.choerodon.agile.api.dto.PriorityDistributeDTO
 import io.choerodon.agile.api.dto.SprintInfoDTO
-import io.choerodon.agile.domain.agile.repository.UserRepository
-import io.choerodon.agile.infra.dataobject.UserDO
-import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.IssueMapper
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import

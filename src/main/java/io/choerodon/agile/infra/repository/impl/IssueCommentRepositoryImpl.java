@@ -5,7 +5,7 @@ import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.IssueCommentE;
-import io.choerodon.agile.domain.agile.repository.IssueCommentRepository;
+import io.choerodon.agile.infra.repository.IssueCommentRepository;
 import io.choerodon.agile.infra.dataobject.IssueCommentDO;
 import io.choerodon.agile.infra.mapper.IssueCommentMapper;
 import org.springframework.beans.factory.annotation.Autowired;

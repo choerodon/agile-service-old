@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.ArtE;
-import io.choerodon.agile.domain.agile.repository.ArtRepository;
+import io.choerodon.agile.infra.repository.ArtRepository;
 import io.choerodon.agile.infra.dataobject.ArtDO;
 import io.choerodon.agile.infra.mapper.ArtMapper;
 import io.choerodon.core.convertor.ConvertHelper;

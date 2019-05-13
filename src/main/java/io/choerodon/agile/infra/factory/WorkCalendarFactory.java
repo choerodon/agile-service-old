@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.factory;
 
 import io.choerodon.agile.app.service.WorkCalendarService;
 import io.choerodon.agile.app.service.impl.JuheWorkCalendarServiceImpl;
-import io.choerodon.agile.domain.agile.repository.WorkCalendarHolidayRefRepository;
+import io.choerodon.agile.infra.repository.WorkCalendarHolidayRefRepository;
 import io.choerodon.agile.infra.common.properties.WorkCalendarHolidayProperties;
 import io.choerodon.agile.infra.mapper.WorkCalendarHolidayRefMapper;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,33 +1,14 @@
 package io.choerodon.agile.app.service.impl;
 
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Transactional;
-
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.domain.agile.event.IssuePayload;
-import io.choerodon.agile.domain.agile.repository.*;
 import io.choerodon.agile.domain.agile.rule.IssueLinkRule;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
@@ -40,6 +21,7 @@ import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.agile.infra.repository.*;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaClient;
@@ -54,6 +36,22 @@ import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * 敏捷开发Issue
@@ -1993,7 +1991,8 @@ public class IssueServiceImpl implements IssueService {
 //                        Collectors.toMap(ProductVersionDataDTO::getVersionId, x-> x));
 
         Map<Long, SprintDO> sprintDoMap = sprintMapper.getSprintByProjectId(projectId).stream().collect(
-                Collectors.toMap(SprintDO::getSprintId, x-> x));;
+                Collectors.toMap(SprintDO::getSprintId, x -> x));
+        ;
 
         List<IssueListTestWithSprintVersionDTO> issueListTestWithSprintVersionDTOS = new ArrayList<>();
 

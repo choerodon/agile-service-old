@@ -4,7 +4,7 @@ import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PriorityDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.api.dto.StoryMapIssueDTO;
-import io.choerodon.agile.domain.agile.repository.UserRepository;
+import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.LookupValueDO;
 import io.choerodon.agile.infra.dataobject.StoryMapIssueDO;

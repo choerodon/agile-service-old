@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.PiObjectiveE;
-import io.choerodon.agile.domain.agile.repository.PiObjectiveRepository;
+import io.choerodon.agile.infra.repository.PiObjectiveRepository;
 import io.choerodon.agile.infra.dataobject.PiObjectiveDO;
 import io.choerodon.agile.infra.mapper.PiObjectiveMapper;
 import io.choerodon.core.convertor.ConvertHelper;

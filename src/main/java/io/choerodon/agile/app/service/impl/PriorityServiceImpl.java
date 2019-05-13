@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.app.service.PriorityService;
-import io.choerodon.agile.domain.agile.repository.IssueRepository;
+import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

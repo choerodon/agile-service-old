@@ -7,7 +7,7 @@ import io.choerodon.agile.api.dto.UserWithRoleDTO;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.domain.agile.event.ProjectEvent;
-import io.choerodon.agile.domain.agile.repository.ProjectInfoRepository;
+import io.choerodon.agile.infra.repository.ProjectInfoRepository;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;

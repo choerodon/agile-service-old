@@ -5,7 +5,7 @@ import io.choerodon.agile.domain.agile.event.RemoveStatusWithProject;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.BoardColumnE;
-import io.choerodon.agile.domain.agile.repository.BoardColumnRepository;
+import io.choerodon.agile.infra.repository.BoardColumnRepository;
 import io.choerodon.agile.infra.dataobject.BoardColumnDO;
 import io.choerodon.agile.infra.mapper.BoardColumnMapper;
 import org.springframework.beans.factory.annotation.Autowired;

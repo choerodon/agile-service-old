@@ -5,25 +5,17 @@ import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.BoardDTO
 import io.choerodon.agile.api.dto.IssueMoveDTO
 import io.choerodon.agile.api.dto.MessageDTO
-import io.choerodon.agile.api.dto.ProjectDTO
-import io.choerodon.agile.api.dto.RoleDTO
-import io.choerodon.agile.api.dto.UserDTO
 import io.choerodon.agile.api.dto.UserSettingDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.BoardService
 import io.choerodon.agile.app.service.NoticeService
-import io.choerodon.agile.domain.agile.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.BoardDO
 import io.choerodon.agile.infra.dataobject.ColumnAndIssueDO
 import io.choerodon.agile.infra.dataobject.IssueDO
-import io.choerodon.agile.infra.dataobject.IssueStatusDO
-import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.mapper.BoardMapper
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.IssueStatusMapper
-import io.choerodon.core.domain.Page
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
@@ -34,8 +26,6 @@ import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
-
-import javax.management.relation.Role
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/8/7.
