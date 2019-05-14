@@ -730,6 +730,7 @@ public class IssueController {
                                                                    @ApiParam(value = "组织id", required = true)
                                                                    @RequestParam Long organizationId,
                                                                    @ApiParam(value = "分页信息", required = true)
+                                                                   @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
                                                                    @ApiIgnore PageRequest pageRequest,
                                                                    @ApiParam(value = "搜索DTO", required = true)
                                                                    @RequestBody SearchDTO searchDTO) {
