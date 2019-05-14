@@ -3331,8 +3331,16 @@
     </resultMap>
 
     <select id="selectFeatureIdsByPage" resultType="java.lang.Long">
-        select
-        ai.issue_id
+        select issue_page.issue_id from
+        (select
+        ai.issue_id as issue_id,
+        ai.issue_num as issue_num,
+        ai.issue_type_id as issue_type_id,
+        ai.status_id as status_id,
+        ai.epic_id as epic_id,
+        ai.last_update_date as last_update_date,
+        ai.creation_date as creation_date,
+        ai.story_points as story_points
         from agile_issue ai
         where ai.program_id = #{programId} and ai.type_code in ('feature', 'issue_epic')
         <if test='searchDTO.advancedSearchArgs != null'>
@@ -3359,9 +3367,10 @@
             </if>
             <if test="(searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0) or (searchDTO.advancedSearchArgs.issueTypeList != null and searchDTO.advancedSearchArgs.issueTypeList.size > 0)">
                 and (
-                    <if test="searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0">
-                        ai.issue_id in (
-                        select af.issue_id from agile_feature af where af.program_id = #{programId} and af.feature_type in
+                    <if test="searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0">ai.issue_id
+                        in (
+                        select af.issue_id
+                        from agile_feature af where af.program_id = #{programId} and af.feature_type in
                         <foreach collection="searchDTO.advancedSearchArgs.featureTypeList" item="featureType" open="("
                                  separator=","
                                  close=")">
@@ -3374,7 +3383,8 @@
                             or
                         </if>
                         ai.issue_type_id IN
-                        <foreach collection="searchDTO.advancedSearchArgs.issueTypeList" item="issueTypeId" open="(" separator=","
+                        <foreach collection="searchDTO.advancedSearchArgs.issueTypeList" item="issueTypeId" open="
+                             (" separator=","
                                  close=")">
                             #{issueTypeId}
                         </foreach>
@@ -3392,8 +3402,7 @@
                 </foreach>
                 )
             </if>
-        </if>
-        order by ai.issue_id desc
+        </if>) issue_page
     </select>
 
     <select id="selectFeatureList" resultMap="featureListMap">
