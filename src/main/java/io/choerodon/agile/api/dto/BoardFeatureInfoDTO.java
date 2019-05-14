@@ -4,10 +4,9 @@ import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author shinan.chen
- * @since 2019/5/13
+ * @since 2019/5/14
  */
-public class BoardFeatureDTO {
-
+public class BoardFeatureInfoDTO {
     @ApiModelProperty(value = "id")
     private Long id;
     @ApiModelProperty(value = "特性id")
@@ -22,6 +21,12 @@ public class BoardFeatureDTO {
     private String rank;
     @ApiModelProperty(value = "项目群id")
     private Long programId;
+    @ApiModelProperty(value = "特性类型")
+    private String featureType;
+    @ApiModelProperty(value = "特性问题编码")
+    private String issueCode;
+    @ApiModelProperty(value = "问题概要")
+    private String summary;
     @ApiModelProperty(value = "乐观锁")
     private Long objectVersionNumber;
 
@@ -87,6 +92,30 @@ public class BoardFeatureDTO {
 
     public void setProgramId(Long programId) {
         this.programId = programId;
+    }
+
+    public String getFeatureType() {
+        return featureType;
+    }
+
+    public void setFeatureType(String featureType) {
+        this.featureType = featureType;
+    }
+
+    public String getIssueCode() {
+        return issueCode;
+    }
+
+    public void setIssueCode(String issueCode) {
+        this.issueCode = issueCode;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 }
 
