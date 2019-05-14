@@ -10,8 +10,11 @@ import io.choerodon.agile.infra.repository.BoardDependRepository;
 import io.choerodon.agile.infra.repository.BoardFeatureRepository;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @author shinan.chen
@@ -32,6 +35,10 @@ public class BoardDependServiceImpl implements BoardDependService {
     public static final String INSERT_ERROR = "error.boardDepend.create";
     public static final String EXIST_ERROR = "error.boardDepend.existData";
     private ModelMapper modelMapper = new ModelMapper();
+    @PostConstruct
+    public void init() {
+        this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
 
     @Override
     public BoardDependDTO create(Long projectId, BoardDependCreateDTO createDTO) {

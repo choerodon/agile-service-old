@@ -13,7 +13,7 @@ public class BoardSprintAttrDTO {
     @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
     @ApiModelProperty(value = "列宽")
-    private int columnWidth;
+    private Integer columnWidth;
     @ApiModelProperty(value = "项目群id")
     private Long programId;
 
@@ -33,11 +33,11 @@ public class BoardSprintAttrDTO {
         this.sprintId = sprintId;
     }
 
-    public int getColumnWidth() {
+    public Integer getColumnWidth() {
         return columnWidth;
     }
 
-    public void setColumnWidth(int columnWidth) {
+    public void setColumnWidth(Integer columnWidth) {
         this.columnWidth = columnWidth;
     }
 

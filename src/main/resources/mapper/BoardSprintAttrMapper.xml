@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="io.choerodon.foundation.infra.mapper.BoardSprintAttrMapper">
+<mapper namespace="io.choerodon.agile.infra.mapper.BoardSprintAttrMapper">
 
     <resultMap id="boardSprintAttr" type="io.choerodon.agile.infra.dataobject.BoardSprintAttrDO">
         <id property="id" column="id"/>
@@ -14,9 +14,10 @@
         <id property="lastUpdatedBy" column="last_updated_by"/>
         <id property="objectVersionNumber" column="object_version_number"/>
     </resultMap>
+
     <select id="queryByProgramId" resultMap="boardSprintAttr">
-        SELECT *
-        FROM board_sprint_attr bsa
+        SELECT bsa.*
+        FROM agile_board_sprint_attr bsa
         WHERE bsa.program_id = #{programId}
     </select>
 </mapper>

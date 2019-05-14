@@ -14,14 +14,14 @@ import javax.persistence.Table;
  */
 @ModifyAudit
 @VersionAudit
-@Table(name = "agile_board_sprint")
+@Table(name = "agile_board_sprint_attr")
 public class BoardSprintAttrDO extends AuditDomain {
 
     @Id
     @GeneratedValue
     private Long id;
     private Long sprintId;
-    private int columnWidth;
+    private Integer columnWidth;
     private Long programId;
 
     public Long getId() {
@@ -40,11 +40,11 @@ public class BoardSprintAttrDO extends AuditDomain {
         this.sprintId = sprintId;
     }
 
-    public int getColumnWidth() {
+    public Integer getColumnWidth() {
         return columnWidth;
     }
 
-    public void setColumnWidth(int columnWidth) {
+    public void setColumnWidth(Integer columnWidth) {
         this.columnWidth = columnWidth;
     }
 

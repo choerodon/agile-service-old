@@ -10,9 +10,11 @@ import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.agile.infra.repository.BoardFeatureRepository;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,11 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     public static final String INSERT_ERROR = "error.boardFeature.create";
     public static final String EXIST_ERROR = "error.boardFeature.existData";
     private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
 
     @Override
     public BoardFeatureDTO create(Long projectId, BoardFeatureCreateDTO createDTO) {

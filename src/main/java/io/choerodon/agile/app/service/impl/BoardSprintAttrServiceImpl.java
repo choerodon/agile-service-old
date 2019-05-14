@@ -7,8 +7,11 @@ import io.choerodon.agile.infra.mapper.BoardSprintAttrMapper;
 import io.choerodon.agile.infra.repository.BoardSprintAttrRepository;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @author shinan.chen
@@ -29,7 +32,11 @@ public class BoardSprintAttrServiceImpl implements BoardSprintAttrService {
     public static final int MAX_COLUMN_WIDTH = 10;
     public static final int MIN_COLUMN_WIDTH = 1;
     private ModelMapper modelMapper = new ModelMapper();
-
+    @PostConstruct
+    public void init() {
+        this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
+    
     @Override
     public BoardSprintAttrDTO addColumnWidth(Long projectId, Long sprintId) {
         BoardSprintAttrDO origin = boardSprintAttrRepository.queryBySprintId(projectId, sprintId);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="io.choerodon.foundation.infra.mapper.BoardDependMapper">
+<mapper namespace="io.choerodon.agile.infra.mapper.BoardDependMapper">
 
     <resultMap id="boardDependInfo" type="io.choerodon.agile.api.dto.BoardDependInfoDTO">
         <id property="id" column="id"/>
@@ -10,10 +10,6 @@
         <id property="teamProjectId" column="team_project_id"/>
         <id property="programId" column="program_id"/>
 
-        <id property="creationDate" column="creation_date"/>
-        <id property="createdBy" column="created_by"/>
-        <id property="lastUpdateDate" column="last_update_date"/>
-        <id property="lastUpdatedBy" column="last_updated_by"/>
         <id property="objectVersionNumber" column="object_version_number"/>
         <association property="boardFeature" columnPrefix="origin_" javaType="io.choerodon.agile.api.dto.BoardFeatureInfoDTO">
             <id property="id" column="id"/>
@@ -51,9 +47,9 @@
         bf2.team_project_id as depend_team_project_id,
         bf2.rank            as depend_rank,
         bf2.program_id      as depend_program_id
-        FROM board_depend bd
-        LEFT JOIN board_feature bf1 ON bf1.id = bd.board_feature_id
-        LEFT JOIN board_feature bf2 ON bf2.id = bd.depend_board_feature_id
+        FROM agile_board_depend bd
+        LEFT JOIN agile_board_feature bf1 ON bf1.id = bd.board_feature_id
+        LEFT JOIN agile_board_feature bf2 ON bf2.id = bd.depend_board_feature_id
         WHERE bd.program_id = #{programId}
         AND bd.pi_id = #{piId}
     </select>
