@@ -8,7 +8,5 @@ import io.choerodon.agile.api.dto.BoardSprintAttrDTO;
  */
 public interface BoardSprintAttrService {
 
-    BoardSprintAttrDTO addColumnWidth(Long projectId, Long sprintId);
-
-    BoardSprintAttrDTO reduceColumnWidth(Long projectId, Long sprintId);
+    BoardSprintAttrDTO updateColumnWidth(Long projectId, Long sprintId, Integer columnWidth);
 }
