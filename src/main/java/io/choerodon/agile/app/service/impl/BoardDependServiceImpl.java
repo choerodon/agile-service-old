@@ -51,19 +51,6 @@ public class BoardDependServiceImpl implements BoardDependService {
         return queryById(projectId, boardDependDO.getId());
     }
 
-    @Override
-    public BoardDependDTO update(Long projectId, Long boardDependId, BoardDependUpdateDTO updateDTO) {
-        boardFeatureRepository.checkId(projectId, updateDTO.getBoardFeatureId());
-        boardFeatureRepository.checkId(projectId, updateDTO.getDependBoardFeatureId());
-        boardDependRepository.checkId(projectId, boardDependId);
-        BoardDependDO update = modelMapper.map(updateDTO, BoardDependDO.class);
-        update.setId(boardDependId);
-        update.setProgramId(projectId);
-        checkExist(update);
-        boardDependRepository.update(update);
-        return queryById(projectId, boardDependId);
-    }
-
     /**
      * 判断是否已经存在
      *

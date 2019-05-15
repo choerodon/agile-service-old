@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.api.dto.BoardFeatureInfoDTO;
 import io.choerodon.agile.infra.dataobject.BoardFeatureDO;
 import io.choerodon.agile.infra.mapper.BoardFeatureMapper;
 import io.choerodon.agile.infra.repository.BoardFeatureRepository;
@@ -47,6 +48,18 @@ public class BoardFeatureRepositoryImpl implements BoardFeatureRepository {
     @Override
     public BoardFeatureDO queryById(Long projectId, Long boardFeatureId) {
         BoardFeatureDO boardFeature = boardFeatureMapper.selectByPrimaryKey(boardFeatureId);
+        if (boardFeature == null) {
+            throw new CommonException(ERROR_BOARDFEATURE_NOTFOUND);
+        }
+        if (!boardFeature.getProgramId().equals(projectId)) {
+            throw new CommonException(ERROR_BOARDFEATURE_ILLEGAL);
+        }
+        return boardFeature;
+    }
+
+    @Override
+    public BoardFeatureInfoDTO queryInfoById(Long projectId, Long boardFeatureId) {
+        BoardFeatureInfoDTO boardFeature = boardFeatureMapper.queryInfoById(projectId, boardFeatureId);
         if (boardFeature == null) {
             throw new CommonException(ERROR_BOARDFEATURE_NOTFOUND);
         }
