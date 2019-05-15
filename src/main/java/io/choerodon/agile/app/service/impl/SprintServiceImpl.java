@@ -637,7 +637,7 @@ public class SprintServiceImpl implements SprintService {
             PiDO res = piMapper.selectActivePi(programId, activeArtDO.getId());
             if (res != null) {
                 List<Long> sprintList = sprintMapper.selectNotDoneByPiId(programId, res.getId());
-                if (sprintList != null) {
+                if (sprintList != null && !sprintList.isEmpty()) {
                     for (Long sprintId : sprintList) {
                         SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO();
                         sprintCompleteDTO.setProjectId(projectId);
