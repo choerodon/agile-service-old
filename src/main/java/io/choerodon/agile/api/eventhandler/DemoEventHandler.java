@@ -8,7 +8,7 @@ import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarE;
 import io.choerodon.agile.domain.agile.event.OrganizationRegisterEventPayload;
 import io.choerodon.agile.domain.agile.event.OrganizationRegisterPayload;
 import io.choerodon.agile.domain.agile.event.ProjectEvent;
-import io.choerodon.agile.domain.agile.repository.TimeZoneWorkCalendarRepository;
+import io.choerodon.agile.infra.repository.TimeZoneWorkCalendarRepository;
 import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
 import io.choerodon.asgard.saga.annotation.SagaTask;

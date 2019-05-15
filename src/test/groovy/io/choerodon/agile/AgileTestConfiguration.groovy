@@ -7,12 +7,11 @@ import io.choerodon.agile.app.service.IssueAttachmentService
 import io.choerodon.agile.app.service.ProductVersionService
 import io.choerodon.agile.app.service.impl.IssueAttachmentServiceImpl
 import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl
-import io.choerodon.agile.domain.agile.event.DeployStateMachinePayload
 import io.choerodon.agile.domain.agile.event.OrganizationCreateEventPayload
 import io.choerodon.agile.domain.agile.event.ProjectCreateAgilePayload
 import io.choerodon.agile.domain.agile.event.ProjectEvent
 import io.choerodon.agile.domain.agile.event.StatusPayload
-import io.choerodon.agile.domain.agile.repository.UserRepository
+import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.feign.FileFeignClient
@@ -37,9 +36,6 @@ import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.jwt.JwtHelper
 import org.springframework.security.jwt.crypto.sign.MacSigner
 import org.springframework.security.jwt.crypto.sign.Signer

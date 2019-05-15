@@ -4,7 +4,7 @@ import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
-import io.choerodon.agile.domain.agile.repository.VersionIssueRelRepository;
+import io.choerodon.agile.infra.repository.VersionIssueRelRepository;
 import io.choerodon.agile.infra.dataobject.VersionIssueRelDO;
 import io.choerodon.agile.infra.mapper.VersionIssueRelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

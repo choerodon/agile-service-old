@@ -3,7 +3,7 @@ package io.choerodon.agile.infra.repository.impl;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.IssueLinkE;
-import io.choerodon.agile.domain.agile.repository.IssueLinkRepository;
+import io.choerodon.agile.infra.repository.IssueLinkRepository;
 import io.choerodon.agile.infra.dataobject.IssueLinkDO;
 import io.choerodon.agile.infra.mapper.IssueLinkMapper;
 import org.springframework.beans.factory.annotation.Autowired;

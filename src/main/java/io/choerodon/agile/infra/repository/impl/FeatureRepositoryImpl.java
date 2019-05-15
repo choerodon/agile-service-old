@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.FeatureE;
-import io.choerodon.agile.domain.agile.repository.FeatureRepository;
+import io.choerodon.agile.infra.repository.FeatureRepository;
 import io.choerodon.agile.infra.dataobject.FeatureDO;
 import io.choerodon.agile.infra.mapper.FeatureMapper;
 import io.choerodon.core.convertor.ConvertHelper;

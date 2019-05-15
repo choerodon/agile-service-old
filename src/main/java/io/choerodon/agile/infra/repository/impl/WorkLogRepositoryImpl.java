@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.WorkLogE;
-import io.choerodon.agile.domain.agile.repository.WorkLogRepository;
+import io.choerodon.agile.infra.repository.WorkLogRepository;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.WorkLogDO;
 import io.choerodon.agile.infra.mapper.WorkLogMapper;

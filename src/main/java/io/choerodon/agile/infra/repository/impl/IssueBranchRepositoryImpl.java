@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.IssueBranchE;
-import io.choerodon.agile.domain.agile.repository.IssueBranchRepository;
+import io.choerodon.agile.infra.repository.IssueBranchRepository;
 import io.choerodon.agile.infra.dataobject.IssueBranchDO;
 import io.choerodon.agile.infra.mapper.IssueBranchMapper;
 import io.choerodon.core.convertor.ConvertHelper;

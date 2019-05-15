@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.WikiRelationE;
-import io.choerodon.agile.domain.agile.repository.WikiRelationRepository;
+import io.choerodon.agile.infra.repository.WikiRelationRepository;
 import io.choerodon.agile.infra.dataobject.WikiRelationDO;
 import io.choerodon.agile.infra.mapper.WikiRelationMapper;
 import io.choerodon.core.convertor.ConvertHelper;

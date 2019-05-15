@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.BoardSprintAttrMapper">
+
+    <resultMap id="boardSprintAttr" type="io.choerodon.agile.infra.dataobject.BoardSprintAttrDO">
+        <id property="id" column="id"/>
+        <id property="sprintId" column="sprint_id"/>
+        <id property="columnWidth" column="column_width"/>
+        <id property="programId" column="program_id"/>
+
+        <id property="creationDate" column="creation_date"/>
+        <id property="createdBy" column="created_by"/>
+        <id property="lastUpdateDate" column="last_update_date"/>
+        <id property="lastUpdatedBy" column="last_updated_by"/>
+        <id property="objectVersionNumber" column="object_version_number"/>
+    </resultMap>
+
+    <select id="queryByProgramId" resultMap="boardSprintAttr">
+        SELECT bsa.*
+        FROM agile_board_sprint_attr bsa
+        WHERE bsa.program_id = #{programId}
+    </select>
+</mapper>

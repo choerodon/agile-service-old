@@ -3,7 +3,7 @@ package io.choerodon.agile.app.service.impl;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.NoticeMessageAssembler;
 import io.choerodon.agile.app.service.NoticeService;
-import io.choerodon.agile.domain.agile.repository.UserRepository;
+import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.MessageDO;
 import io.choerodon.agile.infra.dataobject.MessageDetailDO;
 import io.choerodon.agile.infra.mapper.NoticeDetailMapper;

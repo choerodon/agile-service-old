@@ -3,7 +3,7 @@ package io.choerodon.agile.infra.repository.impl;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.BoardE;
-import io.choerodon.agile.domain.agile.repository.BoardRepository;
+import io.choerodon.agile.infra.repository.BoardRepository;
 import io.choerodon.agile.infra.dataobject.BoardDO;
 import io.choerodon.agile.infra.mapper.BoardMapper;
 import org.springframework.beans.factory.annotation.Autowired;

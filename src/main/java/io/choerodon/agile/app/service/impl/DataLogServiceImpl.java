@@ -5,7 +5,7 @@ import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.app.assembler.DataLogAssembler;
 import io.choerodon.agile.app.service.DataLogService;
 import io.choerodon.agile.domain.agile.entity.DataLogE;
-import io.choerodon.agile.domain.agile.repository.DataLogRepository;
+import io.choerodon.agile.infra.repository.DataLogRepository;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.mapper.DataLogMapper;
 import io.choerodon.core.convertor.ConvertHelper;

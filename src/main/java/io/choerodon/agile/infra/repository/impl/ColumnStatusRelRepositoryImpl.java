@@ -4,7 +4,7 @@ import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
-import io.choerodon.agile.domain.agile.repository.ColumnStatusRelRepository;
+import io.choerodon.agile.infra.repository.ColumnStatusRelRepository;
 import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO;
 import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

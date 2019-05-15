@@ -6,7 +6,7 @@ import io.choerodon.agile.infra.dataobject.VersionIssueDO;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.converter.ProductVersionConverter;
 import io.choerodon.agile.domain.agile.entity.ProductVersionE;
-import io.choerodon.agile.domain.agile.repository.ProductVersionRepository;
+import io.choerodon.agile.infra.repository.ProductVersionRepository;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;
 import io.choerodon.mybatis.helper.OptionalHelper;

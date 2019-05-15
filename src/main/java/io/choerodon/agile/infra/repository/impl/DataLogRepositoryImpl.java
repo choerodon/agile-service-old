@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.DataLogE;
-import io.choerodon.agile.domain.agile.repository.DataLogRepository;
+import io.choerodon.agile.infra.repository.DataLogRepository;
 import io.choerodon.agile.infra.dataobject.DataLogDO;
 import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDO;
 import io.choerodon.agile.infra.mapper.DataLogMapper;

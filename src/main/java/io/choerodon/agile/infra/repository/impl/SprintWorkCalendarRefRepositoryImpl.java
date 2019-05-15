@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
-import io.choerodon.agile.domain.agile.repository.SprintWorkCalendarRefRepository;
+import io.choerodon.agile.infra.repository.SprintWorkCalendarRefRepository;
 import io.choerodon.agile.infra.dataobject.WorkCalendarRefDO;
 import io.choerodon.agile.infra.mapper.WorkCalendarRefMapper;
 import io.choerodon.core.exception.CommonException;

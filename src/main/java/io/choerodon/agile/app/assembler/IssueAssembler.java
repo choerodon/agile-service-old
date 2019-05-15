@@ -2,7 +2,7 @@ package io.choerodon.agile.app.assembler;
 
 import com.google.common.collect.Lists;
 import io.choerodon.agile.api.dto.*;
-import io.choerodon.agile.domain.agile.repository.UserRepository;
+import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.*;

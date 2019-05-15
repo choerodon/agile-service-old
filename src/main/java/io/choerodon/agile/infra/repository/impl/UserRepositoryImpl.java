@@ -4,7 +4,7 @@ import io.choerodon.agile.api.dto.ProjectDTO;
 import io.choerodon.agile.api.dto.RoleAssignmentSearchDTO;
 import io.choerodon.agile.api.dto.RoleDTO;
 import io.choerodon.agile.api.dto.UserDTO;
-import io.choerodon.agile.domain.agile.repository.UserRepository;
+import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;

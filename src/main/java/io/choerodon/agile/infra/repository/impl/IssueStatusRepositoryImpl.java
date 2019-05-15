@@ -7,7 +7,7 @@ import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.IssueStatusE;
-import io.choerodon.agile.domain.agile.repository.IssueStatusRepository;
+import io.choerodon.agile.infra.repository.IssueStatusRepository;
 import io.choerodon.agile.infra.dataobject.IssueStatusDO;
 import io.choerodon.agile.infra.mapper.IssueStatusMapper;
 import org.springframework.beans.factory.annotation.Autowired;

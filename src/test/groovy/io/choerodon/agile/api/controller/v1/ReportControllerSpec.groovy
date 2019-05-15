@@ -7,7 +7,7 @@ import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.ReportService
 import io.choerodon.agile.app.service.SprintService
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
-import io.choerodon.agile.domain.agile.repository.UserRepository
+import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.mapper.*

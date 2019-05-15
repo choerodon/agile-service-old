@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.BoardDependMapper">
+
+    <resultMap id="boardDependInfo" type="io.choerodon.agile.api.dto.BoardDependInfoDTO">
+        <id property="id" column="id"/>
+        <id property="boardFeatureId" column="board_feature_id"/>
+        <id property="dependBoardFeatureId" column="depend_board_feature_id"/>
+        <id property="piId" column="pi_id"/>
+        <id property="teamProjectId" column="team_project_id"/>
+        <id property="programId" column="program_id"/>
+
+        <id property="objectVersionNumber" column="object_version_number"/>
+        <association property="boardFeature" columnPrefix="origin_" javaType="io.choerodon.agile.api.dto.BoardFeatureInfoDTO">
+            <id property="id" column="id"/>
+            <result property="featureId" column="feature_id"/>
+            <result property="sprintId" column="sprint_id"/>
+            <result property="piId" column="pi_id"/>
+            <result property="teamProjectId" column="team_project_id"/>
+            <result property="rank" column="rank"/>
+            <result property="programId" column="program_id"/>
+        </association>
+        <association property="dependBoardFeature" columnPrefix="depend_" javaType="io.choerodon.agile.api.dto.BoardFeatureInfoDTO">
+            <id property="id" column="id"/>
+            <result property="featureId" column="feature_id"/>
+            <result property="sprintId" column="sprint_id"/>
+            <result property="piId" column="pi_id"/>
+            <result property="teamProjectId" column="team_project_id"/>
+            <result property="rank" column="rank"/>
+            <result property="programId" column="program_id"/>
+        </association>
+    </resultMap>
+
+    <select id="queryInfoByPiId" resultMap="boardDependInfo">
+        SELECT bd.*,
+        bf1.id              as origin_id,
+        bf1.feature_id      as origin_feature_id,
+        bf1.sprint_id       as origin_sprint_id,
+        bf1.pi_id           as origin_pi_id,
+        bf1.team_project_id as origin_team_project_id,
+        bf1.rank            as origin_rank,
+        bf1.program_id      as origin_program_id,
+        bf2.id              as depend_id,
+        bf2.feature_id      as depend_feature_id,
+        bf2.sprint_id       as depend_sprint_id,
+        bf2.pi_id           as depend_pi_id,
+        bf2.team_project_id as depend_team_project_id,
+        bf2.rank            as depend_rank,
+        bf2.program_id      as depend_program_id
+        FROM agile_board_depend bd
+        LEFT JOIN agile_board_feature bf1 ON bf1.id = bd.board_feature_id
+        LEFT JOIN agile_board_feature bf2 ON bf2.id = bd.depend_board_feature_id
+        WHERE bd.program_id = #{programId}
+        AND bd.pi_id = #{piId}
+    </select>
+</mapper>

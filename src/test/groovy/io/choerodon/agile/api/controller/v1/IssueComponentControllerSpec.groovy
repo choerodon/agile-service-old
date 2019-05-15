@@ -4,7 +4,7 @@ import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.dto.ComponentForListDTO
 import io.choerodon.agile.api.dto.IssueComponentDTO
 import io.choerodon.agile.api.dto.IssueDTO
-import io.choerodon.agile.domain.agile.repository.UserRepository
+import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.IssueComponentDO
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO

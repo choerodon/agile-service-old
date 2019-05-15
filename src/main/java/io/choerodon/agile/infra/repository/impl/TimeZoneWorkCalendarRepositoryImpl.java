@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarE;
-import io.choerodon.agile.domain.agile.repository.TimeZoneWorkCalendarRepository;
+import io.choerodon.agile.infra.repository.TimeZoneWorkCalendarRepository;
 import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
 import io.choerodon.core.convertor.ConvertHelper;

@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.UserSettingE;
-import io.choerodon.agile.domain.agile.repository.UserSettingRepository;
+import io.choerodon.agile.infra.repository.UserSettingRepository;
 import io.choerodon.agile.infra.dataobject.UserSettingDO;
 import io.choerodon.agile.infra.mapper.UserSettingMapper;
 import io.choerodon.core.convertor.ConvertHelper;

@@ -5,7 +5,7 @@ import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.converter.SprintConverter;
 import io.choerodon.agile.domain.agile.entity.SprintE;
-import io.choerodon.agile.domain.agile.repository.SprintRepository;
+import io.choerodon.agile.infra.repository.SprintRepository;
 import io.choerodon.agile.infra.dataobject.SprintDO;
 import io.choerodon.agile.infra.mapper.SprintMapper;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,12 +1,12 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.domain.agile.repository.DataLogRepository;
+import io.choerodon.agile.infra.repository.DataLogRepository;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.dto.IssueAttachmentDTO;
 import io.choerodon.agile.app.service.IssueAttachmentService;
 import io.choerodon.agile.domain.agile.entity.IssueAttachmentE;
-import io.choerodon.agile.domain.agile.repository.IssueAttachmentRepository;
+import io.choerodon.agile.infra.repository.IssueAttachmentRepository;
 import io.choerodon.agile.infra.dataobject.IssueAttachmentDO;
 import io.choerodon.agile.infra.feign.FileFeignClient;
 import io.choerodon.agile.infra.mapper.IssueAttachmentMapper;
@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;

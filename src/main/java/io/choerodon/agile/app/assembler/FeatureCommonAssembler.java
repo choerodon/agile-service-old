@@ -4,7 +4,7 @@ import io.choerodon.agile.api.dto.FeatureCommonDTO;
 import io.choerodon.agile.api.dto.IssueTypeDTO;
 import io.choerodon.agile.api.dto.PiNameDTO;
 import io.choerodon.agile.api.dto.StatusMapDTO;
-import io.choerodon.agile.domain.agile.repository.UserRepository;
+import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.FeatureCommonDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.core.convertor.ConvertHelper;

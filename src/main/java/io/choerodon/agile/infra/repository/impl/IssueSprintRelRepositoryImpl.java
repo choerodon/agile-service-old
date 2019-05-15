@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.IssueSprintRelE;
-import io.choerodon.agile.domain.agile.repository.IssueSprintRelRepository;
+import io.choerodon.agile.infra.repository.IssueSprintRelRepository;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.IssueSprintRelDO;
 import io.choerodon.agile.infra.mapper.IssueSprintRelMapper;

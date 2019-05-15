@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.IssueLinkTypeE;
-import io.choerodon.agile.domain.agile.repository.IssueLinkTypeRepository;
+import io.choerodon.agile.infra.repository.IssueLinkTypeRepository;
 import io.choerodon.agile.infra.dataobject.IssueLinkDO;
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
 import io.choerodon.agile.infra.mapper.IssueLinkMapper;

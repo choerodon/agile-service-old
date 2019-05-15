@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.BoardFeatureMapper">
+
+    <resultMap id="boardFeature" type="io.choerodon.agile.infra.dataobject.BoardFeatureDO">
+        <id property="id" column="id"/>
+        <id property="featureId" column="feature_id"/>
+        <id property="sprintId" column="sprint_id"/>
+        <id property="piId" column="pi_id"/>
+        <id property="teamProjectId" column="team_project_id"/>
+        <id property="rank" column="rank"/>
+        <id property="programId" column="program_id"/>
+
+        <id property="creationDate" column="creation_date"/>
+        <id property="createdBy" column="created_by"/>
+        <id property="lastUpdateDate" column="last_update_date"/>
+        <id property="lastUpdatedBy" column="last_updated_by"/>
+        <id property="objectVersionNumber" column="object_version_number"/>
+    </resultMap>
+
+    <resultMap id="boardFeatureInfo" type="io.choerodon.agile.api.dto.BoardFeatureInfoDTO">
+        <id property="id" column="id"/>
+        <id property="featureId" column="feature_id"/>
+        <id property="sprintId" column="sprint_id"/>
+        <id property="piId" column="pi_id"/>
+        <id property="teamProjectId" column="team_project_id"/>
+        <id property="rank" column="rank"/>
+        <id property="programId" column="program_id"/>
+
+        <id property="featureType" column="feature_type"/>
+        <id property="issueCode" column="issue_code"/>
+        <id property="summary" column="summary"/>
+
+        <id property="objectVersionNumber" column="object_version_number"/>
+    </resultMap>
+
+    <select id="queryRightRank" resultType="java.lang.String">
+        SELECT MAX(bf.rank)
+        FROM agile_board_feature bf
+        WHERE bf.program_id = #{boardFeature.programId}
+        AND bf.pi_id = #{boardFeature.piId}
+        AND bf.sprint_id = #{boardFeature.sprintId}
+        AND bf.team_project_id = #{boardFeature.teamProjectId}
+        AND bf.rank &lt; #{rank}
+    </select>
+
+    <select id="queryInfoByPiId" resultMap="boardFeatureInfo">
+        SELECT bf.*,
+        ai.summary,
+        af.feature_type,
+        CONCAT_WS('-', api.project_code, ai.issue_num) as issue_code
+        FROM agile_board_feature bf
+        LEFT JOIN agile_issue ai ON ai.issue_id = bf.feature_id
+        LEFT JOIN agile_feature af ON af.issue_id = bf.feature_id
+        LEFT JOIN agile_project_info api ON bf.program_id = api.project_id
+        WHERE bf.program_id = #{programId}
+        AND bf.pi_id = #{piId}
+        ORDER BY bf.rank DESC
+    </select>
+</mapper>

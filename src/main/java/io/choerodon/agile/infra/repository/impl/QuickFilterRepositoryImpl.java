@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.QuickFilterE;
-import io.choerodon.agile.domain.agile.repository.QuickFilterRepository;
+import io.choerodon.agile.infra.repository.QuickFilterRepository;
 import io.choerodon.agile.infra.dataobject.QuickFilterDO;
 import io.choerodon.agile.infra.mapper.QuickFilterMapper;
 import io.choerodon.core.convertor.ConvertHelper;

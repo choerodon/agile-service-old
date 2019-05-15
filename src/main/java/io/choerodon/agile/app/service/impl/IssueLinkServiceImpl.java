@@ -5,7 +5,7 @@ import io.choerodon.agile.api.dto.IssueLinkDTO;
 import io.choerodon.agile.app.assembler.IssueLinkAssembler;
 import io.choerodon.agile.app.service.IssueLinkService;
 import io.choerodon.agile.domain.agile.entity.IssueLinkE;
-import io.choerodon.agile.domain.agile.repository.IssueLinkRepository;
+import io.choerodon.agile.infra.repository.IssueLinkRepository;
 import io.choerodon.agile.domain.agile.rule.IssueLinkRule;
 import io.choerodon.agile.infra.mapper.IssueLinkMapper;
 import org.springframework.beans.factory.annotation.Autowired;
