@@ -1,20 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
-import java.util.List;
-import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.service.IssueService;
@@ -32,6 +19,18 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * 敏捷开发Issue
@@ -523,15 +522,15 @@ public class IssueController {
     @CustomPageRequest
     @PostMapping(value = "/test_component/filter_linked")
     public ResponseEntity<Page<IssueListTestWithSprintVersionDTO>> listIssueWithLinkedIssues(@ApiIgnore
-                                                                            @ApiParam(value = "分页信息", required = true)
-                                                                            @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
-                                                                                    PageRequest pageRequest,
-                                                                            @ApiParam(value = "项目id", required = true)
-                                                                            @PathVariable(name = "project_id") Long projectId,
-                                                                            @ApiParam(value = "组织id", required = true)
-                                                                            @RequestParam Long organizationId,
-                                                                            @ApiParam(value = "查询参数", required = true)
-                                                                            @RequestBody(required = false) SearchDTO searchDTO) {
+                                                                                             @ApiParam(value = "分页信息", required = true)
+                                                                                             @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
+                                                                                                     PageRequest pageRequest,
+                                                                                             @ApiParam(value = "项目id", required = true)
+                                                                                             @PathVariable(name = "project_id") Long projectId,
+                                                                                             @ApiParam(value = "组织id", required = true)
+                                                                                             @RequestParam Long organizationId,
+                                                                                             @ApiParam(value = "查询参数", required = true)
+                                                                                             @RequestBody(required = false) SearchDTO searchDTO) {
         return Optional.ofNullable(issueService.listIssueWithLinkedIssues(projectId, searchDTO, pageRequest, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.Issue.listIssueWithBlockedIssues"));
@@ -737,5 +736,21 @@ public class IssueController {
         return Optional.ofNullable(issueService.queryFeatureList(projectId, organizationId, pageRequest, searchDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.issue.queryFeatureList"));
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("查询当前pi的特性列表")
+    @PostMapping(value = "/program/query_by_pi_id")
+    public ResponseEntity<List<FeatureCommonDTO>> queryFeatureListByPiId(@ApiParam(value = "项目id", required = true)
+                                                                         @PathVariable(name = "project_id") Long projectId,
+                                                                         @ApiParam(value = "组织id", required = true)
+                                                                         @RequestParam Long organizationId,
+                                                                         @ApiParam(value = "piId", required = true)
+                                                                         @RequestParam Long piId,
+                                                                         @ApiParam(value = "搜索DTO", required = true)
+                                                                         @RequestBody SearchDTO searchDTO) {
+        return Optional.ofNullable(issueService.queryFeatureListByPiId(projectId, organizationId, piId, searchDTO))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.issue.queryFeatureListByPiId"));
     }
 }
