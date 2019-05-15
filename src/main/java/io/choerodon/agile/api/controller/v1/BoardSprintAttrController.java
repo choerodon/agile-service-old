@@ -26,26 +26,16 @@ public class BoardSprintAttrController {
     private BoardSprintAttrService boardSprintAttrService;
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("增加公告板冲刺列宽")
-    @GetMapping(value = "/add_column_width")
-    public ResponseEntity<BoardSprintAttrDTO> addColumnWidth(@ApiParam(value = "项目id", required = true)
-                                                             @PathVariable(name = "project_id") Long projectId,
-                                                             @ApiParam(value = "sprintId", required = true)
-                                                             @RequestParam Long sprintId) {
-        return Optional.ofNullable(boardSprintAttrService.addColumnWidth(projectId, sprintId))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
-                .orElseThrow(() -> new CommonException("error.boardSprintAttr.addColumnWidth"));
-    }
-
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("减少公告板冲刺列宽")
-    @GetMapping(value = "/reduce_column_width")
-    public ResponseEntity<BoardSprintAttrDTO> reduceColumnWidth(@ApiParam(value = "项目id", required = true)
+    @ApiOperation("修改公告板冲刺列宽")
+    @GetMapping(value = "/update")
+    public ResponseEntity<BoardSprintAttrDTO> updateColumnWidth(@ApiParam(value = "项目id", required = true)
                                                                 @PathVariable(name = "project_id") Long projectId,
                                                                 @ApiParam(value = "sprintId", required = true)
-                                                                @RequestParam Long sprintId) {
-        return Optional.ofNullable(boardSprintAttrService.reduceColumnWidth(projectId, sprintId))
+                                                                @RequestParam Long sprintId,
+                                                                @ApiParam(value = "columnWidth", required = true)
+                                                                @RequestParam Integer columnWidth) {
+        return Optional.ofNullable(boardSprintAttrService.updateColumnWidth(projectId, sprintId, columnWidth))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
-                .orElseThrow(() -> new CommonException("error.boardSprintAttr.reduceColumnWidth"));
+                .orElseThrow(() -> new CommonException("error.boardSprintAttr.updateColumnWidth"));
     }
 }

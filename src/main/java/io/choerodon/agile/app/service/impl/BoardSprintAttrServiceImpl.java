@@ -21,8 +21,6 @@ import javax.annotation.PostConstruct;
 public class BoardSprintAttrServiceImpl implements BoardSprintAttrService {
 
     @Autowired
-    private BoardSprintAttrMapper boardSprintAttrMapper;
-    @Autowired
     private BoardSprintAttrRepository boardSprintAttrRepository;
 
     public static final String UPDATE_ERROR = "error.sprintAttr.update";
@@ -32,35 +30,19 @@ public class BoardSprintAttrServiceImpl implements BoardSprintAttrService {
     public static final int MAX_COLUMN_WIDTH = 10;
     public static final int MIN_COLUMN_WIDTH = 1;
     private ModelMapper modelMapper = new ModelMapper();
+
     @PostConstruct
     public void init() {
         this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
     }
-    
-    @Override
-    public BoardSprintAttrDTO addColumnWidth(Long projectId, Long sprintId) {
-        BoardSprintAttrDO origin = boardSprintAttrRepository.queryBySprintId(projectId, sprintId);
-        if (origin == null) {
-            boardSprintAttrRepository.create(projectId, sprintId, 2);
-        } else {
-            int columnWidth = origin.getColumnWidth() + 1;
-            if (columnWidth >= MAX_COLUMN_WIDTH) {
-                throw new CommonException(ILLEGAL_ERROR);
-            }
-            origin.setColumnWidth(columnWidth);
-            boardSprintAttrRepository.update(origin);
-        }
-        return modelMapper.map(boardSprintAttrRepository.queryBySprintId(projectId, sprintId), BoardSprintAttrDTO.class);
-    }
 
     @Override
-    public BoardSprintAttrDTO reduceColumnWidth(Long projectId, Long sprintId) {
+    public BoardSprintAttrDTO updateColumnWidth(Long projectId, Long sprintId, Integer columnWidth) {
         BoardSprintAttrDO origin = boardSprintAttrRepository.queryBySprintId(projectId, sprintId);
         if (origin == null) {
-            throw new CommonException(ILLEGAL_ERROR);
+            boardSprintAttrRepository.create(projectId, sprintId, columnWidth);
         } else {
-            int columnWidth = origin.getColumnWidth() - 1;
-            if (columnWidth < MIN_COLUMN_WIDTH) {
+            if (columnWidth > MAX_COLUMN_WIDTH || columnWidth < MIN_COLUMN_WIDTH) {
                 throw new CommonException(ILLEGAL_ERROR);
             }
             origin.setColumnWidth(columnWidth);
