@@ -22,9 +22,12 @@ import java.util.List;
 public class ProgramEventHandler {
 
     private static final String JOIN_PROGRAM_EVENT = "join-program-event";
+    private static final String DELETE_PROGRAM_EVENT = "delete-program-event";
     private static final String IAM_ADD_PROJECT_RELATIONSHIP = "iam-add-project-relationships";
+    private static final String IAM_DELETE_PROJECT_RELATIONSHIP = "iam-delete-project-relationships";
     private static final String ADD = "add";
     private static final String UPDATE = "update";
+    private static final String DELETE = "delete";
     private static final String PROJECT_ENABLE_PROGRAM = "enable-project-program";
     private static final String PROJECT_ENABLE = "iam-enable-project";
     private static final String PROJECT_DISABLE_PROGRAM = "disable-project-program";
@@ -55,9 +58,11 @@ public class ProgramEventHandler {
                 Long projectId = projectRelationship.getId();
                 sprintService.addSprintsWhenJoinProgram(programId, projectId);
             } else if (UPDATE.equals(projectRelationship.getStatus())) {
+                Long projectId = projectRelationship.getId();
                 if (projectRelationship.getEnabled()) {
-                    Long projectId = projectRelationship.getId();
                     sprintService.addSprintsWhenJoinProgram(programId, projectId);
+                } else {
+                    sprintService.completeSprintsByActivePi(programId, projectId);
                 }
             }
         }
@@ -91,6 +96,27 @@ public class ProgramEventHandler {
             ArtDO activeArt = artMapper.selectActiveArt(programId);
             if (activeArt != null) {
                 artService.stopArt(programId, new ArtDTO(programId, activeArt.getId(), activeArt.getObjectVersionNumber()), false);
+            }
+        } else if (PROJECT_CATEGORY_AGILE.equals(projectEvent.getProjectCategory())) {
+            Long projectId= projectEvent.getProjectId();
+            Long programId = projectEvent.getProgramId();
+            sprintService.completeSprintsByActivePi(programId, projectId);
+        }
+        return message;
+    }
+
+    @SagaTask(code = IAM_DELETE_PROJECT_RELATIONSHIP,
+            description = "项目删除项目群关系消费event",
+            sagaCode = DELETE_PROGRAM_EVENT,
+            seq = 3)
+    public String dealProjectDeleteProgram(String message) {
+        ProjectRelationshipInsertPayload projectRelationshipInsertPayload = JSONObject.parseObject(message, ProjectRelationshipInsertPayload.class);
+        Long programId = projectRelationshipInsertPayload.getParentId();
+        List<ProjectRelationshipInsertPayload.ProjectRelationship> relationships = projectRelationshipInsertPayload.getRelationships();
+        for (ProjectRelationshipInsertPayload.ProjectRelationship projectRelationship : relationships) {
+            if (DELETE.equals(projectRelationship.getStatus())) {
+                Long projectId = projectRelationship.getId();
+                sprintService.completeSprintsByActivePi(programId, projectId);
             }
         }
         return message;

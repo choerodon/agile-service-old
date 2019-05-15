@@ -59,4 +59,6 @@ public interface SprintService {
     Boolean checkName(Long projectId, String sprinName);
 
     void addSprintsWhenJoinProgram(Long programId, Long projectId);
+
+    void completeSprintsByActivePi(Long programId, Long projectId);
 }
