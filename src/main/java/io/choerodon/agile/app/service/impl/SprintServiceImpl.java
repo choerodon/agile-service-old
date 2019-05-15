@@ -605,49 +605,46 @@ public class SprintServiceImpl implements SprintService {
 
     @Override
     public void addSprintsWhenJoinProgram(Long programId, Long projectId) {
-        PiDO piDO = new PiDO();
-        piDO.setProgramId(programId);
-        piDO.setStatusCode("doing");
-        PiDO res = piMapper.selectOne(piDO);
-        if (res != null) {
-            SprintDO existSprint = new SprintDO();
-            existSprint.setProjectId(projectId);
-            existSprint.setPiId(res.getId());
-            List<SprintDO> existList = sprintMapper.select(existSprint);
-            if (existList == null || existList.isEmpty()) {
-                SprintDO sprintDO = new SprintDO();
-                sprintDO.setProjectId(programId);
-                sprintDO.setPiId(res.getId());
-                List<SprintDO> sprintDOList = sprintMapper.select(sprintDO);
-                for (SprintDO sprint : sprintDOList) {
-                    SprintE sprintE = new SprintE();
-                    sprintE.setPiId(sprint.getPiId());
-                    sprintE.setEndDate(sprint.getEndDate());
-                    sprintE.setStartDate(sprint.getStartDate());
-                    sprintE.setSprintName(sprint.getSprintName());
-                    sprintE.setProjectId(projectId);
-                    sprintE.setStatusCode(sprint.getStatusCode());
-                    sprintRepository.createSprint(sprintE);
+        ArtDO activeArtDO = artMapper.selectActiveArt(programId);
+        if (activeArtDO != null) {
+            PiDO res = piMapper.selectActivePi(programId, activeArtDO.getId());
+            if (res != null) {
+                List<SprintDO> existList = sprintMapper.selectListByPiId(projectId, res.getId());
+                if (existList == null || existList.isEmpty()) {
+                    List<SprintDO> sprintDOList = sprintMapper.selectListByPiId(programId, res.getId());
+                    if (sprintDOList != null && !sprintDOList.isEmpty()) {
+                        for (SprintDO sprint : sprintDOList) {
+                            SprintE sprintE = new SprintE();
+                            sprintE.setPiId(sprint.getPiId());
+                            sprintE.setEndDate(sprint.getEndDate());
+                            sprintE.setStartDate(sprint.getStartDate());
+                            sprintE.setSprintName(sprint.getSprintName());
+                            sprintE.setProjectId(projectId);
+                            sprintE.setStatusCode(sprint.getStatusCode());
+                            sprintRepository.createSprint(sprintE);
+                        }
+                    }
                 }
             }
         }
+
     }
 
     @Override
     public void completeSprintsByActivePi(Long programId, Long projectId) {
-        PiDO piDO = new PiDO();
-        piDO.setProgramId(programId);
-        piDO.setStatusCode("doing");
-        PiDO res = piMapper.selectOne(piDO);
-        if (res != null) {
-            List<Long> sprintList = sprintMapper.selectNotDoneByPiId(programId, projectId);
-            if (sprintList != null) {
-                for (Long sprintId : sprintList) {
-                    SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO();
-                    sprintCompleteDTO.setProjectId(projectId);
-                    sprintCompleteDTO.setSprintId(sprintId);
-                    sprintCompleteDTO.setIncompleteIssuesDestination(0L);
-                    completeSprint(projectId, sprintCompleteDTO);
+        ArtDO activeArtDO = artMapper.selectActiveArt(programId);
+        if (activeArtDO != null) {
+            PiDO res = piMapper.selectActivePi(programId, activeArtDO.getId());
+            if (res != null) {
+                List<Long> sprintList = sprintMapper.selectNotDoneByPiId(programId, res.getId());
+                if (sprintList != null) {
+                    for (Long sprintId : sprintList) {
+                        SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO();
+                        sprintCompleteDTO.setProjectId(projectId);
+                        sprintCompleteDTO.setSprintId(sprintId);
+                        sprintCompleteDTO.setIncompleteIssuesDestination(0L);
+                        completeSprint(projectId, sprintCompleteDTO);
+                    }
                 }
             }
         }
