@@ -102,14 +102,6 @@
             agile_pi ap
             LEFT JOIN agile_pi_feature apf ON ap.id = apf.pi_id AND apf.program_id = #{programId}
             LEFT JOIN agile_issue ai ON apf.issue_id = ai.issue_id and ai.type_code = 'feature'
-            LEFT JOIN agile_issue epic_info on ai.epic_id = epic_info.issue_id
-            LEFT JOIN agile_lookup_value alv on epic_info.color_code = alv.value_code
-            LEFT JOIN agile_feature af ON ai.issue_id = af.issue_id
-            LEFT JOIN agile_project_info api ON api.project_id = ai.program_id
-        WHERE
-            ap.program_id = #{programId}
-            AND ap.art_id = #{artId}
-            and ap.status_code != 'done'
             <if test='advancedSearchArgs != null'>
                 <if test='advancedSearchArgs.epicId != null'>
                     AND ai.epic_id = #{advancedSearchArgs.epicId}
@@ -118,6 +110,14 @@
                     AND (ai.epic_id IS NULL OR ai.epic_id = 0)
                 </if>
             </if>
+            LEFT JOIN agile_issue epic_info on ai.epic_id = epic_info.issue_id
+            LEFT JOIN agile_lookup_value alv on epic_info.color_code = alv.value_code
+            LEFT JOIN agile_feature af ON ai.issue_id = af.issue_id
+            LEFT JOIN agile_project_info api ON api.project_id = ai.program_id
+        WHERE
+            ap.program_id = #{programId}
+            AND ap.art_id = #{artId}
+            and ap.status_code != 'done'
             order by ap.id, ai.rank
     </select>
 
