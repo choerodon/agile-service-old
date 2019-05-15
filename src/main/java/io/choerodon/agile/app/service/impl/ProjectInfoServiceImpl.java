@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
+import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.dto.ProjectInfoDTO;
 import io.choerodon.agile.api.dto.ProjectRelationshipDTO;
 import io.choerodon.agile.api.dto.RoleAssignmentSearchDTO;
@@ -69,7 +70,7 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
         List<ProjectRelationshipDTO> projectRelationshipDTOs = userFeignClient.getProjUnderGroup(organizationId, projectId, true).getBody();
         for (ProjectRelationshipDTO relationshipDTO : projectRelationshipDTOs) {
-            Page<UserWithRoleDTO> users = userFeignClient.pagingQueryUsersWithProjectLevelRoles(0, 0, relationshipDTO.getProjectId(), new RoleAssignmentSearchDTO(), false).getBody();
+            PageInfo<UserWithRoleDTO> users = userFeignClient.pagingQueryUsersWithProjectLevelRoles(0, 0, relationshipDTO.getProjectId(), new RoleAssignmentSearchDTO(), false).getBody();
             relationshipDTO.setUserCount(users.getSize());
         }
         return projectRelationshipDTOs;

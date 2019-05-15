@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.feign;
 
+import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback;
@@ -49,13 +50,12 @@ public interface UserFeignClient {
      * 根据projectId和param模糊查询loginName和realName两列
      *
      * @param id          id
-     * @param pageRequest pageRequest
      * @param param       param
      * @return UserDTO
      */
     @GetMapping(value = "/v1/projects/{id}/users")
-    ResponseEntity<Page<UserDTO>> list(@PathVariable("id") Long id, @RequestParam("pageRequest") PageRequest pageRequest,
-                                       @RequestParam("param") String param);
+    ResponseEntity<PageInfo<UserDTO>> list(@PathVariable("id") Long id,
+                                           @RequestParam("param") String param);
 
     @PostMapping(value = "/v1/projects/{project_id}/role_members/users/count")
     ResponseEntity<List<RoleDTO>> listRolesWithUserCountOnProjectLevel(
@@ -63,7 +63,7 @@ public interface UserFeignClient {
             @RequestBody(required = false) @Valid RoleAssignmentSearchDTO roleAssignmentSearchDTO);
 
     @PostMapping(value = "/v1/projects/{project_id}/role_members/users")
-    ResponseEntity<Page<UserDTO>> pagingQueryUsersByRoleIdOnProjectLevel(
+    ResponseEntity<PageInfo<UserDTO>> pagingQueryUsersByRoleIdOnProjectLevel(
             @RequestParam(name = "page") int page,
             @RequestParam(name = "size") int size,
             @RequestParam(name = "role_id") Long roleId,
@@ -83,7 +83,7 @@ public interface UserFeignClient {
                                                            @PathVariable(name = "project_id") Long projectId);
 
     @PostMapping(value = "/v1/projects/{project_id}/role_members/users/roles")
-    ResponseEntity<Page<UserWithRoleDTO>> pagingQueryUsersWithProjectLevelRoles(
+    ResponseEntity<PageInfo<UserWithRoleDTO>> pagingQueryUsersWithProjectLevelRoles(
             @RequestParam(name = "page") int page,
             @RequestParam(name = "size") int size,
             @PathVariable(name = "project_id") Long sourceId,

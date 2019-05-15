@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
+import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.NoticeMessageAssembler;
 import io.choerodon.agile.app.service.NoticeService;
@@ -122,8 +123,8 @@ public class NoticeServiceImpl implements NoticeService {
                 }
             }
             if (roleId != null) {
-                Page<UserDTO> userDTOS = userRepository.pagingQueryUsersByRoleIdOnProjectLevel(0, 300,roleId, projectId, roleAssignmentSearchDTO);
-                for (UserDTO userDTO : userDTOS) {
+                PageInfo<UserDTO> userDTOS = userRepository.pagingQueryUsersByRoleIdOnProjectLevel(0, 300,roleId, projectId, roleAssignmentSearchDTO);
+                for (UserDTO userDTO : userDTOS.getList()) {
                     if (!result.contains(userDTO.getId())) {
                         result.add(userDTO.getId());
                     }
