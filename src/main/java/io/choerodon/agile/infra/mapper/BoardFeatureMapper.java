@@ -15,4 +15,6 @@ public interface BoardFeatureMapper extends BaseMapper<BoardFeatureDO> {
     String queryRightRank(@Param("boardFeature") BoardFeatureDO boardFeatureDO, @Param("rank") String rank);
 
     List<BoardFeatureInfoDTO> queryInfoByPiId(@Param("programId") Long programId, @Param("piId") Long piId);
+
+    BoardFeatureInfoDTO queryInfoById(@Param("programId") Long programId, @Param("boardFeatureId") Long boardFeatureId);
 }

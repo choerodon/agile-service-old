@@ -1,9 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.BoardFeatureCreateDTO;
-import io.choerodon.agile.api.dto.BoardFeatureDTO;
-import io.choerodon.agile.api.dto.BoardFeatureUpdateDTO;
-import io.choerodon.agile.api.dto.ProgramBoardInfoDTO;
+import io.choerodon.agile.api.dto.*;
 
 /**
  * @author shinan.chen
@@ -11,11 +8,13 @@ import io.choerodon.agile.api.dto.ProgramBoardInfoDTO;
  */
 public interface BoardFeatureService {
 
-    BoardFeatureDTO create(Long projectId, BoardFeatureCreateDTO createDTO);
+    BoardFeatureInfoDTO create(Long projectId, BoardFeatureCreateDTO createDTO);
 
-    BoardFeatureDTO update(Long projectId, Long boardFeatureId, BoardFeatureUpdateDTO updateDTO);
+    BoardFeatureInfoDTO update(Long projectId, Long boardFeatureId, BoardFeatureUpdateDTO updateDTO);
 
     BoardFeatureDTO queryById(Long projectId, Long boardFeatureId);
+
+    BoardFeatureInfoDTO queryInfoById(Long projectId, Long boardFeatureId);
 
     void deleteById(Long projectId, Long boardFeatureId);
 

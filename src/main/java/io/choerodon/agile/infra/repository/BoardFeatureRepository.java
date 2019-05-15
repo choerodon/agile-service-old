@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.repository;
 
 
+import io.choerodon.agile.api.dto.BoardFeatureInfoDTO;
 import io.choerodon.agile.infra.dataobject.BoardFeatureDO;
 
 /**
@@ -15,6 +16,8 @@ public interface BoardFeatureRepository {
     void update(BoardFeatureDO update);
 
     BoardFeatureDO queryById(Long projectId, Long boardFeatureId);
+
+    BoardFeatureInfoDTO queryInfoById(Long projectId, Long boardFeatureId);
 
     void checkId(Long projectId, Long boardFeatureId);
 }

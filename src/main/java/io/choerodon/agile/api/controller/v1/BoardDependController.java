@@ -40,20 +40,6 @@ public class BoardDependController {
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("修改公告板特性依赖")
-    @PutMapping(value = "/{boardDependId}")
-    public ResponseEntity<BoardDependDTO> update(@ApiParam(value = "项目id", required = true)
-                                                 @PathVariable(name = "project_id") Long projectId,
-                                                 @ApiParam(value = "boardDependId", required = true)
-                                                 @PathVariable Long boardDependId,
-                                                 @ApiParam(value = "updateDTO", required = true)
-                                                 @RequestBody BoardDependUpdateDTO updateDTO) {
-        return Optional.ofNullable(boardDependService.update(projectId, boardDependId, updateDTO))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
-                .orElseThrow(() -> new CommonException("error.boardDepend.update"));
-    }
-
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("删除公告板特性依赖")
     @DeleteMapping(value = "/{boardDependId}")
     public ResponseEntity deleteById(@ApiParam(value = "项目id", required = true)

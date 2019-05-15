@@ -12,8 +12,6 @@ public interface BoardDependService {
 
     BoardDependDTO create(Long projectId, BoardDependCreateDTO createDTO);
 
-    BoardDependDTO update(Long projectId, Long boardDependId, BoardDependUpdateDTO updateDTO);
-
     BoardDependDTO queryById(Long projectId, Long boardDependId);
 
     void deleteById(Long projectId, Long boardDependId);

@@ -56,28 +56,29 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     }
 
     @Override
-    public BoardFeatureDTO create(Long projectId, BoardFeatureCreateDTO createDTO) {
+    public BoardFeatureInfoDTO create(Long projectId, BoardFeatureCreateDTO createDTO) {
         BoardFeatureDO boardFeatureDO = modelMapper.map(createDTO, BoardFeatureDO.class);
         boardFeatureDO.setProgramId(projectId);
         checkExist(boardFeatureDO);
         handleRank(projectId, boardFeatureDO, createDTO.getBefore(), createDTO.getOutsetId());
         boardFeatureRepository.create(boardFeatureDO);
-        return queryById(projectId, boardFeatureDO.getId());
+        return queryInfoById(projectId, boardFeatureDO.getId());
     }
 
     @Override
-    public BoardFeatureDTO update(Long projectId, Long boardFeatureId, BoardFeatureUpdateDTO updateDTO) {
-        boardFeatureRepository.checkId(projectId, boardFeatureId);
+    public BoardFeatureInfoDTO update(Long projectId, Long boardFeatureId, BoardFeatureUpdateDTO updateDTO) {
+        BoardFeatureDO boardFeatureDO = boardFeatureRepository.queryById(projectId, boardFeatureId);
         BoardFeatureDO update = modelMapper.map(updateDTO, BoardFeatureDO.class);
-        update.setId(boardFeatureId);
+        update.setFeatureId(boardFeatureDO.getFeatureId());
         update.setProgramId(projectId);
         BoardFeatureDO select = boardFeatureMapper.selectOne(update);
         if (select != null && !select.getId().equals(boardFeatureId)) {
             throw new CommonException(EXIST_ERROR);
         }
+        update.setId(boardFeatureId);
         handleRank(projectId, update, updateDTO.getBefore(), updateDTO.getOutsetId());
         boardFeatureRepository.update(update);
-        return queryById(projectId, boardFeatureId);
+        return queryInfoById(projectId, boardFeatureId);
     }
 
     /**
@@ -120,6 +121,11 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     @Override
     public BoardFeatureDTO queryById(Long projectId, Long boardFeatureId) {
         return modelMapper.map(boardFeatureRepository.queryById(projectId, boardFeatureId), BoardFeatureDTO.class);
+    }
+
+    @Override
+    public BoardFeatureInfoDTO queryInfoById(Long projectId, Long boardFeatureId) {
+        return boardFeatureRepository.queryInfoById(projectId, boardFeatureId);
     }
 
     @Override
@@ -171,7 +177,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         List<BoardFeatureInfoDTO> boardFeatureInfos = boardFeatureMapper.queryInfoByPiId(programId, piId);
         Map<Long, Map<Long, List<BoardFeatureInfoDTO>>> teamFeatureInfoMap = boardFeatureInfos.stream().collect(Collectors.groupingBy(BoardFeatureInfoDTO::getTeamProjectId, Collectors.groupingBy(BoardFeatureInfoDTO::getSprintId)));
         List<ProgramBoardTeamInfoDTO> teamProjects = new ArrayList<>(projectRelationships.size());
-        handleTeamData(projectRelationships, teamFeatureInfoMap, teamProjects);
+        handleTeamData(projectRelationships, teamFeatureInfoMap, teamProjects, sprints);
         //获取依赖关系
         List<BoardDependInfoDTO> boardDependInfos = boardDependMapper.queryInfoByPiId(programId, piId);
         programBoardInfo.setSprints(sprintInfos);
@@ -187,21 +193,26 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
      * @param teamFeatureInfoMap
      * @param teamProjects
      */
-    private void handleTeamData(List<ProjectRelationshipDTO> projectRelationshipDTOs, Map<Long, Map<Long, List<BoardFeatureInfoDTO>>> teamFeatureInfoMap, List<ProgramBoardTeamInfoDTO> teamProjects) {
+    private void handleTeamData(List<ProjectRelationshipDTO> projectRelationshipDTOs, Map<Long, Map<Long, List<BoardFeatureInfoDTO>>> teamFeatureInfoMap, List<ProgramBoardTeamInfoDTO> teamProjects, List<SprintDO> sprints) {
         for (ProjectRelationshipDTO relationshipDTO : projectRelationshipDTOs) {
             //获取每个团队每个冲刺的公告板特性信息
             Map<Long, List<BoardFeatureInfoDTO>> sprintFeatureInfoMap = teamFeatureInfoMap.get(relationshipDTO.getProjectId());
-            List<ProgramBoardTeamSprintInfoDTO> teamSprintInfos;
+            List<ProgramBoardTeamSprintInfoDTO> teamSprintInfos = new ArrayList<>(sprints.size());
             if (sprintFeatureInfoMap != null) {
-                teamSprintInfos = new ArrayList<>(sprintFeatureInfoMap.size());
-                for (Map.Entry<Long, List<BoardFeatureInfoDTO>> entity : sprintFeatureInfoMap.entrySet()) {
+                for (SprintDO sprint : sprints) {
+                    List<BoardFeatureInfoDTO> boardFeatures = sprintFeatureInfoMap.getOrDefault(sprint.getSprintId(), new ArrayList<>());
                     ProgramBoardTeamSprintInfoDTO teamSprintInfo = new ProgramBoardTeamSprintInfoDTO();
-                    teamSprintInfo.setSprintId(entity.getKey());
-                    teamSprintInfo.setBoardFeatures(entity.getValue());
+                    teamSprintInfo.setSprintId(sprint.getSprintId());
+                    teamSprintInfo.setBoardFeatures(boardFeatures);
                     teamSprintInfos.add(teamSprintInfo);
                 }
             } else {
-                teamSprintInfos = new ArrayList<>();
+                for (SprintDO sprint : sprints) {
+                    ProgramBoardTeamSprintInfoDTO teamSprintInfo = new ProgramBoardTeamSprintInfoDTO();
+                    teamSprintInfo.setSprintId(sprint.getSprintId());
+                    teamSprintInfo.setBoardFeatures(new ArrayList<>());
+                    teamSprintInfos.add(teamSprintInfo);
+                }
             }
             ProgramBoardTeamInfoDTO teamProject = new ProgramBoardTeamInfoDTO();
             teamProject.setProjectId(relationshipDTO.getProjectId());
