@@ -37,6 +37,8 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -222,6 +224,8 @@ public class IssueServiceImpl implements IssueService {
     private static final String ERROR_PROJECT_NOTEXIST = "error.project.notExist";
     private static final String FEATURE_TYPE_BUSINESS = "business";
     private static final String FEATURE_TYPE_ENABLER = "enabler";
+
+    private ModelMapper modelMapper = new ModelMapper();
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -2428,5 +2432,19 @@ public class IssueServiceImpl implements IssueService {
         result.setSize(featureCommonDOPage.getSize());
         result.setTotalElements(featureCommonDOPage.getTotalElements());
         return result;
+    }
+
+    @Override
+    public List<FeatureCommonDTO> queryFeatureListByPiId(Long programId, Long organizationId, Long piId, SearchDTO searchDTO) {
+        List<Long> piList = Arrays.asList(piId);
+        Map<String, Object> otherArgs = searchDTO.getOtherArgs();
+        if (otherArgs == null) {
+            otherArgs = new HashMap<>();
+        }
+        otherArgs.put("piList", piList);
+        List<Long> featureIds = issueMapper.selectFeatureIdsByPage(programId, searchDTO);
+        List<FeatureCommonDO> featureCommonDOs = issueMapper.selectFeatureList(programId, featureIds);
+        return modelMapper.map(featureCommonDOs, new TypeToken<List<FeatureCommonDTO>>() {
+        }.getType());
     }
 }
