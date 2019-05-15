@@ -9,6 +9,9 @@ import io.swagger.annotations.ApiModelProperty;
  */
 public class UnfinishedIssueDTO {
 
+    @ApiModelProperty(value = "问题Id")
+    private Long issueId;
+
     @ApiModelProperty(value = "问题编号")
     private String issueNum;
 
@@ -26,6 +29,14 @@ public class UnfinishedIssueDTO {
 
     @ApiModelProperty(value = "状态DTO")
     private StatusMapDTO statusMapDTO;
+
+    public Long getIssueId() {
+        return issueId;
+    }
+
+    public void setIssueId(Long issueId) {
+        this.issueId = issueId;
+    }
 
     public PriorityDTO getPriorityDTO() {
         return priorityDTO;
