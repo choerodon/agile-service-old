@@ -112,9 +112,9 @@ public class ProgramEventHandler {
         return message;
     }
 
-    @SagaTask(code = IAM_DELETE_PROJECT_RELATIONSHIP,
+    @SagaTask(code = DELETE_PROGRAM_EVENT,
             description = "项目删除项目群关系消费event",
-            sagaCode = DELETE_PROGRAM_EVENT,
+            sagaCode = IAM_DELETE_PROJECT_RELATIONSHIP,
             seq = 3)
     public String dealProjectDeleteProgram(String message) {
         LOGGER.info("项目删除项目群关系消费event: {}", message);
