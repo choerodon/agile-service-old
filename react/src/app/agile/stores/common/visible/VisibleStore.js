@@ -28,6 +28,8 @@ class VisibleStore {
   @observable assigneeShow = false;
 
   @observable changeParentShow = false;
+  
+  @observable detailShow = false;
 
   @action setCreateBranchShow(data) {
     this.createBranchShow = data;
@@ -123,6 +125,14 @@ class VisibleStore {
 
   @computed get getChangeParentShow() {
     return this.changeParentShow;
+  }
+
+  @action setDetailShow(detailShow) {
+    this.detailShow = detailShow;
+  }
+
+  @computed get getDetailShow() {
+    return this.detailShow;
   }
 }
 

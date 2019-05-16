@@ -1,9 +1,9 @@
-.ant-dropdown {
+.c7n-dropdown {
   // position: relative;
   .menu {
     right: -15px;
     top: 0;
-    .ant-dropdown-menu-item {
+    .c7n-dropdown-menu-item {
       .c7n-menuItem {
         display: inline-block;
         max-width: 90px;
@@ -18,13 +18,13 @@
 .c7n-VersionProgress {
   height: calc(100% - 60px);
   .switchVersion {
-    .ant-dropdown-link {
+    .c7n-dropdown-link {
       font-size: 13px;
       // color: #3F51B5;
       // font-weight: 600;
       line-height: 15px;
     }
-    .ant-dropdown-link:hover {
+    .c7n-dropdown-link:hover {
       color: #000;
     }
   }

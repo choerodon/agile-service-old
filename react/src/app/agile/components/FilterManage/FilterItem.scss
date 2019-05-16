@@ -13,32 +13,32 @@
     margin: 0 5px;
   }
 
-  .ant-form-item {
+  .c7n-form-item {
     margin-bottom: 0;
     flex: 1;
 
-    .ant-form-item-control {
+    .c7n-form-item-control {
       display: flex;
 
-      .ant-form-item-children {
+      .c7n-form-item-children {
         flex: 1;
 
-        .ant-input-wrapper {
+        .c7n-input-wrapper {
           margin-bottom: -1px;
         }
       }
 
-      .ant-form-explain {
+      .c7n-form-explain {
         margin-top: 3px;
       }
     }
   }
 
-  .ant-input-underline {
+  .c7n-input-underline {
     display: none;
   }
 
-  .ant-input-length-info {
+  .c7n-input-length-info {
     margin-top: -14px;
   }
 }

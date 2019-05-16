@@ -28,10 +28,12 @@ import { handleFileUpload } from '../../../../common/utils';
   };
 
   refresh = () => {
-    this.setFileList(false);
+    const { store } = this.props;
     const { reloadIssue } = this.props;
+    this.setFileList(false);
+    const { issueId } = store.getIssue;
     if (reloadIssue) {
-      reloadIssue();
+      reloadIssue(issueId);
     }
   };
 

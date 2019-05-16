@@ -7,14 +7,20 @@ const initTypes = ['agile_epic', 'agile_story', 'agile_fault', 'agile_task', 'ag
 class TypeTag extends Component {
   render() {
     const {
-      data, showName, style,
+      data, showName, style, featureType,
     } = this.props;
+    let { colour } = data || {};
+    if (featureType === 'business') {
+      colour = '#29B6F6';
+    } else if (featureType === 'enablear') {
+      colour = '#FFCA28';
+    }
     return (
       <div className="c7n-typeTag" style={style}>
         <Icon
           style={{
             fontSize: '26px',
-            color: data ? data.colour : '#fab614',
+            color: colour || '#fab614',
           }}
           type={data ? data.icon : 'help'}
         />

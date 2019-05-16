@@ -289,6 +289,19 @@ export function ProgramBoardSettingLink() {
 export function ProgramFeatureListLink() { 
   return commonLink('/feature');
 }
+export function issueLink(issueId, typeCode, issueName = null) {
+  const menu = AppState.currentMenuType;
+  const {
+    type, id: projectId, name, organizationId,
+  } = menu;
+  if (typeCode === 'issue_test' || typeCode === 'issue_auto_test') {
+    return encodeURI(`/testManager/IssueManage/testCase/${issueId}?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}`);
+  } else if (issueName) {
+    return encodeURI(`/agile/issue?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}&paramIssueId=${issueId}&paramName=${issueName}`);
+  } else {
+    return encodeURI(`/agile/issue?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}&paramIssueId=${issueId}`);
+  }
+}
 export const getProjectId = () => AppState.currentMenuType.id;
 export const getProjectName = () => AppState.currentMenuType.name;
 export const getOrganizationId = () => AppState.currentMenuType.organizationId;

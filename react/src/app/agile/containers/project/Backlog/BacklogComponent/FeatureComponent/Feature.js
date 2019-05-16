@@ -70,7 +70,7 @@ class Feature extends Component {
               className="c7n-backlog-epicItems-first"
               style={{
                 color: '#3F51B5',
-                background: BacklogStore.getChosenEpic === 'all' ? 'rgba(140, 158, 255, 0.08)' : '',
+                background: BacklogStore.getChosenFeature === 'all' ? 'rgba(140, 158, 255, 0.08)' : '',
               }}
               role="none"
               onClick={() => {

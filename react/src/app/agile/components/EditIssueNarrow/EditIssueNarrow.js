@@ -115,7 +115,7 @@ class EditIssueNarrow extends Component {
       onUpdate();
     }
     this.loadIssueDetail();
-  }
+  };
 
   handleTransformSubIssue() {
     const { onUpdate } = this.props;

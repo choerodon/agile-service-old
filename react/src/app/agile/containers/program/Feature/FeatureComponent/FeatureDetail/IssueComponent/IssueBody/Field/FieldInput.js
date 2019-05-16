@@ -103,7 +103,7 @@ const { Text, Edit } = TextEditToggle;
             <Edit>
               <Input
                 autosize
-                maxLength="10"
+                maxLength="20"
                 size="small"
                 onChange={(e) => {
                   this.setState({

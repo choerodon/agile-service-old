@@ -87,21 +87,19 @@ const loadFeature = () => {
           pageCode: 'agile_issue_create',
         };
         createIssueField(res.issueId, dto);
-        if (BacklogStore.getCurrentVisible === 'version') {
-          loadVersion();
-        } else if (BacklogStore.getCurrentVisible === 'epic') {
-          loadEpic();
-        } else if (BacklogStore.getCurrentVisible === 'feature') {
-          loadFeature();
-        }
-        BacklogStore.axiosGetSprint().then((sprintDate) => {
-          BacklogStore.createIssue({
-            ...res,
-            imageUrl: res.assigneeImageUrl,
-            versionIds: res.versionIssueRelDTOList.length ? [res.versionIssueRelDTOList[0].versionId] : [],
-            versionNames: res.versionIssueRelDTOList.length ? [res.versionIssueRelDTOList[0].name] : [],
-          }, sprintId, sprintDate);
-        });
+        // if (BacklogStore.getCurrentVisible === 'version') {
+        //   loadVersion();
+        // } else if (BacklogStore.getCurrentVisible === 'epic') {
+        //   loadEpic();
+        // } else if (BacklogStore.getCurrentVisible === 'feature') {
+        //   loadFeature();
+        // }
+        BacklogStore.createIssue({
+          ...res,
+          imageUrl: res.assigneeImageUrl,
+          versionIds: res.versionIssueRelDTOList.length ? [res.versionIssueRelDTOList[0].versionId] : [],
+          versionNames: res.versionIssueRelDTOList.length ? [res.versionIssueRelDTOList[0].name] : [],
+        }, sprintId);
       }).catch((error) => {
         this.setState({
           loading: false,

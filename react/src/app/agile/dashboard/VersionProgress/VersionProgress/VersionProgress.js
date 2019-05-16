@@ -108,7 +108,7 @@ class VersionProgress extends Component {
           <DashBoardToolBar>
             <div className="switchVersion">
               <Dropdown overlay={menu} trigger={['click']} getPopupContainer={triggerNode => triggerNode.parentNode}>
-                <a className="ant-dropdown-link c7n-agile-dashboard-versionProgress-select">
+                <a className="c7n-dropdown-link c7n-agile-dashboard-versionProgress-select">
                   {' 切换版本 '}
                   <Icon type="arrow_drop_down" />
                 </a>

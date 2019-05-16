@@ -2,22 +2,22 @@
   .page-content {
     padding: 0;
     .c7n-feature-signUpload {
-      .ant-upload {
+      .c7n-upload {
         display: flex !important;
         margin-left: 40px;
       }
 
-      .ant-btn {
+      .c7n-btn {
         color: #3f51b5;
       }
     }
   }
 
-  .ant-upload-list-item.ant-upload-list-item-done {
+  .c7n-upload-list-item.c7n-upload-list-item-done {
     display: inline-block;
   }
 
-  .ant-upload-list-item {
+  .c7n-upload-list-item {
     .icon-close {
       transform: none;
       font-size: 14px;
@@ -30,7 +30,7 @@
 }
 
 .is-required {
-  .ant-radio-group-label:after {
+  .c7n-radio-group-label:after {
     display: inline-block;
     margin-left: 4px;
     content: "*";
@@ -39,7 +39,7 @@
     color: #d50000;
   }
 
-  .ant-checkbox-group-label:after {
+  .c7n-checkbox-group-label:after {
     display: inline-block;
     margin-left: 4px;
     content: "*";

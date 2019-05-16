@@ -76,20 +76,20 @@ const { Text, Edit } = TextEditToggle;
           </span>
         </div>
         <div className="c7n-value-wrapper">
-          {
-            closeSprint.length ? (
-              <div>
-                <span>已结束冲刺：</span>
-                <span>
-                  {_.map(closeSprint, 'sprintName').join(' , ')}
-                </span>
-              </div>
-            ) : null
-          }
           <TextEditToggle
             formKey="sprint"
             onSubmit={this.updateIssueSprint}
             originData={sprintId}
+            editExtraContent={
+              closeSprint.length ? (
+                <div style={{ maxWidth: 170 }}>
+                  <span>已结束冲刺：</span>
+                  <span>
+                    {_.map(closeSprint, 'sprintName').join(' , ')}
+                  </span>
+                </div>
+              ) : null
+            }
           >
             <Text>
               <Tooltip

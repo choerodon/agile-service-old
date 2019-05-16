@@ -120,7 +120,7 @@ class CreateEpic extends Component {
                   validator: this.checkEpicNameRepeat,
                 }],
               })(
-                <Input label="史诗名称" maxLength={10} />,
+                <Input label="史诗名称" maxLength={20} />,
               )}
             </FormItem>
             <FormItem>

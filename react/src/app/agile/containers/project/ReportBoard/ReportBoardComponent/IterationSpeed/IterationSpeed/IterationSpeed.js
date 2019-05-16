@@ -315,7 +315,7 @@ class IterationSpeed extends Component {
       <div className="c7n-agile-reportBoard-iterationSpeed">
         <div className="switch" style={{ display: loading ? 'none' : 'block' }}>
           <Dropdown overlay={menu} trigger={['click']}>
-            <div className="ant-dropdown-link c7n-agile-dashboard-burndown-select">
+            <div className="c7n-dropdown-link c7n-agile-dashboard-burndown-select">
               {'单位选择'}
               <Icon type="arrow_drop_down" />
             </div>

@@ -5,7 +5,7 @@ import { observer, inject } from 'mobx-react';
 import {
   Page, Header, stores,
 } from '@choerodon/boot';
-import { Button, Spin } from 'choerodon-ui';
+import { Button, Spin, Select } from 'choerodon-ui';
 import { find } from 'lodash';
 import {
   StatusColumn, NoneSprint, CreateFeatureContainer, IssueDetail,
@@ -18,6 +18,7 @@ import CSSBlackMagic from '../../../../components/CSSBlackMagic/CSSBlackMagic';
 import KanbanStore from '../../../../stores/program/Kanban/KanbanStore';
 import './BoardHome.scss';
 
+const { Option } = Select;
 const { AppState } = stores;
 const style = swimLaneId => `
   .${swimLaneId}.c7n-swimlaneContext-itemBodyColumn {
@@ -63,6 +64,13 @@ class BoardHome extends Component {
   constructor() {
     super();
     this.dataConverter = new BoardDataController();
+    this.quickFilters = [{
+      id: 'business',
+      name: '特性',
+    }, {
+      id: 'enabler',
+      name: '使能',
+    }];
   }
 
   componentDidMount() {
@@ -82,14 +90,30 @@ class BoardHome extends Component {
     }
   }
 
+  renderPlaceHolder = (type, props, ommittedValues) => { 
+    const values = [];
+    for (const value of ommittedValues) {
+      const target = find(this[type], { [props[0]]: value })[props[1]];
+      if (target) {
+        values.push(target);
+      }
+    }
+    return values.join(', ');
+  };
+
   handleCreateFeatureClick = () => {
     KanbanStore.setCreateFeatureVisible(true);
-  }
+  };
+
+  handleQuickSearchChange = (featureTypeList) => {    
+    KanbanStore.addQuickSearchFilter(featureTypeList);
+    this.refresh(KanbanStore.getBoardList.get(KanbanStore.getSelectedBoard));
+  };
 
   handleSettingClick = () => {
     const { history } = this.props;
     history.push(ProgramBoardSettingLink());
-  }
+  };
 
   onDragStart = (result) => {
     const { headerStyle } = this.props;
@@ -142,7 +166,7 @@ class BoardHome extends Component {
     const rank = destinationColumnStatusCode !== 'prepare';
     let piId;
 
-    if (destinationColumnStatusCode === 'prepare' && destinationColumnStatusCode === 'prepare') {
+    if (['prepare', 'todo'].includes(destinationColumnStatusCode)) {
       piId = undefined;
     } else if (destinationSwimLineData.length > 0) {
       // eslint-disable-next-line prefer-destructuring
@@ -208,6 +232,7 @@ class BoardHome extends Component {
 
   render() {
     const { HeaderStore } = this.props;
+    const { quickSearchObj } = KanbanStore;
     return (
       <Page
         className="c7nagile-board-page"
@@ -233,7 +258,25 @@ class BoardHome extends Component {
         </Header>
         <div style={{ padding: 0, display: 'flex', flexDirection: 'column' }}>
           <div className="c7n-scrumTools">
-            <div />
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span style={{ marginRight: 16, fontSize: '14px', fontWeight: 600 }}>搜索:</span>
+              <Select
+                className="SelectTheme primary"
+                placeholder="快速搜索"
+                style={{ width: 90 }}
+                mode="multiple"
+                maxTagCount={0}
+                maxTagPlaceholder={this.renderPlaceHolder.bind(this, 'quickFilters', ['id', 'name'])}
+                value={toJS(quickSearchObj.advancedSearchArgs.featureTypeList)}
+                onChange={this.handleQuickSearchChange}
+              >
+                {this.quickFilters.map(filter => (
+                  <Option value={filter.id}>
+                    {filter.name}
+                  </Option>
+                ))}
+              </Select>
+            </div>
             <div
               className="c7n-scrumTools-right"
               style={{ display: 'flex', alignItems: 'center', color: 'rgba(0,0,0,0.54)' }}

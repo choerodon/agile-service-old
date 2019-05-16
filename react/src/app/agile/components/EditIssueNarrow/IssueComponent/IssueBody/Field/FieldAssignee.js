@@ -48,7 +48,7 @@ const { Text, Edit } = TextEditToggle;
     });
     getUsers(input).then((res) => {  
       this.setState({
-        originUsers: res.content,
+        originUsers: res.list,
         selectLoading: false,
       });
     });

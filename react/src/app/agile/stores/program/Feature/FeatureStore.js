@@ -270,6 +270,10 @@ class FeatureStore {
     this.chosenEpic = data;
   }
 
+  @action resetFilter() {
+    this.chosenEpic = 'all';
+  }
+
   @action setFeatureData({ backlogAllFeatures, allPiList = [] } = {}) {
     this.spinIf = false;
     this.issueMap.set('0', backlogAllFeatures);

@@ -93,7 +93,7 @@ const { Text, Edit } = TextEditToggle;
 
   render() {
     const { selectLoading, originVersions } = this.state;
-    const { store, hasPermission } = this.props;
+    const { store } = this.props;
     const issue = store.getIssue;
     const { versionIssueRelDTOList = [] } = issue;
     const fixVersionsTotal = _.filter(versionIssueRelDTOList, { relationType: 'fix' }) || [];
@@ -108,20 +108,20 @@ const { Text, Edit } = TextEditToggle;
           </span>
         </div>
         <div className="c7n-value-wrapper">
-          {
-            fixVersionsFixed.length ? (
-              <div>
-                <span>已归档版本：</span>
-                <span>
-                  {_.map(fixVersionsFixed, 'name').join(' , ')}
-                </span>
-              </div>
-            ) : null
-          }
           <TextEditToggle
             formKey="fixVersion"
             onSubmit={this.updateIssueFixVersion}
             originData={this.transToArr(fixVersions, 'name', 'array')}
+            editExtraContent={
+              fixVersionsFixed.length ? (
+                <div style={{ maxWidth: 170 }}>
+                  <span>已归档版本：</span>
+                  <span>
+                    {_.map(fixVersionsFixed, 'name').join(' , ')}
+                  </span>
+                </div>
+              ) : null
+            }
           >
             <Text>
               {

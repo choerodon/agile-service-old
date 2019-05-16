@@ -33,7 +33,7 @@ class CreateSubIssue extends Component {
     this.setState({ selectLoading: true });
     getUsers(input).then((res) => {
       this.setState({
-        originUsers: res.content,
+        originUsers: res.list,
         selectLoading: false,
       });
     });
@@ -79,7 +79,7 @@ class CreateSubIssue extends Component {
       });
       getUsers(input).then((res) => {
         this.setState({
-          originUsers: res.content,
+          originUsers: res.list,
           selectLoading: false,
         });
       });

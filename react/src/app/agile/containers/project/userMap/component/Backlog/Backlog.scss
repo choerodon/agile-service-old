@@ -12,23 +12,23 @@
   top: 0;
   right: 0;
 
-  .ant-input-underline {
+  .c7n-input-underline {
     display: none;
   }
 
-  .ant-input-wrapper {
+  .c7n-input-wrapper {
     margin-bottom: 0;
   }
 
-  .ant-input-prefix {
+  .c7n-input-prefix {
     color: #000;
   }
 
-  .ant-input-rendered {
+  .c7n-input-rendered {
     margin-left: 36px !important;
   }
 
-  .ant-input-placeholder {
+  .c7n-input-placeholder {
     color: rgba(0, 0, 0, 0.54);
   }
 
@@ -132,20 +132,20 @@
     0 5px 5px -3px rgba(0, 0, 0, 0.20), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
   border-radius: 2px;
 
-  .ant-checkbox-wrapper + .ant-checkbox-wrapper {
+  .c7n-checkbox-wrapper + .c7n-checkbox-wrapper {
     margin-left: unset;
   }
 
-  .ant-checkbox-wrapper {
+  .c7n-checkbox-wrapper {
     margin-bottom: 20px;
     margin-left: 0;
   }
 
-  .ant-checkbox-wrapper:last-child {
+  .c7n-checkbox-wrapper:last-child {
     margin-bottom: 0;
   }
 
-  .ant-checkbox-inner {
+  .c7n-checkbox-inner {
     border-color: rgba(0, 0, 0, 0.54);
   }
 }

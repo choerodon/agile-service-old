@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import classnames from 'classnames';
 import { Collapse } from 'choerodon-ui';
 import './RenderSwimLaneContext.scss';
-import SwimLaneHeader from './SwimLaneHeader.js';
+import SwimLaneHeader from './SwimLaneHeader';
 
 const { Panel } = Collapse;
 

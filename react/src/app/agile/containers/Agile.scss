@@ -16,13 +16,13 @@
   overflow: hidden;
 
   // Select 下划线
-  .ant-select-underline {
+  .c7n-select-underline {
     display: none;
   }
 
   // DropDown 菜单容器
-  .ant-spin-container,
-  .ant-spin-nested-loading {
+  .c7n-spin-container,
+  .c7n-spin-nested-loading {
     min-width: 170px;
   }
 
@@ -54,27 +54,27 @@
     transition: 0s;
   }
 
-  .ant-select-selection__placeholder {
+  .c7n-select-selection__placeholder {
     color: #4a4a4a;
   }
 
   &.primary {
-    .ant-select-selection__placeholder {
+    .c7n-select-selection__placeholder {
       color: #3f51b5;
     }
   }
 
   // antd Select 组件覆盖
-  .ant-select-selection {
+  .c7n-select-selection {
 
     // cursor: pointer;
     padding: 0 0 5px 5px;
 
-    .ant-select-search.ant-select-search--inline {
+    .c7n-select-search.c7n-select-search--inline {
       display: none;
     }
 
-    .ant-select-selection__rendered {
+    .c7n-select-selection__rendered {
       min-height: 24px;
       display: flex;
       align-items: center;
@@ -82,54 +82,45 @@
       margin-top: 4px;
       padding: 0 !important;
 
-      ul >li {
+      ul>li {
         height: 23px;
       }
 
       // 单选多选内容框
       ul,
-      .ant-select-selection-selected-value {
-        width: calc(100% - 50px);
+      .c7n-select-selection-selected-value {
+        width: calc(100% - 26px);
         overflow: hidden;
       }
 
-      .ant-select-selection__placeholder {
+      .c7n-select-selection__placeholder {
         white-space: nowrap;
         flex: 1;
         position: static !important;
       }
 
-      //   li {
-      //     margin-bottom: 0;
-      //   }
-      .ant-select-clear {
+      .c7n-select-clear {
         flex-shrink: 0;
         position: static !important;
 
-        .ant-ripple-wrapper {
+        .c7n-ripple-wrapper {
           display: none;
         }
       }
 
-      .ant-select-arrow {
+      .c7n-select-arrow {
         position: static !important;
-        // top: 50%;
-        // transform: translateY(-50%)
       }
+    }
+  }
 
-      //   .ant-select-selection__choice__content {   
-      //     overflow: hidden;
-      //     white-space: nowrap;
-      //     text-overflow: ellipsis;
-      //     // width: 64px;
-      //     width: calc(100% - 50px);
-      //     height: 24px;
-      //   }
+  &.c7n-select-allow-clear {
+    .c7n-select-selection__rendered {
 
-      //   .ant-select-selection__placeholder {
-      //     margin-top: 3px;
-      //     color: #3f51b5;
-      //   }
+      ul,
+      .c7n-select-selection-selected-value {
+        width: calc(100% - 50px) !important;
+      }
     }
   }
 }

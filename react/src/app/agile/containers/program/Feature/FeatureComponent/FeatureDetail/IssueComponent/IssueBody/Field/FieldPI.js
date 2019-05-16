@@ -22,6 +22,13 @@ const { Text, Edit } = TextEditToggle;
     const issue = store.getIssue;
     const { closePi = [], activePi = {} } = issue;
     const { name, code } = activePi || {};
+    const piList = closePi;
+    if (code) {
+      piList.push({
+        name,
+        code,
+      });
+    }
     return (
       <div className="line-start mt-10">
         <div className="c7n-property-wrapper">
@@ -31,30 +38,13 @@ const { Text, Edit } = TextEditToggle;
         </div>
         <div className="c7n-value-wrapper" style={{ display: 'inline-block' }}>
           {
-            closePi.length ? (
+            piList.length ? (
               <div>
-                <span>已结束PI：</span>
                 <span>
-                  {_.map(closePi, pi => `${pi.name}-${pi.code}`).join(' , ')}
-                </span>
-                <br />
-              </div>
-            ) : null
-          }
-          {
-            code ? (
-              <div>
-                <span>当前PI：</span>
-                <span>
-                  {`${name}-${code}`}
+                  {_.map(piList, pi => `${pi.code}-${pi.name}`).join(' , ')}
                 </span>
               </div>
-            ) : null
-          }
-          {
-            !code && !closePi.length ? (
-              <div>无</div>
-            ) : null
+            ) : <div>无</div>
           }
         </div>
       </div>

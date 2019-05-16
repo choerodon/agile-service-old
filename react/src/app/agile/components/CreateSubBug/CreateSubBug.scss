@@ -1,8 +1,8 @@
 .c7n-createSubIssue {
-  .ant-form-item {
+  .c7n-form-item {
     margin-bottom: 12px !important;
 
-    .ant-input-length-info {
+    .c7n-input-length-info {
       margin-bottom: -18px !important;
     }
   }
@@ -16,17 +16,17 @@
   }
 
   .sign-upload {
-    .ant-upload {
+    .c7n-upload {
       display: flex !important;
       margin-left: 40px;
     }
 
-    .ant-btn {
+    .c7n-btn {
       color: #3f51b5;
     }
   }
 
-  .ant-upload-list-item {
+  .c7n-upload-list-item {
     display: inline-block;
     .icon-close {
       transform: none;
@@ -34,7 +34,7 @@
     }
   }
 
-  .ant-upload-list-item-info {
+  .c7n-upload-list-item-info {
     padding-right: 20px;
     max-width: 100%;
   }
@@ -45,7 +45,7 @@
 }
 
 .is-required {
-  .ant-radio-group-label:after {
+  .c7n-radio-group-label:after {
     display: inline-block;
     margin-left: 4px;
     content: "*";
@@ -54,7 +54,7 @@
     color: #d50000;
   }
 
-  .ant-checkbox-group-label:after {
+  .c7n-checkbox-group-label:after {
     display: inline-block;
     margin-left: 4px;
     content: "*";

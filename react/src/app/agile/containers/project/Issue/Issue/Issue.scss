@@ -167,8 +167,8 @@
     display: none;
   }
 
-  .ant-table-thead >tr >th,
-  .ant-table-tbody >tr >td {
+  .c7n-table-thead >tr >th,
+  .c7n-table-tbody >tr >td {
     padding: 4px 4px;
   }
 }
@@ -180,21 +180,21 @@
   width: 100%; //left: 20px;
   animation: 0.5s slidein; // 暂时隐藏筛选按钮
 
-  // .ant-table-columns-chooser {
+  // .c7n-table-columns-chooser {
   //   display: none;
   // }
-  .ant-table {
+  .c7n-table {
     td {
       white-space: nowrap;
     }
   }
 
-  .ant-table-thead >tr >th,
-  .ant-table-tbody >tr >td {
+  .c7n-table-thead >tr >th,
+  .c7n-table-tbody >tr >td {
     padding: 6px 4px;
   }
 
-  .ant-table-tbody >tr >td {
+  .c7n-table-tbody >tr >td {
     transition: none;
   }
 
@@ -203,7 +203,7 @@
       padding-left: 7px;
     }
 
-    .ant-modal-content {
+    .c7n-modal-content {
       left: 818px;
       width: calc(100% - 818px) !important;
     }
@@ -248,42 +248,42 @@
   }
 
   .expand-sign {
-    .ant-pagination-options-label {
+    .c7n-pagination-options-label {
       display: none;
     }
 
-    .ant-select-selection {
+    .c7n-select-selection {
       min-width: unset;
     }
 
-    .ant-pagination-total-text,
-    .ant-pagination-first,
-    .ant-pagination-prev,
-    .ant-pagination-last {
+    .c7n-pagination-total-text,
+    .c7n-pagination-first,
+    .c7n-pagination-prev,
+    .c7n-pagination-last {
       margin-right: unset;
     }
   }
 
-  .ant-divider-horizontal {
+  .c7n-divider-horizontal {
     margin: 8px 0;
   }
 
-  .ant-pagination-options {
+  .c7n-pagination-options {
     margin-left: 0;
   }
 
-  .ant-table-filter-bar {
+  .c7n-table-filter-bar {
     padding-top: 6px;
     padding-bottom: 5px;
     padding-right: 90px;
   }
 
   .c7n-add {
-    .ant-input-length-info {
+    .c7n-input-length-info {
       display: none;
     }
 
-    .ant-input-underline {
+    .c7n-input-underline {
       display: none;
     }
   }
@@ -297,17 +297,17 @@
     display: block;
   }
 
-  .ant-dropdown {
+  .c7n-dropdown {
     background: #fff;
     box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
     border-radius: 2px;
   }
 
-  .ant-select .ant-select-underline {
+  .c7n-select .c7n-select-underline {
     // display: none;
   }
 
-  .ant-table-footer {
+  .c7n-table-footer {
     background: none;
     border-bottom: 1px solid rgb(232, 232, 232);
     border-top: none;
@@ -326,15 +326,15 @@
   }
 
   .c7n-bar {
-    .ant-table {
+    .c7n-table {
       display: none;
     }
 
-    .ant-table-filter-bar {
+    .c7n-table-filter-bar {
       border-top: none;
     }
 
-    .ant-table-columns-chooser {
+    .c7n-table-columns-chooser {
       display: none;
     }
   }
@@ -355,9 +355,8 @@
 
   .c7n-table {
     margin-top: 2px;
-    padding-left: 24px; // padding-right: 24px;
 
-    .ant-table {
+    .c7n-table {
       table {
         border-collapse: collapse;
       }
@@ -583,12 +582,12 @@
     }
   }
 
-  .ant-spin-nested-loading {
+  .c7n-spin-nested-loading {
     width: 100% !important;
   }
 
-  .ant-table-thead >tr >th:focus,
-  .ant-table-tbody >tr >td:focus {
+  .c7n-table-thead >tr >th:focus,
+  .c7n-table-tbody >tr >td:focus {
     background-color: transparent;
   }
 }
@@ -621,20 +620,20 @@
       padding: 0;
       min-width: 80px;
 
-      .ant-select-selection__placeholder,
-      .ant-select-search__field__placeholder {
+      .c7n-select-selection__placeholder,
+      .c7n-select-search__field__placeholder {
         padding-left: 5px;
       }
 
-      .ant-select-selection {
+      .c7n-select-selection {
         padding: 0;
       }
 
-      .ant-select-arrow {
+      .c7n-select-arrow {
         left: unset !important;
       }
 
-      .ant-select-clear {
+      .c7n-select-clear {
         right: 6px;
       }
     }
@@ -648,18 +647,18 @@
     z-index: 2;
     flex: 1;
 
-    & .ant-select {
+    & .c7n-select {
       cursor: pointer;
 
-      .ant-select-selection--single {
-        .ant-select-search__field__placeholder {
+      .c7n-select-selection--single {
+        .c7n-select-search__field__placeholder {
           padding-left: 5px;
           margin-top: 4px;
         }
       }
 
-      .ant-select-selection__placeholder,
-      .ant-select-search__field__placeholder {
+      .c7n-select-selection__placeholder,
+      .c7n-select-search__field__placeholder {
         padding-left: 5px;
       }
 
@@ -677,28 +676,28 @@
       align-items: center;
       justify-content: space-between;
 
-      .ant-select {
+      .c7n-select {
         min-width: 90px;
         margin-right: 10px;
 
-        .ant-select-selection__rendered {
+        .c7n-select-selection__rendered {
           padding-right: 27px;
 
-          .ant-select-selection__placeholder {
+          .c7n-select-selection__placeholder {
             color: #4a4a4a;
           }
 
-          .ant-select-clear {
+          .c7n-select-clear {
             top: -1px;
           }
         }
 
-        .ant-select-selection__choice__content {
+        .c7n-select-selection__choice__content {
           max-width: 100px;
           line-height: 20px;
         }
 
-        .ant-select-underline {
+        .c7n-select-underline {
           display: none;
         }
 
@@ -706,28 +705,28 @@
           margin-top: -14px;
         }
 
-        .ant-btn .icon {
+        .c7n-btn .icon {
           margin-top: 0;
         }
       }
 
       .myFilterSelect {
-        .ant-select-selection__rendered {
+        .c7n-select-selection__rendered {
           padding-right: 35px;
           margin-bottom: 6px;
 
-          .ant-select-selection-selected-value {
+          .c7n-select-selection-selected-value {
             max-width: 70px;
             margin-right: 5px;
             margin-top: 1px;
           }
 
-          .ant-select-selection__placeholder {
+          .c7n-select-selection__placeholder {
             color: #3F51B5;
           }
         }
 
-        .ant-select-selection__choice__content {
+        .c7n-select-selection__choice__content {
           max-width: 130px;
         }
 
@@ -740,29 +739,29 @@
         display: flex;
         align-items: center;
 
-        .ant-calendar-underline {
+        .c7n-calendar-underline {
           display: none;
         }
 
-        .ant-calendar-picker-icon {
+        .c7n-calendar-picker-icon {
           // display: none;
           right: -45px;
           bottom: 1px;
         }
 
-        .ant-calendar-range-picker-input {
+        .c7n-calendar-range-picker-input {
           width: 65px;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
         }
 
-        .ant-calendar-picker-clear {
+        .c7n-calendar-picker-clear {
           right: -24px;
         }
 
-        .ant-calendar-range-picker-separator,
-        .ant-calendar-range-picker-input[placeholder=""] {
+        .c7n-calendar-range-picker-separator,
+        .c7n-calendar-range-picker-input[placeholder=""] {
           display: none;
         }
       }
@@ -773,7 +772,7 @@
 .issueTypeSelect-dropdown,
 .statusSelect-dropdown,
 .prioritySelect-dropdown {
-  .ant-select-dropdown-select-all-none {
+  .c7n-select-dropdown-select-all-none {
     display: none;
   }
 }
@@ -840,28 +839,28 @@
       }
 
       .c7n-filterNameForm {
-        .ant-input-content {
+        .c7n-input-content {
           display: flex;
           margin-top: 12px;
         }
 
-        .ant-input-underline {
+        .c7n-input-underline {
           display: none;
         }
 
-        .ant-form-item-control.has-success {
+        .c7n-form-item-control.has-success {
           margin-top: 14px;
         }
 
-        .ant-form-item-control.has-feedback {
+        .c7n-form-item-control.has-feedback {
           margin-top: 14px;
         }
 
-        .ant-form-item-control.has-error {
+        .c7n-form-item-control.has-error {
           display: flex;
           align-items: center;
 
-          .ant-form-explain {
+          .c7n-form-explain {
             margin-top: 5px;
           }
         }
@@ -871,7 +870,7 @@
 }
 
 .c7n-Issue-table {
-  .ant-table {
+  .c7n-table {
     margin-top: 0 !important;
   }
 }

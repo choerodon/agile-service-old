@@ -1,43 +1,43 @@
 .c7n-pi-detail {
-  .ant-select {
+  .c7n-select {
     border-radius: 3px;
   }
 
-  .ant-select:hover {
+  .c7n-select:hover {
     background: rgba(0, 0, 0, 0.04);
   }
 
-  .ant-select-selection-selected-value {
+  .c7n-select-selection-selected-value {
     padding: 5px 7px;
   }
 
-  .ant-select-underline {
+  .c7n-select-underline {
     display: none;
   }
 
-  .ant-select-arrow {
+  .c7n-select-arrow {
     bottom: 4px;
   }
 
-  .ant-select-selection__rendered {
+  .c7n-select-selection__rendered {
     margin-bottom: 0;
   }
 
   .c7n-pi-showTypeRadioGroup {
-    .ant-radio-button-wrapper {
+    .c7n-radio-button-wrapper {
       border: 1px solid #3f51b5;
       color: #3f51b5;
     }
 
-    .ant-radio-button-wrapper-checked:first-child {
+    .c7n-radio-button-wrapper-checked:first-child {
       border-radius: 4px 0 0 4px;
     }
 
-    .ant-radio-button-wrapper:last-child {
+    .c7n-radio-button-wrapper:last-child {
       border-radius: 0 4px 4px 0;
     }
 
-    .ant-radio-button-wrapper-checked {
+    .c7n-radio-button-wrapper-checked {
       background: #3f51b5;
       color: #fff;
     }
@@ -51,11 +51,11 @@
   }
 
   .c7n-pi-teamAims {
-    .ant-table-expanded-row-level-1 {
+    .c7n-table-expanded-row-level-1 {
       td[colspan="1"] {
         padding: 0;
 
-        .ant-table-thead >tr >th {
+        .c7n-table-thead >tr >th {
           background: unset;
         }
       }

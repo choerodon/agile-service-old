@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { toJS } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
@@ -8,6 +9,7 @@ import {
   FieldEpic, FieldDateTime, FieldComponent, FieldTimeTrace, FieldStoryPoint,
   FieldSummary, FieldInput,
 } from './Field';
+import VisibleStore from '../../../../stores/common/visible/VisibleStore';
 
 @inject('AppState')
 @observer class IssueField extends Component {
@@ -22,6 +24,9 @@ import {
   }
 
   getFieldComponent = (field) => {
+    const { store } = this.props;
+    const issue = store.getIssue;
+    const { typeCode } = issue;
     switch (field.fieldCode) {
       case 'assignee':
         return (<FieldAssignee {...this.props} />);
@@ -30,7 +35,11 @@ import {
       case 'status':
         return (<FieldStatus {...this.props} />);
       case 'sprint':
-        return (<FieldSprint {...this.props} />);
+        if (typeCode !== 'sub_task') {
+          return (<FieldSprint {...this.props} />);
+        } else {
+          return (<FieldSprint {...this.props} disabled />);
+        }
       case 'reporter':
         return (<FieldReporter {...this.props} />);
       case 'priority':
@@ -40,12 +49,19 @@ import {
       case 'fixVersion':
         return (<FieldFixVersion {...this.props} />);
       case 'epic':
-        return (<FieldEpic {...this.props} />);
+        // 子任务、史诗不显示史诗
+        if (['issue_epic', 'sub_task'].indexOf(typeCode) === -1) {
+          return (<FieldEpic {...this.props} />);
+        }
+        return '';
       case 'creationDate':
       case 'lastUpdateDate':
         return (<FieldDateTime {...this.props} field={field} />);
       case 'component':
-        return (<FieldComponent {...this.props} />);
+        if (typeCode !== 'sub_task') {
+          return (<FieldComponent {...this.props} />);
+        }
+        return '';
       case 'timeTrace':
         return (<FieldTimeTrace {...this.props} />);
       case 'pi':
@@ -68,62 +84,16 @@ import {
   render() {
     const { store, isWide = false } = this.props;
     const issue = store.getIssue;
-    const fields = store.getFields;
+    let fields = toJS(store.getFields);
     const { issueId } = issue;
-
-    const left = [];
-    const right = [];
-    if (issueId && isWide) {
-      fields.forEach((item, index) => {
-        if (index < fields.length / 2) {
-          left.push(item);
-        } else {
-          right.push(item);
-        }
-      });
+    
+    if (!VisibleStore.detailShow) {
+      fields = fields.slice(0, 3);
     }
 
     return (
       <div className="c7n-content-wrapper IssueField">
-        { issueId ? fields.map(field => (
-          <Fragment>
-            {/* <span
-              className="c7n-content-item"
-              key={field.fieldCode}
-            > */}
-            {this.getFieldComponent(field)}
-            {/* </span> */}
-            {/* <div style={{ flex: 1 }} /> */}
-          </Fragment>
-        )) : ''}
-        {/* {isWide && issueId ? (
-          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-            <span style={{ flex: 1 }}>
-              {
-                left.map(field => (
-                  <span
-                    className="c7n-content-item"
-                    key={field.fieldCode}
-                  >
-                    {this.getFieldComponent(field)}
-                  </span>
-                ))
-              }
-            </span>
-            <span style={{ flex: 1 }}>
-              {
-                right.map(field => (
-                  <span
-                    className="c7n-content-item"
-                    key={field.fieldCode}
-                  >
-                    {this.getFieldComponent(field)}
-                  </span>
-                ))
-              }
-            </span>
-          </div>
-        ) : ''} */}
+        { issueId ? fields.map(field => this.getFieldComponent(field)) : ''}
       </div>
     );
   }

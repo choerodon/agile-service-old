@@ -42,7 +42,7 @@
     .rate-wrapper {
       margin-right: 5px;
     }
-    .ant-rate {
+    .c7n-rate {
       font-size: 12px !important;
       min-width: 28px;
       display: flex;
@@ -55,7 +55,7 @@
     .notEmergency {
       color: #faad14 !important;
     }
-    .ant-rate-star {
+    .c7n-rate-star {
       margin-right: 1px !important;
       width: 6px;
       .icon {
@@ -63,7 +63,7 @@
         transform: scale(0.3333333) !important;
       }
     }
-    .ant-rate-star-first .ant-rate-star-second {
+    .c7n-rate-star-first .c7n-rate-star-second {
       font-size: 16px !important;
       transform: scale(0.3333333) !important;
     }
@@ -110,7 +110,7 @@
   background: rgba(140, 158, 255, 0.08);
 }
 .c7n-agile-quickSearch-popover {
-  .ant-checkbox-group-item {
+  .c7n-checkbox-group-item {
     margin-bottom: 5px;
   }
 }

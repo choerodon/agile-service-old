@@ -449,7 +449,7 @@ class BurnDown extends Component {
       <div className="c7n-agile-iterationboard-burndown">
         <div className="switch" style={{ display: !loading && !sprintId ? 'none' : 'block' }}>
           <Dropdown overlay={menu} trigger={['click']} getPopupContainer={triggerNode => triggerNode.parentNode}>
-            <div className="ant-dropdown-link c7n-agile-dashboard-burndown-select">
+            <div className="c7n-dropdown-link c7n-agile-dashboard-burndown-select">
               {'单位选择'}
               <Icon type="arrow_drop_down" />
             </div>

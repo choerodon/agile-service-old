@@ -493,7 +493,7 @@ class SprintCommonStore {
     this.issueStatus = issueStatus;
     this.issuePriority = issuePriority;
     // this.users = users.content;
-    this.users = [...users.content, { id: 'none', realName: '未分配' }];
+    this.users = [...users.list, { id: 'none', realName: '未分配' }];
     this.tagData = tagData;
     this.issueComponents = issueComponents;
     this.issueVersions = issueVersions;

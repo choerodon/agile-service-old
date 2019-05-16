@@ -1,19 +1,19 @@
 .sign-upload {
-  .ant-upload {
+  .c7n-upload {
     display: flex !important;
     margin-left: 40px;
   }
-  .ant-btn {
+  .c7n-btn {
     color: #3f51b5;
   }
-  .ant-upload-list-item {
+  .c7n-upload-list-item {
     display: inline-block;
     .icon-close {
       transform: none;
       font-size: 14px;
     }
   }
-  .ant-upload-list-item-info {
+  .c7n-upload-list-item-info {
     padding-right: 20px;
     max-width: 100%;
   }
