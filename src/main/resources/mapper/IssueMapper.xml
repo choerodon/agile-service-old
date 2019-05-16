@@ -3477,4 +3477,22 @@
         </foreach>
     </update>
 
+    <select id="selectFeatureByPiId" resultType="io.choerodon.agile.infra.dataobject.FeatureCommonDO" >
+        select
+        ai.issue_id,
+        CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+        ai.summary,
+        ai.issue_type_id,
+        af.feature_type
+        from agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.program_id = api.project_id
+        left join agile_feature af on ai.issue_id = af.issue_id
+        where ai.program_id = #{programId}
+        and ai.type_code = 'feature'
+        and ai.issue_id in (
+          select issue_id from agile_pi_feature where pi_id = #{piId}
+        )
+        order by ai.issue_id desc
+    </select>
+
 </mapper>

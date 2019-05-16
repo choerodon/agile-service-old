@@ -5,6 +5,7 @@ import io.choerodon.agile.app.service.BoardFeatureService;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.agile.infra.repository.BoardFeatureRepository;
@@ -43,6 +44,8 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     private BoardSprintAttrMapper boardSprintAttrMapper;
     @Autowired
     private UserFeignClient userFeignClient;
+    @Autowired
+    private IssueFeignClient issueFeignClient;
 
     public static final String UPDATE_ERROR = "error.boardFeature.update";
     public static final String DELETE_ERROR = "error.boardFeature.deleteById";
@@ -175,6 +178,10 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         List<ProjectRelationshipDTO> projectRelationships = userFeignClient.getProjUnderGroup(organizationId, programId, true).getBody();
         //获取公告板特性信息
         List<BoardFeatureInfoDTO> boardFeatureInfos = boardFeatureMapper.queryInfoByPiId(programId, piId);
+        Map<Long, IssueTypeDTO> issueTypeMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        for (BoardFeatureInfoDTO boardFeatureInfo : boardFeatureInfos) {
+            boardFeatureInfo.setIssueTypeDTO(issueTypeMap.get(boardFeatureInfo.getIssueTypeId()));
+        }
         Map<Long, Map<Long, List<BoardFeatureInfoDTO>>> teamFeatureInfoMap = boardFeatureInfos.stream().collect(Collectors.groupingBy(BoardFeatureInfoDTO::getTeamProjectId, Collectors.groupingBy(BoardFeatureInfoDTO::getSprintId)));
         List<ProgramBoardTeamInfoDTO> teamProjects = new ArrayList<>(projectRelationships.size());
         handleTeamData(projectRelationships, teamFeatureInfoMap, teamProjects, sprints);

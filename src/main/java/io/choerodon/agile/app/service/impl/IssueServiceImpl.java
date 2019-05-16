@@ -2439,16 +2439,13 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public List<FeatureCommonDTO> queryFeatureListByPiId(Long programId, Long organizationId, Long piId, SearchDTO searchDTO) {
-        List<Long> piList = Arrays.asList(piId);
-        Map<String, Object> otherArgs = searchDTO.getOtherArgs();
-        if (otherArgs == null) {
-            otherArgs = new HashMap<>();
-        }
-        otherArgs.put("piList", piList);
-        List<Long> featureIds = issueMapper.selectFeatureIdsByPage(programId, searchDTO);
-        List<FeatureCommonDO> featureCommonDOs = issueMapper.selectFeatureList(programId, featureIds);
-        return modelMapper.map(featureCommonDOs, new TypeToken<List<FeatureCommonDTO>>() {
+    public List<FeatureCommonDTO> queryFeatureListByPiId(Long programId, Long organizationId, Long piId) {
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        List<FeatureCommonDTO> featureCommonDTOS = modelMapper.map(issueMapper.selectFeatureByPiId(programId, piId), new TypeToken<List<FeatureCommonDTO>>() {
         }.getType());
+        for (FeatureCommonDTO dto : featureCommonDTOS) {
+            dto.setIssueTypeDTO(issueTypeDTOMap.get(dto.getIssuetypeId()));
+        }
+        return featureCommonDTOS;
     }
 }
