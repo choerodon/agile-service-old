@@ -739,16 +739,14 @@ public class IssueController {
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询当前pi的特性列表")
-    @PostMapping(value = "/program/query_by_pi_id")
+    @GetMapping(value = "/program/query_by_pi_id")
     public ResponseEntity<List<FeatureCommonDTO>> queryFeatureListByPiId(@ApiParam(value = "项目id", required = true)
                                                                          @PathVariable(name = "project_id") Long projectId,
                                                                          @ApiParam(value = "组织id", required = true)
                                                                          @RequestParam Long organizationId,
                                                                          @ApiParam(value = "piId", required = true)
-                                                                         @RequestParam Long piId,
-                                                                         @ApiParam(value = "搜索DTO", required = true)
-                                                                         @RequestBody SearchDTO searchDTO) {
-        return Optional.ofNullable(issueService.queryFeatureListByPiId(projectId, organizationId, piId, searchDTO))
+                                                                         @RequestParam Long piId) {
+        return Optional.ofNullable(issueService.queryFeatureListByPiId(projectId, organizationId, piId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.issue.queryFeatureListByPiId"));
     }

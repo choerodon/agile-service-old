@@ -1,14 +1,13 @@
 package io.choerodon.agile.infra.mapper;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.ibatis.annotations.Param;
-
 import io.choerodon.agile.api.dto.SearchDTO;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -560,4 +559,6 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     List<Long> querySubBugIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     List<Long> querySubBugIdsByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+
+    List<FeatureCommonDO> selectFeatureByPiId(@Param("programId") Long programId, @Param("piId") Long piId);
 }

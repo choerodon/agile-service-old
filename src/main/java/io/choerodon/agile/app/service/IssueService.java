@@ -314,5 +314,5 @@ public interface IssueService {
 
     Page<FeatureCommonDTO> queryFeatureList(Long programId, Long organizationId, PageRequest pageRequest, SearchDTO searchDTO);
 
-    List<FeatureCommonDTO> queryFeatureListByPiId(Long programId, Long organizationId, Long piId, SearchDTO searchDTO);
+    List<FeatureCommonDTO> queryFeatureListByPiId(Long programId, Long organizationId, Long piId);
 }
