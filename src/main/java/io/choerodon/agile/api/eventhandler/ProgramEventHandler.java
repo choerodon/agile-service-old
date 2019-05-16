@@ -9,6 +9,8 @@ import io.choerodon.agile.domain.agile.event.ProjectRelationshipInsertPayload;
 import io.choerodon.agile.infra.dataobject.ArtDO;
 import io.choerodon.agile.infra.mapper.ArtMapper;
 import io.choerodon.asgard.saga.annotation.SagaTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +22,8 @@ import java.util.List;
  */
 @Component
 public class ProgramEventHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProgramEventHandler.class);
 
     private static final String JOIN_PROGRAM_EVENT = "join-program-event";
     private static final String DELETE_PROGRAM_EVENT = "delete-program-event";
@@ -50,6 +54,7 @@ public class ProgramEventHandler {
             sagaCode = IAM_ADD_PROJECT_RELATIONSHIP,
             seq = 3)
     public String dealProjectJoinProgram(String message) {
+        LOGGER.info("项目加入项目群消费event: {}", message);
         ProjectRelationshipInsertPayload projectRelationshipInsertPayload = JSONObject.parseObject(message, ProjectRelationshipInsertPayload.class);
         Long programId = projectRelationshipInsertPayload.getParentId();
         List<ProjectRelationshipInsertPayload.ProjectRelationship> relationships = projectRelationshipInsertPayload.getRelationships();
@@ -74,6 +79,7 @@ public class ProgramEventHandler {
             sagaCode = PROJECT_ENABLE,
             seq = 3)
     public String dealProjectEnableProgram(String message) {
+        LOGGER.info("项目启用: {}", message);
         ProjectEvent projectEvent = JSONObject.parseObject(message, ProjectEvent.class);
         if (PROJECT_CATEGORY_AGILE.equals(projectEvent.getProjectCategory())) {
             Long programId = projectEvent.getProgramId();
@@ -90,6 +96,7 @@ public class ProgramEventHandler {
             sagaCode = PROJECT_DISABLE,
             seq = 3)
     public String dealProjectDisableProgram(String message) {
+        LOGGER.info("项目停用: {}", message);
         ProjectEvent projectEvent = JSONObject.parseObject(message, ProjectEvent.class);
         if (PROJECT_CATEGORY_PROGRAM.equals(projectEvent.getProjectCategory())) {
             Long programId = projectEvent.getProjectId();
@@ -110,6 +117,7 @@ public class ProgramEventHandler {
             sagaCode = DELETE_PROGRAM_EVENT,
             seq = 3)
     public String dealProjectDeleteProgram(String message) {
+        LOGGER.info("项目删除项目群关系消费event: {}", message);
         ProjectRelationshipInsertPayload projectRelationshipInsertPayload = JSONObject.parseObject(message, ProjectRelationshipInsertPayload.class);
         Long programId = projectRelationshipInsertPayload.getParentId();
         List<ProjectRelationshipInsertPayload.ProjectRelationship> relationships = projectRelationshipInsertPayload.getRelationships();
