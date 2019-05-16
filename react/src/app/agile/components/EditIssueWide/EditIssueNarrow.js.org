@@ -1,6 +1,6 @@
 /* eslint-disable react/sort-comp */
 import React, { Component } from 'react';
-import { stores, axios, Permission } from 'choerodon-front-boot';
+import { stores, axios, Permission } from '@choerodon/boot';
 import { withRouter } from 'react-router-dom';
 import _ from 'lodash';
 import TimeAgo from 'timeago-react';
@@ -129,7 +129,7 @@ class CreateSprint extends Component {
     });
     getUsers(input).then((res) => {
       this.setState({
-        originUsers: res.content,
+        originUsers: res.list,
         selectLoading: false,
       });
     });
@@ -312,7 +312,7 @@ class CreateSprint extends Component {
       });
       getUsers(input).then((res) => {
         this.setState({
-          originUsers: res.content,
+          originUsers: res.list,
           selectLoading: false,
         });
       });

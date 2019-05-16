@@ -11,7 +11,7 @@
     margin-bottom: 0;
   }
 
-  .ant-select-selection-selected-value {
+  .c7n-select-selection-selected-value {
     max-width: 100px;
   }
 
@@ -66,17 +66,17 @@
     }
   }
 
-  .ant-input-wrapper {
+  .c7n-input-wrapper {
     margin-bottom: 0;
   }
 
-  .ant-upload {
+  .c7n-upload {
     display: flex !important;
     justify-content: flex-end !important;
   }
 
   .assignee {
-    .ant-input-placeholder {
+    .c7n-input-placeholder {
       display: none;
     }
   }
@@ -88,7 +88,7 @@
     }
   }
 
-  .ant-input-length-info {
+  .c7n-input-length-info {
     position: absolute;
     float: left;
     letter-spacing: 0;
@@ -296,11 +296,11 @@
   }
 
   .select-noBorder {
-    .ant-select-underline {
+    .c7n-select-underline {
       display: none;
     }
 
-    .ant-select-selection__rendered {
+    .c7n-select-selection__rendered {
       margin-left: 0 !important;
     }
   }
@@ -414,11 +414,11 @@
     }
   }
 
-  .ant-progress-inner {
+  .c7n-progress-inner {
     background: rgba(0, 0, 0, 0.08);
   }
 
-  .ant-progress-show-info .ant-progress-outer {
+  .c7n-progress-show-info .c7n-progress-outer {
     padding-right: 5px !important;
   }
 
@@ -426,11 +426,11 @@
     color: rgb(63, 81, 181);
   }
 
-  .ant-btn-flat {
+  .c7n-btn-flat {
     color: rgb(63, 81, 181);
   }
 
-  .ant-upload-list-item {
+  .c7n-upload-list-item {
     display: inline-block;
     max-width: 100%;
     height: 32px;
@@ -452,11 +452,11 @@
       font-size: 14px;
     }
   }
-  .ant-upload-list-item-info {
+  .c7n-upload-list-item-info {
     padding-right: 20px;
   }
 
-  .ant-progress-status-success .ant-progress-bg {
+  .c7n-progress-status-success .c7n-progress-bg {
     background-color: #00bfa5;
   }
 
@@ -468,11 +468,11 @@
     margin-right: 2px;
   }
 
-  .ant-btn > .icon + span {
+  .c7n-btn > .icon + span {
     margin-left: 0 !important;
   }
 
-  .ant-btn > .icon {
+  .c7n-btn > .icon {
     margin-right: 0 !important;
   }
 }

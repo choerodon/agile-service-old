@@ -1,8 +1,8 @@
-.ant-collapse-item.c7n-swimlaneContext-container.shouldBeIndent >.ant-collapse-header {
+.c7n-collapse-item.c7n-swimlaneContext-container.shouldBeIndent >.c7n-collapse-header {
   padding: 0 16px !important;
 }
 
-.ant-collapse-item.c7n-swimlaneContext-container.noStoryInEpic >.ant-collapse-header {
+.c7n-collapse-item.c7n-swimlaneContext-container.noStoryInEpic >.c7n-collapse-header {
   display: none !important;
 }
 
@@ -28,17 +28,17 @@
   &-container {
     border: none !important;
 
-    .ant-collapse-content-box {
+    .c7n-collapse-content-box {
       display: flex;
       padding: 0 !important;
     }
 
-    .ant-collapse-borderless >.ant-collapse-item {
+    .c7n-collapse-borderless >.c7n-collapse-item {
       border-top: 1px solid rgba(0, 0, 0, 0.12) !important;
       border-bottom: none !important;
     }
 
-    .ant-collapse-header {
+    .c7n-collapse-header {
       margin: 4px;
       display: flex;
       align-items: center;
@@ -46,15 +46,15 @@
       padding: 12px 0 !important;
     }
 
-    .ant-collapse-header >.ant-collapse-header {
+    .c7n-collapse-header >.c7n-collapse-header {
       margin: 0 12px;
     }
 
-    .ant-collapse-content {
+    .c7n-collapse-content {
       padding: 0;
     }
 
-    .ant-collapse {
+    .c7n-collapse {
       width: 100%;
     }
   }

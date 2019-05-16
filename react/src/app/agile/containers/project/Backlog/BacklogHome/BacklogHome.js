@@ -48,6 +48,7 @@ class BacklogHome extends Component {
     const { BacklogStore } = this.props;
     BacklogStore.resetData();
     BacklogStore.clearMultiSelected();
+    BacklogStore.resetFilter();
   }
 
   /**
@@ -223,10 +224,16 @@ class BacklogHome extends Component {
   toggleCurrentVisible = (type) => {
     const { BacklogStore } = this.props;
     if (BacklogStore.getCurrentVisible === type) {
+      if (type === 'feature') {
+        QuickSearchEvent.emit('unSelectStory');
+      }
       BacklogStore.toggleVisible(null);
     } else {
       if (type === 'feature') {
         QuickSearchEvent.emit('setSelectQuickSearch', [{ key: -2, label: '仅故事' }]);
+      }
+      if (BacklogStore.getCurrentVisible === 'feature' && type !== 'feature') {
+        QuickSearchEvent.emit('unSelectStory');
       }
       BacklogStore.toggleVisible(type);
     }

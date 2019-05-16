@@ -45,7 +45,21 @@ class MineUnDone extends Component {
             data={issue.issueTypeDTO}
           />
         </div>
-        <span className="issueNum text-overflow-hidden">
+        <span
+          className="issueNum text-overflow-hidden"
+          style={{
+            color: '#3f51b5',
+            cursor: 'pointer',
+            display: 'block',
+            minWidth: 85,
+          }}
+          role="none"
+          onClick={() => {
+            const { history } = this.props;
+            const urlParams = AppState.currentMenuType;
+            history.push(`/agile/issue?type=${urlParams.type}&id=${urlParams.id}&name=${encodeURIComponent(urlParams.name)}&organizationId=${urlParams.organizationId}&paramName=${issue.issueNum}&paramIssueId=${issue.issueId}`);
+          }}
+        >
           {issue.issueNum}
         </span>
         <div className="issueSummary-wrap">

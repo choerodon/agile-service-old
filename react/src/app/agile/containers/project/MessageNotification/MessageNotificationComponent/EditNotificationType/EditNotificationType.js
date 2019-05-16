@@ -47,7 +47,7 @@ class EditNotificationType extends Component {
         this.setState({
           loading: false,
           checkeds: _.map(noticeTypeData, 'enable'),
-          userOptions: [...users.content.filter(item => item.enabled), ...noticeTypeData[3].idWithNameDTOList.filter(item => !users.content.find(o => o.id === item.userId))], // 如果后端返回的idWithNameDTOList中的用户不在20条数据之内，就拼接在后面
+          userOptions: [...users.list.filter(item => item.enabled), ...noticeTypeData[3].idWithNameDTOList.filter(item => !users.list.find(o => o.id === item.userId))], // 如果后端返回的idWithNameDTOList中的用户不在20条数据之内，就拼接在后面
           updateData: _.map(noticeTypeData, (item) => {
             const pickItem = _.pick(item, ['id', 'event', 'noticeType', 'noticeName', 'enable', 'user', 'objectVersionNumber']); // 去除对象中的idWithNameDTOList字段，更新时不需要
             return ({ ...pickItem, objectVersionNumber: pickItem.id ? pickItem.objectVersionNumber : null });// 如果之前没有更新过,pickItem.id为null, 此时后端接受的objectVersionNumber为null
@@ -125,7 +125,7 @@ class EditNotificationType extends Component {
                 .then((res) => {
                   this.setState({
                     userOptionsLoading: false,
-                    userOptions: param ? res.content : [...res.content, ...userOptionsWithUserId],
+                    userOptions: param ? res.list : [...res.list, ...userOptionsWithUserId],
                     // 如果搜索条件为空，就把为空时搜出来的20条与之前有userId的数据进行拼接，保证已被选中但不在20条之内的数据显示出来
                   });
                 })

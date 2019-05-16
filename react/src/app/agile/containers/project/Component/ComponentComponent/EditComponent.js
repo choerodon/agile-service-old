@@ -43,7 +43,7 @@ class EditComponent extends Component {
       });
       getUsers(input).then((res) => {
         this.setState({
-          originUsers: res.content.filter(u => u.enabled),
+          originUsers: res.list.filter(u => u.enabled),
           selectLoading: false,
         });
       });
@@ -59,7 +59,7 @@ class EditComponent extends Component {
     });
     getUsers(input).then((res) => {
       this.setState({
-        originUsers: res.content.filter(u => u.enabled),
+        originUsers: res.list.filter(u => u.enabled),
         selectLoading: false,
       });
     });

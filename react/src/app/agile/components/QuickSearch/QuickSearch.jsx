@@ -29,13 +29,14 @@ class QuickSearch extends Component {
   componentDidMount() {
     QuickSearchEvent.addListener('clearQuickSearchSelect', this.clearQuickSearch);
     QuickSearchEvent.addListener('setSelectQuickSearch', this.setSelectQuickSearch);
+    QuickSearchEvent.addListener('unSelectStory', this.unSelectStory);
     const { AppState } = this.props;
     const axiosGetFilter = axios.post(`/agile/v1/projects/${AppState.currentMenuType.id}/quick_filter/query_all`, {
       contents: [
       ],
       filterName: '',
     });
-    const axiosGetUser = axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?size=40`);
+    const axiosGetUser = axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?page=1&size=40`);
     Promise.all([axiosGetFilter, axiosGetUser]).then((res = []) => {
       const resFilterData = res[0].map(item => ({
         label: item.name,
@@ -114,6 +115,15 @@ class QuickSearch extends Component {
     this.handleQuickSearchChange(selectQuickSearch);
   }
 
+  unSelectStory=() => {
+    const { selectQuickSearch } = this.state;
+    const newSelect = selectQuickSearch.filter(search => search.key !== -2);    
+    this.setState({
+      selectQuickSearch: newSelect,
+    });
+    this.handleQuickSearchChange(newSelect);
+  }
+
   render() {
     // 防抖函数
     const debounceCallback = this.deBounce(500);
@@ -178,7 +188,7 @@ class QuickSearch extends Component {
                   onFilterChange={(value) => {
                     if (value) {
                       debounceCallback(() => {
-                        axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?size=40&param=${value}`).then((res) => {
+                        axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?page=1&size=40&param=${value}`).then((res) => {
                         // Set 用于查询是否有 id 重复的，没有重复才往里加
                           const temp = new Set(userDataArray.map(item => item.id));
                           res.content.filter(item => item.enabled).forEach((item) => {

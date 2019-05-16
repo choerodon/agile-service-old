@@ -34,7 +34,7 @@ class CreateArt extends Component {
         callback();
       }
     });
-  }
+  };
 
   handleOk = () => {
     const { onSubmit, form } = this.props;
@@ -43,7 +43,7 @@ class CreateArt extends Component {
         onSubmit(values);
       }
     });
-  }
+  };
 
   render() {
     const {

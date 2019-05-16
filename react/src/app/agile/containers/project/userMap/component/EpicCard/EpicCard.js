@@ -198,7 +198,7 @@ class EpicCard extends Component {
               >
                 <TextArea
                   className="c7n-textArea"
-                  autosize={{ minRows: 1, maxRows: 1 }}
+                  autosize={{ minRows: 1, maxRows: 2 }}
                   value={epicName}
                   ref={(textArea) => { this.textArea = textArea; }}
                   onChange={this.handleEpicNameChange.bind(this)}
@@ -207,7 +207,7 @@ class EpicCard extends Component {
                   role="none"
                   onBlur={this.updateEpicName}
                   spellCheck="false"
-                  maxLength={10}
+                  maxLength={20}
                 />
               </div>
               <div className="c7n-footer">

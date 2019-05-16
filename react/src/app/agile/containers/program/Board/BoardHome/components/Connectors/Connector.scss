@@ -1,0 +1,13 @@
+.helperLine {
+  stroke-width: 6px;
+  opacity: 0;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.2;
+  }
+}
+
+.line {
+  cursor: pointer;
+
+}

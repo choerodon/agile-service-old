@@ -59,13 +59,13 @@
     max-height: 85px;
 
     // 隐藏字数限制提示
-    .ant-input-length-info {
+    .c7n-input-length-info {
       display: none;
     }
 
-    .ant-input-has-value {
+    .c7n-input-has-value {
       max-height: 50px;
-      &.ant-input-focus {
+      &.c7n-input-focus {
         max-height: 200px;
       }
     }
@@ -75,16 +75,16 @@
       // box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.13);
     }
 
-    .ant-input {
+    .c7n-input {
       padding: 4px;
       border: 1px dashed transparent;
     }
 
-    .ant-input:hover {
+    .c7n-input:hover {
       // border-color: #3F51B5;
     }
 
-    .ant-input:focus {
+    .c7n-input:focus {
       border-color: #3f51b5;
       box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
     }
@@ -94,23 +94,23 @@
       // border-color: #fff !important;
     }
 
-    .ant-input-focus {
+    .c7n-input-focus {
       border-bottom: none;
     }
 
-    .ant-input-border {
+    .c7n-input-border {
       display: none;
     }
 
-    .ant-input-border-active {
+    .c7n-input-border-active {
       display: none;
     }
 
-    .ant-input-underline {
+    .c7n-input-underline {
       display: none;
     }
 
-    .ant-input-wrapper {
+    .c7n-input-wrapper {
       margin-bottom: 0;
     }
   }

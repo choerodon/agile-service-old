@@ -39,7 +39,7 @@ class IssueTable extends Component {
       const issues = IssueStore.getIssues;
       const index = findIndex(issues, { issueId: selectedIssue.issueId });
       if (index > -1) {
-        const target = document.getElementsByClassName('ant-table-row')[index];
+        const target = document.getElementsByClassName('c7n-table-row')[index];
         if (target) {
           target.click();
         }

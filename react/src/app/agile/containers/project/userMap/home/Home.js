@@ -1787,15 +1787,14 @@ class Home extends Component {
         service={['agile-service.issue.deleteIssue', 'agile-service.issue.listEpic']}
       >
         {this.renderHeader()}
-        <div style={{ padding: 0, paddingLeft: 24, overflow: 'unset' }}>
-          <QuickSearch
-            moreSelection={UserMapStore.getFilters}
-            onQuickSearchChange={this.onQuickSearchChange}
-            onAssigneeChange={this.onAssigneeChange}
-          />
-        </div>
-
         <Content style={{ padding: 0, height: '100%', paddingLeft: 24 }}>
+          <div style={{ padding: 0, paddingLeft: 24, overflow: 'unset', height: 48 }}>
+            <QuickSearch
+              moreSelection={UserMapStore.getFilters}
+              onQuickSearchChange={this.onQuickSearchChange}
+              onAssigneeChange={this.onAssigneeChange}
+            />
+          </div>
           {/* eslint-disable */
             isLoading
            /* eslint-enable */
@@ -1809,7 +1808,7 @@ class Home extends Component {
               )
               : epicData.length
                 ? (
-                  <div style={{ padding: 0, height: '100%' }}>
+                  <div style={{ padding: 0 }}>
                     <DragDropContext
                       onDragEnd={this.handleEpicOrIssueDrag}
                       onDragStart={this.handleEpicOrIssueDragStart}
@@ -1877,7 +1876,7 @@ class Home extends Component {
                   </div>
                 )
                 : (
-                  <div style={{ padding: 0, height: '100%', paddingLeft: 24 }}>
+                  <div style={{ padding: 0, paddingLeft: 24 }}>
                     <div style={{
                       display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10%',
                     }}

@@ -13,23 +13,23 @@
     height: 24px;
     line-height: 24px;
   }
-  .ant-select-dropdown {
+  .c7n-select-dropdown {
     box-shadow: none;
-    .ant-spin-container {
+    .c7n-spin-container {
       box-shadow:
         0 5px 5px -3px rgba(0, 0, 0, 0.2),
         0 8px 10px 1px rgba(0, 0, 0, 0.14),
         0 3px 14px 2px rgba(0, 0, 0, 0.12);
     }
   }
-  .ant-select-selection__rendered {
+  .c7n-select-selection__rendered {
     padding: 0 !important;
   }
-  .ant-spin-container {
+  .c7n-spin-container {
     min-width: 180px;
     background: #fff;
   }
-  .ant-spin-container > div {
+  .c7n-spin-container > div {
     width: 100%;
   }
   .quickSearchSelect, .assigneeSelect {
@@ -42,11 +42,11 @@
     position: relative;
     overflow: hidden;
     // Select 下划线
-    .ant-select-underline {
+    .c7n-select-underline {
       display: none;
     }
     // DropDown 菜单容器
-    .ant-spin-container, .ant-spin-nested-loading {
+    .c7n-spin-container, .c7n-spin-nested-loading {
       min-width: 170px;
     }
     &:hover {
@@ -76,27 +76,27 @@
     }
 
     // antd Select 组件覆盖
-    .ant-select-selection--multiple {
+    .c7n-select-selection--multiple {
       cursor: pointer;
       padding: 0 0 0 5px;
-      .ant-select-selection__rendered {
+      .c7n-select-selection__rendered {
         margin-bottom: 0;
         li {
           margin-bottom: 0;
         }
-        .ant-select-arrow {
+        .c7n-select-arrow {
           left: 64px;
           height: 26px;
           line-height: 26px;
         }
-        .ant-select-selection__choice__content {
+        .c7n-select-selection__choice__content {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
           width: 64px;
           height: 24px;
         }
-        .ant-select-selection__placeholder {
+        .c7n-select-selection__placeholder {
           margin-top: 3px;
           color: #3f51b5;
         }
@@ -109,7 +109,7 @@
   min-width: 170px;
 }
 .quickSearchSelect-dropdown {
-  .ant-select-dropdown-select-all-none {
+  .c7n-select-dropdown-select-all-none {
     display: none;
   }
 }

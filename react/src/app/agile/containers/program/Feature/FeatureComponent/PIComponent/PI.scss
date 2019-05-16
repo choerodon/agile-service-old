@@ -1,9 +1,9 @@
 .c7n-feature-sprintTop {
-  .ant-select-arrow {
+  .c7n-select-arrow {
     bottom: unset;
   }
 
-  .ant-select-selection__rendered {
+  .c7n-select-selection__rendered {
     width: unset;
   }
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
@@ -188,7 +188,7 @@
     align-items: center;
     overflow: hidden;
     // width: 0;
-    .ant-form-item {
+    .c7n-form-item {
       //flex: 1;
       margin-bottom: 0 !important;
     }
@@ -199,7 +199,7 @@
       // margin-left: 26px;
     }
 
-    .ant-input-underline {
+    .c7n-input-underline {
       display: none;
     }
 
@@ -271,7 +271,7 @@
   background: #e9e9e9;
 }
 
-.ant-select .ant-select-underline {
+.c7n-select .c7n-select-underline {
   //display: none;
 }
 .c7n-sign {

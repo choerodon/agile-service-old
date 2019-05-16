@@ -8,7 +8,7 @@
   height: 100%;
 }
 
-.ant-tabs-content {
+.c7n-tabs-content {
   flex-grow: 1;
 }
 
@@ -22,12 +22,12 @@
 }
 
 .c7n-scrumboard {
-  .ant-tabs-tabpane {
+  .c7n-tabs-tabpane {
     overflow-y: auto;
     overflow-x: hidden;
   }
   @-moz-document url-prefix() {
-    .ant-tabs {
+    .c7n-tabs {
       overflow: auto;
     }
   }
@@ -35,7 +35,7 @@
 
 .scrumBoardMask {
 
-  .ant-confirm-title {
+  .c7n-confirm-title {
     font-size: 18px!important;
   }
 }

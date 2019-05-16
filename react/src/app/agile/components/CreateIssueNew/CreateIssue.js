@@ -34,7 +34,7 @@ class CreateIssue extends Component {
     this.setState({ selectLoading: true });
     getUsers(input).then((res) => {
       this.setState({
-        originUsers: res.content.filter(u => u.enabled),
+        originUsers: res.list.filter(u => u.enabled),
         selectLoading: false,
       });
     });
@@ -96,7 +96,7 @@ class CreateIssue extends Component {
       });
       getUsers(input).then((res) => {
         this.setState({
-          originUsers: res.content.filter(u => u.enabled),
+          originUsers: res.list.filter(u => u.enabled),
           selectLoading: false,
         });
       });
@@ -889,7 +889,7 @@ class CreateIssue extends Component {
                   validator: this.checkEpicNameRepeat,
                 }],
               })(
-                <Input label="史诗名称" maxLength={10} />,
+                <Input label="史诗名称" maxLength={20} />,
               )}
             </FormItem>
           )

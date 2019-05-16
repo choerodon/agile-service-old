@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { toJS } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
@@ -8,6 +9,7 @@ import {
   FieldEpic, FieldDateTime, FieldComponent, FieldTimeTrace, FieldStoryPoint,
   FieldInput, FieldSummary,
 } from './Field';
+import VisibleStore from '../../../../../../../stores/common/visible/VisibleStore';
 
 const hideFields = ['priority', 'component', 'label', 'fixVersion', 'sprint', 'timeTrace', 'assignee'];
 
@@ -24,6 +26,9 @@ const hideFields = ['priority', 'component', 'label', 'fixVersion', 'sprint', 't
   }
 
   getFieldComponent = (field) => {
+    const { store } = this.props;
+    const issue = store.getIssue;
+    const { typeCode } = issue;
     switch (field.fieldCode) {
       case 'assignee':
         return (<FieldAssignee {...this.props} />);
@@ -42,7 +47,11 @@ const hideFields = ['priority', 'component', 'label', 'fixVersion', 'sprint', 't
       case 'fixVersion':
         return (<FieldFixVersion {...this.props} />);
       case 'epic':
-        return (<FieldEpic {...this.props} />);
+        // 子任务、史诗不显示史诗
+        if (['issue_epic', 'sub_task'].indexOf(typeCode) === -1) {
+          return (<FieldEpic {...this.props} />);
+        }
+        return '';
       case 'creationDate':
       case 'lastUpdateDate':
         return (<FieldDateTime {...this.props} field={field} />);
@@ -70,17 +79,15 @@ const hideFields = ['priority', 'component', 'label', 'fixVersion', 'sprint', 't
   render() {
     const { store } = this.props;
     const issue = store.getIssue;
-    const fields = store.getFields;
+    let fields = toJS(store.getFields).filter(item => hideFields.indexOf(item.fieldCode) === -1);
     const { issueId } = issue;
-
+    if (!VisibleStore.detailShow) {
+      fields = fields.slice(0, 3);
+    }
     return (
       <div className="c7n-content-wrapper">
-        {issueId ? fields.filter(item => hideFields.indexOf(item.fieldCode) === -1).map(field => (
-          // <span
-          //   key={field.code}
-          // >
-          this.getFieldComponent(field)
-          // </span>
+        {issueId ? fields.map(field => (         
+          this.getFieldComponent(field)    
         )) : ''}
       </div>
     );

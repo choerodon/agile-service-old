@@ -2,17 +2,17 @@
   .c7n-epicSelectHeader{
     position: relative;
     display: inline-block;
-    .ant-checkbox{
-      .ant-checkbox-inner{
+    .c7n-checkbox{
+      .c7n-checkbox-inner{
         border-color: rgba(0,0,0,0.54);
       }
     }
-    .ant-checkbox-checked{
-      .ant-checkbox-inner{
+    .c7n-checkbox-checked{
+      .c7n-checkbox-inner{
         border-color: transparent;
       }
     }
-    .ant-checkbox-group-item:last-child{
+    .c7n-checkbox-group-item:last-child{
       margin-top: 5px;
     }
     .icon-show {

@@ -114,7 +114,7 @@ class UserHead extends Component {
                   color: color || 'rgba(0, 0, 0, 0.65)',
                 }}
               >
-                {`${user.realName || ''}`}
+                {`${user.realName || user.loginName}`}
               </span>
             )
           }

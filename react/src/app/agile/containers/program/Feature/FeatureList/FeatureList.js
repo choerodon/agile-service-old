@@ -28,6 +28,10 @@ class FeatureList extends Component {
     this.refresh();
   }
 
+  componentWillUnmount() {
+    FeatureStore.resetFilter();
+  }
+
   saveRef = name => (ref) => {
     this[name] = ref;
   };
@@ -74,7 +78,7 @@ class FeatureList extends Component {
 
   handleExportClick = () => {
     this.QueryMode.exportFeatures();
-  }
+  };
 
   render() {
     const { visible, mode, display } = this.state;

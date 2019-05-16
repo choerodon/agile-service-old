@@ -1,4 +1,4 @@
-import React, { memo, PureComponent, Component } from 'react';
+import React, { memo, Component } from 'react';
 import {
   Table, Tooltip,
 } from 'choerodon-ui';

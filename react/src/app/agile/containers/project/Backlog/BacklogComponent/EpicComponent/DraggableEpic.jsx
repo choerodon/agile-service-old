@@ -174,7 +174,7 @@ class DraggableEpic extends Component {
                     e.stopPropagation();
                   }}
                   onBlur={this.handleSave}
-                  maxLength={10}
+                  maxLength={20}
                 />
               ) : (
                 <p>{item.epicName}</p>

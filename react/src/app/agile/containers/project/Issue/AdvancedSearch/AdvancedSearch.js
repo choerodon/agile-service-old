@@ -301,7 +301,7 @@ class AdvancedSearch extends Component {
               onChange={this.handleAssigneeSelectChange}
               value={selectedAssignee}
               getPopupContainer={triggerNode => triggerNode.parentNode}
-              render={user => <Option value={user.id}>{user.realName}</Option>}
+              render={user => <Option value={user.id}>{user.realName || user.loginName}</Option>}
             >
               <Option value="none">未分配</Option>
             </SelectFocusLoad>

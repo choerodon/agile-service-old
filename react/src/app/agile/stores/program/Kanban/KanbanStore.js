@@ -4,7 +4,7 @@ import {
 import axios from 'axios';
 import { find, findIndex } from 'lodash';
 import { stores } from '@choerodon/boot';
-import { loadBoardData, sortColumn, deleteColumn } from '../../../api/BoardApi';
+import { loadBoardData, sortColumn, deleteColumn } from '../../../api/KanbanApi';
 
 const { AppState } = stores;
 
@@ -66,10 +66,9 @@ class KanbanStore {
   }
 
   @observable quickSearchObj = {
-    onlyMe: false,
-    onlyStory: false,
-    quickSearchArray: [],
-    assigneeFilterIds: [],
+    advancedSearchArgs: {
+      featureTypeList: [],
+    },
   };
 
   @observable allColumnCount = [];
@@ -405,10 +404,8 @@ class KanbanStore {
     this.quickSearchObj.assigneeFilterIds = data;
   }
 
-  @action addQuickSearchFilter(onlyMeChecked = false, onlyStoryChecked = false, moreChecked = []) {
-    this.quickSearchObj.onlyMe = onlyMeChecked;
-    this.quickSearchObj.onlyStory = onlyStoryChecked;
-    this.quickSearchObj.quickSearchArray = moreChecked;
+  @action addQuickSearchFilter(featureTypeList) {
+    this.quickSearchObj.advancedSearchArgs.featureTypeList = featureTypeList;
   }
 
   @computed get hasSetFilter() {
@@ -1056,7 +1053,7 @@ class KanbanStore {
           index = i + 1;
           break;
         }
-      }      
+      }
       startLine.splice(startStatusIndex, 1);
       destinationLine.splice(index, 0, {
         ...issue,
@@ -1066,7 +1063,7 @@ class KanbanStore {
       // 重置
       const index = findIndex(destinationLine, { issueId });
       if (index !== null) {
-        destinationLine.splice(index, 1); 
+        destinationLine.splice(index, 1);
         startLine.splice(destinationStatusIndex, 0, {
           ...issue,
           statusId: startStatus,

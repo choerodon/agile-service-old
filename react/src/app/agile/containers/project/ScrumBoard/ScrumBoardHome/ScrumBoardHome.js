@@ -292,7 +292,7 @@ class ScrumBoardHome extends Component {
              <Tooltip key={ScrumBoardStore.getBoardList.values().next().value.boardId} title={ScrumBoardStore.getBoardList.values().next().value.name}>
                <div
                  funcType="flat"
-                 className="boardBtn ant-btn ant-btn-flat"
+                 className="boardBtn c7n-btn c7n-btn-flat"
                >
                  <span>{ScrumBoardStore.getBoardList.values().next().value.name}</span>
                </div>

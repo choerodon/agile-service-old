@@ -831,9 +831,7 @@ class BacklogStore {
     return this.selectedIssueId;
   }
 
-  @action createIssue(issue, sprintId, { backlogData, sprintData }) {
-    this.backlogData = backlogData;
-    this.sprintData = sprintData;
+  @action createIssue(issue, sprintId) {
     this.clickIssueDetail = issue;
     if (this.clickIssueDetail) {
       this.clickIssueId = issue.issueId;
@@ -990,6 +988,10 @@ class BacklogStore {
     this.epicFilter = 'all';
     this.quickFilters = [];
     this.assigneeFilterIds = [];
+    this.chosenEpic = 'all';
+    this.chosenVersion = 'all';
+    this.filterSelected = false;
+    this.chosenFeature = 'all';
   }
 
   @computed get hasFilter() {
@@ -997,7 +999,6 @@ class BacklogStore {
   }
 
   @action clearSprintFilter() {
-    this.filterSelected = false;
     this.resetFilter();
     this.axiosGetSprint().then(action('fetchSuccess', (res) => {
       this.setSprintData(res);

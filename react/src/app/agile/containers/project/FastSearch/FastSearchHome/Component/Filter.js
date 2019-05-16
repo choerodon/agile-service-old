@@ -225,8 +225,8 @@ class AddComponent extends Component {
     const orgId = AppState.currentMenuType.organizationId;
     const OPTION_FILTER = {
       assignee: {
-        url: `/iam/v1/projects/${projectId}/users?page=0&size=9999`,
-        prop: 'content',
+        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        prop: 'list',
         id: 'id',
         name: 'realName',
       },
@@ -243,20 +243,20 @@ class AddComponent extends Component {
         name: 'name',
       },
       reporter: {
-        url: `/iam/v1/projects/${projectId}/users?page=0&size=9999`,
-        prop: 'content',
+        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        prop: 'list',
         id: 'id',
         name: 'realName',
       },
       created_user: {
-        url: `/iam/v1/projects/${projectId}/users?page=0&size=9999`,
-        prop: 'content',
+        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        prop: 'list',
         id: 'id',
         name: 'realName',
       },
       last_updated_user: {
-        url: `/iam/v1/projects/${projectId}/users?page=0&size=9999`,
-        prop: 'content',
+        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        prop: 'list',
         id: 'id',
         name: 'realName',
       },
@@ -438,8 +438,8 @@ checkSearchNameRepeat = (rule, value, callback) => {
     const orgId = AppState.currentMenuType.organizationId;
     const OPTION_FILTER = {
       assignee: {
-        url: `/iam/v1/projects/${projectId}/users?page=0&size=9999`,
-        prop: 'content',
+        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        prop: 'list',
         id: 'id',
         name: 'realName',
       },
@@ -456,20 +456,20 @@ checkSearchNameRepeat = (rule, value, callback) => {
         name: 'name',
       },
       reporter: {
-        url: `/iam/v1/projects/${projectId}/users?page=0&size=9999`,
-        prop: 'content',
+        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        prop: 'list',
         id: 'id',
         name: 'realName',
       },
       created_user: {
-        url: `/iam/v1/projects/${projectId}/users?page=0&size=9999`,
-        prop: 'content',
+        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        prop: 'list',
         id: 'id',
         name: 'realName',
       },
       last_updated_user: {
-        url: `/iam/v1/projects/${projectId}/users?page=0&size=9999`,
-        prop: 'content',
+        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        prop: 'list',
         id: 'id',
         name: 'realName',
       },

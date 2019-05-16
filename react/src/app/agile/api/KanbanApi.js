@@ -5,7 +5,26 @@ export function loadBoardData(boardId, quickSearchObj = {}) {
   const {
     onlyMe, onlyStory, quickSearchArray, assigneeFilterIds,
   } = quickSearchObj;
-  return axios.get(`/agile/v1/projects/${getProjectId()}/board/${boardId}/all_data_program/${getOrganizationId()}?quickFilterIds=${quickSearchArray || []}`);
+  // {
+  //   "exportFieldCodes": [
+  //     "array"
+  //   ],
+  //   "advancedSearchArgs": "{}",
+  //   "quickFilterIds": [
+  //     "array"
+  //   ],
+  //   "contents": [
+  //     "array"
+  //   ],
+  //   "otherArgs": "{}",
+  //   "assigneeFilterIds": [
+  //     "array"
+  //   ],
+  //   "onlyStory": "boolean",
+  //   "searchArgs": "{}",
+  //   "content": "string"
+  // }
+  return axios.post(`/agile/v1/projects/${getProjectId()}/board/${boardId}/all_data_program/${getOrganizationId()}?quickFilterIds=${quickSearchArray || []}`, quickSearchObj);
 }
 /**
  *
