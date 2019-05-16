@@ -28,7 +28,8 @@
         <id property="programId" column="program_id"/>
 
         <id property="featureType" column="feature_type"/>
-        <id property="issueCode" column="issue_code"/>
+        <id property="issueTypeId" column="issue_type_id"/>
+        <id property="issueNum" column="issue_num"/>
         <id property="summary" column="summary"/>
 
         <id property="objectVersionNumber" column="object_version_number"/>
@@ -47,8 +48,9 @@
     <select id="queryInfoByPiId" resultMap="boardFeatureInfo">
         SELECT bf.*,
         ai.summary,
+        ai.issue_type_id,
         af.feature_type,
-        CONCAT_WS('-', api.project_code, ai.issue_num) as issue_code
+        CONCAT_WS('-', api.project_code, ai.issue_num) as issue_num
         FROM agile_board_feature bf
         LEFT JOIN agile_issue ai ON ai.issue_id = bf.feature_id
         LEFT JOIN agile_feature af ON af.issue_id = bf.feature_id
@@ -61,8 +63,9 @@
     <select id="queryInfoById" resultMap="boardFeatureInfo">
         SELECT bf.*,
         ai.summary,
+        ai.issue_type_id,
         af.feature_type,
-        CONCAT_WS('-', api.project_code, ai.issue_num) as issue_code
+        CONCAT_WS('-', api.project_code, ai.issue_num) as issue_num
         FROM agile_board_feature bf
         LEFT JOIN agile_issue ai ON ai.issue_id = bf.feature_id
         LEFT JOIN agile_feature af ON af.issue_id = bf.feature_id

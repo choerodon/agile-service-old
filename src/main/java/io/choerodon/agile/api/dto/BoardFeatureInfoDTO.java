@@ -24,11 +24,31 @@ public class BoardFeatureInfoDTO {
     @ApiModelProperty(value = "特性类型")
     private String featureType;
     @ApiModelProperty(value = "特性问题编码")
-    private String issueCode;
+    private String issueNum;
     @ApiModelProperty(value = "问题概要")
     private String summary;
+    @ApiModelProperty(value = "问题类型id")
+    private Long issueTypeId;
+    @ApiModelProperty(value = "问题类型对象")
+    private IssueTypeDTO issueTypeDTO;
     @ApiModelProperty(value = "乐观锁")
     private Long objectVersionNumber;
+
+    public Long getIssueTypeId() {
+        return issueTypeId;
+    }
+
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
 
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
@@ -102,12 +122,12 @@ public class BoardFeatureInfoDTO {
         this.featureType = featureType;
     }
 
-    public String getIssueCode() {
-        return issueCode;
+    public String getIssueNum() {
+        return issueNum;
     }
 
-    public void setIssueCode(String issueCode) {
-        this.issueCode = issueCode;
+    public void setIssueNum(String issueNum) {
+        this.issueNum = issueNum;
     }
 
     public String getSummary() {
