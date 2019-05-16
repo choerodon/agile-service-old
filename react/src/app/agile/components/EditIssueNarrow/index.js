@@ -1,3 +1,3 @@
-import EditIssueNarrow from './EditIssueNarrow.js';
+import EditIssueNarrow from './EditIssueNarrow';
 
 export default EditIssueNarrow;

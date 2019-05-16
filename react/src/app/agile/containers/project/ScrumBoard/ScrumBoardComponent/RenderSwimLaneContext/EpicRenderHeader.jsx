@@ -3,9 +3,6 @@ import { observer, inject } from 'mobx-react';
 import { Collapse } from 'choerodon-ui';
 import './RenderSwimLaneContext.scss';
 import { DragDropContext } from 'react-beautiful-dnd';
-import TypeTag from '../../../../../components/TypeTag';
-import StatusTag from '../../../../../components/StatusTag';
-import ScrumBoardStore from '../../../../../stores/project/scrumBoard/ScrumBoardStore';
 import SwimLaneHeader from './SwimLaneHeader';
 
 const { Panel } = Collapse;

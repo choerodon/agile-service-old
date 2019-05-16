@@ -14,12 +14,11 @@ import html2canvas from 'html2canvas';
 import './Home.scss';
 import QuickSearch from '../../../../components/QuickSearch';
 import CreateEpic from '../component/CreateEpic';
-import Backlog from '../component/Backlog/Backlog.js';
-import EpicCard from '../component/EpicCard/EpicCard.js';
-import IssueCard from '../component/IssueCard/IssueCard.js';
+import Backlog from '../component/Backlog/Backlog';
+import EpicCard from '../component/EpicCard/EpicCard';
+import IssueCard from '../component/IssueCard/IssueCard';
 import CreateVOS from '../component/CreateVOS';
-import CreateIssue from '../component/CreateIssue/CreateIssue.js';
-// import epicPic from '../../../../assets/image/用户故事地图－空.svg';
+import CreateIssue from '../component/CreateIssue/CreateIssue';
 import epicPic from '../../../../assets/image/emptyStory.svg';
 import { getProjectsInProgram } from '../../../../api/CommonApi';
 
