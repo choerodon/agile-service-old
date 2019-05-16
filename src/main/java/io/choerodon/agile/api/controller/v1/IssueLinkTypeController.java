@@ -3,6 +3,8 @@ package io.choerodon.agile.api.controller.v1;
 import java.util.Optional;
 
 import io.choerodon.agile.api.dto.IssueLinkTypeSearchDTO;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
@@ -20,8 +22,6 @@ import io.choerodon.agile.app.service.IssueLinkTypeService;
 import io.choerodon.agile.domain.agile.rule.IssueLinkTypeRule;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.swagger.annotation.Permission;
 import springfox.documentation.annotations.ApiIgnore;
 
 /**
@@ -37,7 +37,7 @@ public class IssueLinkTypeController {
     @Autowired
     private IssueLinkTypeRule issueLinkTypeRule;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据项目id查询issueLinkType")
     @PostMapping("/query_all")
     public ResponseEntity<Page<IssueLinkTypeDTO>> listIssueLinkType(@ApiParam(value = "项目id", required = true)
@@ -54,7 +54,7 @@ public class IssueLinkTypeController {
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.listIssueLinkType"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据issueLinkTypeId查询issueLinkType")
     @GetMapping(value = "/{linkTypeId}")
     public ResponseEntity<IssueLinkTypeDTO> queryIssueLinkType(@ApiParam(value = "项目id", required = true)
@@ -66,7 +66,7 @@ public class IssueLinkTypeController {
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.queryIssueLinkType"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+    @Permission(type = ResourceType.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("创建issueLinkType")
     @PostMapping
     public ResponseEntity<IssueLinkTypeDTO> createIssueLinkType(@ApiParam(value = "项目id", required = true)
@@ -80,7 +80,7 @@ public class IssueLinkTypeController {
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.createIssueLinkType"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+    @Permission(type = ResourceType.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("修改issueLinkType")
     @PutMapping
     public ResponseEntity<IssueLinkTypeDTO> updateIssueLinkType(@ApiParam(value = "项目id", required = true)
@@ -94,7 +94,7 @@ public class IssueLinkTypeController {
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.updateIssueLinkType"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+    @Permission(type = ResourceType.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("删除issueLink")
     @DeleteMapping(value = "/{issueLinkTypeId}")
     public ResponseEntity deleteIssueLinkType(@ApiParam(value = "项目id", required = true)
@@ -108,7 +108,7 @@ public class IssueLinkTypeController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+    @Permission(type = ResourceType.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("IssueLinkType重名校验")
     @GetMapping(value = "/check_name")
     public ResponseEntity checkIssueLinkTypeName(@ApiParam(value = "项目id", required = true)

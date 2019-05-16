@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="194px" height="152px" viewBox="0 0 194 152" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>circuit-diagram</title>
+    <desc>Created with Sketch.</desc>
+    <g id="SAFe" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="线路图-1" transform="translate(-515.000000, -254.000000)">
+            <g id="circuit-diagram" transform="translate(515.000000, 254.000000)">
+                <path d="M4,0 L56,0 C58.209139,-4.05812251e-16 60,1.790861 60,4 L60,18 L0,18 L0,4 C-2.705415e-16,1.790861 1.790861,4.05812251e-16 4,0 Z" id="Rectangle-7" fill="#E0E5FF"></path>
+                <path d="M71,0 L123,0 C125.209139,-4.05812251e-16 127,1.790861 127,4 L127,18 L67,18 L67,4 C67,1.790861 68.790861,4.05812251e-16 71,0 Z" id="Rectangle-7-Copy-5" fill="#E0E5FF"></path>
+                <path d="M138,0 L190,0 C192.209139,-4.05812251e-16 194,1.790861 194,4 L194,18 L134,18 L134,4 C134,1.790861 135.790861,4.05812251e-16 138,0 Z" id="Rectangle-7-Copy-7" fill="#E0E5FF"></path>
+                <rect id="Rectangle-4" fill="#CFD5F1" x="5" y="5" width="28" height="8" rx="2"></rect>
+                <rect id="Rectangle-4-Copy-2" fill="#CFD5F1" x="72" y="5" width="28" height="8" rx="2"></rect>
+                <rect id="Rectangle-4-Copy-3" fill="#CFD5F1" x="139" y="5" width="28" height="8" rx="2"></rect>
+                <path d="M0,18 L60,18 L60,130 C60,132.209139 58.209139,134 56,134 L4,134 C1.790861,134 2.705415e-16,132.209139 0,130 L0,18 Z" id="Rectangle-7-Copy-2" fill="#F2F4FD"></path>
+                <g id="Group-2-Copy" transform="translate(4.000000, 22.000000)">
+                    <rect id="Rectangle-7-Copy-2" fill="#E8EAF4" x="0" y="0" width="52" height="22" rx="4"></rect>
+                    <circle id="Oval-3" fill="#DEE0ED" cx="11" cy="11" r="7"></circle>
+                    <rect id="Rectangle-3" fill="#DEE0ED" x="22" y="5" width="26" height="4" rx="2"></rect>
+                    <rect id="Rectangle-3-Copy" fill="#DEE0ED" x="22" y="13" width="26" height="4" rx="2"></rect>
+                </g>
+                <g id="Group-2-Copy-2" transform="translate(4.000000, 48.000000)">
+                    <rect id="Rectangle-7-Copy-2" fill="#E8EAF4" x="0" y="0" width="52" height="22" rx="4"></rect>
+                    <circle id="Oval-3" fill="#DEE0ED" cx="11" cy="11" r="7"></circle>
+                    <rect id="Rectangle-3" fill="#DEE0ED" x="22" y="5" width="26" height="4" rx="2"></rect>
+                    <rect id="Rectangle-3-Copy" fill="#DEE0ED" x="22" y="13" width="26" height="4" rx="2"></rect>
+                </g>
+                <g id="Group-2-Copy-3" transform="translate(4.000000, 74.000000)">
+                    <rect id="Rectangle-7-Copy-2" fill="#E8EAF4" x="0" y="0" width="52" height="22" rx="4"></rect>
+                    <circle id="Oval-3" fill="#DEE0ED" cx="11" cy="11" r="7"></circle>
+                    <rect id="Rectangle-3" fill="#DEE0ED" x="22" y="5" width="26" height="4" rx="2"></rect>
+                    <rect id="Rectangle-3-Copy" fill="#DEE0ED" x="22" y="13" width="26" height="4" rx="2"></rect>
+                </g>
+                <path d="M67,18 L127,18 L127,130 C127,132.209139 125.209139,134 123,134 L71,134 C68.790861,134 67,132.209139 67,130 L67,18 Z" id="Rectangle-7-Copy-6" fill="#F2F4FD"></path>
+                <g id="Group-2-Copy-4" transform="translate(71.000000, 22.000000)">
+                    <rect id="Rectangle-7-Copy-2" fill="#E8EAF4" x="0" y="0" width="52" height="22" rx="4"></rect>
+                    <circle id="Oval-3" fill="#DEE0ED" cx="11" cy="11" r="7"></circle>
+                    <rect id="Rectangle-3" fill="#DEE0ED" x="22" y="5" width="26" height="4" rx="2"></rect>
+                    <rect id="Rectangle-3-Copy" fill="#DEE0ED" x="22" y="13" width="26" height="4" rx="2"></rect>
+                </g>
+                <g id="Group-2-Copy-5" transform="translate(71.000000, 48.000000)">
+                    <rect id="Rectangle-7-Copy-2" fill="#E8EAF4" x="0" y="0" width="52" height="22" rx="4"></rect>
+                    <circle id="Oval-3" fill="#DEE0ED" cx="11" cy="11" r="7"></circle>
+                    <rect id="Rectangle-3" fill="#DEE0ED" x="22" y="5" width="26" height="4" rx="2"></rect>
+                    <rect id="Rectangle-3-Copy" fill="#DEE0ED" x="22" y="13" width="26" height="4" rx="2"></rect>
+                </g>
+                <path d="M134,18 L194,18 L194,130 C194,132.209139 192.209139,134 190,134 L138,134 C135.790861,134 134,132.209139 134,130 L134,18 Z" id="Rectangle-7-Copy-8" fill="#F2F4FD"></path>
+                <g id="Group-2-Copy-6" transform="translate(138.000000, 22.000000)">
+                    <rect id="Rectangle-7-Copy-2" fill="#E8EAF4" x="0" y="0" width="52" height="22" rx="4"></rect>
+                    <circle id="Oval-3" fill="#DEE0ED" cx="11" cy="11" r="7"></circle>
+                    <rect id="Rectangle-3" fill="#DEE0ED" x="22" y="5" width="26" height="4" rx="2"></rect>
+                    <rect id="Rectangle-3-Copy" fill="#DEE0ED" x="22" y="13" width="26" height="4" rx="2"></rect>
+                </g>
+                <g id="Group-2-Copy-7" transform="translate(138.000000, 48.000000)">
+                    <rect id="Rectangle-7-Copy-2" fill="#E8EAF4" x="0" y="0" width="52" height="22" rx="4"></rect>
+                    <circle id="Oval-3" fill="#DEE0ED" cx="11" cy="11" r="7"></circle>
+                    <rect id="Rectangle-3" fill="#DEE0ED" x="22" y="5" width="26" height="4" rx="2"></rect>
+                    <rect id="Rectangle-3-Copy" fill="#DEE0ED" x="22" y="13" width="26" height="4" rx="2"></rect>
+                </g>
+                <g id="Group-2-Copy-9" transform="translate(138.000000, 74.000000)">
+                    <rect id="Rectangle-7-Copy-2" fill="#E8EAF4" x="0" y="0" width="52" height="22" rx="4"></rect>
+                    <circle id="Oval-3" fill="#DEE0ED" cx="11" cy="11" r="7"></circle>
+                    <rect id="Rectangle-3" fill="#DEE0ED" x="22" y="5" width="26" height="4" rx="2"></rect>
+                    <rect id="Rectangle-3-Copy" fill="#DEE0ED" x="22" y="13" width="26" height="4" rx="2"></rect>
+                </g>
+                <g id="分组-6" transform="translate(0.000000, 99.000000)">
+                    <path d="M-4.26325641e-14,4.26325641e-14 L107.205593,5.68434189e-14 C115.162088,5.53818345e-14 122.792705,3.16070521 128.418797,8.78679656 L142.346719,22.7147186 C147.03301,27.4010101 147.03301,34.9989899 142.346719,39.6852814 C140.096282,41.9357179 137.044035,43.2 133.861437,43.2 L-4.26325641e-14,43.2 L-4.26325641e-14,4.26325641e-14 Z" id="矩形" fill="#6776C4"></path>
+                    <path d="M145.861437,31.2 C145.861437,32.8367305 145.528667,34.473461 144.863126,36 L5.68434189e-14,36 L5.68434189e-14,31.2 L145.861437,31.2 Z" id="合并形状" fill="#2A2E76"></path>
+                    <path d="M127.601705,8 C127.878493,8.25662626 128.150917,8.5189168 128.418797,8.78679656 L142.346719,22.7147186 C143.656695,24.0246948 144.600489,25.5621877 145.1781,27.2 L98.4,27.2 C95.0862915,27.2 92.4,24.5137085 92.4,21.2 L92.4,14 C92.4,10.6862915 95.0862915,8 98.4,8 L127.601705,8 Z" id="合并形状" fill="#FFBA1C"></path>
+                    <g id="分组-2" transform="translate(100.400000, 8.000000)" fill="#FFFFFF">
+                        <path d="M26.4145193,0.0118875998 L7.22640687,19.2 L0.438181772,19.2 L19.6381818,7.10542736e-15 L26.4017052,0 C26.4059776,0.00396118379 26.410249,0.00792371714 26.4145193,0.0118875998 Z" id="合并形状"></path>
+                        <path d="M29.8350909,2.60309089 L32.0978326,4.86583259 L17.7636652,19.2 L13.2381818,19.2 L29.8350909,2.60309089 Z" id="合并形状"></path>
+                    </g>
+                    <rect id="矩形-copy-2" fill="#FFBA1C" x="44" y="8" width="41.6" height="19.2" rx="6"></rect>
+                    <path d="M1.38555833e-13,26.0004394 L1.38555833e-13,9.19956058 C1.00279264,8.44633379 2.2492729,8 3.6,8 L33.2,8 C36.5137085,8 39.2,10.6862915 39.2,14 L39.2,21.2 C39.2,24.5137085 36.5137085,27.2 33.2,27.2 L3.6,27.2 C2.2492729,27.2 1.00279264,26.7536662 -4.54269955e-12,26.0004394 Z" id="合并形状" fill="#FFBA1C"></path>
+                    <g id="分组-3" transform="translate(52.000000, 8.000000)" fill="#FFFFFF">
+                        <path d="M19.6381818,0 L26.4264069,0 L7.22640687,19.2 L0.438181772,19.2 L19.6381818,7.10542736e-15 Z" id="合并形状"></path>
+                        <path d="M31.2220099,1.21617183 C32.0882338,1.87304209 32.770552,2.75978241 33.1781184,3.78554676 L17.7636652,19.2 L13.2381818,19.2 L31.2220099,1.21617183 Z" id="合并形状"></path>
+                    </g>
+                    <g id="分组-3-copy" transform="translate(5.600000, 8.000000)" fill="#FFFFFF">
+                        <path d="M19.6381818,0 L26.4264069,0 L7.22640687,19.2 L0.438181772,19.2 L19.6381818,7.10542736e-15 Z" id="合并形状"></path>
+                        <path d="M31.2220099,1.21617183 C32.0882338,1.87304209 32.770552,2.75978241 33.1781184,3.78554676 L17.7636652,19.2 L13.2381818,19.2 L31.2220099,1.21617183 Z" id="合并形状"></path>
+                    </g>
+                </g>
+                <rect id="矩形" fill="#DEE0ED" x="0" y="142" width="194" height="10"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

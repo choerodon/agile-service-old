@@ -1,0 +1,15 @@
+.c7n-unCompleteTaskHome {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    height: calc(100% - 67px);
+    .c7n-loadWrap {
+        display: flex;
+        justify-content: center;
+    }
+    .unit {
+        vertical-align: 2px;
+        padding-left: 2px;
+    }
+}

@@ -94,10 +94,14 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private static final String FIX_RELATION_TYPE = "fix";
     private static final String INFLUENCE_RELATION_TYPE = "influence";
 
-    private final SagaClient sagaClient;
+    private SagaClient sagaClient;
 
     @Autowired
     public ProductVersionServiceImpl(SagaClient sagaClient) {
+        this.sagaClient = sagaClient;
+    }
+
+    public void setSagaClient(SagaClient sagaClient) {
         this.sagaClient = sagaClient;
     }
 

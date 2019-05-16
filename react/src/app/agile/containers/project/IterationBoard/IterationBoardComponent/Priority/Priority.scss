@@ -1,0 +1,77 @@
+.c7n-agile-sprintDashboard-priority {
+  height: 230px;
+  .text-overflow-hidden {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .flex-shrink {
+    flex-shrink: 0;
+  }
+
+  .loading-wrap {
+    height: 232px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .lists {
+    min-height: 230px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 2px;
+    padding-bottom: 22px;
+
+    .title {
+      font-size: 13px;
+      line-height: 18px;
+      color: rgba(0, 0, 0, 0.64);
+    }
+
+    .wrapper {
+      height: 185px;
+      overflow-y: scroll;
+      padding-right: 5px;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      margin-top: 9px;
+      margin-bottom: 22px;
+
+      .tip {
+        font-size: 13px;
+        line-height: 18px;
+        color: #000;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .body {
+        display: flex;
+
+        .progress {
+          margin-left: 19px;
+          padding-top: 4px;
+          flex: 1;
+          max-width: unset;
+          position: relative;
+
+          .progress-bg {
+            height: 12px;
+          }
+
+          .progress-inner {
+            position: absolute;
+            height: 12px;
+            top: 4px;
+            left: 0;
+          }
+        }
+      }
+    }
+  }
+}

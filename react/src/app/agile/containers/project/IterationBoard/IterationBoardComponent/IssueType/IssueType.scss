@@ -1,0 +1,45 @@
+.c7n-IssueType{
+    .c7n-IssueType-loading{
+      display: flex;
+      height: 232px;
+      align-items: center;
+      justify-content: center;
+    }
+    .c7n-IssueType-chart{
+        position: relative;
+        
+        .c7n-IssueType-chart-legend{
+            list-style: none;
+            position: absolute;
+            right: 17px;
+            top: 42px;
+            li{
+              margin-bottom: 40px;
+              display: flex;
+              div{
+                width: 14px;
+                height: 14px;
+                // background-color: aquamarine;
+                border-radius: 2px;
+                margin-right: 6px;
+              }
+              font-size: 13px;
+            }
+            li:first-child{
+              div{
+                background-color: #FFB100;
+              }
+            }
+            li:nth-child(2){
+              div{
+                background-color: #4D90FE;
+              }
+            }
+            li:last-child{
+              div{
+                background-color: #00BFA5;
+              }
+            }
+          }
+    }
+}

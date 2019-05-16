@@ -40,7 +40,6 @@ class ProductVersionControllerSpec extends Specification {
     VersionIssueRelMapper versionIssueRelMapper
 
     @Autowired
-    @Qualifier("productVersionService")
     ProductVersionService productVersionService
 
     @Autowired

@@ -1,0 +1,27 @@
+.c7n-pi-card {
+  width: 362px;
+  padding: 20px 15px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+
+  table {
+    table-layout: fixed;
+    thead {
+      tr {
+        th {
+          padding-bottom: 10px;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        td {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          padding: 0 25px 8px 0;
+        }
+      }
+    }
+  }
+}

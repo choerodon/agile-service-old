@@ -1,0 +1,50 @@
+.c7n-feature-createFeatureSideBar {
+  .page-content {
+    padding: 0;
+    .c7n-feature-signUpload {
+      .ant-upload {
+        display: flex !important;
+        margin-left: 40px;
+      }
+
+      .ant-btn {
+        color: #3f51b5;
+      }
+    }
+  }
+
+  .ant-upload-list-item.ant-upload-list-item-done {
+    display: inline-block;
+  }
+
+  .ant-upload-list-item {
+    .icon-close {
+      transform: none;
+      font-size: 14px;
+    }
+  }
+
+  .fieldWith {
+    width: 520px;
+  }
+}
+
+.is-required {
+  .ant-radio-group-label:after {
+    display: inline-block;
+    margin-left: 4px;
+    content: "*";
+    line-height: 1;
+    font-size: 13px;
+    color: #d50000;
+  }
+
+  .ant-checkbox-group-label:after {
+    display: inline-block;
+    margin-left: 4px;
+    content: "*";
+    line-height: 1;
+    font-size: 13px;
+    color: #d50000;
+  }
+}

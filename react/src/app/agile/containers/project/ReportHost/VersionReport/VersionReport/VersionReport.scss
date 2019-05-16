@@ -1,0 +1,52 @@
+.c7n-versionReport {
+  .c7n-report {
+    display: flex;
+    flex-direction: row;
+    width: '100%';
+
+    .c7n-chart {
+      flex: 1;
+      height: 400px !important;
+      margin-top: 16px;
+      margin-bottom: 36px;
+    }
+
+    .c7n-toolbar {
+      width: 274px;
+      padding-top: 40px;
+
+      h2 {
+        font-size: 18px;
+        line-height: 25px;
+        
+        margin-bottom: 24px;
+      }
+
+      h4 {
+        font-size: 14px;
+        line-height: 20px;
+        margin-top: 24px;
+        margin-bottom: 16px;
+        font-weight: 600;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        
+        li {
+          margin-bottom: 12px;
+
+          .c7n-tip {
+            display: inline-block;
+            width: 99px;
+          }
+        }
+      }
+
+      p {
+        margin-top: 24px;
+      }
+    }
+  }
+}

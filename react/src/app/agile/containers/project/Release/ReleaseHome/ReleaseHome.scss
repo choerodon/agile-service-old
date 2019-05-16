@@ -1,0 +1,21 @@
+.c7n-release-name {
+  color: rgb(63, 81, 181);
+  cursor: pointer;
+}
+
+.c7n-release-name:hover {
+  text-decoration: underline;
+}
+
+.c7n-release-icon {
+  width: 13.3px;
+  height: 13.3px;
+  background: #d50000;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 6px;
+}
+

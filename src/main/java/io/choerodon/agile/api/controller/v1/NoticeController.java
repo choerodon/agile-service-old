@@ -2,10 +2,10 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.MessageDTO;
 import io.choerodon.agile.app.service.NoticeService;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class NoticeController {
     private NoticeService noticeService;
 
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询项目下的通知")
     @GetMapping
     public ResponseEntity<List<MessageDTO>> queryByProjectId(@ApiParam(value = "项目id", required = true)
@@ -38,7 +38,7 @@ public class NoticeController {
                 .orElseThrow(() -> new CommonException("error.message.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更新项目下的通知")
     @PutMapping
     public ResponseEntity updateNotice(@ApiParam(value = "项目id", required = true)

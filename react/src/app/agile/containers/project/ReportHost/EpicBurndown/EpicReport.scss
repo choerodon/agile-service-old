@@ -1,0 +1,220 @@
+.c7n-epicBurndown {
+  .c7n-epicSelectHeader{
+    position: relative;
+    display: inline-block;
+    .ant-checkbox{
+      .ant-checkbox-inner{
+        border-color: rgba(0,0,0,0.54);
+      }
+    }
+    .ant-checkbox-checked{
+      .ant-checkbox-inner{
+        border-color: transparent;
+      }
+    }
+    .ant-checkbox-group-item:last-child{
+      margin-top: 5px;
+    }
+    .icon-show {
+      margin-left: -5px;
+      display: inline-block;
+      vertical-align: 2px;
+      padding-bottom:25px;
+      background-color: transparent;
+      i{
+        color: rgba(0,0,0,0.65);
+      }
+    }
+    .icon-show-info{
+      position: absolute;
+      z-index: 2;
+      top: 60px;
+      left: 0;
+      display: none;
+      // display: flex;
+      justify-content:space-between;
+      width: 457px;
+      height: 267px;
+      padding: 28px;
+      background: #FFFFFF;
+      box-shadow: 0 1px 4px 1px rgba(0,0,0,0.20);
+      border-radius: 2px;
+      
+      .icon-show-progress{
+        margin-right: 42px;
+      }
+
+      .icon-show-info-svg{
+        width: 178px;
+        height: 132px;
+        margin-bottom: 13px;
+      }
+      .icon-show-info-detail-header{
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .icon-show-info-detail-content{
+        font-size: 13px;
+        margin-top: 12px;
+      }
+    }
+  }
+ 
+  .c7n-epicInfo{
+    font-size: 13px;
+    margin-top: -22px;
+  }
+
+  .c7n-report {
+    display: flex;
+    flex-direction: row;
+    width: '100%';
+
+    .c7n-chart {
+      flex: 1;
+      height: 400px !important;
+      margin-top: 16px;
+      // margin-bottom: 36px;
+      margin-bottom: 0;
+      .c7n-chart-yaxixName{
+        position: absolute;
+        top: calc(43% - 60px);
+        // left: 30px;
+        width: 12px;
+        font-size: 12;
+        color: '#000000';
+        line-height: 40px;
+        }
+    }
+
+    .c7n-toolbar {
+      width: 274px;
+      // padding-top: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .toolbar-cannot-forcast {
+        width: 275px;
+        box-shadow: 0 1px 3px 0 rgba(14, 15, 16, 0.24);
+        border-radius: 2px;
+        padding: 36px 32px;
+
+        .title {
+          font-size: 14px;
+          color: #000;
+          line-height: 20px;
+          font-weight: 600;
+          margin-bottom: 8px;
+        }
+
+        .word {
+          font-size: 14px;
+          color: #000;
+          line-height: 20px;
+        }
+      }
+
+      .toolbar-complete {
+        width: 275px;
+        box-shadow: 0 1px 3px 0 rgba(14, 15, 16, 0.24);
+        border-radius: 2px;
+        padding: 46px 53px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .pic {
+          width: 65px;
+          height: 67px;
+          display: inline-block;
+          background: #fff;
+          margin-bottom: 23px;
+        }
+
+        .word {
+          font-size: 14px;
+          color: #000;
+          line-height: 20px;
+          }
+        }
+      }
+
+      .toolbar-forcast {
+        width: 275px;
+        box-shadow: 0 1px 3px 0 rgba(14, 15, 16, 0.24);
+        border-radius: 2px;
+        padding: 27px 22px 7px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-top:-43px;
+
+        .title {
+          font-size: 14px;
+          color: #000;
+          line-height: 20px;
+          margin-bottom: 20px;
+        }
+
+        .toolbar-forcast-content{
+          margin: 0 auto;
+        }
+
+        .word {
+          height: 20px;
+          line-height: 20px;
+          font-size: 14px;
+          color: #000;
+          margin-bottom: 20px;
+          // padding-left: 55px;
+          display: flex;
+          align-items: center;
+
+          .icon{
+            display: inline-block;
+            margin-right: 8px;
+            img{
+              width: 18px;
+              height: 18px;
+              vertical-align: -3px;
+            }
+        }
+      }
+
+      h2 {
+        font-size: 18px;
+        line-height: 25px;
+        
+        margin-bottom: 24px;
+      }
+
+      h4 {
+        font-size: 14px;
+        line-height: 20px;
+        margin-top: 24px;
+        margin-bottom: 16px;
+        font-weight: 600;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        
+        li {
+          margin-bottom: 12px;
+
+          .c7n-tip {
+            display: inline-block;
+            width: 99px;
+          }
+        }
+      }
+
+      p {
+        margin-top: 24px;
+      }
+    }
+  }
+}

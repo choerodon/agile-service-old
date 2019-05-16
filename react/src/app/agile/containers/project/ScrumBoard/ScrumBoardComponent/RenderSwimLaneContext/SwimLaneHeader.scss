@@ -1,0 +1,13 @@
+.c7n-swimlaneHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+}
+
+.c7n-parentIssue-count {
+  opacity: 0.54;
+  margin-left: 10px;
+}

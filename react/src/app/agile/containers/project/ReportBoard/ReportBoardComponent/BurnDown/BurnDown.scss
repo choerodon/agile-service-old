@@ -1,0 +1,22 @@
+.c7n-agile-iterationboard-burndown {
+  .c7n-agile-dashboard-burndown-select {
+    display: inline-block;
+  }
+  .loading-wrap {
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .switch {
+    position: absolute;
+    top: 25px;
+    left: 128px;
+    cursor: pointer;
+
+    .ant-dropdown {
+      min-width: unset !important;
+    }
+  }
+}

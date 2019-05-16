@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="187px" height="106px" viewBox="0 0 187 106" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 2</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="报告－所有报表" transform="translate(-320.000000, -596.000000)">
+            <g id="Group-5" transform="translate(274.000000, 132.000000)">
+                <g id="所有报表－版本报告" transform="translate(0.000000, 422.000000)">
+                    <g id="Group" transform="translate(30.000000, 18.000000)">
+                        <g id="Group-2" transform="translate(18.000000, 24.000000)">
+                            <path d="M2.76406762,104.920814 L183.962262,104.920814" id="Line" stroke="#DFDFDF" stroke-linecap="square"></path>
+                            <path d="M2.60101433,78.9404223 L183.799208,78.9404223" id="Line" stroke="#DFDFDF" stroke-linecap="square"></path>
+                            <path d="M2.60101433,52.9600302 L183.799208,52.9600302" id="Line" stroke="#DFDFDF" stroke-linecap="square"></path>
+                            <path d="M2.60101433,26.979638 L183.799208,26.979638" id="Line" stroke="#DFDFDF" stroke-linecap="square"></path>
+                            <path d="M1.83173727,0.999245852 L183.029931,0.999245852" id="Line" stroke="#DFDFDF" stroke-linecap="square"></path>
+                            <g id="Group-8">
+                                <g id="Group-9" fill="#4D90FE" fill-opacity="0.160000011">
+                                    <polygon id="Line" points="182.341119 0 145.206809 0 145.206809 22.5427534 91.1289293 22.5427534 91.0872989 63.3049923 45.4187583 63.3049923 45.4603887 81.2156731 22.3138904 81.2156731 22.3138904 104.376036 0 104.376036 182.341119 104.376036"></polygon>
+                                </g>
+                                <g id="Group-10" transform="translate(0.000000, 52.805628)" fill="#F44336" fill-opacity="0.160000011">
+                                    <polyline id="Line-5" points="182.341119 52.1880181 81.0960047 52.1880181 81.0960047 36.4389712 63.2781967 36.4389712 63.2781967 16.9842662 32.4717062 16.9842662 32.4717062 0 5.32869025 1.57981706e-13 5.32869025 52.1880181 9.77706804e-12 52.1880181"></polyline>
+                                </g>
+                                <g id="Group-11" transform="translate(0.000000, 34.586142)" fill="#00BFA5" fill-opacity="0.160000011">
+                                    <polygon id="Line" points="182.257859 0.15440242 152.70028 0.15440242 152.70028 16.6754614 111.236409 16.6754614 111.236409 47.2471406 70.2721026 47.2471406 70.2721026 70.0986988 4.66116035e-12 70.0986988 182.257859 70.0986988"></polygon>
+                                </g>
+                                <path d="M182.257859,34.7405446 L0,104.684841" id="Line" stroke-opacity="0.59" stroke="#3F51B5" stroke-width="2" stroke-linecap="square"></path>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

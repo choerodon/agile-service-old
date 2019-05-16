@@ -1,0 +1,41 @@
+"agile": agile
+'agile.issue': Issue
+'agile.release': Release
+'agile.backlog': Backlog
+'agile.scrumboard': Scrumboard
+'agile.component': component
+'agile.reporthost': Agile Report
+'agile.reportboard': Report Workbench
+'agile.projectsetting': Project Setting
+'agile.fastsearch': Fast Search
+'agile.issuelink': Issue Link
+'agile.userStoryMap': Story Map
+'agile.iterationBoard': Iteration Board
+'agile.messageNotification': Notification Setting
+
+'agile.feature': Feature
+'agile.artCalendar': ART Calendar
+'agile.pi': PI Objective
+'agile.art': ART Setting
+'agile.programSetting': Program Setting
+
+'program': Program
+'program.feature': Feature
+'program.artCalendar': ART Calendar
+'program.roadMap': Road Map
+'program.pi': PI Objective
+'program.art': ART Setting
+'program.programKanban': Program Kanban
+'program.programSetting': Program Setting
+
+"rentsetting": "Organization Settings"
+"rentsetting.workCalendar": "Work Calendar"
+"rentsetting.objectScheme-organization": "Field"
+"rentsetting.page-organization": "Page"
+
+"prosetting": "Project Manage"
+"prosetting.objectScheme-project": "Field"
+"prosetting.page-project": "Page"
+
+"platform-reports": "Reports"
+"platform-reports.reportboard": "Agile Report"

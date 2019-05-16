@@ -3,21 +3,16 @@ package io.choerodon.agile.api.controller.v1;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.QuickFilterFieldService;
 import io.choerodon.agile.app.service.QuickFilterService;
-import io.choerodon.core.domain.Page;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.choerodon.mybatis.pagehelper.domain.Sort;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +33,7 @@ public class QuickFilterController {
 
     private static final String DRAG_ERROR = "error.filter.dragVersion";
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+    @Permission(type = ResourceType.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("创建quick filter")
     @PostMapping
     public ResponseEntity<QuickFilterDTO> create(@ApiParam(value = "项目id", required = true)
@@ -50,7 +45,7 @@ public class QuickFilterController {
                 .orElseThrow(() -> new CommonException("error.quickFilter.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("修改quick filter")
     @PutMapping(value = "/{filterId}")
     public ResponseEntity<QuickFilterDTO> update(@ApiParam(value = "项目id", required = true)
@@ -64,7 +59,7 @@ public class QuickFilterController {
                 .orElseThrow(() -> new CommonException("error.quickFilter.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("删除quick filter")
     @DeleteMapping(value = "/{filterId}")
     public ResponseEntity<QuickFilterDTO> deleteById(@ApiParam(value = "项目id", required = true)
@@ -75,7 +70,7 @@ public class QuickFilterController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据id查询quick filter")
     @GetMapping(value = "/{filterId}")
     public ResponseEntity<QuickFilterDTO> queryById(@ApiParam(value = "项目id", required = true)
@@ -87,7 +82,7 @@ public class QuickFilterController {
                 .orElseThrow(() -> new CommonException("error.quickFilter.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询quick filter列表")
     @PostMapping(value = "/query_all")
     public ResponseEntity<List<QuickFilterDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
@@ -99,7 +94,7 @@ public class QuickFilterController {
     }
 
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询quick filter field列表")
     @GetMapping("/fields")
     public ResponseEntity<List<QuickFilterFieldDTO>> list(@ApiParam(value = "项目id", required = true)
@@ -109,7 +104,7 @@ public class QuickFilterController {
                 .orElseThrow(() -> new CommonException("error.quickFilterField.list"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "拖动过滤位置")
     @PutMapping(value = "/drag")
     public ResponseEntity<QuickFilterDTO> dragFilter(@ApiParam(value = "项目id", required = true)
@@ -121,7 +116,7 @@ public class QuickFilterController {
                 .orElseThrow(() -> new CommonException(DRAG_ERROR));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("快速搜索重名校验")
     @GetMapping("/check_name")
     public ResponseEntity<Boolean> checkName(@ApiParam(value = "项目id", required = true)

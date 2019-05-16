@@ -16,7 +16,7 @@ service:
 
 preJob:
   timeout: 300
-  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.6.2
+  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.6.4
   preConfig:
     enable: true
     configFile: application.yml
@@ -56,6 +56,14 @@ env:
     WORKH_CRON: 59 59 23 15 12 *
     SERVICES_WIKI_HOST: example.com
     SERVICES_WIKI_TOKEN: token
+    PRO_API_HOST: gateway.choerodon.com.cn
+    PRO_AGILE_HOST: http://minio.staging.saas.hand-china.com/agile-service/
+    PRO_CLIENT_ID: agile
+    PRO_LOCAL: true
+    PRO_TITLE_NAME: Choerodon
+    PRO_HEADER_TITLE_NAME: Choerodon
+    PRO_COOKIE_SERVER: choerodon.com.cn
+    PRO_HTTP: http
 
 metrics:
   path: /actuator/prometheus

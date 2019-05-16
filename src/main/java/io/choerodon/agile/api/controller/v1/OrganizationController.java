@@ -4,9 +4,10 @@ import io.choerodon.agile.app.service.PriorityService;
 import io.choerodon.agile.app.service.StateMachineService;
 import io.choerodon.agile.domain.agile.event.ProjectConfig;
 import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class OrganizationController {
     @Autowired
     private PriorityService priorityService;
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation("【内部调用】校验是否可以删除状态机的节点")
     @PostMapping("/state_machine/check_delete_node")
     public ResponseEntity<Map<String, Object>> checkDeleteNode(@ApiParam(value = "组织id", required = true)
@@ -43,7 +44,7 @@ public class OrganizationController {
         return new ResponseEntity<>(stateMachineService.checkDeleteNode(organizationId, statusId, projectConfigs), HttpStatus.CREATED);
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation("【内部调用】查询状态机方案变更后对issue的影响")
     @PostMapping("/state_machine/check_state_machine_scheme_change")
     public ResponseEntity<Map<Long, Long>> checkStateMachineSchemeChange(@ApiParam(value = "组织id", required = true)
@@ -53,7 +54,7 @@ public class OrganizationController {
         return new ResponseEntity<>(stateMachineService.checkStateMachineSchemeChange(organizationId, deployCheckIssue), HttpStatus.CREATED);
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation("【内部调用】校验删除优先级")
     @PostMapping("/issues/check_priority_delete")
     public ResponseEntity<Long> checkPriorityDelete(@ApiParam(value = "组织id", required = true)
@@ -66,7 +67,7 @@ public class OrganizationController {
                 .orElseThrow(() -> new CommonException("error.priority.checkPriorityDelete"));
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation("【内部调用】批量更新issue的优先级")
     @PostMapping("/issues/batch_change_issue_priority")
     public ResponseEntity batchChangeIssuePriority(@ApiParam(value = "组织id", required = true)

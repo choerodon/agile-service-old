@@ -1,9 +1,9 @@
 package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.app.service.ReportService;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,7 @@ public class FixDataController {
     @Autowired
     private ReportService reportService;
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR, InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR, InitRoleCode.SITE_DEVELOPER})
     @ApiOperation("修复累积流图脏数据")
     @PostMapping(value = "/fix_cumulative_flow_diagram")
     public ResponseEntity fixCumulativeFlowDiagram() {

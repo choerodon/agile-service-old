@@ -1,0 +1,21 @@
+.c7n-report {
+  .c7n-sprintMessage {
+    margin-top: 16px;
+    margin-bottom: 24px;
+    // width: 520px;
+    display: flex;
+    justify-content: space-between;
+
+    .c7n-sprintContent {
+      width: 520px;
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+
+  .c7n-chart {
+    width: 591.5px;
+    height: 200px !important;
+    margin-bottom: 10px;
+  }
+}

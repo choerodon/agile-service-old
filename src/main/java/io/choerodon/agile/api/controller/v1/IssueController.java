@@ -2,6 +2,15 @@ package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.service.IssueService;
@@ -13,20 +22,10 @@ import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
-import io.choerodon.swagger.annotation.Permission;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -57,7 +56,7 @@ public class IssueController {
         this.issueService = issueService;
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建issue")
     @PostMapping
     public ResponseEntity<IssueDTO> createIssue(@ApiParam(value = "项目id", required = true)
@@ -72,7 +71,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.createIssue"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("史诗名称重复校验")
     @GetMapping(value = "/check_epic_name")
     public ResponseEntity<Boolean> checkEpicName(@ApiParam(value = "项目id", required = true)
@@ -84,7 +83,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.checkEpicName.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建issue子任务")
     @PostMapping(value = "/sub_issue")
     public ResponseEntity<IssueSubDTO> createSubIssue(@ApiParam(value = "项目id", required = true)
@@ -97,7 +96,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.createSubIssue"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更新issue")
     @PutMapping
     public ResponseEntity<IssueDTO> updateIssue(@ApiParam(value = "项目id", required = true)
@@ -115,7 +114,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.updateIssue"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更新issue的状态")
     @PutMapping("/update_status")
     public ResponseEntity<IssueDTO> updateIssueStatus(@ApiParam(value = "项目id", required = true)
@@ -133,7 +132,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.updateIssueStatus"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询单个issue")
     @GetMapping(value = "/{issueId}")
     public ResponseEntity<IssueDTO> queryIssue(@ApiParam(value = "项目id", required = true)
@@ -147,7 +146,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssue"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询单个子任务issue")
     @GetMapping(value = "/sub_issue/{issueId}")
     public ResponseEntity<IssueSubDTO> queryIssueSub(@ApiParam(value = "项目id", required = true)
@@ -162,7 +161,7 @@ public class IssueController {
     }
 
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("分页查询问题列表，包含子任务")
     @PostMapping(value = "/include_sub")
     public ResponseEntity<Page<IssueListDTO>> listIssueWithSub(@ApiIgnore
@@ -180,7 +179,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.listIssueWithSub"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("分页搜索查询issue列表(包含子任务)")
     @CustomPageRequest
     @GetMapping(value = "/summary")
@@ -205,7 +204,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssueByOption"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("分页搜索查询issue列表")
     @CustomPageRequest
     @GetMapping(value = "/agile/summary")
@@ -229,7 +228,7 @@ public class IssueController {
     }
 
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询epic")
     @GetMapping(value = "/epics")
     public ResponseEntity<List<EpicDataDTO>> listEpic(@ApiParam(value = "项目id", required = true)
@@ -239,7 +238,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Epic.listEpic"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("program查询epic")
     @GetMapping(value = "/program/epics")
     public ResponseEntity<List<EpicDataDTO>> listProgramEpic(@ApiParam(value = "项目id", required = true)
@@ -249,7 +248,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.programEpic.listEpic"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("故事地图查询epic")
     @GetMapping(value = "/storymap/epics")
     public ResponseEntity<List<StoryMapEpicDTO>> listStoryMapEpic(@ApiParam(value = "项目id", required = true)
@@ -269,7 +268,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Epic.listStoryMapEpic"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("通过issueId删除")
     @DeleteMapping(value = "/{issueId}")
     public ResponseEntity deleteIssue(@ApiParam(value = "项目id", required = true)
@@ -280,7 +279,7 @@ public class IssueController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
+    @Permission(type = ResourceType.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("批量删除Issue,给测试")
     @DeleteMapping(value = "/to_version_test")
     public ResponseEntity batchDeleteIssues(@ApiParam(value = "项目id", required = true)
@@ -291,7 +290,7 @@ public class IssueController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("issue批量加入版本")
     @PostMapping(value = "/to_version/{versionId}")
     public ResponseEntity<List<IssueSearchDTO>> batchIssueToVersion(@ApiParam(value = "项目id", required = true)
@@ -305,7 +304,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issue.batchToVersion"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("批量替换issue版本,给测试")
     @PostMapping(value = "/to_version_test/{versionId}")
     public ResponseEntity batchIssueToVersionTest(@ApiParam(value = "项目id", required = true)
@@ -318,7 +317,7 @@ public class IssueController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("issue批量加入epic")
     @PostMapping(value = "/to_epic/{epicId}")
     public ResponseEntity<List<IssueSearchDTO>> batchIssueToEpic(@ApiParam(value = "项目id", required = true)
@@ -332,7 +331,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issue.batchToEpic"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("issue批量加入冲刺")
     @PostMapping(value = "/to_sprint/{sprintId}")
     public ResponseEntity<List<IssueSearchDTO>> batchIssueToSprint(@ApiParam(value = "项目id", required = true)
@@ -346,7 +345,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issue.batchToSprint"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询当前项目下的epic，提供给列表下拉")
     @GetMapping(value = "/epics/select_data")
     public ResponseEntity<List<IssueEpicDTO>> listEpicSelectData(@ApiParam(value = "项目id", required = true)
@@ -356,7 +355,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssueEpicList"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询当前项目下的feature，提供给列表下拉")
     @GetMapping(value = "/feature/select_data")
     public ResponseEntity<List<IssueFeatureDTO>> listFeatureSelectData(@ApiParam(value = "项目id", required = true)
@@ -370,7 +369,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.queryIssueFeatureList"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询当前项目下的feature，包括详细统计信息")
     @GetMapping(value = "/features")
     public ResponseEntity<List<IssueFeatureDTO>> listFeature(@ApiParam(value = "项目id", required = true)
@@ -382,7 +381,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.listFeature.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询项目群下的epic，提供给列表下拉")
     @GetMapping(value = "/epics/select_program_data")
     public ResponseEntity<List<IssueEpicDTO>> listEpicSelectProgramData(@ApiParam(value = "项目id", required = true)
@@ -392,7 +391,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.queryProgramIssueEpicList"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更改issue类型")
     @PostMapping("/update_type")
     public ResponseEntity<IssueDTO> updateIssueTypeCode(@ApiParam(value = "项目id", required = true)
@@ -407,7 +406,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issue.updateIssueTypeCode"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("任务转换为子任务")
     @PostMapping("/transformed_sub_task")
     public ResponseEntity<IssueSubDTO> transformedSubTask(@ApiParam(value = "项目id", required = true)
@@ -422,7 +421,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issue.transformedSubTask"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("子任务转换为任务")
     @PostMapping("/transformed_task")
     public ResponseEntity<IssueDTO> transformedTask(@ApiParam(value = "项目id", required = true)
@@ -438,7 +437,7 @@ public class IssueController {
     }
 
     @ResponseBody
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("导出issue列表")
     @PostMapping(value = "/export")
     public void exportIssues(@ApiParam(value = "项目id", required = true)
@@ -453,7 +452,7 @@ public class IssueController {
     }
 
     @ResponseBody
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("导出feature列表")
     @PostMapping(value = "/program/export")
     public void exportProgramIssues(@ApiParam(value = "项目id", required = true)
@@ -467,7 +466,7 @@ public class IssueController {
         issueService.exportProgramIssues(projectId, searchDTO, request, response, organizationId);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("复制一个issue")
     @PostMapping("/{issueId}/clone_issue")
     public ResponseEntity<IssueDTO> cloneIssueByIssueId(@ApiParam(value = "项目id", required = true)
@@ -485,7 +484,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issue.cloneIssueByIssueId"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据issue ids查询issue相关信息")
     @PostMapping("/issue_infos")
     public ResponseEntity<List<IssueInfoDTO>> listByIssueIds(@ApiParam(value = "项目id", required = true)
@@ -497,7 +496,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issueNums.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("分页过滤查询issue列表提供给测试模块用")
     @CustomPageRequest
     @PostMapping(value = "/test_component/no_sub")
@@ -517,7 +516,7 @@ public class IssueController {
     }
 
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("分页过滤查询issue列表, 测试项目接口，过滤linked issue")
     @CustomPageRequest
     @PostMapping(value = "/test_component/filter_linked")
@@ -536,7 +535,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.listIssueWithBlockedIssues"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据时间段查询问题类型的数量")
     @GetMapping(value = "/type/{typeCode}")
     public ResponseEntity<List<IssueCreationNumDTO>> queryIssueNumByTimeSlot(@ApiParam(value = "项目id", required = true)
@@ -550,7 +549,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.timeSlotCount.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "拖动epic位置")
     @PutMapping(value = "/epic_drag")
     public ResponseEntity<EpicDataDTO> dragEpic(@ApiParam(value = "项目id", required = true)
@@ -562,7 +561,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issueController.dragEpic"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("统计issue相关信息（测试模块用）")
     @PostMapping(value = "/test_component/statistic")
     public ResponseEntity<List<PieChartDTO>> issueStatistic(@ApiParam(value = "项目id", required = true)
@@ -576,7 +575,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.issueStatistic"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("分页过滤查询issue列表(不包含子任务，包含详情),测试模块用")
     @CustomPageRequest
     @PostMapping(value = "/test_component/no_sub_detail")
@@ -593,7 +592,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.listIssueWithoutSubDetail"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("故事地图查询issues,type:'sprint, version, none', pageType:'storymap,backlog'")
     @GetMapping(value = "/storymap/issues")
     public ResponseEntity<List<StoryMapIssueDTO>> listIssuesByProjectId(@ApiParam(value = "项目id", required = true)
@@ -617,7 +616,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.listIssuesByProjectId"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("故事地图移动卡片")
     @PostMapping(value = "/storymap/move")
     public ResponseEntity storymapMove(@ApiParam(value = "项目id", required = true)
@@ -628,7 +627,7 @@ public class IssueController {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更改父任务")
     @PostMapping(value = "/update_parent")
     public ResponseEntity<IssueDTO> updateIssueParentId(@ApiParam(value = "项目id", required = true)
@@ -640,7 +639,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issueParentId.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("统计当前项目下未完成的任务数，包括故事、任务、缺陷")
     @GetMapping(value = "/count")
     public ResponseEntity<JSONObject> countUnResolveByProjectId(@ApiParam(value = "项目id", required = true)
@@ -650,7 +649,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.countUnResolveIssue.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据条件过滤查询返回issueIds，测试项目接口")
     @PostMapping(value = "/issue_ids")
     public ResponseEntity<List<Long>> queryIssueIdsByOptions(@ApiParam(value = "项目id", required = true)
@@ -662,7 +661,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issueIds.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询未分配的问题，类型为story,task,bug")
     @GetMapping(value = "/undistributed")
     public ResponseEntity<Page<UndistributedIssueDTO>> queryUnDistributedIssues(@ApiParam(value = "项目id", required = true)
@@ -674,7 +673,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.UndistributedIssueList.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询经办人未完成的问题，类型为story,task,bug")
     @GetMapping(value = "/unfinished/{assignee_id}")
     public ResponseEntity<List<UnfinishedIssueDTO>> queryUnfinishedIssues(@ApiParam(value = "项目id", required = true)
@@ -686,7 +685,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.UnfinishedIssueList.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询用户故事地图泳道")
     @GetMapping(value = "/storymap/swim_lane")
     public ResponseEntity<String> querySwimLaneCode(@ApiParam(value = "项目id", required = true)
@@ -696,7 +695,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.querySwimLaneCode.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("【测试专用】批量复制issue并生成版本信息")
     @PostMapping("/batch_clone_issue/{versionId}")
     public ResponseEntity<List<Long>> cloneIssuesByVersionId(@ApiParam(value = "项目id", required = true)
@@ -711,7 +710,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issue.cloneIssuesByVersionId"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("【测试专用】issue按照项目分组接口")
     @GetMapping("/list_issues_by_project")
     public ResponseEntity<List<IssueProjectDTO>> queryIssueTestGroupByProject(@ApiParam(value = "项目id", required = true)
@@ -721,7 +720,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issue.queryIssueTestGroupByProject"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询feature列表")
     @PostMapping(value = "/program")
     public ResponseEntity<Page<FeatureCommonDTO>> queryFeatureList(@ApiParam(value = "项目id", required = true)
@@ -738,7 +737,7 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.issue.queryFeatureList"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询当前pi的特性列表")
     @PostMapping(value = "/program/query_by_pi_id")
     public ResponseEntity<List<FeatureCommonDTO>> queryFeatureListByPiId(@ApiParam(value = "项目id", required = true)

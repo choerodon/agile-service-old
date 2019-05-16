@@ -1,0 +1,44 @@
+.c7n-wikiItem {
+  // background: #F3F3F3;
+  border-radius: 2px;
+  margin-bottom: 10px;
+  color: #3F51B5;
+  padding: 5px 10px;
+
+  &-icon {
+    vertical-align: text-top;
+    font-size: 16px;
+    margin-right: 5px;
+  }
+
+  &-delete {
+    vertical-align: text-top;
+    font-size: 16px;
+    float: right;
+    cursor: pointer;
+    color: #fff;
+  }
+
+  &-text {
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: top;
+  }
+
+  &-narrow {
+    max-width: 290px;
+  }
+
+  &-wide {
+    max-width: 500px;
+  }
+
+  &:hover {
+  background: #F3F3F3;
+  .c7n-wikiItem-delete {
+    color: #3f51b5;
+  }
+  }
+}

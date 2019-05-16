@@ -118,8 +118,8 @@ class AgileTestConfiguration {
     @MockBean
     private SiteMsgUtil siteMsgUtil
 
-    @MockBean(name = "sagaClient")
-    private SagaClient sagaClient
+//    @MockBean(name = "sagaClient")
+//    private SagaClient sagaClient
 
     @MockBean(name = "fileFeignClient")
     private FileFeignClient fileFeignClient
@@ -130,11 +130,11 @@ class AgileTestConfiguration {
         new IssueAttachmentServiceImpl(fileFeignClient)
     }
 
-    @Bean("productVersionService")
-    @Primary
-    ProductVersionService productVersionService() {
-        new ProductVersionServiceImpl(detachedMockFactory.Mock(SagaClient))
-    }
+//    @Bean("productVersionService")
+//    @Primary
+//    ProductVersionService productVersionService() {
+//        new ProductVersionServiceImpl(detachedMockFactory.Mock(SagaClient))
+//    }
 
 //    @Bean("mockEventProducerTemplate")
 //    @Primary
@@ -173,7 +173,7 @@ class AgileTestConfiguration {
             @Override
             ClientHttpResponse intercept(HttpRequest httpRequest, byte[] bytes, ClientHttpRequestExecution clientHttpRequestExecution) throws IOException {
                 httpRequest.getHeaders()
-                        .add('JWT_Token', createJWT(key, objectMapper))
+                        .add('Authorization', createJWT(key, objectMapper))
                 return clientHttpRequestExecution.execute(httpRequest, bytes)
             }
         }])

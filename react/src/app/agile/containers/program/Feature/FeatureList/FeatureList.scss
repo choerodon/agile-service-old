@@ -1,0 +1,121 @@
+.c7n-featureTools {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 6px 24px 5px;
+  border-bottom: 1px solid #d3d3d3;
+  flex-shrink: 0;
+  align-items: center;
+
+  .c7n-featureTools-left {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    flex-wrap: wrap;
+    overflow: hidden;
+  }
+
+  .c7n-featureTools-right {
+    display: flex;
+  }
+}
+
+.c7n-FeatureList {
+  display: flex;
+  width: 100%;
+
+  .c7n-feature-side +.ant-spin-nested-loading {
+    overflow-x: hidden;
+    display: flex;
+    flex: 1;
+    width: 100%;
+
+    .ant-spin-container {
+      overflow-x: hidden;
+      flex-direction: column;
+      display: flex;
+      flex: 1;
+      width: 100%;
+    }
+  }
+
+  p {
+    margin-bottom: 0;
+  }
+
+  .c7n-feature-side {
+    width: 24px;
+    border-right: 1px solid #d3d3d3;
+
+    p {
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.08);
+      text-align: center;
+      color: rgba(0, 0, 0, 0.65);
+    }
+  }
+}
+
+.wrapSpin {
+  width: 100%;
+  display: flex;
+}
+
+.c7n-feature-filter {
+  cursor: pointer;
+  padding: 3px 8px;
+  margin-right: 18px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.c7n-quickfilter-more {
+  white-space: nowrap;
+  margin-left: 50px;
+  cursor: pointer;
+}
+
+.c7n-agile-backlogTools-popover {
+  .ant-checkbox-group-item {
+    margin-bottom: 5px;
+  }
+}
+
+.c7n-feature-content {
+  //position: absolute;
+  //left: 24px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  width: 100%;
+}
+
+.c7n-feature-clearFilter {
+  margin-left: 18px;
+  font-size: 13px;
+  line-height: 20px;
+  white-space: nowrap;
+  color: rgb(48, 63, 159);
+  cursor: pointer;
+}
+
+.c7n-pi-showTypeRadioGroup {
+  .ant-radio-button-wrapper {
+    border: 1px solid #3f51b5;
+    color: #3f51b5;
+  }
+
+  .ant-radio-button-wrapper-checked:first-child {
+    border-radius: 4px 0 0 4px;
+  }
+
+  .ant-radio-button-wrapper:last-child {
+    border-radius: 0 4px 4px 0;
+  }
+
+  .ant-radio-button-wrapper-checked {
+    background: #3f51b5;
+    color: #fff;
+  }
+}

@@ -230,10 +230,14 @@ public class IssueServiceImpl implements IssueService {
     @Value("${services.attachment.url}")
     private String attachmentUrl;
 
-    private final SagaClient sagaClient;
+    private SagaClient sagaClient;
 
     @Autowired
     public IssueServiceImpl(SagaClient sagaClient) {
+        this.sagaClient = sagaClient;
+    }
+
+    public void setSagaClient(SagaClient sagaClient) {
         this.sagaClient = sagaClient;
     }
 

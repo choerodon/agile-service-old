@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="174px" height="126px" viewBox="0 0 174 126" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>art-list</title>
+    <desc>Created with Sketch.</desc>
+    <g id="SAFe" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="illustrations" transform="translate(-212.000000, -568.000000)">
+            <g id="art-list" transform="translate(212.000000, 568.000000)">
+                <rect id="Rectangle-8-Copy-5" fill="#DEE0ED" x="0" y="0" width="174" height="126" rx="10"></rect>
+                <rect id="Rectangle-21-Copy-10" fill="#CFD5F1" x="62" y="8" width="98" height="8" rx="4"></rect>
+                <rect id="Rectangle-21-Copy-11" fill="#F9FAFF" x="10" y="8" width="8" height="8" rx="4"></rect>
+                <rect id="Rectangle-21-Copy-12" fill="#F9FAFF" x="24" y="8" width="8" height="8" rx="4"></rect>
+                <rect id="Rectangle-21-Copy-13" fill="#F9FAFF" x="38" y="8" width="8" height="8" rx="4"></rect>
+                <path d="M0,24 L174,24 L174,116 C174,121.522847 169.522847,126 164,126 L10,126 C4.4771525,126 6.76353751e-16,121.522847 0,116 L0,24 Z" id="Rectangle-8-Copy-6" fill="#F2F4FD"></path>
+                <g id="分组-4" transform="translate(0.000000, 49.000000)">
+                    <path d="M2.84217094e-14,-1.42108547e-14 L99.6135931,1.0658141e-14 C107.570088,9.19655667e-15 115.200705,3.16070521 120.826797,8.78679656 L145.554719,33.5147186 C150.24101,38.2010101 150.24101,45.7989899 145.554719,50.4852814 C143.304282,52.7357179 140.252035,54 137.069437,54 L2.84217094e-14,54 L2.84217094e-14,-1.42108547e-14 Z" id="矩形" fill="#6776C4"></path>
+                    <path d="M148.690345,39 C149.195801,40.96562 149.195801,43.03438 148.690345,45 L2.84217094e-14,45 L2.84217094e-14,39 L148.690345,39 Z" id="合并形状" fill="#2A2E76"></path>
+                    <path d="M122.04,10 L145.554719,33.5147186 C145.713218,33.673218 145.866357,33.8350481 146.014135,33.9999837 C146.009424,33.9999946 146.004713,34 146,34 L84,34 C80.6862915,34 78,31.3137085 78,28 L78,16 C78,12.6862915 80.6862915,10 84,10 L122.04,10 Z" id="合并形状" fill="#FFBA1C"></path>
+                    <g id="分组-2" transform="translate(88.000000, 10.000000)" fill="#FFFFFF">
+                        <path d="M9.03300859,24 L0.547727215,24 L24.5477272,3.55271368e-15 L33.0330086,0 L9.03300859,24 Z" id="合并形状"></path>
+                        <path d="M37.2938636,3.25386361 L40.1222907,6.08229073 L22.2045815,24 L16.5477272,24 L37.2938636,3.25386361 Z" id="合并形状"></path>
+                    </g>
+                    <rect id="矩形-copy-2" fill="#FFBA1C" x="18" y="10" width="52" height="24" rx="6"></rect>
+                    <g id="分组-3" transform="translate(28.000000, 10.000000)" fill="#FFFFFF">
+                        <path d="M24.5477272,0 L33.0330086,0 L9.03300859,24 L0.547727215,24 L24.5477272,7.10542736e-15 Z" id="合并形状"></path>
+                        <path d="M39.4542607,1.09346655 C40.5777594,1.88587522 41.4169603,3.05441889 41.7886737,4.41590774 L22.2045815,24 L16.5477272,24 L39.4542607,1.09346655 Z" id="合并形状"></path>
+                    </g>
+                    <path d="M0,10 L4,10 C7.3137085,10 10,12.6862915 10,16 L10,28 C10,31.3137085 7.3137085,34 4,34 L0,34 L0,10 Z" id="矩形-copy-3" fill="#FFBA1C"></path>
+                    <g id="分组-3" transform="translate(0.000000, 11.000000)" fill="#FFFFFF">
+                        <path d="M7.45426066,0.0934665518 C8.57775938,0.885875217 9.41696034,2.05441889 9.78867373,3.41590774 L4.4941828e-13,13.2045815 L4.54747351e-13,7.54772721 L7.45426066,0.0934665518 Z" id="合并形状"></path>
+                    </g>
+                </g>
+                <rect id="矩形" fill="#DEE0ED" x="0" y="103" width="174" height="10"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

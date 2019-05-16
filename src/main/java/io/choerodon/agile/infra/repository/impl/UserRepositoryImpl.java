@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.dto.ProjectDTO;
 import io.choerodon.agile.api.dto.RoleAssignmentSearchDTO;
 import io.choerodon.agile.api.dto.RoleDTO;
@@ -72,9 +73,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<UserDTO> queryUsersByNameAndProjectId(Long projectId, String name) {
-        ResponseEntity<Page<UserDTO>> userList = userFeignClient.list(projectId, new PageRequest(), name);
+        ResponseEntity<PageInfo<UserDTO>> userList = userFeignClient.list(projectId, name);
         if (userList != null) {
-            return userList.getBody().getContent();
+            return userList.getBody().getList();
         } else {
             return new ArrayList<>();
         }
@@ -92,9 +93,9 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Page<UserDTO> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO) {
-        ResponseEntity<Page<UserDTO>> users = userFeignClient.pagingQueryUsersByRoleIdOnProjectLevel(page, size, roleId, sourceId, roleAssignmentSearchDTO);
-        return users != null ? users.getBody() : new Page<>();
+    public PageInfo<UserDTO> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO) {
+        ResponseEntity<PageInfo<UserDTO>> users = userFeignClient.pagingQueryUsersByRoleIdOnProjectLevel(page, size, roleId, sourceId, roleAssignmentSearchDTO);
+        return users != null ? users.getBody() : new PageInfo<>();
     }
 
     @Override

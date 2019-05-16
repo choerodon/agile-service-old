@@ -4,14 +4,14 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.infra.dataobject.SubFeatureDO;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class PiController {
     @Autowired
     private PiService piService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("修改pi")
     @PutMapping
     public ResponseEntity<PiDTO> updatePi(@ApiParam(value = "项目id", required = true)
@@ -47,7 +47,7 @@ public class PiController {
                 .orElseThrow(() -> new CommonException("error.pi.update"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("待办页面查询所有pi详情")
     @PostMapping("/backlog_pi_list")
     public ResponseEntity<JSONObject> queryBacklogAll(@ApiParam(value = "项目id", required = true)
@@ -61,7 +61,7 @@ public class PiController {
                 .orElseThrow(() -> new CommonException("error.backlogAll.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("pi页面查询art下所有pi简要列表")
     @GetMapping("/list")
     public ResponseEntity<Page<PiDTO>> queryArtAll(@ApiParam(value = "项目id", required = true)
@@ -76,7 +76,7 @@ public class PiController {
                 .orElseThrow(() -> new CommonException("error.artPiDTOList.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("开启pi")
     @PostMapping("/start")
     public ResponseEntity<PiDTO> startPi(@ApiParam(value = "项目id", required = true)
@@ -88,7 +88,7 @@ public class PiController {
                 .orElseThrow(() -> new CommonException("error.pi.start"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("关闭pi之前统计数量")
     @GetMapping("/before_close")
     public ResponseEntity<PiCompleteCountDTO> beforeClosePi(@ApiParam(value = "项目id", required = true)
@@ -102,7 +102,7 @@ public class PiController {
                 .orElseThrow(() -> new CommonException("error.pi.beforeClose"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("关闭pi")
     @PostMapping("/close")
     public ResponseEntity<PiDTO> closePi(@ApiParam(value = "项目id", required = true)
@@ -114,7 +114,7 @@ public class PiController {
                 .orElseThrow(() -> new CommonException("error.pi.close"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("feature批量拖动到pi")
     @PostMapping(value = "/to_pi/{piId}")
     public ResponseEntity<List<SubFeatureDO>> batchFeatureToPi(@ApiParam(value = "项目id", required = true)
@@ -128,7 +128,7 @@ public class PiController {
                 .orElseThrow(() -> new CommonException("error.feaature.batchToPi"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("feature批量拖动到epic")
     @PostMapping(value = "/to_epic/{epicId}")
     public ResponseEntity<List<SubFeatureDO>> batchFeatureToEpic(@ApiParam(value = "项目id", required = true)
@@ -142,7 +142,7 @@ public class PiController {
                 .orElseThrow(() -> new CommonException("error.feature.batchToEpic"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("pi页面查询项目群下所有pi")
     @GetMapping(value = "/all")
     public ResponseEntity<List<PiNameDTO>> queryAllOfProgram(@ApiParam(value = "项目id", required = true)
@@ -152,7 +152,7 @@ public class PiController {
                 .orElseThrow(() -> new CommonException("error.programPiDTOList.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询ART下的非完成的PI列表")
     @GetMapping(value = "/unfinished")
     public ResponseEntity<List<PiNameDTO>> queryUnfinishedOfProgram(@ApiParam(value = "项目id", required = true)
@@ -162,7 +162,7 @@ public class PiController {
                 .orElseThrow(() -> new CommonException("error.unfinishedPiDTOList.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询PI路线图")
     @GetMapping(value = "/road_map")
     public ResponseEntity<List<PiWithFeatureDTO>> queryRoadMapOfProgram(@ApiParam(value = "项目id", required = true)

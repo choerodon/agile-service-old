@@ -1,0 +1,95 @@
+.pie-chart {
+  .c7n-pieChart-filter {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    width: 67%;
+    align-items: flex-end;
+    .c7n-pieChart-filter-item {
+      flex-grow: 1;
+      margin-right: 10px;
+    }
+  }
+  .pie-otherTooltip {
+    position: absolute;
+    bottom: -37px;
+    left: 0;
+    // width: 100%;
+    .pie-otherTooltip-wrap {
+      width: 100%;
+      height: 20px;
+      border: 2px solid  #f7ca34;
+      border-bottom: 0;
+      margin-bottom: 13px;
+    }
+    .pie-otherTooltip-item-wrap {
+      display: flex;
+      p {
+        min-width: 80px;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-bottom: 0;
+        margin-left: 1px;
+        padding-left: 2px;
+        padding-right: 2px;
+        font-size: 13px;
+        text-align: center;
+        color: rgba(0, 0, 0, 0.65);
+      }
+    }
+    .pie-otherTooptip-item-ignore {
+      display: inline-block;
+      padding: 5px 12px;
+    }
+  }
+
+  .pie-title {
+    position: absolute;
+    right: 0;
+    background: #fff;
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    // top: 20%;
+    // min-width: 326px;
+    padding: 24px;
+    padding-right: 10px;
+    max-width: 380px;
+
+    .pie-legend-title {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .pie-legend-tbody {
+      display: block;
+      max-height: 250px;
+      overflow-y: scroll;
+      margin-bottom: 41px;
+    }
+
+    .pie-legend-icon {
+      float: left;
+      border-radius: 2px;
+      width: 14px;
+      min-height: 14px;
+      display: inline-block;
+      margin-right: 8px;
+    }
+
+    .pie-legend-text {
+      display: inline-block;
+      float: left;
+      line-height: 15px;
+      max-width: 100px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    td {
+      padding-bottom: 12px;
+      padding-right: 35px;
+    }
+  }
+}

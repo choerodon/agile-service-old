@@ -1,0 +1,64 @@
+.c7n-SprintProgressHome {
+  height: calc(100% - 67px);
+  display: flex;
+  align-items: center;
+  padding-left: 24px;
+  .c7n-SprintContainer {
+    width: 100%;
+  }
+  .c7n-SprintStage {
+        padding-top: 5px;
+        font-size: 14px;
+        line-height: 20px;
+        color: rgba(0, 0, 0, 0.87);
+        margin-bottom: 9px;
+    }
+    .c7n-SprintRemainDay {
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.64);
+        .c7n-remainDay {
+            font-size: 20px;
+            color: #f7667f;
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+        margin-bottom: 3px;
+    }
+    .c7n-progress {
+        position: relative;
+        // padding-right: 98px;
+        .ant-progress-outer {
+            width: 80%;
+            .ant-progress-inner {
+                width: 100%;
+                background-color: rgba(247, 102, 127, 0.30);
+                .ant-progress-bg {
+                    // width: 100%;
+                    background-color: #f7667f;
+                }
+            }
+        }
+        .c7n-sprintStart, .c7n-sprintEnd {
+            font-size: 13px;
+            color: rgba(0, 0, 0, 0.64);
+        }
+        .c7n-sprintStart {
+            display: inline-block;
+            padding-top: 0;
+        }
+        .c7n-sprintEnd {
+            position: absolute;
+            top: 18px;
+            right: 20%;
+        }
+    }
+}
+.c7n-loadWrap {
+    display: flex;
+    justify-content: center;
+    margin-right: 52px;
+}
+.c7n-emptySprint {
+    margin-top: 10px;
+    padding-bottom: 40px;
+}

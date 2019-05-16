@@ -3,6 +3,8 @@ package io.choerodon.agile.api.controller.v1;
 import java.util.List;
 import java.util.Optional;
 
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +16,6 @@ import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.IterativeWorktableService;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.swagger.annotation.Permission;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/9/4.
@@ -28,7 +28,7 @@ public class IterativeWorktableController {
     @Autowired
     private IterativeWorktableService iterativeWorktableService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("迭代冲刺台查询issue优先级分布情况")
     @GetMapping(value = "/priority")
     public ResponseEntity<List<PriorityDistributeDTO>> queryPriorityDistribute(@ApiParam(value = "项目id", required = true)
@@ -42,7 +42,7 @@ public class IterativeWorktableController {
                 .orElseThrow(() -> new CommonException("error.PriorityDistribute.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("迭代冲刺台查询issue的状态分布")
     @GetMapping(value = "/status")
     public ResponseEntity<List<StatusCategoryDTO>> queryStatusCategoryDistribute(@ApiParam(value = "项目id", required = true)
@@ -56,7 +56,7 @@ public class IterativeWorktableController {
                 .orElseThrow(() -> new CommonException("error.StatusDistribute.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("迭代冲刺台查询冲刺的基本信息")
     @GetMapping(value = "/sprint/{organization_id}")
     public ResponseEntity<SprintInfoDTO> querySprintInfo(@ApiParam(value = "项目id", required = true)
@@ -70,7 +70,7 @@ public class IterativeWorktableController {
                 .orElseThrow(() -> new CommonException("error.SprintInfo.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("迭代冲刺台查询经办人分布情况api")
     @GetMapping(value = "/assignee_id")
     public ResponseEntity<List<AssigneeDistributeDTO>> queryAssigneeDistribute(@ApiParam(value = "项目id", required = true)
@@ -82,7 +82,7 @@ public class IterativeWorktableController {
                 .orElseThrow(() -> new CommonException("error.queryAssigneeDistribute.get"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("迭代冲刺台查询issue的问题类型分布情况api")
     @GetMapping(value = "/issue_type")
     public ResponseEntity<List<IssueTypeDistributeDTO>> queryIssueTypeDistribute(@ApiParam(value = "项目id", required = true)

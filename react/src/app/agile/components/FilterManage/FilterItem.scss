@@ -1,0 +1,44 @@
+.c7nagile-FilterItem {
+  display: flex;
+  height: 36px;
+  align-items: center;
+  padding: 0 15px 0 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, .12);
+
+  &-text {
+    flex: 1;
+  }
+
+  i {
+    margin: 0 5px;
+  }
+
+  .ant-form-item {
+    margin-bottom: 0;
+    flex: 1;
+
+    .ant-form-item-control {
+      display: flex;
+
+      .ant-form-item-children {
+        flex: 1;
+
+        .ant-input-wrapper {
+          margin-bottom: -1px;
+        }
+      }
+
+      .ant-form-explain {
+        margin-top: 3px;
+      }
+    }
+  }
+
+  .ant-input-underline {
+    display: none;
+  }
+
+  .ant-input-length-info {
+    margin-top: -14px;
+  }
+}

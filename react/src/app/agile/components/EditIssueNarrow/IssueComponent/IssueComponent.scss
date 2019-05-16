@@ -1,0 +1,61 @@
+.issue-sidebar-types {
+  .ant-dropdown-menu-item {
+    padding: 2px 12px;
+  }
+}
+
+.c7n-issue-header {
+  .c7n-value-wrapper {
+    width: 100%;
+  }
+
+  .c7ntest-TextEditToggle-edit {
+    width: 100%;
+  }
+
+}
+
+.c7n-content-wrapper {
+  padding-left: 26px;
+  display: flex;
+  flex-wrap: wrap;
+  .c7n-content-item {
+    flex: 1;
+  }
+}
+
+.issue-header-narrow {
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 20px;
+  display: flex;
+  align-items: center;
+  margin: 10px 0 3px;
+}
+
+.issue-header-wide {
+  align-items: center;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-left: -20px;
+  margin-right: -20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.26);
+  height: 44px;
+}
+
+.issue-nav-narrow {
+  height: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.issue-nav-wide {
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.26);
+}

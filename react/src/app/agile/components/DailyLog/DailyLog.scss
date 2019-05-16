@@ -1,0 +1,20 @@
+.c7n-dailyLog {
+  .ant-input-length-info {
+    position: absolute;
+  }
+
+  .info {
+    display: flex;
+    flex-direction: column;
+
+    .line-info {
+      display: flex;
+      align-items: flex-end;
+    }
+  }
+
+  .error-text {
+    color: #d50000;
+    margin-top: 2px;
+  }
+}

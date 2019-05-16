@@ -1,0 +1,46 @@
+.c7n-scrumsetting-column {
+  height: 100%;
+  padding: 0 10px 0 0;
+
+  .c7n-scrumsetting-columnContent {
+    height: 100%;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 12px;
+
+    .c7n-scrumsetting-columnTop {
+      min-width: 120px;
+      .c7n-scrumsetting-icons {
+        display: flex;
+        justify-content: space-between;
+        font-size: 16px;
+      }
+
+      .c7n-scrumsetting-columnStatus {
+        margin-top: 16px;
+        font-size: 14px;
+        min-height: 23px;
+      }
+
+      .c7n-scrumsetting-columnBottom {
+        // height: 44px;
+        margin-top: 12px;
+        padding-bottom: 21px;
+        // border-bottom: 3px solid black;
+
+        div {
+          display: flex;
+          justify-content: space-between;
+
+          .editSpan {
+            flex-basis: 50%;
+            // min-width: 115px;
+          }
+        }
+      }
+    }
+
+    .c7n-scrumsetting-columnDrop {
+      height: calc(100% - 145px);
+    }
+  }
+}

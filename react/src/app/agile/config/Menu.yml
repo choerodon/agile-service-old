@@ -1,0 +1,179 @@
+"agile":
+  icon: agile
+  sort: 1
+  project:
+    - "backlog":
+        icon: baseline-list_alt
+        Routes: /agile/backlog
+        sort: 1
+        permission:
+          - 'agile-service.sprint.queryByProjectId'
+    - "scrumboard":
+        icon: directions_run
+        Routes: /agile/scrumboard
+        sort: 2
+        permission:
+          - 'agile-service.board.queryByProjectId'
+          - 'agile-service.board.queryByOptions'
+    - "userStoryMap":
+        icon: usermap
+        Routes: /agile/usermap
+        sort: 3
+        permission:
+          - 'agile-service.issue.listEpic'
+    - "issue":
+        icon: assignment
+        Routes: /agile/issue
+        sort: 4
+        permission:
+          - 'agile-service.issue.listIssueWithSub'
+    - "release":
+        icon: publish2
+        Routes: /agile/release
+        sort: 5
+        permission:
+          - 'agile-service.product-version.listByProjectId'
+    - "reportboard":
+        icon: whatshot
+        Routes: /agile/reportboard
+        sort: 6
+        permission:
+          - 'agile-service.sprint.queryNameByOptions'
+    - "component":
+        icon: extension
+        Routes: /agile/component
+        sort: 7
+        permission:
+          - 'agile-service.issue-component.listByProjectId'    
+    - "projectsetting":
+        icon: folder_shared
+        Routes: /agile/projectSetting
+        sort: 9
+        permission:
+          - 'agile-service.project-info.updateProjectInfo'
+    - "fastsearch":
+        icon: youtube_searched_for
+        Routes: /agile/fastSearch
+        sort: 10
+        permission:
+          - 'agile-service.quick-filter.create'
+    - "messageNotification":
+        icon: notifications
+        Routes: /agile/messageNotification
+        sort: 11
+        permission:
+          - 'agile-service.notice.queryByProjectId'
+    - "issuelink":
+        icon: link
+        Routes: /agile/issueLink
+        sort: 12
+        permission:
+          - 'agile-service.issue-link-type.updateIssueLinkType'        
+
+"program":
+  icon: agile
+  sort: 1
+  project:
+    - "feature":
+        icon: baseline-vertical_split
+        category: PROGRAM
+        Routes: /agile/feature
+        sort: 1
+        permission:
+          - 'agile-service.pi.queryBacklogAll'
+    - "programKanban":
+        icon: table_chart
+        category: PROGRAM
+        Routes: /agile/kanban
+        sort: 2
+        permission:
+          - 'agile-service.board.queryByOptionsInProgram'
+    - "artCalendar":
+        icon: insert_invitation
+        category: PROGRAM
+        Routes: /agile/artCalendar
+        sort: 3
+        permission:
+          - 'agile-service.art.queryArtCalendar'
+    - "roadMap":
+        icon: view_week
+        category: PROGRAM
+        Routes: /agile/roadMap
+        sort: 4     
+        permission:
+          - 'agile-service.pi.queryRoadMapOfProgram'
+    - "pi":
+        icon: center_focus_strong
+        category: PROGRAM
+        Routes: /agile/pi
+        sort: 5
+        permission:
+          - 'agile-service.pi-objective.queryPiObjectiveList'
+    - "art":
+        icon: train
+        category: PROGRAM
+        Routes: /agile/art
+        sort: 6
+        permission:
+          - 'agile-service.art.queryArtList'
+    - "programSetting":
+        icon: folder_shared
+        category: PROGRAM
+        Routes: /agile/programSetting
+        sort: 7
+        permission:
+          - 'agile-service.project-info.updateProjectInfo'
+
+"platform-reports":
+  icon: bar_chart
+  sort: 99
+  project:
+    - "reportboard":
+        icon: application_model
+        Routes: /agile/reporthost
+        sort: 3
+        permission:
+          - 'agile-service.sprint.queryNameByOptions'
+
+# 组织设置
+"rentsetting":
+  icon: IAM
+  sort: 2
+  organization: # 组织层的菜单
+    - "workCalendar": # 菜单字段
+        icon: date_range  # 菜单图标
+        Routes: /agile/workCalendar # 菜单对应路由
+        sort: 8 # 菜单的次序
+        permission: # 菜单内容具有的权限
+          - 'agile-service.time-zone-work-calendar.queryTimeZoneWorkCalendar'
+          - 'agile-service.time-zone-work-calendar.queryTimeZoneWorkCalendarRefByTimeZoneId'
+    - "objectScheme-organization":
+        icon: storage
+        Routes: /agile/objectScheme
+        sort: 11
+        permission:
+          - 'foundation-service.object-scheme.pageQuery'
+    - "page-organization":
+        icon: baseline-file_copy
+        Routes: /agile/page
+        sort: 12
+        permission:
+          - 'foundation-service.page.pageQuery'
+
+# 项目设置
+"prosetting":
+  icon: IAM
+  sort: 6
+  project:
+    - "objectScheme-project":
+        icon: storage
+        Routes: /agile/objectScheme
+        sort: 5
+        permission:
+          - 'foundation-service.project-object-scheme.pageQuery'
+    - "page-project":
+        icon: baseline-file_copy
+        Routes: /agile/page
+        sort: 6
+        permission:
+          - 'foundation-service.project-page.pageQuery'
