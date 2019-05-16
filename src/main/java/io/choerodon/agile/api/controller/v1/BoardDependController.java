@@ -2,12 +2,11 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.BoardDependCreateDTO;
 import io.choerodon.agile.api.dto.BoardDependDTO;
-import io.choerodon.agile.api.dto.BoardDependUpdateDTO;
 import io.choerodon.agile.app.service.BoardDependService;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,7 @@ public class BoardDependController {
     @Autowired
     private BoardDependService boardDependService;
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建公告板特性依赖")
     @PostMapping
     public ResponseEntity<BoardDependDTO> create(@ApiParam(value = "项目id", required = true)
@@ -39,7 +38,7 @@ public class BoardDependController {
                 .orElseThrow(() -> new CommonException("error.boardDepend.create"));
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("删除公告板特性依赖")
     @DeleteMapping(value = "/{boardDependId}")
     public ResponseEntity deleteById(@ApiParam(value = "项目id", required = true)
