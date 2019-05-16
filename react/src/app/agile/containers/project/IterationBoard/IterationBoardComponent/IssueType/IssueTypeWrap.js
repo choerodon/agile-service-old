@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Card from '../Card';
-import IssueType from './IssueType.js';
+import IssueType from './IssueType';
 
 class IssueTypeWrap extends Component {
   constructor(props) {
