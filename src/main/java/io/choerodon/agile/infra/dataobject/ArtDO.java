@@ -58,8 +58,6 @@ public class ArtDO extends AuditDomain {
 
     private String sprintCompleteSetting;
 
-    private Long objectVersionNumber;
-
     public Long getId() {
         return id;
     }
@@ -204,13 +202,4 @@ public class ArtDO extends AuditDomain {
         return sprintCompleteSetting;
     }
 
-    @Override
-    public void setObjectVersionNumber(Long objectVersionNumber) {
-        this.objectVersionNumber = objectVersionNumber;
-    }
-
-    @Override
-    public Long getObjectVersionNumber() {
-        return objectVersionNumber;
-    }
 }

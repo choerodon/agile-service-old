@@ -24,7 +24,8 @@
          aa.code,
          aa.name,
          aa.start_date,
-         aa.status_code
+         aa.status_code,
+         aa.object_version_number
         from agile_art aa
         where aa.status_code = 'doing'
         and aa.program_id = #{programId}
