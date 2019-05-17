@@ -44,29 +44,29 @@ class Connector extends Component {
   }
 
   render() {
-    const { from, to, connection } = this.props;
+    const { from, to, isWarn } = this.props;
     const { click } = this.state;
-    const ax = (from.x + to.x) / 2 + 5;
-    const ay = (from.y + to.y) / 2 + 9;
+    const ax = (from.x + to.x) / 2 + Math.min(Math.abs(from.x - to.x) / 50, 5);
+    const ay = (from.y + to.y) / 2 + Math.min(Math.abs(from.y - to.y) / 50, 9);
     // 获取中点
     const [cx, cy] = threeBezier(0.3, [from.x, from.y], [to.x, to.y], [ax, ay], [ax, ay]);
     return (
       [<path
         onClick={this.handleClick}
-        className="helperLine"
+        className={`c7nagile-Connector-helperLine ${isWarn ? 'warn' : ''}`}
         d={`
         M${from.x},${from.y} 
         C${ax},${ay} ${ax},${ay} ${to.x},${to.y}`}
       />, <path
-        className="line"
+        className={`c7nagile-Connector-line ${isWarn ? 'warn' : ''}`}
         d={`
         M${from.x},${from.y} 
         C${ax},${ay} ${ax},${ay} ${to.x},${to.y}`}
-        markerStart="url(#StartMarker)"
-        markerEnd="url(#arrowhead)"
+        markerStart={`url(#${isWarn ? 'StartMarkerWarn' : 'StartMarker'})`}
+        markerEnd={`url(#${isWarn ? 'arrowheadWarn' : 'arrowhead'})`}
       />, click 
-        ? [<circle style={{ cursor: 'pointer' }} stroke="none" onClick={this.handleDeleteClick} cx={cx} cy={cy} r="9" fill="#3F51B5" />,
-          <text className="icon" fill="white" stroke="none" style={{ fontSize: '16px' }} x={cx - 8} y={cy + 7}>&#xE5C3;</text>,
+        ? [<circle className={`c7nagile-Connector-delete-circle ${isWarn ? 'warn' : ''}`} style={{ cursor: 'pointer' }} stroke="none" onClick={this.handleDeleteClick} cx={cx} cy={cy} r="9" fill="#3F51B5" />,
+          <text className={`c7nagile-Connector-delete-icon icon ${isWarn ? 'warn' : ''}`} fill="white" stroke="none" style={{ fontSize: '16px' }} x={cx - 8} y={cy + 7}>&#xE5C3;</text>,
         ] : null]
     );
   }

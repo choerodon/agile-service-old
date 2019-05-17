@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import {
   Page, Header, Content, stores,
 } from '@choerodon/boot';
+import { Spin } from 'choerodon-ui';
 import moment from 'moment';
 import { observer, inject } from 'mobx-react';
 import EditFeature from '../../Feature/FeatureComponent/FeatureDetail/EditFeature';
@@ -30,9 +31,13 @@ class RoadMap extends Component {
   }
 
   loadRoadMap = () => {
+    this.setState({
+      loading: true,
+    });
     getRoadMap().then((piList) => {
       this.setState({
         piList,
+        loading: false,
       });
     });
   }
@@ -76,7 +81,8 @@ class RoadMap extends Component {
           title="路线图"
         />
         <Content style={{ paddingTop: 0 }}>
-          {
+          <Spin spinning={loading}>
+            {
             piList.length > 0 ? (
               <Fragment>
                 <RoadMapHeader startDate={startDate} endDate={endDate} />
@@ -97,6 +103,7 @@ class RoadMap extends Component {
               />
             )
           }
+          </Spin>
           {
             editFeatureVisible && (              
             <EditFeature

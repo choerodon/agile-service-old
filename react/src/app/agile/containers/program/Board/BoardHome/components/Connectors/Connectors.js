@@ -169,6 +169,8 @@ class Connectors extends Component {
     };
   }
 
+  checkIsWarn=({ from, to }) => from.sprintIndex <= to.sprintIndex
+
   render() {
     const { connections } = this.props;    
     return (
@@ -192,10 +194,10 @@ class Connectors extends Component {
         <g fill="none" stroke="#BEC4E5" strokeWidth="1.5">
           {
             connections.map((connection) => {
-              const fromP = this.getIndex(connection.boardFeature);
-              const toP = this.getIndex(connection.dependBoardFeature);
-              const { from, to, isToLeft } = this.calulatePoint({ from: fromP, to: toP });
-              return <Connector from={from} to={to} connection={connection} />;
+              const fromIndexs = this.getIndex(connection.boardFeature);
+              const toIndexs = this.getIndex(connection.dependBoardFeature);
+              const { from, to, isToLeft } = this.calulatePoint({ from: fromIndexs, to: toIndexs });
+              return <Connector key={connection.id} from={from} to={to} connection={connection} isWarn={this.checkIsWarn({ from: fromIndexs, to: toIndexs })} />;
             })
           }
           {/* <Connector
@@ -235,7 +237,31 @@ class Connectors extends Component {
             orient="auto"
           >
             <circle cx="6" cy="6" r="3" />
-          </marker>         
+          </marker>  
+          <marker
+            id="arrowheadWarn"
+            viewBox="0 0 10 10"
+            refX="8"
+            refY="5"
+            markerWidth="6"
+            markerHeight="6"
+            orient="auto"
+          >
+            <path fill="#C62828" d="M 0 0 L 10 5 L 0 10 z" />
+          </marker>
+          <marker
+            id="StartMarkerWarn"
+            viewBox="0 0 12 12"
+            refX="5"
+            refY="6"
+            markerWidth="8"
+            markerHeight="8"
+            fill="white"
+            stroke="#C62828"
+            orient="auto"
+          >
+            <circle cx="6" cy="6" r="3" />
+          </marker>                
         </defs>
 
       </svg>

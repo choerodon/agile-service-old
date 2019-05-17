@@ -247,7 +247,7 @@ class BoardStore {
       // eslint-disable-next-line no-lonely-if
       if (dropIssues.length > 0) {
         data.before = false;
-        data.outsetId = dropIssues[dropIssues.length - 1].id;
+        data.outsetId = dropIssues[dropIssues.length - 1].id || 0;
         insertIndex = dropIssues.length - 1;
       } else {
         data.before = true;
@@ -382,9 +382,11 @@ class BoardStore {
   }
 
   deleteFeatureFromBoard(issue) {
-    deleteFeatureFromBoard(issue).then((res) => {
+    deleteFeatureFromBoard(issue.id).then((res) => {
       this.setClickIssue({});
       this.removeFeatureAndConnection(issue);
+    }).catch((err) => {
+      Choerodon.prompt('移除失败');
     });
   }
 

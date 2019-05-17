@@ -1,12 +1,33 @@
-.helperLine {
-  stroke-width: 6px;
-  opacity: 0;
-  cursor: pointer;
-  &:hover {
-    opacity: 0.2;
-  }
-}
+.c7nagile-Connector {
+  &-helperLine {
+    stroke-width: 8px;
+    opacity: 0;
+    cursor: pointer;
 
-.line {
-  pointer-events: none;
+    &:hover {
+      opacity: 0.2;
+    }
+
+    &.warn {
+      stroke: #C62828;
+    }
+  }
+
+  &-line {
+    pointer-events: none !important;
+
+    &.warn {
+      stroke: #C62828;
+    }
+  }
+
+  &-delete-circle {
+    &.warn {
+      fill: #C62828;
+    }
+  }
+
+  // &-delete-icon {
+  //   &.warn {}
+  // }
 }
