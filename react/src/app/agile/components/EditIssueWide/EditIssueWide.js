@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import { stores, axios } from '@choerodon/boot';
 import { withRouter } from 'react-router-dom';
 import { Spin } from 'choerodon-ui';
+import { throttle } from 'lodash';
 import '../EditIssueNarrow/EditIssueNarrow.scss';
 import {
   loadBranchs, loadDatalogs, loadLinkIssues,
@@ -31,6 +32,7 @@ let hasPermission;
     this.state = {
       issueLoading: false,
     };
+    this.container = React.createRef();
   }
 
   componentDidMount() {
@@ -53,6 +55,7 @@ let hasPermission;
         loginUserId = users.id;
         hasPermission = permission[0].approve;
       }));
+    this.setQuery();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -144,6 +147,19 @@ let hasPermission;
     localStorage.setItem('agile.EditIssue.width', `${width}px`);
   }
 
+  setQuery=(width = this.container.current.clientWidth) => {
+    if (width <= 600) {      
+      this.container.current.setAttribute('max-width', '600px');
+    } else {
+      this.container.current.removeAttribute('max-width');
+    }
+  }
+
+  handleResize = throttle(({ width }) => {
+    this.setQuery(width);
+    // console.log(width, parseInt(width / 100) * 100);
+  }, 150)
+
   render() {
     const {
       store,
@@ -195,8 +211,9 @@ let hasPermission;
             height: '100%',
           }}
           onResizeEnd={this.handleResizeEnd}
+          onResize={this.handleResize}
         >
-          <div className="choerodon-modal-editIssue" style={style}>
+          <div className="choerodon-modal-editIssue" style={style} ref={this.container}>
             {
             issueLoading ? (
               <div
