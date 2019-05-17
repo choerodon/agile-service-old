@@ -65,8 +65,7 @@ class BoardHome extends Component {
           <Spin spinning={loading}>
             {activePi.piId ? (
               <Fragment>
-                <BoardBody projects={projects} sprints={sprints} />
-                {featureListVisible && <SideFeatureList />}
+                <BoardBody projects={projects} sprints={sprints} />                
                 <Connectors connections={connections} />
               </Fragment>
             ) : (
@@ -84,6 +83,7 @@ class BoardHome extends Component {
               />
             )}
           </Spin>
+          {featureListVisible && <SideFeatureList />}
         </Content>
       </Page>
     );
