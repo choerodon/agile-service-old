@@ -4,11 +4,11 @@ import {
 } from 'mobx';
 import axios from 'axios';
 import {
-  find, findIndex, max, remove, 
+  find, findIndex, max, remove,
 } from 'lodash';
 import { stores } from '@choerodon/boot';
 import {
-  getBoard, featureToBoard, featureBoardMove, getSideFeatures, createConnection, deleteConnection, deleteFeatureFromBoard, 
+  getBoard, featureToBoard, featureBoardMove, getSideFeatures, createConnection, deleteConnection, deleteFeatureFromBoard,
 } from '../../../api/BoardFeatureApi';
 
 const { AppState } = stores;
@@ -233,7 +233,11 @@ class BoardStore {
       // 拖动到第一个，传第二个的值
       if (index === 0) {
         data.before = true;
-        data.outsetId = dropIssues[1].id;
+        if (dropIssues.length > 1) {
+          data.outsetId = dropIssues[1].id || 0;
+        } else {
+          data.outsetId = 0;
+        }
       } else {
         data.before = false;
         data.outsetId = dropIssues[index - 1].id;
@@ -253,12 +257,15 @@ class BoardStore {
     // console.log(data);
     featureToBoard(data).then((res) => {
       if (res.failed) {
+        this.clearMovingIssue();
         return;
       }
       action(() => {
         dropIssues[insertIndex] = res;
         // console.log(dropIssues);
       })();
+    }).catch((err) => {
+      this.clearMovingIssue();
     });
   }
 
