@@ -13,4 +13,6 @@ import java.util.List;
  */
 public interface BoardDependMapper extends BaseMapper<BoardDependDO> {
     List<BoardDependInfoDTO> queryInfoByPiId(@Param("programId") Long programId, @Param("piId") Long piId);
+
+    void deleteByBoardFeatureId(@Param("programId") Long programId, @Param("boardFeatureId") Long boardFeatureId);
 }

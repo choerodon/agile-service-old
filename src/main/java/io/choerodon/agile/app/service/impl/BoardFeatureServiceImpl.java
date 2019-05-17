@@ -128,13 +128,19 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
 
     @Override
     public BoardFeatureInfoDTO queryInfoById(Long projectId, Long boardFeatureId) {
-        return boardFeatureRepository.queryInfoById(projectId, boardFeatureId);
+        Long organizationId = ConvertUtil.getOrganizationId(projectId);
+        BoardFeatureInfoDTO info = boardFeatureRepository.queryInfoById(projectId, boardFeatureId);
+        Map<Long, IssueTypeDTO> issueTypeMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        info.setIssueTypeDTO(issueTypeMap.get(info.getIssueTypeId()));
+        return info;
     }
 
     @Override
     public void deleteById(Long projectId, Long boardFeatureId) {
         boardFeatureRepository.checkId(projectId, boardFeatureId);
         boardFeatureRepository.delete(boardFeatureId);
+        //删除依赖关系
+        boardDependMapper.deleteByBoardFeatureId(projectId, boardFeatureId);
     }
 
     @Override

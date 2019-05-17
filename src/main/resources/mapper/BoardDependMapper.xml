@@ -11,7 +11,8 @@
         <id property="programId" column="program_id"/>
 
         <id property="objectVersionNumber" column="object_version_number"/>
-        <association property="boardFeature" columnPrefix="origin_" javaType="io.choerodon.agile.api.dto.BoardFeatureInfoDTO">
+        <association property="boardFeature" columnPrefix="origin_"
+                     javaType="io.choerodon.agile.api.dto.BoardFeatureInfoDTO">
             <id property="id" column="id"/>
             <result property="featureId" column="feature_id"/>
             <result property="sprintId" column="sprint_id"/>
@@ -20,7 +21,8 @@
             <result property="rank" column="rank"/>
             <result property="programId" column="program_id"/>
         </association>
-        <association property="dependBoardFeature" columnPrefix="depend_" javaType="io.choerodon.agile.api.dto.BoardFeatureInfoDTO">
+        <association property="dependBoardFeature" columnPrefix="depend_"
+                     javaType="io.choerodon.agile.api.dto.BoardFeatureInfoDTO">
             <id property="id" column="id"/>
             <result property="featureId" column="feature_id"/>
             <result property="sprintId" column="sprint_id"/>
@@ -53,4 +55,11 @@
         WHERE bd.program_id = #{programId}
         AND bd.pi_id = #{piId}
     </select>
+
+    <delete id="deleteByBoardFeatureId">
+        delete from agile_board_depend
+        where program_id = #{programId}
+        AND (board_feature_id = #{boardFeatureId}
+        OR depend_board_feature_id = #{boardFeatureId})
+    </delete>
 </mapper>
