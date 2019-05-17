@@ -35,7 +35,7 @@ import VisibleStore from '../../../../../../../stores/common/visible/VisibleStor
             <div className="c7n-title-right" style={{ marginLeft: '14px', position: 'relative' }}>
               <Button className="leftBtn" funcType="flat" onClick={() => VisibleStore.setDetailShow(!detailShow)}>
                 <Icon type={detailShow ? 'arrow_drop_down' : 'baseline-arrow_left'} style={{ marginRight: 2 }} />
-                <span>{detailShow ? '隐藏详情' : '显示详情'}</span>
+                <span>{detailShow ? '隐藏更多' : '显示更多'}</span>
               </Button>              
             </div>
           </div>
