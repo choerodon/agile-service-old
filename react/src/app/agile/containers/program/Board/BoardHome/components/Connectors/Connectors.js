@@ -172,7 +172,7 @@ class Connectors extends Component {
   checkIsWarn=({ from, to }) => from.sprintIndex <= to.sprintIndex
 
   render() {
-    const { connections } = this.props;    
+    const { connections } = BoardStore;    
     return (
       <svg
         className="c7nagile-Connectors"

@@ -7,6 +7,48 @@
   flex: 1;
   position: relative;
 
+  &-divider {
+    position: relative;
+    box-sizing: border-box;
+    background: padding-box rgb(122, 134, 154);
+    opacity: 0.2;
+    height: 100%;
+    width: 11px;
+    margin: 0 -4px;
+    border-left: 5px solid rgba(255, 255, 255, 0);
+    border-right: 5px solid rgba(255, 255, 255, 0);
+    cursor: col-resize;
+
+    &:before,
+    &:after {
+      content: "";
+      display: block;
+      position: absolute;
+      background: white;
+    }
+
+    &:before {
+      top: calc(50% - 13px);
+      margin-top: 7px;
+      margin-bottom: 7px;
+      height: 26px;
+      left: -2px;
+      width: 3px;
+      background: rgb(255, 255, 255);
+    }
+
+    &:after {
+      top: calc(50% - 6px);
+      margin-top: 7px;
+      margin-bottom: 7px;
+      height: 12px;
+      left: -1px;
+      width: 2px;
+      border-left: 1px solid rgb(122, 134, 154);
+      border-right: 1px solid rgb(122, 134, 154);
+    }
+  }
+
   &[max-width~="600px"] {
     #detail {
       .line-start {

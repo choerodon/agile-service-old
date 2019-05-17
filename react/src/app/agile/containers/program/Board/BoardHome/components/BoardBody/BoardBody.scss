@@ -1,7 +1,8 @@
 .c7nagile-BoardBody {
+  margin: -1px 0 0 -1px;
   table {
     table-layout: fixed;
-
+    position: relative;
     th,
     td {
       border: 1px solid #D8D8D8;
@@ -9,6 +10,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      background: rgb(245, 245, 245);
     }
 
     thead {
@@ -16,7 +18,7 @@
         height: 40px;
         position: sticky;
         top: 0;
-        z-index: 2;
+        z-index: 6;
         border-top: none !important;
         border-bottom: none !important;
         box-shadow:
@@ -26,7 +28,7 @@
 
         &:first-child {
           left: 0;
-          z-index: 3;
+          z-index: 7;
           padding-left: 1px;
           padding-right: 1px;
           border-right: none;
@@ -56,7 +58,7 @@
           vertical-align: middle;
           position: sticky;
           left: 0;
-          z-index: 2;
+          z-index: 6;
           padding: 0 1px;
           box-shadow: inset -1px 0 0 #D8D8D8;
           border-right: none !important;

@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
-import { find } from 'lodash';
-import { ColumnWidth, CardHeight, CardMargin } from '../Constants';
+import { ColumnWidth } from '../Constants';
 import BoardStore from '../../../../../../stores/program/Board/BoardStore';
 import Connectors from '../Connectors';
 import Cell from './Cell';
@@ -57,6 +56,7 @@ class BoardBody extends Component {
               })
             }
           </tbody>
+          <Connectors />
         </table>
         {resizing && (
           <div style={{
@@ -69,8 +69,7 @@ class BoardBody extends Component {
             cursor: 'col-resize',
           }}
           />
-        )}
-        {/* <Connectors connections={[]} /> */}
+        )}      
       </div>
     );
   }

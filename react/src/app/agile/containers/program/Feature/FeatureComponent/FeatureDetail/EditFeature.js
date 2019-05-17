@@ -161,6 +161,7 @@ let hasPermission;
           onResize={this.handleResize}
         >
           <div className="choerodon-modal-editIssue" style={style} ref={this.container}>
+            <div className="choerodon-modal-editIssue-divider" />
             {
           issueLoading ? (
             <div

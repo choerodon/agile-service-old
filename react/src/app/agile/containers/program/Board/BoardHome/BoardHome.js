@@ -34,7 +34,7 @@ class BoardHome extends Component {
 
   render() {
     const {
-      projects, sprints, connections, featureListVisible, activePi, loading,
+      projects, sprints, featureListVisible, activePi, loading,
     } = BoardStore;
 
     return (
@@ -65,8 +65,7 @@ class BoardHome extends Component {
           <Spin spinning={loading}>
             {activePi.piId ? (
               <Fragment>
-                <BoardBody projects={projects} sprints={sprints} />                
-                <Connectors connections={connections} />
+                <BoardBody projects={projects} sprints={sprints} /> 
               </Fragment>
             ) : (
               <Empty

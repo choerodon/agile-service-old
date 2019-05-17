@@ -188,7 +188,7 @@ class EditIssueNarrow extends Component {
         top: 0,
         height: '100%',
         zIndex: 101,
-        overflow: 'hidden',
+        overflow: 'visible',
       }}
       >
         <ResizeAble
@@ -207,7 +207,7 @@ class EditIssueNarrow extends Component {
           onResize={this.handleResize}
         >
           <div className="choerodon-modal-editIssue" style={style} ref={this.container}>
-            {/* <div className="choerodon-modal-editIssue-divider" /> */}
+            <div className="choerodon-modal-editIssue-divider" />
             {
               issueLoading ? (
                 <div
