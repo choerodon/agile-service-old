@@ -23,9 +23,8 @@ class FeatureItem extends Component {
       connectDragSource(
         connectDropTarget(
           <div className={preFix}>
-            {/* <TypeTag data={issueTypeDTO} featureType={featureType} /> */}
-            <span style={{ color: '#3F51B5', marginRight: 10 }}>{issueNum}</span>
-            
+            <TypeTag data={issueTypeDTO} featureType={featureType} />
+            <span style={{ color: '#3F51B5', margin: '0 10px' }}>{issueNum}</span>            
             <div className={`${preFix}-summary`}>
               <Tooltip title={summary}>
                 {summary}
@@ -61,7 +60,7 @@ export default DropTarget(
       endDrag(props, monitor) {
         const source = monitor.getItem();
         const didDrop = monitor.didDrop();
-        console.log(source, monitor.getDropResult());
+        // console.log(source, monitor.getDropResult());
         const result = monitor.getDropResult();
         if (result) {
           const {

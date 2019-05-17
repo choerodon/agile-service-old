@@ -25,9 +25,19 @@ export function featureToBoard(data) {
 export function featureBoardMove(id, data) {
   return axios.put(`/agile/v1/projects/${getProjectId()}/board_feature/${id}`, data);
 }
+
+export function deleteFeatureFromBoard(id) {
+  return axios.delete(`/agile/v1/projects/${getProjectId()}/board_feature/${id}`);
+}
 export function changeSprintWidth(sprintId, columnWidth) {
   return axios.get(`/agile/v1/projects/${getProjectId()}/board_sprint_attr/update?sprintId=${sprintId}&columnWidth=${columnWidth}`);
 }
 export function getSideFeatures(piId, searchDTO) {
   return axios.post(`/agile/v1/projects/${getProjectId()}/issues/program/query_by_pi_id?piId=${piId}&organizationId=${getOrganizationId()}`, searchDTO);
+}
+export function createConnection(createDTO) {
+  return axios.post(`/agile/v1/projects/${getProjectId()}/board_depend`, createDTO);
+}
+export function deleteConnection(boardDependId) {
+  return axios.delete(`/agile/v1/projects/${getProjectId()}/board_depend/${boardDependId}`);
 }

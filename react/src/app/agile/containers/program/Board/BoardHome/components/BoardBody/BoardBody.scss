@@ -6,7 +6,6 @@
     td {
       border: 1px solid #D8D8D8;
       text-align: center;
-      background: white;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -36,7 +35,8 @@
             inset 0 -1px 0 #D8D8D8,
             inset -1px 0 0 #D8D8D8;
         }
-        &:nth-of-type(2){
+
+        &:nth-of-type(2) {
           border-left: none !important;
         }
       }
@@ -44,7 +44,7 @@
 
     tbody {
       &:nth-of-type(1) tr:nth-of-type(1) td {
-        border-top: none !important;        
+        border-top: none !important;
       }
 
       td {
@@ -61,7 +61,8 @@
           box-shadow: inset -1px 0 0 #D8D8D8;
           border-right: none !important;
         }
-        &:nth-of-type(2){
+
+        &:nth-of-type(2) {
           border-left: none !important;
         }
       }

@@ -1,24 +1,52 @@
+/* eslint-disable consistent-return */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Tooltip, Icon, Popconfirm } from 'choerodon-ui';
 import { find } from 'lodash';
 import { observer } from 'mobx-react';
 import { DragSource, DropTarget } from 'react-dnd';
+import TypeTag from '../../../../../../components/TypeTag';
 import { CardHeight, CardWidth, CardMargin } from '../Constants';
 import BoardStore from '../../../../../../stores/program/Board/BoardStore';
 import './IssueCard.scss';
 
-
 @observer
 class IssueCard extends Component {
+  handleSelect = (e) => {
+    e.stopPropagation();
+    const { issue } = this.props;
+    BoardStore.setClickIssue(issue);
+  }
+
+  handleMouseUp = () => {
+    if (BoardStore.addingConnection) {
+      const { issue } = this.props;
+      BoardStore.createConnection(issue);
+      // console.log(this.props.issue, BoardStore.clickIssue);
+    }
+  }
+
+  handleDelete = (e) => {
+    e.stopPropagation();
+    const { issue } = this.props; 
+    BoardStore.deleteFeatureFromBoard(issue);
+  }
+
   render() {
     const {
       issue, isDragging, connectDragSource, connectDropTarget,
     } = this.props;
     const opacity = isDragging ? 0 : 1;
+    const {
+      issueTypeDTO, summary, issueNum, featureType,
+    } = issue;
     return (
       connectDragSource(
         connectDropTarget(
           <div
+            role="none"
+            onClick={this.handleSelect}
+            onMouseUp={this.handleMouseUp}
             style={{
               // opacity, 
               height: CardHeight,
@@ -27,9 +55,26 @@ class IssueCard extends Component {
             }}
             className="c7nagile-IssueCard"
           >
-            <div className="c7nagile-IssueCard-inner">
-              {issue.summary}
+            <div role="none" className="c7nagile-IssueCard-top" onClick={(e) => { e.stopPropagation(); }}>
+              <TypeTag data={issueTypeDTO} featureType={featureType} />
+              <span className="c7nagile-IssueCard-top-issueNum">
+                {issueNum}
+              </span>
+              <Popconfirm
+                title="确认要移除此特性吗?"  
+                onConfirm={this.handleDelete} 
+                okText="确定"
+                cancelText="取消"
+              >
+                <Icon className="c7nagile-IssueCard-top-delete" type="delete" />
+              </Popconfirm>
+              
             </div>
+            <Tooltip title={summary}>
+              <div className="c7nagile-IssueCard-summary">
+                {summary}
+              </div>
+            </Tooltip>
           </div>,
         ),
       )
@@ -53,8 +98,7 @@ export default DropTarget(
       return true;
     },
     drop(props, monitor, component) {
-      console.log(props, monitor.getDropResult(), component);
-      console.log(monitor.canDrop());
+      // console.log(monitor.canDrop());
       if (!monitor.canDrop()) {
         return;
       }
@@ -66,14 +110,14 @@ export default DropTarget(
       };
     },
     hover(props, monitor) {
-      console.log(monitor.canDrop());
-      if (!monitor.canDrop()) {
+      // console.log(monitor.canDrop());
+      if (!monitor.canDrop() || !monitor.isOver({ shallow: true })) {
         return;
       }
       const source = monitor.getItem();
-      const { issue: { id } } = props;
+      const { issue: { id, featureId } } = props;
       // console.log(source.boardFeatureId, boardFeatureId);
-      if (source.id !== id) {
+      if (source.id !== id && source.issue.issueId !== featureId && source.issue.featureId !== featureId) {
         props.moveCard(source, {
           index: props.index,
           sprintId: props.sprintId,

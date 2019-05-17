@@ -492,10 +492,9 @@ class KanbanStore {
     this.clickedIssue = false;
     // this.swimlaneBasedCode = null;
     this.quickSearchObj = {
-      onlyMe: false,
-      onlyStory: false,
-      quickSearchArray: [],
-      assigneeFilterIds: [],
+      advancedSearchArgs: {
+        featureTypeList: [],
+      },
     };
     this.currentSprintExist = false;
   }
@@ -669,7 +668,7 @@ class KanbanStore {
 
   // eslint-disable-next-line consistent-return
   axiosGetBoardDataBySetting(boardId) {
-    return loadBoardData(boardId);
+    return loadBoardData(boardId, this.quickSearchObj);
   }
 
   axiosGetBoardData(boardId) {

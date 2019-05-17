@@ -1,16 +1,20 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
+import { Link } from 'react-router-dom';
 import {
   Page, Header, stores, Content,
 } from '@choerodon/boot';
 import { Button, Spin } from 'choerodon-ui';
 import { DragDropContextProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import Empty from '../../../../components/Empty';
 import BoardStore from '../../../../stores/program/Board/BoardStore';
 import Connectors from './components/Connectors';
 import BoardBody from './components/BoardBody';
 import SideFeatureList from './components/SideFeatureList';
+import noPI from '../../../../assets/noPI.svg';
+import { artListLink } from '../../../../common/utils';
 import './BoardHome.scss';
 
 
@@ -30,7 +34,7 @@ class BoardHome extends Component {
 
   render() {
     const {
-      projects, sprints, connections, featureListVisible, activePi,
+      projects, sprints, connections, featureListVisible, activePi, loading,
     } = BoardStore;
 
     return (
@@ -44,18 +48,42 @@ class BoardHome extends Component {
           >
             刷新
           </Button>
-          <Button
-            disabled={!activePi.piId}
-            icon="refresh"
-            onClick={this.handleClickFeatureList}
-          >
-            特性列表
-          </Button>
+          <div style={{ flex: 1, visibility: 'hidden' }} />
+          {activePi.piId && (
+            <Button
+              type="primary"
+              funcType="raised"
+              style={{ color: 'white', marginRight: 30 }}
+              icon="view_module"
+              onClick={this.handleClickFeatureList}
+            >
+              特性列表
+            </Button>
+          )}
         </Header>
         <Content style={{ padding: 0 }}>
-          <BoardBody projects={projects} sprints={sprints} />
-          {featureListVisible && <SideFeatureList />}
-          <Connectors connections={connections} />
+          <Spin spinning={loading}>
+            {activePi.piId ? (
+              <Fragment>
+                <BoardBody projects={projects} sprints={sprints} />
+                {featureListVisible && <SideFeatureList />}
+                <Connectors connections={connections} />
+              </Fragment>
+            ) : (
+              <Empty
+                style={{ marginTop: 60 }}
+                pic={noPI}
+                title="没有进行中的敏捷发布火车"
+                description={(
+                  <Fragment>
+                      这是您的项目公告板。如果您想看到具体的PI计划，可以先到
+                    <Link to={artListLink()}>ART设置</Link>
+                      创建开启火车。
+                  </Fragment>
+                  )}
+              />
+            )}
+          </Spin>
         </Content>
       </Page>
     );

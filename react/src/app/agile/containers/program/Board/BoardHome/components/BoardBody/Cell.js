@@ -205,7 +205,7 @@ class Cell extends Component {
     const {
       type, issue, originalIndex, id,
     } = source;
-    console.log(source, target);
+    // console.log(source, target);
     if (type === 'side') {
       BoardStore.addIssueToBoard({
         issue,
@@ -228,7 +228,7 @@ class Cell extends Component {
   dropCard = (source, target) => {
     const { projectIndex, sprintIndex } = this.props;
     const { issue, originalIndex, id } = source;
-    console.log(source, target);
+    // console.log(source, target);
     BoardStore.dropIssue({
       projectIndex,
       sprintIndex,
@@ -244,7 +244,7 @@ class Cell extends Component {
 
     const issue = find(issues, { issueId: id });
     const index = findIndex(issues, { issueId: id });
-    console.log(id, issue, index);
+    // console.log(id, issue, index);
     return {
       issue,
       index,
@@ -261,19 +261,20 @@ class Cell extends Component {
     const { resizing } = this.state;
     return (
       connectDropTarget(
-        <div className="c7nagile-Cell" style={{ width: ColumnWidth * columnWidth, minHeight: CardHeight + CardMargin * 2 }}>
-          {issues.map((issue, i) => (
-            <IssueCard
-              index={i}
-              issue={issue}
-              issues={issues}
-              sprintId={sprintId}
-              projectId={project.projectId}
-              findCard={this.findCard}
-              moveCard={this.moveCard}
-            />
-          ))}
-          {resizing && (
+        <td>
+          <div className="c7nagile-Cell" style={{ width: ColumnWidth * columnWidth, minHeight: CardHeight + CardMargin * 2 }}>
+            {issues.map((issue, i) => (
+              <IssueCard
+                index={i}
+                issue={issue}
+                issues={issues}
+                sprintId={sprintId}
+                projectId={project.projectId}
+                findCard={this.findCard}
+                moveCard={this.moveCard}
+              />
+            ))}
+            {resizing && (
             <div style={{
               position: 'fixed',
               top: 0,
@@ -284,21 +285,22 @@ class Cell extends Component {
               cursor: 'col-resize',
             }}
             />
-          )}
-          <div
-            style={{
-              top: 0,
-              height: '100%',
-              width: 20,
-              position: 'absolute',
-              zIndex: 2,
-              cursor: 'col-resize',
-              right: -10,
-            }}
-            onMouseDown={this.handleMouseDown.bind(this, 'right')}
-            role="none"
-          />
-        </div>,
+            )}
+            <div
+              style={{
+                top: 0,
+                height: '100%',
+                width: 20,
+                position: 'absolute',
+                zIndex: 2,
+                cursor: 'col-resize',
+                right: -10,
+              }}
+              onMouseDown={this.handleMouseDown.bind(this, 'right')}
+              role="none"
+            />
+          </div>
+        </td>,
       )
     );
   }
@@ -316,6 +318,21 @@ export default DropTarget('card', {
       return false;
     }
     return true;
+  },
+  hover(props, monitor, component) {
+    // console.log(monitor.canDrop()); 
+    if (!monitor.canDrop() || !monitor.isOver({ shallow: true })) {
+      return;
+    }
+    const source = monitor.getItem();
+    const { data: { boardFeatures } } = props;
+    if (!find(boardFeatures, { featureId: source.issue.featureId || source.issue.issueId })) {
+      component.moveCard(source, {
+        index: 0,
+        sprintId: props.sprintId,
+        teamProjectId: props.projectId,
+      });
+    }
   },
   drop: (props, monitor, component) => {
     if (monitor.didDrop()) {

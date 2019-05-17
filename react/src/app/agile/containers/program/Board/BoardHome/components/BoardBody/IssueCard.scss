@@ -1,7 +1,39 @@
 .c7nagile-IssueCard {
-  &-inner {
-    border: 1px solid #CCCCCC;
-    // padding: 10px;
-    height: 100%;
+  background: white;
+  text-align: left;
+  padding: 10px;
+  cursor: pointer;
+
+  &-top {
+    display: flex;
+    overflow: hidden;
+    margin-bottom: 10px;
+
+    &-issueNum {
+      color: #3F51B5;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &-delete {
+      display: none;
+    }
+  }
+
+  &:hover &-top-delete {
+
+    display: block;
+  }
+
+  &-summary {
+    height: 40px;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    word-break: break-all;
+    white-space: normal;
   }
 }

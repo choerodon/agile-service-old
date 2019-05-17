@@ -5,6 +5,7 @@ import {
 } from 'lodash';
 import { observer } from 'mobx-react';
 import Connector from './Connector';
+import CreateConnect from './CreateConnect';
 import {
   CardHeight, CardWidth, CardMargin, ColumnMinHeight, ColumnWidth, basePosX, basePosY,
 } from '../Constants';
@@ -38,15 +39,15 @@ class Connectors extends Component {
 
   calulatePoint = (connection) => {
     const { from, to } = connection;
-    
+
     const [fromXAxis, fromYAxis] = this.getAxis(from);
     const [toXAxis, toYAxis] = this.getAxis(to);
-    console.log([fromXAxis, fromYAxis], [toXAxis, toYAxis]);
+    // console.log([fromXAxis, fromYAxis], [toXAxis, toYAxis]);
     const [fromPosition, toPosition] = this.getPositionByAxis({
       fromXAxis, fromYAxis, toXAxis, toYAxis,
     });
-    console.log([fromPosition, toPosition]);
-    console.log([this.getPoint(from, fromPosition), this.getPoint(to, toPosition)]);
+    // console.log([fromPosition, toPosition]);
+    // console.log([this.getPoint(from, fromPosition), this.getPoint(to, toPosition)]);
 
     return {
       from: this.getPoint(from, fromPosition),
@@ -54,7 +55,7 @@ class Connectors extends Component {
     };
   }
 
-  getPositionByAxis=({
+  getPositionByAxis = ({
     fromXAxis, fromYAxis, toXAxis, toYAxis,
   }) => {
     if (fromXAxis === toXAxis) {
@@ -65,28 +66,28 @@ class Connectors extends Component {
       } else {
         return ['bottom', 'top'];
       }
+    } else if (fromXAxis < toXAxis) {
+      if (fromYAxis === toYAxis) {
+        return ['right', 'left'];
+      } else if (fromYAxis > toYAxis) {
+        return ['right', 'left'];
+      } else {
+        return ['right', 'left'];
+      }
     } else if (fromXAxis > toXAxis) {
       if (fromYAxis === toYAxis) {
         return ['left', 'right'];
       } else if (fromYAxis > toYAxis) {
         return ['left', 'right'];
       } else {
-        return ['right', 'right'];
-      }
-    } else if (fromXAxis < toXAxis) {
-      if (fromYAxis === toYAxis) {
-        return ['right', 'left'];
-      } else if (fromYAxis > toYAxis) {
         return ['left', 'right'];
-      } else {
-        return ['right', 'left'];
       }
     }
     return ['bottom', 'top'];
   }
 
   // 获取横纵坐标
-  getAxis=({
+  getAxis = ({
     projectIndex,
     sprintIndex,
     columnIndex,
@@ -135,7 +136,7 @@ class Connectors extends Component {
           x: middleX + CardWidth / 2,
           y: middleY,
         });
-        
+
       default:
         return {
           x: 0,
@@ -154,12 +155,12 @@ class Connectors extends Component {
     const { columnWidth } = sprints[sprintIndex];
     const columnIndex = issueIndex % columnWidth;
     const rowIndex = Math.ceil((issueIndex + 1) / columnWidth) - 1;
-    console.log({
-      projectIndex,
-      sprintIndex,
-      columnIndex,
-      rowIndex,
-    });
+    // console.log({
+    //   projectIndex,
+    //   sprintIndex,
+    //   columnIndex,
+    //   rowIndex,
+    // });
     return {
       projectIndex,
       sprintIndex,
@@ -169,7 +170,7 @@ class Connectors extends Component {
   }
 
   render() {
-    const { connections } = this.props;
+    const { connections } = this.props;    
     return (
       <svg
         className="c7nagile-Connectors"
@@ -187,13 +188,14 @@ class Connectors extends Component {
         // markerMid="url(#arrowhead)" 
         markerEnd="url(#arrowhead)"
       /> */}
+
         <g fill="none" stroke="#BEC4E5" strokeWidth="1.5">
           {
             connections.map((connection) => {
               const fromP = this.getIndex(connection.boardFeature);
               const toP = this.getIndex(connection.dependBoardFeature);
               const { from, to, isToLeft } = this.calulatePoint({ from: fromP, to: toP });
-              return <Connector from={from} to={to} />;
+              return <Connector from={from} to={to} connection={connection} />;
             })
           }
           {/* <Connector
@@ -205,8 +207,10 @@ class Connectors extends Component {
               x: 196,
               y: 120,
             }}
-          /> */}
+          /> */}    
+            
         </g>
+        <CreateConnect getIndex={this.getIndex} getPoint={this.getPoint} />  
         <defs>
           <marker
             id="arrowhead"
@@ -231,7 +235,7 @@ class Connectors extends Component {
             orient="auto"
           >
             <circle cx="6" cy="6" r="3" />
-          </marker>
+          </marker>         
         </defs>
 
       </svg>

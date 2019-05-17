@@ -4,9 +4,19 @@
   height: 100%;
   top: 0;
   left: 0;
+  z-index: 3;
   pointer-events: none;
 
   path {
     pointer-events: stroke;
+  }
+
+  line {
+    pointer-events: stroke;
+  }
+
+  circle,
+  marker {
+    pointer-events: all;
   }
 }

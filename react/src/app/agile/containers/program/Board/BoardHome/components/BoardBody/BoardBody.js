@@ -4,19 +4,21 @@ import { observer } from 'mobx-react';
 import { find } from 'lodash';
 import { ColumnWidth, CardHeight, CardMargin } from '../Constants';
 import BoardStore from '../../../../../../stores/program/Board/BoardStore';
-
+import Connectors from '../Connectors';
 import Cell from './Cell';
 import './BoardBody.scss';
 
-
-const dataMap = new Map([[1, new Map([[2, new Map([[3, []]])]])]]);
 @observer
 class BoardBody extends Component {
+  handleClick=() => {
+    BoardStore.setClickIssue({});
+  }
+
   render() {
     const { resizing, activePi } = BoardStore;
     const { sprints, projects } = this.props;
     return (
-      <div className="c7nagile-BoardBody">
+      <div role="none" className="c7nagile-BoardBody" onClick={this.handleClick}>
         <table>
           <thead>
             <tr>
@@ -40,17 +42,15 @@ class BoardBody extends Component {
                     >          
                       {projectName}
                     </td>
-                    {teamSprints.map((sprint, j) => (
-                      <td>
-                        <Cell
-                          project={project}
-                          data={sprint}
-                          sprintIndex={j}
-                          projectIndex={i}
-                          sprintId={sprint.sprintId}
-                          teamProjectId={project.projectId}
-                        />
-                      </td>
+                    {teamSprints.map((sprint, j) => (                  
+                      <Cell
+                        project={project}
+                        data={sprint}
+                        sprintIndex={j}
+                        projectIndex={i}
+                        sprintId={sprint.sprintId}
+                        teamProjectId={project.projectId}
+                      />               
                     ))}
                   </tr>
                 );
@@ -70,6 +70,7 @@ class BoardBody extends Component {
           }}
           />
         )}
+        {/* <Connectors connections={[]} /> */}
       </div>
     );
   }
