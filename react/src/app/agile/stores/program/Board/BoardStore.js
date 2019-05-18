@@ -354,7 +354,7 @@ class BoardStore {
       } else {
         this.addConnection({
           ...res,
-          boardFeature: this.clickIssue,
+          boardFeature: toJS(this.clickIssue),
           dependBoardFeature: toIssue,
         });
         this.setClickIssue({});
