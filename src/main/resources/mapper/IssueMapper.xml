@@ -3335,6 +3335,7 @@
         (select
         ai.issue_id as issue_id,
         CONCAT(api.project_code,'-', ai.issue_num) as issue_num,
+        ai.summary as summary,
         ai.issue_type_id as issue_type_id,
         ai.status_id as status_id,
         ai.epic_id as epic_id,
@@ -3344,6 +3345,11 @@
         from agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         where ai.program_id = #{programId} and ai.type_code in ('feature', 'issue_epic')
+        <if test="searchDTO.searchArgs != null">
+            <if test='searchDTO.searchArgs.summary != null and searchDTO.searchArgs.summary != "" '>
+                AND position(#{searchDTO.searchArgs.summary} IN ai.summary)
+            </if>
+        </if>
         <if test='searchDTO.advancedSearchArgs != null'>
             <if test='searchDTO.advancedSearchArgs.statusList != null and searchDTO.advancedSearchArgs.statusList.size > 0'>
                 and ai.status_id in
