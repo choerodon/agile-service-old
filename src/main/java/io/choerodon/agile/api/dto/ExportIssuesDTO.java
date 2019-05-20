@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created by jian_zhang02@163.com on 2018/6/12.
@@ -108,6 +109,9 @@ public class ExportIssuesDTO {
 
     @ApiModelProperty(value = "resolution")
     private String resolution;
+
+    @ApiModelProperty(value = "自定义字段kv")
+    private Map<String, String> foundationFieldValue;
 
     public String getAssigneeRealName() {
         return assigneeRealName;
@@ -371,5 +375,13 @@ public class ExportIssuesDTO {
 
     public void setLabelName(String labelName) {
         this.labelName = labelName;
+    }
+
+    public Map<String, String> getFoundationFieldValue() {
+        return foundationFieldValue;
+    }
+
+    public void setFoundationFieldValue(Map<String, String> foundationFieldValue) {
+        this.foundationFieldValue = foundationFieldValue;
     }
 }

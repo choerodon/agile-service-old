@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.common.utils;
 
 import io.choerodon.core.exception.CommonException;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -251,23 +252,42 @@ public class ExcelUtil {
 
     private static <T> void handleWriteCell(SXSSFRow row, int i, int j, List<T> list, CellStyle cellStyle, String[] fields, Class<T> clazz) {
         SXSSFCell cell = row.createCell(i);
-        try {
-            cell.setCellStyle(cellStyle);
-            if (list.get(j) != null) {
-                Object invoke = clazz.getMethod(createGetter(fields[i])).invoke(list.get(j));
-                if (invoke instanceof Date) {
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    cell.setCellValue(formatter.format(invoke));
-                } else {
-                    String str = invoke == null ? null : invoke.toString();
-                    cell.setCellValue(str);
+        cell.setCellStyle(cellStyle);
+        if (list.get(j) != null) {
+            Method method = null;
+            try {
+                method = clazz.getMethod(createGetter(fields[i]));
+            } catch (NoSuchMethodException e) {
+                LOGGER.debug(e.getMessage());
+                try {
+                    method = clazz.getMethod("getFoundationFieldValue");
+                } catch (NoSuchMethodException e1) {
+                    LOGGER.error(EXCEPTION, e1);
                 }
-            } else {
-                cell.setCellValue("");
             }
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            LOGGER.error(EXCEPTION, e);
+            Object invoke = new Object();
+            try {
+                invoke = method.invoke(list.get(j));
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                LOGGER.error(EXCEPTION, e);
+            }
+            if (invoke instanceof Date) {
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                cell.setCellValue(formatter.format(invoke));
+            } else if (invoke instanceof Map) {
+                ObjectMapper m = new ObjectMapper();
+                Map<String, String> foundationFieldValue = m.convertValue(invoke, Map.class);
+
+                String str = foundationFieldValue.get(fields[i]) != null ? foundationFieldValue.get(fields[i]) : "";
+                cell.setCellValue(str);
+            } else {
+                String str = invoke == null ? null : invoke.toString();
+                cell.setCellValue(str);
+            }
+        } else {
+            cell.setCellValue("");
         }
+
     }
 
 
@@ -360,7 +380,7 @@ public class ExcelUtil {
             cell = row.createCell(0);
             cell.setCellValue(datas.get(i));
         }
-        XSSFDataValidationHelper dvHelper = new XSSFDataValidationHelper((XSSFSheet)realSheet);
+        XSSFDataValidationHelper dvHelper = new XSSFDataValidationHelper((XSSFSheet) realSheet);
         XSSFDataValidationConstraint dvConstraint = (XSSFDataValidationConstraint) dvHelper.createFormulaListConstraint(hiddenSheetName + "!$A$1:$A" + datas.size());
         CellRangeAddressList addressList = null;
         XSSFDataValidation validation = null;
