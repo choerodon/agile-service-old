@@ -3439,7 +3439,11 @@
                  close=")">
             #{issueId}
         </foreach>
-        order by ai.issue_id desc
+        order by CASE ai.issue_id
+        <foreach collection="issueIds" item="issueId" index="index">
+            when #{issueId} then #{index}
+        </foreach>
+        END
     </select>
 
     <select id="selectFeatureByMoveIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
