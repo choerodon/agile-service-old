@@ -1,7 +1,5 @@
 package io.choerodon.agile.app.service.impl;
 
-import static org.bouncycastle.asn1.x500.style.RFC4519Style.o;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
