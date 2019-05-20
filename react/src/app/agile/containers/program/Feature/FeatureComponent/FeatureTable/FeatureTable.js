@@ -166,7 +166,7 @@ const getColumns = (filters, getFilteredValue) => ([
 class FeatureTable extends Component {
   getFilteredValue=(key) => {
     const { searchDTO } = this.props;
-    if (key === 'contents') {
+    if (key === 'contents') {      
       return searchDTO.contents || [];
     }
     let field = '';

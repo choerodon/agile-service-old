@@ -126,7 +126,7 @@ class BoardStore {
     this.setHeightLightIssueAndConnection({ connection: clickConnection });
   }
 
-  @action clearSelect() { 
+  @action clearSelect() {
     this.clickIssue = {};
     this.clickConnection = {};
     this.setHeightLightIssueAndConnection();
@@ -145,7 +145,7 @@ class BoardStore {
             issues.push(conn.boardFeature);
           }
         }
-      });     
+      });
       this.heightLightIssueAndConnection.issues = issues;
       this.heightLightIssueAndConnection.connections = connections;
     } else if (connection && connection.id) {
@@ -352,7 +352,7 @@ class BoardStore {
       // eslint-disable-next-line no-lonely-if
       if (dropIssues.length > 0) {
         data.before = false;
-        data.outsetId = dropIssues[dropIssues.length - 1].id;
+        data.outsetId = dropIssues[dropIssues.length - 2] ? dropIssues[dropIssues.length - 2].id : dropIssues[dropIssues.length - 1].id;
         insertIndex = dropIssues.length - 1;
       } else {
         data.before = true;
@@ -400,7 +400,7 @@ class BoardStore {
       this.setLoading(false);
       if (res.failed) {
         Choerodon.prompt('创建连接失败');
-      } else {       
+      } else {
         this.addConnection({
           ...res,
           boardFeature: clickIssue,

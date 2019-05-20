@@ -21,7 +21,7 @@ const getDefaultSearchDTO = () => ({
     reporterList: [],
     epicList: [],
   },
-  contents: '',
+  contents: [],
   otherArgs: {
     piList: [],
   },
@@ -62,8 +62,10 @@ const filterConvert = (filters, originSearchDTO = getDefaultSearchDTO(), barFilt
         break;
     }
   });
-  if (barFilters && barFilters.length > 0) {
-    setArgs('contents', barFilters[0]);
+  if (barFilters) {
+    Object.assign(searchDTO, {
+      contents: barFilters,
+    });
   }
   return searchDTO;
 };
@@ -266,8 +268,8 @@ class QueryMode extends Component {
   }
 
   handleTableChange = (pagination, filters, sorter, barFilters) => {
-    this.filters = { ...this.filters, ...filters };
-    const searchDTO = filterConvert(filters, this.state.searchDTO, barFilters);
+    this.filters = { ...this.filters, ...filters };  
+    const searchDTO = filterConvert(filters, this.state.searchDTO, barFilters || []);
     const newSorter = this.sortConvert(sorter);
     this.loadFeatures({ searchDTO, pagination, sorter: newSorter });
     this.setState({

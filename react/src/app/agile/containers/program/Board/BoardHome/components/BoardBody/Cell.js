@@ -342,9 +342,9 @@ export default DropTarget('card', {
     }
     const source = monitor.getItem();
     const { data: { boardFeatures } } = props;
-    if (!find(boardFeatures, { featureId: source.issue.featureId || source.issue.issueId })) {
+    if (monitor.canDrop()) {
       component.moveCard(source, {
-        index: 0,
+        index: boardFeatures.length - 1,
         sprintId: props.sprintId,
         teamProjectId: props.projectId,
       });
@@ -354,10 +354,12 @@ export default DropTarget('card', {
     if (monitor.didDrop()) {
       return;
     }
+    const { data: { boardFeatures } } = props;
     return {
       dropType: 'outer',
       teamProjectId: props.teamProjectId,
       sprintId: props.sprintId,
+      index: boardFeatures.length - 1,
     };
   },
 }, connect => ({

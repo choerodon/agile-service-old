@@ -161,7 +161,9 @@ export default DropTarget(
         projectId: props.projectId,
       }),
       endDrag(props, monitor, component) {
-        component.resetZIndex();
+        if (component && component.resetZIndex) {
+          component.resetZIndex();
+        }        
         const source = monitor.getItem();
         const didDrop = monitor.didDrop();
         const result = monitor.getDropResult();
