@@ -3334,7 +3334,7 @@
         select issue_page.issue_id from
         (select
         ai.issue_id as issue_id,
-        ai.issue_num as issue_num,
+        CONCAT(api.project_code,'-', ai.issue_num) as issue_num,
         ai.issue_type_id as issue_type_id,
         ai.status_id as status_id,
         ai.epic_id as epic_id,
@@ -3342,6 +3342,7 @@
         ai.creation_date as creation_date,
         ai.story_points as story_points
         from agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         where ai.program_id = #{programId} and ai.type_code in ('feature', 'issue_epic')
         <if test='searchDTO.advancedSearchArgs != null'>
             <if test='searchDTO.advancedSearchArgs.statusList != null and searchDTO.advancedSearchArgs.statusList.size > 0'>
@@ -3402,7 +3403,17 @@
                 </foreach>
                 )
             </if>
-        </if>) issue_page
+        </if>) issue_page where 1=1
+        <if test='searchDTO.searchArgs != null'>
+            <if test='searchDTO.searchArgs.issueNum != null and searchDTO.searchArgs.issueNum != ""'>
+                AND position(#{searchDTO.searchArgs.issueNum} IN issue_page.issue_num)
+            </if>
+        </if>
+        <if test='searchDTO.contents != null and searchDTO.contents.size != 0'>
+            <foreach collection="searchDTO.contents" item="content" index="index">
+                AND (issue_page.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR issue_page.summary LIKE CONCAT(CONCAT('%', #{content}), '%'))
+            </foreach>
+        </if>
     </select>
 
     <select id="selectFeatureList" resultMap="featureListMap">
