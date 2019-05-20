@@ -2,7 +2,9 @@ package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.assembler.*;
@@ -17,6 +19,7 @@ import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.feign.FoundationFeignClient;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
@@ -36,6 +39,7 @@ import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -44,6 +48,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -154,6 +159,10 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private InstanceFeignClient instanceFeignClient;
     @Autowired
+    private FoundationFeignClient foundationFeignClient;
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+    @Autowired
     private StateMachineService stateMachineService;
     @Autowired
     private DataLogRedisUtil dataLogRedisUtil;
@@ -226,6 +235,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String FEATURE_TYPE_ENABLER = "enabler";
 
     private ModelMapper modelMapper = new ModelMapper();
+    private static final String SCHEME_CODE = "agile_issue";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -1539,7 +1549,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response, Long organizationId) {
         //处理根据界面筛选结果导出的字段
-        Map<String, String[]> fieldMap = handleExportFields(searchDTO.getExportFieldCodes());
+        Map<String, String[]> fieldMap = handleExportFields(searchDTO.getExportFieldCodes(), projectId, organizationId);
         String[] fieldCodes = fieldMap.get(FIELD_CODES);
         String[] fieldNames = fieldMap.get(FIELD_NAMES);
 
@@ -1568,12 +1578,14 @@ public class IssueServiceImpl implements IssueService {
                 Map<Long, List<VersionIssueRelDO>> influenceVersionNames = issueMapper.queryVersionNameByIssueIds(projectId, issueIds, INFLUENCE_RELATION_TYPE).stream().collect(Collectors.groupingBy(VersionIssueRelDO::getIssueId));
                 Map<Long, List<LabelIssueRelDO>> labelNames = issueMapper.queryLabelIssueByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(LabelIssueRelDO::getIssueId));
                 Map<Long, List<ComponentIssueRelDO>> componentMap = issueMapper.queryComponentIssueByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(ComponentIssueRelDO::getIssueId));
+                Map<Long, Map<String, String>> foundationCodeValue = foundationFeignClient.queryFieldValueWithIssueIds(organizationId, projectId, issueIds).getBody();
                 exportIssues.forEach(exportIssue -> {
                     String closeSprintName = closeSprintNames.get(exportIssue.getIssueId()) != null ? closeSprintNames.get(exportIssue.getIssueId()).stream().map(SprintNameDO::getSprintName).collect(Collectors.joining(",")) : "";
                     String fixVersionName = fixVersionNames.get(exportIssue.getIssueId()) != null ? fixVersionNames.get(exportIssue.getIssueId()).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(",")) : "";
                     String influenceVersionName = influenceVersionNames.get(exportIssue.getIssueId()) != null ? influenceVersionNames.get(exportIssue.getIssueId()).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(",")) : "";
                     String labelName = labelNames.get(exportIssue.getIssueId()) != null ? labelNames.get(exportIssue.getIssueId()).stream().map(LabelIssueRelDO::getLabelName).collect(Collectors.joining(",")) : "";
                     String componentName = componentMap.get(exportIssue.getIssueId()) != null ? componentMap.get(exportIssue.getIssueId()).stream().map(ComponentIssueRelDO::getName).collect(Collectors.joining(",")) : "";
+                    Map<String, String> fieldValue = foundationCodeValue.get(exportIssue.getIssueId()) != null ? foundationCodeValue.get(exportIssue.getIssueId()) : new HashMap<>();
                     exportIssue.setCloseSprintName(closeSprintName);
                     exportIssue.setProjectName(project.getName());
                     exportIssue.setSprintName(exportIssuesSprintName(exportIssue));
@@ -1583,6 +1595,7 @@ public class IssueServiceImpl implements IssueService {
                     exportIssue.setDescription(getDes(exportIssue.getDescription()));
                     exportIssue.setLabelName(labelName);
                     exportIssue.setComponentName(componentName);
+                    exportIssue.setFoundationFieldValue(fieldValue);
                 });
             }
             ExcelUtil.export(exportIssues, ExportIssuesDTO.class, fieldNames, fieldCodes, project.getName(), Arrays.asList("sprintName"), response);
@@ -1631,7 +1644,7 @@ public class IssueServiceImpl implements IssueService {
      * @param exportFieldCodes
      * @return
      */
-    private Map<String, String[]> handleExportFields(List<String> exportFieldCodes) {
+    private Map<String, String[]> handleExportFields(List<String> exportFieldCodes, Long projectId, Long organizationId) {
         Map<String, String[]> fieldMap = new HashMap<>(2);
         if (exportFieldCodes != null && exportFieldCodes.size() != 0) {
             Map<String, String> data = new HashMap<>(FIELDS.length);
@@ -1652,8 +1665,38 @@ public class IssueServiceImpl implements IssueService {
             fieldMap.put(FIELD_CODES, fieldCodes.stream().toArray(String[]::new));
             fieldMap.put(FIELD_NAMES, fieldNames.stream().toArray(String[]::new));
         } else {
-            fieldMap.put(FIELD_CODES, FIELDS);
-            fieldMap.put(FIELD_NAMES, FIELDS_NAME);
+            ObjectMapper m = new ObjectMapper();
+
+            Object content = Optional.ofNullable(foundationFeignClient
+                    .listQuery(projectId, organizationId, SCHEME_CODE)
+                    .getBody()).orElseThrow(() -> new CommonException("error.foundation.listQuery"))
+                    .get("content");
+
+            List<Object> contentList = m.convertValue(content, List.class);
+            List<ObjectSchemeFieldDTO> fieldDTOS = new ArrayList<>();
+
+            if (content != null) {
+                contentList.forEach(k ->
+                        fieldDTOS.add(m.convertValue(k, ObjectSchemeFieldDTO.class)));
+            }
+
+            List<ObjectSchemeFieldDTO> userDefinedFieldDTOS = fieldDTOS.stream().
+                    filter(v -> !v.getSystem()).collect(Collectors.toList());
+
+            if (!userDefinedFieldDTOS.isEmpty()) {
+                List<String> fieldCodes = new ArrayList(Arrays.asList(FIELDS));
+                List<String> fieldNames = new ArrayList(Arrays.asList(FIELDS_NAME));
+                userDefinedFieldDTOS.forEach(fieldDTO -> {
+                    fieldCodes.add(fieldDTO.getCode());
+                    fieldNames.add(fieldDTO.getName());
+                });
+
+                fieldMap.put(FIELD_CODES, fieldCodes.stream().toArray(String[]::new));
+                fieldMap.put(FIELD_NAMES, fieldNames.stream().toArray(String[]::new));
+            } else {
+                fieldMap.put(FIELD_CODES, FIELDS);
+                fieldMap.put(FIELD_NAMES, FIELDS_NAME);
+            }
         }
         return fieldMap;
     }
