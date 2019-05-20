@@ -74,23 +74,6 @@ public class ProgramEventHandler {
         return message;
     }
 
-    @SagaTask(code = PROJECT_ENABLE_PROGRAM,
-            description = "项目启用",
-            sagaCode = PROJECT_ENABLE,
-            seq = 3)
-    public String dealProjectEnableProgram(String message) {
-        LOGGER.info("项目启用: {}", message);
-        ProjectEvent projectEvent = JSONObject.parseObject(message, ProjectEvent.class);
-        if (PROJECT_CATEGORY_AGILE.equals(projectEvent.getProjectCategory())) {
-            Long programId = projectEvent.getProgramId();
-            if (programId != null) {
-                Long projectId = projectEvent.getProjectId();
-                sprintService.addSprintsWhenJoinProgram(programId, projectId);
-            }
-        }
-        return message;
-    }
-
     @SagaTask(code = PROJECT_DISABLE_PROGRAM,
             description = "项目停用",
             sagaCode = PROJECT_DISABLE,
@@ -101,13 +84,15 @@ public class ProgramEventHandler {
         if (PROJECT_CATEGORY_PROGRAM.equals(projectEvent.getProjectCategory())) {
             Long programId = projectEvent.getProjectId();
             ArtDO activeArt = artMapper.selectActiveArt(programId);
-            if (activeArt != null) {
+            if (programId != null && activeArt != null) {
                 artService.stopArt(programId, new ArtDTO(programId, activeArt.getId(), activeArt.getObjectVersionNumber()), false);
             }
         } else if (PROJECT_CATEGORY_AGILE.equals(projectEvent.getProjectCategory())) {
             Long projectId= projectEvent.getProjectId();
             Long programId = projectEvent.getProgramId();
-            sprintService.completeSprintsByActivePi(programId, projectId);
+            if (projectId != null && programId != null) {
+                sprintService.completeSprintsByActivePi(programId, projectId);
+            }
         }
         return message;
     }
@@ -122,7 +107,7 @@ public class ProgramEventHandler {
         Long programId = projectRelationshipInsertPayload.getParentId();
         List<ProjectRelationshipInsertPayload.ProjectRelationship> relationships = projectRelationshipInsertPayload.getRelationships();
         for (ProjectRelationshipInsertPayload.ProjectRelationship projectRelationship : relationships) {
-            if (DELETE.equals(projectRelationship.getStatus())) {
+            if (DELETE.equals(projectRelationship.getStatus()) && projectRelationship.getEnabled()) {
                 Long projectId = projectRelationship.getId();
                 sprintService.completeSprintsByActivePi(programId, projectId);
             }
