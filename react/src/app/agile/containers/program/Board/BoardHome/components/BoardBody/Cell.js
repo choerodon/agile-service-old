@@ -251,6 +251,17 @@ class Cell extends Component {
     };
   }
 
+  judgeMode=(issue) => {
+    const { heightLightIssueAndConnection: { issues } } = BoardStore;
+    let mode = 'normal';
+    if (issues.length > 0) {
+      mode = 'unlight';
+    }
+    if (find(issues, { id: issue.id })) {
+      mode = 'light';
+    }
+    return mode;
+  }
 
   render() {
     const {
@@ -259,6 +270,7 @@ class Cell extends Component {
     const { columnWidth } = BoardStore.sprints[sprintIndex];
     const { boardFeatures: issues, sprintId } = data;
     const { resizing } = this.state;
+    
     return (
       connectDropTarget(
         <td>
@@ -272,6 +284,7 @@ class Cell extends Component {
                 projectId={project.projectId}
                 findCard={this.findCard}
                 moveCard={this.moveCard}
+                mode={this.judgeMode(issue)}
               />
             ))}
             {resizing && (

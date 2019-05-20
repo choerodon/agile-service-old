@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
-  sumBy, findIndex, max, sum,
+  sumBy, findIndex, max, sum, find,
 } from 'lodash';
 import { observer } from 'mobx-react';
 import Connector from './Connector';
@@ -171,6 +171,18 @@ class Connectors extends Component {
 
   checkIsWarn=({ from, to }) => from.sprintIndex <= to.sprintIndex
 
+  judgeMode=(connection) => {
+    const { heightLightIssueAndConnection: { connections } } = BoardStore;
+    let mode = 'normal';
+    if (connections.length > 0) {
+      mode = 'unlight';
+    }
+    if (find(connections, { id: connection.id })) {     
+      mode = 'light';
+    }
+    return mode;
+  }
+
   render() {
     const { connections } = BoardStore;    
     return (
@@ -179,6 +191,7 @@ class Connectors extends Component {
         xmlns="http://www.w3.org/2000/svg"
         // viewBox="0 0 800 600"
         preserveAspectRatio="xMidYMid meet"
+        onClick={e => e.stopPropagation()}
       >
         {/* <path     
         className="line"            
@@ -197,7 +210,7 @@ class Connectors extends Component {
               const fromIndexs = this.getIndex(connection.boardFeature);
               const toIndexs = this.getIndex(connection.dependBoardFeature);
               const { from, to, isToLeft } = this.calulatePoint({ from: fromIndexs, to: toIndexs });
-              return <Connector key={connection.id} from={from} to={to} connection={connection} isWarn={this.checkIsWarn({ from: fromIndexs, to: toIndexs })} />;
+              return <Connector key={connection.id} from={from} to={to} connection={connection} isWarn={this.checkIsWarn({ from: fromIndexs, to: toIndexs })} mode={this.judgeMode(connection)} />;
             })
           }
           {/* <Connector

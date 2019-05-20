@@ -9,8 +9,8 @@ import './BoardBody.scss';
 
 @observer
 class BoardBody extends Component {
-  handleClick=() => {
-    BoardStore.setClickIssue({});
+  handleClick=(e) => {
+    BoardStore.clearSelect();
   }
 
   render() {
@@ -58,6 +58,7 @@ class BoardBody extends Component {
           </tbody>
           <Connectors />
         </table>
+        {/* <Mask />       */}
         {resizing && (
           <div style={{
             position: 'fixed',

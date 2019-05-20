@@ -34,7 +34,7 @@ class IssueCard extends Component {
 
   render() {
     const {
-      issue, isDragging, connectDragSource, connectDropTarget,
+      issue, isDragging, connectDragSource, connectDropTarget, mode,
     } = this.props;
     const opacity = isDragging ? 0 : 1;
     const {
@@ -51,9 +51,9 @@ class IssueCard extends Component {
               // opacity, 
               height: CardHeight,
               width: CardWidth,
-              margin: CardMargin,
+              margin: CardMargin, 
             }}
-            className="c7nagile-IssueCard"
+            className={`c7nagile-IssueCard ${mode}`}
           >
             <div role="none" className="c7nagile-IssueCard-top" onClick={(e) => { e.stopPropagation(); }}>
               <TypeTag data={issueTypeDTO} featureType={featureType} />

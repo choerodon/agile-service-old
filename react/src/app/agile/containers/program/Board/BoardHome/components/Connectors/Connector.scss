@@ -8,6 +8,10 @@
       opacity: 0.2;
     }
 
+    // &.unlight {
+    //   opacity: 0.2;
+    // }
+
     &.warn {
       stroke: #C62828;
     }
@@ -15,19 +19,27 @@
 
   &-line {
     pointer-events: none !important;
-
+    &.unlight {
+      opacity: 0.2;
+    }
     &.warn {
       stroke: #C62828;
     }
   }
 
   &-delete-circle {
+    &.unlight {
+      opacity: 0.2;
+    }
     &.warn {
       fill: #C62828;
     }
   }
 
-  // &-delete-icon {
-  //   &.warn {}
-  // }
+  &-delete-icon {
+    &.unlight {
+      opacity: 0.2;
+    }
+    // &.warn {}
+  }
 }

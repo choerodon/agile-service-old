@@ -4,6 +4,10 @@
   padding: 10px;
   cursor: pointer;
 
+  &.unlight {
+    opacity: 0.2;
+  }
+
   &-top {
     display: flex;
     align-items: center;
