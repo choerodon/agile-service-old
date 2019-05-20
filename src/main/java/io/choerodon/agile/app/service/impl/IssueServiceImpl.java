@@ -2466,7 +2466,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public Page<FeatureCommonDTO> queryFeatureList(Long programId, Long organizationId, PageRequest pageRequest, SearchDTO searchDTO) {
         pageRequest.resetOrder("issue_page", new HashMap<>());
-        Page<Long> featureCommonDOPage = PageHelper.doPage(pageRequest, () ->
+        Page<Long> featureCommonDOPage = PageHelper.doPageAndSort(pageRequest, () ->
                 issueMapper.selectFeatureIdsByPage(programId, searchDTO)
         );
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
