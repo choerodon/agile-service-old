@@ -55,10 +55,10 @@ class BoardBody extends Component {
                 );
               })
             }
-          </tbody>
-          <Connectors />
+          </tbody>          
         </table>
-        {/* <Mask />       */}
+        <Connectors />
+        <div />
         {resizing && (
           <div style={{
             position: 'fixed',

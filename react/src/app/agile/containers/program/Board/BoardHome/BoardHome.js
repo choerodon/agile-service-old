@@ -9,6 +9,7 @@ import { Button, Spin } from 'choerodon-ui';
 import { DragDropContextProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import Empty from '../../../../components/Empty';
+import Loading from '../../../../components/Loading';
 import BoardStore from '../../../../stores/program/Board/BoardStore';
 import Connectors from './components/Connectors';
 import BoardBody from './components/BoardBody';
@@ -62,26 +63,25 @@ class BoardHome extends Component {
           )}
         </Header>
         <Content style={{ padding: 0 }}>
-          <Spin spinning={loading}>
-            {activePi.piId ? (
-              <Fragment>
-                <BoardBody projects={projects} sprints={sprints} /> 
-              </Fragment>
-            ) : (
-              <Empty
-                style={{ marginTop: 60 }}
-                pic={noPI}
-                title="没有进行中的敏捷发布火车"
-                description={(
-                  <Fragment>
+          <Loading loading={loading} />
+          {activePi.piId ? (
+            <Fragment>
+              <BoardBody projects={projects} sprints={sprints} /> 
+            </Fragment>
+          ) : (
+            <Empty
+              style={{ marginTop: 60 }}
+              pic={noPI}
+              title="没有进行中的敏捷发布火车"
+              description={(
+                <Fragment>
                       这是您的项目公告板。如果您想看到具体的PI计划，可以先到
-                    <Link to={artListLink()}>ART设置</Link>
+                  <Link to={artListLink()}>ART设置</Link>
                       创建开启火车。
-                  </Fragment>
+                </Fragment>
                   )}
-              />
-            )}
-          </Spin>
+            />
+          )}          
           {featureListVisible && <SideFeatureList />}
         </Content>
       </Page>

@@ -28,8 +28,12 @@
     }
   }
 
-  &:hover &-top-delete {
+  &:hover {
+    opacity: 1;
+  }
 
+  &:hover &-top-delete {
+    opacity: 1;
     display: block;
   }
 

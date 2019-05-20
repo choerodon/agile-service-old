@@ -24,7 +24,8 @@
   display: flex;
   width: 100%;
 
-  .c7n-feature-side +.c7n-spin-nested-loading {
+  .c7n-feature-side +.c7n-spin-nested-loading,
+  .c7n-feature-epic +.c7n-spin-nested-loading {
     overflow-x: hidden;
     display: flex;
     flex: 1;

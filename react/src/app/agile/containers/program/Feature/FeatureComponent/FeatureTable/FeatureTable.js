@@ -88,7 +88,7 @@ const getColumns = (filters, getFilteredValue) => ([
     title: '史诗',
     key: 'epicList',
     className: 'epic',
-    sorterId: 'epic',
+    sorterId: 'epicId',
     filters: filters.epic,
     filterMultiple: true,
     filteredValue: getFilteredValue('epicList'),
@@ -103,9 +103,7 @@ const getColumns = (filters, getFilteredValue) => ([
     dataIndex: 'piNameDTOList',    
     filters: filters.pi,
     filteredValue: getFilteredValue('piList'),
-    filterMultiple: true,
-    sorterId: 'pi',
-    sorter: true,
+    filterMultiple: true,    
     width: 134,
     render: piNameDTOList => (
       <Tooltip placement="top" title={piNameDTOList.length ? piNameDTOList.map(o => `${o.code}-${o.name};`) : ''}>
