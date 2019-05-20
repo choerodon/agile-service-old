@@ -24,19 +24,24 @@ class IssueCard extends Component {
       BoardStore.createConnection(issue);
       // console.log(this.props.issue, BoardStore.clickIssue);
     }
+    this.container.style.zIndex = 'unset';
+  }
+
+  handleMouseDown = () => {
+    this.container.style.zIndex = 9999;
   }
 
   handleDelete = (e) => {
     e.stopPropagation();
-    const { issue } = this.props; 
+    const { issue } = this.props;
     BoardStore.deleteFeatureFromBoard(issue);
   }
 
   render() {
     const {
       issue, isDragging, connectDragSource, connectDropTarget, mode,
-    } = this.props;
-    const opacity = isDragging ? 0 : 1;
+    } = this.props;    
+
     const {
       issueTypeDTO, summary, issueNum, featureType,
     } = issue;
@@ -45,13 +50,15 @@ class IssueCard extends Component {
         connectDropTarget(
           <div
             role="none"
+            ref={(container) => { this.container = container; }}
             onClick={this.handleSelect}
             onMouseUp={this.handleMouseUp}
+            onMouseDown={this.handleMouseDown}
             style={{
-              // opacity, 
+              // zIndex,
               height: CardHeight,
               width: CardWidth,
-              margin: CardMargin, 
+              margin: CardMargin,
             }}
             className={`c7nagile-IssueCard ${mode}`}
           >
@@ -61,20 +68,26 @@ class IssueCard extends Component {
                 {issueNum}
               </span>
               <Popconfirm
-                title="确认要移除此特性吗?"  
-                onConfirm={this.handleDelete} 
+                title="确认要移除此特性吗?"
+                onConfirm={this.handleDelete}
                 okText="确定"
                 cancelText="取消"
               >
                 <Icon className="c7nagile-IssueCard-top-delete" type="delete" />
               </Popconfirm>
-              
+
             </div>
-            <Tooltip title={summary}>
+            {isDragging ? (
               <div className="c7nagile-IssueCard-summary">
                 {summary}
               </div>
-            </Tooltip>
+            ) : (
+              <Tooltip title={summary}>
+                <div className="c7nagile-IssueCard-summary">
+                  {summary}
+                </div>
+              </Tooltip>
+            )}
           </div>,
         ),
       )
