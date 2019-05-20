@@ -21,11 +21,14 @@ class BoardBody extends Component {
         <table>
           <thead>
             <tr>
-              <th style={{ width: 140, minWidth: 140, textAlign: 'center' }}>
+              <th style={{
+                width: 140, minWidth: 140, textAlign: 'center', fontWeight: 500, 
+              }}
+              >
                 {activePi.piCode}
               </th>
               {
-                sprints.map(sprint => <th style={{ width: ColumnWidth * sprint.columnWidth }}>{sprint.sprintName}</th>)
+                sprints.map(sprint => <th style={{ width: ColumnWidth * sprint.columnWidth, fontWeight: 500 }}>{sprint.sprintName}</th>)
               }
             </tr>
           </thead>
@@ -36,7 +39,7 @@ class BoardBody extends Component {
                 return (
                   <tr>
                     <td style={{
-                      width: 140, minWidth: 140, textAlign: 'center', 
+                      width: 140, minWidth: 140, textAlign: 'center', fontWeight: 500, 
                     }}
                     >          
                       {projectName}
