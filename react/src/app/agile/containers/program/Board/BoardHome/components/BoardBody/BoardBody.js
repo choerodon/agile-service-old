@@ -14,10 +14,10 @@ class BoardBody extends Component {
   }
 
   render() {
-    const { resizing, activePi } = BoardStore;
+    const { resizing, activePi, featureListVisible } = BoardStore;
     const { sprints, projects } = this.props;
     return (
-      <div role="none" className="c7nagile-BoardBody" onClick={this.handleClick}>
+      <div role="none" className="c7nagile-BoardBody" onClick={this.handleClick} style={{ paddingRight: featureListVisible ? 400 : 30 }}>
         <table>
           <thead>
             <tr>
