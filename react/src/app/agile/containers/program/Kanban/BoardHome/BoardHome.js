@@ -18,7 +18,7 @@ import CSSBlackMagic from '../../../../components/CSSBlackMagic/CSSBlackMagic';
 import KanbanStore from '../../../../stores/program/Kanban/KanbanStore';
 import './BoardHome.scss';
 
-const { Option } = Select;
+const { Option, OptGroup } = Select;
 const { AppState } = stores;
 const style = swimLaneId => `
   .${swimLaneId}.c7n-swimlaneContext-itemBodyColumn {
@@ -70,6 +70,12 @@ class BoardHome extends Component {
     }, {
       id: 'enabler',
       name: '使能',
+    }, {
+      id: '1',
+      name: '已完成',
+    }, {
+      id: '0',
+      name: '未完成',
     }];
   }
 
@@ -105,8 +111,10 @@ class BoardHome extends Component {
     KanbanStore.setCreateFeatureVisible(true);
   };
 
-  handleQuickSearchChange = (featureTypeList) => {    
-    KanbanStore.addQuickSearchFilter(featureTypeList);
+  handleQuickSearchChange = (filters) => {
+    const featureFilters = filters.filter(filter => ['business', 'enabler'].includes(filter));
+    const completeFilters = filters.filter(filter => ['0', '1'].includes(filter));
+    KanbanStore.addQuickSearchFilter({ featureFilters, completeFilters });
     this.refresh(KanbanStore.getBoardList.get(KanbanStore.getSelectedBoard));
   };
 
@@ -267,14 +275,17 @@ class BoardHome extends Component {
                 mode="multiple"
                 maxTagCount={0}
                 maxTagPlaceholder={this.renderPlaceHolder.bind(this, 'quickFilters', ['id', 'name'])}
-                value={toJS(quickSearchObj.advancedSearchArgs.featureTypeList)}
+                value={toJS(quickSearchObj.advancedSearchArgs.featureTypeList).concat(toJS(quickSearchObj.advancedSearchArgs.completeList))}
                 onChange={this.handleQuickSearchChange}
               >
+                {/* <OptGroup label="常用选项"> */}
                 {this.quickFilters.map(filter => (
                   <Option value={filter.id}>
                     {filter.name}
                   </Option>
                 ))}
+                {/* </OptGroup> */}
+
               </Select>
             </div>
             <div

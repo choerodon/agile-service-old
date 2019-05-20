@@ -27,6 +27,7 @@ const getColumns = (filters, getFilteredValue) => ([
     className: 'issueId',
     sorterId: 'issueId',
     width: 100,  
+    sorter: true,
     // filters: [],
     // filteredValue: getFilteredValue('issueNum'),
     render: text => <IssueNum text={text} />,
@@ -36,7 +37,8 @@ const getColumns = (filters, getFilteredValue) => ([
     key: 'featureType',
     dataIndex: 'featureType',
     className: 'featureType',
-    sorterId: 'featureType',
+    sorterId: 'issueTypeId',
+    sorter: true,
     width: 100,
     render: (featureType, record) => {
       const { typeCode, issueTypeDTO } = record;
@@ -75,7 +77,8 @@ const getColumns = (filters, getFilteredValue) => ([
     title: '状态',
     key: 'statusList',
     className: 'status',
-    sorterId: 'statusList',    
+    sorterId: 'statusId',
+    sorter: true,   
     // filters: filters.issueStatus,
     // filterMultiple: true,
     width: 134,
@@ -90,6 +93,7 @@ const getColumns = (filters, getFilteredValue) => ([
     filterMultiple: true,
     filteredValue: getFilteredValue('epicList'),
     width: 134,
+    sorter: true,
     render: (epic, record) => <Epic color={record.epicColor} name={record.epicName} />,
   },
   {
@@ -100,6 +104,8 @@ const getColumns = (filters, getFilteredValue) => ([
     filters: filters.pi,
     filteredValue: getFilteredValue('piList'),
     filterMultiple: true,
+    sorterId: 'pi',
+    sorter: true,
     width: 134,
     render: piNameDTOList => (
       <Tooltip placement="top" title={piNameDTOList.length ? piNameDTOList.map(o => `${o.code}-${o.name};`) : ''}>
@@ -113,6 +119,7 @@ const getColumns = (filters, getFilteredValue) => ([
     className: 'lastUpdateDate',
     key: 'lastUpdateDate',
     sorterId: 'lastUpdateDate',
+    sorter: true,
     width: 134,    
     render: text => <LastUpdateTime text={text} />,
   },
@@ -122,6 +129,7 @@ const getColumns = (filters, getFilteredValue) => ([
     className: 'creationDate',
     key: 'creationDate',
     sorterId: 'creationDate',
+    sorter: true,
     width: 134,   
     hidden: true,
     render: text => <LastUpdateTime text={text} />,

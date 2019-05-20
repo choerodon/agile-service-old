@@ -25,13 +25,13 @@ const getDefaultSearchDTO = () => ({
     piList: [],
   },
   searchArgs: {
-  //   assignee: '',
-  //   component: '',
-  //   epic: '',
+    //   assignee: '',
+    //   component: '',
+    //   epic: '',
     issueNum: '',
     //   sprint: '',
     summary: '',
-  //   version: '',
+    //   version: '',
   },
 });
 const filterConvert = (filters, originSearchDTO = getDefaultSearchDTO()) => {
@@ -46,7 +46,7 @@ const filterConvert = (filters, originSearchDTO = getDefaultSearchDTO()) => {
       case 'assigneeIds':
       case 'statusList':
       case 'issueTypeList':
-      case 'featureTypeList':      
+      case 'featureTypeList':
       case 'reporterList':
       case 'epicList':
         setArgs('advancedSearchArgs', { [key]: filters[key] });
@@ -82,6 +82,9 @@ class QueryMode extends Component {
       'lastUpdateDate',
     ],
     searchDTO: getDefaultSearchDTO(),
+    sorter: {
+      sort: '',
+    },
     issues: [],
     myFilters: [],
     createMyFilterVisible: false,
@@ -127,7 +130,7 @@ class QueryMode extends Component {
     });
   }
 
-  handleCancelExport=() => {
+  handleCancelExport = () => {
     this.setState({
       exportIssueVisible: false,
     });
@@ -185,15 +188,16 @@ class QueryMode extends Component {
   }
 
   // eslint-disable-next-line react/destructuring-assignment
-  loadFeatures = ({ pagination = this.state.pagination, searchDTO = this.state.searchDTO } = {}) => {
+  loadFeatures = ({ pagination = this.state.pagination, searchDTO = this.state.searchDTO, sorter = this.state.sorter } = {}) => {
     const { current, pageSize } = pagination;
     this.setState({
       loading: true,
     });
+
     getFeatures({
       page: current - 1,
       size: pageSize,
-    }, searchDTO).then((res) => {
+    }, searchDTO, sorter).then((res) => {
       if (res.failed) {
         return;
       }
@@ -218,12 +222,12 @@ class QueryMode extends Component {
     // 对类型单独处理，因为特性的区分是用business,enabler , 但史诗是用id
     if (type === 'issueTypeList') {
       const issueTypeList = values.filter(value => !isNaN(value));
-      const featureTypeList = values.filter(value => isNaN(value));      
+      const featureTypeList = values.filter(value => isNaN(value));
       searchDTO = filterConvert({ issueTypeList, featureTypeList }, this.state.searchDTO);
     } else {
       searchDTO = filterConvert({ [type]: values }, this.state.searchDTO);
     }
-   
+
     this.loadFeatures({ searchDTO });
     this.setState({
       searchDTO,
@@ -231,12 +235,30 @@ class QueryMode extends Component {
     });
   }
 
-  handleTableChange = (pagination, filters) => {
-    this.filters = { ...this.filters, ...filters };  
-    const searchDTO = filterConvert(filters, this.state.searchDTO); 
-    this.loadFeatures({ searchDTO, pagination });
+  /**
+   *
+   * @param orderDTO => Object => 排序对象
+   * @returns Object => ajax 请求时所需要的排序对象
+   */
+  sortConvert=(orderDTO) => {
+    const { column } = orderDTO;
+    let { order = '' } = orderDTO;
+    if (order) {
+      order = order === 'ascend' ? 'asc' : 'desc';
+    }
+    return {
+      sort: `${column && order ? `${column.sorterId},${order}` : ''}`,
+    };
+  }
+
+  handleTableChange = (pagination, filters, sorter) => {
+    this.filters = { ...this.filters, ...filters };
+    const searchDTO = filterConvert(filters, this.state.searchDTO);
+    const newSorter = this.sortConvert(sorter);
+    this.loadFeatures({ searchDTO, pagination, sorter: newSorter });
     this.setState({
       searchDTO,
+      sorter: newSorter,
       selectedFilter: undefined,
     });
   }
@@ -255,7 +277,7 @@ class QueryMode extends Component {
   }
 
 
-  handleClearFilter = () => {   
+  handleClearFilter = () => {
     this.filters = {};
     this.loadFeatures({ searchDTO: getDefaultSearchDTO() });
     this.setState({
@@ -264,11 +286,11 @@ class QueryMode extends Component {
     });
   }
 
-  handleMyFilterUpdate=() => {
+  handleMyFilterUpdate = () => {
     this.loadMyFilters();
   }
 
-  handleMyFilterDelete=() => {
+  handleMyFilterDelete = () => {
     this.loadMyFilters();
   }
 
@@ -282,7 +304,7 @@ class QueryMode extends Component {
 
   render() {
     const {
-      pagination, loading, issues, searchDTO, myFilters, selectedFilter, 
+      pagination, loading, issues, searchDTO, myFilters, selectedFilter,
       createMyFilterVisible, filterManageVisible, filterManageLoading,
       tableShowColumns, exportIssueVisible,
     } = this.state;
@@ -304,7 +326,7 @@ class QueryMode extends Component {
           onManageClick={this.handleManageClick}
           onClose={this.handleManageClose}
           onUpdate={this.handleMyFilterUpdate}
-          onDelete={this.handleMyFilterDelete}          
+          onDelete={this.handleMyFilterDelete}
         />
         <FeatureTable
           loading={loading}
@@ -317,7 +339,7 @@ class QueryMode extends Component {
           onRow={this.handleRow}
           onCreateFeature={this.handleCreateFeature}
         />
-        <ExportIssue 
+        <ExportIssue
           visible={exportIssueVisible}
           searchDTO={searchDTO}
           tableShowColumns={tableShowColumns}
