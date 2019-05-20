@@ -156,8 +156,11 @@ class Cell extends Component {
       // resize的变化量
       const { x, scrollPos } = this.initScrollPosition;
       const posX = clientX - this.initScrollPosition.x + scrollPos;
-
-
+      // 优化最右侧扩宽   
+      const { isLast } = this.props;   
+      if (isLast && posX > 15) {
+        this.handleItemResize('right', 1);
+      }
       // 一个所占宽度
       if (Math.abs(posX) > (ColumnWidth / 2)) {
         // 变化的倍数 当达到宽度1/2的倍数的时候触发变化        

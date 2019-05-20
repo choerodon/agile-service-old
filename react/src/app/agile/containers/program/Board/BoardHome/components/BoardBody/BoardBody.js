@@ -43,6 +43,7 @@ class BoardBody extends Component {
                     </td>
                     {teamSprints.map((sprint, j) => (                  
                       <Cell
+                        isLast={j === teamSprints.length - 1}
                         project={project}
                         data={sprint}
                         sprintIndex={j}

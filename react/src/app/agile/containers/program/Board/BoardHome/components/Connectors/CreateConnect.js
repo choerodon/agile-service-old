@@ -38,6 +38,7 @@ class CreateConnect extends Component {
       y: e.clientY,
       scrollPos: 0,
       scrollLeft: scroller.scrollLeft,
+      scrollTop: scroller.scrollTop,
     };
     document.addEventListener('mouseup', this.handleMouseUp);
     document.addEventListener('mousemove', this.handleMouseMove);
@@ -54,20 +55,28 @@ class CreateConnect extends Component {
     } = this.autoScroll;
     this.initMouseX = e.clientX;
     if (scrollLeftPosition >= e.clientX) {
-      this.startAutoScroll(e.clientX, 'left');
+      this.startAutoScroll({ clientX: e.clientX, clientY: e.clientY }, 'left');
     } else if (scrollRightPosition <= e.clientX) {
-      this.startAutoScroll(e.clientX, 'right');
+      this.startAutoScroll({ clientX: e.clientX, clientY: e.clientY }, 'right');
     } else {
       this.stopAutoScroll(e.clientX);
     }
 
-    this.fireChange({
-      x: this.initPoint.x + e.clientX - this.initScrollPosition.x,
-      y: this.initPoint.y + e.clientY - this.initScrollPosition.y,
+    this.fireChange(e);
+  }
+
+  fireChange=({ clientX, clientY }) => {
+    const { scroller } = this.autoScroll;
+    const { scrollLeft, scrollTop } = this.initScrollPosition;
+    const scrollLeftPos = scroller.scrollLeft - scrollLeft;
+    const scrollTopPos = scroller.scrollTop - scrollTop;
+    this.setPoint({
+      x: this.initPoint.x + clientX - this.initScrollPosition.x + scrollLeftPos,
+      y: this.initPoint.y + clientY - this.initScrollPosition.y + scrollTopPos,
     });
   }
 
-  fireChange = ({ x, y }) => {
+  setPoint = ({ x, y }) => {
     this.line.setAttribute('x2', x);
     this.line.setAttribute('y2', y);
     this.circle.setAttribute('cx', x);
@@ -80,7 +89,7 @@ class CreateConnect extends Component {
     document.removeEventListener('mousemove', this.handleMouseMove);
     document.removeEventListener('mouseup', this.handleMouseUp);
     this.stopAutoScroll();
-    this.fireChange(this.initPoint);
+    this.setPoint(this.initPoint);
     BoardStore.setAddingConnection(false);
     this.circle.style.pointerEvents = 'all';
   }
@@ -89,7 +98,7 @@ class CreateConnect extends Component {
     const scroller = findScroller(findDOMNode(this));// eslint-disable-line
     const { left, width } = scroller.getBoundingClientRect();
     const scrollRightPosition = left + width;
-    const scrollLeftPosition = left;
+    const scrollLeftPosition = left + 140;
     this.autoScroll = {
       scroller,
       scrollLeftPosition,
@@ -98,7 +107,7 @@ class CreateConnect extends Component {
   }
 
   // 拖动时，当鼠标到边缘时，自动滚动
-  startAutoScroll = (initMouseX, mode) => {
+  startAutoScroll = ({ clientX, clientY }, mode) => {
     // console.log('start');
     const {
       scroller,
@@ -122,11 +131,12 @@ class CreateConnect extends Component {
       } else {
         scroller.scrollLeft -= AUTOSCROLL_RATE;
       }
-      const { scrollLeft } = this.initScrollPosition;
+      const { scrollLeft, scrollTop } = this.initScrollPosition;
       this.initScrollPosition.scrollPos = scroller.scrollLeft - scrollLeft;
+      
       // 因为鼠标并没有move，所以这里要手动触发，否则item的宽度不会变化
-      this.fireResize(initMouseX);
-
+      
+      this.fireChange({ clientX, clientY });
       if (shouldStop()) {
         cancelAnimationFrame(this.scrollTimer);
       } else {
@@ -152,8 +162,7 @@ class CreateConnect extends Component {
     this.initPoint = {
       x: x + 20,
       y,
-    };
-    const markerId = Math.random();
+    };   
     return (
       [<line
         ref={this.saveRef('line')}
