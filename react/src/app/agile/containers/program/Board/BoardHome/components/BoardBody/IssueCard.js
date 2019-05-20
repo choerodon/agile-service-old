@@ -23,12 +23,16 @@ class IssueCard extends Component {
       const { issue } = this.props;
       BoardStore.createConnection(issue);
       // console.log(this.props.issue, BoardStore.clickIssue);
-    }
-    this.container.style.zIndex = 'unset';
+    } 
+    this.resetZIndex();
   }
 
   handleMouseDown = () => {
-    this.container.style.zIndex = 9999;
+    this.container.style.zIndex = 9999;    
+  }
+
+  resetZIndex=() => {
+    this.container.style.zIndex = 'unset';   
   }
 
   handleDelete = (e) => {
@@ -154,7 +158,8 @@ export default DropTarget(
         sprintId: props.sprintId,
         projectId: props.projectId,
       }),
-      endDrag(props, monitor) {
+      endDrag(props, monitor, component) {
+        component.resetZIndex();
         const source = monitor.getItem();
         const didDrop = monitor.didDrop();
         const result = monitor.getDropResult();
