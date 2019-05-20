@@ -28,8 +28,8 @@ const getColumns = (filters, getFilteredValue) => ([
     sorterId: 'issueId',
     width: 100,  
     sorter: true,
-    // filters: [],
-    // filteredValue: getFilteredValue('issueNum'),
+    filters: [],
+    filteredValue: getFilteredValue('issueNum'),
     render: text => <IssueNum text={text} />,
   },
   {
@@ -69,8 +69,8 @@ const getColumns = (filters, getFilteredValue) => ([
     className: 'summary',
     key: 'summary',
     width: 240, 
-    // filters: [],
-    // filteredValue: getFilteredValue('summary'),
+    filters: [],
+    filteredValue: getFilteredValue('summary'),
     render: text => <Summary text={text} />,
   },
   {
@@ -166,6 +166,9 @@ const getColumns = (filters, getFilteredValue) => ([
 class FeatureTable extends Component {
   getFilteredValue=(key) => {
     const { searchDTO } = this.props;
+    if (key === 'contents') {
+      return searchDTO.contents || [];
+    }
     let field = '';
     switch (key) {
       case 'assigneeIds':
@@ -218,6 +221,7 @@ class FeatureTable extends Component {
               scroll={{
                 x: true,
               }}
+              filters={this.getFilteredValue('contents')}
               rowClassName={record => (record.selected ? 'c7nagile-FeatureTable-row-select' : '')}
             />
           </div>

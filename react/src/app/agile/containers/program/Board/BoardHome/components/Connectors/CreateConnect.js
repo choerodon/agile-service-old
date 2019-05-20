@@ -43,6 +43,8 @@ class CreateConnect extends Component {
     document.addEventListener('mouseup', this.handleMouseUp);
     document.addEventListener('mousemove', this.handleMouseMove);
     this.circle.style.pointerEvents = 'none';
+    this.icon.style.pointerEvents = 'none';
+    this.line.style.pointerEvents = 'none';
   }
 
   handleMouseMove = (e) => {

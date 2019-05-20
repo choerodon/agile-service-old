@@ -7,6 +7,7 @@ import { observer } from 'mobx-react';
 import FeatureTable from '../FeatureTable';
 import SearchArea from '../SearchArea';
 import ExportIssue from '../ExportIssue';
+import { getParams } from '../../../../../common/utils';
 import { getFeatures } from '../../../../../api/FeatureApi';
 import FeatureStore from '../../../../../stores/program/Feature/FeatureStore';
 import { getMyFilters } from '../../../../../api/NewIssueApi';
@@ -20,7 +21,7 @@ const getDefaultSearchDTO = () => ({
     reporterList: [],
     epicList: [],
   },
-  // content: '',
+  contents: '',
   otherArgs: {
     piList: [],
   },
@@ -34,7 +35,7 @@ const getDefaultSearchDTO = () => ({
     //   version: '',
   },
 });
-const filterConvert = (filters, originSearchDTO = getDefaultSearchDTO()) => {
+const filterConvert = (filters, originSearchDTO = getDefaultSearchDTO(), barFilters) => {
   const searchDTO = { ...originSearchDTO };
   const setArgs = (field, filter) => {
     Object.assign(searchDTO[field], filter);
@@ -61,40 +62,53 @@ const filterConvert = (filters, originSearchDTO = getDefaultSearchDTO()) => {
         break;
     }
   });
+  if (barFilters && barFilters.length > 0) {
+    setArgs('contents', barFilters[0]);
+  }
   return searchDTO;
 };
 @observer
 class QueryMode extends Component {
-  state = {
-    loading: false,
-    pagination: {
-      current: 1,
-      total: 0,
-      pageSize: 10,
-    },
-    tableShowColumns: [
-      'issueNum',
-      'featureType',
-      'summary',
-      'statusList',
-      'epicList',
-      'piList',
-      'lastUpdateDate',
-    ],
-    searchDTO: getDefaultSearchDTO(),
-    sorter: {
-      sort: '',
-    },
-    issues: [],
-    myFilters: [],
-    createMyFilterVisible: false,
-    filterManageVisible: false,
-    filterManageLoading: false,
-    selectedFilter: undefined,
-    exportIssueVisible: false,
+  constructor() {
+    super();
+    const { paramName, paramIssueId } = getParams();
+    const searchDTO = getDefaultSearchDTO();
+    if (paramIssueId) {
+      searchDTO.searchArgs.issueNum = paramName;
+      searchDTO.otherArgs.issueIds = [paramIssueId];
+      FeatureStore.setClickIssueDetail({ issueId: paramIssueId });
+    }
+    this.state = {
+      loading: false,
+      pagination: {
+        current: 1,
+        total: 0,
+        pageSize: 10,
+      },
+      tableShowColumns: [
+        'issueNum',
+        'featureType',
+        'summary',
+        'statusList',
+        'epicList',
+        'piList',
+        'lastUpdateDate',
+      ],
+      searchDTO,
+      sorter: {
+        sort: '',
+      },
+      issues: [],
+      myFilters: [],
+      createMyFilterVisible: false,
+      filterManageVisible: false,
+      filterManageLoading: false,
+      selectedFilter: undefined,
+      exportIssueVisible: false,
+    };
+    this.filters = {};
   }
-
-  filters = {}
+  
 
   componentDidMount() {
     this.refresh();
@@ -240,7 +254,7 @@ class QueryMode extends Component {
    * @param orderDTO => Object => 排序对象
    * @returns Object => ajax 请求时所需要的排序对象
    */
-  sortConvert=(orderDTO) => {
+  sortConvert = (orderDTO) => {
     const { column } = orderDTO;
     let { order = '' } = orderDTO;
     if (order) {
@@ -251,9 +265,9 @@ class QueryMode extends Component {
     };
   }
 
-  handleTableChange = (pagination, filters, sorter) => {
+  handleTableChange = (pagination, filters, sorter, barFilters) => {
     this.filters = { ...this.filters, ...filters };
-    const searchDTO = filterConvert(filters, this.state.searchDTO);
+    const searchDTO = filterConvert(filters, this.state.searchDTO, barFilters);
     const newSorter = this.sortConvert(sorter);
     this.loadFeatures({ searchDTO, pagination, sorter: newSorter });
     this.setState({

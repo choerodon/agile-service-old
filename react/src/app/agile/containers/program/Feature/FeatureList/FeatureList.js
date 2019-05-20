@@ -7,6 +7,7 @@ import {
   Header, Page,
 } from '@choerodon/boot';
 import './FeatureList.scss';
+import { getParams } from '../../../../common/utils';
 import FeatureDetail from '../FeatureComponent/FeatureDetail/FeatureDetail';
 import CreateFeature from '../FeatureComponent/CreateFeature/CreateFeature';
 import FeatureStore from '../../../../stores/program/Feature/FeatureStore';
@@ -20,7 +21,7 @@ const RadioButton = Radio.Button;
 class FeatureList extends Component {
   state = {
     visible: false,
-    mode: 'plan',
+    mode: getParams().paramIssueId ? 'query' : 'plan',
     display: false,
   };
 

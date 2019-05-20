@@ -1,10 +1,12 @@
 /* eslint-disable consistent-return */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { Tooltip, Icon, Popconfirm } from 'choerodon-ui';
 import { find } from 'lodash';
 import { observer } from 'mobx-react';
 import { DragSource, DropTarget } from 'react-dnd';
+import { programIssueLink } from '../../../../../../common/utils';
 import TypeTag from '../../../../../../components/TypeTag';
 import { CardHeight, CardWidth, CardMargin } from '../Constants';
 import BoardStore from '../../../../../../stores/program/Board/BoardStore';
@@ -47,7 +49,7 @@ class IssueCard extends Component {
     } = this.props;    
 
     const {
-      issueTypeDTO, summary, issueNum, featureType,
+      issueTypeDTO, summary, issueNum, featureType, featureId,
     } = issue;
     return (
       connectDragSource(
@@ -69,7 +71,7 @@ class IssueCard extends Component {
             <div role="none" className="c7nagile-IssueCard-top" onClick={(e) => { e.stopPropagation(); }}>
               <TypeTag data={issueTypeDTO} featureType={featureType} />
               <span className="c7nagile-IssueCard-top-issueNum">
-                {issueNum}
+                <Link to={programIssueLink(featureId, issueNum)} target="_blank">{issueNum}</Link>                
               </span>
               <Popconfirm
                 title="确认要移除此特性吗?"
