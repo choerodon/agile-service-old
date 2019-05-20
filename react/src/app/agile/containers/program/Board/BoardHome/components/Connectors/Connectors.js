@@ -172,9 +172,9 @@ class Connectors extends Component {
   checkIsWarn=({ from, to }) => from.sprintIndex <= to.sprintIndex
 
   judgeMode=(connection) => {
-    const { heightLightIssueAndConnection: { connections } } = BoardStore;
+    const { heightLightIssueAndConnection: { connections, issues } } = BoardStore;
     let mode = 'normal';
-    if (connections.length > 0) {
+    if (connections.length > 0 || issues.length > 0) {
       mode = 'unlight';
     }
     if (find(connections, { id: connection.id })) {     
@@ -184,7 +184,7 @@ class Connectors extends Component {
   }
 
   render() {
-    const { connections } = BoardStore;    
+    const { connections, clickConnection } = BoardStore;    
     return (
       <svg
         className="c7nagile-Connectors"
@@ -210,7 +210,17 @@ class Connectors extends Component {
               const fromIndexs = this.getIndex(connection.boardFeature);
               const toIndexs = this.getIndex(connection.dependBoardFeature);
               const { from, to, isToLeft } = this.calulatePoint({ from: fromIndexs, to: toIndexs });
-              return <Connector key={connection.id} from={from} to={to} connection={connection} isWarn={this.checkIsWarn({ from: fromIndexs, to: toIndexs })} mode={this.judgeMode(connection)} />;
+              return (
+                <Connector 
+                  key={connection.id}
+                  from={from}
+                  to={to}
+                  connection={connection}
+                  isWarn={this.checkIsWarn({ from: fromIndexs, to: toIndexs })}
+                  mode={this.judgeMode(connection)}
+                  checked={clickConnection.id === connection.id}
+                />
+              );
             })
           }
           {/* <Connector

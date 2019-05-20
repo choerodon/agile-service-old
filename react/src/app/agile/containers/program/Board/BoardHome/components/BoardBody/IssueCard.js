@@ -57,7 +57,7 @@ class IssueCard extends Component {
             ref={(container) => { this.container = container; }}
             onClick={this.handleSelect}
             onMouseUp={this.handleMouseUp}
-            onMouseDown={this.handleMouseDown}
+            onMouseDown={this.handleMouseDown}         
             style={{
               // zIndex,
               height: CardHeight,

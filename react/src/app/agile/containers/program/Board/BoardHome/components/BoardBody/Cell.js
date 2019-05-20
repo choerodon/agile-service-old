@@ -255,9 +255,9 @@ class Cell extends Component {
   }
 
   judgeMode=(issue) => {
-    const { heightLightIssueAndConnection: { issues } } = BoardStore;
+    const { heightLightIssueAndConnection: { issues, connections } } = BoardStore;
     let mode = 'normal';
-    if (issues.length > 0) {
+    if (issues.length > 0 || connections.length > 0) {
       mode = 'unlight';
     }
     if (find(issues, { id: issue.id })) {

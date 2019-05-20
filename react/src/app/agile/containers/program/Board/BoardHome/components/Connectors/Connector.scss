@@ -1,6 +1,7 @@
 .c7nagile-Connector {
   &-helperLine {
     stroke-width: 8px;
+    stroke: #3F51B5;
     opacity: 0;
     cursor: pointer;
 
@@ -19,9 +20,12 @@
 
   &-line {
     pointer-events: none !important;
+    stroke: #3F51B5;
+
     &.unlight {
-      opacity: 0.2;
+      opacity: 0.3;
     }
+
     &.warn {
       stroke: #C62828;
     }
@@ -31,6 +35,7 @@
     &.unlight {
       opacity: 0.2;
     }
+
     &.warn {
       fill: #C62828;
     }
@@ -40,6 +45,7 @@
     &.unlight {
       opacity: 0.2;
     }
+
     // &.warn {}
   }
 }
