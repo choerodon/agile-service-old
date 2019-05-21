@@ -11,10 +11,10 @@ class CreateConnect extends Component {
     this.AutoScroll = new AutoScroll({
       scrollElement: document.getElementsByClassName('page-content')[0],
       pos: {
-        left: 145,
-        top: 45,
-        bottom: 5,
-        right: 5,
+        left: 200,
+        top: 150,
+        bottom: 150,
+        right: 150,
       },
       onMouseMove: this.fireChange,
       onMouseUp: this.handleMouseUp,

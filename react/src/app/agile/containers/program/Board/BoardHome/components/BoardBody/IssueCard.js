@@ -19,10 +19,10 @@ class IssueCard extends Component {
     this.AutoScroll = new AutoScroll({
       scrollElement: document.getElementsByClassName('page-content')[0],      
       pos: {
-        left: 145,
-        top: 45,
-        bottom: 5,
-        right: 5,
+        left: 200,
+        top: 150,
+        bottom: 150,
+        right: 150,
       },
     });
   }
@@ -43,8 +43,11 @@ class IssueCard extends Component {
   }
 
   handleMouseDown = (e) => {
-    this.container.style.zIndex = 9999;
     this.AutoScroll.prepare(e);
+  }
+
+  setZIndex=() => {
+    this.container.style.zIndex = 9999;   
   }
 
   resetZIndex=() => {
@@ -167,13 +170,21 @@ export default DropTarget(
   DragSource(
     'card',
     {
-      beginDrag: props => ({
-        id: props.issue.id,
-        issue: props.issue,
-        index: props.index,
-        sprintId: props.sprintId,
-        projectId: props.projectId,
-      }),
+      beginDrag: (props, monitor, component) => {
+        if (component && component.resetZIndex) {
+          component.setZIndex();
+          setTimeout(() => {
+            component.resetZIndex();
+          });
+        } 
+        return {
+          id: props.issue.id,
+          issue: props.issue,
+          index: props.index,
+          sprintId: props.sprintId,
+          projectId: props.projectId,
+        };
+      },
       endDrag(props, monitor, component) {
         if (component && component.resetZIndex) {
           component.resetZIndex();
