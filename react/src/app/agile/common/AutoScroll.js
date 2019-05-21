@@ -72,7 +72,7 @@ export default class AutoScroll {
 
 
   handleMouseMove = (e) => {
-    e.stopPropagation();
+    // e.stopPropagation();
     // e.preventDefault();
     const {
       scroller,
