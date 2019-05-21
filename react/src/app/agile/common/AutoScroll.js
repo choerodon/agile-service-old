@@ -1,18 +1,18 @@
 /* eslint-disable no-bitwise */
 const AUTOSCROLL_RATE = 7;
-const isScrollable = (...values) => values.some(value => value === 'auto' || value === 'scroll');
-function findScroller(n) {
-  let node = n;
-  while (node) {
-    const style = window.getComputedStyle(node);
-    if (isScrollable(style.overflow, style.overflowY, style.overflowX)) {
-      return node;
-    } else {
-      node = node.parentNode;
-    }
-  }
-  return null;
-}
+// const isScrollable = (...values) => values.some(value => value === 'auto' || value === 'scroll');
+// function findScroller(n) {
+//   let node = n;
+//   while (node) {
+//     const style = window.getComputedStyle(node);
+//     if (isScrollable(style.overflow, style.overflowY, style.overflowX)) {
+//       return node;
+//     } else {
+//       node = node.parentNode;
+//     }
+//   }
+//   return null;
+// }
 export default class AutoScroll {
   constructor({
     rate = AUTOSCROLL_RATE,
@@ -25,12 +25,14 @@ export default class AutoScroll {
     },
     onMouseMove = () => {},
     onMouseUp = () => {},
+    type = 'move',
   } = {}) {
     this.rate = rate;
     this.scrollElement = scrollElement;
     this.pos = pos;
     this.onMouseMove = onMouseMove;
     this.onMouseUp = onMouseUp;
+    this.type = type;
   }
 
   prepare = ({
@@ -59,17 +61,15 @@ export default class AutoScroll {
       scrollLeft: scroller.scrollLeft,
       scrollTop: scroller.scrollTop,
     };
-    document.addEventListener('mouseup', this.handleMouseUp);
-    document.addEventListener('mousemove', this.handleMouseMove);
-    document.addEventListener('drag', this.handleMouseMove);
-    document.addEventListener('drop', this.handleMouseUp);
+    if (this.type === 'move') {
+      document.addEventListener('mouseup', this.handleMouseUp);
+      document.addEventListener('mousemove', this.handleMouseMove);
+    } else {
+      document.addEventListener('dragover', this.handleMouseMove);
+      document.addEventListener('drop', this.handleMouseUp);
+    }
   }
 
-  handleDrag=(e) => {
-    // e.stopPropagation();
-    // e.preventDefault();
-    // console.log('drag');
-  }
 
   handleMouseMove = (e) => {
     e.stopPropagation();
@@ -106,11 +106,11 @@ export default class AutoScroll {
     });
   }
 
-  handleMouseUp = (e) => {
+  handleMouseUp = (e) => {       
     document.removeEventListener('mouseup', this.handleMouseUp);
-    document.removeEventListener('mousemove', this.handleMouseMove);
-    document.removeEventListener('drag', this.handleMouseMove);    
-    document.removeEventListener('drop', this.handleMouseUp);    
+    document.removeEventListener('mousemove', this.handleMouseMove); 
+    document.removeEventListener('dragover', this.handleMouseMove);    
+    document.removeEventListener('drop', this.handleMouseUp);        
     this.stopAutoScroll();
     this.onMouseUp(e);   
   }

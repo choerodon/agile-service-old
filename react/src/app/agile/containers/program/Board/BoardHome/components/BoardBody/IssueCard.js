@@ -24,6 +24,7 @@ class IssueCard extends Component {
         bottom: 150,
         right: 150,
       },
+      type: 'drag',
     });
   }
 
