@@ -7,6 +7,7 @@ import { find } from 'lodash';
 import { observer } from 'mobx-react';
 import { DragSource, DropTarget } from 'react-dnd';
 import { programIssueLink } from '../../../../../../common/utils';
+import AutoScroll from '../../../../../../common/AutoScroll';
 import TypeTag from '../../../../../../components/TypeTag';
 import { CardHeight, CardWidth, CardMargin } from '../Constants';
 import BoardStore from '../../../../../../stores/program/Board/BoardStore';
@@ -14,6 +15,12 @@ import './IssueCard.scss';
 
 @observer
 class IssueCard extends Component {
+  componentDidMount() {
+    // this.AutoScroll = new AutoScroll({
+    //   scrollElement: document.getElementsByClassName('page-content')[0],      
+    // });
+  }
+
   handleSelect = (e) => {
     e.stopPropagation();
     const { issue } = this.props;
@@ -29,8 +36,9 @@ class IssueCard extends Component {
     this.resetZIndex();
   }
 
-  handleMouseDown = () => {
-    this.container.style.zIndex = 9999;    
+  handleMouseDown = (e) => {
+    this.container.style.zIndex = 9999;
+    // this.AutoScroll.prepare(e);
   }
 
   resetZIndex=() => {
