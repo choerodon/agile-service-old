@@ -10,4 +10,6 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface BoardTeamMapper extends BaseMapper<BoardTeamDO> {
     String queryRightRank(@Param("boardTeam") BoardTeamDO boardTeamDO, @Param("rank") String rank);
+
+    String queryMinRank(@Param("programId")Long programId);
 }

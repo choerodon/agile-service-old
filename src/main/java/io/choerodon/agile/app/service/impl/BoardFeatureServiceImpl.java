@@ -195,7 +195,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         Map<Long, Map<Long, List<BoardFeatureInfoDTO>>> teamFeatureInfoMap = boardFeatureInfos.stream().collect(Collectors.groupingBy(BoardFeatureInfoDTO::getTeamProjectId, Collectors.groupingBy(BoardFeatureInfoDTO::getSprintId)));
         List<ProgramBoardTeamInfoDTO> teamProjects = new ArrayList<>(projectRelationships.size());
         handleTeamData(projectId, projectRelationships, teamFeatureInfoMap, teamProjects, sprints);
-        Collections.sort(teamProjects, Comparator.comparing(ProgramBoardTeamInfoDTO::getRank));
+        Collections.sort(teamProjects, Comparator.comparing(ProgramBoardTeamInfoDTO::getRank).reversed());
         //获取依赖关系
         List<BoardDependInfoDTO> boardDependInfos = boardDependMapper.queryInfoByPiId(programId, piId);
         programBoardInfo.setSprints(sprintInfos);
@@ -217,11 +217,8 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         for (ProjectRelationshipDTO relationshipDTO : projectRelationshipDTOs) {
             //判断boardTeam数据是否存在
             BoardTeamDO team = teamMap.get(relationshipDTO.getProjectId());
-            String rank;
             if (team == null) {
-                rank = boardTeamService.create(programId, relationshipDTO.getProjectId()).getRank();
-            } else {
-                rank = team.getRank();
+                team = boardTeamService.create(programId, relationshipDTO.getProjectId());
             }
             //获取每个团队每个冲刺的公告板特性信息
             Map<Long, List<BoardFeatureInfoDTO>> sprintFeatureInfoMap = teamFeatureInfoMap.get(relationshipDTO.getProjectId());
@@ -245,7 +242,9 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
             ProgramBoardTeamInfoDTO teamProject = new ProgramBoardTeamInfoDTO();
             teamProject.setProjectId(relationshipDTO.getProjectId());
             teamProject.setProjectName(relationshipDTO.getProjName());
-            teamProject.setRank(rank);
+            teamProject.setObjectVersionNumber(team.getObjectVersionNumber());
+            teamProject.setRank(team.getRank());
+            teamProject.setBoardTeamId(team.getId());
             teamProject.setTeamSprints(teamSprintInfos);
             teamProjects.add(teamProject);
         }

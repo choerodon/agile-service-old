@@ -15,12 +15,17 @@
         <id property="objectVersionNumber" column="object_version_number"/>
     </resultMap>
 
-    <select id="queryRightRank" resultMap="boardTeam">
+    <select id="queryRightRank" resultType="java.lang.String">
         SELECT MAX(bt.rank)
         FROM agile_board_team bt
         WHERE bt.program_id = #{boardTeam.programId}
-        AND bt.team_project_id = #{boardTeam.teamProjectId}
         AND bt.rank &lt; #{rank}
+    </select>
+
+    <select id="queryMinRank" resultType="java.lang.String">
+        SELECT MIN(bt.rank)
+        FROM agile_board_team bt
+        WHERE bt.program_id = #{programId}
     </select>
 
 </mapper>

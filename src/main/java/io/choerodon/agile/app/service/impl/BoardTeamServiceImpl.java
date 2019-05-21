@@ -8,8 +8,11 @@ import io.choerodon.agile.infra.dataobject.BoardTeamDO;
 import io.choerodon.agile.infra.mapper.BoardTeamMapper;
 import io.choerodon.agile.infra.repository.BoardTeamRepository;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @author shinan.chen
@@ -24,12 +27,22 @@ public class BoardTeamServiceImpl implements BoardTeamService {
 
     private ModelMapper modelMapper = new ModelMapper();
 
+    @PostConstruct
+    public void init() {
+        this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
+
     @Override
     public BoardTeamDO create(Long programId, Long teamProjectId) {
         BoardTeamDO team = new BoardTeamDO();
         team.setTeamProjectId(teamProjectId);
         team.setProgramId(programId);
-        team.setRank(RankUtil.mid());
+        String minRank = boardTeamMapper.queryMinRank(programId);
+        if (minRank == null) {
+            team.setRank(RankUtil.mid());
+        } else {
+            team.setRank(RankUtil.genPre(minRank));
+        }
         return boardTeamRepository.create(team);
     }
 
@@ -37,6 +50,7 @@ public class BoardTeamServiceImpl implements BoardTeamService {
     public BoardTeamDTO update(Long programId, Long boardTeamId, BoardTeamUpdateDTO updateDTO) {
         BoardTeamDO boardTeamDO = modelMapper.map(updateDTO, BoardTeamDO.class);
         boardTeamDO.setId(boardTeamId);
+        boardTeamDO.setProgramId(programId);
         String outSetRank = boardTeamRepository.queryById(programId, updateDTO.getOutsetId()).getRank();
         if (updateDTO.getBefore()) {
             boardTeamDO.setRank(RankUtil.genNext(outSetRank));
