@@ -8,7 +8,7 @@ import {
 } from 'lodash';
 import { stores } from '@choerodon/boot';
 import {
-  getBoard, featureToBoard, featureBoardMove, getSideFeatures, createConnection, deleteConnection, deleteFeatureFromBoard,
+  getBoard, featureToBoard, featureBoardMove, projectMove, getSideFeatures, createConnection, deleteConnection, deleteFeatureFromBoard,
 } from '../../../api/BoardFeatureApi';
 
 const { AppState } = stores;
@@ -199,6 +199,58 @@ class BoardStore {
         });
       });
     });
+  }
+
+  @action sortProjects = (index, atIndex) => {
+    // console.log(index, atIndex);
+    if (index === atIndex) {
+      return;
+    }
+    const [project] = this.projects.splice(index, 1);
+    this.projects.splice(atIndex, 0, project);
+    // console.log(toJS(this.projects));
+  }
+
+  projectMove = (sourceId, atIndex) => {
+    const index = findIndex(this.projects, { boardTeamId: sourceId });
+    this.sortProjects(index, atIndex);
+    const sourceProject = find(this.projects, { boardTeamId: sourceId });
+    const data = {
+      before: true,
+      objectVersionNumber: sourceProject.objectVersionNumber,
+      outsetId: 0,
+    };
+
+    if (atIndex === 0) {
+      data.before = true;
+      if (this.projects.length > 1) {
+        data.outsetId = this.projects[1].boardTeamId;
+      } else {
+        data.outsetId = 0;
+      }
+    } else {
+      data.before = false;
+      data.outsetId = this.projects[atIndex - 1].boardTeamId;
+    }
+    // console.log(data);
+    projectMove(sourceId, data).then((res) => {
+      if (res.failed) {
+        Choerodon.prompt('更新失败');
+        this.loadData();
+      } else {
+        action(() => {
+          Object.assign(this.projects[atIndex], res);
+        })();
+      }
+    });
+  }
+
+  @action
+  resetProject = (source) => {
+    const { index, id } = source;
+    const currentIndex = findIndex(this.projects, { boardTeamId: id });
+    const [project] = this.projects.splice(currentIndex, 1);
+    this.projects.splice(index, 0, project);
   }
 
   @action setConnectionsWhenDrag(issue) {

@@ -179,7 +179,7 @@ class CreateConnect extends Component {
         markerEnd="url(#addMarker)"
       />,
         <circle ref={this.saveRef('circle')} style={{ cursor: 'pointer' }} fill="#3F51B5" onMouseDown={this.handleMouseDown} cx={x + 20} cy={y} r="9" />,
-        <text ref={this.saveRef('icon')} style={{ fontSize: '16px' }} className="icon" fill="white" x={x + 12} y={y + 7}>&#xE5C3;</text>,
+        <text ref={this.saveRef('icon')} style={{ fontSize: '16px' }} className="icon" fill="white" x={x + 12} y={y + 7}>&#xE0D7;</text>,
       ]
     );
   }
