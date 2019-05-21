@@ -600,7 +600,7 @@ class SprintCommonStore {
   }
 
   @computed get getColumnFilter() {
-    return toJS(this.columnFilter);
+    return this.columnFilter;
   }
 
   @action setFilterMap(data) {
@@ -608,7 +608,7 @@ class SprintCommonStore {
   }
 
   @computed get getFilterMap() {
-    return toJS(this.filterMap);
+    return this.filterMap;
   }
 
   @action setBarFilter(data) {

@@ -752,7 +752,6 @@ class CreateIssue extends Component {
           <FormItem label="版本" style={{ width: 520 }}>
             {getFieldDecorator('fixVersionIssueRel', {
               rules: [{ transform: value => (value ? value.toString() : value) }],
-              normalize: value => (value ? value.map(s => s.toString().substr(0, 10)) : value), // 限制最长10位
             })(
               <Select
                 label="版本"
@@ -835,7 +834,6 @@ class CreateIssue extends Component {
           <FormItem label="模块" style={{ width: 520 }}>
             {getFieldDecorator('componentIssueRel', {
               rules: [{ transform: value => (value ? value.toString() : value) }],
-              normalize: value => (value ? value.map(s => s.toString().substr(0, 10)) : value), // 限制最长10位
             })(
               <Select
                 label="模块"
