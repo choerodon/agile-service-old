@@ -76,7 +76,8 @@
   &-content {
     overflow-y: auto;
     height: calc(100% - 60px);
-    padding: 16px;
+    padding: 0 16px;
+    margin: 16px 0;
     position: relative;
 
     &-pi {
