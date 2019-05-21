@@ -1,12 +1,12 @@
 .c7nagile-Connector {
   &-helperLine {
-    stroke-width: 8px;
+    stroke-width: 6px;
     stroke: #3F51B5;
     opacity: 0;
     cursor: pointer;
 
     &:hover {
-      opacity: 0.2;
+      opacity: 0.1;
     }
 
     // &.unlight {
@@ -21,9 +21,9 @@
   &-line {
     pointer-events: none !important;
     stroke: #3F51B5;
-
-    &.unlight {
-      opacity: 0.3;
+    opacity: 0.3;
+    &.light {
+      opacity: 1;
     }
 
     &.warn {
@@ -32,8 +32,9 @@
   }
 
   &-delete-circle {
-    &.unlight {
-      opacity: 0.2;
+    opacity: 0.3;
+    &.light {
+      opacity: 1;
     }
 
     &.warn {
@@ -42,8 +43,9 @@
   }
 
   &-delete-icon {
-    &.unlight {
-      opacity: 0.2;
+    opacity: 0.3;
+    &.light {
+      opacity: 1;
     }
 
     // &.warn {}
