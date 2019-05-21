@@ -114,7 +114,7 @@ import { updateIssue } from '../../../../api/NewIssueApi';
     } else {
       const delta = delta2Html(description);
       return (
-        <div className="c7n-content-wrapper">
+        <div className="c7n-content-wrapper" style={{ maxHeight: 400, overflow: 'auto' }}>
           <div
             className="mt-10 c7n-description"
             role="none"
