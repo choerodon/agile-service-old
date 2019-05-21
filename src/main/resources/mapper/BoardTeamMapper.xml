@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.BoardTeamMapper">
+
+    <resultMap id="boardTeam" type="io.choerodon.agile.infra.dataobject.BoardTeamDO">
+        <id property="id" column="id"/>
+        <id property="teamProjectId" column="team_project_id"/>
+        <id property="rank" column="rank"/>
+        <id property="programId" column="program_id"/>
+
+        <id property="creationDate" column="creation_date"/>
+        <id property="createdBy" column="created_by"/>
+        <id property="lastUpdateDate" column="last_update_date"/>
+        <id property="lastUpdatedBy" column="last_updated_by"/>
+        <id property="objectVersionNumber" column="object_version_number"/>
+    </resultMap>
+
+    <select id="queryRightRank" resultMap="boardTeam">
+        SELECT MAX(bt.rank)
+        FROM agile_board_team bt
+        WHERE bt.program_id = #{boardTeam.programId}
+        AND bt.team_project_id = #{boardTeam.teamProjectId}
+        AND bt.rank &lt; #{rank}
+    </select>
+
+</mapper>

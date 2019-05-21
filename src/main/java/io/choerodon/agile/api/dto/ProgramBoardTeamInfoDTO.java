@@ -14,6 +14,8 @@ public class ProgramBoardTeamInfoDTO {
     private Long projectId;
     @ApiModelProperty(value = "项目名称")
     private String projectName;
+    @ApiModelProperty(value = "排序")
+    private String rank;
     @ApiModelProperty(value = "团队冲刺信息")
     private List<ProgramBoardTeamSprintInfoDTO> teamSprints;
 
@@ -23,6 +25,14 @@ public class ProgramBoardTeamInfoDTO {
 
     public void setTeamSprints(List<ProgramBoardTeamSprintInfoDTO> teamSprints) {
         this.teamSprints = teamSprints;
+    }
+
+    public String getRank() {
+        return rank;
+    }
+
+    public void setRank(String rank) {
+        this.rank = rank;
     }
 
     public Long getProjectId() {

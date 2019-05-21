@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.BoardFeatureService;
+import io.choerodon.agile.app.service.BoardTeamService;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.dataobject.*;
@@ -9,6 +10,7 @@ import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.agile.infra.repository.BoardFeatureRepository;
+import io.choerodon.agile.infra.repository.BoardTeamRepository;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -16,9 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +42,10 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     private SprintMapper sprintMapper;
     @Autowired
     private BoardSprintAttrMapper boardSprintAttrMapper;
+    @Autowired
+    private BoardTeamRepository boardTeamRepository;
+    @Autowired
+    private BoardTeamService boardTeamService;
     @Autowired
     private UserFeignClient userFeignClient;
     @Autowired
@@ -190,7 +194,8 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         }
         Map<Long, Map<Long, List<BoardFeatureInfoDTO>>> teamFeatureInfoMap = boardFeatureInfos.stream().collect(Collectors.groupingBy(BoardFeatureInfoDTO::getTeamProjectId, Collectors.groupingBy(BoardFeatureInfoDTO::getSprintId)));
         List<ProgramBoardTeamInfoDTO> teamProjects = new ArrayList<>(projectRelationships.size());
-        handleTeamData(projectRelationships, teamFeatureInfoMap, teamProjects, sprints);
+        handleTeamData(projectId, projectRelationships, teamFeatureInfoMap, teamProjects, sprints);
+        Collections.sort(teamProjects, Comparator.comparing(ProgramBoardTeamInfoDTO::getRank));
         //获取依赖关系
         List<BoardDependInfoDTO> boardDependInfos = boardDependMapper.queryInfoByPiId(programId, piId);
         programBoardInfo.setSprints(sprintInfos);
@@ -202,12 +207,22 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     /**
      * 处理团队具体数据
      *
+     * @param programId
      * @param projectRelationshipDTOs
      * @param teamFeatureInfoMap
      * @param teamProjects
      */
-    private void handleTeamData(List<ProjectRelationshipDTO> projectRelationshipDTOs, Map<Long, Map<Long, List<BoardFeatureInfoDTO>>> teamFeatureInfoMap, List<ProgramBoardTeamInfoDTO> teamProjects, List<SprintDO> sprints) {
+    private void handleTeamData(Long programId, List<ProjectRelationshipDTO> projectRelationshipDTOs, Map<Long, Map<Long, List<BoardFeatureInfoDTO>>> teamFeatureInfoMap, List<ProgramBoardTeamInfoDTO> teamProjects, List<SprintDO> sprints) {
+        Map<Long, BoardTeamDO> teamMap = boardTeamRepository.queryByProgramId(programId).stream().collect(Collectors.toMap(BoardTeamDO::getTeamProjectId, x -> x));
         for (ProjectRelationshipDTO relationshipDTO : projectRelationshipDTOs) {
+            //判断boardTeam数据是否存在
+            BoardTeamDO team = teamMap.get(relationshipDTO.getProjectId());
+            String rank;
+            if (team == null) {
+                rank = boardTeamService.create(programId, relationshipDTO.getProjectId()).getRank();
+            } else {
+                rank = team.getRank();
+            }
             //获取每个团队每个冲刺的公告板特性信息
             Map<Long, List<BoardFeatureInfoDTO>> sprintFeatureInfoMap = teamFeatureInfoMap.get(relationshipDTO.getProjectId());
             List<ProgramBoardTeamSprintInfoDTO> teamSprintInfos = new ArrayList<>(sprints.size());
@@ -230,6 +245,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
             ProgramBoardTeamInfoDTO teamProject = new ProgramBoardTeamInfoDTO();
             teamProject.setProjectId(relationshipDTO.getProjectId());
             teamProject.setProjectName(relationshipDTO.getProjName());
+            teamProject.setRank(rank);
             teamProject.setTeamSprints(teamSprintInfos);
             teamProjects.add(teamProject);
         }
