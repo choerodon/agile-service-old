@@ -16,9 +16,15 @@ import './IssueCard.scss';
 @observer
 class IssueCard extends Component {
   componentDidMount() {
-    // this.AutoScroll = new AutoScroll({
-    //   scrollElement: document.getElementsByClassName('page-content')[0],      
-    // });
+    this.AutoScroll = new AutoScroll({
+      scrollElement: document.getElementsByClassName('page-content')[0],      
+      pos: {
+        left: 145,
+        top: 45,
+        bottom: 5,
+        right: 5,
+      },
+    });
   }
 
   handleSelect = (e) => {
@@ -38,7 +44,7 @@ class IssueCard extends Component {
 
   handleMouseDown = (e) => {
     this.container.style.zIndex = 9999;
-    // this.AutoScroll.prepare(e);
+    this.AutoScroll.prepare(e);
   }
 
   resetZIndex=() => {

@@ -85,6 +85,7 @@ export default class AutoScroll {
     const {
       left, top, bottom, right, 
     } = this.pos;
+    // console.log(scrollLeftPosition, scrollRightPosition, e.clientX);
     if (scrollLeftPosition + left >= e.clientX) {
       this.startAutoScroll({ clientX: e.clientX, clientY: e.clientY }, 'left');
     } else if (scrollRightPosition - right <= e.clientX) {
