@@ -27,15 +27,11 @@ function threeBezier(t, p1, cp1, cp2, p2) {
   return [x, y];
 }
 class Connector extends Component {
-  state = {
-    click: false,
-  }
-
   handleClick = (e) => {
+    e.stopPropagation();
     e.preventDefault();
-    this.setState(({ click }) => ({
-      click: !click,
-    }));
+    const { connection } = this.props;
+    BoardStore.setClickConnection(connection);
   }
 
   handleDeleteClick = () => {
@@ -44,8 +40,9 @@ class Connector extends Component {
   }
 
   render() {
-    const { from, to, isWarn } = this.props;
-    const { click } = this.state;
+    const {
+      from, to, isWarn, mode, checked,
+    } = this.props;
     const ax = (from.x + to.x) / 2 + Math.min(Math.abs(from.x - to.x) / 50, 5);
     const ay = (from.y + to.y) / 2 + Math.min(Math.abs(from.y - to.y) / 50, 9);
     // 获取中点
@@ -53,20 +50,20 @@ class Connector extends Component {
     return (
       [<path
         onClick={this.handleClick}
-        className={`c7nagile-Connector-helperLine ${isWarn ? 'warn' : ''}`}
+        className={`c7nagile-Connector-helperLine ${isWarn ? 'warn' : ''} ${mode}`}
         d={`
         M${from.x},${from.y} 
         C${ax},${ay} ${ax},${ay} ${to.x},${to.y}`}
       />, <path
-        className={`c7nagile-Connector-line ${isWarn ? 'warn' : ''}`}
+        className={`c7nagile-Connector-line ${isWarn ? 'warn' : ''} ${mode}`}
         d={`
         M${from.x},${from.y} 
         C${ax},${ay} ${ax},${ay} ${to.x},${to.y}`}
         markerStart={`url(#${isWarn ? 'StartMarkerWarn' : 'StartMarker'})`}
         markerEnd={`url(#${isWarn ? 'arrowheadWarn' : 'arrowhead'})`}
-      />, click 
-        ? [<circle className={`c7nagile-Connector-delete-circle ${isWarn ? 'warn' : ''}`} style={{ cursor: 'pointer' }} stroke="none" onClick={this.handleDeleteClick} cx={cx} cy={cy} r="9" fill="#3F51B5" />,
-          <text className={`c7nagile-Connector-delete-icon icon ${isWarn ? 'warn' : ''}`} fill="white" stroke="none" style={{ fontSize: '16px' }} x={cx - 8} y={cy + 7}>&#xE5C3;</text>,
+      />, checked 
+        ? [<circle className={`c7nagile-Connector-delete-circle ${isWarn ? 'warn' : ''} ${mode}`} style={{ cursor: 'pointer' }} stroke="none" onClick={this.handleDeleteClick} cx={cx} cy={cy} r="9" fill="#3F51B5" />,
+          <text className={`c7nagile-Connector-delete-icon icon ${isWarn ? 'warn' : ''} ${mode}`} fill="white" stroke="none" style={{ fontSize: '16px' }} x={cx - 8} y={cy + 7}>&#xE5C3;</text>,
         ] : null]
     );
   }

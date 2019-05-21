@@ -27,8 +27,9 @@ const getColumns = (filters, getFilteredValue) => ([
     className: 'issueId',
     sorterId: 'issueId',
     width: 100,  
-    // filters: [],
-    // filteredValue: getFilteredValue('issueNum'),
+    sorter: true,
+    filters: [],
+    filteredValue: getFilteredValue('issueNum'),
     render: text => <IssueNum text={text} />,
   },
   {
@@ -36,7 +37,8 @@ const getColumns = (filters, getFilteredValue) => ([
     key: 'featureType',
     dataIndex: 'featureType',
     className: 'featureType',
-    sorterId: 'featureType',
+    sorterId: 'issueTypeId',
+    sorter: true,
     width: 100,
     render: (featureType, record) => {
       const { typeCode, issueTypeDTO } = record;
@@ -67,15 +69,16 @@ const getColumns = (filters, getFilteredValue) => ([
     className: 'summary',
     key: 'summary',
     width: 240, 
-    // filters: [],
-    // filteredValue: getFilteredValue('summary'),
+    filters: [],
+    filteredValue: getFilteredValue('summary'),
     render: text => <Summary text={text} />,
   },
   {
     title: '状态',
     key: 'statusList',
     className: 'status',
-    sorterId: 'statusList',    
+    sorterId: 'statusId',
+    sorter: true,   
     // filters: filters.issueStatus,
     // filterMultiple: true,
     width: 134,
@@ -85,11 +88,12 @@ const getColumns = (filters, getFilteredValue) => ([
     title: '史诗',
     key: 'epicList',
     className: 'epic',
-    sorterId: 'epic',
+    sorterId: 'epicId',
     filters: filters.epic,
     filterMultiple: true,
     filteredValue: getFilteredValue('epicList'),
     width: 134,
+    sorter: true,
     render: (epic, record) => <Epic color={record.epicColor} name={record.epicName} />,
   },
   {
@@ -99,7 +103,7 @@ const getColumns = (filters, getFilteredValue) => ([
     dataIndex: 'piNameDTOList',    
     filters: filters.pi,
     filteredValue: getFilteredValue('piList'),
-    filterMultiple: true,
+    filterMultiple: true,    
     width: 134,
     render: piNameDTOList => (
       <Tooltip placement="top" title={piNameDTOList.length ? piNameDTOList.map(o => `${o.code}-${o.name};`) : ''}>
@@ -113,6 +117,7 @@ const getColumns = (filters, getFilteredValue) => ([
     className: 'lastUpdateDate',
     key: 'lastUpdateDate',
     sorterId: 'lastUpdateDate',
+    sorter: true,
     width: 134,    
     render: text => <LastUpdateTime text={text} />,
   },
@@ -122,6 +127,7 @@ const getColumns = (filters, getFilteredValue) => ([
     className: 'creationDate',
     key: 'creationDate',
     sorterId: 'creationDate',
+    sorter: true,
     width: 134,   
     hidden: true,
     render: text => <LastUpdateTime text={text} />,
@@ -160,6 +166,9 @@ const getColumns = (filters, getFilteredValue) => ([
 class FeatureTable extends Component {
   getFilteredValue=(key) => {
     const { searchDTO } = this.props;
+    if (key === 'contents') {      
+      return searchDTO.contents || [];
+    }
     let field = '';
     switch (key) {
       case 'assigneeIds':
@@ -212,6 +221,7 @@ class FeatureTable extends Component {
               scroll={{
                 x: true,
               }}
+              filters={this.getFilteredValue('contents')}
               rowClassName={record => (record.selected ? 'c7nagile-FeatureTable-row-select' : '')}
             />
           </div>

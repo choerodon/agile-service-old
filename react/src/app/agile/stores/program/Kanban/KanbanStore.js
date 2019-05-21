@@ -68,6 +68,7 @@ class KanbanStore {
   @observable quickSearchObj = {
     advancedSearchArgs: {
       featureTypeList: [],
+      completeList: [],
     },
   };
 
@@ -404,8 +405,9 @@ class KanbanStore {
     this.quickSearchObj.assigneeFilterIds = data;
   }
 
-  @action addQuickSearchFilter(featureTypeList) {
-    this.quickSearchObj.advancedSearchArgs.featureTypeList = featureTypeList;
+  @action addQuickSearchFilter({ featureFilters, completeFilters }) {
+    this.quickSearchObj.advancedSearchArgs.featureTypeList = featureFilters;
+    this.quickSearchObj.advancedSearchArgs.completeList = completeFilters;
   }
 
   @computed get hasSetFilter() {
@@ -494,6 +496,7 @@ class KanbanStore {
     this.quickSearchObj = {
       advancedSearchArgs: {
         featureTypeList: [],
+        completeList: [],
       },
     };
     this.currentSprintExist = false;

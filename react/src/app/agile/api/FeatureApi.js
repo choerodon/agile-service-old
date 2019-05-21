@@ -2,9 +2,11 @@
 import { stores, axios } from '@choerodon/boot';
 import { getProjectId, getOrganizationId } from '../common/utils';
 
-export function getFeatures(pagination, searchDTO) {
+export function getFeatures(pagination, searchDTO, sort) {
   const { size, page } = pagination;
-  return axios.post(`/agile/v1/projects/${getProjectId()}/issues/program?size=${size}&page=${page}&organizationId=${getOrganizationId()}`, searchDTO);
+  return axios.post(`/agile/v1/projects/${getProjectId()}/issues/program?size=${size}&page=${page}&organizationId=${getOrganizationId()}`, searchDTO, {
+    params: sort,
+  });
 }
 export function getFeaturesInProject() {
   return axios.get(`/agile/v1/projects/${getProjectId()}/issues/features?organizationId=${getOrganizationId()}`);

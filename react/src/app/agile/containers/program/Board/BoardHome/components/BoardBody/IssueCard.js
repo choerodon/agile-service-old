@@ -1,10 +1,12 @@
 /* eslint-disable consistent-return */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { Tooltip, Icon, Popconfirm } from 'choerodon-ui';
 import { find } from 'lodash';
 import { observer } from 'mobx-react';
 import { DragSource, DropTarget } from 'react-dnd';
+import { programIssueLink } from '../../../../../../common/utils';
 import TypeTag from '../../../../../../components/TypeTag';
 import { CardHeight, CardWidth, CardMargin } from '../Constants';
 import BoardStore from '../../../../../../stores/program/Board/BoardStore';
@@ -23,58 +25,75 @@ class IssueCard extends Component {
       const { issue } = this.props;
       BoardStore.createConnection(issue);
       // console.log(this.props.issue, BoardStore.clickIssue);
-    }
+    } 
+    this.resetZIndex();
+  }
+
+  handleMouseDown = () => {
+    this.container.style.zIndex = 9999;    
+  }
+
+  resetZIndex=() => {
+    this.container.style.zIndex = 'unset';   
   }
 
   handleDelete = (e) => {
     e.stopPropagation();
-    const { issue } = this.props; 
+    const { issue } = this.props;
     BoardStore.deleteFeatureFromBoard(issue);
   }
 
   render() {
     const {
-      issue, isDragging, connectDragSource, connectDropTarget,
-    } = this.props;
-    const opacity = isDragging ? 0 : 1;
+      issue, isDragging, connectDragSource, connectDropTarget, mode,
+    } = this.props;    
+
     const {
-      issueTypeDTO, summary, issueNum, featureType,
+      issueTypeDTO, summary, issueNum, featureType, featureId,
     } = issue;
     return (
       connectDragSource(
         connectDropTarget(
           <div
             role="none"
+            ref={(container) => { this.container = container; }}
             onClick={this.handleSelect}
             onMouseUp={this.handleMouseUp}
+            onMouseDown={this.handleMouseDown}         
             style={{
-              // opacity, 
+              // zIndex,
               height: CardHeight,
               width: CardWidth,
               margin: CardMargin,
             }}
-            className="c7nagile-IssueCard"
+            className={`c7nagile-IssueCard ${mode}`}
           >
             <div role="none" className="c7nagile-IssueCard-top" onClick={(e) => { e.stopPropagation(); }}>
               <TypeTag data={issueTypeDTO} featureType={featureType} />
               <span className="c7nagile-IssueCard-top-issueNum">
-                {issueNum}
+                <Link to={programIssueLink(featureId, issueNum)} target="_blank">{issueNum}</Link>                
               </span>
               <Popconfirm
-                title="确认要移除此特性吗?"  
-                onConfirm={this.handleDelete} 
+                title="确认要移除此特性吗?"
+                onConfirm={this.handleDelete}
                 okText="确定"
                 cancelText="取消"
               >
                 <Icon className="c7nagile-IssueCard-top-delete" type="delete" />
               </Popconfirm>
-              
+
             </div>
-            <Tooltip title={summary}>
+            {isDragging ? (
               <div className="c7nagile-IssueCard-summary">
                 {summary}
               </div>
-            </Tooltip>
+            ) : (
+              <Tooltip title={summary}>
+                <div className="c7nagile-IssueCard-summary">
+                  {summary}
+                </div>
+              </Tooltip>
+            )}
           </div>,
         ),
       )
@@ -141,7 +160,10 @@ export default DropTarget(
         sprintId: props.sprintId,
         projectId: props.projectId,
       }),
-      endDrag(props, monitor) {
+      endDrag(props, monitor, component) {
+        if (component && component.resetZIndex) {
+          component.resetZIndex();
+        }        
         const source = monitor.getItem();
         const didDrop = monitor.didDrop();
         const result = monitor.getDropResult();

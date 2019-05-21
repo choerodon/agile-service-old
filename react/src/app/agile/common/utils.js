@@ -183,7 +183,8 @@ export function delta2Html(description) {
 export function escape(str) {
   return str.replace(/<\/script/g, '<\\/script').replace(/<!--/g, '<\\!--');
 }
-export function getParams(url) {
+// eslint-disable-next-line no-restricted-globals
+export function getParams(url = location.href) {
   const theRequest = {};
   if (url.indexOf('?') !== -1) {
     const str = url.split('?')[1];
@@ -302,6 +303,14 @@ export function issueLink(issueId, typeCode, issueName = null) {
     return encodeURI(`/agile/issue?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}&paramIssueId=${issueId}`);
   }
 }
+export function programIssueLink(issueId, issueName) {
+  const menu = AppState.currentMenuType;
+  const {
+    type, id: projectId, name, organizationId,
+  } = menu;
+  return encodeURI(`/agile/feature?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}&paramIssueId=${issueId}&paramName=${issueName}`);
+}
+
 export const getProjectId = () => AppState.currentMenuType.id;
 export const getProjectName = () => AppState.currentMenuType.name;
 export const getOrganizationId = () => AppState.currentMenuType.organizationId;

@@ -1,8 +1,13 @@
 .c7nagile-BoardBody {
   margin: -1px 0 0 -1px;
+  display: table;
+  padding-right: 30px;
+  position: relative;
+
   table {
     table-layout: fixed;
     position: relative;
+
     th,
     td {
       border: 1px solid #D8D8D8;

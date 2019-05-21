@@ -5,6 +5,7 @@ import {
 } from 'choerodon-ui';
 import { observer } from 'mobx-react';
 import BoardStore from '../../../../../../stores/program/Board/BoardStore';
+import Loading from '../../../../../../components/Loading';
 import FeatureItem from './FeatureItem';
 import './SideFeatureList.scss';
 
@@ -88,19 +89,20 @@ class SideFeatureList extends Component {
             </div>
           </Popover> */}
         </div>
-        <Spin spinning={featureListLoading}>
-          <div className="c7nagile-SideFeatureList-content">
-            <div className="c7nagile-SideFeatureList-content-pi">
-              <span>{activePi.piCode}</span>
-              <Icon type={featureListCollapse ? 'expand_more' : 'expand_less'} onClick={this.handleCollapseClick} />
-            </div>
-            <div className="c7nagile-SideFeatureList-content-list">
-              {
+        
+        <div className="c7nagile-SideFeatureList-content">
+          <Loading loading={featureListLoading} />
+          <div className="c7nagile-SideFeatureList-content-pi">
+            <span>{activePi.piCode}</span>
+            <Icon type={featureListCollapse ? 'expand_more' : 'expand_less'} onClick={this.handleCollapseClick} />
+          </div>
+          <div className="c7nagile-SideFeatureList-content-list">
+            {
               !featureListCollapse && featureList.filter(this.handleFilter).map(feature => <FeatureItem feature={feature} />)
             }
-            </div>
           </div>
-        </Spin>
+        </div>
+        
       </div>
     );
   }

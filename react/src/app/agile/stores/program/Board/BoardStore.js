@@ -37,6 +37,13 @@ class BoardStore {
 
   @observable clickIssue = {};
 
+  @observable clickConnection = {};
+
+  @observable heightLightIssueAndConnection = {
+    issues: [],
+    connections: [],
+  }
+
   @observable overIssue = {};
 
   @action
@@ -111,7 +118,48 @@ class BoardStore {
 
   @action setClickIssue(clickIssue) {
     this.clickIssue = clickIssue;
+    this.setHeightLightIssueAndConnection({ issue: clickIssue });
   }
+
+  @action setClickConnection(clickConnection) {
+    this.clickConnection = clickConnection;
+    this.setHeightLightIssueAndConnection({ connection: clickConnection });
+  }
+
+  @action clearSelect() {
+    this.clickIssue = {};
+    this.clickConnection = {};
+    this.setHeightLightIssueAndConnection();
+  }
+
+  @action setHeightLightIssueAndConnection({ issue, connection } = {}) {
+    if (issue && issue.id) {
+      const issues = [issue];
+      const connections = [];
+      this.connections.forEach((conn) => {
+        if (conn.boardFeature.id === issue.id || conn.dependBoardFeature.id === issue.id) {
+          connections.push(conn);
+          if (conn.boardFeature.id === issue.id) {
+            issues.push(conn.dependBoardFeature);
+          } else {
+            issues.push(conn.boardFeature);
+          }
+        }
+      });
+      this.heightLightIssueAndConnection.issues = issues;
+      this.heightLightIssueAndConnection.connections = connections;
+    } else if (connection && connection.id) {
+      const connections = [connection];
+      const { boardFeature, dependBoardFeature } = connection;
+      const issues = [boardFeature, dependBoardFeature];
+      this.heightLightIssueAndConnection.issues = issues;
+      this.heightLightIssueAndConnection.connections = connections;
+    } else {
+      this.heightLightIssueAndConnection.issues = [];
+      this.heightLightIssueAndConnection.connections = [];
+    }
+  }
+
 
   @action setOverIssue(overIssue) {
     this.overIssue = overIssue;
@@ -304,7 +352,7 @@ class BoardStore {
       // eslint-disable-next-line no-lonely-if
       if (dropIssues.length > 0) {
         data.before = false;
-        data.outsetId = dropIssues[dropIssues.length - 1].id;
+        data.outsetId = dropIssues[dropIssues.length - 2] ? dropIssues[dropIssues.length - 2].id : dropIssues[dropIssues.length - 1].id;
         insertIndex = dropIssues.length - 1;
       } else {
         data.before = true;
@@ -342,6 +390,7 @@ class BoardStore {
     if (!this.clickIssue.id || !toIssue || !toIssue.id) {
       return;
     }
+    const clickIssue = { ...this.clickIssue };
     this.setLoading(true);
     createConnection({
       piId: this.activePi.piId,
@@ -354,10 +403,10 @@ class BoardStore {
       } else {
         this.addConnection({
           ...res,
-          boardFeature: toJS(this.clickIssue),
+          boardFeature: clickIssue,
           dependBoardFeature: toIssue,
         });
-        this.setClickIssue({});
+        this.clearSelect();
         this.setAddingConnection(false);
       }
     });
@@ -372,6 +421,7 @@ class BoardStore {
     this.setLoading(true);
     deleteConnection(id).then((res) => {
       this.removeConnection(id);
+      this.clearSelect();
       this.setLoading(false);
     });
   }
@@ -383,7 +433,7 @@ class BoardStore {
 
   deleteFeatureFromBoard(issue) {
     deleteFeatureFromBoard(issue.id).then((res) => {
-      this.setClickIssue({});
+      this.clearSelect();
       this.removeFeatureAndConnection(issue);
     }).catch((err) => {
       Choerodon.prompt('移除失败');

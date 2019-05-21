@@ -7,6 +7,7 @@ import { observer } from 'mobx-react';
 import FeatureTable from '../FeatureTable';
 import SearchArea from '../SearchArea';
 import ExportIssue from '../ExportIssue';
+import { getParams } from '../../../../../common/utils';
 import { getFeatures } from '../../../../../api/FeatureApi';
 import FeatureStore from '../../../../../stores/program/Feature/FeatureStore';
 import { getMyFilters } from '../../../../../api/NewIssueApi';
@@ -20,21 +21,21 @@ const getDefaultSearchDTO = () => ({
     reporterList: [],
     epicList: [],
   },
-  // content: '',
+  contents: [],
   otherArgs: {
     piList: [],
   },
   searchArgs: {
-  //   assignee: '',
-  //   component: '',
-  //   epic: '',
+    //   assignee: '',
+    //   component: '',
+    //   epic: '',
     issueNum: '',
     //   sprint: '',
     summary: '',
-  //   version: '',
+    //   version: '',
   },
 });
-const filterConvert = (filters, originSearchDTO = getDefaultSearchDTO()) => {
+const filterConvert = (filters, originSearchDTO = getDefaultSearchDTO(), barFilters) => {
   const searchDTO = { ...originSearchDTO };
   const setArgs = (field, filter) => {
     Object.assign(searchDTO[field], filter);
@@ -46,7 +47,7 @@ const filterConvert = (filters, originSearchDTO = getDefaultSearchDTO()) => {
       case 'assigneeIds':
       case 'statusList':
       case 'issueTypeList':
-      case 'featureTypeList':      
+      case 'featureTypeList':
       case 'reporterList':
       case 'epicList':
         setArgs('advancedSearchArgs', { [key]: filters[key] });
@@ -61,37 +62,55 @@ const filterConvert = (filters, originSearchDTO = getDefaultSearchDTO()) => {
         break;
     }
   });
+  if (barFilters) {
+    Object.assign(searchDTO, {
+      contents: barFilters,
+    });
+  }
   return searchDTO;
 };
 @observer
 class QueryMode extends Component {
-  state = {
-    loading: false,
-    pagination: {
-      current: 1,
-      total: 0,
-      pageSize: 10,
-    },
-    tableShowColumns: [
-      'issueNum',
-      'featureType',
-      'summary',
-      'statusList',
-      'epicList',
-      'piList',
-      'lastUpdateDate',
-    ],
-    searchDTO: getDefaultSearchDTO(),
-    issues: [],
-    myFilters: [],
-    createMyFilterVisible: false,
-    filterManageVisible: false,
-    filterManageLoading: false,
-    selectedFilter: undefined,
-    exportIssueVisible: false,
+  constructor() {
+    super();
+    const { paramName, paramIssueId } = getParams();
+    const searchDTO = getDefaultSearchDTO();
+    if (paramIssueId) {
+      searchDTO.searchArgs.issueNum = paramName;
+      searchDTO.otherArgs.issueIds = [paramIssueId];
+      FeatureStore.setClickIssueDetail({ issueId: paramIssueId });
+    }
+    this.state = {
+      loading: false,
+      pagination: {
+        current: 1,
+        total: 0,
+        pageSize: 10,
+      },
+      tableShowColumns: [
+        'issueNum',
+        'featureType',
+        'summary',
+        'statusList',
+        'epicList',
+        'piList',
+        'lastUpdateDate',
+      ],
+      searchDTO,
+      sorter: {
+        sort: '',
+      },
+      issues: [],
+      myFilters: [],
+      createMyFilterVisible: false,
+      filterManageVisible: false,
+      filterManageLoading: false,
+      selectedFilter: undefined,
+      exportIssueVisible: false,
+    };
+    this.filters = {};
   }
-
-  filters = {}
+  
 
   componentDidMount() {
     this.refresh();
@@ -127,7 +146,7 @@ class QueryMode extends Component {
     });
   }
 
-  handleCancelExport=() => {
+  handleCancelExport = () => {
     this.setState({
       exportIssueVisible: false,
     });
@@ -185,15 +204,16 @@ class QueryMode extends Component {
   }
 
   // eslint-disable-next-line react/destructuring-assignment
-  loadFeatures = ({ pagination = this.state.pagination, searchDTO = this.state.searchDTO } = {}) => {
+  loadFeatures = ({ pagination = this.state.pagination, searchDTO = this.state.searchDTO, sorter = this.state.sorter } = {}) => {
     const { current, pageSize } = pagination;
     this.setState({
       loading: true,
     });
+
     getFeatures({
       page: current - 1,
       size: pageSize,
-    }, searchDTO).then((res) => {
+    }, searchDTO, sorter).then((res) => {
       if (res.failed) {
         return;
       }
@@ -218,12 +238,12 @@ class QueryMode extends Component {
     // 对类型单独处理，因为特性的区分是用business,enabler , 但史诗是用id
     if (type === 'issueTypeList') {
       const issueTypeList = values.filter(value => !isNaN(value));
-      const featureTypeList = values.filter(value => isNaN(value));      
+      const featureTypeList = values.filter(value => isNaN(value));
       searchDTO = filterConvert({ issueTypeList, featureTypeList }, this.state.searchDTO);
     } else {
       searchDTO = filterConvert({ [type]: values }, this.state.searchDTO);
     }
-   
+
     this.loadFeatures({ searchDTO });
     this.setState({
       searchDTO,
@@ -231,12 +251,30 @@ class QueryMode extends Component {
     });
   }
 
-  handleTableChange = (pagination, filters) => {
+  /**
+   *
+   * @param orderDTO => Object => 排序对象
+   * @returns Object => ajax 请求时所需要的排序对象
+   */
+  sortConvert = (orderDTO) => {
+    const { column } = orderDTO;
+    let { order = '' } = orderDTO;
+    if (order) {
+      order = order === 'ascend' ? 'asc' : 'desc';
+    }
+    return {
+      sort: `${column && order ? `${column.sorterId},${order}` : ''}`,
+    };
+  }
+
+  handleTableChange = (pagination, filters, sorter, barFilters) => {
     this.filters = { ...this.filters, ...filters };  
-    const searchDTO = filterConvert(filters, this.state.searchDTO); 
-    this.loadFeatures({ searchDTO, pagination });
+    const searchDTO = filterConvert(filters, this.state.searchDTO, barFilters || []);
+    const newSorter = this.sortConvert(sorter);
+    this.loadFeatures({ searchDTO, pagination, sorter: newSorter });
     this.setState({
       searchDTO,
+      sorter: newSorter,
       selectedFilter: undefined,
     });
   }
@@ -255,7 +293,7 @@ class QueryMode extends Component {
   }
 
 
-  handleClearFilter = () => {   
+  handleClearFilter = () => {
     this.filters = {};
     this.loadFeatures({ searchDTO: getDefaultSearchDTO() });
     this.setState({
@@ -264,11 +302,11 @@ class QueryMode extends Component {
     });
   }
 
-  handleMyFilterUpdate=() => {
+  handleMyFilterUpdate = () => {
     this.loadMyFilters();
   }
 
-  handleMyFilterDelete=() => {
+  handleMyFilterDelete = () => {
     this.loadMyFilters();
   }
 
@@ -282,7 +320,7 @@ class QueryMode extends Component {
 
   render() {
     const {
-      pagination, loading, issues, searchDTO, myFilters, selectedFilter, 
+      pagination, loading, issues, searchDTO, myFilters, selectedFilter,
       createMyFilterVisible, filterManageVisible, filterManageLoading,
       tableShowColumns, exportIssueVisible,
     } = this.state;
@@ -304,7 +342,7 @@ class QueryMode extends Component {
           onManageClick={this.handleManageClick}
           onClose={this.handleManageClose}
           onUpdate={this.handleMyFilterUpdate}
-          onDelete={this.handleMyFilterDelete}          
+          onDelete={this.handleMyFilterDelete}
         />
         <FeatureTable
           loading={loading}
@@ -317,7 +355,7 @@ class QueryMode extends Component {
           onRow={this.handleRow}
           onCreateFeature={this.handleCreateFeature}
         />
-        <ExportIssue 
+        <ExportIssue
           visible={exportIssueVisible}
           searchDTO={searchDTO}
           tableShowColumns={tableShowColumns}

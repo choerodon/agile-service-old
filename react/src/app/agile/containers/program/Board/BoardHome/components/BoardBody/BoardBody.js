@@ -9,23 +9,26 @@ import './BoardBody.scss';
 
 @observer
 class BoardBody extends Component {
-  handleClick=() => {
-    BoardStore.setClickIssue({});
+  handleClick=(e) => {
+    BoardStore.clearSelect();
   }
 
   render() {
-    const { resizing, activePi } = BoardStore;
+    const { resizing, activePi, featureListVisible } = BoardStore;
     const { sprints, projects } = this.props;
     return (
-      <div role="none" className="c7nagile-BoardBody" onClick={this.handleClick}>
+      <div role="none" className="c7nagile-BoardBody" onClick={this.handleClick} style={{ paddingRight: featureListVisible ? 400 : 30 }}>
         <table>
           <thead>
             <tr>
-              <th style={{ width: 140, minWidth: 140, textAlign: 'center' }}>
+              <th style={{
+                width: 140, minWidth: 140, textAlign: 'center', fontWeight: 500, 
+              }}
+              >
                 {activePi.piCode}
               </th>
               {
-                sprints.map(sprint => <th style={{ width: ColumnWidth * sprint.columnWidth }}>{sprint.sprintName}</th>)
+                sprints.map(sprint => <th style={{ width: ColumnWidth * sprint.columnWidth, fontWeight: 500 }}>{sprint.sprintName}</th>)
               }
             </tr>
           </thead>
@@ -36,13 +39,14 @@ class BoardBody extends Component {
                 return (
                   <tr>
                     <td style={{
-                      width: 140, minWidth: 140, textAlign: 'center', 
+                      width: 140, minWidth: 140, textAlign: 'center', fontWeight: 500, 
                     }}
                     >          
                       {projectName}
                     </td>
                     {teamSprints.map((sprint, j) => (                  
                       <Cell
+                        isLast={j === teamSprints.length - 1}
                         project={project}
                         data={sprint}
                         sprintIndex={j}
@@ -55,9 +59,10 @@ class BoardBody extends Component {
                 );
               })
             }
-          </tbody>
-          <Connectors />
+          </tbody>          
         </table>
+        <Connectors />
+        <div />
         {resizing && (
           <div style={{
             position: 'fixed',

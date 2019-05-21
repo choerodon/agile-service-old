@@ -2,7 +2,13 @@
   background: white;
   text-align: left;
   padding: 10px;
+  border-radius: 2px;
+  border: 1px solid #ccc;
   cursor: pointer;
+
+  &.unlight {
+    opacity: 0.2;
+  }
 
   &-top {
     display: flex;
@@ -24,8 +30,12 @@
     }
   }
 
-  &:hover &-top-delete {
+  &:hover {
+    opacity: 1;
+  }
 
+  &:hover &-top-delete {
+    opacity: 1;
     display: block;
   }
 

@@ -156,8 +156,11 @@ class Cell extends Component {
       // resize的变化量
       const { x, scrollPos } = this.initScrollPosition;
       const posX = clientX - this.initScrollPosition.x + scrollPos;
-
-
+      // 优化最右侧扩宽   
+      const { isLast } = this.props;   
+      if (isLast && posX > 15) {
+        this.handleItemResize('right', 1);
+      }
       // 一个所占宽度
       if (Math.abs(posX) > (ColumnWidth / 2)) {
         // 变化的倍数 当达到宽度1/2的倍数的时候触发变化        
@@ -251,6 +254,17 @@ class Cell extends Component {
     };
   }
 
+  judgeMode=(issue) => {
+    const { heightLightIssueAndConnection: { issues, connections } } = BoardStore;
+    let mode = 'normal';
+    if (issues.length > 0 || connections.length > 0) {
+      mode = 'unlight';
+    }
+    if (find(issues, { id: issue.id })) {
+      mode = 'light';
+    }
+    return mode;
+  }
 
   render() {
     const {
@@ -259,6 +273,7 @@ class Cell extends Component {
     const { columnWidth } = BoardStore.sprints[sprintIndex];
     const { boardFeatures: issues, sprintId } = data;
     const { resizing } = this.state;
+    
     return (
       connectDropTarget(
         <td>
@@ -272,6 +287,7 @@ class Cell extends Component {
                 projectId={project.projectId}
                 findCard={this.findCard}
                 moveCard={this.moveCard}
+                mode={this.judgeMode(issue)}
               />
             ))}
             {resizing && (
@@ -326,9 +342,9 @@ export default DropTarget('card', {
     }
     const source = monitor.getItem();
     const { data: { boardFeatures } } = props;
-    if (!find(boardFeatures, { featureId: source.issue.featureId || source.issue.issueId })) {
+    if (monitor.canDrop()) {
       component.moveCard(source, {
-        index: 0,
+        index: boardFeatures.length - 1,
         sprintId: props.sprintId,
         teamProjectId: props.projectId,
       });
@@ -338,10 +354,12 @@ export default DropTarget('card', {
     if (monitor.didDrop()) {
       return;
     }
+    const { data: { boardFeatures } } = props;
     return {
       dropType: 'outer',
       teamProjectId: props.teamProjectId,
       sprintId: props.sprintId,
+      index: boardFeatures.length - 1,
     };
   },
 }, connect => ({
