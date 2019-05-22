@@ -1,6 +1,35 @@
 # Changelog
 All notable changes about agile-service will be documented in this file.
 
+## [0.17.0] - 2019-05-24
+
+### Added
+
+- When the program completes PI, sprint under PI will be completed automatically, and the front end of team receives prompt.
+- Program - Project settings can view project information.
+- Feature management list of program function upgrade, advanced search.
+- PM can view feature backlog of 3 PIs in the program Roadmap.
+- Program can view working hours based on their work calendar.
+- Users can create bugs directly in stories.
+- Program members can view dependencies between teams and sprints through bulletin boards.
+- Support sorting in feature query mode.
+- Program kanban add fast search.
+
+### Changed
+
+- Issue association relationships show associated test cases.
+- Issue import template add component, sprint fields.
+- Optimizing the width and narrow styles of issue details pages.
+- Custom field optimization related optimization.
+- Partial views style optimization. 
+- Partial report optimization.
+
+### Fixed
+
+- Repairing the PI display bug of epic screening.
+- Repair display bug of ART list time.
+
+
 ## [0.16.0] - 2019-04-19
 
 ### Added
