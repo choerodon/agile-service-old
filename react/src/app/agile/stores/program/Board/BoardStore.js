@@ -347,7 +347,7 @@ class BoardStore {
       // eslint-disable-next-line no-lonely-if
       if (dropIssues.length > 0) {
         data.before = false;
-        data.outsetId = dropIssues[dropIssues.length - 1].id || 0;
+        data.outsetId = dropIssues[dropIssues.length - 2] ? dropIssues[dropIssues.length - 2].id : dropIssues[dropIssues.length - 1].id;
         insertIndex = dropIssues.length - 1;
       } else {
         data.before = true;
