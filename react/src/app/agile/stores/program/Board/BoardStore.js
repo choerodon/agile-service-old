@@ -439,7 +439,7 @@ class BoardStore {
   }
 
   createConnection = (toIssue) => {
-    if (!this.clickIssue.id || !toIssue || !toIssue.id) {
+    if (!this.clickIssue.id || !toIssue || !toIssue.id || toIssue.id === this.clickIssue.id) {
       return;
     }
     const clickIssue = { ...this.clickIssue };
