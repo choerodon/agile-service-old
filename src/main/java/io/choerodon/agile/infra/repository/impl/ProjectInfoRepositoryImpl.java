@@ -32,8 +32,8 @@ public class ProjectInfoRepositoryImpl implements ProjectInfoRepository {
     }
 
     @Override
-    public int updateIssueMaxNum(Long projectId, Integer increase) {
-        int result = projectInfoMapper.updateIssueMaxNum(projectId, increase);
+    public int updateIssueMaxNum(Long projectId, String issueMaxNum) {
+        int result = projectInfoMapper.updateIssueMaxNum(projectId, issueMaxNum);
         if (result != 1) {
             throw new CommonException("error.projectInfo.updateIssueMaxNum");
         }
