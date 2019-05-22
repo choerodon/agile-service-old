@@ -3,10 +3,28 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { DragSource, DropTarget } from 'react-dnd';
 import { observer } from 'mobx-react';
+import AutoScroll from '../../../../../../common/AutoScroll';
 import BoardStore from '../../../../../../stores/program/Board/BoardStore';
 
 @observer
 class ProjectCard extends Component {
+  componentDidMount() {
+    this.AutoScroll = new AutoScroll({
+      scrollElement: document.getElementsByClassName('page-content')[0],      
+      pos: {
+        left: 0,
+        top: 150,
+        bottom: 150,
+        right: 0,
+      },
+      type: 'drag',
+    });
+  }
+
+  handleMouseDown = (e) => {
+    this.AutoScroll.prepare(e);
+  }
+
   render() {
     const {
       project, connectDragSource, connectDropTarget, 
@@ -15,9 +33,12 @@ class ProjectCard extends Component {
     return (
       connectDragSource(
         connectDropTarget(
-          <td style={{
-            width: 140, minWidth: 140, textAlign: 'center', fontWeight: 500, 
-          }}
+          <td 
+            role="none"
+            onMouseDown={this.handleMouseDown}     
+            style={{
+              width: 140, minWidth: 140, textAlign: 'center', fontWeight: 500, cursor: 'move',
+            }}
           >          
             {projectName}
           </td>,
