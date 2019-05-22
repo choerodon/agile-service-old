@@ -62,7 +62,9 @@ public class ProgramEventHandler {
             for (ProjectRelationshipInsertPayload.ProjectRelationship projectRelationship : relationships) {
                 if (ADD.equals(projectRelationship.getStatus())) {
                     Long projectId = projectRelationship.getId();
-                    sprintService.addSprintsWhenJoinProgram(programId, projectId);
+                    if (projectRelationship.getEnabled()) {
+                        sprintService.addSprintsWhenJoinProgram(programId, projectId);
+                    }
                 } else if (UPDATE.equals(projectRelationship.getStatus())) {
                     Long projectId = projectRelationship.getId();
                     if (projectRelationship.getEnabled()) {
