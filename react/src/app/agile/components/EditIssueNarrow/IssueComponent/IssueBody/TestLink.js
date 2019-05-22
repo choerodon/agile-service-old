@@ -35,7 +35,7 @@ const { AppState } = stores;
 
   renderLinkIssues() {
     const { store } = this.props;
-    const linkIssues = store.getLinkIssues;
+    const linkIssues = store.getLinkIssues.filter(i => i.applyType === 'test');
     return (
       <div className="c7n-tasks">
         {
