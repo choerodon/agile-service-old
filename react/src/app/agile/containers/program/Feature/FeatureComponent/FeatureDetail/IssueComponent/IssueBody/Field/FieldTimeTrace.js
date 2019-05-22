@@ -56,6 +56,7 @@ const { Text, Edit } = TextEditToggle;
                   }
                   size="small"
                   status="success"
+                  showInfo={false}
                 />
                 <span>
                   {workloads}

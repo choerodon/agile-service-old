@@ -35,7 +35,7 @@ class Cell extends Component {
     const scroller = findScroller(findDOMNode(this));// eslint-disable-line
     const { left, width } = scroller.getBoundingClientRect();
     const scrollRightPosition = left + width;
-    const scrollLeftPosition = left;
+    const scrollLeftPosition = left + 140;
     this.autoScroll = {
       scroller,
       scrollLeftPosition,
@@ -141,7 +141,7 @@ class Cell extends Component {
     this.initMouseX = e.clientX;
     if (scrollLeftPosition >= e.clientX) {
       this.startAutoScroll(e.clientX, 'left');
-    } else if (scrollRightPosition <= e.clientX) {
+    } else if (scrollRightPosition <= e.clientX + 10) {
       this.startAutoScroll(e.clientX, 'right');
     } else {
       this.stopAutoScroll(e.clientX);

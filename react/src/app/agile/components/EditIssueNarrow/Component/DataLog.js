@@ -1,3 +1,4 @@
+/*eslint-disable */
 import React, { Component } from 'react';
 import { Icon, Popover } from 'choerodon-ui';
 import UserHead from '../../UserHead';
@@ -483,19 +484,19 @@ class DataLog extends Component {
                       <span>
                         {this.getMode1(datalog)}
                       </span>
-                      <span style={{ color: '#303f9f' }}>
+                      <span style={{ color: '#303f9f', wordBreak: 'break-all' }}>
                         {this.getMode2(datalog)}
                       </span>
                       <span>
                         {this.getMode3(datalog)}
                       </span>
-                      <span style={{ color: '#303f9f' }}>
+                      <span style={{ color: '#303f9f', wordBreak: 'break-all' }}>
                         {this.getMode4(datalog)}
                       </span>
                       <span>
                         {this.getMode5(datalog)}
                       </span>
-                      <span style={{ color: '#303f9f' }}>
+                      <span style={{ color: '#303f9f', wordBreak: 'break-all' }}>
                         {this.getMode6(datalog)}
                       </span>
                     </div>

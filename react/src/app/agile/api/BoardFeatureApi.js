@@ -25,7 +25,9 @@ export function featureToBoard(data) {
 export function featureBoardMove(id, data) {
   return axios.put(`/agile/v1/projects/${getProjectId()}/board_feature/${id}`, data);
 }
-
+export function projectMove(id, data) {
+  return axios.put(`/agile/v1/projects/${getProjectId()}/board_team/${id}`, data);
+}
 export function deleteFeatureFromBoard(id) {
   return axios.delete(`/agile/v1/projects/${getProjectId()}/board_feature/${id}`);
 }

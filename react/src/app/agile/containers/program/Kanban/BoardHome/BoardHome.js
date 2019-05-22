@@ -333,7 +333,7 @@ class BoardHome extends Component {
 
           </Spin>
         </div>
-        <CreateFeatureContainer onCreate={this.handleCreate} />
+        <CreateFeatureContainer onOk={this.handleCreate} />
       </Page>
     );
   }

@@ -292,7 +292,7 @@ let hasPermission;
             {
             relateStoryShow ? (
               <RelateStory
-                issueId={issueId}
+                issue={issue}
                 visible={relateStoryShow}
                 onCancel={() => VisibleStore.setRelateStoryShow(false)}
                 onOk={this.handleRelateStory.bind(this)}

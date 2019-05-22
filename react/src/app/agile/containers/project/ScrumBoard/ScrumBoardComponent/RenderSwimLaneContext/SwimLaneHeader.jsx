@@ -90,7 +90,7 @@ export default class SwimLaneHeader extends Component {
             overflow: 'hidden',
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis',
-            maxWidth: 235,
+            maxWidth: 330,
           } : {}
           }
         >
