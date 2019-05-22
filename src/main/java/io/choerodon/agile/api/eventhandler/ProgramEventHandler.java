@@ -50,24 +50,26 @@ public class ProgramEventHandler {
     private ArtMapper artMapper;
 
     @SagaTask(code = JOIN_PROGRAM_EVENT,
-            description = "项目加入项目群消费event",
+            description = "项目加入项目群或更新项目与项目群关系消费event",
             sagaCode = IAM_ADD_PROJECT_RELATIONSHIP,
             seq = 3)
     public String dealProjectJoinProgram(String message) {
-        LOGGER.info("项目加入项目群消费event: {}", message);
+        LOGGER.info("项目加入项目群或更新项目与项目群关系消费event: {}", message);
         ProjectRelationshipInsertPayload projectRelationshipInsertPayload = JSONObject.parseObject(message, ProjectRelationshipInsertPayload.class);
         Long programId = projectRelationshipInsertPayload.getParentId();
         List<ProjectRelationshipInsertPayload.ProjectRelationship> relationships = projectRelationshipInsertPayload.getRelationships();
-        for (ProjectRelationshipInsertPayload.ProjectRelationship projectRelationship : relationships) {
-            if (ADD.equals(projectRelationship.getStatus())) {
-                Long projectId = projectRelationship.getId();
-                sprintService.addSprintsWhenJoinProgram(programId, projectId);
-            } else if (UPDATE.equals(projectRelationship.getStatus())) {
-                Long projectId = projectRelationship.getId();
-                if (projectRelationship.getEnabled()) {
+        if (relationships != null && !relationships.isEmpty()) {
+            for (ProjectRelationshipInsertPayload.ProjectRelationship projectRelationship : relationships) {
+                if (ADD.equals(projectRelationship.getStatus())) {
+                    Long projectId = projectRelationship.getId();
                     sprintService.addSprintsWhenJoinProgram(programId, projectId);
-                } else {
-                    sprintService.completeSprintsByActivePi(programId, projectId);
+                } else if (UPDATE.equals(projectRelationship.getStatus())) {
+                    Long projectId = projectRelationship.getId();
+                    if (projectRelationship.getEnabled()) {
+                        sprintService.addSprintsWhenJoinProgram(programId, projectId);
+                    } else {
+                        sprintService.completeSprintsByActivePi(programId, projectId);
+                    }
                 }
             }
         }
@@ -106,10 +108,12 @@ public class ProgramEventHandler {
         ProjectRelationshipInsertPayload projectRelationshipInsertPayload = JSONObject.parseObject(message, ProjectRelationshipInsertPayload.class);
         Long programId = projectRelationshipInsertPayload.getParentId();
         List<ProjectRelationshipInsertPayload.ProjectRelationship> relationships = projectRelationshipInsertPayload.getRelationships();
-        for (ProjectRelationshipInsertPayload.ProjectRelationship projectRelationship : relationships) {
-            if (DELETE.equals(projectRelationship.getStatus()) && projectRelationship.getEnabled()) {
-                Long projectId = projectRelationship.getId();
-                sprintService.completeSprintsByActivePi(programId, projectId);
+        if (relationships != null && !relationships.isEmpty()) {
+            for (ProjectRelationshipInsertPayload.ProjectRelationship projectRelationship : relationships) {
+                if (DELETE.equals(projectRelationship.getStatus()) && projectRelationship.getEnabled()) {
+                    Long projectId = projectRelationship.getId();
+                    sprintService.completeSprintsByActivePi(programId, projectId);
+                }
             }
         }
         return message;
