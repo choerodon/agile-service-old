@@ -18,6 +18,8 @@ const { AppState } = stores;
   };
 
   renderLinkList(link, i) {
+    const { reloadIssue, store } = this.props;
+    const { issueId: id } = store.getIssue;
     return (
       <LinkList
         issue={{
@@ -28,7 +30,10 @@ const { AppState } = stores;
         onOpen={(issueId, linkedIssueId) => {
           this.onOpen(issueId);
         }}
-        canDelete={false}
+        // canDelete={false}
+        onRefresh={() => {
+          reloadIssue(id);
+        }}
       />
     );
   }
