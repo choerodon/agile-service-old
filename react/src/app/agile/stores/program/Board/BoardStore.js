@@ -345,7 +345,7 @@ class BoardStore {
     } else {
       // 目标各自如果有issue，放在最后一个
       // eslint-disable-next-line no-lonely-if
-      if (dropIssues.length > 0) {
+      if (dropIssues.length > 1) {
         data.before = false;
         data.outsetId = dropIssues[dropIssues.length - 2] ? dropIssues[dropIssues.length - 2].id : dropIssues[dropIssues.length - 1].id;
         insertIndex = dropIssues.length - 1;
