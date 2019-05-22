@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.assembler.*;
@@ -39,7 +38,6 @@ import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -295,7 +293,7 @@ public class IssueServiceImpl implements IssueService {
         }
         //初始化创建issue设置issue编号、项目默认设置
         issueE.initializationIssue(statusId, projectInfoE);
-        projectInfoRepository.updateIssueMaxNum(issueE.getProjectId(), 1);
+        projectInfoRepository.updateIssueMaxNum(issueE.getProjectId(), issueE.getIssueNum());
         //初始化排序
         if (issueE.isIssueRank()) {
             calculationRank(issueE.getProjectId(), issueE);
@@ -816,7 +814,7 @@ public class IssueServiceImpl implements IssueService {
         IssueE parentIssueE = ConvertHelper.convert(issueMapper.queryIssueSprintNotClosed(subIssueE.getProjectId(), subIssueE.getParentIssueId()), IssueE.class);
         //设置初始状态,跟随父类状态
         subIssueE = parentIssueE.initializationSubIssue(subIssueE, statusId, projectInfoE);
-        projectInfoRepository.updateIssueMaxNum(subIssueE.getProjectId(), 1);
+        projectInfoRepository.updateIssueMaxNum(subIssueE.getProjectId(), subIssueE.getIssueNum());
         //初始化排序
         if (subIssueE.isIssueRank()) {
             calculationRank(subIssueE.getProjectId(), subIssueE);
@@ -2377,7 +2375,8 @@ public class IssueServiceImpl implements IssueService {
         issueDOList.forEach(issueDetailDO -> {
             IssueE issueE = issueAssembler.toTarget(issueDetailDO, IssueE.class);
             //初始化创建issue设置issue编号、项目默认设置
-            issueE.initializationIssueByCopy(initStatusId, projectInfoE);
+            issueE.initializationIssueByCopy(initStatusId);
+            projectInfoRepository.updateIssueMaxNum(projectId, issueE.getIssueNum());
             issueE.setApplyType(SchemeApplyType.TEST);
             Long issueId = issueRepository.create(issueE).getIssueId();
             handleCreateCopyLabelIssueRel(issueDetailDO.getLabelIssueRelDOList(), issueId);
@@ -2387,7 +2386,6 @@ public class IssueServiceImpl implements IssueService {
         VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
         versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
         issueRepository.batchIssueToVersion(versionIssueRelE);
-        projectInfoRepository.updateIssueMaxNum(projectId, issueDOList.size());
         return issueIds;
     }
 
