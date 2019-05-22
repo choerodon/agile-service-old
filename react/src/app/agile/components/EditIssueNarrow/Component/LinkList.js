@@ -33,7 +33,7 @@ class IssueList extends Component {
   render() {
     const {
       issue, i, showAssignee,
-      canDelete = true, onOpen,
+      canDelete = true, onOpen, type,
     } = this.props;
     return (
       <div
@@ -124,7 +124,7 @@ class IssueList extends Component {
               }}
             >
               <Popconfirm
-                title="确认要删除该问题链接吗?"
+                title={type === 'test' ? '确认要删除该测试用例吗?' : '确认要删除该问题链接吗?'}
                 placement="left"
                 onConfirm={this.confirm.bind(this, issue.linkId)}
                 onCancel={this.cancel}

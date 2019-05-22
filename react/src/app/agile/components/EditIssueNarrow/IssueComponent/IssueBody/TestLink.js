@@ -34,6 +34,7 @@ const { AppState } = stores;
         onRefresh={() => {
           reloadIssue(id);
         }}
+        type="test"
       />
     );
   }
