@@ -90,8 +90,11 @@ class Epic extends Component {
               所有问题
             </div>
             <DragDropContext
-              onDragEnd={(result) => {
+              onDragEnd={(result) => {                
                 const { destination, source } = result;
+                if (!destination || !source) {
+                  return;
+                }
                 const { index: destinationIndex } = destination;
                 const { index: sourceIndex } = source;
                 BacklogStore.moveEpic(sourceIndex, destinationIndex);
