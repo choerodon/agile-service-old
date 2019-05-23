@@ -44,7 +44,7 @@ const STATUS = {
   },
 };
 const SprintItem = ({
-  borderColor, sprint, todayIsBetween,
+  borderColor, sprint, isCurrentSprint,
 }) => {
   const isDoing = sprint.statusCode === 'started';
   return (
@@ -61,7 +61,7 @@ const SprintItem = ({
         title={null}
         placement="bottomLeft"
       >
-        <div style={{ padding: '0 10px', background: `${todayIsBetween ? '#4D90FE' : '#fff'}`, color: `${todayIsBetween ? '#fff' : '#000'}` }}>
+        <div style={{ padding: '0 10px', background: `${isCurrentSprint ? '#4D90FE' : '#fff'}`, color: `${isCurrentSprint ? '#fff' : '#000'}` }}>
           {sprint.sprintName}
         </div>
       </Popover>
@@ -94,6 +94,27 @@ const CardTitle = ({
   );
 };
 class PiItem extends Component {
+  getIsCurrentSprint=({
+    PIDoing,
+    todayIsBetweenPI,
+    todayIsBetween,
+    ipStartDate,
+    index,
+    SprintList,
+  }) => {
+    if (PIDoing) {
+      if (todayIsBetweenPI) {
+        return todayIsBetween;
+      } else if (moment().isBefore(moment(ipStartDate))) {
+        return index === 0;
+      } else {
+        return index === SprintList.length - 1;
+      }
+    } else {
+      return false;
+    }
+  }
+
   render() {
     const { pi, diff } = this.props;
     const {
@@ -104,7 +125,8 @@ class PiItem extends Component {
     const ipStartDate = SprintList && SprintList.length > 0 ? SprintList[SprintList.length - 1].endDate : moment();
     const ipEndDate = endDate;
     const ipWeeks = SprintList && SprintList.length > 0 ? moment.range(SprintList[SprintList.length - 1].endDate, endDate).diff('days') : 0;
-
+    const todayIsBetweenPI = moment().isBetween(pi.startDate, pi.endDate);
+    const PIDoing = statusCode === 'doing';
     const style = STATUS[statusCode];    
     return (
       <div
@@ -129,9 +151,18 @@ class PiItem extends Component {
             </Popover>
           </div>
           <div className="PiItem-pi-sprints">
-            {SprintList.map((sprint) => {
+            {SprintList.map((sprint, index) => {
               const todayIsBetween = moment().isBetween(sprint.startDate, sprint.endDate);
-              return <SprintItem borderColor={style.sprintBorder} sprint={sprint} todayIsBetween={todayIsBetween} />;
+              
+              const isCurrentSprint = this.getIsCurrentSprint({
+                PIDoing,
+                todayIsBetweenPI,
+                todayIsBetween,
+                ipStartDate,
+                index,
+                SprintList,
+              });
+              return <SprintItem borderColor={style.sprintBorder} sprint={sprint} isCurrentSprint={isCurrentSprint} />;
             })}
             {ipWeeks ? (
               <div className="PiItem-pi-sprint" style={{ flex: ipWeeks, borderColor: style.sprintBorder }}>
