@@ -157,15 +157,9 @@ public class ExcelServiceImpl implements ExcelService {
         try {
             wb = ExcelUtil.dropDownList2007(wb, sheet, priorityList, 1, 500, 2, 2, HIDDEN_PRIORITY, 2);
             wb = ExcelUtil.dropDownList2007(wb, sheet, issueTypeList, 1, 500, 3, 3, HIDDEN_ISSUE_TYPE, 3);
-            if (!versionList.isEmpty()) {
-                wb = ExcelUtil.dropDownList2007(wb, sheet, versionList, 1, 500, 6, 6, HIDDEN_FIX_VERSION, 4);
-            }
-            if (!componentList.isEmpty()) {
-                wb = ExcelUtil.dropDownList2007(wb, sheet, componentList, 1, 500, 8, 8, HIDDEN_COMPONENT, 5);
-            }
-            if (!sprintList.isEmpty()) {
-                wb = ExcelUtil.dropDownList2007(wb, sheet, sprintList, 1, 500, 9, 9, HIDDEN_SPRINT, 6);
-            }
+            wb = ExcelUtil.dropDownList2007(wb, sheet, versionList, 1, 500, 6, 6, HIDDEN_FIX_VERSION, 4);
+            wb = ExcelUtil.dropDownList2007(wb, sheet, componentList, 1, 500, 8, 8, HIDDEN_COMPONENT, 5);
+            wb = ExcelUtil.dropDownList2007(wb, sheet, sprintList, 1, 500, 9, 9, HIDDEN_SPRINT, 6);
             wb.write(response.getOutputStream());
         } catch (Exception e) {
             LOGGER.info(e.getMessage());
