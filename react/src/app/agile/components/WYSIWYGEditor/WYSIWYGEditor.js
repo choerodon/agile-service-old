@@ -130,7 +130,7 @@ class WYSIWYGEditor extends Component {
             placeholder={placeholder || '描述'}
             defaultValue={value}
             onChange={this.handleChange}
-            bounds={this.container}
+            bounds=".react-quill-editor"
           />
         </div>
         {

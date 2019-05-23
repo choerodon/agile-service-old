@@ -105,23 +105,24 @@ class ColumnPage extends Component {
         const code = result.draggableId.split(',')[0];
         const columnId = result.source.droppableId.split(',')[1];
         const minNum = result.source.droppableId.split(',')[2];
-        let totalNum = 0;
-        if (KanbanStore.getCurrentConstraint !== 'constraint_none') {
-          for (
-            let index = 0, len = newState[columnIndex].subStatuses.length;
-            index < len;
-            index += 1) {
-            for (
-              let index2 = 0, len2 = newState[columnIndex].subStatuses[index].issues.length;
-              index2 < len2;
-              index2 += 1) {
-              if (KanbanStore.getCurrentConstraint === 'issue') {
-                totalNum += 1;
-              } else if (newState[columnIndex].subStatuses[index].issues[index2].issueTypeDTO.typeCode !== 'sub_task') {
-                totalNum += 1;
-              }
-            }
-          }/* eslint-disable */
+        // let totalNum = 0;
+        // if (KanbanStore.getCurrentConstraint !== 'constraint_none') {
+        //   for (
+        //     let index = 0, len = newState[columnIndex].subStatuses.length;
+        //     index < len;
+        //     index += 1) {
+        //     for (
+        //       let index2 = 0, len2 = newState[columnIndex].subStatuses[index].issues.length;
+        //       index2 < len2;
+        //       index2 += 1) {
+        //       if (KanbanStore.getCurrentConstraint === 'issue') {
+        //         totalNum += 1;
+        //       } else if (newState[columnIndex].subStatuses[index].issues[index2].issueTypeDTO.typeCode !== 'sub_task') {
+        //         totalNum += 1;
+        //       }
+        //     }
+        //   }
+        /* eslint-disable */
           // if (!isNaN(minNum)) {
           //   /* eslint-enable */
           //   if (parseInt(totalNum, 10) < parseInt(minNum, 10)) {
@@ -129,7 +130,7 @@ class ColumnPage extends Component {
           //     return;
           //   }
           // }
-        }
+        // }
         for (let index = 0, len = newState.length; index < len; index += 1) {
           if (String(newState[index].columnId) === String(result.destination.droppableId.split(',')[1])) {
             newState[index].subStatuses.splice(result.destination.index, 0, draggableData);
@@ -160,23 +161,23 @@ class ColumnPage extends Component {
         const originColumnId = result.source.droppableId.split(',')[1] === 'unset' ? 0 : result.source.droppableId.split(',')[1];
         const minNum = result.source.droppableId.split(',')[2];
         const maxNum = result.destination.droppableId.split(',')[3];
-        let totalNum = 0;
-        if (KanbanStore.getCurrentConstraint !== 'constraint_none') {
-          for (
-            let index = 0, len = newState[columnIndex].subStatuses.length;
-            index < len;
-            index += 1) {
-            for (
-              let index2 = 0, len2 = newState[columnIndex].subStatuses[index].issues.length;
-              index2 < len2;
-              index2 += 1) {
-              if (KanbanStore.getCurrentConstraint === 'issue') {
-                totalNum += 1;
-              } else if (newState[columnIndex].subStatuses[index].issues[index2].issueTypeDTO.typeCode !== 'sub_task') {
-                totalNum += 1;
-              }
-            }
-          }
+        // let totalNum = 0;
+        // if (KanbanStore.getCurrentConstraint !== 'constraint_none') {
+        //   for (
+        //     let index = 0, len = newState[columnIndex].subStatuses.length;
+        //     index < len;
+        //     index += 1) {
+        //     for (
+        //       let index2 = 0, len2 = newState[columnIndex].subStatuses[index].issues.length;
+        //       index2 < len2;
+        //       index2 += 1) {
+        //       if (KanbanStore.getCurrentConstraint === 'issue') {
+        //         totalNum += 1;
+        //       } else if (newState[columnIndex].subStatuses[index].issues[index2].issueTypeDTO.typeCode !== 'sub_task') {
+        //         totalNum += 1;
+        //       }
+        //     }
+        //   }
           /* eslint-disable */
           // if (!isNaN(minNum)) {
           //   /* eslint-enable */
@@ -185,39 +186,39 @@ class ColumnPage extends Component {
           //     return;
           //   }
           // }
-          let destinationTotal = 0;
-          for (let index = 0, len = newState.length; index < len; index += 1) {
-            if (parseInt(newState[index].columnId, 10) === parseInt(columnId, 10)) {
-              for (
-                let index2 = 0, len2 = newState[index].subStatuses.length;
-                index2 < len2;
-                index2 += 1) {
-                for (
-                  let index3 = 0, len3 = newState[index].subStatuses[index2].issues.length;
-                  index3 < len3;
-                  index3 += 1) {
-                  if (KanbanStore.getCurrentConstraint === 'issue') {
-                    destinationTotal += 1;
-                  } else if (newState[index].subStatuses[index2].issues[index3].issueTypeDTO.typeCode !== 'sub_task') {
-                    destinationTotal += 1;
-                  }
-                }
-              }
-            }
-          }
-          let draggableTotal = 0;
-          for (let index = 0, len = draggableData.issues.length; index < len; index += 1) {
-            if (KanbanStore.getCurrentConstraint === 'issue') {
-              draggableTotal += 1;
-            } else if (draggableData.issues[index].issueTypeDTO.typeCode !== 'sub_task') {
-              draggableTotal += 1;
-            }
-          }
+          // let destinationTotal = 0;
+          // for (let index = 0, len = newState.length; index < len; index += 1) {
+          //   if (parseInt(newState[index].columnId, 10) === parseInt(columnId, 10)) {
+          //     for (
+          //       let index2 = 0, len2 = newState[index].subStatuses.length;
+          //       index2 < len2;
+          //       index2 += 1) {
+          //       for (
+          //         let index3 = 0, len3 = newState[index].subStatuses[index2].issues.length;
+          //         index3 < len3;
+          //         index3 += 1) {
+          //         if (KanbanStore.getCurrentConstraint === 'issue') {
+          //           destinationTotal += 1;
+          //         } else if (newState[index].subStatuses[index2].issues[index3].issueTypeDTO.typeCode !== 'sub_task') {
+          //           destinationTotal += 1;
+          //         }
+          //       }
+          //     }
+          //   }
+          // }
+          // let draggableTotal = 0;
+          // for (let index = 0, len = draggableData.issues.length; index < len; index += 1) {
+          //   if (KanbanStore.getCurrentConstraint === 'issue') {
+          //     draggableTotal += 1;
+          //   } else if (draggableData.issues[index].issueTypeDTO.typeCode !== 'sub_task') {
+          //     draggableTotal += 1;
+          //   }
+          // }
           // if ((destinationTotal + draggableTotal) > parseInt(maxNum, 10)) {
           //   Choerodon.prompt('移动至目标列后的issue数大于目标列的最大issue数，无法移动状态');
           //   return;
           // }
-        }
+        // }
         for (let index = 0, len = newState.length; index < len; index += 1) {
           if (String(newState[index].columnId) === String(result.destination.droppableId.split(',')[1])) {
             newState[index].subStatuses.splice(result.destination.index, 0, draggableData);

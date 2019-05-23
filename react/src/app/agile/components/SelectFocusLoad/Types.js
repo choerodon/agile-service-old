@@ -58,8 +58,8 @@ export default {
       }); 
       Promise.all(requestQue).then((users) => {
         users.forEach((res) => {
-          if (res.content && res.content.length > 0) {
-            extraList.push(res.content[0]);
+          if (res.list && res.list.length > 0) {
+            extraList.push(res.list[0]);
           }
         });
         resolve(extraList);
