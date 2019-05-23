@@ -48,9 +48,6 @@ class UploadControl extends React.Component {
         if (file.size > 1024 * 1024 * 30) {
           Choerodon.prompt('文件不能超过30M');
           return false;
-        } else if (fileList.length >= 10) {
-          Choerodon.prompt('最多上传10个文件');
-          return false;
         } else if (file.name && encodeURI(file.name).length > 210) {
           Choerodon.prompt('文件名过长');
           return false;

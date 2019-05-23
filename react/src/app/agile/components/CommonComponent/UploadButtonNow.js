@@ -25,9 +25,6 @@ class UploadButtonNow extends React.Component {
         if (file.size > 1024 * 1024 * 30) {
           Choerodon.prompt('文件不能超过30M');
           return false;
-        } else if (fileList.length >= 10) {
-          Choerodon.prompt('最多上传10个文件');
-          return false;
         } else if (file.name && encodeURI(file.name).length > 210) {
           // check name length, the name in the database will
           // like `file_uuid_encodeURI(file.name)`,

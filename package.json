@@ -43,7 +43,7 @@
     "compile": "gulp compile",
     "lint-staged": "lint-staged",
     "lint-staged:es": "eslint",
-    "prepublishOnly": "choerodon-front-boot prepublish",
+    "prepublish": "choerodon-front-boot prepublish",
     "postpublish": "choerodon-front-boot postpublish"
   },
   "author": "",

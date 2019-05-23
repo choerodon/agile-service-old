@@ -225,6 +225,7 @@ class BoardHome extends Component {
         ['assignee', this.dataConverter.getAssigneeData],
         ['feature', this.dataConverter.getFeatureData],
         ['swimlane_none', this.dataConverter.getAllData],
+        ['undefined', this.dataConverter.getAllData],
       ]);
       const renderData = renderDataMap.get(defaultBoard.userDefaultBoard)();
       const canDragOn = this.dataConverter.getCanDragOn();
