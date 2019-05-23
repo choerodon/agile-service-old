@@ -4,10 +4,12 @@ import PropTypes from 'prop-types';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ImageDrop from './ImageDrop';
+import Link from './Link';
 import './WYSIWYGEditor.scss';
 import cls from '../CommonComponent/ClickOutSide';
 
 Quill.register('modules/imageDrop', ImageDrop);
+Quill.register('formats/link', Link);
 const modules = {
   toolbar: [
     ['bold', 'italic', 'underline', 'strike', 'blockquote'],
@@ -118,7 +120,7 @@ class WYSIWYGEditor extends Component {
     const editHeight = newStyle.height === '100%' ? `calc(100% - ${toolbarHeight || '42px'})` : (newStyle.height - (toolbarHeight || 42));
     return (
       <div style={{ width: '100%', height: '100%' }}>
-        <div style={newStyle} className="react-quill-editor">
+        <div style={newStyle} className="react-quill-editor" ref={(container) => { this.container = container; }}>
           <ReactQuill
             ref={saveRef}
             theme="snow"
@@ -128,6 +130,7 @@ class WYSIWYGEditor extends Component {
             placeholder={placeholder || '描述'}
             defaultValue={value}
             onChange={this.handleChange}
+            bounds={this.container}
           />
         </div>
         {
