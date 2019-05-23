@@ -7,6 +7,8 @@ package io.choerodon.agile.infra.dataobject;
  */
 public class UnfinishedIssueDO {
 
+    private Long issueId;
+
     private String issueNum;
 
     private Long issueTypeId;
@@ -16,6 +18,14 @@ public class UnfinishedIssueDO {
     private Long priorityId;
 
     private String summary;
+
+    public Long getIssueId() {
+        return issueId;
+    }
+
+    public void setIssueId(Long issueId) {
+        this.issueId = issueId;
+    }
 
     public String getIssueNum() {
         return issueNum;
