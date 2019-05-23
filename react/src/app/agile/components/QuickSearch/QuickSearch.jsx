@@ -43,7 +43,7 @@ class QuickSearch extends Component {
         value: item.filterId,
       }));
       // 非停用角色
-      const resUserData = res[1].content.filter(item => item.enabled).map(item => ({
+      const resUserData = res[1].list.filter(item => item.enabled).map(item => ({
         id: item.id,
         realName: item.realName,
       }));
@@ -191,7 +191,7 @@ class QuickSearch extends Component {
                         axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?page=1&size=40&param=${value}`).then((res) => {
                         // Set 用于查询是否有 id 重复的，没有重复才往里加
                           const temp = new Set(userDataArray.map(item => item.id));
-                          res.content.filter(item => item.enabled).forEach((item) => {
+                          res.list.filter(item => item.enabled).forEach((item) => {
                             if (!temp.has(item.id)) {
                               userDataArray.push({
                                 id: item.id,
