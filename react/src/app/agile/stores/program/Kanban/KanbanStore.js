@@ -25,7 +25,7 @@ class KanbanStore {
   }
 
   @computed get getIssue() {
-    return this.issue;
+    return toJS(this.issue);
   }
 
   // issue attribute
