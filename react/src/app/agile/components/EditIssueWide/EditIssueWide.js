@@ -168,6 +168,7 @@ let hasPermission;
       style,
       onUpdate,
       onDeleteIssue,
+      onDeleteSubIssue,
     } = this.props;
     const {
       issueLoading,
@@ -258,6 +259,7 @@ let hasPermission;
                 store={store}
                 reloadIssue={this.loadIssueDetail}
                 onUpdate={onUpdate}
+                onDeleteSubIssue={onDeleteSubIssue}
                 loginUserId={loginUserId}
                 hasPermission={hasPermission}
               />

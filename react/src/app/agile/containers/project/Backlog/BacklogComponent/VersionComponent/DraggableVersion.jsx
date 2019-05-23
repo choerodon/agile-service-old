@@ -38,20 +38,6 @@ class VersionItem extends Component {
     );
   }
 
-  /**
-   *点击单个menu的事件
-   *
-   * @param {*} e
-   * @memberof VersionItem
-   */
-  clickMenu(e) {
-    e.domEvent.stopPropagation();
-    if (e.key === '0') {
-      this.setState({
-        editName: true,
-      });
-    }
-  }
 
   /**
    *更新描述
@@ -84,6 +70,7 @@ class VersionItem extends Component {
     const { objectVersionNumber, versionId } = item;
     const { value } = e.target;
     if (item && item.name === value) {
+      Choerodon.prompt('版本名称重复');
       this.setState({
         editName: false,
       });
@@ -158,6 +145,21 @@ class VersionItem extends Component {
     this.setState({
       expand: !expand,
     });
+  }
+
+  /**
+   *点击单个menu的事件
+   *
+   * @param {*} e
+   * @memberof VersionItem
+   */
+  clickMenu(e) {
+    e.domEvent.stopPropagation();
+    if (e.key === '0') {
+      this.setState({
+        editName: true,
+      });
+    }
   }
 
   render() {
@@ -263,6 +265,7 @@ class VersionItem extends Component {
                       )}
               >
                 <EasyEdit
+                  maxLength="30"
                   type="input"
                   defaultValue={item.description}
                   enterOrBlur={this.handleOnBlurDes.bind(this)}

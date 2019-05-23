@@ -48,6 +48,13 @@ class ExpandWideCard extends Component {
             Promise.resolve();
           });
         }}
+        onDeleteSubIssue={() => {
+          const filterControler = new IssueFilterControler();
+          filterControler.refresh('refresh').then((res) => {
+            IssueStore.refreshTrigger(res);
+            Promise.resolve();
+          });
+        }}
       /> 
     ) : null;
   }

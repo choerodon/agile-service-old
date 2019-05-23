@@ -161,6 +161,7 @@ class EditIssueNarrow extends Component {
       style,
       onUpdate,
       onDeleteIssue,
+      onDeleteSubIssue,
     } = this.props;
     const {
       issueLoading,
@@ -248,6 +249,7 @@ class EditIssueNarrow extends Component {
                 store={store}
                 reloadIssue={this.loadIssueDetail}
                 onUpdate={onUpdate}
+                onDeleteSubIssue={onDeleteSubIssue}
                 loginUserId={loginUserId}
                 hasPermission={hasPermission}
               />

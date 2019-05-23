@@ -53,6 +53,7 @@
     "no-console": "error",
     "no-unused-vars":"warn",
     "no-restricted-syntax":"off",
+    "react/sort-comp":"off",
     "jsx-a11y/anchor-is-valid": [
       "warn",
       {
