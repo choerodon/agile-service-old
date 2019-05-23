@@ -23,7 +23,7 @@ public interface ProjectInfoRepository {
      * @param issueMaxNum issueMaxNum
      * @return int
      */
-    int updateIssueMaxNum(Long projectId, String issueMaxNum);
+    void updateIssueMaxNum(Long projectId, String issueMaxNum);
 
     /**
      * 更新
