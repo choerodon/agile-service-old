@@ -17,7 +17,7 @@ public interface ProjectInfoMapper extends BaseMapper<ProjectInfoDO> {
     ProjectInfoDO queryByProjectId(@Param("projectId") Long projectId);
 
     /**
-     * 更新MaxNum+increase
+     * 更新MaxNum
      *
      * @param projectId projectId
      * @param issueMaxNum  issueMaxNum

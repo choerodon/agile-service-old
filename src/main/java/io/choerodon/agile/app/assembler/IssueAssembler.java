@@ -1,12 +1,14 @@
 package io.choerodon.agile.app.assembler;
 
 import com.google.common.collect.Lists;
+
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.core.convertor.ConvertHelper;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -61,7 +63,7 @@ public class IssueAssembler extends AbstractAssembler {
                 assigneeIdList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
         UserMessageDO assigneeUserDO = userMessageDOMap.get(issueDTO.getAssigneeId());
         UserMessageDO reporterUserDO = userMessageDOMap.get(issueDTO.getReporterId());
-        String assigneeName =  assigneeUserDO!= null ? assigneeUserDO.getName() : null;
+        String assigneeName = assigneeUserDO != null ? assigneeUserDO.getName() : null;
         String assigneeLoginName = assigneeUserDO != null ? assigneeUserDO.getLoginName() : null;
         String assigneeRealName = assigneeUserDO != null ? assigneeUserDO.getRealName() : null;
         String reporterName = reporterUserDO != null ? reporterUserDO.getName() : null;
@@ -320,13 +322,21 @@ public class IssueAssembler extends AbstractAssembler {
             Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
             issueComponentDetailDOS.parallelStream().forEachOrdered(issueDO -> {
                 String assigneeName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getName() : null;
+                String assigneeLoginName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getLoginName() : null;
+                String assigneeRealName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getRealName() : null;
                 String reporterName = usersMap.get(issueDO.getReporterId()) != null ? usersMap.get(issueDO.getReporterId()).getName() : null;
+                String reporterLoginName = usersMap.get(issueDO.getReporterId()) != null ? usersMap.get(issueDO.getReporterId()).getLoginName() : null;
+                String reporterRealName = usersMap.get(issueDO.getReporterId()) != null ? usersMap.get(issueDO.getReporterId()).getRealName() : null;
                 String assigneeImageUrl = assigneeName != null ? usersMap.get(issueDO.getAssigneeId()).getImageUrl() : null;
                 String reporterImageUrl = reporterName != null ? usersMap.get(issueDO.getReporterId()).getImageUrl() : null;
                 IssueComponentDetailDTO issueComponentDetailDTO = new IssueComponentDetailDTO();
                 BeanUtils.copyProperties(issueDO, issueComponentDetailDTO);
                 issueComponentDetailDTO.setAssigneeName(assigneeName);
+                issueComponentDetailDTO.setAssigneeLoginName(assigneeLoginName);
+                issueComponentDetailDTO.setAssigneeRealName(assigneeRealName);
                 issueComponentDetailDTO.setReporterName(reporterName);
+                issueComponentDetailDTO.setReporterLoginName(reporterLoginName);
+                issueComponentDetailDTO.setReporterRealName(reporterRealName);
                 issueComponentDetailDTO.setAssigneeImageUrl(assigneeImageUrl);
                 issueComponentDetailDTO.setReporterImageUrl(reporterImageUrl);
                 issueComponentDetailDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));

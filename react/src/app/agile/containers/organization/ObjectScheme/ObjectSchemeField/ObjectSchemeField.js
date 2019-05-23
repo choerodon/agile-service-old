@@ -282,7 +282,7 @@ class ObjectSchemeField extends Component {
                   initialValue: field.name,
                 })(
                   <Input
-                    maxLength={15}
+                    maxLength={6}
                     label={<FormattedMessage id="name" />}
                   />,
                 )}
@@ -521,6 +521,7 @@ class ObjectSchemeField extends Component {
                           <InputNumber
                             step={isCheck ? 0.1 : 1}
                             label={<FormattedMessage id="field.default" />}
+                            maxLength={8}
                           />,
                         )}
                       </FormItem>
@@ -539,6 +540,7 @@ class ObjectSchemeField extends Component {
                       })(
                         <Input
                           label={<FormattedMessage id="field.default" />}
+                          maxLength={100}
                         />,
                       )}
                     </FormItem>
@@ -556,6 +558,7 @@ class ObjectSchemeField extends Component {
                       })(
                         <TextArea
                           label={<FormattedMessage id="field.default" />}
+                          maxLength={255}
                         />,
                       )}
                     </FormItem>

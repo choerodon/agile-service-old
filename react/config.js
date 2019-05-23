@@ -7,5 +7,6 @@ const config = {
   buildType: 'single',
   dashboard: {},
   resourcesLevel: ['site', 'origanization', 'project', 'user'],
+  webSocketServer: 'ws://notify.staging.saas.hand-china.com',
 };
 module.exports = config;

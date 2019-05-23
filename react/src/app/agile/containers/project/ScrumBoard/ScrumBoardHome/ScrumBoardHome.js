@@ -242,6 +242,7 @@ class ScrumBoardHome extends Component {
         ['swimlane_epic', this.dataConverter.getEpicData],
         ['assignee', this.dataConverter.getAssigneeData],
         ['swimlane_none', this.dataConverter.getAllData],
+        ['undefined', this.dataConverter.getAllData],
       ]);
       const renderData = renderDataMap.get(defaultBoard.userDefaultBoard)();
       const canDragOn = this.dataConverter.getCanDragOn();

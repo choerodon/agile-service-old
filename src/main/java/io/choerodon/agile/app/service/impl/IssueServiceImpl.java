@@ -915,7 +915,7 @@ public class IssueServiceImpl implements IssueService {
         //处理子任务与子缺陷
         List<Long> subTaskIds = issueMapper.querySubIssueIds(projectId, moveIssueIds);
         List<Long> subBugIds = issueMapper.querySubBugIds(projectId, moveIssueIds);
-        if (subTaskIds != null && !subBugIds.isEmpty()) {
+        if (subTaskIds != null && !subTaskIds.isEmpty()) {
             moveIssueIds.addAll(subTaskIds);
         }
         if (subBugIds != null && !subBugIds.isEmpty()) {
