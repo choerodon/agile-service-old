@@ -52,7 +52,7 @@ class RelateStory extends Component {
   }
 
   loadIssues=(isInit) => {
-    if (this.storyType) {
+    if (this.types) {
       this.setState({
         selectLoading: true,
       });
@@ -121,12 +121,12 @@ class RelateStory extends Component {
       selectLoading: true,
     });
     loadIssueTypes().then((issueTypes) => {
-      const storyType = issueTypes.find(type => type.typeCode === 'story');
-      if (storyType) {
-        this.storyType = storyType;
+      const types = issueTypes.filter(type => type.typeCode === 'story' || type.typeCode === 'task');
+      if (types) {
+        this.types = types;
         this.filters = {
           advancedSearchArgs: {
-            issueTypeId: [storyType.id],        
+            issueTypeId: types.map(type => type.id),        
           },     
         };
         this.loadIssues(true);
@@ -145,7 +145,7 @@ class RelateStory extends Component {
     return (
       <Sidebar
         className="c7n-RelateStory"
-        title="关联故事"
+        title="关联问题"
         visible={visible || false}
         onOk={this.handleRelateStory}
         onCancel={onCancel}
@@ -155,14 +155,14 @@ class RelateStory extends Component {
       >
         <Content
           style={{ padding: 0 }}
-          title="为Bug关联故事"
-          description="请在下面选择所要关联的故事。"
+          title="为Bug关联问题"
+          description="请在下面选择所要关联的问题。"
         >
           <Form layout="vertical">
-            <FormItem label="故事" style={{ width: 520 }}>
+            <FormItem label="问题" style={{ width: 520 }}>
               {getFieldDecorator('relateIssueId', {})(
                 <Select
-                  label="故事"
+                  label="问题"
                   allowClear                  
                   dropdownClassName="issueSelectDropDown"
                   loading={selectLoading}                 
