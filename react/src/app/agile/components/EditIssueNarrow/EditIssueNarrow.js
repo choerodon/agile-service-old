@@ -51,11 +51,16 @@ class EditIssueNarrow extends Component {
         organizationId: AppState.currentMenuType.organizationId,
         projectId: AppState.currentMenuType.id,
         resourceType: 'project',
+      }, {
+        code: 'agile-service.notice.queryByProjectId',
+        organizationId: AppState.currentMenuType.organizationId,
+        projectId: AppState.currentMenuType.id,
+        resourceType: 'project',
       }]),
     ])
       .then(axios.spread((users, permission) => {
         loginUserId = users.id;
-        hasPermission = permission[0].approve;
+        hasPermission = permission[0].approve || permission[1].approve;
       }));
     this.setQuery();
   }

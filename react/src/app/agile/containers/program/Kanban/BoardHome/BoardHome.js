@@ -143,7 +143,7 @@ class BoardHome extends Component {
     const [SwimLaneId, issueId] = draggableId.split(['/']);
     const allDataMap = KanbanStore.getAllDataMap;
     KanbanStore.resetCanDragOn();
-    KanbanStore.setIsDragging(true);
+    KanbanStore.setIsDragging(false);
     headerStyle.unMountStyle();
     if (!destination) {
       return;
