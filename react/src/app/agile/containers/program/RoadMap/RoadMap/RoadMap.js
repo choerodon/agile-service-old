@@ -105,14 +105,19 @@ class RoadMap extends Component {
           }
           </Spin>
           {
-            editFeatureVisible && (              
-            <EditFeature
-              store={FeatureStore}
-              issueId={currentFeature}
-              onCancel={this.handleCancel}
-              onUpdate={this.loadRoadMap}
-              onDeleteIssue={this.handleDelete}
-            />             
+            editFeatureVisible && ( 
+            <div style={{
+              position: 'fixed', bottom: 0, right: 0, top: 155, 
+            }}
+            >             
+              <EditFeature
+                store={FeatureStore}
+                issueId={currentFeature}
+                onCancel={this.handleCancel}
+                onUpdate={this.loadRoadMap}
+                onDeleteIssue={this.handleDelete}
+              />         
+            </div>    
             )}
         </Content>
       </Page>
