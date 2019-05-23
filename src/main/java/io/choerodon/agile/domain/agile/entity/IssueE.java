@@ -2,6 +2,7 @@ package io.choerodon.agile.domain.agile.entity;
 
 
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
+import io.choerodon.agile.infra.common.utils.IssueNumUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.LookupValueDO;
 import io.choerodon.core.oauth.DetailsHelper;
@@ -329,7 +330,7 @@ public class IssueE {
         subIssueE.setTypeCode(SUB_TASK);
         subIssueE.setEpicId(0L);
         subIssueE.initializationReporter();
-        subIssueE.initializationIssueNum(projectInfoE);
+        subIssueE.initializationIssueNum(projectInfoE.getProjectId());
         subIssueE.initializationIssueUser();
         subIssueE.initializationDefaultSetting(projectInfoE);
         return subIssueE;
@@ -363,7 +364,7 @@ public class IssueE {
         //项目默认设置
         initializationDefaultSetting(projectInfoE);
         //编号设置
-        initializationIssueNum(projectInfoE);
+        initializationIssueNum(projectInfoE.getProjectId());
     }
 
     private void initializationDefaultSetting(ProjectInfoE projectInfoE) {
@@ -403,21 +404,18 @@ public class IssueE {
         }
     }
 
-    private void initializationIssueNum(ProjectInfoE projectInfoE) {
-        Integer max = projectInfoE.getIssueMaxNum().intValue() + 1;
+    private void initializationIssueNum(Long projectId) {
+        Long max = IssueNumUtil.getNewIssueNum(projectId);
         this.issueNum = max.toString();
     }
 
-    public void initializationIssueByCopy(Long statusId, ProjectInfoE projectInfoE) {
+    public void initializationIssueByCopy(Long statusId) {
         this.statusId = statusId;
         this.parentIssueId = 0L;
         this.issueId = null;
         this.sprintId = 0L;
         this.remainingTime = BigDecimal.valueOf(0D);
-        Long issueMaxNum = projectInfoE.getIssueMaxNum();
-        Integer max = issueMaxNum.intValue() + 1;
-        this.issueNum = max.toString();
-        projectInfoE.setIssueMaxNum(issueMaxNum + 1);
+        initializationIssueNum(projectId);
     }
 
     public void setStayDate(Date stayDate) {

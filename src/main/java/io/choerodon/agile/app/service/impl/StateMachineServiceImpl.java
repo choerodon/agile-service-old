@@ -14,9 +14,6 @@ import io.choerodon.agile.domain.agile.event.CreateIssuePayload;
 import io.choerodon.agile.domain.agile.event.CreateSubIssuePayload;
 import io.choerodon.agile.domain.agile.event.ProjectConfig;
 import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue;
-import io.choerodon.agile.infra.repository.FeatureRepository;
-import io.choerodon.agile.infra.repository.IssueRepository;
-import io.choerodon.agile.infra.repository.PiFeatureRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.common.utils.EnumUtil;
@@ -26,6 +23,9 @@ import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
+import io.choerodon.agile.infra.repository.FeatureRepository;
+import io.choerodon.agile.infra.repository.IssueRepository;
+import io.choerodon.agile.infra.repository.PiFeatureRepository;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
@@ -92,6 +92,7 @@ public class StateMachineServiceImpl implements StateMachineService {
     private FeatureRepository featureRepository;
     @Autowired
     private PiFeatureRepository piFeatureRepository;
+
     /**
      * 创建issue，用于敏捷和测试
      *
@@ -100,7 +101,7 @@ public class StateMachineServiceImpl implements StateMachineService {
      * @return
      */
     @Override
-    public synchronized IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType) {
+    public IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType) {
         if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
             throw new CommonException("error.applyType.illegal");
         }
@@ -120,7 +121,7 @@ public class StateMachineServiceImpl implements StateMachineService {
         if (initStatusId == null) {
             throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
         }
-        //处理编号
+        //获取项目信息
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(projectId);
         ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
@@ -175,7 +176,7 @@ public class StateMachineServiceImpl implements StateMachineService {
         if (initStatusId == null) {
             throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
         }
-        //处理编号
+        //获取项目信息
         ProjectInfoDO projectInfoDO = new ProjectInfoDO();
         projectInfoDO.setProjectId(subIssueE.getProjectId());
         ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
