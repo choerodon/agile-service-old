@@ -258,8 +258,11 @@ class BoardStore {
   }
 
   @action setConnectionsWhenDrag(issue) {
-    this.connections.forEach((connection) => {
+    this.connections.forEach((connection) => {      
       const { boardFeature, dependBoardFeature } = connection;
+      if (!boardFeature || !dependBoardFeature) {
+        return;
+      }
       if (boardFeature.id === issue.id) {
         boardFeature.sprintId = issue.sprintId;
         boardFeature.teamProjectId = issue.teamProjectId;
