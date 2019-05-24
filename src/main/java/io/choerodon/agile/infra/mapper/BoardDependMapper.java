@@ -15,4 +15,6 @@ public interface BoardDependMapper extends BaseMapper<BoardDependDO> {
     List<BoardDependInfoDTO> queryInfoByPiId(@Param("programId") Long programId, @Param("piId") Long piId);
 
     void deleteByBoardFeatureId(@Param("programId") Long programId, @Param("boardFeatureId") Long boardFeatureId);
+
+    void deleteByFeatureId(@Param("programId") Long programId, @Param("featureId") Long featureId);
 }
