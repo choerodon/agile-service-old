@@ -1,5 +1,6 @@
 package io.choerodon.agile.domain.agile.rule;
 
+import java.util.List;
 import java.util.Objects;
 
 import com.alibaba.fastjson.JSONObject;
@@ -176,6 +177,14 @@ public class IssueRule {
             issueDO.setIssueId(epicId);
             if (issueMapper.selectByPrimaryKey(issueDO) == null) {
                 throw new CommonException("error.epic.notFound");
+            }
+        }
+    }
+
+    public void checkBatchStoryToFeature(Long featureId) {
+        if (featureId != null && !Objects.equals(featureId, 0L)) {
+            if (issueMapper.selectByPrimaryKey(featureId) == null) {
+                throw new CommonException("error.feature.notFound");
             }
         }
     }

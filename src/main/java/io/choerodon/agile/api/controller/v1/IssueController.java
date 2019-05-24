@@ -332,6 +332,19 @@ public class IssueController {
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("story批量加入feature")
+    @PostMapping(value = "/to_feature/{featureId}")
+    public ResponseEntity batchStoryToFeature(@ApiParam(value = "项目id", required = true)
+                                              @PathVariable(name = "project_id") Long projectId,
+                                              @ApiParam(value = "featureId", required = true)
+                                              @PathVariable Long featureId,
+                                              @ApiParam(value = "issue id", required = true)
+                                              @RequestBody List<Long> issueIds) {
+        issueService.batchStoryToFeature(projectId, featureId, issueIds);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("issue批量加入冲刺")
     @PostMapping(value = "/to_sprint/{sprintId}")
     public ResponseEntity<List<IssueSearchDTO>> batchIssueToSprint(@ApiParam(value = "项目id", required = true)
