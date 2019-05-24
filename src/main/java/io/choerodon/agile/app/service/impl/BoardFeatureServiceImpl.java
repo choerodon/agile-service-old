@@ -149,10 +149,10 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
 
     @Override
     public void deleteByFeatureId(Long projectId, Long featureId) {
-        //删除boardFeature
-        boardFeatureMapper.deleteByFeatureId(projectId, featureId);
         //删除boardDepend
         boardDependMapper.deleteByFeatureId(projectId, featureId);
+        //删除boardFeature
+        boardFeatureMapper.deleteByFeatureId(projectId, featureId);
     }
 
     @Override
