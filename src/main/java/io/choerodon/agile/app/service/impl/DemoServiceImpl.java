@@ -418,8 +418,7 @@ public class DemoServiceImpl implements DemoService {
         if (projectResult == null) {
             throw new CommonException("error.project.get");
         }
-        projectInfoMapper.updateProjectInfo(projectId, date1);
-        projectInfoMapper.updateProjectIssuesInfo(projectId, date2);
+        projectInfoMapper.updateProjectAndIssues(projectId, date1, date2);
     }
 
     /**
