@@ -245,6 +245,9 @@ class BoardHome extends Component {
     return (
       <Page
         className="c7nagile-board-page"
+        service={[
+          'agile-service.board.queryByOptionsInProgram',
+        ]}
       >
         <Header title="项目群看板">
           <Button

@@ -41,6 +41,9 @@ class BoardHome extends Component {
     return (
       <Page
         className="c7nagile-BoardHome"
+        service={[
+          'agile-service.board-feature.queryBoardInfo',
+        ]}
       >
         <Header title="项目群公告板">
           <Button

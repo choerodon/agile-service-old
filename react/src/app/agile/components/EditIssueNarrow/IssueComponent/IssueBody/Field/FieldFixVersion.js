@@ -148,7 +148,7 @@ const { Text, Edit } = TextEditToggle;
                 loading={selectLoading}
                 tokenSeparators={[',']}
                 getPopupContainer={triggerNode => triggerNode.parentNode}
-                style={{ width: '150px', marginTop: 0, paddingTop: 0 }}
+                style={{ width: '180px', marginTop: 0, paddingTop: 0 }}
                 onChange={(value) => {
                   const versions = value.filter(v => v && v.trim()).map((item) => {
                     if (_.find(originVersions, { name: item })) {
