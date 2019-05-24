@@ -137,6 +137,10 @@ class BoardStore {
       const issues = [issue];
       const connections = [];
       this.connections.forEach((conn) => {
+        const { boardFeature, dependBoardFeature } = conn;
+        if (!boardFeature || !dependBoardFeature) {
+          return;
+        }
         if (conn.boardFeature.id === issue.id || conn.dependBoardFeature.id === issue.id) {
           connections.push(conn);
           if (conn.boardFeature.id === issue.id) {
