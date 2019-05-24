@@ -116,33 +116,33 @@ class Feature extends Component {
               onClick={() => {
                 this.handleClickFeature('unset');
               }}
-            // onMouseEnter={(e) => {
-            //   if (BacklogStore.isDragging) {
-            //     BacklogStore.toggleIssueDrag(true);
-            //     e.currentTarget.style.border = '2px dashed green';
-            //   }
-            // }}
-            // onMouseLeave={(e) => {
-            //   if (BacklogStore.isDragging) {
-            //     BacklogStore.toggleIssueDrag(false);
-            //     e.currentTarget.style.border = 'none';
-            //   }
-            // }}
-            // onMouseUp={(e) => {
-            //   if (BacklogStore.getIsDragging) {
-            //     BacklogStore.toggleIssueDrag(false);
-            //     e.currentTarget.style.border = 'none';
-            //     BacklogStore.axiosUpdateIssuesToEpic(
-            //       0, BacklogStore.getIssueWithEpicOrVersion,
-            //     ).then(() => {
-            //       issueRefresh();
-            //       refresh();
-            //     }).catch(() => {
-            //       issueRefresh();
-            //       refresh();
-            //     });
-            //   }
-            // }}
+              onMouseEnter={(e) => {
+                if (BacklogStore.isDragging) {
+                  BacklogStore.toggleIssueDrag(true);
+                  e.currentTarget.style.border = '2px dashed green';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (BacklogStore.isDragging) {
+                  BacklogStore.toggleIssueDrag(false);
+                  e.currentTarget.style.border = 'none';
+                }
+              }}
+              onMouseUp={(e) => {
+                if (BacklogStore.getIsDragging) {
+                  BacklogStore.toggleIssueDrag(false);
+                  e.currentTarget.style.border = 'none';
+                  BacklogStore.axiosUpdateIssuesToFeature(
+                    0, BacklogStore.getIssueWithEpicOrVersion,
+                  ).then(() => {
+                    issueRefresh();
+                    refresh();
+                  }).catch(() => {
+                    issueRefresh();
+                    refresh();
+                  });
+                }
+              }}
             >
               未指定特性的问题
             </div>

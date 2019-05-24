@@ -223,19 +223,22 @@ class BacklogHome extends Component {
 
   toggleCurrentVisible = (type) => {
     const { BacklogStore } = this.props;
-    if (BacklogStore.getCurrentVisible === type) {
+    const currentVisible = BacklogStore.getCurrentVisible;    
+    if (currentVisible === type) {
+      BacklogStore.toggleVisible(null);
       if (type === 'feature') {
         QuickSearchEvent.emit('unSelectStory');
       }
-      BacklogStore.toggleVisible(null);
     } else {
+      BacklogStore.toggleVisible(type);
+      if (currentVisible === 'feature' && type !== 'feature') {
+        QuickSearchEvent.emit('unSelectStory');
+      }
+      
       if (type === 'feature') {
         QuickSearchEvent.emit('setSelectQuickSearch', [{ key: -2, label: '仅故事' }]);
+        BacklogStore.clearMultiSelected();
       }
-      if (BacklogStore.getCurrentVisible === 'feature' && type !== 'feature') {
-        QuickSearchEvent.emit('unSelectStory');
-      }
-      BacklogStore.toggleVisible(type);
     }
   };
 
@@ -303,6 +306,7 @@ class BacklogHome extends Component {
             }}
           >
             <QuickSearch
+              showQuickSearch={BacklogStore.getCurrentVisible !== 'feature'}
               onQuickSearchChange={this.onQuickSearchChange}
               resetFilter={BacklogStore.getQuickSearchClean}
               onAssigneeChange={this.onAssigneeChange}
@@ -376,7 +380,7 @@ class BacklogHome extends Component {
             <Spin spinning={BacklogStore.getSpinIf}>
               <div className="c7n-backlog-content">
                 <DragDropContext
-                  onDragEnd={(result) => {
+                  onDragEnd={(result) => {         
                     BacklogStore.setIsDragging(null);
                     const { destination, source, draggableId } = result;
                     if (destination) {

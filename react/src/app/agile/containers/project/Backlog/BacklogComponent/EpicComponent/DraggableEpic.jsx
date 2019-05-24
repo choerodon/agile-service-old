@@ -102,8 +102,7 @@ class DraggableEpic extends Component {
     const { item, index, refresh } = this.props;
     e.stopPropagation();
     const { value } = e.target;
-    if (item && item.epicName === value) {
-      Choerodon.prompt('史诗名称重复');
+    if (item && item.epicName === value) {      
       this.setState({
         editName: false,
       });

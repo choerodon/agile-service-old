@@ -425,6 +425,10 @@ class BacklogStore {
     return axios.post(`/agile/v1/projects/${AppState.currentMenuType.id}/issues/to_epic/${epicId}`, ids);
   }
 
+  axiosUpdateIssuesToFeature(featureId, ids) {
+    return axios.post(`/agile/v1/projects/${AppState.currentMenuType.id}/issues/to_feature/${featureId}`, ids);
+  }
+
   @computed get getIsLeaveSprint() {
     return this.isLeaveSprint;
   }
@@ -542,7 +546,12 @@ class BacklogStore {
 
   @action setAssigneeFilterIds(data) {
     this.spinIf = true;
-    this.filterSelected = true;
+    if (data.length > 0) {
+      this.filterSelected = true;
+    } else if (!this.Judge.onlyMeChecked && !this.Judge.moreChecked.length && (!this.Judge.onlyStoryChecked || this.whichVisible === 'feature')) {
+      this.filterSelected = false;
+    }
+    
     this.assigneeFilterIds = data;
   }
 
@@ -688,11 +697,19 @@ class BacklogStore {
   @action dealWithShift(data, currentIndex) {
     const [startIndex, endIndex] = this.checkStartAndEnd(this.prevClickedIssue.index, currentIndex);
     for (let i = startIndex; i <= endIndex; i += 1) {
+      // if (this.whichVisible === 'feature' && data[i].issueTypeDTO.typeCode === 'story') {
+      // this.multiSelected.set(data[i].issueId, data[i]);
+      // } else {
       this.multiSelected.set(data[i].issueId, data[i]);
+      // }
     }
   }
 
   @action dealWithCtrl(data, currentIndex, item) {
+    // console.log(data, currentIndex, item);
+    // if (this.whichVisible === 'feature' && item.issueTypeDTO.typeCode !== 'story') {
+    //   return;
+    // }
     if (this.multiSelected.has(item.issueId)) {
       const prevClickedStatus = this.multiSelected.get(item.issueId);
       if (prevClickedStatus) {
@@ -879,7 +896,7 @@ class BacklogStore {
         if (!res.message) {
           this.axiosGetEpic().then((epics) => {
             this.setEpicData(epics);
-          });          
+          });
         } else {
           this.epicList.splice(destinationIndex, 1);
           this.epicList.splice(sourceIndex, 0, movedItem);
@@ -925,7 +942,7 @@ class BacklogStore {
       objectVersionNumber,
     };
     this.handleVersionDrap(req).then(
-      action('fetchSuccess', (res) => {        
+      action('fetchSuccess', (res) => {
         if (!res.message) {
           this.axiosGetVersion().then((versions) => {
             this.setVersionData(versions);
@@ -983,7 +1000,11 @@ class BacklogStore {
 
   @action resetFilter() {
     this.spinIf = true;
-    this.filter = { advancedSearchArgs: {} };
+    if (this.whichVisible === 'feature') {
+      this.filter = { advancedSearchArgs: { onlyStory: 'true' } };
+    } else {
+      this.filter = { advancedSearchArgs: {} };
+    }   
     this.versionFilter = 'all';
     this.epicFilter = 'all';
     this.quickFilters = [];
@@ -992,6 +1013,10 @@ class BacklogStore {
     this.chosenVersion = 'all';
     this.filterSelected = false;
     this.chosenFeature = 'all';
+  }
+
+  @action setFilterSelected(filterSelected) {
+    this.filterSelected = filterSelected;
   }
 
   @computed get hasFilter() {
@@ -1005,8 +1030,11 @@ class BacklogStore {
     }));
   }
 
-  @action setQuickFilters(onlyMeChecked, onlyStoryChecked, moreChecked = []) {
+  @action setQuickFilters(onlyMeChecked, onlyStoryChecked, moreChecked = []) {   
     this.spinIf = true;
+    this.Judge = {
+      onlyMeChecked, onlyStoryChecked, moreChecked,
+    };
     if (onlyMeChecked) {
       this.filter.advancedSearchArgs.ownIssue = 'true';
       this.filterSelected = true;
@@ -1014,8 +1042,10 @@ class BacklogStore {
       delete this.filter.advancedSearchArgs.ownIssue;
     }
     if (onlyStoryChecked) {
-      this.filter.advancedSearchArgs.onlyStory = 'true';
-      this.filterSelected = true;
+      this.filter.advancedSearchArgs.onlyStory = 'true';      
+      if (this.whichVisible !== 'feature') {
+        this.filterSelected = true;
+      }     
     } else {
       delete this.filter.advancedSearchArgs.onlyStory;
     }
@@ -1023,8 +1053,9 @@ class BacklogStore {
     if (moreChecked.length) {
       this.filterSelected = true;
     }
+
     // 如果一个都没选，则不显示清空
-    if (!onlyMeChecked && !onlyStoryChecked && !moreChecked.length) {
+    if (!onlyMeChecked && !onlyStoryChecked && !moreChecked.length && !this.assigneeFilterIds.length === 0) {
       this.filterSelected = false;
     }
   }
