@@ -25,7 +25,9 @@ public interface ProjectInfoMapper extends BaseMapper<ProjectInfoDO> {
      */
     int updateIssueMaxNum(@Param("projectId") Long projectId, @Param("issueMaxNum") String issueMaxNum);
 
-    void updateProjectAndIssues(@Param("projectId") Long projectId, @Param("creationDate1") Date creationDate1, @Param("creationDate2") Date creationDate2);
+    void updateProjectInfo(@Param("projectId") Long projectId, @Param("creationDate1") Date creationDate1);
+
+    void updateProjectIssuesInfo(@Param("projectId") Long projectId, @Param("creationDate2") Date creationDate2);
 
     String selectProjectCodeByProjectId(@Param("projectId") Long projectId);
 }
