@@ -53,10 +53,8 @@ class BacklogHome extends Component {
 
   /**
    * 加载选择快速搜索的冲刺数据
-   * isCreate: 是否创建冲刺，如果是则自动滚动到新建的冲刺
-   * issue: 新建的issue，如果新建issue则自动滚动到新建的issue
    */
-  getSprint = (isCreate = false, issue) => {
+  getSprint = () => {
     const { BacklogStore } = this.props;
     BacklogStore.axiosGetIssueTypes();
     BacklogStore.axiosGetDefaultPriority();
@@ -120,12 +118,12 @@ class BacklogHome extends Component {
     return retObj;
   };
 
-  refresh = (isCreate, issue) => {
-    const { location } = this.props;
-    const url = this.paramConverter(location.search);
+  refresh = (spinIf = true) => {
     const { BacklogStore } = this.props;
-    BacklogStore.setSpinIf(true);
-    this.getSprint(isCreate, issue);
+    if (spinIf) {
+      BacklogStore.setSpinIf(true);
+    }
+    this.getSprint();
     if (BacklogStore.getCurrentVisible === 'version') {
       this.loadVersion();
     } else if (BacklogStore.getCurrentVisible === 'epic') {
@@ -452,7 +450,7 @@ class BacklogHome extends Component {
               </div>
             </Spin>
             <IssueDetail
-              refresh={this.refresh}
+              refresh={() => this.refresh(false)}
               onRef={(ref) => {
                 this.IssueDetail = ref;
               }}
