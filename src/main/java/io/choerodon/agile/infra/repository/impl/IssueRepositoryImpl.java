@@ -103,6 +103,12 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
+    public Boolean batchStoryToFeature(Long projectId, Long featureId, List<Long> issueIds) {
+        issueMapper.batchStoryToFeature(projectId, featureId, issueIds);
+        return true;
+    }
+
+    @Override
     @DataLog(type = "batchRemoveVersion", single = false)
     public Integer batchRemoveVersion(Long projectId, List<Long> issueIds) {
         return issueMapper.batchRemoveFromVersion(projectId, issueIds);

@@ -871,6 +871,15 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
+    public void batchStoryToFeature(Long projectId, Long featureId, List<Long> issueIds) {
+        issueRule.checkBatchStoryToFeature(featureId);
+        List<Long> filterIds = issueMapper.filterStoryIds(projectId, issueIds);
+        if (filterIds != null && !filterIds.isEmpty()) {
+            issueRepository.batchStoryToFeature(projectId, featureId, filterIds);
+        }
+    }
+
+    @Override
     public List<IssueSearchDTO> batchIssueToEpicInStoryMap(Long projectId, Long epicId, StoryMapMoveDTO storyMapMoveDTO) {
         List<Long> issueIds = storyMapMoveDTO.getEpicIssueIds();
         issueRule.judgeExist(projectId, epicId);
