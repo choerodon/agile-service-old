@@ -76,7 +76,12 @@ class RoadMap extends Component {
     const { HeaderStore } = this.props;
     const { startDate, endDate } = this.getRange(piList);
     return (
-      <Page className="c7ntest-Issue c7ntest-region">
+      <Page
+        className="c7ntest-Issue c7ntest-region"
+        service={[
+          'agile-service.pi.queryRoadMapOfProgram',
+        ]}
+      >
         <Header
           title="路线图"
         />

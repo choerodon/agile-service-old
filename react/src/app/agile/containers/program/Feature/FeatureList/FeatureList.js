@@ -40,7 +40,7 @@ class FeatureList extends Component {
   refresh = () => {
     if (this.PlanMode) {
       this.PlanMode.refresh();
-    } else {
+    } else if (this.QueryMode) {
       this.QueryMode.refresh();
     }
   };
@@ -87,7 +87,11 @@ class FeatureList extends Component {
     const pi = FeatureStore.getPiList;
 
     return (
-      <Page>
+      <Page
+        service={[
+          'agile-service.pi.queryBacklogAll',
+        ]}
+      >
         <Header
           title="特性列表"
         >

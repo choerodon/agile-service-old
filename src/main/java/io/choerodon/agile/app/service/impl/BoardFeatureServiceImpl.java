@@ -148,6 +148,14 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     }
 
     @Override
+    public void deleteByFeatureId(Long projectId, Long featureId) {
+        //删除boardDepend
+        boardDependMapper.deleteByFeatureId(projectId, featureId);
+        //删除boardFeature
+        boardFeatureMapper.deleteByFeatureId(projectId, featureId);
+    }
+
+    @Override
     public ProgramBoardInfoDTO queryBoardInfo(Long projectId) {
         ProgramBoardInfoDTO programBoardInfo = new ProgramBoardInfoDTO();
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
@@ -187,7 +195,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         //获取团队信息
         List<ProjectRelationshipDTO> projectRelationships = userFeignClient.getProjUnderGroup(organizationId, programId, true).getBody();
         //获取公告板特性信息
-        List<BoardFeatureInfoDTO> boardFeatureInfos = boardFeatureMapper.queryInfoByPiId(programId, piId);
+        List<BoardFeatureInfoDTO> boardFeatureInfos = boardFeatureMapper.queryInfoByPiId(programId, piId).stream().filter(x->x.getIssueTypeId()!=null).collect(Collectors.toList());
         Map<Long, IssueTypeDTO> issueTypeMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         for (BoardFeatureInfoDTO boardFeatureInfo : boardFeatureInfos) {
             boardFeatureInfo.setIssueTypeDTO(issueTypeMap.get(boardFeatureInfo.getIssueTypeId()));

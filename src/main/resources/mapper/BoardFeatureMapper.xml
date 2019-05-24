@@ -73,4 +73,10 @@
         WHERE bf.program_id = #{programId}
         AND bf.id = #{boardFeatureId}
     </select>
+
+    <delete id="deleteByFeatureId" >
+        DELETE FROM agile_board_feature
+        WHERE program_id = #{programId}
+        AND feature_id = #{featureId}
+    </delete>
 </mapper>

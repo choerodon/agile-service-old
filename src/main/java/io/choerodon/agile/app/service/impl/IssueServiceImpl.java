@@ -166,18 +166,16 @@ public class IssueServiceImpl implements IssueService {
     private DataLogRedisUtil dataLogRedisUtil;
     @Autowired
     private IssueSprintRelMapper issueSprintRelMapper;
-
     @Autowired
     private FeatureMapper featureMapper;
-
     @Autowired
     private FeatureRepository featureRepository;
-
     @Autowired
     private FeatureCommonAssembler featureCommonAssembler;
-
     @Autowired
     private SendMsgUtil sendMsgUtil;
+    @Autowired
+    private BoardFeatureService boardFeatureService;
 
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
@@ -744,6 +742,8 @@ public class IssueServiceImpl implements IssueService {
         issueCommentService.deleteByIssueId(issueE.getIssueId());
         //删除附件
         issueAttachmentService.deleteByIssueId(issueE.getIssueId());
+        //删除公告板特性及依赖
+        boardFeatureService.deleteByFeatureId(projectId, issueId);
 
         if (ISSUE_TYPE_FEATURE.equals(issueE.getTypeCode())) {
             featureRepository.delete(issueId);
