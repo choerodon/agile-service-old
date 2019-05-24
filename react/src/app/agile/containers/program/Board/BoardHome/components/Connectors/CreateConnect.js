@@ -66,6 +66,7 @@ class CreateConnect extends Component {
   render() {
     const { getIndex, getPoint } = this.props;
     const { clickIssue } = BoardStore;
+    
     if (!clickIssue.id) {
       return null;
     }

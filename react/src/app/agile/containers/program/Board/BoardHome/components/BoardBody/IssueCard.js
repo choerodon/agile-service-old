@@ -172,6 +172,7 @@ export default DropTarget(
     'card',
     {
       beginDrag: (props, monitor, component) => {
+        BoardStore.clearSelect();
         if (component && component.resetZIndex) {
           component.setZIndex();
           setTimeout(() => {

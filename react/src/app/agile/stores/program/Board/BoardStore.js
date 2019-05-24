@@ -433,7 +433,7 @@ class BoardStore {
   @computed get getProjectsHeight() {
     return this.projects.map((project) => {
       const { teamSprints } = project;
-      const maxHeight = max(teamSprints.map((sprint, i) => Math.ceil(sprint.boardFeatures.length / this.sprints[i].columnWidth)));
+      const maxHeight = max(teamSprints.map((sprint, i) => Math.ceil(sprint.boardFeatures.length / this.sprints[i].columnWidth) || 1));
       return maxHeight;
     });
   }

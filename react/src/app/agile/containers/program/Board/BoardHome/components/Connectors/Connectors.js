@@ -146,27 +146,24 @@ class Connectors extends Component {
   }
 
   getIndex = (info) => {
-    const { teamProjectId, sprintId, id } = info;
+    const { teamProjectId, sprintId, id } = info || {};
     const { sprints, projects } = BoardStore;
-
-    const projectIndex = findIndex(projects, { projectId: teamProjectId });
-    const sprintIndex = findIndex(sprints, { sprintId });
-    const issueIndex = findIndex(projects[projectIndex].teamSprints[sprintIndex].boardFeatures, { id });
-    const { columnWidth } = sprints[sprintIndex];
-    const columnIndex = issueIndex % columnWidth;
-    const rowIndex = Math.ceil((issueIndex + 1) / columnWidth) - 1;
-    // console.log({
-    //   projectIndex,
-    //   sprintIndex,
-    //   columnIndex,
-    //   rowIndex,
-    // });
-    return {
-      projectIndex,
-      sprintIndex,
-      columnIndex,
-      rowIndex,
-    };
+    try {
+      const projectIndex = findIndex(projects, { projectId: teamProjectId });
+      const sprintIndex = findIndex(sprints, { sprintId });    
+      const issueIndex = findIndex(projects[projectIndex].teamSprints[sprintIndex].boardFeatures, { id });
+      const { columnWidth } = sprints[sprintIndex];
+      const columnIndex = issueIndex % columnWidth;
+      const rowIndex = Math.ceil((issueIndex + 1) / columnWidth) - 1;
+      return {
+        projectIndex,
+        sprintIndex,
+        columnIndex,
+        rowIndex,
+      };
+    } catch (error) {
+      return null;
+    }
   }
 
   checkIsWarn=({ from, to }) => from.sprintIndex <= to.sprintIndex
@@ -207,8 +204,15 @@ class Connectors extends Component {
         <g fill="none" stroke="#BEC4E5" strokeWidth="1.5">
           {
             connections.map((connection) => {
-              const fromIndexs = this.getIndex(connection.boardFeature);
-              const toIndexs = this.getIndex(connection.dependBoardFeature);
+              const { boardFeature, dependBoardFeature } = connection;
+              if (!boardFeature || !dependBoardFeature) {
+                return null;
+              }
+              const fromIndexs = this.getIndex(boardFeature);
+              const toIndexs = this.getIndex(dependBoardFeature);
+              if (!fromIndexs || !toIndexs) {
+                return null;
+              }
               const { from, to, isToLeft } = this.calulatePoint({ from: fromIndexs, to: toIndexs });
               return (
                 <Connector 
