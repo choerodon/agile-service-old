@@ -57,6 +57,9 @@ class QuickSearch extends Component {
   }
 
   componentWillUnmount() {
+    QuickSearchEvent.removeListener('clearQuickSearchSelect', this.clearQuickSearch);
+    QuickSearchEvent.removeListener('setSelectQuickSearch', this.setSelectQuickSearch);
+    QuickSearchEvent.removeListener('unSelectStory', this.unSelectStory);
     this.setState({
       userDataArray: [],
       quickSearchArray: [],
