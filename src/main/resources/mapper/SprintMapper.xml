@@ -76,7 +76,9 @@
         SELECT distinct
         ai.assignee_id
         FROM agile_issue ai
-        where ai.assignee_id is not null and ai.assignee_id != 0 AND ai.issue_id IN
+        where ai.assignee_id is not null and ai.assignee_id != 0
+        AND ai.project_id = #{projectId}
+        AND ai.issue_id IN
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
             #{issueId}
@@ -98,7 +100,9 @@
         alv2.name AS color,
         apv1.version_id AS version_id,
         apv1.name AS version_name
-        FROM (select ai3.* from agile_issue ai3 where ai3.issue_id in
+        FROM (select ai3.* from agile_issue ai3
+        where ai3.project_id = #{projectId}
+        AND ai3.issue_id in
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
             #{issueId}
@@ -321,7 +325,7 @@
         IF(ai2.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai2.issue_num)) AS issue_num,
         ai2.summary,
         ai2.rank,
-        ai2.reporter_id, ai2.description,
+        ai2.reporter_id,
         ai2.assignee_id, ai2.project_id,
         ai2.epic_id,
         aisr2.sprint_id as is_sprint_id,
@@ -335,7 +339,8 @@
         apv1.name AS version_name
         FROM
         (select * from agile_issue ai4 WHERE
-        ai4.issue_id in
+        ai4.project_id = #{projectId}
+        AND ai4.issue_id in
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
             #{issueId}
@@ -384,7 +389,7 @@
         IF(ai2.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai2.issue_num)) AS issue_num,
         ai2.summary,
         ai2.rank,
-        ai2.reporter_id, ai2.description,
+        ai2.reporter_id,
         ai2.assignee_id, ai2.project_id,
         ai2.epic_id, #{sprintId} as is_sprint_id,
         ai2.story_points, ai2.status_id,
@@ -397,7 +402,8 @@
         apv1.name AS version_name
         FROM
         (select * from agile_issue ai4 WHERE
-        ai4.issue_id in
+        ai4.project_id = #{projectId}
+        AND ai4.issue_id in
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
             #{issueId}

@@ -56,7 +56,7 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     List<Long> queryAllRankIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    Set<Long> queryAssigneeIdsByIssueIds(@Param("issueIds") List<Long> issueIds);
+    Set<Long> queryAssigneeIdsByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     List<IssueSearchDO> queryBacklogIssues(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
@@ -105,7 +105,7 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
      * @param issueIds issueIds
      * @return IssueSearchDO
      */
-    List<IssueSearchDO> queryActiveSprintIssueSearchByIssueIds(@Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds);
+    List<IssueSearchDO> queryActiveSprintIssueSearchByIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds);
 
     /**
      * 查询待办事项的所有冲刺中的所有用户
@@ -113,9 +113,9 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
      * @param projectId projectId
      * @return assigneeId
      */
-    Set<Long> queryBacklogSprintAssigneeIds(@Param("projectId")Long projectId);
+    Set<Long> queryBacklogSprintAssigneeIds(@Param("projectId") Long projectId);
 
-    List<Long> selectNotDoneByPiId(@Param("projectId") Long projectId, @Param("piId")Long piId);
+    List<Long> selectNotDoneByPiId(@Param("projectId") Long projectId, @Param("piId") Long piId);
 
     void updateSprintNameByBatch(@Param("projectId") Long projectId, @Param("sprintIds") List<Long> sprintIds);
 
@@ -125,5 +125,5 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     List<SprintDO> getSprintByProjectId(@Param("projectId") Long projectId);
 
-    List<SprintDO> selectNotDoneByProjectId(@Param("projectId")Long projectId);
+    List<SprintDO> selectNotDoneByProjectId(@Param("projectId") Long projectId);
 }
