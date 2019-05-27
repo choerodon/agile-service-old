@@ -107,6 +107,9 @@ class Version extends Component {
             <DragDropContext
               onDragEnd={(result) => {
                 const { destination, source, draggableId } = result;
+                if (!destination || !source) {
+                  return;
+                }
                 const { droppableId: destinationId, index: destinationIndex } = destination;
                 const { droppableId: sourceId, index: sourceIndex } = source;
                 BacklogStore.moveVersion(sourceIndex, destinationIndex);

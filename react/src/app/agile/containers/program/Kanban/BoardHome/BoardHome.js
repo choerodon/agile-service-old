@@ -143,7 +143,7 @@ class BoardHome extends Component {
     const [SwimLaneId, issueId] = draggableId.split(['/']);
     const allDataMap = KanbanStore.getAllDataMap;
     KanbanStore.resetCanDragOn();
-    KanbanStore.setIsDragging(true);
+    KanbanStore.setIsDragging(false);
     headerStyle.unMountStyle();
     if (!destination) {
       return;
@@ -225,6 +225,7 @@ class BoardHome extends Component {
         ['assignee', this.dataConverter.getAssigneeData],
         ['feature', this.dataConverter.getFeatureData],
         ['swimlane_none', this.dataConverter.getAllData],
+        ['undefined', this.dataConverter.getAllData],
       ]);
       const renderData = renderDataMap.get(defaultBoard.userDefaultBoard)();
       const canDragOn = this.dataConverter.getCanDragOn();
@@ -244,6 +245,9 @@ class BoardHome extends Component {
     return (
       <Page
         className="c7nagile-board-page"
+        service={[
+          'agile-service.board.queryByOptionsInProgram',
+        ]}
       >
         <Header title="项目群看板">
           <Button
@@ -333,7 +337,7 @@ class BoardHome extends Component {
 
           </Spin>
         </div>
-        <CreateFeatureContainer onCreate={this.handleCreate} />
+        <CreateFeatureContainer onOk={this.handleCreate} />
       </Page>
     );
   }

@@ -2,11 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.choerodon.agile.infra.mapper.ProjectInfoMapper">
 
+    <select id="queryByProjectId" resultType="io.choerodon.agile.infra.dataobject.ProjectInfoDO">
+        select *
+        from agile_project_info
+        where project_id = #{projectId}
+    </select>
+
     <update id="updateIssueMaxNum">
         UPDATE agile_project_info api
-        SET api.issue_max_num = api.issue_max_num + #{increase}
+        SET api.issue_max_num = #{issueMaxNum}
         WHERE
             api.project_id = #{projectId}
+            and #{issueMaxNum} > api.issue_max_num
     </update>
 
     <update id="updateProjectAndIssues">

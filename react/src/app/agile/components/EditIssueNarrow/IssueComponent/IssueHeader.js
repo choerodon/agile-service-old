@@ -162,7 +162,7 @@ const { confirm } = Modal;
         {
           typeCode === 'bug' && (
             <Menu.Item key="10">
-              {'关联故事'}
+              {'关联问题'}
             </Menu.Item>
           )
         }

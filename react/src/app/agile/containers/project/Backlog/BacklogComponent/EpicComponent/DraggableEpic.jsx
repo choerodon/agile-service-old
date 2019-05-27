@@ -102,7 +102,7 @@ class DraggableEpic extends Component {
     const { item, index, refresh } = this.props;
     e.stopPropagation();
     const { value } = e.target;
-    if (item && item.epicName === value) {
+    if (item && item.epicName === value) {      
       this.setState({
         editName: false,
       });

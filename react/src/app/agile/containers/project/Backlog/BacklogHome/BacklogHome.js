@@ -53,10 +53,8 @@ class BacklogHome extends Component {
 
   /**
    * 加载选择快速搜索的冲刺数据
-   * isCreate: 是否创建冲刺，如果是则自动滚动到新建的冲刺
-   * issue: 新建的issue，如果新建issue则自动滚动到新建的issue
    */
-  getSprint = (isCreate = false, issue) => {
+  getSprint = () => {
     const { BacklogStore } = this.props;
     BacklogStore.axiosGetIssueTypes();
     BacklogStore.axiosGetDefaultPriority();
@@ -120,12 +118,12 @@ class BacklogHome extends Component {
     return retObj;
   };
 
-  refresh = (isCreate, issue) => {
-    const { location } = this.props;
-    const url = this.paramConverter(location.search);
+  refresh = (spinIf = true) => {
     const { BacklogStore } = this.props;
-    BacklogStore.setSpinIf(true);
-    this.getSprint(isCreate, issue);
+    if (spinIf) {
+      BacklogStore.setSpinIf(true);
+    }
+    this.getSprint();
     if (BacklogStore.getCurrentVisible === 'version') {
       this.loadVersion();
     } else if (BacklogStore.getCurrentVisible === 'epic') {
@@ -223,19 +221,22 @@ class BacklogHome extends Component {
 
   toggleCurrentVisible = (type) => {
     const { BacklogStore } = this.props;
-    if (BacklogStore.getCurrentVisible === type) {
+    const currentVisible = BacklogStore.getCurrentVisible;    
+    if (currentVisible === type) {
+      BacklogStore.toggleVisible(null);
       if (type === 'feature') {
         QuickSearchEvent.emit('unSelectStory');
       }
-      BacklogStore.toggleVisible(null);
     } else {
+      BacklogStore.toggleVisible(type);
+      if (currentVisible === 'feature' && type !== 'feature') {
+        QuickSearchEvent.emit('unSelectStory');
+      }
+      
       if (type === 'feature') {
         QuickSearchEvent.emit('setSelectQuickSearch', [{ key: -2, label: '仅故事' }]);
+        BacklogStore.clearMultiSelected();
       }
-      if (BacklogStore.getCurrentVisible === 'feature' && type !== 'feature') {
-        QuickSearchEvent.emit('unSelectStory');
-      }
-      BacklogStore.toggleVisible(type);
     }
   };
 
@@ -303,6 +304,7 @@ class BacklogHome extends Component {
             }}
           >
             <QuickSearch
+              showQuickSearch={BacklogStore.getCurrentVisible !== 'feature'}
               onQuickSearchChange={this.onQuickSearchChange}
               resetFilter={BacklogStore.getQuickSearchClean}
               onAssigneeChange={this.onAssigneeChange}
@@ -376,7 +378,7 @@ class BacklogHome extends Component {
             <Spin spinning={BacklogStore.getSpinIf}>
               <div className="c7n-backlog-content">
                 <DragDropContext
-                  onDragEnd={(result) => {
+                  onDragEnd={(result) => {         
                     BacklogStore.setIsDragging(null);
                     const { destination, source, draggableId } = result;
                     if (destination) {
@@ -448,7 +450,7 @@ class BacklogHome extends Component {
               </div>
             </Spin>
             <IssueDetail
-              refresh={this.refresh}
+              refresh={() => this.refresh(false)}
               onRef={(ref) => {
                 this.IssueDetail = ref;
               }}

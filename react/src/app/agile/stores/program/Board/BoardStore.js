@@ -8,7 +8,7 @@ import {
 } from 'lodash';
 import { stores } from '@choerodon/boot';
 import {
-  getBoard, featureToBoard, featureBoardMove, getSideFeatures, createConnection, deleteConnection, deleteFeatureFromBoard,
+  getBoard, featureToBoard, featureBoardMove, projectMove, getSideFeatures, createConnection, deleteConnection, deleteFeatureFromBoard,
 } from '../../../api/BoardFeatureApi';
 
 const { AppState } = stores;
@@ -137,6 +137,10 @@ class BoardStore {
       const issues = [issue];
       const connections = [];
       this.connections.forEach((conn) => {
+        const { boardFeature, dependBoardFeature } = conn;
+        if (!boardFeature || !dependBoardFeature) {
+          return;
+        }
         if (conn.boardFeature.id === issue.id || conn.dependBoardFeature.id === issue.id) {
           connections.push(conn);
           if (conn.boardFeature.id === issue.id) {
@@ -201,9 +205,64 @@ class BoardStore {
     });
   }
 
+  @action sortProjects = (index, atIndex) => {
+    // console.log(index, atIndex);
+    if (index === atIndex) {
+      return;
+    }
+    const [project] = this.projects.splice(index, 1);
+    this.projects.splice(atIndex, 0, project);
+    // console.log(toJS(this.projects));
+  }
+
+  projectMove = (sourceId, atIndex) => {
+    const index = findIndex(this.projects, { boardTeamId: sourceId });
+    this.sortProjects(index, atIndex);
+    const sourceProject = find(this.projects, { boardTeamId: sourceId });
+    const data = {
+      before: true,
+      objectVersionNumber: sourceProject.objectVersionNumber,
+      outsetId: 0,
+    };
+
+    if (atIndex === 0) {
+      data.before = true;
+      if (this.projects.length > 1) {
+        data.outsetId = this.projects[1].boardTeamId;
+      } else {
+        data.outsetId = 0;
+      }
+    } else {
+      data.before = false;
+      data.outsetId = this.projects[atIndex - 1].boardTeamId;
+    }
+    // console.log(data);
+    projectMove(sourceId, data).then((res) => {
+      if (res.failed) {
+        Choerodon.prompt('更新失败');
+        this.loadData();
+      } else {
+        action(() => {
+          Object.assign(this.projects[atIndex], res);
+        })();
+      }
+    });
+  }
+
+  @action
+  resetProject = (source) => {
+    const { index, id } = source;
+    const currentIndex = findIndex(this.projects, { boardTeamId: id });
+    const [project] = this.projects.splice(currentIndex, 1);
+    this.projects.splice(index, 0, project);
+  }
+
   @action setConnectionsWhenDrag(issue) {
-    this.connections.forEach((connection) => {
+    this.connections.forEach((connection) => {      
       const { boardFeature, dependBoardFeature } = connection;
+      if (!boardFeature || !dependBoardFeature) {
+        return;
+      }
       if (boardFeature.id === issue.id) {
         boardFeature.sprintId = issue.sprintId;
         boardFeature.teamProjectId = issue.teamProjectId;
@@ -293,9 +352,9 @@ class BoardStore {
     } else {
       // 目标各自如果有issue，放在最后一个
       // eslint-disable-next-line no-lonely-if
-      if (dropIssues.length > 0) {
+      if (dropIssues.length > 1) {
         data.before = false;
-        data.outsetId = dropIssues[dropIssues.length - 1].id || 0;
+        data.outsetId = dropIssues[dropIssues.length - 2] ? dropIssues[dropIssues.length - 2].id : dropIssues[dropIssues.length - 1].id;
         insertIndex = dropIssues.length - 1;
       } else {
         data.before = true;
@@ -381,13 +440,13 @@ class BoardStore {
   @computed get getProjectsHeight() {
     return this.projects.map((project) => {
       const { teamSprints } = project;
-      const maxHeight = max(teamSprints.map((sprint, i) => Math.ceil(sprint.boardFeatures.length / this.sprints[i].columnWidth)));
+      const maxHeight = max(teamSprints.map((sprint, i) => Math.ceil(sprint.boardFeatures.length / this.sprints[i].columnWidth) || 1));
       return maxHeight;
     });
   }
 
   createConnection = (toIssue) => {
-    if (!this.clickIssue.id || !toIssue || !toIssue.id) {
+    if (!this.clickIssue.id || !toIssue || !toIssue.id || toIssue.id === this.clickIssue.id) {
       return;
     }
     const clickIssue = { ...this.clickIssue };

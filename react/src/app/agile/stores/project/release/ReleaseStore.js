@@ -87,7 +87,7 @@ class ReleaseStore {
   }
 
   @computed get getFilterMap() {
-    return toJS(this.filterMap);
+    return this.filterMap;
   }
 
   @action clearArg() {

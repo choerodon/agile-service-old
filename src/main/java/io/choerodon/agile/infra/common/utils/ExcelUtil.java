@@ -372,6 +372,9 @@ public class ExcelUtil {
         XSSFSheet hidden = workbook.createSheet(hiddenSheetName);
         // 数据源sheet页不显示
         workbook.setSheetHidden(hiddenSheetIndex, true);
+        if (datas == null || datas.isEmpty()) {
+            return workbook;
+        }
         // 将下拉列表的数据放在数据源sheet上
         XSSFRow row = null;
         XSSFCell cell = null;

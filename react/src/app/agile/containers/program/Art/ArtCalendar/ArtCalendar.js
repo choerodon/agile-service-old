@@ -95,7 +95,12 @@ class ArtCalendar extends Component {
       createEventLoading,
     } = this.state;
     return (
-      <Page className="c7nagile-ArtCalendar">
+      <Page
+        className="c7nagile-ArtCalendar"
+        service={[
+          'agile-service.art.queryArtCalendar',
+        ]}
+      >
         <Header title="ART日历">
           {/* <Button icon="playlist_add" onClick={this.handleCreateEventClick}>
             创建事件

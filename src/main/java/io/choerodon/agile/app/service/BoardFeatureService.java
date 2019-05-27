@@ -18,5 +18,7 @@ public interface BoardFeatureService {
 
     void deleteById(Long projectId, Long boardFeatureId);
 
+    void deleteByFeatureId(Long projectId, Long featureId);
+
     ProgramBoardInfoDTO queryBoardInfo(Long projectId);
 }

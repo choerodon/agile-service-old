@@ -233,7 +233,12 @@ class PIAims extends Component {
     const selectedPI = selectedPIId && PIList.find(item => item.id === selectedPIId);
 
     return (
-      <Page className="c7n-pi-detail">
+      <Page
+        className="c7n-pi-detail"
+        service={[
+          'agile-service.pi-objective.queryPiObjectiveList',
+        ]}
+      >
         <Header title="PI目标">
           <Button funcType="flat" disabled={!selectedPI || selectedPI.statusCode === 'done'} onClick={this.handleCreateFeatureBtnClick}>
             <Icon type="playlist_add" />

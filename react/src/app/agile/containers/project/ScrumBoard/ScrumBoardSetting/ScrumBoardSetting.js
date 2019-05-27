@@ -36,9 +36,14 @@ class ScrumBoardSetting extends Component {
       organizationId: AppState.currentMenuType.organizationId,
       projectId: AppState.currentMenuType.id,
       resourceType: 'project',
+    }, {
+      code: 'agile-service.notice.queryByProjectId',
+      organizationId: AppState.currentMenuType.organizationId,
+      projectId: AppState.currentMenuType.id,
+      resourceType: 'project',
     }]).then((permission) => {
       this.setState({
-        hasPermission: !permission[0].approve,
+        hasPermission: permission[0].approve || permission[1].approve,
       });
     });
   }
@@ -149,12 +154,12 @@ class ScrumBoardSetting extends Component {
             {ScrumBoardStore.getCalanderCouldUse
               ? (
                 <TabPane tab="工作日历" key="3">
-                  <WorkcalendarPage selectedDateDisabled={hasPermission} />
+                  <WorkcalendarPage selectedDateDisabled={!hasPermission} />
                 </TabPane>
               ) : null
             }
             <TabPane tab="看板名称" key="4">
-              <EditBoardName editBoardNameDisabled={hasPermission} />
+              <EditBoardName editBoardNameDisabled={!hasPermission} />
             </TabPane>
           </Tabs>
         </Content>

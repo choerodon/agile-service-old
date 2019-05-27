@@ -17,13 +17,13 @@ public interface ProjectInfoRepository {
     ProjectInfoE create(ProjectInfoE projectInfoE);
 
     /**
-     * 根据projectId更新issueMaxNum+increase
+     * 根据projectId更新issueMaxNum
      *
-     * @param projectId projectId
-     * @param increase  increase
+     * @param projectId   projectId
+     * @param issueMaxNum issueMaxNum
      * @return int
      */
-    int updateIssueMaxNum(Long projectId, Integer increase);
+    void updateIssueMaxNum(Long projectId, String issueMaxNum);
 
     /**
      * 更新

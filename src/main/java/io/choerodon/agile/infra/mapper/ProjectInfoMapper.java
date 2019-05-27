@@ -14,14 +14,16 @@ import java.util.Date;
 @Component
 public interface ProjectInfoMapper extends BaseMapper<ProjectInfoDO> {
 
+    ProjectInfoDO queryByProjectId(@Param("projectId") Long projectId);
+
     /**
-     * 更新MaxNum+increase
+     * 更新MaxNum
      *
      * @param projectId projectId
-     * @param increase  increase
+     * @param issueMaxNum  issueMaxNum
      * @return int
      */
-    int updateIssueMaxNum(@Param("projectId") Long projectId, @Param("increase") Integer increase);
+    int updateIssueMaxNum(@Param("projectId") Long projectId, @Param("issueMaxNum") String issueMaxNum);
 
     void updateProjectAndIssues(@Param("projectId") Long projectId, @Param("creationDate1") Date creationDate1, @Param("creationDate2") Date creationDate2);
 

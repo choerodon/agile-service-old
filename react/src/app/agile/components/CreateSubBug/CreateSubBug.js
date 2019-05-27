@@ -550,7 +550,6 @@ class CreateSubBug extends Component {
           <FormItem label="版本" style={{ width: 520 }}>
             {getFieldDecorator('fixVersionIssueRel', {
               rules: [{ transform: value => (value ? value.toString() : value) }],
-              normalize: value => (value ? value.map(s => s.toString().substr(0, 10)) : value),
             })(
               <Select
                 label="版本"

@@ -43,7 +43,7 @@ class QuickSearch extends Component {
         value: item.filterId,
       }));
       // 非停用角色
-      const resUserData = res[1].content.filter(item => item.enabled).map(item => ({
+      const resUserData = res[1].list.filter(item => item.enabled).map(item => ({
         id: item.id,
         realName: item.realName,
       }));
@@ -128,7 +128,7 @@ class QuickSearch extends Component {
     // 防抖函数
     const debounceCallback = this.deBounce(500);
     const {
-      style, AppState, onAssigneeChange, quickSearchAllowClear, 
+      style, AppState, onAssigneeChange, quickSearchAllowClear, showQuickSearch,
     } = this.props;
     const { showRealQuickSearch } = BacklogStore;
     const {
@@ -144,34 +144,36 @@ class QuickSearch extends Component {
         <p>搜索:</p>
         {showRealQuickSearch ? (
           <React.Fragment>
-            <Select
-              key="quickSearchSelect"
-              className="quickSearchSelect"
-              dropdownClassName="quickSearchSelect-dropdown"
-              mode="multiple"
-              labelInValue
-              placeholder="快速搜索"
-              maxTagCount={0}
-              maxTagPlaceholder={ommittedValues => `${ommittedValues.map(item => item.label).join(', ')}`}
-              onChange={this.handleQuickSearchChange}
-              getPopupContainer={triggerNode => triggerNode.parentNode}
-              allowClear={!!quickSearchAllowClear}
-              value={selectQuickSearch}
-            >
-              {
-                <OptGroup key="quickSearch" label="常用选项">
-                  <Option key={-1} value={-1}>仅我的问题</Option>
-                  <Option key={-2} value={-2}>仅故事</Option>
-                </OptGroup>
-          }
-              <OptGroup key="more" label="更多">
+            {showQuickSearch ? (
+              <Select          
+                key="quickSearchSelect"
+                className="quickSearchSelect"
+                dropdownClassName="quickSearchSelect-dropdown"
+                mode="multiple"
+                labelInValue
+                placeholder="快速搜索"
+                maxTagCount={0}
+                maxTagPlaceholder={ommittedValues => `${ommittedValues.map(item => item.label).join(', ')}`}
+                onChange={this.handleQuickSearchChange}
+                getPopupContainer={triggerNode => triggerNode.parentNode}
+                allowClear={!!quickSearchAllowClear}
+                value={selectQuickSearch}
+              >
                 {
+                  <OptGroup key="quickSearch" label="常用选项">
+                    <Option key={-1} value={-1}>仅我的问题</Option>
+                    <Option key={-2} value={-2}>仅故事</Option>
+                  </OptGroup>
+          }
+                <OptGroup key="more" label="更多">
+                  {
               quickSearchArray.map(item => (
                 <Option key={item.value} value={item.value} title={item.label}>{item.label}</Option>
               ))
             }
-              </OptGroup>
-            </Select>
+                </OptGroup>
+              </Select>
+            ) : null}
             {
               onAssigneeChange && (
                 <Select
@@ -191,7 +193,7 @@ class QuickSearch extends Component {
                         axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?page=1&size=40&param=${value}`).then((res) => {
                         // Set 用于查询是否有 id 重复的，没有重复才往里加
                           const temp = new Set(userDataArray.map(item => item.id));
-                          res.content.filter(item => item.enabled).forEach((item) => {
+                          res.list.filter(item => item.enabled).forEach((item) => {
                             if (!temp.has(item.id)) {
                               userDataArray.push({
                                 id: item.id,
@@ -220,7 +222,7 @@ class QuickSearch extends Component {
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <Select placeholder="快速搜索" className="quickSearchSelect" />
+            {showQuickSearch && <Select placeholder="快速搜索" className="quickSearchSelect" />}
             <Select placeholder="经办人" className="assigneeSelect" />
           </React.Fragment>
         )}

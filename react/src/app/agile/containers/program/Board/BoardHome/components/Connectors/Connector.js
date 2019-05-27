@@ -63,7 +63,7 @@ class Connector extends Component {
         markerEnd={`url(#${isWarn ? 'arrowheadWarn' : 'arrowhead'})`}
       />, checked 
         ? [<circle className={`c7nagile-Connector-delete-circle ${isWarn ? 'warn' : ''} ${mode}`} style={{ cursor: 'pointer' }} stroke="none" onClick={this.handleDeleteClick} cx={cx} cy={cy} r="9" fill="#3F51B5" />,
-          <text className={`c7nagile-Connector-delete-icon icon ${isWarn ? 'warn' : ''} ${mode}`} fill="white" stroke="none" style={{ fontSize: '16px' }} x={cx - 8} y={cy + 7}>&#xE5C3;</text>,
+          <text className={`c7nagile-Connector-delete-icon icon ${isWarn ? 'warn' : ''} ${mode}`} fill="white" stroke="none" style={{ fontSize: '16px' }} x={cx - 8} y={cy + 7}>&#xE9F4;</text>,
         ] : null]
     );
   }

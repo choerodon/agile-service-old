@@ -76,7 +76,12 @@ class RoadMap extends Component {
     const { HeaderStore } = this.props;
     const { startDate, endDate } = this.getRange(piList);
     return (
-      <Page className="c7ntest-Issue c7ntest-region">
+      <Page
+        className="c7ntest-Issue c7ntest-region"
+        service={[
+          'agile-service.pi.queryRoadMapOfProgram',
+        ]}
+      >
         <Header
           title="路线图"
         />
@@ -105,14 +110,19 @@ class RoadMap extends Component {
           }
           </Spin>
           {
-            editFeatureVisible && (              
-            <EditFeature
-              store={FeatureStore}
-              issueId={currentFeature}
-              onCancel={this.handleCancel}
-              onUpdate={this.loadRoadMap}
-              onDeleteIssue={this.handleDelete}
-            />             
+            editFeatureVisible && ( 
+            <div style={{
+              position: 'fixed', bottom: 0, right: 0, top: 155, 
+            }}
+            >             
+              <EditFeature
+                store={FeatureStore}
+                issueId={currentFeature}
+                onCancel={this.handleCancel}
+                onUpdate={this.loadRoadMap}
+                onDeleteIssue={this.handleDelete}
+              />         
+            </div>    
             )}
         </Content>
       </Page>

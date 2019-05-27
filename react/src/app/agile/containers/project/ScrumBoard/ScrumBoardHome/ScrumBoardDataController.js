@@ -172,8 +172,8 @@ export default class ScrumBoardDataController {
 
     const parentCompletedSet = new Set(parentCompleted);
     const parentIdsSet = new Set(parentIssues.map(issue => issue.issueId));
-    const parentIssueIdsSet = new Set(combinedIssueArr.filter(issue => !issue.parentIssueId && parentIdsSet.has(issue.issueId)).map(issue => issue.issueId));
-    const noParentIssueIdsSet = new Set(combinedIssueArr.filter(issue => !issue.parentIssueId && !parentIdsSet.has(issue.issueId)).map(issue => issue.issueId));
+    const parentIssueIdsSet = new Set(combinedIssueArr.filter(issue => !issue.relateIssueId && !issue.parentIssueId && parentIdsSet.has(issue.issueId)).map(issue => issue.issueId));
+    const noParentIssueIdsSet = new Set(combinedIssueArr.filter(issue => !issue.relateIssueId && !issue.parentIssueId && !parentIdsSet.has(issue.issueId)).map(issue => issue.issueId));
     let parentDataMap = new Map();
     let parentDataArr = [];
     let otherIssueWithoutParent = [];
@@ -196,7 +196,7 @@ export default class ScrumBoardDataController {
     }
     if (noParentIssueIdsSet.size) {
       // parentIssueId 没有值可能为 null，也可能为 0（后端返回数据不可信）
-      otherIssueWithoutParent = combinedIssueArr.filter(issue => (issue.parentIssueId === 0 || issue.parentIssueId === null) && noParentIssueIdsSet.has(issue.issueId));
+      otherIssueWithoutParent = combinedIssueArr.filter(issue => (issue.relateIssueId === 0 || issue.relateIssueId === null) && (issue.parentIssueId === 0 || issue.parentIssueId === null) && noParentIssueIdsSet.has(issue.issueId));
     }
 
     return {

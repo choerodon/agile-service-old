@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.assembler.*;
@@ -39,7 +38,6 @@ import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -168,18 +166,16 @@ public class IssueServiceImpl implements IssueService {
     private DataLogRedisUtil dataLogRedisUtil;
     @Autowired
     private IssueSprintRelMapper issueSprintRelMapper;
-
     @Autowired
     private FeatureMapper featureMapper;
-
     @Autowired
     private FeatureRepository featureRepository;
-
     @Autowired
     private FeatureCommonAssembler featureCommonAssembler;
-
     @Autowired
     private SendMsgUtil sendMsgUtil;
+    @Autowired
+    private BoardFeatureService boardFeatureService;
 
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
@@ -295,7 +291,7 @@ public class IssueServiceImpl implements IssueService {
         }
         //初始化创建issue设置issue编号、项目默认设置
         issueE.initializationIssue(statusId, projectInfoE);
-        projectInfoRepository.updateIssueMaxNum(issueE.getProjectId(), 1);
+        projectInfoRepository.updateIssueMaxNum(issueE.getProjectId(), issueE.getIssueNum());
         //初始化排序
         if (issueE.isIssueRank()) {
             calculationRank(issueE.getProjectId(), issueE);
@@ -746,6 +742,8 @@ public class IssueServiceImpl implements IssueService {
         issueCommentService.deleteByIssueId(issueE.getIssueId());
         //删除附件
         issueAttachmentService.deleteByIssueId(issueE.getIssueId());
+        //删除公告板特性及依赖
+        boardFeatureService.deleteByFeatureId(projectId, issueId);
 
         if (ISSUE_TYPE_FEATURE.equals(issueE.getTypeCode())) {
             featureRepository.delete(issueId);
@@ -816,7 +814,7 @@ public class IssueServiceImpl implements IssueService {
         IssueE parentIssueE = ConvertHelper.convert(issueMapper.queryIssueSprintNotClosed(subIssueE.getProjectId(), subIssueE.getParentIssueId()), IssueE.class);
         //设置初始状态,跟随父类状态
         subIssueE = parentIssueE.initializationSubIssue(subIssueE, statusId, projectInfoE);
-        projectInfoRepository.updateIssueMaxNum(subIssueE.getProjectId(), 1);
+        projectInfoRepository.updateIssueMaxNum(subIssueE.getProjectId(), subIssueE.getIssueNum());
         //初始化排序
         if (subIssueE.isIssueRank()) {
             calculationRank(subIssueE.getProjectId(), subIssueE);
@@ -873,6 +871,15 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
+    public void batchStoryToFeature(Long projectId, Long featureId, List<Long> issueIds) {
+        issueRule.checkBatchStoryToFeature(featureId);
+        List<Long> filterIds = issueMapper.filterStoryIds(projectId, issueIds);
+        if (filterIds != null && !filterIds.isEmpty()) {
+            issueRepository.batchStoryToFeature(projectId, featureId, filterIds);
+        }
+    }
+
+    @Override
     public List<IssueSearchDTO> batchIssueToEpicInStoryMap(Long projectId, Long epicId, StoryMapMoveDTO storyMapMoveDTO) {
         List<Long> issueIds = storyMapMoveDTO.getEpicIssueIds();
         issueRule.judgeExist(projectId, epicId);
@@ -917,7 +924,7 @@ public class IssueServiceImpl implements IssueService {
         //处理子任务与子缺陷
         List<Long> subTaskIds = issueMapper.querySubIssueIds(projectId, moveIssueIds);
         List<Long> subBugIds = issueMapper.querySubBugIds(projectId, moveIssueIds);
-        if (subTaskIds != null && !subBugIds.isEmpty()) {
+        if (subTaskIds != null && !subTaskIds.isEmpty()) {
             moveIssueIds.addAll(subTaskIds);
         }
         if (subBugIds != null && !subBugIds.isEmpty()) {
@@ -2377,7 +2384,8 @@ public class IssueServiceImpl implements IssueService {
         issueDOList.forEach(issueDetailDO -> {
             IssueE issueE = issueAssembler.toTarget(issueDetailDO, IssueE.class);
             //初始化创建issue设置issue编号、项目默认设置
-            issueE.initializationIssueByCopy(initStatusId, projectInfoE);
+            issueE.initializationIssueByCopy(initStatusId);
+            projectInfoRepository.updateIssueMaxNum(projectId, issueE.getIssueNum());
             issueE.setApplyType(SchemeApplyType.TEST);
             Long issueId = issueRepository.create(issueE).getIssueId();
             handleCreateCopyLabelIssueRel(issueDetailDO.getLabelIssueRelDOList(), issueId);
@@ -2387,7 +2395,6 @@ public class IssueServiceImpl implements IssueService {
         VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
         versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
         issueRepository.batchIssueToVersion(versionIssueRelE);
-        projectInfoRepository.updateIssueMaxNum(projectId, issueDOList.size());
         return issueIds;
     }
 

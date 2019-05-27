@@ -95,7 +95,12 @@ class ArtList extends Component {
       data, createArtVisible, createArtLoading, loading, createDisabled,
     } = this.state;
     return (
-      <Page className="c7ntest-Issue c7ntest-region">
+      <Page
+        className="c7ntest-Issue c7ntest-region"
+        service={[
+          'agile-service.art.queryArtList',
+        ]}
+      >
         <Header
           title="ART列表"
         >

@@ -49,11 +49,16 @@ let hasPermission;
         organizationId: AppState.currentMenuType.organizationId,
         projectId: AppState.currentMenuType.id,
         resourceType: 'project',
+      }, {
+        code: 'agile-service.notice.queryByProjectId',
+        organizationId: AppState.currentMenuType.organizationId,
+        projectId: AppState.currentMenuType.id,
+        resourceType: 'project',
       }]),
     ])
       .then(axios.spread((users, permission) => {
         loginUserId = users.id;
-        hasPermission = permission[0].approve;
+        hasPermission = permission[0].approve || permission[1].approve;
       }));
     this.setQuery();
   }
@@ -168,6 +173,7 @@ let hasPermission;
       style,
       onUpdate,
       onDeleteIssue,
+      onDeleteSubIssue,
     } = this.props;
     const {
       issueLoading,
@@ -258,6 +264,7 @@ let hasPermission;
                 store={store}
                 reloadIssue={this.loadIssueDetail}
                 onUpdate={onUpdate}
+                onDeleteSubIssue={onDeleteSubIssue}
                 loginUserId={loginUserId}
                 hasPermission={hasPermission}
               />
@@ -292,7 +299,7 @@ let hasPermission;
             {
             relateStoryShow ? (
               <RelateStory
-                issueId={issueId}
+                issue={issue}
                 visible={relateStoryShow}
                 onCancel={() => VisibleStore.setRelateStoryShow(false)}
                 onOk={this.handleRelateStory.bind(this)}

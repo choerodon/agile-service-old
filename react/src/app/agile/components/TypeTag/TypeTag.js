@@ -12,7 +12,7 @@ class TypeTag extends Component {
     let { colour } = data || {};
     if (featureType === 'business') {
       colour = '#29B6F6';
-    } else if (featureType === 'enablear') {
+    } else if (featureType === 'enabler') {
       colour = '#FFCA28';
     }
     return (

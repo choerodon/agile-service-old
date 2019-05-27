@@ -10,6 +10,10 @@ import { QuickSearchEvent } from '../../../../../../../components/QuickSearch';
     e.stopPropagation();
     QuickSearchEvent.emit('clearQuickSearchSelect');
     BacklogStore.clearSprintFilter();
+    BacklogStore.hideQuickSearch();
+    setTimeout(() => {
+      BacklogStore.showQuickSearch();
+    });
   }
 
   render() {

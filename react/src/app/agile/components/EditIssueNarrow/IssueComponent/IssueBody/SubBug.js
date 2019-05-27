@@ -20,7 +20,7 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
    * @param {*} i
    */
   renderIssueList = (issue, i) => {
-    const { reloadIssue, store } = this.props;
+    const { reloadIssue, store, onDeleteSubIssue } = this.props;
     const { issueId: id } = store.getIssue;
     return (
       <IssueList
@@ -39,6 +39,9 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
         onRefresh={() => {
           if (reloadIssue) {
             reloadIssue(id);
+          }
+          if (onDeleteSubIssue) {
+            onDeleteSubIssue();
           }
         }}
       />

@@ -384,6 +384,16 @@
         </foreach>
     </select>
 
+    <select id="filterStoryIds" resultType="java.lang.Long">
+        select ai.issue_id
+        from agile_issue ai
+        where ai.project_id = #{projectId} and ai.type_code = 'story' and ai.issue_id in
+        <foreach collection="issueIds" item="issueId" open="(" separator=","
+                 close=")">
+            #{issueId}
+        </foreach>
+    </select>
+
     <select id="queryIssueListWithSubByIssueIds" resultMap="IssueWithSub">
         SELECT
         ai.issue_id as issue_issue_id,
@@ -1233,6 +1243,16 @@
         UPDATE agile_issue
         SET epic_id = #{epicId}
         WHERE project_id = #{projectId} AND issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+    </update>
+
+    <update id="batchStoryToFeature">
+        update agile_issue
+        set feature_id = #{featureId}
+        where project_id = #{projectId} and type_code = 'story' and issue_id in
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
             #{issueId}

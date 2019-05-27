@@ -17,4 +17,6 @@ public interface BoardFeatureMapper extends BaseMapper<BoardFeatureDO> {
     List<BoardFeatureInfoDTO> queryInfoByPiId(@Param("programId") Long programId, @Param("piId") Long piId);
 
     BoardFeatureInfoDTO queryInfoById(@Param("programId") Long programId, @Param("boardFeatureId") Long boardFeatureId);
+
+    void deleteByFeatureId(@Param("programId") Long programId, @Param("featureId") Long featureId);
 }

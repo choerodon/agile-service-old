@@ -30,33 +30,33 @@ class FeatureItem extends Component {
       BacklogStore.getFeatureData.map((item, index) => (
         <div
           role="none"
-          // onMouseEnter={(e) => {
-          //   if (BacklogStore.isDragging) {
-          //     BacklogStore.toggleIssueDrag(true);
-          //     e.currentTarget.style.border = '2px dashed green';
-          //   }
-          // }}
-          // onMouseLeave={(e) => {
-          //   if (BacklogStore.isDragging) {
-          //     BacklogStore.toggleIssueDrag(false);
-          //     e.currentTarget.style.border = 'none';
-          //   }
-          // }}
-          // onMouseUp={(e) => {
-          //   if (BacklogStore.getIsDragging) {
-          //     BacklogStore.toggleIssueDrag(false);
-          //     e.currentTarget.style.border = 'none';
-          //     BacklogStore.axiosUpdateIssuesToFeature(
-          //       item.issueId, BacklogStore.getIssueWithFeatureOrVersion,
-          //     ).then((res) => {
-          //       issueRefresh();
-          //       refresh();
-          //     }).catch((error) => {
-          //       issueRefresh();
-          //       refresh();
-          //     });
-          //   }
-          // }}
+          onMouseEnter={(e) => {
+            if (BacklogStore.isDragging) {
+              BacklogStore.toggleIssueDrag(true);
+              e.currentTarget.style.border = '2px dashed green';
+            }
+          }}
+          onMouseLeave={(e) => {        
+            if (BacklogStore.isDragging) {
+              BacklogStore.toggleIssueDrag(false);
+              e.currentTarget.style.border = 'none';
+            }
+          }}
+          onMouseUp={(e) => {            
+            if (BacklogStore.getIsDragging) {
+              BacklogStore.toggleIssueDrag(false);
+              e.currentTarget.style.border = 'none';
+              BacklogStore.axiosUpdateIssuesToFeature(
+                item.issueId, BacklogStore.getIssueWithEpicOrVersion,
+              ).then((res) => {
+                issueRefresh();
+                refresh();
+              }).catch((error) => {
+                issueRefresh();
+                refresh();
+              });
+            }
+          }}
           onClick={(e) => {
             this.handleClickFeature(item.issueId);
           }}

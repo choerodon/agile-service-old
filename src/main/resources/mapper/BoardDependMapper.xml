@@ -62,4 +62,15 @@
         AND (board_feature_id = #{boardFeatureId}
         OR depend_board_feature_id = #{boardFeatureId})
     </delete>
+
+    <delete id="deleteByFeatureId">
+        delete from agile_board_depend
+        where program_id = #{programId}
+        AND (board_feature_id IN (
+          select id from agile_board_feature where feature_id = #{featureId}
+        )
+        OR depend_board_feature_id IN(
+          select id from agile_board_feature where feature_id = #{featureId}
+        ))
+    </delete>
 </mapper>

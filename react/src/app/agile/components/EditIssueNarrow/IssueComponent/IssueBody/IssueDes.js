@@ -68,14 +68,16 @@ import { updateIssue } from '../../../../api/NewIssueApi';
     }
     if (!description || editDesShow) {
       return (
+        editDesShow && (
         <div
-          className="line-start mt-10 two-to-one"          
+          className="line-start mt-10 two-to-one"
         >
           <div style={{
             width: '100%',
             position: 'absolute',
             top: 0,
             bottom: 0, 
+            marginBottom: 25, 
           }}
           >
             <WYSIWYGEditor
@@ -110,11 +112,12 @@ import { updateIssue } from '../../../../api/NewIssueApi';
             />
           </div>
         </div>
+        )
       );
     } else {
       const delta = delta2Html(description);
       return (
-        <div className="c7n-content-wrapper">
+        <div className="c7n-content-wrapper" style={{ maxHeight: 400, overflow: 'auto' }}>
           <div
             className="mt-10 c7n-description"
             role="none"
@@ -140,7 +143,7 @@ import { updateIssue } from '../../../../api/NewIssueApi';
     };
 
     return (
-      <div id="des" style={{ marginBottom: 65 }}>
+      <div id="des">
         <div className="c7n-title-wrapper">
           <div className="c7n-title-left">
             <Icon type="subject c7n-icon-title" />

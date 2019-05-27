@@ -37,7 +37,11 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     int batchIssueToEpic(@Param("projectId") Long projectId, @Param("epicId") Long epicId, @Param("issueIds") List<Long> issueIds);
 
+    int batchStoryToFeature(@Param("projectId") Long projectId, @Param("featureId") Long featureId, @Param("issueIds") List<Long> issueIds);
+
     List<IssueSearchDO> queryIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+
+    List<Long> filterStoryIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     /**
      * 根据项目id查询issue中的epic

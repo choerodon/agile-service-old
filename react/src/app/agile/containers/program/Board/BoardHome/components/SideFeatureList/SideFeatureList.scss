@@ -75,7 +75,8 @@
 
   &-content {
     overflow-y: auto;
-    height: calc(100% - 60px);
+    overflow-x: hidden;
+    height: calc(100% - 75px);
     padding: 16px;
     position: relative;
 

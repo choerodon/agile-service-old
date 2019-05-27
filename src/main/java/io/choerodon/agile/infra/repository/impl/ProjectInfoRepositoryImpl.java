@@ -31,13 +31,15 @@ public class ProjectInfoRepositoryImpl implements ProjectInfoRepository {
         return ConvertHelper.convert(projectInfoMapper.selectOne(query), ProjectInfoE.class);
     }
 
+    /**
+     * 更新MaxNum方法，在高并发的情况下，可能更新的maxNum已经不是最大的maxNum，因此不需要判断是否更新成功
+     *
+     * @param projectId   projectId
+     * @param issueMaxNum issueMaxNum
+     */
     @Override
-    public int updateIssueMaxNum(Long projectId, Integer increase) {
-        int result = projectInfoMapper.updateIssueMaxNum(projectId, increase);
-        if (result != 1) {
-            throw new CommonException("error.projectInfo.updateIssueMaxNum");
-        }
-        return result;
+    public void updateIssueMaxNum(Long projectId, String issueMaxNum) {
+        projectInfoMapper.updateIssueMaxNum(projectId, issueMaxNum);
     }
 
     @Override

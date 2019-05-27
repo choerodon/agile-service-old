@@ -18,6 +18,8 @@ const { AppState } = stores;
   };
 
   renderLinkList(link, i) {
+    const { reloadIssue, store } = this.props;
+    const { issueId: id } = store.getIssue;
     return (
       <LinkList
         issue={{
@@ -28,14 +30,18 @@ const { AppState } = stores;
         onOpen={(issueId, linkedIssueId) => {
           this.onOpen(issueId);
         }}
-        canDelete={false}
+        // canDelete={false}
+        onRefresh={() => {
+          reloadIssue(id);
+        }}
+        type="test"
       />
     );
   }
 
   renderLinkIssues() {
     const { store } = this.props;
-    const linkIssues = store.getLinkIssues;
+    const linkIssues = store.getLinkIssues.filter(i => i.applyType === 'test');
     return (
       <div className="c7n-tasks">
         {
