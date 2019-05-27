@@ -6,10 +6,6 @@ import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.domain.agile.entity.SprintE;
-import io.choerodon.agile.infra.repository.IssueRepository;
-import io.choerodon.agile.infra.repository.SprintRepository;
-import io.choerodon.agile.infra.repository.SprintWorkCalendarRefRepository;
-import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.DateUtil;
@@ -19,6 +15,10 @@ import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.agile.infra.repository.IssueRepository;
+import io.choerodon.agile.infra.repository.SprintRepository;
+import io.choerodon.agile.infra.repository.SprintWorkCalendarRefRepository;
+import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
@@ -207,7 +207,7 @@ public class SprintServiceImpl implements SprintService {
     @Override
     public Map<String, Object> queryByProjectId(Long projectId, Map<String, Object> searchParamMap, List<Long> quickFilterIds, Long organizationId, List<Long> assigneeFilterIds) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        Map<String, Object> backlog = new HashMap<>();
+        Map<String, Object> backlog = new HashMap<>(2);
         String filterSql = null;
         if (quickFilterIds != null && !quickFilterIds.isEmpty()) {
             filterSql = getQuickFilter(quickFilterIds);
@@ -262,12 +262,11 @@ public class SprintServiceImpl implements SprintService {
 
     private void handleSprintIssueData(List<Long> allIssueIds, List<Long> issueIds, List<SprintSearchDTO> sprintSearches, BackLogIssueDTO backLogIssueDTO, Long projectId, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
         //查询出所有经办人用户id
-        Set<Long> assigneeIds = sprintMapper.queryAssigneeIdsByIssueIds(allIssueIds);
-        assigneeIds.addAll(sprintMapper.queryBacklogSprintAssigneeIds(projectId));
+        Set<Long> assigneeIds = sprintMapper.queryAssigneeIdsByIssueIds(projectId, allIssueIds);
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(new ArrayList<>(assigneeIds), true);
         SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
         if (sprintSearchDO != null) {
-            sprintSearchDO.setIssueSearchDOList(sprintMapper.queryActiveSprintIssueSearchByIssueIds(sprintSearchDO.getSprintId(), allIssueIds));
+            sprintSearchDO.setIssueSearchDOList(sprintMapper.queryActiveSprintIssueSearchByIssueIds(projectId, sprintSearchDO.getSprintId(), allIssueIds));
             sprintSearchDO.setAssigneeIssueDOList(sprintMapper.queryAssigneeIssueByActiveSprintId(projectId, sprintSearchDO.getSprintId()));
             SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDO, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap);
             activeSprint.setIssueCount(activeSprint.getIssueSearchDTOList() == null ? 0 : activeSprint.getIssueSearchDTOList().size());

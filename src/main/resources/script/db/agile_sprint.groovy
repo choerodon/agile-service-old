@@ -49,4 +49,10 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_sprint.groovy') {
             column(name: 'pi_id', type: 'BIGINT UNSIGNED', remarks: 'pi id')
         }
     }
+
+    changeSet(id: '2019-05-27-add-index', author: 'shinan.chenX@gmail.com') {
+        createIndex(tableName: "agile_sprint", indexName: "idx_sprint_project_id") {
+            column(name: "project_id", type: "BIGINT UNSIGNED")
+        }
+    }
 }
