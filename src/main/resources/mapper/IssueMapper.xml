@@ -726,8 +726,7 @@
             <if test='searchDTO.otherArgs.epic != null and searchDTO.otherArgs.epic.size > 0'>
                 AND (
                 <if test='searchDTO.otherArgs.epicNull != null and searchDTO.otherArgs.epicNull == true'>
-                    (((ai.epic_id is null or ai.epic_id = 0) and ai.type_code != 'issue_epic' and ai.type_code
-                    != 'sub_task')
+                    (((ai.epic_id is null or ai.epic_id = 0) and ai.type_code in ('story', 'task', 'bug'))
                     or (ai.parent_issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id =
                     ai.parent_issue_id and
                     (ai7.epic_id is null or ai7.epic_id = 0) and ai.type_code = 'sub_task' ))) OR
@@ -737,7 +736,7 @@
                          close=")">
                     #{id}
                 </foreach>
-                and ai.type_code != 'sub_task' and ai.type_code != 'issue_epic')
+                and ai.type_code in ('story', 'task', 'bug'))
                 or (ai.parent_issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id =
                 ai.parent_issue_id and
                 ai7.epic_id in
@@ -820,7 +819,7 @@
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE ai.project_id = #{projectId} AND ai.type_code != 'issue_epic'
+        WHERE ai.project_id = #{projectId} AND ai.type_code in ('story', 'task', 'bug', 'sub_task')
         <if test="activeSprintId != null">
             AND ai.issue_id IN (
             SELECT
@@ -852,8 +851,9 @@
             CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
             FROM agile_issue ai
             LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-            WHERE ai.project_id = #{projectId} AND ai.type_code != 'issue_epic'
-            AND ai.type_code != 'sub_task' AND ai.apply_type = 'agile'
+            WHERE ai.project_id = #{projectId}
+            AND ai.type_code in ('story', 'task', 'bug')
+            AND ai.apply_type = 'agile'
             <if test="issueId != null">
                 AND ai.issue_id != #{issueId}
             </if>
@@ -1129,7 +1129,7 @@
         left join agile_issue_status ais on ais.status_id = ai.status_id and ais.project_id = ai.project_id
         WHERE
         (ais.is_completed != 1 or ais.is_completed is null)
-        and ai.project_id = #{projectId} AND ai.type_code !='sub_task' AND ai.type_code != 'issue_epic' AND
+        and ai.project_id = #{projectId} AND ai.type_code in ('story', 'task', 'bug') AND
         ai.apply_type = 'agile'
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.versionId != null'>
@@ -1175,7 +1175,7 @@
         SELECT
         ai.issue_id
         FROM agile_issue ai
-        WHERE ai.project_id = #{projectId} AND ai.type_code !='sub_task' AND ai.type_code != 'issue_epic' AND
+        WHERE ai.project_id = #{projectId} AND ai.type_code in ('story', 'task', 'bug') AND
         ai.apply_type = 'agile'
         <if test='advancedSearchArgs != null'>
             <if test='advancedSearchArgs.versionId != null'>
@@ -1583,7 +1583,7 @@
         agile_issue ai
         WHERE
         ai.project_id = #{projectId}
-        AND ai.type_code != 'issue_epic'
+        AND ai.type_code in ('story', 'task', 'bug', 'sub_task')
         AND ai.rank > #{leftRank}
         AND ai.issue_id
         <choose>
@@ -1617,7 +1617,7 @@
         agile_issue ai
         WHERE
         ai.project_id = #{projectId}
-        AND ai.type_code != 'issue_epic'
+        AND ai.type_code in ('story', 'task', 'bug', 'sub_task')
         AND ai.rank &lt; #{rightRank}
         AND ai.issue_id
         <choose>
@@ -1929,7 +1929,7 @@
         from agile_issue_link ail, agile_issue ai2
         where ai2.project_id = #{projectId} and ail.issue_id = ai2.issue_id and ai2.apply_type = 'test'
         )
-        AND ai.type_code != 'sub_task'
+        AND ai.type_code in ('story', 'task', 'bug', 'issue_test')
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
                 AND position(#{searchArgs.summary} IN ai.summary)
@@ -2042,7 +2042,7 @@
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE ai.project_id = #{projectId} AND ai.type_code != 'sub_task'
+        WHERE ai.project_id = #{projectId} AND ai.type_code in ('story', 'task', 'bug', 'issue_test')
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
                 AND position(#{searchArgs.summary} IN ai.summary)
@@ -2149,7 +2149,7 @@
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE ai.project_id = #{projectId} and ai.type_code != 'sub_task'
+        WHERE ai.project_id = #{projectId} and ai.type_code ('story', 'task', 'bug', 'issue_test')
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
                 AND position(#{searchArgs.summary} IN ai.summary)
@@ -2412,7 +2412,7 @@
         agile_issue_sprint_rel aisr
         LEFT JOIN agile_sprint asp ON aisr.sprint_id = asp.sprint_id
         LEFT JOIN agile_issue ai
-        on ai.apply_type = 'agile' and ai.type_code != 'sub_task' and ai.type_code != 'issue_epic'
+        on ai.apply_type = 'agile' and ai.type_code in ('story', 'task', 'bug')
         <if test='onlyStory != null and onlyStory == true'>
             AND ai.type_code = 'story'
         </if>
@@ -2473,7 +2473,7 @@
         WHERE
         aisr.project_id = #{projectId} and aisr.sprint_id = asp.sprint_id and asp.status_code != 'closed'
         )
-        AND ai.apply_type = 'agile' and ai.type_code != 'sub_task' and ai.type_code != 'issue_epic'
+        AND ai.apply_type = 'agile' and ai.type_code in ('story', 'task', 'bug')
         and ai.status_id not in
         <foreach collection="doneIds" item="doneId" open="(" separator=","
                  close=")">
@@ -2528,8 +2528,7 @@
         FROM
         agile_version_issue_rel avir
         LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
-        LEFT JOIN agile_issue ai ON ai.apply_type = 'agile' and ai.type_code != 'sub_task' and ai.type_code !=
-        'issue_epic'
+        LEFT JOIN agile_issue ai ON ai.apply_type = 'agile' and ai.type_code in ('story', 'task', 'bug')
         <if test='onlyStory != null and onlyStory == true'>
             AND ai.type_code = 'story'
         </if>
@@ -2595,7 +2594,7 @@
         avir.project_id = #{projectId} and avir.version_id = apv.version_id and apv.status_code = 'version_planning'
         and avir.relation_type = 'fix'
         )
-        AND ai.apply_type = 'agile' and ai.type_code != 'sub_task' and ai.type_code != 'issue_epic'
+        AND ai.apply_type = 'agile' and ai.type_code in ('story', 'task', 'bug')
         and ai.status_id not in
         <foreach collection="doneIds" item="doneId" open="(" separator=","
                  close=")">
@@ -2649,7 +2648,7 @@
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         WHERE
         ai.project_id = #{projectId}
-        AND ai.apply_type = 'agile' and ai.type_code != 'sub_task' and ai.type_code != 'issue_epic'
+        AND ai.apply_type = 'agile' and ai.type_code in ('story', 'task', 'bug')
         and ai.status_id not in
         <foreach collection="doneIds" item="doneId" open="(" separator=","
                  close=")">
@@ -2895,9 +2894,8 @@
             WHERE
                 ai.epic_id = #{epicId}
                 AND ai.project_id = #{projectId}
-                AND ai.type_code != 'issue_epic'
+                AND ai.type_code in ('story', 'task', 'bug')
                 AND ai.apply_type = 'agile'
-                AND ai.type_code != 'sub_task'
             ) aaa
         WHERE
             aaa.add_date IS NOT NULL order by aaa.add_date asc
@@ -2975,9 +2973,8 @@
             WHERE
                 avir.version_id = #{versionId}
                 AND ai.project_id =  #{projectId}
-                AND ai.type_code != 'issue_epic'
+                AND ai.type_code in ('story', 'task', 'bug')
                 AND ai.apply_type = 'agile'
-                AND ai.type_code != 'sub_task'
             ) aaa
         WHERE
             aaa.add_date IS NOT NULL order by aaa.add_date asc

@@ -188,7 +188,7 @@
                                             FROM agile_issue_sprint_rel ais
                                             WHERE ais.sprint_id = #{sprintDO.sprintId})) aa LEFT JOIN agile_issue ai
                 ON ai.issue_id = aa.issue_id
-        WHERE ai.type_code != 'sub_task'
+        WHERE ai.type_code in ('story', 'task', 'bug')
     </select>
 
     <select id="queryRemoveIssueValueDurationSprint"
@@ -801,7 +801,7 @@
         aisr.project_id = #{projectId}
         AND aisr.sprint_id = #{sprintId}
         AND aisr.issue_id = ai.issue_id
-        AND ai.type_code != 'sub_task'
+        AND ai.type_code in ('story', 'task', 'bug')
         <if test="status">
             and adl2.new_value is not null
         </if>
@@ -951,7 +951,7 @@
         select ai.issue_id from agile_issue ai LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id where
         ai.project_id = #{projectId}
         AND ai.apply_type = 'agile' AND (ai2.apply_type = 'agile' or ai2.type_code is null)
-        AND ai.type_code != 'issue_epic' AND (ai2.type_code != 'issue_epic' or ai2.type_code is null)
+        AND ai.type_code in ('story', 'task', 'bug', 'sub_task') AND (ai2.type_code in ('story', 'task', 'bug', 'sub_task') or ai2.type_code is null)
         <if test='filterSql != null'>
             AND ai.issue_id IN (${filterSql})
         </if>
@@ -1770,8 +1770,7 @@
         WHERE
         ai.project_id = #{projectId}
         AND ai.apply_type = 'agile'
-        AND ai.type_code != 'sub_task'
-        AND ai.type_code != 'issue_epic'
+        AND ai.type_code in ('story', 'task', 'bug')
         UNION
         SELECT
         ai4.issue_id,
