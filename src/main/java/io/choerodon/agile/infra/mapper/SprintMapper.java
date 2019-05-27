@@ -38,7 +38,7 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
 
     int queryIssueCount(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    BigDecimal queryStoryPoint(@Param("statusIds") List<Long> statusIds, @Param("issueIds") List<Long> issueIds, @Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+    BigDecimal queryStoryPoint(@Param("statusIds") List<Long> statusIds, @Param("issueIds") List<Long> issueIds, @Param("projectId") Long projectId);
 
     SprintDO queryLastSprint(@Param("projectId") Long projectId);
 
@@ -105,7 +105,7 @@ public interface SprintMapper extends BaseMapper<SprintDO> {
      * @param issueIds issueIds
      * @return IssueSearchDO
      */
-    List<IssueSearchDO> queryActiveSprintIssueSearchByIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("issueIds") List<Long> issueIds);
+    List<IssueSearchDO> queryActiveSprintIssueSearchByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("sprintId") Long sprintId);
 
     /**
      * 查询待办事项的所有冲刺中的所有用户
