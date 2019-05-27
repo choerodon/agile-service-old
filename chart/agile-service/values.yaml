@@ -10,7 +10,7 @@ image:
 deployment:
   managementPort: 8379
 service:
-  enable: false
+  enabled: false
   type: ClusterIP
   port: 8378
 
@@ -18,7 +18,7 @@ preJob:
   timeout: 300
   image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.6.4
   preConfig:
-    enable: true
+    enabled: true
     configFile: application.yml
     configType: k8s
     registerHost: http://register-server.c7n-system:8000
@@ -27,7 +27,7 @@ preJob:
       username: username
       password: password
   preInitDB:
-    enable: true
+    enabled: true
     datasource:
       url: jdbc:mysql://localhost:3306/agile_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
       username: username
@@ -56,14 +56,14 @@ env:
     WORKH_CRON: 59 59 23 15 12 *
     SERVICES_WIKI_HOST: example.com
     SERVICES_WIKI_TOKEN: token
-    PRO_API_HOST: gateway.choerodon.com.cn
-    PRO_AGILE_HOST: http://minio.staging.saas.hand-china.com/agile-service/
-    PRO_CLIENT_ID: agile
-    PRO_LOCAL: true
-    PRO_TITLE_NAME: Choerodon
-    PRO_HEADER_TITLE_NAME: Choerodon
-    PRO_COOKIE_SERVER: choerodon.com.cn
-    PRO_HTTP: http
+#    PRO_API_HOST: gateway.example.com.cn
+#    PRO_AGILE_HOST: http://minio.example.com/agile-service/
+#    PRO_CLIENT_ID: agile
+#    PRO_LOCAL: true
+#    PRO_TITLE_NAME: Choerodon
+#    PRO_HEADER_TITLE_NAME: Choerodon
+#    PRO_COOKIE_SERVER: example.com.cn
+#    PRO_HTTP: http
 
 metrics:
   path: /actuator/prometheus

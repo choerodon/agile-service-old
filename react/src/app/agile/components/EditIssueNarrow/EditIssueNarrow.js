@@ -194,7 +194,7 @@ class EditIssueNarrow extends Component {
         top: 0,
         height: '100%',
         zIndex: 101,
-        overflow: 'visible',
+        overflow: 'hidden',
       }}
       >
         <ResizeAble

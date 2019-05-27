@@ -57,6 +57,9 @@ class QuickSearch extends Component {
   }
 
   componentWillUnmount() {
+    QuickSearchEvent.removeListener('clearQuickSearchSelect', this.clearQuickSearch);
+    QuickSearchEvent.removeListener('setSelectQuickSearch', this.setSelectQuickSearch);
+    QuickSearchEvent.removeListener('unSelectStory', this.unSelectStory);
     this.setState({
       userDataArray: [],
       quickSearchArray: [],
@@ -108,16 +111,16 @@ class QuickSearch extends Component {
     });
   }
 
-  setSelectQuickSearch=(selectQuickSearch) => {
+  setSelectQuickSearch = (selectQuickSearch) => {
     this.setState({
       selectQuickSearch,
     });
     this.handleQuickSearchChange(selectQuickSearch);
   }
 
-  unSelectStory=() => {
+  unSelectStory = () => {
     const { selectQuickSearch } = this.state;
-    const newSelect = selectQuickSearch.filter(search => search.key !== -2);    
+    const newSelect = selectQuickSearch.filter(search => search.key !== -2);
     this.setState({
       selectQuickSearch: newSelect,
     });
@@ -128,7 +131,7 @@ class QuickSearch extends Component {
     // 防抖函数
     const debounceCallback = this.deBounce(500);
     const {
-      style, AppState, onAssigneeChange, quickSearchAllowClear, showQuickSearch,
+      style, AppState, onAssigneeChange, quickSearchAllowClear, hideQuickSearch,
     } = this.props;
     const { showRealQuickSearch } = BacklogStore;
     const {
@@ -144,8 +147,8 @@ class QuickSearch extends Component {
         <p>搜索:</p>
         {showRealQuickSearch ? (
           <React.Fragment>
-            {showQuickSearch ? (
-              <Select          
+            {hideQuickSearch ? null : (
+              <Select
                 key="quickSearchSelect"
                 className="quickSearchSelect"
                 dropdownClassName="quickSearchSelect-dropdown"
@@ -164,16 +167,16 @@ class QuickSearch extends Component {
                     <Option key={-1} value={-1}>仅我的问题</Option>
                     <Option key={-2} value={-2}>仅故事</Option>
                   </OptGroup>
-          }
+                }
                 <OptGroup key="more" label="更多">
                   {
-              quickSearchArray.map(item => (
-                <Option key={item.value} value={item.value} title={item.label}>{item.label}</Option>
-              ))
-            }
+                    quickSearchArray.map(item => (
+                      <Option key={item.value} value={item.value} title={item.label}>{item.label}</Option>
+                    ))
+                  }
                 </OptGroup>
               </Select>
-            ) : null}
+            )}
             {
               onAssigneeChange && (
                 <Select
@@ -191,7 +194,7 @@ class QuickSearch extends Component {
                     if (value) {
                       debounceCallback(() => {
                         axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?page=1&size=40&param=${value}`).then((res) => {
-                        // Set 用于查询是否有 id 重复的，没有重复才往里加
+                          // Set 用于查询是否有 id 重复的，没有重复才往里加
                           const temp = new Set(userDataArray.map(item => item.id));
                           res.list.filter(item => item.enabled).forEach((item) => {
                             if (!temp.has(item.id)) {
@@ -222,7 +225,7 @@ class QuickSearch extends Component {
           </React.Fragment>
         ) : (
           <React.Fragment>
-            {showQuickSearch && <Select placeholder="快速搜索" className="quickSearchSelect" />}
+            {hideQuickSearch ? null : <Select placeholder="快速搜索" className="quickSearchSelect" />}
             <Select placeholder="经办人" className="assigneeSelect" />
           </React.Fragment>
         )}

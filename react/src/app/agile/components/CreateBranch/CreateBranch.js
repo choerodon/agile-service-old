@@ -110,7 +110,7 @@ class CreateBranch extends Component {
     } = this.state;
     return (
       <Sidebar
-        className="c7n-createBranch"
+        className="c7nagile-createBranch"
         title="创建分支"
         visible={visible}
         onOk={this.handleOk}
@@ -128,7 +128,7 @@ class CreateBranch extends Component {
           description="您可以在此选择应用、分支来源，可以修改默认的分支类型及分支名称，即可为该问题创建关联的分支。"
           link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/issue/manage-branch/"
         >
-          <Form layout="vertical" className="c7n-sidebar-form">
+          <Form layout="vertical" className="c7nagile-sidebar-form">
             <div className="branch-formItem-icon">
               <span className="icon icon-widgets" />
             </div>
@@ -309,7 +309,7 @@ class CreateBranch extends Component {
             <div className="branch-formItem-icon">
               <span className="icon icon-branch" />
             </div>
-            <FormItem className="c7n-formItem_180">
+            <FormItem className="c7nagile-formItem_180">
               {getFieldDecorator('type', {
                 rules: [{ required: true, message: '请选择分支类型' }],
                 initialValue: MAP[typeCode || 'task'],
@@ -320,7 +320,7 @@ class CreateBranch extends Component {
                 >
                   {['feature', 'bugfix', 'release', 'hotfix', 'custom'].map(s => (
                     <Option value={s} key={s}>
-                      <span className={`c7n-branch-icon icon-${s === 'bugfix' ? 'develop' : s}`}>
+                      <span className={`c7nagile-branch-icon icon-${s === 'bugfix' ? 'develop' : s}`}>
                         {s.slice(0, 1).toUpperCase()}
                       </span>
                       <span>{s}</span>
@@ -329,7 +329,7 @@ class CreateBranch extends Component {
                 </Select>,
               )}
             </FormItem>
-            <FormItem className="c7n-formItem_281">
+            <FormItem className="c7nagile-formItem_281">
               {getFieldDecorator('name', {
                 rules: [{
                   required: true,

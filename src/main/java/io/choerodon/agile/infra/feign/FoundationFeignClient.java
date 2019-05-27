@@ -17,13 +17,13 @@ public interface FoundationFeignClient {
     ResponseEntity<Map<String, Object>> listQuery(@ApiParam(value = "项目id", required = true)
                                                   @PathVariable("project_id") Long projectId,
                                                   @ApiParam(value = "组织id", required = true)
-                                                  @RequestParam Long organizationId,
+                                                  @RequestParam("organizationId") Long organizationId,
                                                   @ApiParam(value = "方案编码", required = true)
-                                                  @RequestParam String schemeCode);
+                                                  @RequestParam("schemeCode") String schemeCode);
 
     @PostMapping("/v1/projects/{project_id}/field_value/query/instanceIds")
     ResponseEntity<Map<Long, Map<String, String>>> queryFieldValueWithIssueIds(@ApiParam(value = "组织id", required = true)
-                                                                               @RequestParam Long organizationId,
+                                                                               @RequestParam("organizationId") Long organizationId,
                                                                                @ApiParam(value = "项目id", required = true)
                                                                                @PathVariable("project_id") Long projectId,
                                                                                @ApiParam(value = "实例ids", required = true)
