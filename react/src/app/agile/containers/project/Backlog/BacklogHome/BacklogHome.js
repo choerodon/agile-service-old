@@ -304,7 +304,7 @@ class BacklogHome extends Component {
             }}
           >
             <QuickSearch
-              showQuickSearch={BacklogStore.getCurrentVisible !== 'feature'}
+              hideQuickSearch={BacklogStore.getCurrentVisible === 'feature'}
               onQuickSearchChange={this.onQuickSearchChange}
               resetFilter={BacklogStore.getQuickSearchClean}
               onAssigneeChange={this.onAssigneeChange}
