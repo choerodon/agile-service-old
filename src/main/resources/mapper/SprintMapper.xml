@@ -132,7 +132,6 @@
         FROM agile_issue ai
         WHERE ai.project_id = #{projectId}
         AND ai.type_code = 'story'
-        AND ai.issue_id in (select aisr.issue_id from agile_issue_sprint_rel aisr where aisr.sprint_id = #{sprintId})
         AND ai.issue_id IN
         <foreach collection="issueIds" item="issueId" index="index"
                  open="(" close=")" separator=",">
@@ -422,7 +421,6 @@
             LEFT JOIN agile_product_version apv ON avir.version_id = apv.version_id
             where avir.relation_type = 'fix') apv1
         ON apv1.issue_id = ai2.issue_id
-        where ai2.issue_id in (select aisr2.issue_id from  agile_issue_sprint_rel aisr2 where aisr2.sprint_id = #{sprintId})
         order by ai2.rank asc
     </select>
 

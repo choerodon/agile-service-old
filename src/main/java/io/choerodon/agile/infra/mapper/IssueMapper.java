@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
+import io.choerodon.agile.api.dto.IssueIdSprintIdDTO;
 import io.choerodon.agile.api.dto.SearchDTO;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.BaseMapper;
@@ -311,7 +312,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
      * @param filterSql          filterSql
      * @return issueIds
      */
-    List<Long> querySprintAllIssueIdsByCondition(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql, @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
+    List<IssueIdSprintIdDTO> querySprintAllIssueIdsByCondition(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql, @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
 
     List<StoryMapIssueDO> listIssuesByProjectIdSprint(@Param("projectId") Long projectId,
                                                       @Param("pageType") String pageType,
