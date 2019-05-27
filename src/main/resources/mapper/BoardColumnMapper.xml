@@ -57,7 +57,7 @@
         LEFT JOIN (SELECT ai1.*
         from agile_issue ai1, agile_issue_sprint_rel aisr
         WHERE aisr.sprint_id = #{activeSprintId} AND ai1.issue_id = aisr.issue_id
-        AND ai1.type_code != 'issue_epic'
+        AND ai1.type_code in ('story', 'task', 'bug', 'sub_task')
         <if test='onlyStory != null and onlyStory == true'>
             AND ai1.type_code = 'story'
         </if>
@@ -193,46 +193,46 @@
             abcsr.project_id = #{projectId} and abcsr.status_id != 0
     </select>
 
-    <select id="selectColumnByColumnId" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDO">
-        SELECT
-            abc.name,
-            abc.min_num,
-            abc.max_num,
-            COUNT(ai.issue_id) AS issue_count
-        FROM
-            agile_board_column abc
-            LEFT JOIN agile_board_column_status_rel abcsr ON abc.column_id = abcsr.column_id
-            LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.status_id and ais.project_id = #{projectId}
-            LEFT JOIN (SELECT
-                           ai1.issue_id,
-                           ai1.status_id
-                       FROM agile_issue ai1, agile_issue_sprint_rel aisr
-                       WHERE aisr.sprint_id = #{activeSprintId} AND ai1.issue_id = aisr.issue_id
-                             and ai1.type_code != 'issue_epic' and ai1.apply_type = 'agile'
-                      ) ai ON ai.status_id = ais.status_id and ais.project_id = #{projectId}
-        WHERE
-            abc.column_id = #{columnId}
-    </select>
+    <!--<select id="selectColumnByColumnId" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDO">-->
+        <!--SELECT-->
+            <!--abc.name,-->
+            <!--abc.min_num,-->
+            <!--abc.max_num,-->
+            <!--COUNT(ai.issue_id) AS issue_count-->
+        <!--FROM-->
+            <!--agile_board_column abc-->
+            <!--LEFT JOIN agile_board_column_status_rel abcsr ON abc.column_id = abcsr.column_id-->
+            <!--LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.status_id and ais.project_id = #{projectId}-->
+            <!--LEFT JOIN (SELECT-->
+                           <!--ai1.issue_id,-->
+                           <!--ai1.status_id-->
+                       <!--FROM agile_issue ai1, agile_issue_sprint_rel aisr-->
+                       <!--WHERE aisr.sprint_id = #{activeSprintId} AND ai1.issue_id = aisr.issue_id-->
+                             <!--and ai1.type_code != 'issue_epic' and ai1.apply_type = 'agile'-->
+                      <!--) ai ON ai.status_id = ais.status_id and ais.project_id = #{projectId}-->
+        <!--WHERE-->
+            <!--abc.column_id = #{columnId}-->
+    <!--</select>-->
 
-    <select id="selectColumnByColumnIdWithoutSub" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDO">
-        SELECT
-            abc.min_num,
-            abc.max_num,
-            COUNT(ai.issue_id) AS issue_count
-        FROM
-            agile_board_column abc
-            LEFT JOIN agile_board_column_status_rel abcsr ON abc.column_id = abcsr.column_id
-            LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.status_id and ais.project_id = #{projectId}
-            LEFT JOIN (SELECT
-                           ai1.issue_id,
-                           ai1.status_id
-                       FROM agile_issue ai1, agile_issue_sprint_rel aisr
-                       WHERE aisr.sprint_id = #{activeSprintId} AND ai1.issue_id = aisr.issue_id
-                             and ai1.type_code != 'issue_epic' and ai1.type_code != 'sub_task' and ai1.apply_type = 'agile'
-                      ) ai ON ai.status_id = ais.status_id and ais.project_id = #{projectId}
-        WHERE
-            abc.column_id = #{columnId}
-    </select>
+    <!--<select id="selectColumnByColumnIdWithoutSub" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDO">-->
+        <!--SELECT-->
+            <!--abc.min_num,-->
+            <!--abc.max_num,-->
+            <!--COUNT(ai.issue_id) AS issue_count-->
+        <!--FROM-->
+            <!--agile_board_column abc-->
+            <!--LEFT JOIN agile_board_column_status_rel abcsr ON abc.column_id = abcsr.column_id-->
+            <!--LEFT JOIN agile_issue_status ais ON abcsr.status_id = ais.status_id and ais.project_id = #{projectId}-->
+            <!--LEFT JOIN (SELECT-->
+                           <!--ai1.issue_id,-->
+                           <!--ai1.status_id-->
+                       <!--FROM agile_issue ai1, agile_issue_sprint_rel aisr-->
+                       <!--WHERE aisr.sprint_id = #{activeSprintId} AND ai1.issue_id = aisr.issue_id-->
+                             <!--and ai1.type_code != 'issue_epic' and ai1.type_code != 'sub_task' and ai1.apply_type = 'agile'-->
+                      <!--) ai ON ai.status_id = ais.status_id and ais.project_id = #{projectId}-->
+        <!--WHERE-->
+            <!--abc.column_id = #{columnId}-->
+    <!--</select>-->
 
     <update id="updateMaxAndMinNum" parameterType="io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO">
         UPDATE agile_board_column
@@ -342,10 +342,10 @@
         FROM agile_issue ai1, agile_issue_sprint_rel aisr
         WHERE aisr.sprint_id = #{activeSprintId} AND ai1.issue_id = aisr.issue_id
         <if test="columnConstraint == 'issue'">
-            and ai1.type_code != 'issue_epic' and ai1.apply_type = 'agile'
+            and ai1.type_code in ('story', 'task', 'bug', 'sub_task') and ai1.apply_type = 'agile'
         </if>
         <if test="columnConstraint == 'issue_without_sub_task'">
-            and ai1.type_code != 'issue_epic' and ai1.type_code != 'sub_task' and ai1.apply_type = 'agile'
+            and ai1.type_code in ('story', 'task', 'bug') and ai1.apply_type = 'agile'
         </if>
         ) ai ON ai.status_id = ais.status_id and ais.project_id = #{projectId}
         where abc.board_id = #{boardId}

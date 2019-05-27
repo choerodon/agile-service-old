@@ -39,13 +39,13 @@ public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
 
     List queryColumnStatusRelByProjectId(@Param("projectId") Long projectId);
 
-    BoardColumnCheckDO selectColumnByColumnId(@Param("projectId") Long projectId,
-                                              @Param("columnId") Long columnId,
-                                              @Param("activeSprintId") Long activeSprintId);
+//    BoardColumnCheckDO selectColumnByColumnId(@Param("projectId") Long projectId,
+//                                              @Param("columnId") Long columnId,
+//                                              @Param("activeSprintId") Long activeSprintId);
 
-    BoardColumnCheckDO selectColumnByColumnIdWithoutSub(@Param("projectId") Long projectId,
-                                                        @Param("columnId") Long columnId,
-                                                        @Param("activeSprintId") Long activeSprintId);
+//    BoardColumnCheckDO selectColumnByColumnIdWithoutSub(@Param("projectId") Long projectId,
+//                                                        @Param("columnId") Long columnId,
+//                                                        @Param("activeSprintId") Long activeSprintId);
 
     void updateMaxAndMinNum(@Param("columnInfo") ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO);
 
