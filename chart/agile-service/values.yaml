@@ -10,7 +10,7 @@ image:
 deployment:
   managementPort: 8379
 service:
-  enable: false
+  enabled: false
   type: ClusterIP
   port: 8378
 
@@ -27,7 +27,7 @@ preJob:
       username: username
       password: password
   preInitDB:
-    enable: true
+    enabled: true
     datasource:
       url: jdbc:mysql://localhost:3306/agile_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
       username: username
