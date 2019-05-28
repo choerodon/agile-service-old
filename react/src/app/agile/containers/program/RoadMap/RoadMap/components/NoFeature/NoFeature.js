@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ProgramFeatureListLink } from '../../../../../../common/utils';
 import noFeature from './noFeature.svg';
 
-const NoFeature = () => (
+const NoFeature = ({ disabled }) => (
   <div style={{
     display: 'flex',
     alignItems: 'center',   
@@ -17,7 +17,7 @@ const NoFeature = () => (
       <div style={{ fontSize: '12px', color: 'rgba(0,0,0,0.65)' }}>计划PI中的特性</div>
       <div style={{ fontSize: '14px', marginTop: 10 }}>
         你可以到
-        <Link style={{ marginLeft: 5 }} to={ProgramFeatureListLink()}>特性列表</Link>
+        <Link style={{ marginLeft: 5 }} to={ProgramFeatureListLink()} disabled={disabled}>特性列表</Link>
         添加一些特性，再进行PI计划
       </div>
     </div>

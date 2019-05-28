@@ -66,12 +66,12 @@ let hasPermission;
   }
 
   loadIssueDetail = (paramIssueId) => {
-    const { store, issueId } = this.props;
+    const { store, issueId, projectId } = this.props;
     const id = paramIssueId || issueId;
     this.setState({
       issueLoading: true,
     }, () => {
-      loadIssue(id).then((res) => {
+      loadIssue(id, projectId).then((res) => {
         const param = {
           schemeCode: 'agile_issue',
           context: res.typeCode,
@@ -85,9 +85,9 @@ let hasPermission;
         });
       });
       axios.all([
-        loadWikies(id),
-        loadDatalogs(id),
-        loadLinkIssues(id),
+        loadWikies(id, projectId),
+        loadDatalogs(id, projectId),
+        loadLinkIssues(id, projectId),
       ])
         .then(axios.spread((wiki, dataLogs, linkIssues) => {
           store.initIssueAttribute(wiki, dataLogs, linkIssues);
@@ -130,6 +130,8 @@ let hasPermission;
       style,
       onUpdate,
       onDeleteIssue,
+      disabled,
+      projectId,
     } = this.props;
     const {
       issueLoading,
@@ -188,6 +190,7 @@ let hasPermission;
           ) : null
         }
             <IssueSidebar
+              disabled={disabled}
               store={store}
               reloadIssue={this.loadIssueDetail}
               onUpdate={onUpdate}
@@ -195,6 +198,7 @@ let hasPermission;
             <div className="c7n-content">
               <IssueHeader
                 store={store}
+                disabled={disabled}
                 reloadIssue={this.loadIssueDetail}
                 backUrl={backUrl}
                 onCancel={onCancel}
@@ -204,6 +208,8 @@ let hasPermission;
                 onDeleteIssue={onDeleteIssue}
               />
               <IssueBody
+                disabled={disabled}
+                projectId={projectId}
                 store={store}
                 reloadIssue={this.loadIssueDetail}
                 onUpdate={onUpdate}

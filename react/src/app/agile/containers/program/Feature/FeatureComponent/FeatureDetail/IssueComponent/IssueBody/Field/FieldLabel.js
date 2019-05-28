@@ -83,7 +83,7 @@ const { Text, Edit } = TextEditToggle;
 
   render() {
     const { selectLoading, originLabels } = this.state;
-    const { store } = this.props;
+    const { store, disabled } = this.props;
     const issue = store.getIssue;
     const { labelIssueRelDTOList = [] } = issue;
 
@@ -96,6 +96,7 @@ const { Text, Edit } = TextEditToggle;
         </div>
         <div className="c7n-value-wrapper">
           <TextEditToggle
+            disabled={disabled}
             formKey="label"
             onSubmit={this.updateIssuePriority}
             originData={this.transToArr(labelIssueRelDTOList, 'labelName', 'array')}

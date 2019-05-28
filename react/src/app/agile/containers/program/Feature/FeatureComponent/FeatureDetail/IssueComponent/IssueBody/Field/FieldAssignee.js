@@ -83,7 +83,7 @@ const { Text, Edit } = TextEditToggle;
 
   render() {
     const { selectLoading, originUsers } = this.state;
-    const { store, loginUserId } = this.props;
+    const { store, loginUserId, disabled } = this.props;
     const issue = store.getIssue;
     const { assigneeId, assigneeName, assigneeImageUrl } = issue;
     const targetUser = _.find(originUsers, { id: assigneeId, enabled: true });
@@ -106,6 +106,7 @@ const { Text, Edit } = TextEditToggle;
         </div>
         <div className="c7n-value-wrapper">
           <TextEditToggle
+            disabled={disabled}
             formKey="assignee"
             onSubmit={this.updateIssueAssignee}
             originData={assigneeId || []}

@@ -34,7 +34,8 @@ class RoadMap extends Component {
     this.setState({
       loading: true,
     });
-    getRoadMap().then((piList) => {
+    const { projectId } = this.props;
+    getRoadMap(projectId).then((piList) => {
       this.setState({
         piList,
         loading: false,
@@ -73,7 +74,7 @@ class RoadMap extends Component {
     const {
       piList, editFeatureVisible, currentFeature, loading,
     } = this.state;
-    const { HeaderStore } = this.props;
+    const { HeaderStore, projectId } = this.props;
     const { startDate, endDate } = this.getRange(piList);
     return (
       <Page
@@ -91,7 +92,7 @@ class RoadMap extends Component {
             piList.length > 0 ? (
               <Fragment>
                 <RoadMapHeader startDate={startDate} endDate={endDate} />
-                <RoadMapContent piList={piList} onFeatureClick={this.handleFeatureClick} currentFeature={currentFeature} />
+                <RoadMapContent disabled={projectId} piList={piList} onFeatureClick={this.handleFeatureClick} currentFeature={currentFeature} />
               </Fragment>
             ) : (
               <Empty
@@ -101,7 +102,7 @@ class RoadMap extends Component {
                 description={(
                   <Fragment>
                       这是您的ART线路图。如果您想看到具体的PI计划，可以先到
-                    <Link to={artListLink()}>ART设置</Link>
+                    <Link to={artListLink()} disabled={projectId}>ART设置</Link>
                       创建开启火车。
                   </Fragment>
                   )}
@@ -118,6 +119,8 @@ class RoadMap extends Component {
               <EditFeature
                 store={FeatureStore}
                 issueId={currentFeature}
+                disabled={projectId}
+                projectId={projectId}
                 onCancel={this.handleCancel}
                 onUpdate={this.loadRoadMap}
                 onDeleteIssue={this.handleDelete}

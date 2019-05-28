@@ -92,7 +92,7 @@ const defaultList = ['0.5', '1', '2', '3', '4', '5', '8', '13'];
 
   render() {
     const { newValue } = this.state;
-    const { store, field } = this.props;
+    const { store, field, disabled } = this.props;
     const issue = store.getIssue;
     const { fieldCode, fieldName } = field;
     const { [fieldCode]: value } = issue;
@@ -106,6 +106,7 @@ const defaultList = ['0.5', '1', '2', '3', '4', '5', '8', '13'];
         </div>
         <div className="c7n-value-wrapper" style={{ width: 'auto' }}>
           <TextEditToggle
+            disabled={disabled}
             onSubmit={this.updateIssueField}
           >
             <Text>

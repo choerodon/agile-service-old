@@ -30,7 +30,7 @@ import { withRouter } from 'react-router-dom';
 
   render() {
     const {
-      typeCode, parentIssueNum, issueNum,
+      typeCode, parentIssueNum, issueNum, disabled,
     } = this.props;
 
     return (
@@ -50,7 +50,7 @@ import { withRouter } from 'react-router-dom';
           ) : null
         }
         {
-          typeCode === 'sub_task' ? (
+          typeCode === 'sub_task' || disabled ? (
             <span>
               {issueNum}
             </span>

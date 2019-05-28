@@ -63,7 +63,7 @@ const { Text, Edit } = TextEditToggle;
 
   render() {
     const { selectLoading, originSprints } = this.state;
-    const { store } = this.props;
+    const { store, disabled } = this.props;
     const issue = store.getIssue;
     const { closeSprint = [], activeSprint = {} } = issue;
     const sprintId = activeSprint ? activeSprint.sprintId : undefined;
@@ -77,6 +77,7 @@ const { Text, Edit } = TextEditToggle;
         </div>
         <div className="c7n-value-wrapper">
           <TextEditToggle
+            disabled={disabled}
             formKey="sprint"
             onSubmit={this.updateIssueSprint}
             originData={sprintId}

@@ -10,10 +10,12 @@ import './PiCard.scss';
 
 class PiCard extends Component {
   renderFeatures = () => {
-    const { pi, onFeatureClick, currentFeature } = this.props;
+    const {
+      pi, onFeatureClick, currentFeature, disabled, 
+    } = this.props;
     const { subFeatureDTOList } = pi;
     if (subFeatureDTOList.length === 0) {
-      return <NoFeature />;
+      return <NoFeature disabled={disabled} />;
     }
     const groupedFeatures = groupBy(subFeatureDTOList, 'featureType');
     const enablerFeatures = groupedFeatures.enabler || [];

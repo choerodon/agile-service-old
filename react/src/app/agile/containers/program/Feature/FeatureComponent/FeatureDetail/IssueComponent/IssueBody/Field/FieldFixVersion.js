@@ -93,7 +93,7 @@ const { Text, Edit } = TextEditToggle;
 
   render() {
     const { selectLoading, originVersions } = this.state;
-    const { store } = this.props;
+    const { store, disabled } = this.props;
     const issue = store.getIssue;
     const { versionIssueRelDTOList = [] } = issue;
     const fixVersionsTotal = _.filter(versionIssueRelDTOList, { relationType: 'fix' }) || [];
@@ -109,6 +109,7 @@ const { Text, Edit } = TextEditToggle;
         </div>
         <div className="c7n-value-wrapper">
           <TextEditToggle
+            disabled={disabled}
             formKey="fixVersion"
             onSubmit={this.updateIssueFixVersion}
             originData={this.transToArr(fixVersions, 'name', 'array')}

@@ -51,7 +51,7 @@ import { createCommit } from '../../../../../../../api/NewIssueApi';
   }
 
   renderCommits() {
-    const { store } = this.props;
+    const { store, disabled } = this.props;
     const issue = store.getIssue;
     const { issueCommentDTOList = [] } = issue;
 
@@ -97,6 +97,7 @@ import { createCommit } from '../../../../../../../api/NewIssueApi';
   }
 
   render() {
+    const { disabled } = this.props;
     return (
       <div id="commit">
         <div className="c7n-title-wrapper">
@@ -108,12 +109,14 @@ import { createCommit } from '../../../../../../../api/NewIssueApi';
             flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
           }}
           />
+          {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Button className="leftBtn" funcType="flat" onClick={() => this.setState({ addCommit: true })}>
               <Icon type="playlist_add icon" />
               <FormattedMessage id="issue.commit.create" />
             </Button>
           </div>
+          )}
         </div>
         {this.renderCommits()}
       </div>
