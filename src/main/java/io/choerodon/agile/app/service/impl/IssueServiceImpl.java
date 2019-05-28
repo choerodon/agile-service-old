@@ -1192,7 +1192,7 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void setStatisticFeatureDetail(Long projectId, List<IssueFeatureDTO> featureList) {
+    private void setFeatureStatisticDetail(Long projectId, List<IssueFeatureDTO> featureList) {
         if (featureList != null && !featureList.isEmpty()) {
             List<Long> ids = featureList.stream().map(IssueFeatureDTO::getIssueId).collect(Collectors.toList());
             Map<Long, Integer> storyCountMap = issueMapper.selectStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
@@ -1223,11 +1223,11 @@ public class IssueServiceImpl implements IssueService {
             }
             List<IssueFeatureDTO> issueFeatureDTOList = issueAssembler.toTargetList(result, IssueFeatureDTO.class);
             Collections.sort(issueFeatureDTOList, (i1, i2) -> i2.getIssueId().compareTo(i1.getIssueId()));
-            setStatisticFeatureDetail(projectId, issueFeatureDTOList);
+            setFeatureStatisticDetail(projectId, issueFeatureDTOList);
             return issueFeatureDTOList;
         } else {
             List<IssueFeatureDTO> featureDTOList = issueAssembler.toTargetList(projectFeatureList, IssueFeatureDTO.class);
-            setStatisticFeatureDetail(projectId, featureDTOList);
+            setFeatureStatisticDetail(projectId, featureDTOList);
             return featureDTOList;
         }
     }
