@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import RoadMap from './RoadMap';
+import PIAims from '../../program/PI/PIAims';
 import IsInProgram from '../../../components/IsInProgram';
 
 class Test extends Component {
   render() { 
     return (
       <IsInProgram>
-        {program => <RoadMap {...this.props} programId={program.id} />}
+        {program => <PIAims {...this.props} isProject programId={program.id} />}
       </IsInProgram>
     );
   }
