@@ -10,7 +10,7 @@
   "dependencies": {
     "@choerodon/boot": "0.17.x",
     "@choerodon/master": "0.17.x",
-    "@toast-ui/react-calendar": "^1.0.1",
+    "@toast-ui/react-calendar": "1.0.1",
     "bizcharts": "^3.1.10",
     "canvas2image": "^1.0.5",
     "echarts": "^4.1.0",
