@@ -1459,6 +1459,14 @@
         </if>
         ORDER BY ai.issue_id DESC
     </select>
+
+    <select id="selectFeatureListByAgileProject" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        select
+        from agile_issue ai
+        where ai.project_id = {projectId}
+        AND ai.type_code = 'feature' and ai.status_id = ais.status_id and ais.project_id = #{projectId} and ais.category_code in ('todo', 'doing')
+        ORDER BY ai.issue_id DESC
+    </select>
     
     <select id="selectStoryCountByIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
         select ai.feature_id as id, IFNULL(COUNT(ai.issue_id), 0) as issue_count

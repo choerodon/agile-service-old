@@ -54,6 +54,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<IssueDO> queryIssueFeatureSelectList(@Param("programId") Long programId, @Param("epicId") Long epicId);
 
+    List<IssueDO> selectFeatureListByAgileProject(@Param("projectId") Long projectId);
+
     List<IssueDO> listEpicSelectProgramData(@Param("programId") Long programId);
 
     Integer batchRemoveFromVersion(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
