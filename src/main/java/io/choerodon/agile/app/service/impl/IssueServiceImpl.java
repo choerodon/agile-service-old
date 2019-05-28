@@ -1192,27 +1192,43 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
+    private void setStatisticFeatureDetail(Long projectId, List<IssueFeatureDTO> featureList) {
+        if (featureList != null && !featureList.isEmpty()) {
+            List<Long> ids = featureList.stream().map(IssueFeatureDTO::getIssueId).collect(Collectors.toList());
+            Map<Long, Integer> storyCountMap = issueMapper.selectStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> completedStoryCountMap = issueMapper.selectCompletedStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> unestimateStoryCountMap = issueMapper.selectUnEstimateStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, BigDecimal> totalStoryPointsMap = issueMapper.selectTotalStoryPointsByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getStoryPointCount));
+            featureList.forEach(issueFeatureDTO -> {
+                issueFeatureDTO.setStoryCount(storyCountMap.get(issueFeatureDTO.getIssueId()) == null ? 0 : storyCountMap.get(issueFeatureDTO.getIssueId()));
+                issueFeatureDTO.setStoryCompletedCount(completedStoryCountMap.get(issueFeatureDTO.getIssueId()) == null ? 0 : completedStoryCountMap.get(issueFeatureDTO.getIssueId()));
+                issueFeatureDTO.setUnEstimateStoryCount(unestimateStoryCountMap.get(issueFeatureDTO.getIssueId()) == null ? 0 : unestimateStoryCountMap.get(issueFeatureDTO.getIssueId()));
+                issueFeatureDTO.setTotalStoryPoints(totalStoryPointsMap.get(issueFeatureDTO.getIssueId()) == null ? new BigDecimal(0) : totalStoryPointsMap.get(issueFeatureDTO.getIssueId()));
+            });
+        }
+    }
+
     @Override
     public List<IssueFeatureDTO> listFeature(Long projectId, Long organizationId) {
         ProjectDTO program = userFeignClient.getGroupInfoByEnableProject(organizationId, projectId).getBody();
+        List<IssueDO> projectFeatureList = issueMapper.selectFeatureListByAgileProject(projectId);
         if (program != null) {
-            List<IssueFeatureDTO> issueFeatureDTOList = issueAssembler.toTargetList(issueMapper.queryIssueFeatureSelectList(program.getId(), null), IssueFeatureDTO.class);
-            if (issueFeatureDTOList != null && !issueFeatureDTOList.isEmpty()) {
-                List<Long> ids = issueFeatureDTOList.stream().map(IssueFeatureDTO::getIssueId).collect(Collectors.toList());
-                Map<Long, Integer> storyCountMap = issueMapper.selectStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-                Map<Long, Integer> completedStoryCountMap = issueMapper.selectCompletedStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-                Map<Long, Integer> unestimateStoryCountMap = issueMapper.selectUnEstimateStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-                Map<Long, BigDecimal> totalStoryPointsMap = issueMapper.selectTotalStoryPointsByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getStoryPointCount));
-                issueFeatureDTOList.forEach(issueFeatureDTO -> {
-                    issueFeatureDTO.setStoryCount(storyCountMap.get(issueFeatureDTO.getIssueId()) == null ? 0 : storyCountMap.get(issueFeatureDTO.getIssueId()));
-                    issueFeatureDTO.setStoryCompletedCount(completedStoryCountMap.get(issueFeatureDTO.getIssueId()) == null ? 0 : completedStoryCountMap.get(issueFeatureDTO.getIssueId()));
-                    issueFeatureDTO.setUnEstimateStoryCount(unestimateStoryCountMap.get(issueFeatureDTO.getIssueId()) == null ? 0 : unestimateStoryCountMap.get(issueFeatureDTO.getIssueId()));
-                    issueFeatureDTO.setTotalStoryPoints(totalStoryPointsMap.get(issueFeatureDTO.getIssueId()) == null ? new BigDecimal(0) : totalStoryPointsMap.get(issueFeatureDTO.getIssueId()));
-                });
+            List<IssueDO> result = new ArrayList<>();
+            if (projectFeatureList != null && !projectFeatureList.isEmpty()) {
+                result.addAll(projectFeatureList);
             }
+            List<IssueDO> programFeatureList = issueMapper.queryIssueFeatureSelectList(program.getId(), null);
+            if (programFeatureList != null && !projectFeatureList.isEmpty()) {
+                result.addAll(programFeatureList);
+            }
+            List<IssueFeatureDTO> issueFeatureDTOList = issueAssembler.toTargetList(result, IssueFeatureDTO.class);
+            Collections.sort(issueFeatureDTOList, (i1, i2) -> i2.getIssueId().compareTo(i1.getIssueId()));
+            setStatisticFeatureDetail(projectId, issueFeatureDTOList);
             return issueFeatureDTOList;
         } else {
-            return new ArrayList<>();
+            List<IssueFeatureDTO> featureDTOList = issueAssembler.toTargetList(projectFeatureList, IssueFeatureDTO.class);
+            setStatisticFeatureDetail(projectId, featureDTOList);
+            return featureDTOList;
         }
     }
 
