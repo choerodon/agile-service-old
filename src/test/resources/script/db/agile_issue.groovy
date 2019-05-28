@@ -167,4 +167,10 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_issue.groovy') {
             column(name: 'relate_issue_id', type: 'BIGINT UNSIGNED', remarks: 'relate issue id')
         }
     }
+
+    changeSet(id: '2019-05-28-agile-issue-add-index', author: 'fuqianghuang01@gmail.com') {
+        createIndex(tableName: "agile_issue", indexName: "idx_relate_issue_id") {
+            column(name: "relate_issue_id")
+        }
+    }
 }
