@@ -58,7 +58,7 @@ const { Text, Edit } = TextEditToggle;
 
   render() {
     const { selectLoading, originEpics } = this.state;
-    const { store } = this.props;
+    const { store, disabled } = this.props;
     const issue = store.getIssue;
     const { epicColor, epicId, epicName } = issue;
     return (
@@ -70,6 +70,7 @@ const { Text, Edit } = TextEditToggle;
         </div>
         <div className="c7n-value-wrapper">
           <TextEditToggle
+            disabled={disabled}
             formKey="epic"
             onSubmit={this.updateIssueEpic}
             originData={epicId || []}

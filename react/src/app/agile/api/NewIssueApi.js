@@ -105,8 +105,7 @@ export function loadChartData(id, type) {
   return axios.get(`/agile/v1/projects/${projectId}/reports/${id}/burn_down_report?type=${type}&ordinalType=asc`);
 }
 
-export function loadStatus(statusId, issueId, typeId, applyType = 'agile') {
-  const projectId = AppState.currentMenuType.id;
+export function loadStatus(statusId, issueId, typeId, applyType = 'agile', projectId = AppState.currentMenuType.id) {
   return axios.get(
     `/issue/v1/projects/${projectId}/schemes/query_transforms?current_status_id=${statusId}&issue_id=${issueId}&issue_type_id=${typeId}&apply_type=${applyType}`,
   );

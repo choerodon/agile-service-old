@@ -87,7 +87,7 @@ const { Text, Edit } = TextEditToggle;
 
   render() {
     const { selectLoading, originComponents } = this.state;
-    const { store, hasPermission } = this.props;
+    const { store, hasPermission, disabled } = this.props;
     const issue = store.getIssue;
     const { componentIssueRelDTOList = [] } = issue;
     return (
@@ -99,6 +99,7 @@ const { Text, Edit } = TextEditToggle;
         </div>
         <div className="c7n-value-wrapper">
           <TextEditToggle
+            disabled={disabled}
             formKey="component"
             onSubmit={this.updateIssueComponents}
             originData={componentIssueRelDTOList.map(component => component.id)}

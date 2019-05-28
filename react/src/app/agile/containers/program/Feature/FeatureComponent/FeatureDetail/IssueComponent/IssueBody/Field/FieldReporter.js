@@ -83,7 +83,9 @@ const { Text, Edit } = TextEditToggle;
 
   render() {
     const { selectLoading, originUsers } = this.state;
-    const { store, loginUserId, hasPermission } = this.props;
+    const {
+      store, loginUserId, hasPermission, disabled, 
+    } = this.props;
     const issue = store.getIssue;
     const {
       reporterId, reporterName, reporterImageUrl,
@@ -109,7 +111,7 @@ const { Text, Edit } = TextEditToggle;
         </div>
         <div className="c7n-value-wrapper">
           <TextEditToggle
-            disabled={reporterId !== loginUserId && !hasPermission}
+            disabled={disabled || (reporterId !== loginUserId && !hasPermission)}
             formKey="reporter"
             onSubmit={this.updateIssueReporter}
             originData={reporterId || []}

@@ -30,7 +30,7 @@ const { Text, Edit } = TextEditToggle;
   }
 
   loadIssueStatus = () => {
-    const { store } = this.props;
+    const { store, projectId } = this.props;
     const issue = store.getIssue;
     const {
       issueTypeDTO = {},
@@ -39,7 +39,7 @@ const { Text, Edit } = TextEditToggle;
       activePi = {},
     } = issue;
     const typeId = issueTypeDTO.id;
-    loadStatus(statusId, issueId, typeId, 'program').then((res) => {
+    loadStatus(statusId, issueId, typeId, 'program', projectId).then((res) => {
       if (activePi && activePi.statusCode === 'doing') {
         this.setState({
           originStatus: res,
@@ -82,7 +82,7 @@ const { Text, Edit } = TextEditToggle;
 
   render() {
     const { selectLoading, originStatus } = this.state;
-    const { store } = this.props;
+    const { store, disabled } = this.props;
     const issue = store.getIssue;
     const { statusMapDTO = {}, statusId } = issue;
     const { type, name } = statusMapDTO;
@@ -95,6 +95,7 @@ const { Text, Edit } = TextEditToggle;
         </div>
         <div className="c7n-value-wrapper">
           <TextEditToggle
+            disabled={disabled}
             formKey="status"
             onSubmit={this.updateIssueStatus}
             originData={statusId}

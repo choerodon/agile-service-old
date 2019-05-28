@@ -66,7 +66,7 @@ import '../../../../../../components/EditIssueNarrow/IssueComponent/IssueCompone
 
   render() {
     const {
-      store,
+      store, disabled,
     } = this.props;
 
     let issueTypeData = store.getIssueTypes ? store.getIssueTypes : [];
@@ -124,7 +124,7 @@ import '../../../../../../components/EditIssueNarrow/IssueComponent/IssueCompone
       <div className="c7n-nav">
         {/* 转换类型 */}
         <div>
-          <Dropdown overlay={typeList} trigger={['click']} disabled={issueTypeDTO.typeCode === 'issue_epic'}>
+          <Dropdown overlay={typeList} trigger={['click']} disabled={disabled || issueTypeDTO.typeCode === 'issue_epic'}>
             <div
               style={{
                 height: 50,

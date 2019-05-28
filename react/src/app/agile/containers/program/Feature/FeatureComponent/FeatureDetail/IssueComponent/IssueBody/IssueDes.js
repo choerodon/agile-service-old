@@ -129,7 +129,7 @@ import { updateIssue } from '../../../../../../../api/NewIssueApi';
 
   render() {
     const { edit, description, editDes } = this.state;
-
+    const { disabled } = this.props;
     const callback = (value) => {
       this.setState({
         description: value,
@@ -151,11 +151,12 @@ import { updateIssue } from '../../../../../../../api/NewIssueApi';
             flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
           }}
           />
+          {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px', position: 'relative' }}>
             <Button className="leftBtn" funcType="flat" onClick={() => this.setState({ edit: true })}>
               <Icon type="zoom_out_map icon" style={{ marginRight: 2 }} />
               <span>全屏编辑</span>
-            </Button>
+            </Button>            
             <Icon
               className="c7n-des-edit"
               style={{ position: 'absolute', top: 8, right: -20 }}
@@ -167,8 +168,9 @@ import { updateIssue } from '../../../../../../../api/NewIssueApi';
                   editDes: description,
                 });
               }}
-            />
+            />     
           </div>
+          )}
         </div>
         {this.renderDes()}
         {

@@ -58,7 +58,7 @@ const { Text, Edit } = TextEditToggle;
 
   render() {
     const { selectLoading, originPriorities } = this.state;
-    const { store } = this.props;
+    const { store, disabled } = this.props;
     const issue = store.getIssue;
     const { priorityId, priorityDTO = {} } = issue;
     const { colour, name } = priorityDTO;
@@ -72,6 +72,7 @@ const { Text, Edit } = TextEditToggle;
         </div>
         <div className="c7n-value-wrapper">
           <TextEditToggle
+            disabled={disabled}
             formKey="priority"
             onSubmit={this.updateIssuePriority}
             originData={priorityId}
