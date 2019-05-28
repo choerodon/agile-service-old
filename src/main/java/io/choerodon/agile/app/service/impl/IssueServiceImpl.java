@@ -1218,7 +1218,7 @@ public class IssueServiceImpl implements IssueService {
                 result.addAll(projectFeatureList);
             }
             List<IssueDO> programFeatureList = issueMapper.queryIssueFeatureSelectList(program.getId(), null);
-            if (programFeatureList != null && !projectFeatureList.isEmpty()) {
+            if (programFeatureList != null && !programFeatureList.isEmpty()) {
                 result.addAll(programFeatureList);
             }
             List<IssueFeatureDTO> issueFeatureDTOList = issueAssembler.toTargetList(result, IssueFeatureDTO.class);
