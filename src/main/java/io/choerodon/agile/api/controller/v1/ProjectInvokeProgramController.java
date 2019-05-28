@@ -1,11 +1,8 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.DataLogDTO;
-import io.choerodon.agile.api.dto.IssueDTO;
-import io.choerodon.agile.api.dto.PiWithFeatureDTO;
-import io.choerodon.agile.app.service.DataLogService;
-import io.choerodon.agile.app.service.IssueService;
-import io.choerodon.agile.app.service.PiService;
+import com.alibaba.fastjson.JSONObject;
+import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.app.service.*;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
@@ -36,6 +33,13 @@ public class ProjectInvokeProgramController {
 
     @Autowired
     private DataLogService dataLogService;
+
+    @Autowired
+    private BoardService boardService;
+
+    @Autowired
+    private BoardFeatureService boardFeatureService;
+
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询PI路线图")
@@ -79,6 +83,49 @@ public class ProjectInvokeProgramController {
         return Optional.ofNullable(dataLogService.listByIssueId(programId, issueId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.dataLogList.get"));
+    }
+
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("根据projectId查询项目下的board")
+    @GetMapping("/board")
+    public ResponseEntity<List<BoardDTO>> queryByProjectId(@ApiParam(value = "项目id", required = true)
+                                                           @PathVariable(name = "project_id") Long projectId,
+                                                           @ApiParam(value = "项目群id", required = true)
+                                                           @RequestParam Long programId) {
+        return Optional.ofNullable(boardService.queryByProjectId(programId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.boardList.get"));
+    }
+
+
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("all board data for program")
+    @PostMapping(value = "/{boardId}/all_data_program/{organization_id}")
+    public ResponseEntity<JSONObject> queryByOptionsInProgram(@ApiParam(value = "项目id", required = true)
+                                                              @PathVariable(name = "project_id") Long projectId,
+                                                              @ApiParam(value = "项目群id", required = true)
+                                                              @RequestParam Long programId,
+                                                              @ApiParam(value = "agile board id", required = true)
+                                                              @PathVariable Long boardId,
+                                                              @ApiParam(value = "组织id", required = true)
+                                                              @PathVariable(name = "organization_id") Long organizationId,
+                                                              @ApiParam(name = "search DTO", required = false)
+                                                              @RequestBody SearchDTO searchDTO) {
+        return Optional.ofNullable(boardService.queryByOptionsInProgram(programId, boardId, organizationId, searchDTO))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.programBoard.get"));
+    }
+
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("获取公告板所有信息")
+    @GetMapping(value = "/query_board_info")
+    public ResponseEntity<ProgramBoardInfoDTO> queryBoardInfo(@ApiParam(value = "项目id", required = true)
+                                                              @PathVariable(name = "project_id") Long projectId,
+                                                              @ApiParam(value = "项目群id", required = true)
+                                                              @RequestParam Long programId) {
+        return Optional.ofNullable(boardFeatureService.queryBoardInfo(projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
+                .orElseThrow(() -> new CommonException("error.boardFeature.queryBoardInfo"));
     }
 
 }
