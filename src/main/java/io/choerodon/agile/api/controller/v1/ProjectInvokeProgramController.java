@@ -40,6 +40,9 @@ public class ProjectInvokeProgramController {
     @Autowired
     private BoardFeatureService boardFeatureService;
 
+    @Autowired
+    private ArtService artService;
+
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询PI路线图")
@@ -123,9 +126,34 @@ public class ProjectInvokeProgramController {
                                                               @PathVariable(name = "project_id") Long projectId,
                                                               @ApiParam(value = "项目群id", required = true)
                                                               @RequestParam Long programId) {
-        return Optional.ofNullable(boardFeatureService.queryBoardInfo(projectId))
+        return Optional.ofNullable(boardFeatureService.queryBoardInfo(programId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.boardFeature.queryBoardInfo"));
     }
 
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("查询当前活跃art")
+    @GetMapping("/art/active")
+    public ResponseEntity<ArtDTO> queryActiveArt(@ApiParam(value = "项目id", required = true)
+                                                 @PathVariable(name = "project_id") Long projectId,
+                                                 @ApiParam(value = "项目群id", required = true)
+                                                 @RequestParam Long programId) {
+        return Optional.ofNullable(artService.queryActiveArt(programId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.activeArt.get"));
+    }
+
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("查询art日历")
+    @GetMapping("/art_calendar")
+    public ResponseEntity<List<PiCalendarDTO>> queryArtCalendar(@ApiParam(value = "项目id", required = true)
+                                                                @PathVariable(name = "project_id") Long projectId,
+                                                                @ApiParam(value = "项目群id", required = true)
+                                                                @RequestParam Long programId,
+                                                                @ApiParam(value = "art id")
+                                                                @RequestParam Long id) {
+        return Optional.ofNullable(artService.queryArtCalendar(programId, id))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.artCalendar.get"));
+    }
 }
