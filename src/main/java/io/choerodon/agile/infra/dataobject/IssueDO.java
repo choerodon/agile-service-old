@@ -173,6 +173,7 @@ public class IssueDO extends AuditDomain {
 
     private Long relateIssueId;
 
+    @Transient
     private String featureType;
 
     public List<LabelIssueRelDO> getLabelIssueRelDOS() {
