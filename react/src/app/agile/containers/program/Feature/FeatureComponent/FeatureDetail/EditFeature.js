@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { Spin } from 'choerodon-ui';
 import { throttle } from 'lodash';
 // import './EditFeature.scss';
-import '../../../../../components/EditIssueNarrow/EditIssueNarrow.scss';
+import '../../../../../components/EditIssue/EditIssue.scss';
 import {
   loadDatalogs, loadLinkIssues, loadIssue, getFieldAndValue, loadWikies,
 } from '../../../../../api/NewIssueApi';

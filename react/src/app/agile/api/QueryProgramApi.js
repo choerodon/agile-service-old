@@ -21,3 +21,13 @@ export function getFieldAndValue(id, dto, programId) {
 export function getBoard(programId) {
   return axios.get(`/agile/v1/projects/${getProjectId()}/project_invoke_program/query_board_info?programId=${programId}`);
 }
+export function getBoardList(programId) {
+  return axios.get(`/agile/v1/projects/${getProjectId()}/project_invoke_program/board?programId=${programId}`);
+}
+
+export function loadBoardData(boardId, quickSearchObj = {}, programId) {
+  const {
+    onlyMe, onlyStory, quickSearchArray, assigneeFilterIds,
+  } = quickSearchObj; 
+  return axios.post(`/agile/v1/projects/${getProjectId()}/project_invoke_program/${boardId}/all_data_program/${getOrganizationId()}?programId=${programId}&quickFilterIds=${quickSearchArray || []}`, quickSearchObj);
+}

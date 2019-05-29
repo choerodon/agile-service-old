@@ -7,7 +7,11 @@ import {
 } from 'choerodon-ui';
 import moment from 'moment';
 import { UploadButton } from '../CommonComponent';
-import { handleFileUpload, beforeTextUpload, randomString } from '../../common/utils';
+import {
+  handleFileUpload, beforeTextUpload, randomString,  
+} from '../../common/utils';
+import IsInProgramStore from '../../stores/common/program/IsInProgramStore';
+
 import {
   createIssue, loadLabels, loadPriorities, loadVersions,
   loadSprints, loadComponents, loadEpics, loadIssuesInLink,
@@ -372,7 +376,7 @@ class CreateIssue extends Component {
             }
           });
         }
-      
+
         const extra = {
           issueTypeId: values.typeId,
           typeCode,
@@ -390,6 +394,11 @@ class CreateIssue extends Component {
           storyPoints,
           remainingTime: estimatedTime,
           issueLinkCreateDTOList,
+          featureDTO: {
+            benfitHypothesis: values.benfitHypothesis,
+            acceptanceCritera: values.acceptanceCritera,
+            featureType: values.featureType,
+          },
         };
         this.setState({ createLoading: true });
         const deltaOps = delta;
@@ -427,15 +436,15 @@ class CreateIssue extends Component {
             className="fieldWith"
           >
             {fieldOptions && fieldOptions.length > 0
-            && fieldOptions.filter(option => option.enabled).map(item => (
-              <Radio
-                className="radioStyle"
-                value={item.id}
-                key={item.id}
-              >
-                {item.value}
-              </Radio>
-            ))}
+              && fieldOptions.filter(option => option.enabled).map(item => (
+                <Radio
+                  className="radioStyle"
+                  value={item.id}
+                  key={item.id}
+                >
+                  {item.value}
+                </Radio>
+              ))}
           </Radio.Group>
         );
       } else {
@@ -457,20 +466,20 @@ class CreateIssue extends Component {
           >
             <Row>
               {fieldOptions && fieldOptions.length > 0
-              && fieldOptions.filter(option => option.enabled).map(item => (
-                <Col
-                  span={24}
-                  key={item.id}
-                >
-                  <Checkbox
-                    value={item.id}
+                && fieldOptions.filter(option => option.enabled).map(item => (
+                  <Col
+                    span={24}
                     key={item.id}
-                    className="checkboxStyle"
                   >
-                    {item.value}
-                  </Checkbox>
-                </Col>
-              ))}
+                    <Checkbox
+                      value={item.id}
+                      key={item.id}
+                      className="checkboxStyle"
+                    >
+                      {item.value}
+                    </Checkbox>
+                  </Col>
+                ))}
             </Row>
           </Checkbox.Group>
         );
@@ -512,14 +521,14 @@ class CreateIssue extends Component {
           allowClear={!required}
         >
           {field.fieldOptions && field.fieldOptions.length > 0
-          && field.fieldOptions.filter(option => option.enabled).map(item => (
-            <Option
-              value={item.id}
-              key={item.id}
-            >
-              {item.value}
-            </Option>
-          ))}
+            && field.fieldOptions.filter(option => option.enabled).map(item => (
+              <Option
+                value={item.id}
+                key={item.id}
+              >
+                {item.value}
+              </Option>
+            ))}
         </Select>
       );
     } else if (field.fieldType === 'multiple') {
@@ -531,14 +540,14 @@ class CreateIssue extends Component {
           className="fieldWith"
         >
           {field.fieldOptions && field.fieldOptions.length > 0
-          && field.fieldOptions.filter(option => option.enabled).map(item => (
-            <Option
-              value={item.id}
-              key={item.id}
-            >
-              {item.value}
-            </Option>
-          ))}
+            && field.fieldOptions.filter(option => option.enabled).map(item => (
+              <Option
+                value={item.id}
+                key={item.id}
+              >
+                {item.value}
+              </Option>
+            ))}
         </Select>
       );
     } else if (field.fieldType === 'number') {
@@ -570,6 +579,19 @@ class CreateIssue extends Component {
     }
   };
 
+  getIssueTypes=() => {
+    const createTypes = [];
+    const { originIssueTypes } = this.state;
+    originIssueTypes.forEach((type) => {
+      const { typeCode } = type;
+      if ((IsInProgramStore.isInProgram && ['issue_epic', 'feature'].includes(typeCode)) || ['sub_task'].includes(typeCode)) {
+        return;
+      }
+      createTypes.push(type);
+    });
+    return createTypes;
+  }
+
   getFieldComponent = (field) => {
     const { form } = this.props;
     const { getFieldDecorator } = form;
@@ -585,44 +607,65 @@ class CreateIssue extends Component {
     switch (field.fieldCode) {
       case 'issueType':
         return (
-          <FormItem label="问题类型" style={{ width: 520 }}>
-            {getFieldDecorator('typeId', {
-              rules: [{ required: true, message: '问题类型为必输项' }],
-              initialValue: defaultTypeId || '',
-            })(
-              <Select
-                label="问题类型"
-                getPopupContainer={triggerNode => triggerNode.parentNode}
-                onChange={((value) => {
-                  const { typeCode } = originIssueTypes.find(item => item.id === value);
-                  this.setState({
-                    newIssueTypeCode: typeCode,
-                  });
-                  const param = {
-                    schemeCode: 'agile_issue',
-                    context: typeCode,
-                    pageCode: 'agile_issue_create',
-                  };
-                  getFields(param).then((res) => {
+          [
+            <FormItem label="问题类型" style={{ width: 520 }}>
+              {getFieldDecorator('typeId', {
+                rules: [{ required: true, message: '问题类型为必输项' }],
+                initialValue: defaultTypeId || '',
+              })(
+                <Select
+                  label="问题类型"
+                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                  onChange={((value) => {
+                    const { typeCode } = originIssueTypes.find(item => item.id === value);
                     this.setState({
-                      fields: res,
+                      newIssueTypeCode: typeCode,
                     });
-                  });
-                })}
-              >
-                {originIssueTypes.filter(t => ['sub_task', 'feature'].indexOf(t.typeCode) === -1).map(type => (
-                  <Option key={type.id} value={type.id}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', padding: '2px' }}>
-                      <TypeTag
-                        data={type}
-                        showName
-                      />
-                    </div>
-                  </Option>
-                ))}
-              </Select>,
-            )}
-          </FormItem>
+                    const param = {
+                      schemeCode: 'agile_issue',
+                      context: typeCode,
+                      pageCode: 'agile_issue_create',
+                    };
+                    getFields(param).then((res) => {
+                      this.setState({
+                        fields: res,
+                      });
+                    });
+                  })}
+                >
+                  {this.getIssueTypes().map(type => (
+                    <Option key={type.id} value={type.id}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', padding: '2px' }}>
+                        <TypeTag
+                          data={type}
+                          showName
+                        />
+                      </div>
+                    </Option>
+                  ))}
+                </Select>,
+              )}
+            </FormItem>, 
+            newIssueTypeCode === 'feature' ? (
+              <FormItem style={{ width: 520 }}>
+                {getFieldDecorator('featureType', {
+                  rules: [{ required: true, message: '特性类型为必输项' }],
+                  initialValue: 'business',
+                })(
+                  <Select
+                    label="特性类型"
+                    getPopupContainer={triggerNode => triggerNode.parentNode}
+                  >
+                    <Option key="business" value="business">
+                    特性
+                    </Option>
+                    <Option key="enabler" value="enabler">
+                    使能
+                    </Option>
+                  </Select>,
+                )}
+              </FormItem>
+            ) : null]
         );
       case 'assignee':
         return (
@@ -874,7 +917,7 @@ class CreateIssue extends Component {
             {getFieldDecorator('summary', {
               rules: [{ required: true, message: '概要为必输项' }],
             })(
-              <Input label="概要" maxLength={44} />,
+              <Input autoFocus label="概要" maxLength={44} />,
             )}
           </FormItem>
         );
@@ -1085,7 +1128,7 @@ class CreateIssue extends Component {
                                   showName={issue.issueNum}
                                 >
                                   <div style={{
-                                    display: 'inline-flex',                            
+                                    display: 'inline-flex',
                                     flex: 1,
                                     width: 'calc(100% - 30px)',
                                     alignItems: 'center',

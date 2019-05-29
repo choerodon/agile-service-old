@@ -5,7 +5,7 @@ import { Icon, Button } from 'choerodon-ui';
 import { injectIntl } from 'react-intl';
 import { deleteWiki, loadWikies } from '../../../../../../../api/NewIssueApi';
 import Wiki from '../../../../../../../components/Wiki';
-import WikiItem from '../../../../../../../components/EditIssueNarrow/Component/WikiItem';
+import WikiItem from '../../../../../../../components/EditIssue/Component/WikiItem';
 
 @inject('AppState')
 @observer class IssueCommit extends Component {

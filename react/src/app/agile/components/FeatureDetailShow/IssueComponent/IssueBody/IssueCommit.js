@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { Icon, Button } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import WYSIWYGEditor from '../../../WYSIWYGEditor';
-import Comment from '../../../EditIssueNarrow/Component/Comment';
+import Comment from '../../../EditIssue/Component/Comment';
 import { text2Delta, beforeTextUpload } from '../../../../common/utils';
 import { createCommit } from '../../../../api/NewIssueApi';
 

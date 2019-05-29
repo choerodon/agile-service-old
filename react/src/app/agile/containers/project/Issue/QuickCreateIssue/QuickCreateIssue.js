@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
 import {
   Button, Input, Dropdown, Menu, Icon,
@@ -9,8 +10,10 @@ import { createIssue, loadPriorities, createIssueField } from '../../../../api/N
 import TypeTag from '../../../../components/TypeTag';
 import IssueFilterControler from '../IssueFilterControler';
 import { QuickSearchEvent } from '../../../../components/QuickSearch';
+import IsInProgramStore from '../../../../stores/common/program/IsInProgramStore';
 
 const { AppState } = stores;
+@withRouter
 @observer
 class QuickCreateIssue extends Component {
   constructor(props) {
@@ -36,56 +39,58 @@ class QuickCreateIssue extends Component {
 
   handleBlurCreateIssue = () => {
     const createIssueValue = this.inputvalue.input.value;
-    const { selectIssueType } = this.state;
+    const { selectIssueType, featureType } = this.state;
     const currentType = IssueStore.getIssueTypes.find(t => t.typeCode === selectIssueType);
     if (createIssueValue !== '') {
       const { history } = this.props;
       const {
         type, id, name, organizationId,
       } = AppState.currentMenuType;
-      axios.get(`/agile/v1/projects/${id}/project_info`)
-        .then((res) => {
-          const data = {
-            priorityCode: `priority-${IssueStore.getDefaultPriorityId}`,
-            priorityId: IssueStore.getDefaultPriorityId,
-            projectId: id,
-            sprintId: 0,
-            summary: createIssueValue,
-            issueTypeId: currentType.id,
-            typeCode: currentType.typeCode,
-            epicId: 0,
-            epicName: selectIssueType === 'issue_epic' ? createIssueValue : undefined,
-            parentIssueId: 0,
+      const data = {
+        priorityCode: `priority-${IssueStore.getDefaultPriorityId}`,
+        priorityId: IssueStore.getDefaultPriorityId,
+        projectId: id,
+        sprintId: 0,
+        summary: createIssueValue,
+        issueTypeId: currentType.id,
+        typeCode: currentType.typeCode,
+        epicId: 0,
+        epicName: selectIssueType === 'issue_epic' ? createIssueValue : undefined,
+        parentIssueId: 0,
+        featureDTO: {
+          // benfitHypothesis: values.benfitHypothesis,
+          // acceptanceCritera: values.acceptanceCritera,
+          featureType,
+        },
+      };
+      this.setState({
+        createLoading: true,
+      });
+      createIssue(data)
+        .then((response) => {
+          const dto = {
+            schemeCode: 'agile_issue',
+            context: response.typeCode,
+            pageCode: 'agile_issue_create',
           };
-          this.setState({
-            createLoading: true,
+          createIssueField(response.issueId, dto);
+          this.filterControler = new IssueFilterControler();
+          this.filterControler.resetCacheMap();
+          IssueStore.setLoading(true);
+          IssueStore.resetFilterSelect(this.filterControler, true);
+          // quickSearch.clearQuickSearch();
+          QuickSearchEvent.emitEvent('clearQuickSearchSelect');
+          this.filterControler.refresh('refresh').then((resRefresh) => {
+            IssueStore.refreshTrigger(resRefresh);
           });
-          createIssue(data)
-            .then((response) => {
-              const dto = {
-                schemeCode: 'agile_issue',
-                context: response.typeCode,
-                pageCode: 'agile_issue_create',
-              };
-              createIssueField(response.issueId, dto);
-              this.filterControler = new IssueFilterControler();
-              this.filterControler.resetCacheMap();
-              IssueStore.setLoading(true);
-              IssueStore.resetFilterSelect(this.filterControler, true);
-              // quickSearch.clearQuickSearch();
-              QuickSearchEvent.emitEvent('clearQuickSearchSelect');
-              this.filterControler.refresh('refresh').then((resRefresh) => {
-                IssueStore.refreshTrigger(resRefresh);
-              });
-              this.inputvalue.input.value = '';
-              this.setState({
-                checkCreateIssue: false,
-                createLoading: false,
-              });
-              history.push(`/agile/issue?type=${type}&id=${id}&name=${encodeURIComponent(name)}&organizationId=${organizationId}&paramName=${response.issueNum}&paramIssueId=${response.issueId}&paramOpenIssueId=${response.issueId}`);
-            })
-            .catch((error) => {
-            });
+          this.inputvalue.input.value = '';
+          this.setState({
+            checkCreateIssue: false,
+            createLoading: false,
+          });
+          // history.push(`/agile/issue?type=${type}&id=${id}&name=${encodeURIComponent(name)}&organizationId=${organizationId}&paramName=${response.issueNum}&paramIssueId=${response.issueId}&paramOpenIssueId=${response.issueId}`);
+        })
+        .catch((error) => {
         });
     }
   };
@@ -93,17 +98,46 @@ class QuickCreateIssue extends Component {
   handleChangeType = (type) => {
     this.setState({
       selectIssueType: type.key,
+      featureType: type.item.props.featureType,
     });
   };
 
+  getIssueTypes=() => {
+    const createTypes = [];
+    const issueTypes = IssueStore.getIssueTypes;
+    issueTypes.forEach((type) => {
+      const { typeCode } = type;
+      if ((IsInProgramStore.isInProgram && ['issue_epic', 'feature'].includes(typeCode)) || ['sub_task'].includes(typeCode)) {
+        return;
+      }
+      if (typeCode === 'feature') {
+        createTypes.push({
+          ...type,
+          colour: '#29B6F6',
+          featureType: 'business',
+          name: '特性',
+          id: 'business',
+        });
+        createTypes.push({
+          ...type,
+          colour: '#FFCA28',
+          featureType: 'enabler',
+          name: '使能',
+          id: 'enabler',
+        });
+      } else {
+        createTypes.push(type);
+      } 
+    });
+    return createTypes;
+  }
 
   render() {
     const {
-      checkCreateIssue, createLoading, selectIssueType, createIssueValue,
-    } = this.state;
-    let issueTypes = IssueStore.getIssueTypes;
-    issueTypes = AppState.currentMenuType.category === 'PROGRAM' ? issueTypes : issueTypes.filter(item => item.typeCode !== 'feature');
-    const currentType = issueTypes.find(t => t.typeCode === selectIssueType);
+      checkCreateIssue, createLoading, selectIssueType, createIssueValue, featureType,
+    } = this.state;    
+    const issueTypes = this.getIssueTypes();   
+    const currentType = issueTypes.find(t => t.typeCode === selectIssueType && t.featureType === featureType);
     const typeList = (
       <Menu
         style={{
@@ -114,8 +148,8 @@ class QuickCreateIssue extends Component {
         onClick={this.handleChangeType.bind(this)}
       >
         {
-          issueTypes.filter(t => t.typeCode !== 'sub_task').map(type => (
-            <Menu.Item key={type.typeCode}>
+          issueTypes.map(type => (
+            <Menu.Item key={type.typeCode} featureType={type.featureType}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <TypeTag
                   data={type}

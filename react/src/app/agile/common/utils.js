@@ -314,3 +314,4 @@ export function programIssueLink(issueId, issueName) {
 export const getProjectId = () => AppState.currentMenuType.id;
 export const getProjectName = () => AppState.currentMenuType.name;
 export const getOrganizationId = () => AppState.currentMenuType.organizationId;
+export const getIsInProgram = () => true;

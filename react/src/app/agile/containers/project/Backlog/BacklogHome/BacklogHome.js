@@ -16,6 +16,7 @@ import SprintItem from '../BacklogComponent/SprintComponent/SprintItem';
 import QuickSearch, { QuickSearchEvent } from '../../../../components/QuickSearch';
 import Injecter from '../../../../components/Injecter';
 import ClearFilter from '../BacklogComponent/SprintComponent/SprintItemComponent/SprintHeaderComponent/ClearAllFilter';
+import IsInProgramStore from '../../../../stores/common/program/IsInProgramStore';
 import { getFeaturesInProject } from '../../../../api/FeatureApi';
 import { getProjectsInProgram } from '../../../../api/CommonApi';
 
@@ -30,18 +31,12 @@ class BacklogHome extends Component {
       spinIf: false,
       versionVisible: false,
       epicVisible: false,
-      isInProgram: false,
       display: false,
     };
   }
 
   componentDidMount() {
-    this.refresh();
-    getProjectsInProgram().then((res) => {
-      this.setState({
-        isInProgram: Boolean(res),
-      });
-    });
+    this.refresh();    
   }
 
   componentWillUnmount() {
@@ -249,7 +244,8 @@ class BacklogHome extends Component {
   render() {
     const { BacklogStore, HeaderStore } = this.props;
     const arr = BacklogStore.getSprintData;
-    const { isInProgram, display } = this.state;
+    const { display } = this.state;
+    const { isInProgram } = IsInProgramStore;
     return (
       <Page
         service={[
@@ -326,6 +322,7 @@ class BacklogHome extends Component {
               >
                 {'版本'}
               </p>
+              {!isInProgram && (
               <p
                 style={{
                   marginTop: 12,
@@ -337,19 +334,18 @@ class BacklogHome extends Component {
               >
                 {'史诗'}
               </p>
-              {isInProgram && (
-                <p
-                  style={{
-                    marginTop: 12,
-                  }}
-                  role="none"
-                  onClick={() => {
-                    this.toggleCurrentVisible('feature');
-                  }}
-                >
-                  {'特性'}
-                </p>
-              )}
+              )}   
+              <p
+                style={{
+                  marginTop: 12,
+                }}
+                role="none"
+                onClick={() => {
+                  this.toggleCurrentVisible('feature');
+                }}
+              >
+                {'特性'}
+              </p>         
             </div>
             <Version
               store={BacklogStore}
@@ -359,6 +355,7 @@ class BacklogHome extends Component {
                 this.IssueDetail.refreshIssueDetail();
               }}
             />
+            {!isInProgram && (
             <Epic
               refresh={this.refresh}
               visible={BacklogStore.getCurrentVisible}
@@ -366,15 +363,14 @@ class BacklogHome extends Component {
                 this.IssueDetail.refreshIssueDetail();
               }}
             />
-            {isInProgram && (
-              <Feature
-                refresh={this.refresh}
-                visible={BacklogStore.getCurrentVisible}
-                issueRefresh={() => {
-                  this.IssueDetail.refreshIssueDetail();
-                }}
-              />
-            )}
+            )}     
+            <Feature
+              refresh={this.refresh}
+              visible={BacklogStore.getCurrentVisible}
+              issueRefresh={() => {
+                this.IssueDetail.refreshIssueDetail();
+              }}
+            />   
             <Spin spinning={BacklogStore.getSpinIf}>
               <div className="c7n-backlog-content">
                 <DragDropContext

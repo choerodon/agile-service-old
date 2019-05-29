@@ -4,7 +4,7 @@ import { Dropdown, Icon, Menu } from 'choerodon-ui';
 import IssueNav from './IssueNav';
 import TypeTag from '../../../../../../components/TypeTag';
 import { updateIssueType, updateIssue } from '../../../../../../api/NewIssueApi';
-import '../../../../../../components/EditIssueNarrow/IssueComponent/IssueComponent.scss';
+import '../../../../../../components/EditIssue/IssueComponent/IssueComponent.scss';
 
 @inject('AppState', 'HeaderStore')
 @observer class SprintHeader extends Component {

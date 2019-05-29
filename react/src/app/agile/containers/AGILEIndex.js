@@ -7,6 +7,7 @@ import { inject } from 'mobx-react';
 import {
   asyncRouter, asyncLocaleProvider, stores, nomatch, 
 } from '@choerodon/boot';
+import IsInProgramStore from '../stores/common/program/IsInProgramStore';
 import './Agile.scss';
 
 const Home = asyncRouter(() => import('./Home'));
@@ -30,6 +31,7 @@ const PAGEINDEX = asyncRouter(() => import('./organization/Page'));
 
 const ART = asyncRouter(() => import('./program/Art')); 
 const KANBAN = asyncRouter(() => import('./program/Kanban')); 
+const PROJECTKANBAN = asyncRouter(() => import('./project/Kanban')); 
 const FEATURE = asyncRouter(() => import('./program/Feature'));
 const PIAIMS = asyncRouter(() => import('./program/PI'));
 const PROGRAMSETTING = asyncRouter(() => import('./program/ProgramSetting'));
@@ -41,6 +43,10 @@ const BOARD = asyncRouter(() => import('./program/Board'));
 const PROJECTBOARD = asyncRouter(() => import('./project/Board'));
 
 class AGILEIndex extends React.Component {
+  componentDidMount() {
+    IsInProgramStore.refresh();    
+  }
+  
   render() {
     const { match } = this.props;
     const { AppState } = stores;
@@ -80,6 +86,8 @@ class AGILEIndex extends React.Component {
 
           <Route path={`${match.url}/art`} component={ART} />
           <Route path={`${match.url}/kanban`} component={KANBAN} />          
+          <Route path={`${match.url}/kanban_project`} component={PROJECTKANBAN} />          
+          
           <Route path={`${match.url}/feature`} component={FEATURE} /> 
           <Route path={`${match.url}/pi`} component={PIAIMS} />
           <Route path={`${match.url}/programSetting`} component={PROGRAMSETTING} /> 

@@ -63,7 +63,7 @@ const navIcon = {
 
 const noDisplay = {
   sub_task: ['sub_task', 'bug', 'link_task', 'wiki'],
-  feature: ['sub_task', 'bug', 'wiki', 'branch', 'log', 'link_task'],
+  feature: ['sub_task', 'bug', 'wiki', 'branch', 'log', 'link_task', 'link_test'],
   bug: ['bug'],
   issue_epic: ['bug'],
   // task: ['bug'],

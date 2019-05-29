@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import EditIssue from '../../../../../components/EditIssueNarrow';
+import EditIssue from '../../../../../components/EditIssue';
 import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
 
 @inject('AppState')

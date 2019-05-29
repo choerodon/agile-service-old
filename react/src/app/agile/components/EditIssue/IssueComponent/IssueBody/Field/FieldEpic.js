@@ -6,7 +6,7 @@ import { injectIntl } from 'react-intl';
 import TextEditToggle from '../../../../TextEditToggle';
 import { loadEpics, updateIssue } from '../../../../../api/NewIssueApi';
 import { getFeaturesByEpic } from '../../../../../api/FeatureApi';
-import { getProjectsInProgram } from '../../../../../api/CommonApi';
+import IsInProgramStore from '../../../../../stores/common/program/IsInProgramStore';
 
 const { Option } = Select;
 const { Text, Edit } = TextEditToggle;
@@ -21,7 +21,6 @@ const { Text, Edit } = TextEditToggle;
       selectLoading: true,
       newEpicId: undefined,
       newFeatureId: undefined,
-      isInProgram: false,
     };
   }
 
@@ -43,19 +42,16 @@ const { Text, Edit } = TextEditToggle;
         selectLoading: false,
       });
     });
-    getProjectsInProgram().then((res) => {
-      getFeaturesByEpic().then((data) => {
-        this.setState({
-          originFeatures: data,
-          selectLoading: false,
-          isInProgram: Boolean(res),
-        });
+    getFeaturesByEpic().then((data) => {
+      this.setState({
+        originFeatures: data,
+        selectLoading: false,
       });
     });
   };
 
   updateIssueEpic = () => {
-    const { newEpicId, isInProgram } = this.state;
+    const { newEpicId } = this.state;
     const { store, onUpdate, reloadIssue } = this.props;
     const issue = store.getIssue;
     const { epicId, issueId, objectVersionNumber } = issue;
@@ -67,7 +63,7 @@ const { Text, Edit } = TextEditToggle;
       };
       updateIssue(obj)
         .then(() => {
-          if (isInProgram) {
+          if (IsInProgramStore.isInProgram) {
             getFeaturesByEpic().then((data) => {
               this.setState({
                 originFeatures: data,
@@ -109,7 +105,7 @@ const { Text, Edit } = TextEditToggle;
 
   render() {
     const {
-      selectLoading, originEpics, originFeatures, isInProgram,
+      selectLoading, originEpics, originFeatures, 
     } = this.state;
     const { store } = this.props;
     const issue = store.getIssue;
@@ -119,7 +115,7 @@ const { Text, Edit } = TextEditToggle;
     } = issue;
     return (
       <React.Fragment>
-        {typeCode === 'story' && isInProgram
+        {typeCode === 'story' && IsInProgramStore.isInProgram
           ? (
             <div className="line-start mt-10">
               <div className="c7n-property-wrapper">
@@ -128,7 +124,7 @@ const { Text, Edit } = TextEditToggle;
                 </span>
               </div>
               <div className="c7n-value-wrapper">
-                <TextEditToggle
+                <TextEditToggle                  
                   formKey="epic"
                   onSubmit={this.updateIssueFeature}
                   originData={featureId || []}
@@ -185,10 +181,10 @@ const { Text, Edit } = TextEditToggle;
           </div>
           <div className="c7n-value-wrapper">
             <TextEditToggle
+              disabled={IsInProgramStore.isInProgram}
               formKey="epic"
               onSubmit={this.updateIssueEpic}
               originData={epicId || []}
-              // disabled={!!featureName}
             >
               <Text>
                 {
