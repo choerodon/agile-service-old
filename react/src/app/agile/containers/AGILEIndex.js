@@ -7,6 +7,7 @@ import { inject } from 'mobx-react';
 import {
   asyncRouter, asyncLocaleProvider, stores, nomatch, 
 } from '@choerodon/boot';
+import IsInProgramStore from '../stores/common/program/IsInProgramStore';
 import './Agile.scss';
 
 const Home = asyncRouter(() => import('./Home'));
@@ -42,6 +43,10 @@ const BOARD = asyncRouter(() => import('./program/Board'));
 const PROJECTBOARD = asyncRouter(() => import('./project/Board'));
 
 class AGILEIndex extends React.Component {
+  componentDidMount() {
+    IsInProgramStore.refresh();    
+  }
+  
   render() {
     const { match } = this.props;
     const { AppState } = stores;

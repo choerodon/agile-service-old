@@ -1,3 +1,3 @@
-import QuickCreateIssue from './QuickCraeteIssue';
+import QuickCreateIssue from './QuickCreateIssue';
 
 export default QuickCreateIssue;

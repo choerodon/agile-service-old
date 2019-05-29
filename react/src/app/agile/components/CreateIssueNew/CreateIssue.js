@@ -7,7 +7,11 @@ import {
 } from 'choerodon-ui';
 import moment from 'moment';
 import { UploadButton } from '../CommonComponent';
-import { handleFileUpload, beforeTextUpload, randomString } from '../../common/utils';
+import {
+  handleFileUpload, beforeTextUpload, randomString,  
+} from '../../common/utils';
+import IsInProgramStore from '../../stores/common/program/IsInProgramStore';
+
 import {
   createIssue, loadLabels, loadPriorities, loadVersions,
   loadSprints, loadComponents, loadEpics, loadIssuesInLink,
@@ -575,6 +579,19 @@ class CreateIssue extends Component {
     }
   };
 
+  getIssueTypes=() => {
+    const createTypes = [];
+    const { originIssueTypes } = this.state;
+    originIssueTypes.forEach((type) => {
+      const { typeCode } = type;
+      if ((IsInProgramStore.isInProgram && ['issue_epic', 'feature'].includes(typeCode)) || ['sub_task'].includes(typeCode)) {
+        return;
+      }
+      createTypes.push(type);
+    });
+    return createTypes;
+  }
+
   getFieldComponent = (field) => {
     const { form } = this.props;
     const { getFieldDecorator } = form;
@@ -616,7 +633,7 @@ class CreateIssue extends Component {
                     });
                   })}
                 >
-                  {originIssueTypes.filter(t => ['sub_task'].indexOf(t.typeCode) === -1).map(type => (
+                  {this.getIssueTypes().map(type => (
                     <Option key={type.id} value={type.id}>
                       <div style={{ display: 'inline-flex', alignItems: 'center', padding: '2px' }}>
                         <TypeTag

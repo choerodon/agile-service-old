@@ -10,7 +10,7 @@ import {
 } from './IssueTableComponent';
 import EmptyBlock from '../../../../components/EmptyBlock';
 import pic from '../../../../assets/image/emptyIssue.svg';
-import QuickCreateIssue from '../QuickCreateIssue/QuickCraeteIssue';
+import QuickCreateIssue from '../QuickCreateIssue/QuickCreateIssue';
 
 let previousClick = false;
 @observer
