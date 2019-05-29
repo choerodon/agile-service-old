@@ -1211,21 +1211,13 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public List<IssueFeatureDTO> listFeature(Long projectId, Long organizationId) {
         ProjectDTO program = userFeignClient.getGroupInfoByEnableProject(organizationId, projectId).getBody();
-        List<IssueDO> projectFeatureList = issueMapper.selectFeatureListByAgileProject(projectId);
         if (program != null) {
-            List<IssueDO> result = new ArrayList<>();
-            if (projectFeatureList != null && !projectFeatureList.isEmpty()) {
-                result.addAll(projectFeatureList);
-            }
             List<IssueDO> programFeatureList = issueMapper.queryIssueFeatureSelectList(program.getId(), null);
-            if (programFeatureList != null && !programFeatureList.isEmpty()) {
-                result.addAll(programFeatureList);
-            }
-            List<IssueFeatureDTO> issueFeatureDTOList = issueAssembler.toTargetList(result, IssueFeatureDTO.class);
-            Collections.sort(issueFeatureDTOList, (i1, i2) -> i2.getIssueId().compareTo(i1.getIssueId()));
+            List<IssueFeatureDTO> issueFeatureDTOList = issueAssembler.toTargetList(programFeatureList, IssueFeatureDTO.class);
             setFeatureStatisticDetail(projectId, issueFeatureDTOList);
             return issueFeatureDTOList;
         } else {
+            List<IssueDO> projectFeatureList = issueMapper.selectFeatureListByAgileProject(projectId);
             List<IssueFeatureDTO> featureDTOList = issueAssembler.toTargetList(projectFeatureList, IssueFeatureDTO.class);
             setFeatureStatisticDetail(projectId, featureDTOList);
             return featureDTOList;

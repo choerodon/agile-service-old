@@ -73,6 +73,9 @@ public class IssueListDTO implements Serializable {
     @ApiModelProperty(value = "故事点")
     private BigDecimal storyPoints;
 
+    @ApiModelProperty(value = "如果问题类型是特性，返回特性类别:business、enabler")
+    private String featureType;
+
     @ApiModelProperty(value = "是否添加问题")
     private Boolean addIssue;
 
@@ -342,6 +345,14 @@ public class IssueListDTO implements Serializable {
 
     public void setReporterRealName(String reporterRealName) {
         this.reporterRealName = reporterRealName;
+    }
+
+    public void setFeatureType(String featureType) {
+        this.featureType = featureType;
+    }
+
+    public String getFeatureType() {
+        return featureType;
     }
 
     @Override

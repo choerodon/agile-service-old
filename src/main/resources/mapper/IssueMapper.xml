@@ -346,6 +346,7 @@
         <id property="lastUpdateDate" column="issue_last_update_date"/>
         <id property="remainingTime" column="remaining_time"/>
         <id property="storyPoints" column="story_points"/>
+        <id property="featureType" column="feature_type"/>
         <collection property="versionIssueRelDOS" autoMapping="true"
                     ofType="io.choerodon.agile.infra.dataobject.VersionIssueRelDO">
             <id property="versionId" column="version_id"/>
@@ -425,7 +426,8 @@
         ail.label_name,
         ail.label_id,
         ai.story_points,
-        ai.remaining_time
+        ai.remaining_time,
+        af.feature_type
         FROM agile_issue ai
         left join agile_issue ai3 on ai.epic_id = ai3.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai3.color_code = alv2.value_code
@@ -438,6 +440,7 @@
         left join agile_issue_component aic on aic.component_id = acir.component_id
         left join agile_label_issue_rel alir on alir.issue_id = ai.issue_id
         left join agile_issue_label ail on ail.label_id = alir.label_id
+        left join agile_feature af on ai.issue_id = af.issue_id
         WHERE
         ai.issue_id IN
         <foreach collection="issueIds" item="issueId" open="(" separator=","
@@ -726,7 +729,7 @@
             <if test='searchDTO.otherArgs.epic != null and searchDTO.otherArgs.epic.size > 0'>
                 AND (
                 <if test='searchDTO.otherArgs.epicNull != null and searchDTO.otherArgs.epicNull == true'>
-                    (((ai.epic_id is null or ai.epic_id = 0) and ai.type_code in ('story', 'task', 'bug'))
+                    (((ai.epic_id is null or ai.epic_id = 0) and ai.type_code in ('story', 'task', 'bug', 'feature'))
                     or (ai.parent_issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id =
                     ai.parent_issue_id and
                     (ai7.epic_id is null or ai7.epic_id = 0) and ai.type_code = 'sub_task' ))) OR
@@ -736,7 +739,7 @@
                          close=")">
                     #{id}
                 </foreach>
-                and ai.type_code in ('story', 'task', 'bug'))
+                and ai.type_code in ('story', 'task', 'bug', 'feature'))
                 or (ai.parent_issue_id in (select ai7.issue_id from agile_issue ai7 where ai7.issue_id =
                 ai.parent_issue_id and
                 ai7.epic_id in
