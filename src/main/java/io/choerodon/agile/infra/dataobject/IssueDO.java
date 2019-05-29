@@ -173,6 +173,8 @@ public class IssueDO extends AuditDomain {
 
     private Long relateIssueId;
 
+    private String featureType;
+
     public List<LabelIssueRelDO> getLabelIssueRelDOS() {
         return labelIssueRelDOS;
     }
@@ -523,6 +525,14 @@ public class IssueDO extends AuditDomain {
 
     public Long getRelateIssueId() {
         return relateIssueId;
+    }
+
+    public void setFeatureType(String featureType) {
+        this.featureType = featureType;
+    }
+
+    public String getFeatureType() {
+        return featureType;
     }
 
     @Override
