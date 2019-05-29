@@ -219,7 +219,7 @@ public class ExcelServiceImpl implements ExcelService {
         issueCreateDTO.setProjectId(projectId);
         issueCreateDTO.setSummary(summary);
         if (description != null) {
-            issueCreateDTO.setDescription("[{\"insert\":\"" + description + "\\n\"}]");
+            issueCreateDTO.setDescription("[{\"insert\":\"" + StringUtil.replaceChar(description) + "\\n\"}]");
         }
         issueCreateDTO.setPriorityCode("priority" + priorityMap.get(priorityName));
         issueCreateDTO.setPriorityId(priorityMap.get(priorityName));

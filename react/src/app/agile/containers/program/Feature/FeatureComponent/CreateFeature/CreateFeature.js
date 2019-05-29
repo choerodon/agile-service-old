@@ -126,7 +126,7 @@ class CreateFeature extends Component {
         if (!item.system) {
           let value = form.getFieldValue(item.fieldCode);
           if (item.fieldType === 'time' || item.fieldType === 'datetime') {
-            value = value.format('YYYY-MM-DD HH:mm:ss');
+            value = value && value.format('YYYY-MM-DD HH:mm:ss');
           }
           fieldList.push({
             fieldType: item.fieldType,
