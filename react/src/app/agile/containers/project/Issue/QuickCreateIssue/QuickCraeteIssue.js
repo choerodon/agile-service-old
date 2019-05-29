@@ -36,7 +36,7 @@ class QuickCreateIssue extends Component {
 
   handleBlurCreateIssue = () => {
     const createIssueValue = this.inputvalue.input.value;
-    const { selectIssueType } = this.state;
+    const { selectIssueType, featureType } = this.state;
     const currentType = IssueStore.getIssueTypes.find(t => t.typeCode === selectIssueType);
     if (createIssueValue !== '') {
       const { history } = this.props;
@@ -56,6 +56,11 @@ class QuickCreateIssue extends Component {
             epicId: 0,
             epicName: selectIssueType === 'issue_epic' ? createIssueValue : undefined,
             parentIssueId: 0,
+            featureDTO: {
+              // benfitHypothesis: values.benfitHypothesis,
+              // acceptanceCritera: values.acceptanceCritera,
+              featureType,
+            },
           };
           this.setState({
             createLoading: true,
@@ -93,17 +98,44 @@ class QuickCreateIssue extends Component {
   handleChangeType = (type) => {
     this.setState({
       selectIssueType: type.key,
+      featureType: type.item.props.featureType,
     });
   };
 
+  getIssueTypes=() => {
+    const createTypes = [];
+    const issueTypes = IssueStore.getIssueTypes;
+    issueTypes.forEach((type) => {
+      if (type.typeCode !== 'sub_task') {
+        if (type.typeCode === 'feature') {
+          createTypes.push({
+            ...type,
+            colour: '#29B6F6',
+            featureType: 'business',
+            name: '特性',
+            id: 'business',
+          });
+          createTypes.push({
+            ...type,
+            colour: '#FFCA28',
+            featureType: 'enabler',
+            name: '使能',
+            id: 'enabler',
+          });
+        } else {
+          createTypes.push(type);
+        }
+      }
+    });
+    return createTypes;
+  }
 
   render() {
     const {
-      checkCreateIssue, createLoading, selectIssueType, createIssueValue,
-    } = this.state;
-    let issueTypes = IssueStore.getIssueTypes;
-    issueTypes = AppState.currentMenuType.category === 'PROGRAM' ? issueTypes : issueTypes.filter(item => item.typeCode !== 'feature');
-    const currentType = issueTypes.find(t => t.typeCode === selectIssueType);
+      checkCreateIssue, createLoading, selectIssueType, createIssueValue, featureType,
+    } = this.state;    
+    const issueTypes = this.getIssueTypes();   
+    const currentType = issueTypes.find(t => t.typeCode === selectIssueType && t.featureType === featureType);
     const typeList = (
       <Menu
         style={{
@@ -114,8 +146,8 @@ class QuickCreateIssue extends Component {
         onClick={this.handleChangeType.bind(this)}
       >
         {
-          issueTypes.filter(t => t.typeCode !== 'sub_task').map(type => (
-            <Menu.Item key={type.typeCode}>
+          issueTypes.map(type => (
+            <Menu.Item key={type.typeCode} featureType={type.featureType}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <TypeTag
                   data={type}

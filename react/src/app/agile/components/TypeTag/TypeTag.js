@@ -9,11 +9,13 @@ class TypeTag extends Component {
     const {
       data, showName, style, featureType,
     } = this.props;
-    let { colour } = data || {};
+    let { colour, name = '' } = data || {};
     if (featureType === 'business') {
       colour = '#29B6F6';
+      name = '特性';
     } else if (featureType === 'enabler') {
       colour = '#FFCA28';
+      name = '使能';
     }
     return (
       <div className="c7n-typeTag" style={style}>
@@ -26,7 +28,7 @@ class TypeTag extends Component {
         />
         {
           showName && (
-            <span className="name">{data ? data.name : ''}</span>
+            <span className="name">{name}</span>
           )
         }
       </div>
