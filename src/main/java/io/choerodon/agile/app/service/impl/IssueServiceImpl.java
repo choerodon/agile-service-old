@@ -1188,7 +1188,7 @@ public class IssueServiceImpl implements IssueService {
         if (program != null) {
             return issueAssembler.toTargetList(issueMapper.queryIssueFeatureSelectList(program.getId(), epicId), IssueFeatureDTO.class);
         } else {
-            return new ArrayList<>();
+            return issueAssembler.toTargetList(issueMapper.selectFeatureListByAgileProject(projectId), IssueFeatureDTO.class);
         }
     }
 
