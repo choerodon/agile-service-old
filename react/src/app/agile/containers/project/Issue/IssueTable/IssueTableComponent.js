@@ -35,6 +35,7 @@ export function TypeCode({ record }) {
       data={record.issueTypeDTO}
       showName={record.issueTypeDTO && record.issueTypeDTO.name}
       style={{ minWidth: 80 }}
+      featureType={record.featureDTO && record.featureDTO.featureType}
     />
   );
 }

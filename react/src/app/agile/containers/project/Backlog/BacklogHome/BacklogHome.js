@@ -326,6 +326,7 @@ class BacklogHome extends Component {
               >
                 {'版本'}
               </p>
+              {!isInProgram && (
               <p
                 style={{
                   marginTop: 12,
@@ -337,19 +338,18 @@ class BacklogHome extends Component {
               >
                 {'史诗'}
               </p>
-              {isInProgram && (
-                <p
-                  style={{
-                    marginTop: 12,
-                  }}
-                  role="none"
-                  onClick={() => {
-                    this.toggleCurrentVisible('feature');
-                  }}
-                >
-                  {'特性'}
-                </p>
-              )}
+              )}   
+              <p
+                style={{
+                  marginTop: 12,
+                }}
+                role="none"
+                onClick={() => {
+                  this.toggleCurrentVisible('feature');
+                }}
+              >
+                {'特性'}
+              </p>         
             </div>
             <Version
               store={BacklogStore}
@@ -359,6 +359,7 @@ class BacklogHome extends Component {
                 this.IssueDetail.refreshIssueDetail();
               }}
             />
+            {!isInProgram && (
             <Epic
               refresh={this.refresh}
               visible={BacklogStore.getCurrentVisible}
@@ -366,15 +367,14 @@ class BacklogHome extends Component {
                 this.IssueDetail.refreshIssueDetail();
               }}
             />
-            {isInProgram && (
-              <Feature
-                refresh={this.refresh}
-                visible={BacklogStore.getCurrentVisible}
-                issueRefresh={() => {
-                  this.IssueDetail.refreshIssueDetail();
-                }}
-              />
-            )}
+            )}     
+            <Feature
+              refresh={this.refresh}
+              visible={BacklogStore.getCurrentVisible}
+              issueRefresh={() => {
+                this.IssueDetail.refreshIssueDetail();
+              }}
+            />   
             <Spin spinning={BacklogStore.getSpinIf}>
               <div className="c7n-backlog-content">
                 <DragDropContext

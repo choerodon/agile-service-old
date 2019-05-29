@@ -7,7 +7,7 @@ import { updateIssueType, updateIssue } from '../../../api/NewIssueApi';
 import './IssueComponent.scss';
 
 @inject('AppState', 'HeaderStore')
-@observer class SprintHeader extends Component {
+@observer class IssueSidebar extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,24 +20,50 @@ import './IssueComponent.scss';
     } = this.props;
     const issue = store.getIssue;
     const {
-      issueId, objectVersionNumber, summary,
+      issueId, objectVersionNumber, summary, featureDTO = {}, issueTypeDTO = {},
     } = issue;
-    const issueUpdateTypeDTO = {
-      epicName: type.key === 'issue_epic' ? summary : undefined,
-      issueId,
-      objectVersionNumber,
-      typeCode: type.key,
-      issueTypeId: type.item.props.value,
-    };
-    updateIssueType(issueUpdateTypeDTO)
-      .then(() => {
-        if (reloadIssue) {
-          reloadIssue(issueId);
-        }
-        if (onUpdate) {
-          onUpdate();
-        }
-      });
+    const { featureType, value } = type.item.props;
+    const { typeCode } = issueTypeDTO;
+    if (typeCode === 'feature') {
+      const { id, objectVersionNumber: featureObjNum } = featureDTO;
+      const issueUpdateDTO = {
+        issueId,
+        objectVersionNumber,
+        featureDTO: {
+          id,
+          issueId,
+          objectVersionNumber: featureObjNum,
+          featureType: type.item.props.value,
+        },
+      };
+      updateIssue(issueUpdateDTO)
+        .then(() => {
+          if (reloadIssue) {
+            reloadIssue(issueId);
+          }
+          if (onUpdate) {
+            onUpdate();
+          }
+        });
+    } else {
+      const issueUpdateTypeDTO = {
+        epicName: type.key === 'issue_epic' ? summary : undefined,
+        issueId,
+        objectVersionNumber,
+        typeCode: type.key,
+        issueTypeId: value,
+        featureType,
+      };
+      updateIssueType(issueUpdateTypeDTO)
+        .then(() => {
+          if (reloadIssue) {
+            reloadIssue(issueId);
+          }
+          if (onUpdate) {
+            onUpdate();
+          }
+        });
+    }
   };
 
   render() {
@@ -45,17 +71,34 @@ import './IssueComponent.scss';
       store, type = 'narrow',
     } = this.props;
 
-    const issueTypeData = store.getIssueTypes ? store.getIssueTypes : [];
+    const issueTypes = store.getIssueTypes ? store.getIssueTypes : [];
     const issue = store.getIssue;
-    const { issueTypeId, typeCode } = issue;
-    let issueTypes = [];
-    const currentType = issueTypeData.find(t => t.id === issueTypeId);
-    if (currentType) {
-      issueTypes = issueTypeData.filter(t => (t.stateMachineId === currentType.stateMachineId
-        && t.typeCode !== typeCode && t.typeCode !== 'sub_task' && t.typeCode !== 'feature'
+    const {
+      issueTypeId, issueTypeDTO, typeCode, featureDTO = {}, 
+    } = issue;
+    const currentType = issueTypes.find(t => t.id === issueTypeId);
+    let transformIssueTypes = [];
+    if (typeCode === 'feature') {
+      transformIssueTypes = [
+        {
+          ...issueTypeDTO,
+          colour: '#29B6F6',
+          featureType: 'business',
+          name: '特性',
+          id: 'business',
+        }, {
+          ...issueTypeDTO,
+          colour: '#FFCA28',
+          featureType: 'enabler',
+          name: '使能',
+          id: 'enabler',
+        },
+      ].filter(t => t.featureType !== featureDTO.featureType);      
+    } else if (currentType) {
+      transformIssueTypes = issueTypes.filter(t => (t.stateMachineId === currentType.stateMachineId
+          && t.typeCode !== typeCode && t.typeCode !== 'sub_task' && t.typeCode !== 'feature'
       ));
     }
-
     const typeList = (
       <Menu
         style={{
@@ -67,12 +110,12 @@ import './IssueComponent.scss';
         onClick={this.handleChangeType}
       >
         {
-          issueTypes.map(t => (
-            <Menu.Item key={t.typeCode} value={t.id}>
+          transformIssueTypes.map(t => (
+            <Menu.Item key={t.typeCode} value={t.id} featureType={t.featureType}>
               <TypeTag
                 style={{ margin: 0 }}
                 data={t}
-                showName
+                showName                
               />
             </Menu.Item>
           ))
@@ -90,6 +133,7 @@ import './IssueComponent.scss';
             >
               <TypeTag
                 data={currentType}
+                featureType={featureDTO && featureDTO.featureType}
               />
               <Icon
                 type="arrow_drop_down"
@@ -105,4 +149,4 @@ import './IssueComponent.scss';
   }
 }
 
-export default SprintHeader;
+export default IssueSidebar;
