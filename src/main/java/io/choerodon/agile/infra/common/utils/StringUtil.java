@@ -57,4 +57,16 @@ public class StringUtil {
         }
     }
 
+    public static String replaceChar(String str) {
+        if (str != null && !str.equals("")) {
+            for (int i = 9; i < 14; i++) {
+                //替换tab、换行
+                str = str.replaceAll(String.valueOf((char) i), "\\\\n");
+            }
+            //替换双引号为转义字符的双引号
+            str = str.replaceAll(String.valueOf("\""), "\\\\\"");
+        }
+        return str;
+    }
+
 }
