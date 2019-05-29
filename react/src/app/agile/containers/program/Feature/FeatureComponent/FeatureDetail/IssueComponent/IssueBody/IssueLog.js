@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { Icon, Button } from 'choerodon-ui';
 import _ from 'lodash';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import DataLogs from '../../../../../../../components/EditIssueNarrow/Component/DataLogs';
+import DataLogs from '../../../../../../../components/EditIssue/Component/DataLogs';
 
 @inject('AppState')
 @observer class IssueCommit extends Component {

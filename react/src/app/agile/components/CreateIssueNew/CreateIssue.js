@@ -390,6 +390,11 @@ class CreateIssue extends Component {
           storyPoints,
           remainingTime: estimatedTime,
           issueLinkCreateDTOList,
+          featureDTO: {
+            benfitHypothesis: values.benfitHypothesis,
+            acceptanceCritera: values.acceptanceCritera,
+            featureType: 'business',
+          },
         };
         this.setState({ createLoading: true });
         const deltaOps = delta;
@@ -610,7 +615,7 @@ class CreateIssue extends Component {
                   });
                 })}
               >
-                {originIssueTypes.filter(t => ['sub_task', 'feature'].indexOf(t.typeCode) === -1).map(type => (
+                {originIssueTypes.filter(t => ['sub_task'].indexOf(t.typeCode) === -1).map(type => (
                   <Option key={type.id} value={type.id}>
                     <div style={{ display: 'inline-flex', alignItems: 'center', padding: '2px' }}>
                       <TypeTag
@@ -874,7 +879,7 @@ class CreateIssue extends Component {
             {getFieldDecorator('summary', {
               rules: [{ required: true, message: '概要为必输项' }],
             })(
-              <Input label="概要" maxLength={44} />,
+              <Input autoFocus label="概要" maxLength={44} />,
             )}
           </FormItem>
         );

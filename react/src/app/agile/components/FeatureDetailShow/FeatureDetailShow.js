@@ -5,7 +5,7 @@ import { stores, axios } from '@choerodon/boot';
 import { withRouter } from 'react-router-dom';
 import { Spin } from 'choerodon-ui';
 import { throttle } from 'lodash';
-import '../EditIssueNarrow/EditIssueNarrow.scss';
+import '../EditIssue/EditIssue.scss';
 import {
   loadDatalogs, loadIssue, getFieldAndValue,
 } from '../../api/QueryProgramApi';

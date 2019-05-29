@@ -5,7 +5,7 @@ import { Icon, Button } from 'choerodon-ui';
 import _ from 'lodash';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import CreateLinkTask from '../../../CreateLinkTask';
-import LinkList from '../../../EditIssueNarrow/Component/LinkList';
+import LinkList from '../../../EditIssue/Component/LinkList';
 
 @inject('AppState')
 @observer class IssueLink extends Component {
