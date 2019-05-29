@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import EditFeature from '../../../../../../components/FeatureDetailShow';
 import KanbanStore from '../../../../../../stores/project/Kanban/KanbanStore';
+import IsInProgramStore from '../../../../../../stores/common/program/IsInProgramStore';
 
 @inject('HeaderStore')
 @observer
@@ -19,6 +20,7 @@ class IssueDetail extends Component {
     const { refresh, HeaderStore, programId } = this.props;
     return KanbanStore.getClickedIssue ? (
       <EditFeature
+        disabled={IsInProgramStore.isInProgram}
         programId={programId}
         key={KanbanStore.getClickIssueDetail.issueId}
         store={KanbanStore}
