@@ -33,14 +33,14 @@ class EditPIAims extends Component {
           planBv: values.planBv,
           actualBv: values.actualBv,
           stretch: values.stretch,
-          levelCode: 'program',
+          levelCode: 'team',
           programId,
           projectId: AppState.currentMenuType.projectId,
         };
         upDatePIAmix(piObjectiveDTO).then(() => {
           getPIAims(editingPiAimsInfo.piId, programId).then((piAims) => {
             PIStore.setPIAims(piAims);
-            PIStore.setEditPiAimsCtrl(piAims.program.map((item, index) => (
+            PIStore.setEditPiAimsCtrl(piAims.map((item, index) => (
               {
                 isEditing: false,
                 editingId: item.id,

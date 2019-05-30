@@ -49,7 +49,7 @@ class CreatePIAims extends Component {
               })
             )));
             PIStore.setPIAims(piAims);
-            PIStore.setEditPiAimsCtrl(piAims.program.map((item, index) => (
+            PIStore.setEditPiAimsCtrl(piAims.map((item, index) => (
               {
                 isEditing: false,
                 editingId: item.id,
