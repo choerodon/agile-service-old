@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import PIAims from '../../program/PI/PIAims';
+import PIAims from './PIAims';
 import IsInProgram from '../../../components/IsInProgram';
 
 class Test extends Component {

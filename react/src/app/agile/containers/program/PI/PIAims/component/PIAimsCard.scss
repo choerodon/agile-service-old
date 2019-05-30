@@ -6,6 +6,7 @@
 
   table {
     table-layout: fixed;
+
     thead {
       tr {
         th {
@@ -23,5 +24,52 @@
         }
       }
     }
+  }
+}
+
+.line-container {
+  margin-top: 80px;
+  position: relative;
+
+  &:before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 20px;
+    border-right: 2px solid #D8D8D8;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -20px;
+  }
+
+  &:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 17px solid #D8D8D8;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -35px;
+  }
+
+  .line {
+    border-right: 2px solid #D8D8D8;
+    border-top: 2px solid #D8D8D8;
+    padding: 10px;
+    height: 20px;
+    flex: 2;
+  }
+
+  .line:first-of-type {
+    border-top: none;
+    flex: 1;
+  }
+
+  .line:last-of-type {
+    border: none;
+    flex: 1;
   }
 }

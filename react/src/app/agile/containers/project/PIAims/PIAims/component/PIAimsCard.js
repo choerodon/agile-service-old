@@ -7,51 +7,10 @@ import './PIAimsCard.scss';
 const propTypes = {
   aimsCategory: PropTypes.oneOf(['team', 'program']).isRequired,
   piName: PropTypes.string.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
   aimsInfo: PropTypes.array.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
   stretchAimsInfo: PropTypes.array,
-};
-const teams = Array(3).fill({
-  name: '前端开发团队',
-  piAims: [{
-    name: '前端开发团队的第一个PI目标',
-    planBv: 5,
-    actualBv: 5,
-  }, {
-    name: '前端开发团队的第一个PI目标',
-    planBv: 5,
-    actualBv: 5,
-  }, {
-    name: '前端开发团队的第一个PI目标',
-    planBv: 5,
-    actualBv: 5,
-  }],
-});
-const Line = (({ data }) => (
-  <div style={{ display: 'flex' }}>
-    <div style={{ flex: 1 }}>{data[0]}</div>
-    <div style={{ width: 50 }}>{data[1]}</div>
-    <div style={{ width: 50 }}>{data[2]}</div>
-  </div>
-));
-const ProjectCard = ({ team }) => {
-  const { name, piAims } = team; 
-  const aims = piAims.map((aim) => {
-    const { name: PIname, planBv, actualBv } = aim;
-    return <Line data={[PIname, planBv, actualBv]} />;
-  });
-  return (
-    <div style={{
-      border: '1px solid #CCCCCC',
-      borderRadius: 2,
-      borderTop: '5px solid #00BFA5',
-      margin: 10,
-      flex: 1,
-    }}
-    >
-      <Line data={[name, '计划BV', '实际BV']} />
-      {aims}
-    </div>
-  );
 };
 const PIAimsCard = ({ 
   aimsCategory, piName, aimsInfo, stretchAimsInfo, 
@@ -61,8 +20,8 @@ const PIAimsCard = ({
   // eslint-disable-next-line no-nested-ternary
   const percent = Number.isInteger(totalPlanBv) ? (Number.isInteger(totalPlanBv) && Number.isInteger(totalActualBv) ? `${(totalActualBv / totalPlanBv * 100).toFixed(2)}%` : '0%') : '-';
   return (
-    <div>
-      <div className="c7n-pi-card" style={{ borderTop: `5px solid ${aimsCategory === 'program' ? '#4D90FE' : '#00BFA5'}`, margin: 'auto' }}>
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div className="c7n-pi-card" style={{ borderTop: '5px solid #00BFA5' }}>
         <table style={{ width: '100%' }}>
           <thead>
             <tr>
@@ -77,7 +36,7 @@ const PIAimsCard = ({
                 <tr key={item.id}>
                   <td valign="top" style={{ display: 'flex' }}>
                     <span style={{
-                      display: 'flex', flexShrink: 0, marginTop: 8, marginRight: 10, width: 5, height: 5, borderRadius: '50%', background: `${aimsCategory === 'program' ? '#4D90FE' : '#00BFA5'}`, 
+                      display: 'flex', flexShrink: 0, marginTop: 8, marginRight: 10, width: 5, height: 5, borderRadius: '50%', background: '#00BFA5', 
                     }}
                     />
                     <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</div>                    
@@ -147,15 +106,6 @@ const PIAimsCard = ({
           )
         }
       </div>
-      <div style={{ display: 'flex' }} className="line-container">
-        {/* <div className="line" /> */}
-        {teams.map(team => <div className="line" />)}
-        <div className="line" />
-      </div>
-      <div style={{ display: 'flex', marginTop: 20 }}>     
-        {teams.map(team => <ProjectCard team={team} />)}
-        
-      </div>     
     </div>
   );
 };
