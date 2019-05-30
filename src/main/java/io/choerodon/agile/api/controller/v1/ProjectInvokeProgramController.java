@@ -172,17 +172,4 @@ public class ProjectInvokeProgramController {
                 .orElseThrow(() -> new CommonException("error.unfinishedPiDTOList.get"));
     }
 
-    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
-    @ApiOperation("项目层下查询PI objective列表")
-    @GetMapping("/pi_objective/list")
-    public ResponseEntity<JSONObject> queryPiObjectiveList(@ApiParam(value = "项目id", required = true)
-                                                           @PathVariable(name = "project_id") Long projectId,
-                                                           @ApiParam(value = "项目群id", required = true)
-                                                           @RequestParam Long programId,
-                                                           @ApiParam(value = "pi id", required = true)
-                                                           @RequestParam Long piId) {
-        return Optional.ofNullable(piObjectiveService.queryPiObjectiveList(programId, piId))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.piObjectiveList.get"));
-    }
 }
