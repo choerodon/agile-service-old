@@ -28,7 +28,7 @@ public class PiObjectiveController {
     private PiObjectiveService piObjectiveService;
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
-    @ApiOperation("创建pi objective")
+    @ApiOperation("创建PI objective")
     @PostMapping
     public ResponseEntity<PiObjectiveDTO> createPiObjective(@ApiParam(value = "项目id", required = true)
                                                             @PathVariable(name = "project_id") Long projectId,
@@ -40,7 +40,7 @@ public class PiObjectiveController {
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
-    @ApiOperation("修改pi objective")
+    @ApiOperation("修改PI objective")
     @PutMapping
     public ResponseEntity<PiObjectiveDTO> updatePiObjective(@ApiParam(value = "项目id", required = true)
                                                             @PathVariable(name = "project_id") Long projectId,
@@ -52,7 +52,7 @@ public class PiObjectiveController {
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
-    @ApiOperation("删除pi objective")
+    @ApiOperation("删除PI objective")
     @DeleteMapping("/{id}")
     public ResponseEntity deletePiObjective(@ApiParam(value = "项目id", required = true)
                                             @PathVariable(name = "project_id") Long projectId,
@@ -63,7 +63,7 @@ public class PiObjectiveController {
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
-    @ApiOperation("查询单个pi objective")
+    @ApiOperation("查询单个PI objective")
     @GetMapping
     public ResponseEntity<PiObjectiveDTO> queryPiObjective(@ApiParam(value = "项目id", required = true)
                                                            @PathVariable(name = "project_id") Long projectId,
@@ -75,7 +75,7 @@ public class PiObjectiveController {
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
-    @ApiOperation("查询pi objective列表")
+    @ApiOperation("查询PI objective列表")
     @GetMapping("/list")
     public ResponseEntity<JSONObject> queryPiObjectiveList(@ApiParam(value = "项目id", required = true)
                                                            @PathVariable(name = "project_id") Long projectId,

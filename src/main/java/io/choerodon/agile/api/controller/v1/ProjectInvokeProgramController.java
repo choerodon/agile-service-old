@@ -43,9 +43,12 @@ public class ProjectInvokeProgramController {
     @Autowired
     private ArtService artService;
 
+    @Autowired
+    private PiObjectiveService piObjectiveService;
+
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
-    @ApiOperation("查询PI路线图")
+    @ApiOperation("项目层下查询查询PI路线图")
     @GetMapping(value = "/road_map")
     public ResponseEntity<List<PiWithFeatureDTO>> queryRoadMapOfProgram(@ApiParam(value = "项目id", required = true)
                                                                         @PathVariable(name = "project_id") Long projectId,
@@ -59,8 +62,8 @@ public class ProjectInvokeProgramController {
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("查询单个issue")
-    @GetMapping(value = "/{issueId}")
+    @ApiOperation("项目层下查询查询单个issue")
+    @GetMapping(value = "/issue/{issueId}")
     public ResponseEntity<IssueDTO> queryIssue(@ApiParam(value = "项目id", required = true)
                                                @PathVariable(name = "project_id") Long projectId,
                                                @ApiParam(value = "项目群id", required = true)
@@ -75,7 +78,7 @@ public class ProjectInvokeProgramController {
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("查询DataLog列表")
+    @ApiOperation("项目层下查询查询DataLog列表")
     @GetMapping(value = "/datalog")
     public ResponseEntity<List<DataLogDTO>> listByIssueId(@ApiParam(value = "项目id", required = true)
                                                           @PathVariable(name = "project_id") Long projectId,
@@ -89,7 +92,7 @@ public class ProjectInvokeProgramController {
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("根据projectId查询项目下的board")
+    @ApiOperation("项目层下查询根据projectId查询项目下的board")
     @GetMapping("/board")
     public ResponseEntity<List<BoardDTO>> queryByProjectId(@ApiParam(value = "项目id", required = true)
                                                            @PathVariable(name = "project_id") Long projectId,
@@ -102,7 +105,7 @@ public class ProjectInvokeProgramController {
 
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("all board data for program")
+    @ApiOperation("项目层下查询，all board data for program")
     @PostMapping(value = "/{boardId}/all_data_program/{organization_id}")
     public ResponseEntity<JSONObject> queryByOptionsInProgram(@ApiParam(value = "项目id", required = true)
                                                               @PathVariable(name = "project_id") Long projectId,
@@ -120,7 +123,7 @@ public class ProjectInvokeProgramController {
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("获取公告板所有信息")
+    @ApiOperation("项目层下查询获取公告板所有信息")
     @GetMapping(value = "/query_board_info")
     public ResponseEntity<ProgramBoardInfoDTO> queryBoardInfo(@ApiParam(value = "项目id", required = true)
                                                               @PathVariable(name = "project_id") Long projectId,
@@ -132,7 +135,7 @@ public class ProjectInvokeProgramController {
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
-    @ApiOperation("查询当前活跃art")
+    @ApiOperation("项目层下查询查询当前活跃art")
     @GetMapping("/art/active")
     public ResponseEntity<ArtDTO> queryActiveArt(@ApiParam(value = "项目id", required = true)
                                                  @PathVariable(name = "project_id") Long projectId,
@@ -144,7 +147,7 @@ public class ProjectInvokeProgramController {
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
-    @ApiOperation("查询art日历")
+    @ApiOperation("项目层下查询查询art日历")
     @GetMapping("/art_calendar")
     public ResponseEntity<List<PiCalendarDTO>> queryArtCalendar(@ApiParam(value = "项目id", required = true)
                                                                 @PathVariable(name = "project_id") Long projectId,
@@ -155,5 +158,31 @@ public class ProjectInvokeProgramController {
         return Optional.ofNullable(artService.queryArtCalendar(programId, id))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.artCalendar.get"));
+    }
+
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("项目层下查询ART下的非完成的PI列表")
+    @GetMapping(value = "/pi_objective/unfinished")
+    public ResponseEntity<List<PiNameDTO>> queryUnfinishedOfProgram(@ApiParam(value = "项目id", required = true)
+                                                                    @PathVariable(name = "project_id") Long projectId,
+                                                                    @ApiParam(value = "项目群id", required = true)
+                                                                    @RequestParam Long programId) {
+        return Optional.ofNullable(piService.queryUnfinishedOfProgram(programId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.unfinishedPiDTOList.get"));
+    }
+
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("项目层下查询PI objective列表")
+    @GetMapping("/pi_objective/list")
+    public ResponseEntity<JSONObject> queryPiObjectiveList(@ApiParam(value = "项目id", required = true)
+                                                           @PathVariable(name = "project_id") Long projectId,
+                                                           @ApiParam(value = "项目群id", required = true)
+                                                           @RequestParam Long programId,
+                                                           @ApiParam(value = "pi id", required = true)
+                                                           @RequestParam Long piId) {
+        return Optional.ofNullable(piObjectiveService.queryPiObjectiveList(programId, piId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.piObjectiveList.get"));
     }
 }

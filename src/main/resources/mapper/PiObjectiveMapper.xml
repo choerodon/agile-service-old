@@ -19,6 +19,13 @@
         from agile_pi_objective apo
         where apo.program_id = #{programId}
         and apo.pi_id = #{piId}
+        <if test='teamWithProgramIds != null and teamWithProgramIds.size > 0'>
+            and apo.project_id in
+            <foreach collection="teamWithProgramIds" item="teamWithProgramId" open="(" separator=","
+                     close=")">
+                #{teamWithProgramId}
+            </foreach>
+        </if>
         order by apo.id desc
     </select>
 
