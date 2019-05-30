@@ -158,15 +158,13 @@ export default class IssueFilterControler {
     const filter = Object.keys(this.cache.get('paramFilter')).length ? this.cache.get('paramFilter') : this.cache.get('filter');
     return (modes, data) => {
       switch (modes) {
-        case 'advArgs':
-          this.updateCache(
-            Object.assign(filter.advancedSearchArgs, data),
-          );
+        case 'advArgs':        
+          Object.assign(filter.advancedSearchArgs, data);
+          this.updateCache(filter);
           break;
         case 'otherArgs':
-          this.updateCache(
-            Object.assign(filter.otherArgs, data),
-          );
+          Object.assign(filter.otherArgs, data);
+          this.updateCache(filter);
           break;
         case 'contents':
         case 'onlyStory':
@@ -177,19 +175,16 @@ export default class IssueFilterControler {
           );
           break;
         case 'quickFilterIds':
-          this.updateCache(
-            Object.assign(filter.quickFilterIds, data),
-          );
+          Object.assign(filter.quickFilterIds, data);
+          this.updateCache(filter);          
           break;
         case 'assigneeFilterIds':
-          this.updateCache(
-            Object.assign(filter.assigneeFilterIds, data),
-          );
+          Object.assign(filter.assigneeFilterIds, data);
+          this.updateCache(filter);             
           break;
         case 'searchArgs':
-          this.updateCache(
-            Object.assign(filter.searchArgs, data),
-          );
+          Object.assign(filter.searchArgs, data);
+          this.updateCache(filter);             
           break;
         case 'args': 
           this.updateCache(
@@ -240,7 +235,7 @@ export default class IssueFilterControler {
    * 将传入的值设置到 cache 中健为 userFilter 的部分
    * @param data
    */
-  updateCache = (data) => {
+  updateCache = (data) => {   
     this.cache.set('userFilter', data);
   };
 
