@@ -2,8 +2,10 @@ package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.PiObjectiveDTO;
+import io.choerodon.agile.api.dto.ProjectRelationshipDTO;
 import io.choerodon.agile.app.service.PiObjectiveService;
 import io.choerodon.agile.domain.agile.entity.PiObjectiveE;
+import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.repository.PiObjectiveRepository;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.PiObjectiveDO;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/3/11.
@@ -29,6 +32,9 @@ public class PiObjectiveServiceImpl implements PiObjectiveService {
 
     @Autowired
     private PiObjectiveMapper piObjectiveMapper;
+
+    @Autowired
+    private UserFeignClient userFeignClient;
 
     @Override
     public PiObjectiveDTO createPiObjective(Long programId, PiObjectiveDTO piObjectiveDTO) {
@@ -57,7 +63,14 @@ public class PiObjectiveServiceImpl implements PiObjectiveService {
     @Override
     public JSONObject queryPiObjectiveList(Long programId, Long piId) {
         JSONObject result = new JSONObject();
-        List<PiObjectiveDO> piObjectiveDOList = piObjectiveMapper.selectPiObjectiveList(programId, piId);
+        // get team
+        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
+        List<Long> teamWithProgramIds = new ArrayList<>();
+        teamWithProgramIds.add(programId);
+        if (projectRelationshipDTOList != null && !projectRelationshipDTOList.isEmpty()) {
+            teamWithProgramIds.addAll(projectRelationshipDTOList.stream().map(ProjectRelationshipDTO::getProjectId).collect(Collectors.toList()));
+        }
+        List<PiObjectiveDO> piObjectiveDOList = piObjectiveMapper.selectPiObjectiveList(programId, piId, teamWithProgramIds);
         List<PiObjectiveDO> programPiObjectives = new ArrayList<>();
         Map<Long, List<PiObjectiveDO>> map = new HashMap<>();
         for (PiObjectiveDO piObjectiveDO : piObjectiveDOList) {
