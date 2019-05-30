@@ -21,6 +21,17 @@ public class ProgramBoardInfoDTO {
     @ApiModelProperty(value = "依赖关系")
     private List<BoardDependInfoDTO> boardDepends;
 
+    @ApiModelProperty(value = "冲刺筛选列表")
+    private List<SprintDTO> filterSprintList;
+
+    public List<SprintDTO> getFilterSprintList() {
+        return filterSprintList;
+    }
+
+    public void setFilterSprintList(List<SprintDTO> filterSprintList) {
+        this.filterSprintList = filterSprintList;
+    }
+
     public Long getPiId() {
         return piId;
     }

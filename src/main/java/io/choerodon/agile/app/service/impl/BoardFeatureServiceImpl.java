@@ -13,6 +13,7 @@ import io.choerodon.agile.infra.repository.BoardFeatureRepository;
 import io.choerodon.agile.infra.repository.BoardTeamRepository;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     public static final String DELETE_ERROR = "error.boardFeature.deleteById";
     public static final String INSERT_ERROR = "error.boardFeature.create";
     public static final String EXIST_ERROR = "error.boardFeature.existData";
+    public static final String SPRINT_NOTFOUND_ERROR = "error.sprint.notFound";
     private ModelMapper modelMapper = new ModelMapper();
 
     @PostConstruct
@@ -183,6 +185,20 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         //获取冲刺信息
         Map<Long, Integer> columnWidthMap = boardSprintAttrMapper.queryByProgramId(programId).stream().collect(Collectors.toMap(BoardSprintAttrDO::getSprintId, BoardSprintAttrDO::getColumnWidth));
         List<SprintDO> sprints = sprintMapper.selectListByPiId(programId, piId);
+        programBoardInfo.setFilterSprintList(modelMapper.map(sprints, new TypeToken<List<SprintDTO>>() {
+        }.getType()));
+
+        //获取团队信息
+        List<ProjectRelationshipDTO> projectRelationships = userFeignClient.getProjUnderGroup(organizationId, programId, true).getBody();
+        //获取依赖关系
+        List<BoardDependInfoDTO> boardDependInfos = boardDependMapper.queryInfoByPiId(programId, piId);
+        //获取公告板特性信息
+        List<BoardFeatureInfoDTO> boardFeatureInfos = boardFeatureMapper.queryInfoByPiId(programId, piId).stream().filter(x -> x.getIssueTypeId() != null).collect(Collectors.toList());
+        Map<String, Object> result = handleBoardFilter(boardFilter, boardDependInfos, boardFeatureInfos, sprints);
+
+        boardFeatureInfos = (List<BoardFeatureInfoDTO>) result.get("boardFeatures");
+        sprints = (List<SprintDO>) result.get("sprints");
+
         List<ProgramBoardSprintInfoDTO> sprintInfos = new ArrayList<>(sprints.size());
         for (SprintDO sprint : sprints) {
             ProgramBoardSprintInfoDTO sprintInfo = new ProgramBoardSprintInfoDTO();
@@ -192,12 +208,6 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
             sprintInfo.setColumnWidth(columnWidth);
             sprintInfos.add(sprintInfo);
         }
-        //获取团队信息
-        List<ProjectRelationshipDTO> projectRelationships = userFeignClient.getProjUnderGroup(organizationId, programId, true).getBody();
-        //获取依赖关系
-        List<BoardDependInfoDTO> boardDependInfos = boardDependMapper.queryInfoByPiId(programId, piId);
-        //获取公告板特性信息
-        List<BoardFeatureInfoDTO> boardFeatureInfos = boardFeatureMapper.queryInfoByPiId(programId, piId).stream().filter(x -> x.getIssueTypeId() != null).collect(Collectors.toList());
         Map<Long, IssueTypeDTO> issueTypeMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         for (BoardFeatureInfoDTO boardFeatureInfo : boardFeatureInfos) {
             boardFeatureInfo.setIssueTypeDTO(issueTypeMap.get(boardFeatureInfo.getIssueTypeId()));
@@ -212,7 +222,8 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         return programBoardInfo;
     }
 
-    private void handleBoardFilter(ProgramBoardFilterDTO boardFilter, List<BoardDependInfoDTO> boardDependInfos, List<BoardFeatureInfoDTO> boardFeatureInfos) {
+    private Map<String, Object> handleBoardFilter(ProgramBoardFilterDTO boardFilter, List<BoardDependInfoDTO> boardDependInfos, List<BoardFeatureInfoDTO> boardFeatureInfos, List<SprintDO> sprints) {
+        Map<String, Object> result = new HashMap<>(3);
         //只显示有依赖关系的公告板特性
         if (boardFilter.getOnlyDependFeature()) {
             Set<Long> boardFeatureIds = boardDependInfos.stream().map(BoardDependInfoDTO::getBoardFeatureId).collect(Collectors.toSet());
@@ -223,6 +234,19 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
                 boardFeatureInfos.add(map.get(boardFeatureId));
             }
         }
+        result.put("boardFeatures", boardFeatureInfos);
+        //只筛选某个冲刺的公告板特性
+        if (boardFilter.getSprintId() != null) {
+            Map<Long, SprintDO> map = sprints.stream().collect(Collectors.toMap(SprintDO::getSprintId, x -> x));
+            SprintDO sprintDO = map.get(boardFilter.getSprintId());
+            if (sprintDO != null) {
+                sprints = Arrays.asList(sprintDO);
+            } else {
+                throw new CommonException(SPRINT_NOTFOUND_ERROR);
+            }
+        }
+        result.put("sprints", sprints);
+        return result;
     }
 
     /**
