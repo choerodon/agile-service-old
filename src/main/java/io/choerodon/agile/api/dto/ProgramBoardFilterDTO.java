@@ -12,6 +12,16 @@ public class ProgramBoardFilterDTO {
     private Boolean onlyDependFeature;
     @ApiModelProperty(value = "只筛选某个冲刺的公告板特性")
     private Long sprintId;
+    @ApiModelProperty(value = "只筛选某个团队的公告板特性")
+    private Long teamProjectId;
+
+    public Long getTeamProjectId() {
+        return teamProjectId;
+    }
+
+    public void setTeamProjectId(Long teamProjectId) {
+        this.teamProjectId = teamProjectId;
+    }
 
     public Long getSprintId() {
         return sprintId;

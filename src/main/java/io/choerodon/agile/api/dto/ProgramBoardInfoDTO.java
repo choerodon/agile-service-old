@@ -23,14 +23,8 @@ public class ProgramBoardInfoDTO {
 
     @ApiModelProperty(value = "冲刺筛选列表")
     private List<SprintDTO> filterSprintList;
-
-    public List<SprintDTO> getFilterSprintList() {
-        return filterSprintList;
-    }
-
-    public void setFilterSprintList(List<SprintDTO> filterSprintList) {
-        this.filterSprintList = filterSprintList;
-    }
+    @ApiModelProperty(value = "团队筛选列表")
+    private List<TeamProjectDTO> filterTeamList;
 
     public Long getPiId() {
         return piId;
@@ -48,14 +42,6 @@ public class ProgramBoardInfoDTO {
         this.piCode = piCode;
     }
 
-    public List<ProgramBoardTeamInfoDTO> getTeamProjects() {
-        return teamProjects;
-    }
-
-    public void setTeamProjects(List<ProgramBoardTeamInfoDTO> teamProjects) {
-        this.teamProjects = teamProjects;
-    }
-
     public List<ProgramBoardSprintInfoDTO> getSprints() {
         return sprints;
     }
@@ -64,12 +50,36 @@ public class ProgramBoardInfoDTO {
         this.sprints = sprints;
     }
 
+    public List<ProgramBoardTeamInfoDTO> getTeamProjects() {
+        return teamProjects;
+    }
+
+    public void setTeamProjects(List<ProgramBoardTeamInfoDTO> teamProjects) {
+        this.teamProjects = teamProjects;
+    }
+
     public List<BoardDependInfoDTO> getBoardDepends() {
         return boardDepends;
     }
 
     public void setBoardDepends(List<BoardDependInfoDTO> boardDepends) {
         this.boardDepends = boardDepends;
+    }
+
+    public List<SprintDTO> getFilterSprintList() {
+        return filterSprintList;
+    }
+
+    public void setFilterSprintList(List<SprintDTO> filterSprintList) {
+        this.filterSprintList = filterSprintList;
+    }
+
+    public List<TeamProjectDTO> getFilterTeamList() {
+        return filterTeamList;
+    }
+
+    public void setFilterTeamList(List<TeamProjectDTO> filterTeamList) {
+        this.filterTeamList = filterTeamList;
     }
 }
 
