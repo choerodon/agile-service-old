@@ -156,7 +156,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     }
 
     @Override
-    public ProgramBoardInfoDTO queryBoardInfo(Long projectId) {
+    public ProgramBoardInfoDTO queryBoardInfo(Long projectId, ProgramBoardFilterDTO boardFilter) {
         ProgramBoardInfoDTO programBoardInfo = new ProgramBoardInfoDTO();
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
 
@@ -194,8 +194,10 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         }
         //获取团队信息
         List<ProjectRelationshipDTO> projectRelationships = userFeignClient.getProjUnderGroup(organizationId, programId, true).getBody();
+        //获取依赖关系
+        List<BoardDependInfoDTO> boardDependInfos = boardDependMapper.queryInfoByPiId(programId, piId);
         //获取公告板特性信息
-        List<BoardFeatureInfoDTO> boardFeatureInfos = boardFeatureMapper.queryInfoByPiId(programId, piId).stream().filter(x->x.getIssueTypeId()!=null).collect(Collectors.toList());
+        List<BoardFeatureInfoDTO> boardFeatureInfos = boardFeatureMapper.queryInfoByPiId(programId, piId).stream().filter(x -> x.getIssueTypeId() != null).collect(Collectors.toList());
         Map<Long, IssueTypeDTO> issueTypeMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         for (BoardFeatureInfoDTO boardFeatureInfo : boardFeatureInfos) {
             boardFeatureInfo.setIssueTypeDTO(issueTypeMap.get(boardFeatureInfo.getIssueTypeId()));
@@ -204,12 +206,23 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         List<ProgramBoardTeamInfoDTO> teamProjects = new ArrayList<>(projectRelationships.size());
         handleTeamData(projectId, projectRelationships, teamFeatureInfoMap, teamProjects, sprints);
         Collections.sort(teamProjects, Comparator.comparing(ProgramBoardTeamInfoDTO::getRank).reversed());
-        //获取依赖关系
-        List<BoardDependInfoDTO> boardDependInfos = boardDependMapper.queryInfoByPiId(programId, piId);
         programBoardInfo.setSprints(sprintInfos);
         programBoardInfo.setTeamProjects(teamProjects);
         programBoardInfo.setBoardDepends(boardDependInfos);
         return programBoardInfo;
+    }
+
+    private void handleBoardFilter(ProgramBoardFilterDTO boardFilter, List<BoardDependInfoDTO> boardDependInfos, List<BoardFeatureInfoDTO> boardFeatureInfos) {
+        //只显示有依赖关系的公告板特性
+        if (boardFilter.getOnlyDependFeature()) {
+            Set<Long> boardFeatureIds = boardDependInfos.stream().map(BoardDependInfoDTO::getBoardFeatureId).collect(Collectors.toSet());
+            boardFeatureIds.addAll(boardDependInfos.stream().map(BoardDependInfoDTO::getBoardFeatureId).collect(Collectors.toSet()));
+            Map<Long, BoardFeatureInfoDTO> map = boardFeatureInfos.stream().collect(Collectors.toMap(BoardFeatureInfoDTO::getId, x -> x));
+            boardFeatureInfos = new ArrayList<>(boardFeatureIds.size());
+            for (Long boardFeatureId : boardFeatureIds) {
+                boardFeatureInfos.add(map.get(boardFeatureId));
+            }
+        }
     }
 
     /**
