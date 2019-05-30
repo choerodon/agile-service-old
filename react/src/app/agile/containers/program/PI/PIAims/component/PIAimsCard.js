@@ -10,22 +10,7 @@ const propTypes = {
   aimsInfo: PropTypes.array.isRequired,
   stretchAimsInfo: PropTypes.array,
 };
-const teams = Array(3).fill({
-  name: '前端开发团队',
-  piAims: [{
-    name: '前端开发团队的第一个PI目标',
-    planBv: 5,
-    actualBv: 5,
-  }, {
-    name: '前端开发团队的第一个PI目标',
-    planBv: 5,
-    actualBv: 5,
-  }, {
-    name: '前端开发团队的第一个PI目标',
-    planBv: 5,
-    actualBv: 5,
-  }],
-});
+
 const Line = (({ data }) => (
   <div style={{ display: 'flex' }}>
     <div style={{ flex: 1 }}>{data[0]}</div>
@@ -46,6 +31,8 @@ const ProjectCard = ({ team }) => {
       borderTop: '5px solid #00BFA5',
       margin: 10,
       flex: 1,
+      padding: 10,
+      // maxWidth: 450,
     }}
     >
       <Line data={[name, '计划BV', '实际BV']} />
@@ -54,12 +41,16 @@ const ProjectCard = ({ team }) => {
   );
 };
 const PIAimsCard = ({ 
-  aimsCategory, piName, aimsInfo, stretchAimsInfo, 
+  aimsCategory, piName, aimsInfo, stretchAimsInfo, teamAimsInfo,
 }) => {
   const totalPlanBv = (aimsCategory === 'program' && aimsInfo && _.reduce(_.map(aimsInfo, 'planBv'), (sum, n) => sum + n, 0)) || '-';
   const totalActualBv = (aimsCategory === 'program' && aimsInfo && stretchAimsInfo && _.reduce(_.map(aimsInfo, 'actualBv'), (sum, n) => sum + n, 0) + _.reduce(_.map(stretchAimsInfo, 'actualBv'), (sum, n) => sum + n, 0)) || '-';
   // eslint-disable-next-line no-nested-ternary
   const percent = Number.isInteger(totalPlanBv) ? (Number.isInteger(totalPlanBv) && Number.isInteger(totalActualBv) ? `${(totalActualBv / totalPlanBv * 100).toFixed(2)}%` : '0%') : '-';
+  const teams = Object.keys(teamAimsInfo).map(name => ({
+    name,
+    piAims: teamAimsInfo[name],
+  }));
   return (
     <div>
       <div className="c7n-pi-card" style={{ borderTop: `5px solid ${aimsCategory === 'program' ? '#4D90FE' : '#00BFA5'}`, margin: 'auto' }}>
@@ -152,7 +143,7 @@ const PIAimsCard = ({
         {teams.map(team => <div className="line" />)}
         <div className="line" />
       </div>
-      <div style={{ display: 'flex', marginTop: 20 }}>     
+      <div style={{ display: 'flex', marginTop: 10 }}>     
         {teams.map(team => <ProjectCard team={team} />)}
         
       </div>     

@@ -308,6 +308,7 @@ class PIAims extends Component {
                           piName={`${selectedPI.code}-${selectedPI.name}`}
                           aimsInfo={PIAims.program.filter(item => !item.stretch)}
                           stretchAimsInfo={PIAims.program.filter(item => item.stretch)}
+                          teamAimsInfo={PIAims.team}
                         />
                       )
                     }

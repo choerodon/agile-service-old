@@ -99,7 +99,7 @@ class PIAims extends Component {
       getPIAims(id, programId).then((res) => {
         PIStore.setPIAimsLoading(false);
         PIStore.setPIAims(res);
-        PIStore.setEditPiAimsCtrl(res.program.map((item, index) => (
+        PIStore.setEditPiAimsCtrl(res.map((item, index) => (
           {
             isEditing: false,
             editingId: item.id,
@@ -147,7 +147,7 @@ class PIAims extends Component {
     editPiAimsCtrl[editingIndex].isEditing = true;
     PIStore.setEditPiAimsCtrl(editPiAimsCtrl);
     this.setState({
-      editingPiAimsInfo: PIAims.program[editingIndex],
+      editingPiAimsInfo: PIAims[editingIndex],
     }, () => {
       PIStore.setEditPIVisible(true);
     });
@@ -168,7 +168,7 @@ class PIAims extends Component {
       getPIAims(deleteRecord.piId, programId).then((piAims) => {
         PIStore.setPIAimsLoading(false);
         PIStore.setPIAims(piAims);
-        PIStore.setEditPiAimsCtrl(piAims.program.map((item, index) => (
+        PIStore.setEditPiAimsCtrl(piAims.map((item, index) => (
           {
             isEditing: false,
             editingId: item.id,
@@ -264,7 +264,7 @@ class PIAims extends Component {
                       </div>
                     </div>
                     {
-                      PIAims.program && PIAims.program.length > 0 && (
+                      PIAims && PIAims.length > 0 && (
                         <RadioGroup className="c7n-pi-showTypeRadioGroup" onChange={this.handleRadioChange} defaultValue="list">
                           <RadioButton value="list">列表</RadioButton>
                           <RadioButton value="card">卡片</RadioButton>
@@ -278,17 +278,17 @@ class PIAims extends Component {
                       showType === 'list' ? (
                         <ProgramAimsTable
                           amisColumns={amisColumns}
-                          dataSource={PIAims.program}
+                          dataSource={PIAims}
                           onEditPiAims={this.handleEditPiAims}
                           onDeletePiAims={this.handledeletePiAims}
                         />
                       ) : (
                         <PIAimsCard
                           style={{ margin: '0 24px' }}
-                          aimsCategory="program"
+                          aimsCategory="team"
                           piName={`${selectedPI.code}-${selectedPI.name}`}
-                          aimsInfo={PIAims.program.filter(item => !item.stretch)}
-                          stretchAimsInfo={PIAims.program.filter(item => item.stretch)}
+                          aimsInfo={PIAims.filter(item => !item.stretch)}
+                          stretchAimsInfo={PIAims.filter(item => item.stretch)}
                         />
                       )
                     }

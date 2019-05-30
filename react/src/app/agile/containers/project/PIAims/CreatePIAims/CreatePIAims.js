@@ -30,7 +30,7 @@ class CreatePIAims extends Component {
       if (!err) {
         PIStore.setPIAimsLoading(true);
         const piObjectiveDTO = {
-          levelCode: 'program',
+          levelCode: 'team',
           programId,
           projectId: AppState.currentMenuType.id,
           piId: values.piId || piId,

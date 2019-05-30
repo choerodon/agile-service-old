@@ -42,5 +42,5 @@ export function getPIList(programId) {
  * @param {*} piId 
  */
 export function getPIAims(piId, programId) {
-  return axios.get(`/agile/v1/projects/${getProjectId()}/project_invoke_program/pi_objective/list?piId=${piId}&programId=${programId}`);
+  return axios.get(`/agile/v1/projects/${getProjectId()}/pi_objective/list_by_project?piId=${piId}&programId=${programId}`);
 }
