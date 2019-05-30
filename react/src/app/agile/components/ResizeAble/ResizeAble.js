@@ -58,6 +58,7 @@ const MODES = {
     cursor: 'nw-resize',
   },
 };
+
 const propTypes = {
   defaultSize: PropTypes.shape({
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
@@ -247,7 +248,11 @@ class ResizeAble extends Component {
         )}
         {children}
         {
-          modes.map(position => <div role="none" key={position} style={{ position: 'absolute', ...MODES[position] }} onMouseDown={this.handleMouseDown.bind(this, position)} />)
+          modes.map(position => (
+            <div role="none" key={position} className={`resizable-${position}`} style={{ position: 'absolute', ...MODES[position] }} onMouseDown={this.handleMouseDown.bind(this, position)}>
+              <div className={`resizable-line-${position} ${resizing && position === mode ? 'active' : ''}`} />
+            </div>
+          ))
         }
       </div>
     );

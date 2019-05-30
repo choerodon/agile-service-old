@@ -35,6 +35,7 @@ class EditIssue extends Component {
       issueLoading: false,
     };
     this.container = React.createRef();
+    this.line = React.createRef();
   }
 
   componentDidMount() {
@@ -214,6 +215,7 @@ class EditIssue extends Component {
         >
           <div className="choerodon-modal-editIssue" style={style} ref={this.container}>
             <div className="choerodon-modal-editIssue-divider" />
+            {/* <div className="choerodon-modal-editIssue-divider-line" ref={this.line} /> */}
             {
               issueLoading ? (
                 <div
