@@ -14,6 +14,16 @@ public class ProgramBoardFilterDTO {
     private Long sprintId;
     @ApiModelProperty(value = "只筛选某个团队的公告板特性")
     private Long teamProjectId;
+    @ApiModelProperty(value = "只显示其他团队与当前所选团队有依赖关系的公告板特性")
+    private Boolean onlyOtherTeamDependFeature;
+
+    public Boolean getOnlyOtherTeamDependFeature() {
+        return onlyOtherTeamDependFeature;
+    }
+
+    public void setOnlyOtherTeamDependFeature(Boolean onlyOtherTeamDependFeature) {
+        this.onlyOtherTeamDependFeature = onlyOtherTeamDependFeature;
+    }
 
     public Long getTeamProjectId() {
         return teamProjectId;

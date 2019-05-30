@@ -256,7 +256,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         }
         result.put("sprints", sprints);
         //只筛选某个团队的公告板特性
-        if (boardFilter.getTeamProjectId() != null) {
+        if (!boardFilter.getOnlyOtherTeamDependFeature() && boardFilter.getTeamProjectId() != null) {
             Map<Long, ProjectRelationshipDTO> map = projectRelationships.stream().collect(Collectors.toMap(ProjectRelationshipDTO::getProjectId, x -> x));
             ProjectRelationshipDTO relationshipDTO = map.get(boardFilter.getTeamProjectId());
             if (relationshipDTO != null) {
@@ -265,8 +265,41 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
                 throw new CommonException(TEAM_NOTFOUND_ERROR);
             }
         }
+        //只显示其他团队与当前所选团队有依赖关系的公告板特性
+        if (boardFilter.getOnlyOtherTeamDependFeature() && boardFilter.getTeamProjectId() != null) {
+            List<BoardFeatureInfoDTO> newFeatures = new ArrayList<>(boardFeatureInfos.size());
+            //当前团队feature
+            List<BoardFeatureInfoDTO> myTeamInfos = boardFeatureInfos.stream().filter(info -> info.getTeamProjectId().equals(boardFilter.getTeamProjectId())).collect(Collectors.toList());
+            Map<Long, BoardFeatureInfoDTO> myTeamMap = myTeamInfos.stream().collect(Collectors.toMap(BoardFeatureInfoDTO::getId, x -> x));
+            newFeatures.addAll(myTeamInfos);
+            //其他团队feature
+            List<BoardFeatureInfoDTO> otherTeamInfos = boardFeatureInfos.stream().filter(info -> !info.getTeamProjectId().equals(boardFilter.getTeamProjectId())).collect(Collectors.toList());
+            Map<Long, BoardFeatureInfoDTO> otherTeamMap = otherTeamInfos.stream().collect(Collectors.toMap(BoardFeatureInfoDTO::getId, x -> x));
+            for (BoardDependInfoDTO dependInfo : boardDependInfos) {
+                Long boardFeatureId = dependInfo.getBoardFeatureId();
+                Long dependBoardFeatureId = dependInfo.getDependBoardFeatureId();
+                boolean dependOther = myTeamMap.get(boardFeatureId) != null && otherTeamMap.get(dependBoardFeatureId) != null;
+                if (dependOther) {
+                    newFeatures.add(otherTeamMap.get(dependBoardFeatureId));
+                }
+                boolean otherDepend = myTeamMap.get(dependBoardFeatureId) != null && otherTeamMap.get(boardFeatureId) != null;
+                if (otherDepend) {
+                    newFeatures.add(otherTeamMap.get(boardFeatureId));
+                }
+            }
+            //计算出要展示的团队
+            Map<Long, ProjectRelationshipDTO> teamMap = projectRelationships.stream().collect(Collectors.toMap(ProjectRelationshipDTO::getProjectId, x -> x));
+            projectRelationships = new ArrayList<>();
+            List<Long> projectIds = newFeatures.stream().map(BoardFeatureInfoDTO::getTeamProjectId).distinct().collect(Collectors.toList());
+            for (Long teamProjectId : projectIds) {
+                ProjectRelationshipDTO relationshipDTO = teamMap.get(teamProjectId);
+                if (relationshipDTO != null) {
+                    projectRelationships.add(relationshipDTO);
+                }
+            }
+            result.put("boardFeatures", newFeatures);
+        }
         result.put("projectRelationships", projectRelationships);
-
         return result;
     }
 
