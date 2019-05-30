@@ -13,4 +13,6 @@ import java.util.List;
 public interface PiObjectiveMapper extends BaseMapper<PiObjectiveDO> {
 
     List<PiObjectiveDO> selectPiObjectiveList(@Param("programId") Long programId, @Param("piId") Long piId, @Param("teamWithProgramIds") List<Long> teamWithProgramIds);
+
+    List<PiObjectiveDO> selectPiObjectiveListByProject(@Param("projectId") Long projectId, @Param("piId") Long piId);
 }

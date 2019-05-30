@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -85,5 +86,18 @@ public class PiObjectiveController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.piObjectiveList.get"));
     }
+
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("项目层下查询PI objective列表")
+    @GetMapping("/list_by_project")
+    public ResponseEntity<List<PiObjectiveDTO>> queryPiObjectiveListByProject(@ApiParam(value = "项目id", required = true)
+                                                                              @PathVariable(name = "project_id") Long projectId,
+                                                                              @ApiParam(value = "pi id", required = true)
+                                                                              @RequestParam Long piId) {
+        return Optional.ofNullable(piObjectiveService.queryPiObjectiveListByProject(projectId, piId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.piObjectiveListByProject.get"));
+    }
+
 
 }

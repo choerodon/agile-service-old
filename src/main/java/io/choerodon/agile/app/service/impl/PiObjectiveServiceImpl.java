@@ -102,4 +102,14 @@ public class PiObjectiveServiceImpl implements PiObjectiveService {
         result.put("team", projectJson);
         return result;
     }
+
+    @Override
+    public List<PiObjectiveDTO> queryPiObjectiveListByProject(Long projectId, Long piId) {
+        List<PiObjectiveDO> piObjectiveDOList = piObjectiveMapper.selectPiObjectiveListByProject(projectId, piId);
+        if (piObjectiveDOList != null && !piObjectiveDOList.isEmpty()) {
+            return ConvertHelper.convertList(piObjectiveDOList, PiObjectiveDTO.class);
+        } else {
+            return new ArrayList<>();
+        }
+    }
 }

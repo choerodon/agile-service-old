@@ -29,4 +29,24 @@
         order by apo.id desc
     </select>
 
+    <select id="selectPiObjectiveListByProject" resultType="io.choerodon.agile.infra.dataobject.PiObjectiveDO">
+        select
+           apo.id,
+           apo.name,
+           apo.is_stretch as stretch,
+           apo.plan_bv,
+           apo.actual_bv,
+           apo.level_code,
+           apo.pi_id,
+           apo.program_id,
+           apo.project_id,
+           apo.object_version_number,
+           apo.creation_date,
+           apo.last_update_date
+        from agile_pi_objective apo
+        where apo.project_id = #{projectId}
+        and apo.pi_id = #{piId}
+        order by apo.id desc
+    </select>
+
 </mapper>
