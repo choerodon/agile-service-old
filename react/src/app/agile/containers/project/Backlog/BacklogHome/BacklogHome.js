@@ -366,6 +366,7 @@ class BacklogHome extends Component {
             )}     
             <Feature
               refresh={this.refresh}
+              isInProgram={isInProgram}
               visible={BacklogStore.getCurrentVisible}
               issueRefresh={() => {
                 this.IssueDetail.refreshIssueDetail();

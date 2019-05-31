@@ -8,6 +8,7 @@ import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
 import { QuickSearchEvent } from '../../../../../components/QuickSearch';
 import FeatureItem from './FeatureItem';
 import { getFeaturesInProject } from '../../../../../api/FeatureApi';
+import CreateFeature from './CreateFeature';
 import './Feature.scss';
 
 @observer
@@ -15,7 +16,7 @@ class Feature extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      addEpic: false,
+      addFeature: false,
     };
   }
 
@@ -45,14 +46,27 @@ class Feature extends Component {
   };
 
   render() {
-    const { draggableIds, addEpic } = this.state;
-    const { refresh, issueRefresh } = this.props;
+    const { draggableIds, addFeature } = this.state;
+    const { refresh, issueRefresh, isInProgram } = this.props;
     return BacklogStore.getCurrentVisible === 'feature' ? (
       <div className="c7n-backlog-epic">
         <div className="c7n-backlog-epicContent">
           <div className="c7n-backlog-epicTitle">
             <p style={{ fontWeight: 'bold' }}>特性</p>
             <div className="c7n-backlog-epicRight">
+              {!isInProgram && (
+              <p
+                style={{ color: '#3F51B5', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                role="none"
+                onClick={() => {
+                  this.setState({
+                    addFeature: true,
+                  });
+                }}
+              >
+                创建特性
+              </p>
+              )}
               <Icon
                 type="first_page"
                 role="none"
@@ -149,6 +163,16 @@ class Feature extends Component {
               未指定特性的问题
             </div>
           </div>
+          <CreateFeature
+            store={BacklogStore}
+            visible={addFeature}
+            onCancel={() => {
+              this.setState({
+                addFeature: false,
+              });
+            }}
+            refresh={this.featureRefresh}
+          />
         </div>
       </div>
     ) : null;
