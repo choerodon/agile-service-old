@@ -303,12 +303,12 @@ export function issueLink(issueId, typeCode, issueName = null) {
     return encodeURI(`/agile/issue?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}&paramIssueId=${issueId}`);
   }
 }
-export function programIssueLink(issueId, issueName) {
+export function programIssueLink(issueId, issueName, projectId) {
   const menu = AppState.currentMenuType;
   const {
-    type, id: projectId, name, organizationId,
+    type, id, name, organizationId,
   } = menu;
-  return encodeURI(`/agile/feature?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}&paramIssueId=${issueId}&paramName=${issueName}`);
+  return encodeURI(`/agile/feature?type=${type}&id=${projectId || id}&name=${name}&organizationId=${organizationId}&paramIssueId=${issueId}&paramName=${issueName}`);
 }
 
 export const getProjectId = () => Number(AppState.currentMenuType.id);
