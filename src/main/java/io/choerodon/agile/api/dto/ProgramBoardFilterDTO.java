@@ -2,6 +2,8 @@ package io.choerodon.agile.api.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.List;
+
 /**
  * @author shinan.chen
  * @since 2019/5/14
@@ -10,10 +12,10 @@ public class ProgramBoardFilterDTO {
 
     @ApiModelProperty(value = "只显示有依赖关系的公告板特性")
     private Boolean onlyDependFeature;
-    @ApiModelProperty(value = "只筛选某个冲刺的公告板特性")
-    private Long sprintId;
-    @ApiModelProperty(value = "只筛选某个团队的公告板特性")
-    private Long teamProjectId;
+    @ApiModelProperty(value = "只筛选某些冲刺的公告板特性")
+    private List<Long> sprintIds;
+    @ApiModelProperty(value = "只筛选某些团队的公告板特性")
+    private List<Long> teamProjectIds;
     @ApiModelProperty(value = "只显示其他团队与当前所选团队有依赖关系的公告板特性")
     private Boolean onlyOtherTeamDependFeature;
 
@@ -25,20 +27,20 @@ public class ProgramBoardFilterDTO {
         this.onlyOtherTeamDependFeature = onlyOtherTeamDependFeature;
     }
 
-    public Long getTeamProjectId() {
-        return teamProjectId;
+    public List<Long> getSprintIds() {
+        return sprintIds;
     }
 
-    public void setTeamProjectId(Long teamProjectId) {
-        this.teamProjectId = teamProjectId;
+    public void setSprintIds(List<Long> sprintIds) {
+        this.sprintIds = sprintIds;
     }
 
-    public Long getSprintId() {
-        return sprintId;
+    public List<Long> getTeamProjectIds() {
+        return teamProjectIds;
     }
 
-    public void setSprintId(Long sprintId) {
-        this.sprintId = sprintId;
+    public void setTeamProjectIds(List<Long> teamProjectIds) {
+        this.teamProjectIds = teamProjectIds;
     }
 
     public Boolean getOnlyDependFeature() {
