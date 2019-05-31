@@ -124,12 +124,13 @@ public class ProjectInvokeProgramController {
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("项目层下查询获取公告板所有信息")
-    @GetMapping(value = "/query_board_info")
+    @PostMapping(value = "/query_board_info")
     public ResponseEntity<ProgramBoardInfoDTO> queryBoardInfo(@ApiParam(value = "项目id", required = true)
                                                               @PathVariable(name = "project_id") Long projectId,
                                                               @ApiParam(value = "项目群id", required = true)
-                                                              @RequestParam Long programId) {
-        return Optional.ofNullable(boardFeatureService.queryBoardInfo(programId))
+                                                              @RequestParam Long programId,
+                                                              @RequestBody ProgramBoardFilterDTO boardFilterDTO) {
+        return Optional.ofNullable(boardFeatureService.queryBoardInfo(programId, boardFilterDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.boardFeature.queryBoardInfo"));
     }

@@ -1,9 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.BoardFeatureCreateDTO;
-import io.choerodon.agile.api.dto.BoardFeatureInfoDTO;
-import io.choerodon.agile.api.dto.BoardFeatureUpdateDTO;
-import io.choerodon.agile.api.dto.ProgramBoardInfoDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.BoardFeatureService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -67,10 +64,11 @@ public class BoardFeatureController {
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("获取公告板所有信息")
-    @GetMapping(value = "/query_board_info")
+    @PostMapping(value = "/query_board_info")
     public ResponseEntity<ProgramBoardInfoDTO> queryBoardInfo(@ApiParam(value = "项目id", required = true)
-                                                              @PathVariable(name = "project_id") Long projectId) {
-        return Optional.ofNullable(boardFeatureService.queryBoardInfo(projectId))
+                                                              @PathVariable(name = "project_id") Long projectId,
+                                                              @RequestBody ProgramBoardFilterDTO boardFilter) {
+        return Optional.ofNullable(boardFeatureService.queryBoardInfo(projectId, boardFilter))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.boardFeature.queryBoardInfo"));
     }
