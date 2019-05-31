@@ -18,8 +18,8 @@ export function loadDatalogs(issueId, programId) {
 export function getFieldAndValue(id, dto, programId) {  
   return axios.post(`/foundation/v1/projects/${getProjectId()}/field_value/list/${id}?programId=${programId}&organizationId=${getOrganizationId()}`, dto);
 }
-export function getBoard(programId) {
-  return axios.get(`/agile/v1/projects/${getProjectId()}/project_invoke_program/query_board_info?programId=${programId}`);
+export function getBoard(programId, filter) {
+  return axios.post(`/agile/v1/projects/${getProjectId()}/project_invoke_program/query_board_info?programId=${programId}`, filter);
 }
 export function getBoardList(programId) {
   return axios.get(`/agile/v1/projects/${getProjectId()}/project_invoke_program/board?programId=${programId}`);

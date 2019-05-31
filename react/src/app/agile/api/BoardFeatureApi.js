@@ -1,8 +1,8 @@
 import { axios } from '@choerodon/boot';
 import { getProjectId, getOrganizationId } from '../common/utils';
 
-export function getBoard() {
-  return axios.get(`/agile/v1/projects/${getProjectId()}/board_feature/query_board_info`);
+export function getBoard(filter) {
+  return axios.post(`/agile/v1/projects/${getProjectId()}/board_feature/query_board_info`, filter);
 }
 // {
 //   "piId": "integer",  //piId

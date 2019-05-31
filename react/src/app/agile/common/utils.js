@@ -311,7 +311,7 @@ export function programIssueLink(issueId, issueName) {
   return encodeURI(`/agile/feature?type=${type}&id=${projectId}&name=${name}&organizationId=${organizationId}&paramIssueId=${issueId}&paramName=${issueName}`);
 }
 
-export const getProjectId = () => AppState.currentMenuType.id;
+export const getProjectId = () => Number(AppState.currentMenuType.id);
 export const getProjectName = () => AppState.currentMenuType.name;
 export const getOrganizationId = () => AppState.currentMenuType.organizationId;
 export const getIsInProgram = () => true;

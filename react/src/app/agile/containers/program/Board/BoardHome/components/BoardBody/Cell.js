@@ -268,7 +268,7 @@ class Cell extends Component {
 
   render() {
     const {
-      data, project, sprintIndex, connectDropTarget,
+      data, project, sprintIndex, connectDropTarget, projectIndex,
     } = this.props;
     const { columnWidth } = BoardStore.sprints[sprintIndex];
     const { boardFeatures: issues, sprintId } = data;
@@ -285,6 +285,8 @@ class Cell extends Component {
                 issues={issues}
                 sprintId={sprintId}
                 projectId={project.projectId}
+                projectIndex={projectIndex}
+                sprintIndex={sprintIndex}
                 findCard={this.findCard}
                 moveCard={this.moveCard}
                 mode={this.judgeMode(issue)}
