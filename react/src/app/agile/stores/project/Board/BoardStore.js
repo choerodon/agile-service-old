@@ -1,17 +1,24 @@
 
-import {
-  observable, action, computed, toJS, extendObservable,
-} from 'mobx';
-import axios from 'axios';
+import { observable, action, computed } from 'mobx';
 import {
   find, findIndex, max, remove,
 } from 'lodash';
-import { stores } from '@choerodon/boot';
-import { getBoard } from '../../../api/QueryProgramApi';
+import {
+  getBoard, 
+} from '../../../api/QueryProgramApi';
+import { getProjectId } from '../../../common/utils';
 
-const { AppState } = stores;
 class BoardStore {
   @observable resizing = false;
+
+  @observable filter = {
+    onlyDependFeature: false,
+    sprintId: undefined,
+    teamProjectId: getProjectId(),
+    onlyOtherTeamDependFeature: false,
+  };
+
+  @observable boardData = null;
 
   @observable loading = false;
 
@@ -47,13 +54,17 @@ class BoardStore {
   @action
   loadData = (programId) => {
     this.loading = true;
-    getBoard(programId).then(({
-      boardDepends,
-      piCode,
-      piId,
-      sprints,
-      teamProjects,
-    }) => {
+    getBoard(programId, this.filter).then((boardData) => {
+      const {
+        filterSprintList,
+        filterTeamList,
+        boardDepends,
+        piCode,
+        piId,
+        sprints,
+        teamProjects,
+      } = boardData;
+      this.setBoardData(boardData);
       this.init({
         boardDepends,
         piCode,
@@ -62,6 +73,10 @@ class BoardStore {
         teamProjects,
       });
     });
+  }
+
+  @action setFilter = (filter) => {
+    this.filter = { ...this.filter, ...filter };
   }
 
   @action init = ({
@@ -81,18 +96,13 @@ class BoardStore {
     this.loading = false;
   }
 
+  @action setBoardData(boardData) {
+    this.boardData = boardData;
+  }
+
   @action setLoading(loading) {
     this.loading = loading;
   }
-
-  // @action
-  // loadFeatureList = () => {
-  //   this.featureListLoading = true;
-  //   getSideFeatures(this.activePi.piId, {}).then((feature) => {
-  //     this.setFeatureList(feature);
-  //     this.featureListLoading = false;
-  //   });
-  // }
 
   @action setFeatureListVisible(featureListVisible) {
     this.featureListVisible = featureListVisible;
@@ -213,39 +223,6 @@ class BoardStore {
     // console.log(toJS(this.projects));
   }
 
-  // projectMove = (sourceId, atIndex) => {
-  //   const index = findIndex(this.projects, { boardTeamId: sourceId });
-  //   this.sortProjects(index, atIndex);
-  //   const sourceProject = find(this.projects, { boardTeamId: sourceId });
-  //   const data = {
-  //     before: true,
-  //     objectVersionNumber: sourceProject.objectVersionNumber,
-  //     outsetId: 0,
-  //   };
-
-  //   if (atIndex === 0) {
-  //     data.before = true;
-  //     if (this.projects.length > 1) {
-  //       data.outsetId = this.projects[1].boardTeamId;
-  //     } else {
-  //       data.outsetId = 0;
-  //     }
-  //   } else {
-  //     data.before = false;
-  //     data.outsetId = this.projects[atIndex - 1].boardTeamId;
-  //   }
-  //   // console.log(data);
-  //   projectMove(sourceId, data).then((res) => {
-  //     if (res.failed) {
-  //       Choerodon.prompt('更新失败');
-  //       this.loadData();
-  //     } else {
-  //       action(() => {
-  //         Object.assign(this.projects[atIndex], res);
-  //       })();
-  //     }
-  //   });
-  // }
 
   @action
   resetProject = (source) => {
@@ -256,7 +233,7 @@ class BoardStore {
   }
 
   @action setConnectionsWhenDrag(issue) {
-    this.connections.forEach((connection) => {      
+    this.connections.forEach((connection) => {
       const { boardFeature, dependBoardFeature } = connection;
       if (!boardFeature || !dependBoardFeature) {
         return;
@@ -315,119 +292,6 @@ class BoardStore {
     this.projects[projectIndex].teamSprints[sprintIndex].boardFeatures.splice(atIndex, 0, insertIssue);
   }
 
-  // feature列表移动到板子上
-  // fromSideToBoard = ({
-  //   dropType, index, teamProjectId, sprintId, featureId,
-  // }) => {
-  //   let insertIndex = index;
-  //   const data = {
-  //     // dropType,
-  //     // index,
-  //     sprintId,
-  //     piId: this.activePi.piId, // piId
-  //     before: true, // 是否拖动到第一个
-  //     teamProjectId, // 团队项目id
-  //     featureId,
-  //     outsetId: 0, // before：true，在当前移动的值之后，false，在当前移动的值之前，若为0L则为第一次创建
-  //   };
-
-  //   const dropIssues = this.findIssuesByProjectAndSprint(teamProjectId, sprintId);
-  //   // console.log(dropIssues);
-  //   // 内部有卡片
-  //   if (dropType === 'inner') {
-  //     // 拖动到第一个，传第二个的值
-  //     if (index === 0) {
-  //       data.before = true;
-  //       if (dropIssues.length > 1) {
-  //         data.outsetId = dropIssues[1].id || 0;
-  //       } else {
-  //         data.outsetId = 0;
-  //       }
-  //     } else {
-  //       data.before = false;
-  //       data.outsetId = dropIssues[index - 1].id;
-  //     }
-  //   } else {
-  //     // 目标各自如果有issue，放在最后一个
-  //     // eslint-disable-next-line no-lonely-if
-  //     if (dropIssues.length > 1) {
-  //       data.before = false;
-  //       data.outsetId = dropIssues[dropIssues.length - 2] ? dropIssues[dropIssues.length - 2].id : dropIssues[dropIssues.length - 1].id;
-  //       insertIndex = dropIssues.length - 1;
-  //     } else {
-  //       data.before = true;
-  //       insertIndex = 0;
-  //     }
-  //   }
-  //   // console.log(data);
-  //   featureToBoard(data).then((res) => {
-  //     if (res.failed) {
-  //       this.clearMovingIssue();
-  //       return;
-  //     }
-  //     action(() => {
-  //       dropIssues[insertIndex] = res;
-  //       // console.log(dropIssues);
-  //     })();
-  //   }).catch((err) => {
-  //     this.clearMovingIssue();
-  //   });
-  // }
-
-  // feature在板子上移动
-  // featureBoardMove = ({
-  //   dropType, index, teamProjectId, sprintId, issue,
-  // }) => {
-  //   let insertIndex = index;
-  //   const data = {
-  //     objectVersionNumber: issue.objectVersionNumber, // 乐观锁
-  //     piId: this.activePi.piId, // piId
-  //     sprintId, // 冲刺id
-  //     before: true, // 是否拖动到第一个
-  //     teamProjectId,
-  //     outsetId: 0,
-  //   };
-
-  //   const dropIssues = this.findIssuesByProjectAndSprint(teamProjectId, sprintId);
-  //   // console.log(dropIssues);
-  //   // 内部有卡片
-  //   if (dropType === 'inner') {
-  //     // 拖动到第一个，传第二个的值
-  //     if (index === 0) {
-  //       data.before = true;
-  //       if (dropIssues.length > 1) {
-  //         data.outsetId = dropIssues[1].id;
-  //       } else {
-  //         data.outsetId = dropIssues[0].id;
-  //       }
-  //     } else {
-  //       data.before = false;
-  //       data.outsetId = dropIssues[index - 1].id;
-  //     }
-  //   } else {
-  //     // 目标格子如果有issue，放在最后一个
-  //     // eslint-disable-next-line no-lonely-if
-  //     if (dropIssues.length > 0) {
-  //       data.before = false;
-  //       data.outsetId = dropIssues[dropIssues.length - 2] ? dropIssues[dropIssues.length - 2].id : dropIssues[dropIssues.length - 1].id;
-  //       insertIndex = dropIssues.length - 1;
-  //     } else {
-  //       data.before = true;
-  //       insertIndex = 0;
-  //     }
-  //   }
-  //   // console.log(data, issue);
-  //   featureBoardMove(issue.id, data).then((res) => {
-  //     if (res.failed) {
-  //       return;
-  //     }
-  //     action(() => {
-  //       dropIssues[insertIndex] = res;
-  //       // console.log(dropIssues);
-  //     })();
-  //   });
-  // }
-
 
   findIssuesByProjectAndSprint(projectId, sprintId) {
     const targetProject = find(this.projects, { projectId });
@@ -443,59 +307,18 @@ class BoardStore {
     });
   }
 
-  // createConnection = (toIssue) => {
-  //   if (!this.clickIssue.id || !toIssue || !toIssue.id || toIssue.id === this.clickIssue.id) {
-  //     return;
-  //   }
-  //   const clickIssue = { ...this.clickIssue };
-  //   this.setLoading(true);
-  //   createConnection({
-  //     piId: this.activePi.piId,
-  //     dependBoardFeatureId: toIssue.id,
-  //     boardFeatureId: this.clickIssue.id,
-  //   }).then((res) => {
-  //     this.setLoading(false);
-  //     if (res.failed) {
-  //       Choerodon.prompt('创建连接失败');
-  //     } else {
-  //       this.addConnection({
-  //         ...res,
-  //         boardFeature: clickIssue,
-  //         dependBoardFeature: toIssue,
-  //       });
-  //       this.clearSelect();
-  //       this.setAddingConnection(false);
-  //     }
-  //   });
-  // }
 
   @action
   addConnection = (connection) => {
     this.connections.push(connection);
   }
 
-  // deleteConnection = (id) => {
-  //   this.setLoading(true);
-  //   deleteConnection(id).then((res) => {
-  //     this.removeConnection(id);
-  //     this.clearSelect();
-  //     this.setLoading(false);
-  //   });
-  // }
 
   @action
   removeConnection(id) {
     remove(this.connections, { id });
   }
 
-  // deleteFeatureFromBoard(issue) {
-  //   deleteFeatureFromBoard(issue.id).then((res) => {
-  //     this.clearSelect();
-  //     this.removeFeatureAndConnection(issue);
-  //   }).catch((err) => {
-  //     Choerodon.prompt('移除失败');
-  //   });
-  // }
 
   @action
   removeFeatureAndConnection(issue) {

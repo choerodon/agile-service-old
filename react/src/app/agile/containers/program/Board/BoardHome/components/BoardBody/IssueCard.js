@@ -185,6 +185,8 @@ export default DropTarget(
           index: props.index,
           sprintId: props.sprintId,
           projectId: props.projectId,
+          projectIndex: props.projectIndex,
+          sprintIndex: props.sprintIndex,
         };
       },
       endDrag(props, monitor, component) {
@@ -205,6 +207,7 @@ export default DropTarget(
             teamProjectId,
             sprintId,
             issue: source.issue,
+            source,
           });
         } else {
           BoardStore.resetMovingIssue(source);

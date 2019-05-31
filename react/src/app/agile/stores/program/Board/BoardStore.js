@@ -1,19 +1,24 @@
 
-import {
-  observable, action, computed, toJS, extendObservable,
-} from 'mobx';
-import axios from 'axios';
+import { observable, action, computed } from 'mobx';
 import {
   find, findIndex, max, remove,
 } from 'lodash';
-import { stores } from '@choerodon/boot';
 import {
-  getBoard, featureToBoard, featureBoardMove, projectMove, getSideFeatures, createConnection, deleteConnection, deleteFeatureFromBoard,
+  getBoard, featureToBoard, featureBoardMove, projectMove,
+  getSideFeatures, createConnection, deleteConnection, deleteFeatureFromBoard,
 } from '../../../api/BoardFeatureApi';
 
-const { AppState } = stores;
 class BoardStore {
   @observable resizing = false;
+
+  @observable filter = {
+    onlyDependFeature: false,
+    sprintId: undefined,
+    teamProjectId: undefined,
+    onlyOtherTeamDependFeature: false,
+  };
+
+  @observable boardData = null;
 
   @observable loading = false;
 
@@ -49,13 +54,17 @@ class BoardStore {
   @action
   loadData = () => {
     this.loading = true;
-    getBoard().then(({
-      boardDepends,
-      piCode,
-      piId,
-      sprints,
-      teamProjects,
-    }) => {
+    getBoard(this.filter).then((boardData) => {
+      const {
+        filterSprintList,
+        filterTeamList,
+        boardDepends,
+        piCode,
+        piId,
+        sprints,
+        teamProjects,
+      } = boardData;
+      this.setBoardData(boardData);
       this.init({
         boardDepends,
         piCode,
@@ -64,6 +73,10 @@ class BoardStore {
         teamProjects,
       });
     });
+  }
+
+  @action setFilter = (filter) => {
+    this.filter = { ...this.filter, ...filter };
   }
 
   @action init = ({
@@ -81,6 +94,10 @@ class BoardStore {
     };
     this.connections = boardDepends;
     this.loading = false;
+  }
+
+  @action setBoardData(boardData) {
+    this.boardData = boardData;
   }
 
   @action setLoading(loading) {
@@ -258,7 +275,7 @@ class BoardStore {
   }
 
   @action setConnectionsWhenDrag(issue) {
-    this.connections.forEach((connection) => {      
+    this.connections.forEach((connection) => {
       const { boardFeature, dependBoardFeature } = connection;
       if (!boardFeature || !dependBoardFeature) {
         return;
@@ -364,6 +381,9 @@ class BoardStore {
     // console.log(data);
     featureToBoard(data).then((res) => {
       if (res.failed) {
+        if (res.code === 'error.boardFeature.existData') {
+          Choerodon.prompt('目标已经含有此卡片');
+        }
         this.clearMovingIssue();
         return;
       }
@@ -378,7 +398,7 @@ class BoardStore {
 
   // feature在板子上移动
   featureBoardMove = ({
-    dropType, index, teamProjectId, sprintId, issue,
+    dropType, index, teamProjectId, sprintId, issue, source,
   }) => {
     let insertIndex = index;
     const data = {
@@ -421,6 +441,10 @@ class BoardStore {
     // console.log(data, issue);
     featureBoardMove(issue.id, data).then((res) => {
       if (res.failed) {
+        if (res.code === 'error.boardFeature.existData') {
+          Choerodon.prompt('目标已经含有此卡片');
+        }
+        this.resetMovingIssue(source);
         return;
       }
       action(() => {

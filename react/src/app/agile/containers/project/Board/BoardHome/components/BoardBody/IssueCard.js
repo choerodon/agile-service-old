@@ -25,7 +25,7 @@ class IssueCard extends Component {
     } = this.props;
 
     const {
-      issueTypeDTO, summary, issueNum, featureType, featureId,
+      issueTypeDTO, summary, issueNum, featureType, featureId, programId,
     } = issue;
     return (
       <div
@@ -43,7 +43,7 @@ class IssueCard extends Component {
         <div role="none" className="c7nagile-IssueCard-top" onClick={(e) => { e.stopPropagation(); }}>
           <TypeTag data={issueTypeDTO} featureType={featureType} />
           <span className="c7nagile-IssueCard-top-issueNum">
-            <Link to={programIssueLink(featureId, issueNum)} target="_blank">{issueNum}</Link>
+            <Link to={programIssueLink(featureId, issueNum, programId)} target="_blank">{issueNum}</Link>
           </span>
         </div>
         <Tooltip title={summary}>

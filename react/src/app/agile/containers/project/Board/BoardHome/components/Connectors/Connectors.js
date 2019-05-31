@@ -151,6 +151,9 @@ class Connectors extends Component {
       const projectIndex = findIndex(projects, { projectId: teamProjectId });
       const sprintIndex = findIndex(sprints, { sprintId });    
       const issueIndex = findIndex(projects[projectIndex].teamSprints[sprintIndex].boardFeatures, { id });
+      if (issueIndex === -1) {
+        throw new Error('没有找到对应issue');
+      }
       const { columnWidth } = sprints[sprintIndex];
       const columnIndex = issueIndex % columnWidth;
       const rowIndex = Math.ceil((issueIndex + 1) / columnWidth) - 1;
