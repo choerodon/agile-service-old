@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { Link } from 'react-router-dom';
 import {
@@ -35,14 +36,14 @@ class BoardHome extends Component {
 
   handleSprintChange=(value) => {
     BoardStore.setFilter({
-      sprintId: value,
+      sprintIds: value,
     });
     this.handleRefresh();
   }
 
   handleProjectChange=(value) => {
     BoardStore.setFilter({
-      teamProjectId: value,
+      teamProjectIds: value,
     });
     this.handleRefresh();
   }
@@ -86,8 +87,8 @@ class BoardHome extends Component {
     } = BoardStore;
     const {
       onlyDependFeature,
-      sprintId,
-      teamProjectId,
+      sprintIds,
+      teamProjectIds,
       onlyOtherTeamDependFeature,
     } = filter;
     const { 
@@ -114,11 +115,12 @@ class BoardHome extends Component {
         <Header title="项目群公告板">
           <Select
             className="SelectTheme"
-            placeholder="根据冲刺筛选"
-            allowClear
-            style={{ width: 180 }}
+            placeholder="冲刺"           
+            mode="multiple"
+            style={{ maxWidth: 100 }}
             onChange={this.handleSprintChange}
-            value={sprintId}
+            value={toJS(sprintIds)}
+            dropdownMatchSelectWidth={false}
             maxTagCount={0}
             maxTagPlaceholder={this.renderPlaceHolder.bind(this, 'filterSprintList', ['sprintId', 'sprintName'])}
           >
@@ -126,11 +128,12 @@ class BoardHome extends Component {
           </Select>
           <Select
             className="SelectTheme"
-            placeholder="根据团队筛选" 
-            allowClear
-            style={{ width: 120 }}
+            placeholder="团队"  
+            mode="multiple"          
+            style={{ maxWidth: 100 }}
             onChange={this.handleProjectChange}
-            value={teamProjectId}
+            value={toJS(teamProjectIds)}
+            dropdownMatchSelectWidth={false}
             maxTagCount={0}
             maxTagPlaceholder={this.renderPlaceHolder.bind(this, 'filterTeamList', ['teamProjectId', 'name'])}
           >
@@ -140,14 +143,14 @@ class BoardHome extends Component {
             checked={onlyDependFeature}            
             onChange={this.CheckboxChange.bind(this, 'onlyDependFeature')}
           >
-           只看有依赖关系的卡片
+           仅显示依赖关系
           </Checkbox>
-          {teamProjectId && (
+          {teamProjectIds && teamProjectIds.length > 0 && (
           <Checkbox
             checked={onlyOtherTeamDependFeature}            
             onChange={this.CheckboxChange.bind(this, 'onlyOtherTeamDependFeature')}
           >
-           只看和当前团队有依赖关系的卡片
+           显示与当前团队的依赖关系
           </Checkbox>
           )}
           <Button

@@ -13,8 +13,8 @@ class BoardStore {
 
   @observable filter = {
     onlyDependFeature: false,
-    sprintId: undefined,
-    teamProjectId: undefined,
+    sprintIds: [],
+    teamProjectIds: [],
     onlyOtherTeamDependFeature: false,
   };
 
