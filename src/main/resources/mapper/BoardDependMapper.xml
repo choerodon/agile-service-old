@@ -7,7 +7,6 @@
         <id property="boardFeatureId" column="board_feature_id"/>
         <id property="dependBoardFeatureId" column="depend_board_feature_id"/>
         <id property="piId" column="pi_id"/>
-        <id property="teamProjectId" column="team_project_id"/>
         <id property="programId" column="program_id"/>
 
         <id property="objectVersionNumber" column="object_version_number"/>
