@@ -64,16 +64,13 @@ const ProjectCard = ({ team }) => {
   );
 };
 const PIAimsCard = ({
-  aimsCategory, piName, aimsInfo, stretchAimsInfo, teamAimsInfo,
+  aimsCategory, piName, aimsInfo, stretchAimsInfo, teams,
 }) => {
   const totalPlanBv = (aimsCategory === 'program' && aimsInfo && _.reduce(_.map(aimsInfo, 'planBv'), (sum, n) => sum + n, 0)) || '-';
   const totalActualBv = (aimsCategory === 'program' && aimsInfo && stretchAimsInfo && _.reduce(_.map(aimsInfo, 'actualBv'), (sum, n) => sum + n, 0) + _.reduce(_.map(stretchAimsInfo, 'actualBv'), (sum, n) => sum + n, 0)) || '-';
   // eslint-disable-next-line no-nested-ternary
   const percent = Number.isInteger(totalPlanBv) ? (Number.isInteger(totalPlanBv) && Number.isInteger(totalActualBv) ? `${(totalActualBv / totalPlanBv * 100).toFixed(2)}%` : '0%') : '-';
-  const teams = Object.keys(teamAimsInfo).map(name => ({
-    name,
-    piAims: teamAimsInfo[name],
-  }));
+ 
   const groups = [];
   const colomns = 3;
 

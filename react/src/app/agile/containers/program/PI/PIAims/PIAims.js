@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import {
   Button, Icon, Table, Radio, Form, Spin, Modal, Select, Divider,
@@ -14,6 +14,7 @@ import {
 } from '../../../../api/PIApi';
 import { getArtList } from '../../../../api/ArtApi';
 import ProgramAimsTable from './component/ProgramAimsTable';
+import ProjectTable from './component/ProjectTable';
 import PIAimsCard from './component/PIAimsCard';
 import Empty from '../../../../components/Empty';
 import emptyPI from '../../../../assets/image/emptyPI.svg';
@@ -231,7 +232,11 @@ class PIAims extends Component {
       PIList, PIAims, PIAimsLoading, editPIVisible,
     } = PIStore;
     const selectedPI = selectedPIId && PIList.find(item => item.id === selectedPIId);
-
+    const { team = {}, program } = PIAims;
+    const teams = Object.keys(team).map(name => ({
+      name,
+      piAims: team[name],
+    }));
     return (
       <Page
         className="c7n-pi-detail"
@@ -283,7 +288,7 @@ class PIAims extends Component {
                       </div>
                     </div>
                     {
-                      PIAims.program && PIAims.program.length > 0 && (
+                      program && program.length > 0 && (
                         <RadioGroup className="c7n-pi-showTypeRadioGroup" onChange={this.handleRadioChange} defaultValue="list">
                           <RadioButton value="list">列表</RadioButton>
                           <RadioButton value="card">卡片</RadioButton>
@@ -295,12 +300,19 @@ class PIAims extends Component {
                   <div style={{ margin: '0 24px' }}>
                     {
                       showType === 'list' ? (
-                        <ProgramAimsTable
-                          amisColumns={amisColumns}
-                          dataSource={PIAims.program}
-                          onEditPiAims={this.handleEditPiAims}
-                          onDeletePiAims={this.handledeletePiAims}
-                        />
+                        <Fragment>
+                          <ProgramAimsTable
+                            amisColumns={amisColumns}
+                            dataSource={program}
+                            onEditPiAims={this.handleEditPiAims}
+                            onDeletePiAims={this.handledeletePiAims}
+                          />
+                          {teams.length && (
+                            <ProjectTable
+                              dataSource={teams}
+                            />
+                          )}
+                        </Fragment>
                       ) : (
                         <PIAimsCard
                           style={{ margin: '0 24px' }}
@@ -308,7 +320,7 @@ class PIAims extends Component {
                           piName={`${selectedPI.code}-${selectedPI.name}`}
                           aimsInfo={PIAims.program.filter(item => !item.stretch)}
                           stretchAimsInfo={PIAims.program.filter(item => item.stretch)}
-                          teamAimsInfo={PIAims.team}
+                          teams={teams}
                         />
                       )
                     }
