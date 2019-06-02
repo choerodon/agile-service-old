@@ -4,7 +4,7 @@ import {
   find, findIndex, max, remove,
 } from 'lodash';
 import {
-  getBoard, 
+  getBoard,
 } from '../../../api/QueryProgramApi';
 import { getProjectId } from '../../../common/utils';
 
@@ -12,11 +12,21 @@ class BoardStore {
   @observable resizing = false;
 
   @observable filter = {
-    onlyDependFeature: false,
     sprintIds: [],
     teamProjectIds: [getProjectId()],
-    onlyOtherTeamDependFeature: true,
+
   };
+
+  @observable allFilters = [{
+    id: 'onlyDependFeature',
+    name: '仅显示依赖关系',
+  }, {
+    id: 'onlyOtherTeamDependFeature',
+    name: '显示团队相关卡片',
+  }]
+    ;
+
+  @observable selectedFilter = ['onlyOtherTeamDependFeature'];
 
   @observable boardData = null;
 
@@ -54,7 +64,13 @@ class BoardStore {
   @action
   loadData = (programId) => {
     this.loading = true;
-    getBoard(programId, this.filter).then((boardData) => {
+    const Filter = {
+      ...this.filter,
+    };
+    this.allFilters.forEach((filter) => {
+      Filter[filter.id] = this.selectedFilter.includes(filter.id);
+    });
+    getBoard(programId, Filter).then((boardData) => {
       const {
         filterSprintList,
         filterTeamList,
@@ -73,6 +89,10 @@ class BoardStore {
         teamProjects,
       });
     });
+  }
+
+  @action setSelectedFilter = (selectedFilter) => {
+    this.selectedFilter = selectedFilter;
   }
 
   @action setFilter = (filter) => {

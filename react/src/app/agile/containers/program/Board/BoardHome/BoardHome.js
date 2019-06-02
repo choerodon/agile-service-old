@@ -23,7 +23,7 @@ const { Option } = Select;
 @observer
 class BoardHome extends Component {
   componentDidMount() {
-    BoardStore.loadData();
+    this.handleRefresh();
   }
 
   handleRefresh = () => {
@@ -38,24 +38,28 @@ class BoardHome extends Component {
     BoardStore.setFilter({
       sprintIds: value,
     });
-    BoardStore.setSelectedFilter([]);
-    BoardStore.loadData();
+    if (value.length > 0) {
+      BoardStore.setSelectedFilter([]);
+    }    
+    this.handleRefresh();
   }
 
   handleProjectChange = (value) => {
     BoardStore.setFilter({
       teamProjectIds: value,
     });
-    if (value.length === 0) {
+    if (value.length > 0) {
+      const { selectedFilter } = BoardStore;
+      BoardStore.setSelectedFilter(selectedFilter.filter(filter => filter !== 'onlyDependFeature'));
+    } else {
       BoardStore.setSelectedFilter([]);
     }
-
-    BoardStore.loadData();
+    this.handleRefresh();
   }
 
   handleSearchChange = (value) => {
     BoardStore.setSelectedFilter(value);
-    BoardStore.loadData();
+    this.handleRefresh();
   }
 
   renderPlaceHolder = (type, props, ommittedValues) => {
@@ -190,10 +194,12 @@ class BoardHome extends Component {
               {projectOptions}
             </Select>
             {this.isHasFilter() && (
-              <Button onClick={() => {
-                BoardStore.clearFilter();
-                BoardStore.loadData();
-              }}
+              <Button
+                type="primary"
+                onClick={() => {
+                  BoardStore.clearFilter();
+                  this.handleRefresh();
+                }}
               >
                 清空所有筛选
               </Button>
