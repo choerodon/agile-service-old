@@ -12,11 +12,21 @@ class BoardStore {
   @observable resizing = false;
 
   @observable filter = {
-    onlyDependFeature: false,
     sprintIds: [],
     teamProjectIds: [],
-    onlyOtherTeamDependFeature: false,
+
   };
+
+  @observable allFilters = [{
+    id: 'onlyDependFeature',
+    name: '仅显示依赖关系',
+  }, {
+    id: 'onlyOtherTeamDependFeature',
+    name: '显示团队相关卡片',
+  }]
+;
+
+  @observable selectedFilter = [];
 
   @observable boardData = null;
 
@@ -54,7 +64,14 @@ class BoardStore {
   @action
   loadData = () => {
     this.loading = true;
-    getBoard(this.filter).then((boardData) => {
+
+    const Filter = {
+      ...this.filter,
+    };
+    this.allFilters.forEach((filter) => {
+      Filter[filter.id] = this.selectedFilter.includes(filter.id);
+    });
+    getBoard(Filter).then((boardData) => {
       const {
         filterSprintList,
         filterTeamList,
@@ -75,8 +92,20 @@ class BoardStore {
     });
   }
 
+  @action setSelectedFilter=(selectedFilter) => {
+    this.selectedFilter = selectedFilter;
+  }
+
   @action setFilter = (filter) => {
     this.filter = { ...this.filter, ...filter };
+  }
+
+  @action clearFilter=() => {
+    this.filter = {
+      sprintIds: [],
+      teamProjectIds: [],  
+    };
+    this.selectedFilter = [];
   }
 
   @action init = ({

@@ -38,6 +38,7 @@ class BoardHome extends Component {
     BoardStore.setFilter({
       sprintIds: value,
     });
+    BoardStore.setSelectedFilter([]);
     BoardStore.loadData();
   }
 
@@ -45,29 +46,16 @@ class BoardHome extends Component {
     BoardStore.setFilter({
       teamProjectIds: value,
     });
+    if (value.length === 0) {
+      BoardStore.setSelectedFilter([]);
+    }
+
     BoardStore.loadData();
   }
 
-  CheckboxChange = (type, e) => {
-    const { checked } = e.target;
-    switch (type) {
-      case 'onlyDependFeature': {
-        BoardStore.setFilter({
-          onlyDependFeature: checked,
-        });
-        BoardStore.loadData();
-        break;
-      }
-      case 'onlyOtherTeamDependFeature': {
-        BoardStore.setFilter({
-          onlyOtherTeamDependFeature: checked,
-        });
-        BoardStore.loadData();
-        break;
-      }
-      default:
-        break;
-    }
+  handleSearchChange = (value) => {
+    BoardStore.setSelectedFilter(value);
+    BoardStore.loadData();
   }
 
   renderPlaceHolder = (type, props, ommittedValues) => {
@@ -81,9 +69,27 @@ class BoardHome extends Component {
     return values.join(', ');
   }
 
+  renderSearchPlaceHolder = (type, props, ommittedValues) => {
+    const values = [];
+    for (const value of ommittedValues) {
+      const target = find(BoardStore[type], { [props[0]]: value })[props[1]];
+      if (target) {
+        values.push(target);
+      }
+    }
+    return values.join(', ');
+  }
+
+  isHasFilter = () => {
+    const {
+      teamProjectIds, sprintIds, 
+    } = BoardStore.filter;
+    return teamProjectIds.length > 0 || sprintIds.length > 0 || BoardStore.selectedFilter.length > 0;
+  }
+
   render() {
     const {
-      projects, sprints, featureListVisible, activePi, loading, filter, boardData,
+      projects, sprints, featureListVisible, activePi, loading, filter, boardData, selectedFilter,
     } = BoardStore;
     const {
       onlyDependFeature,
@@ -113,46 +119,6 @@ class BoardHome extends Component {
         ]}
       >
         <Header title="项目群公告板">
-          <Select
-            className="SelectTheme"
-            placeholder="冲刺"            
-            mode="multiple"
-            style={{ maxWidth: 100 }}
-            onChange={this.handleSprintChange}
-            value={toJS(sprintIds)}
-            dropdownMatchSelectWidth={false}
-            maxTagCount={0}
-            maxTagPlaceholder={this.renderPlaceHolder.bind(this, 'filterSprintList', ['sprintId', 'sprintName'])}
-          >
-            {sprintOptions}
-          </Select>
-          <Select
-            className="SelectTheme"
-            placeholder="团队"           
-            mode="multiple"
-            style={{ maxWidth: 100 }}
-            onChange={this.handleProjectChange}
-            value={toJS(teamProjectIds)}
-            dropdownMatchSelectWidth={false}
-            maxTagCount={0}
-            maxTagPlaceholder={this.renderPlaceHolder.bind(this, 'filterTeamList', ['teamProjectId', 'name'])}
-          >
-            {projectOptions}
-          </Select>
-          <Checkbox
-            checked={onlyDependFeature}
-            onChange={this.CheckboxChange.bind(this, 'onlyDependFeature')}
-          >
-            仅显示依赖关系
-          </Checkbox>
-          {teamProjectIds && teamProjectIds.length > 0 && (
-            <Checkbox
-              checked={onlyOtherTeamDependFeature}
-              onChange={this.CheckboxChange.bind(this, 'onlyOtherTeamDependFeature')}
-            >
-              显示与当前团队的依赖关系
-            </Checkbox>
-          )}
           <Button
             icon="refresh"
             onClick={this.handleRefresh}
@@ -170,8 +136,69 @@ class BoardHome extends Component {
               特性列表
             </Button>
           )}
+
         </Header>
         <Content style={{ padding: 0 }}>
+          <div style={{
+            display: 'flex',
+            background: 'white',
+            paddingLeft: 24,
+            height: 48,
+            alignItems: 'center',
+            borderBottom: '1px solid rgba(0,0,0,.12)',
+          }}
+          >
+            <Select
+              className="SelectTheme primary"
+              placeholder="快速搜索"
+              mode="multiple"
+              showCheckAll={false}
+              style={{ maxWidth: 100 }}
+              onChange={this.handleSearchChange}
+              value={toJS(selectedFilter)}
+              dropdownMatchSelectWidth={false}
+              maxTagCount={0}
+              maxTagPlaceholder={this.renderSearchPlaceHolder.bind(this, 'allFilters', ['id', 'name'])}
+            >
+              <Option value="onlyDependFeature" disabled={sprintIds.length > 0 || teamProjectIds.length > 0}>仅显示依赖关系</Option>
+              <Option value="onlyOtherTeamDependFeature" disabled={teamProjectIds.length === 0}>显示团队相关卡片</Option>
+            </Select>
+            <Select
+              className="SelectTheme"
+              placeholder="冲刺"
+              mode="multiple"
+              style={{ maxWidth: 100 }}
+              onChange={this.handleSprintChange}
+              value={toJS(sprintIds)}
+              dropdownMatchSelectWidth={false}
+              maxTagCount={0}
+              maxTagPlaceholder={this.renderPlaceHolder.bind(this, 'filterSprintList', ['sprintId', 'sprintName'])}
+            >
+              {sprintOptions}
+            </Select>
+            <Select
+              className="SelectTheme"
+              placeholder="团队"
+              mode="multiple"
+              style={{ maxWidth: 100 }}
+              onChange={this.handleProjectChange}
+              value={toJS(teamProjectIds)}
+              dropdownMatchSelectWidth={false}
+              maxTagCount={0}
+              maxTagPlaceholder={this.renderPlaceHolder.bind(this, 'filterTeamList', ['teamProjectId', 'name'])}
+            >
+              {projectOptions}
+            </Select>
+            {this.isHasFilter() && (
+              <Button onClick={() => {
+                BoardStore.clearFilter();
+                BoardStore.loadData();
+              }}
+              >
+                清空所有筛选
+              </Button>
+            )}
+          </div>
           <Loading loading={loading} />
           {activePi.piId ? (
             <Fragment>
