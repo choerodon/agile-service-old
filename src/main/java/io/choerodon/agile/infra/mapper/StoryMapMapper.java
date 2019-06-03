@@ -17,5 +17,5 @@ public interface StoryMapMapper {
 
     List<StoryMapStoryDO> selectStoryList(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds, @Param("featureIds") List<Long> featureIds);
 
-    List<StoryMapStoryDO> selectDemandStoryList(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds, @Param("featureIds") List<Long> featureIds);
+    List<StoryMapStoryDO> selectDemandStoryList(@Param("projectId") Long projectId);
 }

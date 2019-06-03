@@ -9,7 +9,6 @@ import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.infra.dataobject.EpicWithFeatureDO;
 import io.choerodon.agile.infra.dataobject.FeatureCommonDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
-import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.StoryMapMapper;
 import io.choerodon.agile.infra.repository.IssueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +34,6 @@ public class StoryMapServiceImpl implements StoryMapService {
 
     @Autowired
     private IssueRepository issueRepository;
-
-    @Autowired
-    private IssueMapper issueMapper;
 
     @Autowired
     private StoryMapValidator storyMapValidator;
@@ -71,7 +67,7 @@ public class StoryMapServiceImpl implements StoryMapService {
             featureIds.addAll(featureCommonDOList.stream().map(FeatureCommonDO::getIssueId).collect(Collectors.toList()));
         });
         result.put("storyList", storyMapMapper.selectStoryList(projectId, epicIds, featureIds));
-        result.put("demandStoryList", storyMapMapper.selectDemandStoryList(projectId, epicIds, featureIds));
+        result.put("demandStoryList", storyMapMapper.selectDemandStoryList(projectId));
         return result;
     }
 
