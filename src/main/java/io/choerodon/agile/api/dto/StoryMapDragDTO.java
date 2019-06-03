@@ -20,9 +20,6 @@ public class StoryMapDragDTO {
     @ApiModelProperty(value = "要关联的版本id")
     private Long versionId;
 
-    @ApiModelProperty(value = "要移动的问题id列表")
-    private List<Long> issueIds;
-
     @ApiModelProperty(value = "问题id列表，移动到史诗，配合epicId使用")
     private List<Long> epicIssueIds;
 
@@ -54,14 +51,6 @@ public class StoryMapDragDTO {
 
     public void setVersionId(Long versionId) {
         this.versionId = versionId;
-    }
-
-    public List<Long> getIssueIds() {
-        return issueIds;
-    }
-
-    public void setIssueIds(List<Long> issueIds) {
-        this.issueIds = issueIds;
     }
 
     public List<Long> getEpicIssueIds() {
