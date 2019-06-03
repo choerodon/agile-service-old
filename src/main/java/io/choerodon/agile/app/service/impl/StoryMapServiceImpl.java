@@ -14,9 +14,7 @@ import io.choerodon.agile.infra.repository.IssueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,8 +36,23 @@ public class StoryMapServiceImpl implements StoryMapService {
     @Autowired
     private StoryMapValidator storyMapValidator;
 
+    private List<FeatureCommonDO> setFeatureWithoutEpicByProgram(Long programId, Long projectId) {
+        List<FeatureCommonDO> result = new ArrayList<>();
+        List<FeatureCommonDO> programFeatureList = storyMapMapper.selectFeatureByNoEpicByProgram(programId);
+        List<FeatureCommonDO> projectFeatureList = storyMapMapper.selectFeatureByNoEpicByProject(projectId);
+        if (programFeatureList != null && !programFeatureList.isEmpty()) {
+            result.addAll(programFeatureList);
+        }
+        if (programFeatureList != null && !projectFeatureList.isEmpty()) {
+            result.addAll(projectFeatureList);
+        }
+        Collections.sort(result, Comparator.comparing(FeatureCommonDO::getIssueId));
+        return result;
+    }
+
     @Override
     public JSONObject queryStoryMap(Long projectId, Long organizationId) {
+        JSONObject result = new JSONObject(true);
         List<Long> epicIds = new ArrayList<>();
         // get program epic
         ProjectDTO program = userFeignClient.getGroupInfoByEnableProject(organizationId, projectId).getBody();
@@ -55,12 +68,14 @@ public class StoryMapServiceImpl implements StoryMapService {
             epicIds.addAll(projectEpicIds);
         }
 
-        JSONObject result = new JSONObject(true);
-        if (epicIds.isEmpty()) {
-            return result;
-        }
         List<EpicWithFeatureDO> epicWithFeatureDOList = storyMapMapper.selectEpicWithFeatureList(epicIds);
         result.put("epicWithFeature", epicWithFeatureDOList);
+        if (program != null) {
+            result.put("featureWithoutEpic", setFeatureWithoutEpicByProgram(program.getId(), projectId));
+        } else {
+            result.put("featureWithoutEpic", storyMapMapper.selectFeatureByNoEpicByProject(projectId));
+        }
+
         List<Long> featureIds = new ArrayList<>();
         epicWithFeatureDOList.forEach(epicWithFeatureDO -> {
             List<FeatureCommonDO> featureCommonDOList = epicWithFeatureDO.getFeatureCommonDOList();

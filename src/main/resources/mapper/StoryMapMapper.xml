@@ -65,10 +65,42 @@
         </foreach>
     </select>
 
+    <select id="selectFeatureByNoEpicByProject" resultType="io.choerodon.agile.infra.dataobject.FeatureCommonDO">
+        select
+          ai.issue_id,
+          IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) as issue_num,
+          ai.type_code,
+          ai.summary,
+          af.feature_type
+        from agile_issue ai, agile_project_info api, agile_feature af
+        where ai.type_code = 'feature'
+        and ai.project_id = api.project_id
+        and ai.project_id = #{projectId}
+        and (ai.epic_id is null or ai.epic_id = 0)
+        and ai.issue_id = af.issue_id
+    </select>
+
+    <select id="selectFeatureByNoEpicByProgram" resultType="io.choerodon.agile.infra.dataobject.FeatureCommonDO">
+        select
+          ai.issue_id,
+          IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) as issue_num,
+          ai.type_code,
+          ai.summary,
+          af.feature_type
+        from agile_issue ai, agile_project_info api, agile_feature af
+        where ai.type_code = 'feature'
+        and ai.program_id = api.project_id
+        and ai.program_id = #{programId}
+        and (ai.epic_id is null or ai.epic_id = 0)
+        and ai.issue_id = af.issue_id
+    </select>
+
     <resultMap id="storyListMap" type="io.choerodon.agile.infra.dataobject.StoryMapStoryDO">
         <id column="ai_issue_id" property="issueId"/>
         <id column="ai_issue_num" property="issueNum"/>
         <id column="ai_summary" property="summary"/>
+        <id column="ai_epic_id" property="epicId"/>
+        <id column="ai_feature_id" property="featureId"/>
         <collection property="storyMapVersionDOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.StoryMapVersionDO">
             <id property="versionId" column="version_version_id"/>
             <id property="name" column="version_name"/>
@@ -80,6 +112,8 @@
         ai.issue_id as ai_issue_id,
         IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) as ai_issue_num,
         ai.summary as ai_summary,
+        ai.epic_id as ai_epic_id,
+        ai.feature_id as ai_feature_id,
         version_info.version_id as version_version_id,
         version_info.name as version_name
         from agile_issue ai
