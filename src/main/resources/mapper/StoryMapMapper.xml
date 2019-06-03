@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.choerodon.agile.infra.mapper.StoryMapMapper">
+
+    <select id="selectEpicIdsByProgram" resultType="java.lang.Long">
+        select ai.issue_id
+        from agile_issue ai
+        where ai.program_id = #{programId}
+        and ai.type_code = 'issue_epic'
+    </select>
+
+    <select id="selectEpicIdsByProject" resultType="java.lang.Long">
+        select ai.issue_id
+        from agile_issue ai
+        where ai.project_id = #{projectId}
+        and ai.type_code = 'issue_epic'
+    </select>
+
+    <resultMap id="epicWithFeatureListMap" type="io.choerodon.agile.infra.dataobject.EpicWithFeatureDO">
+        <id column="ai_issue_id" property="issueId"/>
+        <id column="ai_issue_num" property="issueNum"/>
+        <id column="ai_type_code" property="typeCode"/>
+        <id column="ai_summary" property="summary"/>
+        <collection property="featureCommonDOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.FeatureCommonDO">
+            <id property="issueId" column="feature_issue_id"/>
+            <id property="issueNum" column="feature_issue_num"/>
+            <id property="typeCode" column="feature_type_code"/>
+            <id property="summary" column="feature_summary"/>
+            <id property="featureType" column="feature_feature_type"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectEpicWithFeatureList" resultMap="epicWithFeatureListMap">
+        select
+            ai.issue_id as ai_issue_id,
+            IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) as ai_issue_num,
+            ai.type_code as ai_type_code,
+            ai.summary as ai_summary,
+            feature_info.issue_id as feature_issue_id,
+            feature_info.issue_num as feature_issue_num,
+            feature_info.type_code as feature_type_code,
+            feature_info.summary as feature_summary,
+            feature_info.feature_type as feature_feature_type
+        from agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        left join
+            (select
+              ai2.issue_id,
+              IF(ai2.issue_num IS NULL, NULL, CONCAT_WS('-', api2.project_code, ai2.issue_num)) as issue_num,
+              ai2.type_code,
+              ai2.summary,
+              ai2.epic_id,
+              af.feature_type
+             from agile_issue ai2, agile_feature af, agile_project_info api2
+             where ai2.type_code in ('feature') and ai2.issue_id = af.issue_id and ai2.project_id = api2.project_id and ai2.epic_id in
+             <foreach collection="epicIds" item="epicId" open="(" separator=","
+                     close=")">
+                #{epicId}
+             </foreach>
+            ) feature_info on feature_info.epic_id = ai.issue_id
+        where ai.issue_id in
+        <foreach collection="epicIds" item="epicId" open="(" separator=","
+                 close=")">
+            #{epicId}
+        </foreach>
+    </select>
+
+    <resultMap id="storyListMap" type="io.choerodon.agile.infra.dataobject.StoryMapStoryDO">
+        <id column="ai_issue_id" property="issueId"/>
+        <id column="ai_issue_num" property="issueNum"/>
+        <id column="ai_summary" property="summary"/>
+        <collection property="storyMapVersionDOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.StoryMapVersionDO">
+            <id property="versionId" column="version_version_id"/>
+            <id property="name" column="version_name"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectStoryList" resultMap="storyListMap">
+        select
+        ai.issue_id as ai_issue_id,
+        IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) as ai_issue_num,
+        ai.summary as ai_summary,
+        version_info.version_id as version_version_id,
+        version_info.name as version_name
+        from agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        left join (
+            select avir.issue_id, apv.version_id, apv.name
+            from agile_version_issue_rel avir, agile_product_version apv
+            where avir.version_id = apv.version_id and avir.project_id = #{projectId}
+        ) version_info on ai.issue_id = version_info.issue_id
+        where ai.project_id = #{projectId} and ai.type_code = 'story'
+        and (
+        ai.epic_id in
+           <foreach collection="epicIds" item="epicId" open="(" separator=","
+                     close=")">
+              #{epicId}
+           </foreach>
+           OR
+           ai.feature_id in
+           <foreach collection="featureIds" item="featureId" open="(" separator=","
+                 close=")">
+              #{featureId}
+           </foreach>
+        )
+        order by ai.issue_id
+    </select>
+
+    <select id="selectDemandStoryList" resultMap="storyListMap">
+        select
+        ai.issue_id as ai_issue_id,
+        IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) as ai_issue_num,
+        ai.summary as ai_summary,
+        version_info.version_id as version_version_id,
+        version_info.name as version_name
+        from agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        left join (
+            select avir.issue_id, apv.version_id, apv.name
+            from agile_version_issue_rel avir, agile_product_version apv
+            where avir.version_id = apv.version_id and avir.project_id = #{projectId}
+        ) version_info on ai.issue_id = version_info.issue_id
+        where ai.project_id = #{projectId} and ai.type_code = 'story'
+        and (ai.epic_id is null or ai.epic_id = 0)
+        and (ai.feature_id is null or ai.feature_id = 0)
+        order by ai.issue_id
+    </select>
+
+</mapper>
