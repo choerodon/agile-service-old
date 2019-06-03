@@ -53,6 +53,16 @@
         LEFT JOIN agile_board_feature bf2 ON bf2.id = bd.depend_board_feature_id
         WHERE bd.program_id = #{programId}
         AND bd.pi_id = #{piId}
+        AND bf1.team_project_id IN
+        <foreach collection="teanProjectIds" item="teanProjectId" open="("
+                 separator="," close=")">
+            #{teanProjectId}
+        </foreach>
+        AND bf2.team_project_id IN
+        <foreach collection="teanProjectIds" item="teanProjectId" open="("
+                 separator="," close=")">
+            #{teanProjectId}
+        </foreach>
     </select>
 
     <delete id="deleteByBoardFeatureId">
