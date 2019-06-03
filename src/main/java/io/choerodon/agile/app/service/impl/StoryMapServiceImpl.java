@@ -3,14 +3,17 @@ package io.choerodon.agile.app.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.ProjectDTO;
 import io.choerodon.agile.api.dto.StoryMapDragDTO;
+import io.choerodon.agile.api.dto.VersionIssueRelDTO;
 import io.choerodon.agile.api.validator.StoryMapValidator;
 import io.choerodon.agile.app.service.StoryMapService;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.infra.dataobject.EpicWithFeatureDO;
 import io.choerodon.agile.infra.dataobject.FeatureCommonDO;
+import io.choerodon.agile.infra.dataobject.VersionIssueRelDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.StoryMapMapper;
 import io.choerodon.agile.infra.repository.IssueRepository;
+import io.choerodon.agile.infra.repository.VersionIssueRelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +38,9 @@ public class StoryMapServiceImpl implements StoryMapService {
 
     @Autowired
     private StoryMapValidator storyMapValidator;
+
+    @Autowired
+    private VersionIssueRelRepository versionIssueRelRepository;
 
     private List<FeatureCommonDO> setFeatureWithoutEpicByProgram(Long programId, Long projectId) {
         List<FeatureCommonDO> result = new ArrayList<>();
@@ -105,18 +111,26 @@ public class StoryMapServiceImpl implements StoryMapService {
     }
 
     private void dragToVersion(Long projectId, Long versionId, StoryMapDragDTO storyMapDragDTO) {
+        List<VersionIssueRelDTO> versionIssueRelDTOList = storyMapDragDTO.getVersionIssueRelDTOList();
+        if (versionIssueRelDTOList != null && !versionIssueRelDTOList.isEmpty()) {
+            for (VersionIssueRelDTO versionIssueRelDTO : versionIssueRelDTOList) {
+                VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
+                versionIssueRelDO.setIssueId(versionIssueRelDTO.getIssueId());
+                versionIssueRelDO.setVersionId(versionIssueRelDTO.getVersionId());
+                versionIssueRelDO.setRelationType("fix");
+                versionIssueRelDO.setProjectId(projectId);
+                versionIssueRelRepository.delete(versionIssueRelDO);
+            }
+        }
         storyMapValidator.checkVersionExist(versionId);
         List<Long> issueIds = storyMapDragDTO.getVersionIssueIds();
         if (issueIds == null || issueIds.isEmpty()) {
             return;
         }
         if (!Objects.equals(versionId, 0L)) {
-            issueRepository.batchRemoveVersion(projectId, issueIds);
             VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
             versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
             issueRepository.batchIssueToVersion(versionIssueRelE);
-        } else {
-            issueRepository.batchRemoveVersion(projectId, issueIds);
         }
     }
 

@@ -29,6 +29,8 @@ public class StoryMapDragDTO {
     @ApiModelProperty(value = "问题id列表，移动到版本，配合versionId使用")
     private List<Long> versionIssueIds;
 
+    private List<VersionIssueRelDTO> versionIssueRelDTOList;
+
     public Long getEpicId() {
         return epicId;
     }
@@ -75,5 +77,13 @@ public class StoryMapDragDTO {
 
     public void setVersionIssueIds(List<Long> versionIssueIds) {
         this.versionIssueIds = versionIssueIds;
+    }
+
+    public void setVersionIssueRelDTOList(List<VersionIssueRelDTO> versionIssueRelDTOList) {
+        this.versionIssueRelDTOList = versionIssueRelDTOList;
+    }
+
+    public List<VersionIssueRelDTO> getVersionIssueRelDTOList() {
+        return versionIssueRelDTOList;
     }
 }
