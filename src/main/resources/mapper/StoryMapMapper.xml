@@ -91,17 +91,19 @@
         ) version_info on ai.issue_id = version_info.issue_id
         where ai.project_id = #{projectId} and ai.type_code = 'story'
         and (
-        ai.epic_id in
+           ai.epic_id in
            <foreach collection="epicIds" item="epicId" open="(" separator=","
                      close=")">
               #{epicId}
            </foreach>
-           OR
-           ai.feature_id in
-           <foreach collection="featureIds" item="featureId" open="(" separator=","
-                 close=")">
-              #{featureId}
-           </foreach>
+           <if test="featureIds != null and featureIds.size > 0">
+               OR
+               ai.feature_id in
+               <foreach collection="featureIds" item="featureId" open="(" separator=","
+                        close=")">
+                   #{featureId}
+               </foreach>
+           </if>
         )
         order by ai.issue_id
     </select>
