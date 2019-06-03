@@ -2,7 +2,6 @@ package io.choerodon.agile.app.service;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.StoryMapDragDTO;
-import io.choerodon.agile.api.dto.StoryMapMoveDTO;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/5/31.

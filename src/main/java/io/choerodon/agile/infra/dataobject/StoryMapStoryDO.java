@@ -10,6 +10,10 @@ public class StoryMapStoryDO {
 
     private String summary;
 
+    private Long epicId;
+
+    private Long featureId;
+
     private List<StoryMapVersionDO> storyMapVersionDOList;
 
     public Long getIssueId() {
@@ -34,6 +38,22 @@ public class StoryMapStoryDO {
 
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    public Long getEpicId() {
+        return epicId;
+    }
+
+    public void setEpicId(Long epicId) {
+        this.epicId = epicId;
+    }
+
+    public Long getFeatureId() {
+        return featureId;
+    }
+
+    public void setFeatureId(Long featureId) {
+        this.featureId = featureId;
     }
 
     public void setStoryMapVersionDOList(List<StoryMapVersionDO> storyMapVersionDOList) {
