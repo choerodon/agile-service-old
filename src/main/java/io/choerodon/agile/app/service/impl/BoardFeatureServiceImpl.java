@@ -198,8 +198,8 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
             filterTeamList.add(teamProjectDTO);
         }
         programBoardInfo.setFilterTeamList(filterTeamList);
-        //获取依赖关系
-        List<BoardDependInfoDTO> boardDependInfos = boardDependMapper.queryInfoByPiId(programId, piId);
+        //获取依赖关系，只获取有效团队的依赖关系
+        List<BoardDependInfoDTO> boardDependInfos = boardDependMapper.queryInfoByPiId(programId, piId, projectRelationships.stream().map(ProjectRelationshipDTO::getProjectId).collect(Collectors.toList()));
         //获取公告板特性信息
         List<BoardFeatureInfoDTO> boardFeatureInfos = boardFeatureMapper.queryInfoByPiId(programId, piId).stream().filter(x -> x.getIssueTypeId() != null).collect(Collectors.toList());
 
