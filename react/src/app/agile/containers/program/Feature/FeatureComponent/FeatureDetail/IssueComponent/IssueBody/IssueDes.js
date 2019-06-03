@@ -81,6 +81,7 @@ import { updateIssue } from '../../../../../../../api/NewIssueApi';
           }}
           >
             <WYSIWYGEditor
+              autoFocus
               bottomBar
               value={text2Delta(editDes)}
               style={{ height: '100%', width: '100%' }}

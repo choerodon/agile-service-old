@@ -159,6 +159,7 @@ class Comment extends Component {
               {
                 comment.commentId === editCommentId ? (
                   <WYSIWYGEditor
+                    autoFocus
                     bottomBar
                     value={deltaEdit}
                     style={{ height: 200, width: '100%' }}

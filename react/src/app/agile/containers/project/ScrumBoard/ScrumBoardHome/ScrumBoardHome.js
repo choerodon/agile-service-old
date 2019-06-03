@@ -530,7 +530,7 @@ class ScrumBoardHome extends Component {
                     validator: this.checkBoardNameRepeat,
                   }],
                 })(
-                  <Input
+                  <Input                   
                     style={{
                       width: 512,
                     }}

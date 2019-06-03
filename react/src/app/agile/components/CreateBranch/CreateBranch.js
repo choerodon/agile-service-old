@@ -41,6 +41,12 @@ class CreateBranch extends Component {
     };
   }
 
+  componentDidMount() {   
+    setTimeout(() => {
+      this.Select.focus();
+    });
+  }
+
   handleOk = (e) => {
     e.preventDefault();
     const { form, issueId, onOk } = this.props;
@@ -137,6 +143,8 @@ class CreateBranch extends Component {
                 rules: [{ required: true, message: '请选择应用' }],
               })(
                 <Select
+                  ref={(select) => { this.Select = select; }}
+                  defaultOpen
                   label="应用名称"
                   allowClear
                   onFocus={this.onApplicationNameChange}
@@ -161,7 +169,7 @@ class CreateBranch extends Component {
               {getFieldDecorator('branch', {
                 rules: [{ required: true, message: '请选择分支来源' }],
               })(
-                <Select
+                <Select                  
                   label="分支来源"
                   allowClear
                   disabled={!form.getFieldValue('app')}

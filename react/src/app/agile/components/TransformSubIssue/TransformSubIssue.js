@@ -44,6 +44,10 @@ class TransformSubIssue extends Component {
 
   componentDidMount() {
     this.getStatus();
+    this.onFilterChange('');
+    setTimeout(() => {
+      this.Select.focus();
+    });
   }
 
   onFilterChange(input) {
@@ -168,6 +172,8 @@ class TransformSubIssue extends Component {
                 rules: [{ required: true, message: '请选择父任务' }],
               })(
                 <Select
+                  ref={(select) => { this.Select = select; }}
+                  defaultOpen
                   label="父任务"
                   loading={selectLoading}
                   filter

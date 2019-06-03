@@ -185,6 +185,7 @@ class Log extends Component {
               {
                 worklog.logId === editLogId ? (
                   <WYSIWYGEditor
+                    autoFocus
                     bottomBar
                     value={deltaEdit}
                     style={{ height: 200, width: '100%' }}

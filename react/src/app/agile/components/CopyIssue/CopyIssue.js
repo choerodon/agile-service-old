@@ -18,6 +18,12 @@ class CopyIssue extends Component {
     };
   }
 
+  componentDidMount() {
+    setTimeout(() => {
+      this.textInput.focus();
+    });
+  }
+  
   handleCopyIssue = () => {
     const { applyType = 'agile' } = this.props;
     this.props.form.validateFields((err, values) => {
@@ -74,6 +80,7 @@ class CopyIssue extends Component {
               initialValue: issueSummary,
             })(
               <Input
+                ref={(input) => { this.textInput = input; }}
                 label="概要"
                 prefix="CLONE - "
                 maxLength={44}

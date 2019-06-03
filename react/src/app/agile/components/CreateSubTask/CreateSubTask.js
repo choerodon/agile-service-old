@@ -588,7 +588,7 @@ class CreateSubIssue extends Component {
             {getFieldDecorator('summary', {
               rules: [{ required: true, message: '子任务概要为必输项' }],
             })(
-              <Input label="子任务概要" maxLength={44} />,
+              <Input autoFocus label="子任务概要" maxLength={44} />,
             )}
           </FormItem>
         );

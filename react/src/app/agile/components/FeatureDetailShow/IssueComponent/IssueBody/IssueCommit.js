@@ -64,6 +64,7 @@ import { createCommit } from '../../../../api/NewIssueApi';
           addCommit && (
             <div className="line-start mt-10" style={{ width: '100%' }}>
               <WYSIWYGEditor
+                autoFocus
                 bottomBar
                 value={delta}
                 style={{ height: 200, width: '100%' }}

@@ -43,6 +43,12 @@ class DailyLog extends Component {
     };
   }
 
+  componentDidMount() {
+    setTimeout(() => {
+      this.Select.focus();
+    });
+  }
+  
   onRadioChange = (e) => {
     this.setState({ radio: e.target.value });
   }
@@ -276,11 +282,13 @@ class DailyLog extends Component {
           </p>
           <section className="info">
             <div className="line-info">
-              <Select
+              <Select                
+                defaultOpen
                 label="耗费时间*"
                 value={dissipate && dissipate.toString()}
                 mode="combobox"
                 ref={(e) => {
+                  this.Select = e;
                   this.componentRef = e;
                 }}
                 onPopupFocus={(e) => {
@@ -422,7 +430,7 @@ class DailyLog extends Component {
               {
                 !edit && (
                   <div className="clear-p-mw">
-                    <WYSIWYGEditor
+                    <WYSIWYGEditor                      
                       value={delta}
                       style={{ height: 200, width: '100%' }}
                       onChange={(value) => {

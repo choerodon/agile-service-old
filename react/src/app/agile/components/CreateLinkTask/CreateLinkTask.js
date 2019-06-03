@@ -40,6 +40,9 @@ class CreateLinkTask extends Component {
 
   componentDidMount() {
     this.getLinks();
+    setTimeout(() => {
+      this.Select.focus();
+    });
   }
 
   onFilterChange(input) {
@@ -167,6 +170,8 @@ class CreateLinkTask extends Component {
                 ],
               })(
                 <Select
+                  ref={(select) => { this.Select = select; }}
+                  defaultOpen
                   label="关系"
                   loading={selectLoading}
                 >
@@ -214,14 +219,14 @@ class CreateLinkTask extends Component {
                             />
                           </div>
                           <div style={{
-                            paddingLeft: 12, paddingRight: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', 
+                            paddingLeft: 12, paddingRight: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           }}
                           >
                             {issue.issueNum}
                           </div>
                           <div style={{ overflow: 'hidden', flex: 1 }}>
                             <p style={{
-                              paddingRight: '25px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 0, maxWidth: 'unset', 
+                              paddingRight: '25px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 0, maxWidth: 'unset',
                             }}
                             >
                               {issue.summary}

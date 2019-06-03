@@ -54,6 +54,7 @@ const propTypes = {
   handleDelete: PropTypes.func,
   handleSave: PropTypes.func,
   saveRef: PropTypes.func,
+  autoFocus: PropTypes.bool,
 };
 class WYSIWYGEditor extends Component {
   constructor(props) {
@@ -71,6 +72,23 @@ class WYSIWYGEditor extends Component {
       };
     }
     return null;
+  }
+
+  componentDidMount() {
+    const { autoFocus } = this.props;
+    if (autoFocus && this.editor) {
+      setTimeout(() => {
+        this.editor.focus();
+      });
+    }
+  }
+  
+  saveRef = name => (ref) => {
+    this[name] = ref;
+    const { saveRef } = this.props;
+    if (saveRef) {
+      saveRef(ref);
+    }
   }
 
   isHasImg = (delta) => {
@@ -112,17 +130,16 @@ class WYSIWYGEditor extends Component {
       style,
       bottomBar,
       handleDelete,
-      handleSave,
-      saveRef,
+      handleSave,  
     } = this.props;
     const { loading, value } = this.state;
     const newStyle = { ...defaultStyle, ...style };
     const editHeight = newStyle.height === '100%' ? `calc(100% - ${toolbarHeight || '42px'})` : (newStyle.height - (toolbarHeight || 42));
     return (
       <div style={{ width: '100%', height: '100%' }}>
-        <div style={newStyle} className="react-quill-editor" ref={(container) => { this.container = container; }}>
+        <div style={newStyle} className="react-quill-editor">
           <ReactQuill
-            ref={saveRef}
+            ref={this.saveRef('editor')}
             theme="snow"
             modules={modules}
             formats={formats}
