@@ -7,9 +7,10 @@ import FeatureCard from './FeatureCard';
 @observer
 class FeatureColumn extends Component {
   render() {
-    const { feature } = this.props;
+    const { feature, otherData } = this.props;
+    const { width } = otherData || {};
     return (
-      <Column>
+      <Column width={width}>
         <FeatureCard feature={feature} />      
       </Column>
     );

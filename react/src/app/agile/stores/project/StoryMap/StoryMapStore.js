@@ -1,11 +1,14 @@
 
 import { observable, action, computed } from 'mobx';
 import {
-  find, findIndex, max, remove, groupBy, 
+  find, findIndex, max, remove, groupBy,
 } from 'lodash';
 import { getStoryMap } from '../../../api/StoryMapApi';
+import { loadIssueTypes } from '../../../api/NewIssueApi';
 
 class StoryMapStore {
+  @observable issueTypes = [];
+
   @observable resizing = false;
 
   @observable storyMapData = {};
@@ -16,7 +19,8 @@ class StoryMapStore {
 
   getStoryMap = () => {
     this.setLoading(true);
-    getStoryMap().then((storyMapData) => {
+    Promise.all([getStoryMap(), loadIssueTypes()]).then(([storyMapData, issueTypes]) => {
+      this.issueTypes = issueTypes;
       this.setStoryMapData(storyMapData);
       this.initStoryData(storyMapData);
       this.setLoading(false);
@@ -46,6 +50,7 @@ class StoryMapStore {
         if (!targetFeature[feature.issueId]) {
           targetFeature[feature.issueId] = {
             storys: [],
+            // width: 2,
           };
         }
       });
@@ -55,7 +60,7 @@ class StoryMapStore {
       if (epicId && storyData[epicId]) {
         const targetEpic = storyData[epicId];
         const { feature, storys } = targetEpic;
-        storys.push(story); 
+        storys.push(story);
         const targetFeature = feature[featureId];
         if (targetFeature) {
           targetFeature.storys.push(story);
@@ -68,6 +73,28 @@ class StoryMapStore {
 
   @action collapse(epicId) {
     this.storyData[epicId].collapse = !this.storyData[epicId].collapse;
+  }
+
+  @action addEpic(epicData) {
+    const epic = {
+      adding: true,
+    };
+    // 删掉之前正在创建的
+    remove(this.storyMapData.epicWithFeature, { adding: true });
+    const currentIndex = findIndex(this.storyMapData.epicWithFeature, { issueId: epicData.issueId });
+    // console.log(currentIndex);
+    this.storyMapData.epicWithFeature.splice(currentIndex + 1, 0, epic);
+  }
+
+  @action addFeature(epicData) {
+    const feature = {
+      adding: true,
+    };
+    // 删掉之前正在创建的
+    remove(this.storyMapData.epicWithFeature, { adding: true });
+    const currentIndex = findIndex(this.storyMapData.epicWithFeature, { issueId: epicData.issueId });
+    // console.log(currentIndex);
+    this.storyMapData.epicWithFeature[currentIndex].featureCommonDOList.push(feature);
   }
 }
 

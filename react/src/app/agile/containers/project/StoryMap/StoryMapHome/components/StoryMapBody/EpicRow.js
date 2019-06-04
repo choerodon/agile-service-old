@@ -12,7 +12,7 @@ class EpicRow extends Component {
 
     return (
       <tr>
-        {epicWithFeature ? epicWithFeature.map(epicData => <EpicCell epicData={epicData} otherData={storyData[epicData.issueId]} />) : null}
+        {epicWithFeature ? epicWithFeature.map((epicData, index) => <EpicCell index={index} epicData={epicData} otherData={storyData[epicData.issueId]} />) : null}
       </tr>
     );
   }
