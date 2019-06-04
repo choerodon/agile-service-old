@@ -602,13 +602,23 @@ public class IssueServiceImpl implements IssueService {
                 issueE.setOriginSprintId(originIssue.getSprintId());
             }
         }
-//        if (fieldList.contains("featureId")) {
-//            IssueDO featureUpdate = issueMapper.selectByPrimaryKey(issueE.getFeatureId());
-//            if (featureUpdate != null && !((issueE.getEpicId() == null || issueE.getEpicId() == 0) && (featureUpdate.getEpicId() == null || featureUpdate.getEpicId() == 0)) && !Objects.equals(issueE.getEpicId(), featureUpdate.getEpicId())) {
-//                fieldList.add("epicId");
-//                issueE.setEpicId(featureUpdate.getEpicId());
-//            }
-//        }
+        if (STORY_TYPE.equals(originIssue.getTypeCode()) && fieldList.contains("featureId")) {
+            if (Objects.equals(issueUpdateDTO.getFeatureId(), 0L) && !Objects.equals(originIssue.getEpicId(), 0L)) {
+                issueE.setEpicId(0L);
+                fieldList.add("epicId");
+            } else if (!Objects.equals(issueUpdateDTO.getFeatureId(), 0L)) {
+                IssueDO featureUpdate = issueMapper.selectByPrimaryKey(issueUpdateDTO.getFeatureId());
+                issueE.setEpicId(featureUpdate.getEpicId() == null ? 0L : featureUpdate.getEpicId());
+                fieldList.add("epicId");
+            }
+        }
+        if ("feature".equals(originIssue.getTypeCode()) && fieldList.contains("epicId")) {
+            if (Objects.equals(issueUpdateDTO.getEpicId(), 0L) && !Objects.equals(originIssue.getEpicId(), 0L)) {
+                issueMapper.updateEpicIdOfStoryByFeature(issueUpdateDTO.getIssueId(), issueUpdateDTO.getEpicId());
+            } else if (!Objects.equals(issueUpdateDTO.getEpicId(), 0L)) {
+                issueMapper.updateEpicIdOfStoryByFeature(issueUpdateDTO.getIssueId(), issueUpdateDTO.getEpicId());
+            }
+        }
         issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
         if (issueUpdateDTO.getFeatureDTO() != null && issueUpdateDTO.getFeatureDTO().getIssueId() != null) {
             FeatureDTO featureDTO = issueUpdateDTO.getFeatureDTO();
@@ -875,7 +885,9 @@ public class IssueServiceImpl implements IssueService {
         issueRule.checkBatchStoryToFeature(featureId);
         List<Long> filterIds = issueMapper.filterStoryIds(projectId, issueIds);
         if (filterIds != null && !filterIds.isEmpty()) {
-            issueRepository.batchStoryToFeature(projectId, featureId, filterIds);
+            IssueDO feature = issueMapper.selectByPrimaryKey(featureId);
+            Long updateEpicId = (feature.getEpicId() == null ? 0L : feature.getEpicId());
+            issueRepository.batchStoryToFeature(projectId, featureId, filterIds, updateEpicId);
         }
     }
 

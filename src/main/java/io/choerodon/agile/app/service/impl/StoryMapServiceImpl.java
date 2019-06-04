@@ -4,16 +4,22 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.ProjectDTO;
 import io.choerodon.agile.api.dto.StoryMapDragDTO;
 import io.choerodon.agile.api.dto.VersionIssueRelDTO;
+import io.choerodon.agile.api.dto.StoryMapWidthDTO;
 import io.choerodon.agile.api.validator.StoryMapValidator;
 import io.choerodon.agile.app.service.StoryMapService;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.infra.dataobject.EpicWithFeatureDO;
 import io.choerodon.agile.infra.dataobject.FeatureCommonDO;
 import io.choerodon.agile.infra.dataobject.VersionIssueRelDO;
+import io.choerodon.agile.infra.dataobject.IssueDO;
+import io.choerodon.agile.infra.dataobject.StoryMapWidthDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
+import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.StoryMapMapper;
+import io.choerodon.agile.infra.mapper.StoryMapWidthMapper;
 import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.infra.repository.VersionIssueRelRepository;
+import io.choerodon.core.convertor.ConvertHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +48,13 @@ public class StoryMapServiceImpl implements StoryMapService {
     @Autowired
     private VersionIssueRelRepository versionIssueRelRepository;
 
+    @Autowired
+    private StoryMapWidthMapper storyMapWidthMapper;
+
+    @Autowired
+    private IssueMapper issueMapper;
+
+
     private List<FeatureCommonDO> setFeatureWithoutEpicByProgram(Long programId, Long projectId) {
         List<FeatureCommonDO> result = new ArrayList<>();
         List<FeatureCommonDO> programFeatureList = storyMapMapper.selectFeatureByNoEpicByProgram(programId);
@@ -54,6 +67,15 @@ public class StoryMapServiceImpl implements StoryMapService {
         }
         Collections.sort(result, Comparator.comparing(FeatureCommonDO::getIssueId));
         return result;
+    }
+
+    private List<StoryMapWidthDTO> setStoryMapWidth(Long projectId) {
+        List<StoryMapWidthDO> storyMapWidthDOList = storyMapWidthMapper.selectByProjectId(projectId);
+        if (storyMapWidthDOList != null && !storyMapWidthDOList.isEmpty()) {
+            return ConvertHelper.convertList(storyMapWidthDOList, StoryMapWidthDTO.class);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     @Override
@@ -89,6 +111,7 @@ public class StoryMapServiceImpl implements StoryMapService {
         });
         result.put("storyList", storyMapMapper.selectStoryList(projectId, epicIds, featureIds));
         result.put("demandStoryList", storyMapMapper.selectDemandStoryList(projectId));
+        result.put("storyMapWidth", setStoryMapWidth(projectId));
         return result;
     }
 
@@ -106,7 +129,9 @@ public class StoryMapServiceImpl implements StoryMapService {
         storyMapValidator.checkFeatureExist(featureId);
         List<Long> issueIds = storyMapDragDTO.getFeatureIssueIds();
         if (issueIds != null && !issueIds.isEmpty()) {
-            issueRepository.batchStoryToFeature(projectId, featureId, issueIds);
+            IssueDO feature = issueMapper.selectByPrimaryKey(featureId);
+            Long updateEpicId = (feature.getEpicId() == null ? 0L : feature.getEpicId());
+            issueRepository.batchStoryToFeature(projectId, featureId, issueIds, updateEpicId);
         }
     }
 

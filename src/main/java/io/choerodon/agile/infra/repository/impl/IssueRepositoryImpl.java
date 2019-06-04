@@ -103,8 +103,8 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public Boolean batchStoryToFeature(Long projectId, Long featureId, List<Long> issueIds) {
-        issueMapper.batchStoryToFeature(projectId, featureId, issueIds);
+    public Boolean batchStoryToFeature(Long projectId, Long featureId, List<Long> issueIds, Long updateEpicId) {
+        issueMapper.batchStoryToFeature(projectId, featureId, issueIds, updateEpicId);
         return true;
     }
 

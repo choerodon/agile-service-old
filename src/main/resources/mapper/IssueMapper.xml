@@ -1256,7 +1256,7 @@
 
     <update id="batchStoryToFeature">
         update agile_issue
-        set feature_id = #{featureId}
+        set feature_id = #{featureId}, epic_id = #{updateEpicId}
         where project_id = #{projectId} and type_code = 'story' and issue_id in
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
@@ -2313,6 +2313,7 @@
             ai.issue_type_id,
             ai.status_id,
             ai.apply_type,
+            ai.epic_id,
             sprint.sprint_id
         FROM
             agile_issue ai
@@ -3547,5 +3548,21 @@
         )
         order by ai.issue_id desc
     </select>
+
+    <update id="updateEpicIdOfStoryByFeature">
+        update agile_issue
+        set epic_id = #{epicId}
+        where type_code = 'story' and feature_id = #{featureId}
+    </update>
+
+    <update id="updateEpicIdOfStoryByFeatureList">
+        update agile_issue
+        set epic_id = #{epicId}
+        where type_code = 'story' and feature_id in
+        <foreach collection="featureIds" item="featureId" open="(" separator=","
+                 close=")">
+            #{featureId}
+        </foreach>
+    </update>
 
 </mapper>

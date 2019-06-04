@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.choerodon.agile.infra.mapper.StoryMapWidthMapper">
+
+    <select id="selectByProjectId" resultType="io.choerodon.agile.infra.dataobject.StoryMapWidthDO">
+        select
+           asw.id,
+           asw.type,
+           asw.project_id,
+           asw.issue_id,
+           asw.width,
+           asw.object_version_number
+        from agile_storymap_width asw
+        where asw.project_id = #{projectId}
+    </select>
+
+</mapper>
