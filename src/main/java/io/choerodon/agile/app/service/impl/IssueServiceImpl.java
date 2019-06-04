@@ -176,6 +176,8 @@ public class IssueServiceImpl implements IssueService {
     private SendMsgUtil sendMsgUtil;
     @Autowired
     private BoardFeatureService boardFeatureService;
+    @Autowired
+    private StoryMapWidthMapper storyMapWidthMapper;
 
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
@@ -729,6 +731,17 @@ public class IssueServiceImpl implements IssueService {
         dataLogRepository.delete(dataLogE);
     }
 
+    private void deleteStoryMapWidth(Long issueId) {
+        StoryMapWidthDO selectMapWidthDO = new StoryMapWidthDO();
+        selectMapWidthDO.setIssueId(issueId);
+        selectMapWidthDO.setType("feature");
+        List<StoryMapWidthDO> storyMapWidthDOList = storyMapWidthMapper.select(selectMapWidthDO);
+        if (storyMapWidthDOList != null && !storyMapWidthDOList.isEmpty()) {
+            storyMapWidthMapper.delete(selectMapWidthDO);
+        }
+    }
+
+
     @Saga(code = "agile-delete-issue", description = "删除issue", inputSchemaClass = IssuePayload.class)
     @Override
     public void deleteIssue(Long projectId, Long issueId) {
@@ -770,6 +783,13 @@ public class IssueServiceImpl implements IssueService {
             if (issueDOList != null && !issueDOList.isEmpty()) {
                 issueDOList.forEach(subIssue -> deleteIssue(subIssue.getProjectId(), subIssue.getIssueId()));
             }
+        }
+        // 如果是删除feature，将其下的issue的featureId置为0
+        if ("feature".equals(issueE.getTypeCode())) {
+            issueMapper.updateEpicIdOfStoryByFeature(issueE.getIssueId(), 0L);
+            issueMapper.updateFeatureIdOfStoryByFeature(issueE.getIssueId(), 0L);
+            // 删除故事地图扩列
+            deleteStoryMapWidth(issueE.getIssueId());
         }
         //删除日志信息
         dataLogDeleteByIssueId(projectId, issueId);

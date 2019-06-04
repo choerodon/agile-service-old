@@ -3551,13 +3551,19 @@
 
     <update id="updateEpicIdOfStoryByFeature">
         update agile_issue
-        set epic_id = #{epicId}
+        set epic_id = #{updateEpicId}
+        where type_code = 'story' and feature_id = #{featureId}
+    </update>
+
+    <update id="updateFeatureIdOfStoryByFeature">
+        update agile_issue
+        set feature_id = #{updateFeatureId}
         where type_code = 'story' and feature_id = #{featureId}
     </update>
 
     <update id="updateEpicIdOfStoryByFeatureList">
         update agile_issue
-        set epic_id = #{epicId}
+        set epic_id = #{updateEpicId}
         where type_code = 'story' and feature_id in
         <foreach collection="featureIds" item="featureId" open="(" separator=","
                  close=")">
