@@ -14,6 +14,8 @@ databaseChangeLog(logicalFilePath: 'agile_pi.groovy') {
             column(name: 'end_date', type: 'DATETIME', remarks: 'start date')
             column(name: 'art_id', type: 'BIGINT UNSIGNED', remarks: 'art id')
             column(name: 'program_id', type: 'BIGINT UNSIGNED', remarks: 'program id')
+            column(name: 'actual_start_date', type: 'DATETIME', remarks: 'actual start date')
+            column(name: 'actual_end_date', type: 'DATETIME', remarks: 'actual end date')
 
             column(name: "object_version_number", type: "BIGINT UNSIGNED", defaultValue: "1")
             column(name: "created_by", type: "BIGINT UNSIGNED", defaultValue: "0")

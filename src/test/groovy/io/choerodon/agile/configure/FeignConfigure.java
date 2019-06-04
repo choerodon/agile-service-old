@@ -50,6 +50,26 @@ public class FeignConfigure {
         projectDTO.setName("test");
         projectDTO.setOrganizationId(1L);
         Mockito.when(userFeignClient.queryProject(Matchers.anyLong())).thenReturn(new ResponseEntity<>(projectDTO, HttpStatus.OK));
+        List<ProjectRelationshipDTO> rel = new ArrayList<>(2);
+        ProjectRelationshipDTO rel1 = new ProjectRelationshipDTO();
+        rel1.setProjectId(2L);
+        rel1.setUserCount(2);
+        rel1.setParentId(1L);
+        rel1.setEnabled(true);
+        rel1.setProgramId(1L);
+        rel1.setProjCode("test1");
+        rel1.setProjName("敏捷项目1");
+        ProjectRelationshipDTO rel2 = new ProjectRelationshipDTO();
+        rel2.setProjectId(3L);
+        rel2.setUserCount(2);
+        rel2.setParentId(1L);
+        rel2.setEnabled(true);
+        rel2.setProgramId(1L);
+        rel2.setProjCode("test2");
+        rel2.setProjName("敏捷项目2");
+        rel.add(rel1);
+        rel.add(rel2);
+        Mockito.when(userFeignClient.getProjUnderGroup(Matchers.anyLong(), Matchers.anyLong(), Matchers.anyBoolean())).thenReturn(new ResponseEntity<>(rel, HttpStatus.OK));
         return userFeignClient;
     }
 
@@ -227,7 +247,7 @@ public class FeignConfigure {
         StatusInfoDTO statusInfoDTO = new StatusInfoDTO();
         statusInfoDTO.setId(10000L);
         statusInfoDTO.setName("statusName");
-        Mockito.when(issueFeignClient.createStatusForAgile(Matchers.anyLong(),Matchers.anyString(),  Matchers.any(StatusInfoDTO.class))).thenReturn(new ResponseEntity<>(statusInfoDTO, HttpStatus.OK));
+        Mockito.when(issueFeignClient.createStatusForAgile(Matchers.anyLong(), Matchers.anyString(), Matchers.any(StatusInfoDTO.class))).thenReturn(new ResponseEntity<>(statusInfoDTO, HttpStatus.OK));
         List<StatusMapDTO> statusMapDTOList = new ArrayList<>();
         StatusMapDTO statusMapDTO1 = new StatusMapDTO();
         statusMapDTO1.setOrganizationId(1L);
