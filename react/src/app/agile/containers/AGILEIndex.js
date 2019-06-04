@@ -37,6 +37,7 @@ const PIAIMS = asyncRouter(() => import('./program/PI'));
 const PROJECTPIAIMS = asyncRouter(() => import('./project/PIAims'));
 const PROGRAMSETTING = asyncRouter(() => import('./program/ProgramSetting'));
 const ARTCALENDAR = asyncRouter(() => import('./program/Art/ArtCalendar'));
+const PROJECTARTCALENDAR = asyncRouter(() => import('./project/ArtCalendar'));
 const ROADMAP = asyncRouter(() => import('./program/RoadMap'));
 const PROJECTROADMAP = asyncRouter(() => import('./project/RoadMap'));
 
@@ -94,7 +95,8 @@ class AGILEIndex extends React.Component {
           <Route path={`${match.url}/pi_project`} component={PROJECTPIAIMS} />
           
           <Route path={`${match.url}/programSetting`} component={PROGRAMSETTING} /> 
-          <Route path={`${match.url}/artCalendar`} component={ARTCALENDAR} /> 
+          <Route path={`${match.url}/artCalendar`} component={ARTCALENDAR} />
+          <Route path={`${match.url}/artCalendar_project`} component={PROJECTARTCALENDAR} />
           <Route path={`${match.url}/roadMap`} component={ROADMAP} /> 
           <Route path={`${match.url}/roadMap_project`} component={PROJECTROADMAP} /> 
           <Route path={`${match.url}/board`} component={BOARD} /> 

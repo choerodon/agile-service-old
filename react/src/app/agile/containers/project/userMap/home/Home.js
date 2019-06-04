@@ -1807,7 +1807,7 @@ class Home extends Component {
               )
               : epicData.length
                 ? (
-                  <div style={{ padding: 0 }}>
+                  <div style={{ padding: 0, height: 'calc(100% - 48px)' }}>
                     <DragDropContext
                       onDragEnd={this.handleEpicOrIssueDrag}
                       onDragStart={this.handleEpicOrIssueDragStart}

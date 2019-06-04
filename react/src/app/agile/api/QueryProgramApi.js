@@ -39,8 +39,26 @@ export function getPIList(programId) {
 }
 /**
  * 获取单个PI的目标列表
- * @param {*} piId 
+ * @param {*} piId
+ * @param programId
  */
 export function getPIAims(piId, programId) {
   return axios.get(`/agile/v1/projects/${getProjectId()}/pi_objective/list_by_project?piId=${piId}&programId=${programId}`);
+}
+
+/**
+ * 获取活跃ART
+ * @param programId
+ */
+export function getActiveArt(programId) {
+  return axios.get(`/agile/v1/projects/${getProjectId()}/project_invoke_program/art/active?programId=${programId}`);
+}
+
+/**
+ * 获取ART日历
+ * @param id
+ * @param programId
+ */
+export function getArtCalendar(id, programId) {
+  return axios.get(`/agile/v1/projects/${getProjectId()}/project_invoke_program/art_calendar?programId=${programId}&id=${id}`);
 }

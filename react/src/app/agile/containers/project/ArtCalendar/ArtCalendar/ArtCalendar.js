@@ -5,7 +5,7 @@ import { Spin, Button } from 'choerodon-ui';
 import moment from 'moment';
 import 'tui-calendar/dist/tui-calendar.css';
 import Calendar from '@toast-ui/react-calendar';
-import { getArtCalendar, getActiveArt } from '../../../../api/ArtApi';
+import { getArtCalendar, getActiveArt } from '../../../../api/QueryProgramApi';
 import './ArtCalendar.scss';
 import emptyArtCalendar from '../../../../assets/image/emptyArtCalendar.svg';
 import Empty from '../../../../components/Empty';
@@ -28,6 +28,7 @@ class ArtCalendar extends Component {
     this.calendar = React.createRef();
   }
 
+
   componentDidMount() {
     this.loadArt();
     window.addEventListener('click', this.onCalendarClick);
@@ -47,16 +48,17 @@ class ArtCalendar extends Component {
   };
 
   loadArt = () => {
+    const { programId } = this.props;
     this.setState({
       loading: true,
     });
-    getActiveArt().then((doingArt) => {
+    getActiveArt(programId).then((doingArt) => {
       this.setState({
         doingArt,
         artStartDate: doingArt && doingArt.startDate,
       }, () => {
         if (doingArt && doingArt.id) {
-          getArtCalendar(doingArt.id).then((res) => {
+          getArtCalendar(doingArt.id, programId).then((res) => {
             this.setState({
               loading: false,
             });
@@ -86,18 +88,6 @@ class ArtCalendar extends Component {
       startDate,
       endDate,
     };
-  };
-
-  handleCreateEventClick=() => {
-    this.setState({
-      createEventVisible: true,
-    });
-  };
-
-  handleCancelCreateEvent=() => {
-    this.setState({
-      createEventVisible: false,
-    });
   };
 
   getSchedules = (data) => {
@@ -142,16 +132,12 @@ class ArtCalendar extends Component {
 
   render() {
     const {
-      data, 
-      startDate,
+      data,
       currentPI, 
       ArtName,
-      endDate,
       doingArt,
       loading,
       artStartDate,
-      createEventVisible,
-      createEventLoading,
     } = this.state;
     return (
       <Page
@@ -161,9 +147,6 @@ class ArtCalendar extends Component {
         ]}
       >
         <Header title="ART日历">
-          {/* <Button icon="playlist_add" onClick={this.handleCreateEventClick}>
-            创建事件
-          </Button> */}
           <Button icon="refresh" onClick={this.loadArt}>
             刷新
           </Button>
@@ -265,12 +248,6 @@ class ArtCalendar extends Component {
               )
             }
           </Spin>
-          {/* <CreateEvent 
-            visible={createEventVisible}
-            loading={createEventLoading}
-            onCancel={this.handleCancelCreateEvent}
-            onSubmit={this.handleEventSubmit}
-          /> */}
         </Content>
       </Page>
     );
