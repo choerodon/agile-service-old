@@ -181,7 +181,7 @@ class ScrumBoardHome extends Component {
     const { draggableId } = result;
     const [SwimLaneId, issueId] = draggableId.split(['/']);
     headerStyle.changeStyle(style(SwimLaneId));
-    ScrumBoardStore.setIsDragging(true);
+    ScrumBoardStore.setIsDragging(SwimLaneId, true);
   };
 
   onDragEnd = (result) => {
@@ -190,7 +190,7 @@ class ScrumBoardHome extends Component {
     const [SwimLaneId, issueId] = draggableId.split(['/']);
     const allDataMap = ScrumBoardStore.getAllDataMap;
     ScrumBoardStore.resetCanDragOn();
-    ScrumBoardStore.setIsDragging(false);
+    ScrumBoardStore.setIsDragging(SwimLaneId, false);
     headerStyle.unMountStyle();
     if (!destination) {
       return;

@@ -11,11 +11,11 @@ class StatusCouldDragOn extends Component {
   }
 
   render() {
-    const { statusId } = this.props;
+    const { statusId, swimlaneId } = this.props;
     const cantDragOn = ScrumBoardStore.getCanDragOn.get(statusId);
-    const isDragging = ScrumBoardStore.getIsDragging;
+    const { draggingSwimlane, draggingStart } = ScrumBoardStore.getIsDragging;
     return (
-      <div className={cantDragOn && isDragging ? 'statusCantDragOn' : ''} />
+      <div className={cantDragOn && draggingStart && (swimlaneId === draggingSwimlane) ? 'statusCantDragOn' : ''} />
     );
   }
 }

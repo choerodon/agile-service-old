@@ -24,7 +24,7 @@ export default class StatusProvider extends Component {
         >
           {(provided, snapshot) => (
             <React.Fragment>
-              <StatusCouldDragOn statusId={statusId} />
+              <StatusCouldDragOn statusId={statusId} swimlaneId={keyId} />
               <div
                 ref={provided.innerRef}
                 className={classnames('c7n-swimlaneContext-itemBodyStatus-container', {
