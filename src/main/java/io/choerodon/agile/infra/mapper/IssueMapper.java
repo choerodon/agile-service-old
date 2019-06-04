@@ -569,7 +569,9 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     List<FeatureCommonDO> selectFeatureByPiId(@Param("programId") Long programId, @Param("piId") Long piId);
 
-    void updateEpicIdOfStoryByFeature(@Param("featureId") Long featureId, @Param("epicId") Long epicId);
+    void updateEpicIdOfStoryByFeature(@Param("featureId") Long featureId, @Param("updateEpicId") Long updateEpicId);
 
-    void updateEpicIdOfStoryByFeatureList(@Param("featureIds") List<Long> featureIds, @Param("epicId") Long epicId);
+    void updateFeatureIdOfStoryByFeature(@Param("featureId") Long featureId, @Param("updateFeatureId") Long updateFeatureId);
+
+    void updateEpicIdOfStoryByFeatureList(@Param("featureIds") List<Long> featureIds, @Param("updateEpicId") Long updateEpicId);
 }
