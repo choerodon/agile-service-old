@@ -1,0 +1,23 @@
+.c7nagile-StoryMapBody {
+  table {
+    table-layout: fixed;
+    position: relative;
+
+    th,
+    td {
+      border: 1px solid #D8D8D8;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      // background: rgb(245, 245, 245);
+      background-clip: padding-box;
+    }
+
+    td {
+      vertical-align: top;
+      position: relative;
+      overflow: visible;
+    }
+  }
+}

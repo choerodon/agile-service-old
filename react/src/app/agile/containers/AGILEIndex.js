@@ -21,6 +21,7 @@ const FASTSEARCHINDEX = asyncRouter(() => import('./project/FastSearch'));
 const REPORTHOSTINDEX = asyncRouter(() => import('./project/ReportHost'));
 const ISSUELINKINDEX = asyncRouter(() => import('./project/IssueLink'));
 const USERMAPINDEX = asyncRouter(() => import('./project/userMap'));
+const STORYMAPINDEX = asyncRouter(() => import('./project/StoryMap'));
 const INERATIONBOARDINDEX = asyncRouter(() => import('./project/IterationBoard'));
 const REPORTBOARD = asyncRouter(() => import('./project/ReportBoard'));
 const MESSAGENOTIFICATION = asyncRouter(() => import('./project/MessageNotification'));
@@ -76,7 +77,7 @@ class AGILEIndex extends React.Component {
           <Route path={`${match.url}/fastSearch`} component={FASTSEARCHINDEX} />
           {/* 问题链接 */}
           <Route path={`${match.url}/issueLink`} component={ISSUELINKINDEX} />
-          <Route path={`${match.url}/userMap`} component={USERMAPINDEX} />
+          <Route path={`${match.url}/userMap`} component={STORYMAPINDEX} />
           {/* 迭代工作台 */}
           <Route path={`${match.url}/iterationBoard/:id`} component={INERATIONBOARDINDEX} />
           <Route path={`${match.url}/reportBoard`} component={REPORTBOARD} />

@@ -68,7 +68,7 @@ const ArtTable = ({
       filterBar={false}
       pagination={false}
       columns={columns}
-      dataSource={dataSource}
+      dataSource={dataSource.sort((a, b) => (a.statusCode > b.statusCode ? 1 : -1))}
       empty={(
         <Empty
           border

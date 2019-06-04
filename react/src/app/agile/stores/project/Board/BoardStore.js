@@ -99,6 +99,14 @@ class BoardStore {
     this.filter = { ...this.filter, ...filter };
   }
 
+  @action clearFilter=() => {
+    this.filter = {
+      sprintIds: [],
+      teamProjectIds: [],  
+    };
+    this.selectedFilter = [];
+  }
+
   @action init = ({
     boardDepends,
     piCode,
