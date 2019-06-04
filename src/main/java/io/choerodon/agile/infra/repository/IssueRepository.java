@@ -52,7 +52,7 @@ public interface IssueRepository {
 
     Boolean batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds);
 
-    Boolean batchStoryToFeature(Long projectId, Long featureId, List<Long> issueIds);
+    Boolean batchStoryToFeature(Long projectId, Long featureId, List<Long> issueIds, Long epicId);
 
     Integer batchRemoveVersion(Long projectId, List<Long> issueIds);
 

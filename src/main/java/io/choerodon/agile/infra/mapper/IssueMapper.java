@@ -38,7 +38,7 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
 
     int batchIssueToEpic(@Param("projectId") Long projectId, @Param("epicId") Long epicId, @Param("issueIds") List<Long> issueIds);
 
-    int batchStoryToFeature(@Param("projectId") Long projectId, @Param("featureId") Long featureId, @Param("issueIds") List<Long> issueIds);
+    int batchStoryToFeature(@Param("projectId") Long projectId, @Param("featureId") Long featureId, @Param("issueIds") List<Long> issueIds, @Param("updateEpicId") Long updateEpicId);
 
     List<IssueSearchDO> queryIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
@@ -568,4 +568,8 @@ public interface IssueMapper extends BaseMapper<IssueDO> {
     List<Long> querySubBugIdsByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
     List<FeatureCommonDO> selectFeatureByPiId(@Param("programId") Long programId, @Param("piId") Long piId);
+
+    void updateEpicIdOfStoryByFeature(@Param("featureId") Long featureId, @Param("epicId") Long epicId);
+
+    void updateEpicIdOfStoryByFeatureList(@Param("featureIds") List<Long> featureIds, @Param("epicId") Long epicId);
 }

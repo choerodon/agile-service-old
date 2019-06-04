@@ -1403,7 +1403,8 @@ public class DataLogAspect {
     }
 
     private void dataLogCreateEpicId(Long epicId, IssueDO originIssueDO, ProjectInfoDO projectInfoDO) {
-        IssueDO issueEpic = queryIssueByIssueIdAndProjectId(originIssueDO.getProjectId(), epicId);
+//        IssueDO issueEpic = queryIssueByIssueIdAndProjectId(originIssueDO.getProjectId(), epicId);
+        IssueDO issueEpic = issueMapper.selectByPrimaryKey(epicId);
         if (issueEpic == null) {
             throw new CommonException(ERROR_EPIC_NOT_FOUND);
         } else {
@@ -1420,7 +1421,8 @@ public class DataLogAspect {
     }
 
     private void dataLogChangeEpicId(Long epicId, IssueDO originIssueDO, ProjectInfoDO projectInfoDO) {
-        IssueDO oldIssueEpic = queryIssueByIssueIdAndProjectId(originIssueDO.getProjectId(), originIssueDO.getEpicId());
+//        IssueDO oldIssueEpic = queryIssueByIssueIdAndProjectId(originIssueDO.getProjectId(), originIssueDO.getEpicId());
+        IssueDO oldIssueEpic = issueMapper.selectByPrimaryKey(originIssueDO.getEpicId());
         if (oldIssueEpic == null) {
             throw new CommonException(ERROR_EPIC_NOT_FOUND);
         } else {
@@ -1431,7 +1433,8 @@ public class DataLogAspect {
                         null, oldIssueEpic.getIssueId().toString(), null);
             } else {
                 deleteBurnDownCoordinateByTypeEpic(epicId, originIssueDO.getProjectId(), oldIssueEpic.getIssueId());
-                IssueDO newIssueEpic = queryIssueByIssueIdAndProjectId(originIssueDO.getProjectId(), epicId);
+//                IssueDO newIssueEpic = queryIssueByIssueIdAndProjectId(originIssueDO.getProjectId(), epicId);
+                IssueDO newIssueEpic = issueMapper.selectByPrimaryKey(epicId);
                 if (newIssueEpic == null) {
                     throw new CommonException(ERROR_EPIC_NOT_FOUND);
                 } else {

@@ -623,6 +623,7 @@ public class PiServiceImpl implements PiService {
     @Override
     public List<SubFeatureDO> batchFeatureToEpic(Long programId, Long epicId, List<Long> featureIds) {
         issueRepository.batchFeatureToEpic(programId, epicId, featureIds);
+        issueMapper.updateEpicIdOfStoryByFeatureList(featureIds, epicId);
         return piMapper.selectFeatureIdByFeatureIds(programId, featureIds);
     }
 
