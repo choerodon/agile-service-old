@@ -21,6 +21,7 @@
         <id column="ai_issue_num" property="issueNum"/>
         <id column="ai_type_code" property="typeCode"/>
         <id column="ai_summary" property="summary"/>
+        <id column="ai_epic_name" property="epicName"/>
         <collection property="featureCommonDOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.FeatureCommonDO">
             <id property="issueId" column="feature_issue_id"/>
             <id property="issueNum" column="feature_issue_num"/>
@@ -36,6 +37,7 @@
             IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) as ai_issue_num,
             ai.type_code as ai_type_code,
             ai.summary as ai_summary,
+            ai.epic_name as ai_epic_name,
             feature_info.issue_id as feature_issue_id,
             feature_info.issue_num as feature_issue_num,
             feature_info.type_code as feature_type_code,

@@ -12,6 +12,8 @@ public class EpicWithFeatureDO {
 
     private String summary;
 
+    private String epicName;
+
     private List<FeatureCommonDO> featureCommonDOList;
 
     public Long getIssueId() {
@@ -44,6 +46,14 @@ public class EpicWithFeatureDO {
 
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    public void setEpicName(String epicName) {
+        this.epicName = epicName;
+    }
+
+    public String getEpicName() {
+        return epicName;
     }
 
     public List<FeatureCommonDO> getFeatureCommonDOList() {

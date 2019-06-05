@@ -103,6 +103,7 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
+    @DataLog(type = "batchStoryToFeature", single = false)
     public Boolean batchStoryToFeature(Long projectId, Long featureId, List<Long> issueIds, Long updateEpicId) {
         issueMapper.batchStoryToFeature(projectId, featureId, issueIds, updateEpicId);
         return true;
@@ -218,6 +219,18 @@ public class IssueRepositoryImpl implements IssueRepository {
     @Override
     public void batchFeatureToEpic(Long programId, Long epicId, List<Long> featureIds) {
         issueMapper.batchFeatureToEpic(programId, epicId, featureIds);
+    }
+
+    @Override
+    @DataLog(type = "updateEpicIdOfStoryByFeature", single = false)
+    public void updateEpicIdOfStoryByFeature(Long featureId, Long epicId) {
+        issueMapper.updateEpicIdOfStoryByFeature(featureId, epicId);
+    }
+
+    @Override
+    @DataLog(type = "updateEpicIdOfStoryByFeatureList", single = false)
+    public void updateEpicIdOfStoryByFeatureList(List<Long> featureIds, Long epicId) {
+        issueMapper.updateEpicIdOfStoryByFeatureList(featureIds, epicId);
     }
 
     @Override

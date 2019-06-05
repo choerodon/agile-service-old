@@ -83,8 +83,6 @@ public interface DataLogMapper extends BaseMapper<DataLogDO> {
 
     void updateDemoEpicDataLog(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("creationDate") Date creationDate, @Param("lastUpdateDate") Date lastUpdateDate, @Param("userId") Long userId);
 
-//    void deleteDemoData(@Param("projectId") Long projectId);
-
     void batchCreateChangePriorityLogByIssueDOs(@Param("issueDOS") List<IssueDO> issueDOS, @Param("userId") Long userId,
                                                 @Param("oldPriorityName") String oldPriorityName, @Param("newPriorityName") String newPriorityName);
 }
