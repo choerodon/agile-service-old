@@ -17,7 +17,6 @@
     td {
       text-align: center;
       white-space: nowrap;
-      overflow: hidden;
       text-overflow: ellipsis;
       // background: rgb(245, 245, 245);
       background-clip: padding-box;
@@ -33,6 +32,7 @@
       vertical-align: top;
       position: relative;
       overflow: visible;
+      height: 1px; //使td中的div可以充满td
     }
   }
 }

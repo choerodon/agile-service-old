@@ -63,11 +63,11 @@ class StoryCell extends Component {
     return (
       <Cell style={{ ...collapse ? { borderBottom: isLastRow ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {} }}>
         {collapse ? null : (
-          <div>
+          <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <div style={{ textAlign: 'left', marginLeft: -20, height: 30 }}>
               {showTitle && this.renderTitle(storyCollapse)}
             </div>
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', flex: 1 }}>
               {
                 adding ? null : (
                   <Fragment>

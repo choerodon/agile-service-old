@@ -6,7 +6,7 @@ class Cell extends Component {
   render() {
     const { children, style } = this.props;
     return (
-      <td style={{ padding: CellPadding, ...style }}>
+      <td {...this.props} style={{ padding: CellPadding, ...style }}>
         {children}
       </td>
     );
