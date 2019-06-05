@@ -14,7 +14,7 @@
         from agile_issue ai
         where ai.project_id = #{projectId}
         and ai.type_code = 'issue_epic'
-        order by ai_issue_id desc
+        order by ai.issue_id desc
     </select>
 
     <resultMap id="epicWithFeatureListMap" type="io.choerodon.agile.infra.dataobject.EpicWithFeatureDO">
