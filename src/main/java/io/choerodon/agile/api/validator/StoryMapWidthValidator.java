@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class StoryMapWidthValidator {
 
     private static final String TYPE_FEATURE = "feature";
-    private static final String TYPE_EPIC = "issue_epic";
+    private static final String TYPE_EPIC = "epic";
 
     public void checkStoryMapWidthCreate(StoryMapWidthDTO storyMapWidthDTO) {
         if (storyMapWidthDTO.getIssueId() == null) {
