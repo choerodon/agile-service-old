@@ -1998,7 +1998,7 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            and (SELECT new_value FROM agile_data_log WHERE project_id = #{projectId} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
             AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
@@ -2068,7 +2068,7 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            and (SELECT new_value FROM agile_data_log WHERE project_id = #{projectId} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
             AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
@@ -2145,7 +2145,7 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            and (SELECT new_value FROM agile_data_log WHERE project_id = #{projectId} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
             AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
@@ -2220,7 +2220,7 @@
         )
         <if test="chartType == 'epic_chart'">
             AND adl.field = 'Epic Link'
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            and (SELECT new_value FROM agile_data_log WHERE project_id = #{projectId} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
             AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         <if test="chartType == 'version_chart'">
@@ -2296,7 +2296,7 @@
         )
         AND adl.field = 'Story Points'
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            and (SELECT new_value FROM agile_data_log WHERE project_id = #{projectId} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
             AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
@@ -2374,7 +2374,7 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            and (SELECT new_value FROM agile_data_log WHERE project_id = #{projectId} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
             AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
@@ -2446,7 +2446,7 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            and (SELECT new_value FROM agile_data_log WHERE project_id = #{projectId} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
             AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
@@ -2530,7 +2530,7 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            and (SELECT new_value FROM agile_data_log WHERE project_id = #{projectId} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
             AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
@@ -2601,7 +2601,7 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            and (SELECT new_value FROM agile_data_log WHERE project_id = #{projectId} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
             AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
@@ -2678,7 +2678,7 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            and (SELECT new_value FROM agile_data_log WHERE project_id = #{projectId} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
             AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
@@ -2751,7 +2751,7 @@
         '%Y-%m-%d'
         )
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            and (SELECT new_value FROM agile_data_log WHERE project_id = #{projectId} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
             AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
@@ -2826,7 +2826,7 @@
         )
         <if test="chartType == 'epic_chart'">
             AND adl.field = 'Epic Link'
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            and (SELECT new_value FROM agile_data_log WHERE project_id = #{projectId} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
             AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         <if test="chartType == 'version_chart'">
@@ -2904,7 +2904,7 @@
         AND adl.project_id = #{projectId}
         AND adl.field = 'timeestimate'
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            and (SELECT new_value FROM agile_data_log WHERE project_id = #{projectId} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
             AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
@@ -2980,7 +2980,7 @@
         AND adl.project_id = #{projectId}
         <if test="chartType == 'epic_chart'">
             AND adl.field = 'Epic Link'
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            and (SELECT new_value FROM agile_data_log WHERE project_id = #{projectId} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
             AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         <if test="chartType == 'version_chart'">
@@ -3051,7 +3051,7 @@
         )
         AND adl.project_id = #{projectId}
         <if test="chartType == 'epic_chart'">
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            and (SELECT new_value FROM agile_data_log WHERE project_id = #{projectId} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
             AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         AND adl.issue_id IN (
@@ -3132,7 +3132,7 @@
         )
         <if test="chartType == 'epic_chart'">
             AND adl.field = 'Epic Link'
-            and (SELECT new_value FROM agile_data_log WHERE t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
+            and (SELECT new_value FROM agile_data_log WHERE project_id = #{projectId} and t1.group_day >= DATE_FORMAT( last_update_date, '%Y-%m-%d' )
             AND field = 'Epic Link' AND issue_id = adl.issue_id order BY log_id desc limit 1) = #{id}
         </if>
         <if test="chartType == 'version_chart'">

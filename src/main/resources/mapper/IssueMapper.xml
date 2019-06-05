@@ -978,7 +978,7 @@
         </foreach>
         GROUP BY ai1.epic_id
         ) ic ON ic.epic_id = ai.issue_id
-        WHERE ai.project_id = #{projectId} AND ai.issue_id IN
+        WHERE ai.issue_id IN
         <foreach collection="epicIds" item="epicId" open="("
                  separator="," close=")">
             #{epicId}
@@ -1018,7 +1018,7 @@
         </foreach>
         GROUP BY ai1.epic_id
         ) ic ON ic.epic_id = ai.issue_id
-        WHERE ai.project_id = #{projectId} AND ai.issue_id IN
+        WHERE ai.issue_id IN
         <foreach collection="epicIds" item="epicId" open="("
                  separator="," close=")">
             #{epicId}
@@ -1059,7 +1059,7 @@
         </foreach>
         GROUP BY ai1.epic_id
         ) ic ON ic.epic_id = ai.issue_id
-        WHERE ai.project_id = #{projectId} AND ai.issue_id IN
+        WHERE ai.issue_id IN
         <foreach collection="epicIds" item="epicId" open="("
                  separator="," close=")">
             #{epicId}
@@ -1098,7 +1098,7 @@
         </foreach>
         GROUP BY ai1.epic_id
         ) ic ON ic.epic_id = ai.issue_id
-        WHERE ai.project_id = #{projectId} AND ai.issue_id IN
+        WHERE ai.issue_id IN
         <foreach collection="epicIds" item="epicId" open="("
                  separator="," close=")">
             #{epicId}
@@ -2909,7 +2909,6 @@
                 LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id and ais.project_id = #{projectId}
             WHERE
                 ai.epic_id = #{epicId}
-                AND ai.project_id = #{projectId}
                 AND ai.type_code in ('story', 'task', 'bug')
                 AND ai.apply_type = 'agile'
             ) aaa
@@ -3139,7 +3138,6 @@
                 LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id and ais.project_id = ai.project_id
             WHERE
                 ai.issue_id = #{issueId}
-                AND ai.project_id = #{projectId}
                 AND ai.type_code = 'issue_epic'
     </select>
 
@@ -3167,7 +3165,7 @@
             LEFT JOIN agile_issue_status ais ON ais.status_id = ai.status_id and ais.project_id = ai.project_id
         WHERE
             ai.issue_id = #{issueId}
-            AND ai.project_id = #{projectId}
+
     </select>
 
     <select id="queryIssueTestGroupByProject" resultMap="issueProject">
@@ -3570,5 +3568,32 @@
             #{featureId}
         </foreach>
     </update>
+
+    <select id="selectByFeatureIds" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        select * from agile_issue
+        where type_code = 'story' and feature_id in
+        <foreach collection="featureIds" item="featureId" open="(" separator=","
+                 close=")">
+            #{featureId}
+        </foreach>
+    </select>
+
+    <select id="selectEpicByProgram" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+        SELECT
+            ai.issue_id,
+            ai.summary,
+            ai.description,
+            ai.program_id as project_id,
+            CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,
+            ai.epic_name,
+            alv.name AS color,
+            ai.object_version_number,
+            ai.epic_sequence
+        FROM agile_issue ai
+        LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
+        LEFT JOIN agile_project_info api ON ai.program_id = api.project_id
+        WHERE ai.program_id = #{programId} AND ai.type_code = 'issue_epic'
+        ORDER BY ai.epic_sequence DESC
+    </select>
 
 </mapper>

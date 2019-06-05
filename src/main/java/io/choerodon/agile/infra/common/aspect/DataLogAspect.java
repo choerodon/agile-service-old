@@ -64,6 +64,9 @@ public class DataLogAspect {
     private static final String BATCH_REMOVE_SPRINT_TO_TARGET = "batchRemoveSprintToTarget";
     private static final String BATCH_REMOVE_PI_TO_TARGET = "batchRemovePiToTarget";
     private static final String BATCH_TO_EPIC = "batchToEpic";
+    private static final String BATCH_STORY_TO_FEATURE = "batchStoryToFeature";
+    private static final String UPDATE_EPIC_OF_STORY_BY_FEATURE = "updateEpicIdOfStoryByFeature";
+    private static final String UPDATE_EPIC_OF_STORY_BY_FEATURE_LIST = "updateEpicIdOfStoryByFeatureList";
     private static final String BATCH_REMOVE_SPRINT = "batchRemoveSprint";
     private static final String BATCH_REMOVE_PI = "batchRemovePi";
     private static final String BATCH_REMOVE_SPRINT_BY_SPRINT_ID = "batchRemoveSprintBySprintId";
@@ -251,6 +254,15 @@ public class DataLogAspect {
                         break;
                     case BATCH_TO_EPIC:
                         batchToEpicDataLog(args);
+                        break;
+                    case BATCH_STORY_TO_FEATURE:
+                        batchStoryToFeatureDataLog(args);
+                        break;
+                    case UPDATE_EPIC_OF_STORY_BY_FEATURE:
+                        updateEpicIdOfStoryByFeature(args);
+                        break;
+                    case UPDATE_EPIC_OF_STORY_BY_FEATURE_LIST:
+                        updateEpicIdOfStoryByFeatureList(args);
                         break;
                     case BATCH_COMPONENT_DELETE:
                         batchComponentDeleteDataLog(args);
@@ -985,6 +997,58 @@ public class DataLogAspect {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private void batchStoryToFeatureDataLog(Object[] args) {
+        Long projectId = (Long) args[0];
+        Long featureId = (Long) args[1];
+        List<Long> issueIds = (List<Long>) args[2];
+        Long epicId = (Long) args[3];
+        if (projectId != null && epicId != null && issueIds != null && !issueIds.isEmpty()) {
+            List<IssueDO> issueDOList = issueMapper.queryIssueEpicInfoByIssueIds(projectId, issueIds);
+            issueDOList.forEach(issueDO -> createIssueEpicLog(epicId, issueDO));
+            redisUtil.deleteRedisCache(new String[]{
+                    BURN_DOWN_COORDINATE_BY_TYPE + projectId + ":" + EPIC + ":" + epicId
+            });
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void updateEpicIdOfStoryByFeature(Object[] args) {
+        Long featureId = (Long) args[0];
+        Long epicId = (Long) args[1];
+        if (featureId != null && epicId != null) {
+            IssueDO selectDO = new IssueDO();
+            selectDO.setTypeCode("story");
+            selectDO.setFeatureId(featureId);
+            List<IssueDO> issueDOList = issueMapper.select(selectDO);
+            if (issueDOList != null && !issueDOList.isEmpty()) {
+                issueDOList.forEach(issueDO -> createIssueEpicLog(epicId, issueDO));
+                List<Long> projectIds = issueDOList.stream().map(IssueDO::getProjectId).collect(Collectors.toList());
+                projectIds.forEach(projectId ->
+                        redisUtil.deleteRedisCache(new String[]{
+                                BURN_DOWN_COORDINATE_BY_TYPE + projectId + ":" + EPIC + ":" + epicId})
+                );
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void updateEpicIdOfStoryByFeatureList(Object[] args) {
+        List<Long> featureIds = (List<Long>) args[0];
+        Long epicId = (Long) args[1];
+        if (featureIds != null && !featureIds.isEmpty() && epicId != null) {
+            List<IssueDO> issueDOList = issueMapper.selectByFeatureIds(featureIds);
+            if (issueDOList != null && !issueDOList.isEmpty()) {
+                issueDOList.forEach(issueDO -> createIssueEpicLog(epicId, issueDO));
+                List<Long> projectIds = issueDOList.stream().map(IssueDO::getProjectId).collect(Collectors.toList());
+                projectIds.forEach(projectId ->
+                        redisUtil.deleteRedisCache(new String[]{
+                                BURN_DOWN_COORDINATE_BY_TYPE + projectId + ":" + EPIC + ":" + epicId})
+                );
+            }
+        }
+    }
+
     private void handleVersionCreateDataLog(Object[] args) {
         VersionIssueRelE versionIssueRelE = null;
         for (Object arg : args) {
@@ -1370,14 +1434,14 @@ public class DataLogAspect {
     }
 
     private void createIssueEpicLog(Long epicId, IssueDO originIssueDO) {
-        ProjectInfoDO query = new ProjectInfoDO();
-        query.setProjectId(originIssueDO.getProjectId());
-        ProjectInfoDO projectInfoDO = projectInfoMapper.selectOne(query);
+        ProjectInfoDO projectInfoDO = projectInfoMapper.queryByProjectId(originIssueDO.getProjectId());
         if (projectInfoDO == null) {
             throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
         }
         if ((originIssueDO.getEpicId() == null || originIssueDO.getEpicId() == 0)) {
-            dataLogCreateEpicId(epicId, originIssueDO, projectInfoDO);
+            if (!Objects.equals(epicId, 0L)) {
+                dataLogCreateEpicId(epicId, originIssueDO, projectInfoDO);
+            }
         } else {
             dataLogChangeEpicId(epicId, originIssueDO, projectInfoDO);
         }
@@ -1408,14 +1472,18 @@ public class DataLogAspect {
         if (issueEpic == null) {
             throw new CommonException(ERROR_EPIC_NOT_FOUND);
         } else {
-            deleteBurnDownCoordinateByTypeEpic(originIssueDO.getEpicId(), originIssueDO.getProjectId(), issueEpic.getIssueId());
+            ProjectInfoDO epicProject = projectInfoMapper.queryByProjectId(issueEpic.getProjectId());
+            if (epicProject == null) {
+                throw new CommonException(ERROR_EPIC_NOT_FOUND);
+            }
+            deleteBurnDownCoordinateByTypeEpic(issueEpic.getIssueId(), projectInfoDO.getProjectId(), null);
             createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(), FIELD_EPIC_LINK,
-                    null, projectInfoDO.getProjectCode() + "-" + issueEpic.getIssueNum(),
+                    null, epicProject.getProjectCode() + "-" + issueEpic.getIssueNum(),
                     null, issueEpic.getIssueId().toString());
-            createDataLog(originIssueDO.getProjectId(), epicId, FIELD_EPIC_CHILD,
+            createDataLog(epicProject.getProjectId(), epicId, FIELD_EPIC_CHILD,
                     null, projectInfoDO.getProjectCode() + "-" + originIssueDO.getIssueNum(),
                     null, originIssueDO.getIssueId().toString());
-            dataLogRedisUtil.deleteByDataLogCreateEpicId(originIssueDO.getProjectId(), issueEpic.getIssueId());
+            dataLogRedisUtil.deleteByDataLogCreateEpicId(projectInfoDO.getProjectId(), issueEpic.getIssueId());
 
         }
     }
@@ -1426,32 +1494,40 @@ public class DataLogAspect {
         if (oldIssueEpic == null) {
             throw new CommonException(ERROR_EPIC_NOT_FOUND);
         } else {
-            deleteBurnDownCoordinateByTypeEpic(originIssueDO.getEpicId(), originIssueDO.getProjectId(), oldIssueEpic.getIssueId());
+            ProjectInfoDO oldEpicProject = projectInfoMapper.queryByProjectId(oldIssueEpic.getProjectId());
+            if (oldEpicProject == null) {
+                throw new CommonException(ERROR_EPIC_NOT_FOUND);
+            }
+            deleteBurnDownCoordinateByTypeEpic(originIssueDO.getEpicId(), projectInfoDO.getProjectId(), null);
             if (epicId == null || epicId == 0) {
                 createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(), FIELD_EPIC_LINK,
-                        projectInfoDO.getProjectCode() + "-" + oldIssueEpic.getIssueNum(),
+                        oldEpicProject.getProjectCode() + "-" + oldIssueEpic.getIssueNum(),
                         null, oldIssueEpic.getIssueId().toString(), null);
             } else {
-                deleteBurnDownCoordinateByTypeEpic(epicId, originIssueDO.getProjectId(), oldIssueEpic.getIssueId());
 //                IssueDO newIssueEpic = queryIssueByIssueIdAndProjectId(originIssueDO.getProjectId(), epicId);
                 IssueDO newIssueEpic = issueMapper.selectByPrimaryKey(epicId);
                 if (newIssueEpic == null) {
                     throw new CommonException(ERROR_EPIC_NOT_FOUND);
                 } else {
+                    ProjectInfoDO newEpicProject = projectInfoMapper.queryByProjectId(newIssueEpic.getProjectId());
+                    if (newEpicProject == null) {
+                        throw new CommonException(ERROR_EPIC_NOT_FOUND);
+                    }
+                    deleteBurnDownCoordinateByTypeEpic(epicId, projectInfoDO.getProjectId(), null);
                     createDataLog(originIssueDO.getProjectId(), originIssueDO.getIssueId(), FIELD_EPIC_LINK,
-                            projectInfoDO.getProjectCode() + "-" + oldIssueEpic.getIssueNum(),
-                            projectInfoDO.getProjectCode() + "-" + newIssueEpic.getIssueNum(),
+                            oldEpicProject.getProjectCode() + "-" + oldIssueEpic.getIssueNum(),
+                            newEpicProject.getProjectCode() + "-" + newIssueEpic.getIssueNum(),
                             oldIssueEpic.getIssueId().toString(), newIssueEpic.getIssueId().toString());
-                    createDataLog(originIssueDO.getProjectId(), epicId, FIELD_EPIC_CHILD,
+                    createDataLog(newEpicProject.getProjectId(), epicId, FIELD_EPIC_CHILD,
                             null, projectInfoDO.getProjectCode() + "-" + originIssueDO.getIssueNum(),
                             null, originIssueDO.getIssueId().toString());
-                    dataLogRedisUtil.deleteByDataLogCreateEpicId(originIssueDO.getProjectId(), newIssueEpic.getIssueId());
+                    dataLogRedisUtil.deleteByDataLogCreateEpicId(projectInfoDO.getProjectId(), newIssueEpic.getIssueId());
                 }
             }
-            createDataLog(originIssueDO.getProjectId(), originIssueDO.getEpicId(), FIELD_EPIC_CHILD,
+            createDataLog(oldEpicProject.getProjectId(), originIssueDO.getEpicId(), FIELD_EPIC_CHILD,
                     projectInfoDO.getProjectCode() + "-" + originIssueDO.getIssueNum(), null,
                     originIssueDO.getIssueId().toString(), null);
-            dataLogRedisUtil.deleteByDataLogCreateEpicId(originIssueDO.getProjectId(), oldIssueEpic.getIssueId());
+            dataLogRedisUtil.deleteByDataLogCreateEpicId(projectInfoDO.getProjectId(), oldIssueEpic.getIssueId());
         }
     }
 

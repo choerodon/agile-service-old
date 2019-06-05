@@ -178,6 +178,8 @@ public class IssueServiceImpl implements IssueService {
     private BoardFeatureService boardFeatureService;
     @Autowired
     private StoryMapWidthMapper storyMapWidthMapper;
+    @Autowired
+    private StoryMapMapper storyMapMapper;
 
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
@@ -616,9 +618,9 @@ public class IssueServiceImpl implements IssueService {
         }
         if ("feature".equals(originIssue.getTypeCode()) && fieldList.contains("epicId")) {
             if (Objects.equals(issueUpdateDTO.getEpicId(), 0L) && !Objects.equals(originIssue.getEpicId(), 0L)) {
-                issueMapper.updateEpicIdOfStoryByFeature(issueUpdateDTO.getIssueId(), issueUpdateDTO.getEpicId());
+                issueRepository.updateEpicIdOfStoryByFeature(issueUpdateDTO.getIssueId(), issueUpdateDTO.getEpicId());
             } else if (!Objects.equals(issueUpdateDTO.getEpicId(), 0L)) {
-                issueMapper.updateEpicIdOfStoryByFeature(issueUpdateDTO.getIssueId(), issueUpdateDTO.getEpicId());
+                issueRepository.updateEpicIdOfStoryByFeature(issueUpdateDTO.getIssueId(), issueUpdateDTO.getEpicId());
             }
         }
         issueRepository.update(issueE, fieldList.toArray(new String[fieldList.size()]));
@@ -662,6 +664,14 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public List<EpicDataDTO> listEpic(Long projectId) {
         List<EpicDataDTO> epicDataList = epicDataAssembler.toTargetList(issueMapper.queryEpicList(projectId), EpicDataDTO.class);
+        ProjectDTO program = userFeignClient.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId).getBody();
+        List<EpicDataDTO> programEpics = null;
+        if (program != null) {
+            programEpics = epicDataAssembler.toTargetList(issueMapper.selectEpicByProgram(program.getId()), EpicDataDTO.class);
+            if (programEpics != null && !programEpics.isEmpty()) {
+                epicDataList.addAll(programEpics);
+            }
+        }
         if (!epicDataList.isEmpty()) {
             List<Long> epicIds = epicDataList.stream().map(EpicDataDTO::getIssueId).collect(Collectors.toList());
             Map<Long, Integer> issueCountMap = issueMapper.queryIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
@@ -786,7 +796,7 @@ public class IssueServiceImpl implements IssueService {
         }
         // 如果是删除feature，将其下的issue的featureId置为0
         if ("feature".equals(issueE.getTypeCode())) {
-            issueMapper.updateEpicIdOfStoryByFeature(issueE.getIssueId(), 0L);
+            issueRepository.updateEpicIdOfStoryByFeature(issueE.getIssueId(), 0L);
             issueMapper.updateFeatureIdOfStoryByFeature(issueE.getIssueId(), 0L);
             // 删除故事地图扩列
             deleteStoryMapWidth(issueE.getIssueId());

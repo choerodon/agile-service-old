@@ -126,6 +126,10 @@ public interface IssueRepository {
 
     void batchFeatureToEpic(Long programId, Long epicId, List<Long> featureIds);
 
+    void updateEpicIdOfStoryByFeature(Long featureId, Long epicId);
+
+    void updateEpicIdOfStoryByFeatureList(List<Long> featureIds, Long epicId);
+
     void updateStatusIdBatch(Long programId, Long updateStatusId, List<IssueDO> issueDOList, Long lastUpdatedBy, Date lastUpdateDate);
 
 }

@@ -8,6 +8,7 @@ import io.choerodon.agile.app.service.ReportService;
 import io.choerodon.agile.domain.agile.converter.SprintConverter;
 import io.choerodon.agile.domain.agile.entity.ReportIssueE;
 import io.choerodon.agile.domain.agile.entity.SprintE;
+import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.repository.DataLogRepository;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
@@ -76,6 +77,8 @@ public class ReportServiceImpl implements ReportService {
     private StateMachineFeignClient stateMachineFeignClient;
     @Autowired
     private DataLogRepository dataLogRepository;
+    @Autowired
+    private UserFeignClient userFeignClient;
 
     private static final String STORY_POINTS = "storyPoints";
     private static final String REMAINING_ESTIMATED_TIME = "remainingEstimatedTime";
