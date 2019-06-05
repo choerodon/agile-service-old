@@ -65,7 +65,7 @@ public class StoryMapServiceImpl implements StoryMapService {
         if (programFeatureList != null && !projectFeatureList.isEmpty()) {
             result.addAll(projectFeatureList);
         }
-        Collections.sort(result, Comparator.comparing(FeatureCommonDO::getIssueId));
+        Collections.sort(result, (o1, o2) -> o2.getIssueId().compareTo(o1.getIssueId()));
         return result;
     }
 

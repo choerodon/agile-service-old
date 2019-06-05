@@ -1432,7 +1432,7 @@
     <update id="batchUpdateIssueEpicId">
         UPDATE agile_issue
         SET epic_id = 0
-        WHERE project_id = #{projectId} AND epic_id = #{issueId}
+        WHERE epic_id = #{issueId}
     </update>
 
     <select id="queryIssueEpicSelectList" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
