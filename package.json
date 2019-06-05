@@ -1,9 +1,9 @@
 {
   "name": "@choerodon/agile",
   "routeName": "agile",
-  "version": "0.18.4",
+  "version": "0.18.5",
   "description": "",
-  "main": "./react/src/app/agile/containers/AGILEIndex.js",
+  "main": "./lib/src/app/agile/containers/AGILEIndex.js",
   "files": [
     "lib"
   ],
