@@ -6,10 +6,29 @@ import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMap
 
 @observer
 class StoryArea extends Component {
+  renderWithSwimVersion=() => {
+    const { versionList, swimLine } = StoryMapStore;   
+    return versionList.map(version => <StoryRow version={version} storyCollapse={version.collapse} />);
+  }
+
+  renderWithNone=() => <StoryRow />
+
+  renderStory=() => {
+    const { swimLine } = StoryMapStore;
+    switch (swimLine) {
+      case 'none': {
+        return this.renderWithNone();
+      }
+      case 'version': {
+        return this.renderWithSwimVersion();
+      }
+      default: return null;
+    }
+  }
+
   render() {
-    return (
-      <StoryRow />    
-    );
+    const { versionList, swimLine } = StoryMapStore;
+    return this.renderStory();
   }
 }
 

@@ -3,7 +3,9 @@ import {
   Page, Header, Content, stores,
 } from '@choerodon/boot';
 import PropTypes from 'prop-types';
-import { Button, Select, Checkbox } from 'choerodon-ui';
+import {
+  Button, Select, Checkbox, Menu, Dropdown, 
+} from 'choerodon-ui';
 import { DragDropContextProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { observer } from 'mobx-react';
@@ -11,6 +13,7 @@ import Empty from '../../../../components/Empty';
 import noBoard from '../../../../assets/noBoard.svg';
 import Loading from '../../../../components/Loading';
 import StoryMapBody from './components/StoryMapBody';
+import SwitchSwimLine from './components/SwitchSwimLine';
 import StoryMapStore from '../../../../stores/project/StoryMap/StoryMapStore';
 
 @observer
@@ -25,6 +28,7 @@ class StoryMapHome extends Component {
 
   render() {
     const { loading, storyMapData } = StoryMapStore;
+
     return (
       <Page
         className="c7ntest-Issue c7ntest-region"
@@ -39,8 +43,9 @@ class StoryMapHome extends Component {
           >
             刷新
           </Button>
+          <SwitchSwimLine />
         </Header>
-        <Content style={{ paddingTop: 0 }}>
+        <Content style={{ padding: 0 }}>
           <Loading loading={loading} />
           {storyMapData ? (
             <Fragment>

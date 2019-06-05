@@ -6,12 +6,25 @@ import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMap
 
 @observer
 class StoryRow extends Component {
+  getFirstNotCollapseIndex = () => {
+    const { storyMapData, storyData } = StoryMapStore;
+    const { epicWithFeature } = storyMapData || {};
+    for (let i = 0; i < epicWithFeature.length; i += 1) {
+      if (!storyData[epicWithFeature[i].issueId].collapse) {
+        return i;
+      }
+    }
+    return 0;
+  }
+
   render() {
     const { collapseEpics, storyMapData, storyData } = StoryMapStore;
     const { epicWithFeature } = storyMapData || {};
+    const firstNotCollapseIndex = this.getFirstNotCollapseIndex();
+    const { storyCollapse } = this.props;
     return (
-      <tr>
-        {epicWithFeature.map(epic => <StoryCell epic={epic} otherData={storyData[epic.issueId]} />)}
+      <tr style={{ ...storyCollapse ? { height: 0 } : {} }}>
+        {epicWithFeature.map((epic, index) => <StoryCell showTitle={firstNotCollapseIndex === index} epic={epic} otherData={storyData[epic.issueId]} {...this.props} />)}
       </tr>
     );
   }
