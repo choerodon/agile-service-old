@@ -46,6 +46,7 @@ class FullEditor extends Component {
         onOk={this.handleOk}
       >
         <WYSIWYGEditor
+          autoFocus
           value={delta}
           style={{
             width: '100%', marginTop: 20, height: '100%',

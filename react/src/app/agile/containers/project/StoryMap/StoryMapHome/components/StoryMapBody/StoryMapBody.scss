@@ -1,0 +1,29 @@
+.c7nagile-StoryMapBody {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+
+  table {
+    min-height: 200px;
+    table-layout: fixed;
+    position: relative;
+    border: 1px solid #D8D8D8;
+
+    th,
+    td {
+      border: 1px solid #D8D8D8;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      // background: rgb(245, 245, 245);
+      background-clip: padding-box;
+    }
+
+    td {
+      vertical-align: top;
+      position: relative;
+      overflow: visible;
+    }
+  }
+}

@@ -613,7 +613,7 @@ class CreateIssue extends Component {
                 rules: [{ required: true, message: '问题类型为必输项' }],
                 initialValue: defaultTypeId || '',
               })(
-                <Select
+                <Select                
                   label="问题类型"
                   getPopupContainer={triggerNode => triggerNode.parentNode}
                   onChange={((value) => {

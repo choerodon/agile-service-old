@@ -1,0 +1,9 @@
+.c7nagile-StoryMap-CreateStory {
+  &-btn {
+    display: none;
+  }
+
+  &:hover &-btn {
+    display: block;
+  }
+}

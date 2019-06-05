@@ -584,7 +584,7 @@ class CreateSubBug extends Component {
             {getFieldDecorator('summary', {
               rules: [{ required: true, message: '缺陷概要为必输项' }],
             })(
-              <Input label="缺陷概要" maxLength={44} />,
+              <Input autoFocus label="缺陷概要" maxLength={44} />,
             )}
           </FormItem>
         );

@@ -1,0 +1,18 @@
+.c7nagile-StoryMap-StoryCell-title {
+  display: flex;
+  align-items: center;
+  height: 100%;
+
+  i {
+    cursor: pointer;
+  }
+
+  &-createBtn {
+    margin-left: 15px;
+    display: none;
+  }
+
+  &:hover &-createBtn {
+    display: inline-block;
+  }
+}

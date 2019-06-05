@@ -125,24 +125,14 @@ const { Text, Edit } = TextEditToggle;
               </div>
               <div className="c7n-value-wrapper">
                 <TextEditToggle                  
-                  formKey="epic"
+                  formKey="feature"
                   onSubmit={this.updateIssueFeature}
                   originData={featureId || []}
                 >
                   <Text>
                     {featureName ? (
                       <div
-                        style={{
-                          color: epicColor,
-                          borderWidth: '1px',
-                          borderStyle: 'solid',
-                          borderColor: epicColor,
-                          borderRadius: '2px',
-                          fontSize: '13px',
-                          lineHeight: '20px',
-                          padding: '0 8px',
-                          display: 'inline-block',
-                        }}
+                        style={{ color: '#3f51b5', wordBreak: 'break-word' }}
                       >
                         {featureName}
                       </div>
@@ -165,7 +155,7 @@ const { Text, Edit } = TextEditToggle;
                         });
                       }}
                     >
-                      {originFeatures.map(epic => <Option key={`${epic.issueId}`} value={epic.issueId}>{epic.summary}</Option>)}
+                      {originFeatures.map(feature => <Option key={`${feature.issueId}`} value={feature.issueId}>{feature.summary}</Option>)}
                     </Select>
                   </Edit>
                 </TextEditToggle>
