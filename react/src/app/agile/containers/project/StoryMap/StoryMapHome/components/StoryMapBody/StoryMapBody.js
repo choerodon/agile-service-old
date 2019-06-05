@@ -13,10 +13,11 @@ class StoryMapBody extends Component {
     return (
       <div className="c7nagile-StoryMapBody">        
         <table>
-          <tbody>
+          <tbody>            
             <EpicRow />
             <FeatureRow />  
             <StoryArea />
+            <tr style={{ visibility: 'hidden' }} />
           </tbody>          
         </table>        
       </div>

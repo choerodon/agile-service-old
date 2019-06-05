@@ -171,7 +171,7 @@ const { Text, Edit } = TextEditToggle;
           </div>
           <div className="c7n-value-wrapper">
             <TextEditToggle
-              disabled={IsInProgramStore.isInProgram}
+              disabled={IsInProgramStore.isInProgram || featureId}
               formKey="epic"
               onSubmit={this.updateIssueEpic}
               originData={epicId || []}

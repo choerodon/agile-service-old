@@ -54,14 +54,14 @@ class StoryCell extends Component {
 
   render() {
     const {
-      epic, otherData, showTitle, version, storyCollapse,
+      epic, otherData, showTitle, version, storyCollapse, isLastRow,
     } = this.props;
     const { storyData, storyMapData } = StoryMapStore;
     const { issueId: epicId, featureCommonDOList, adding } = epic;
     const targetEpic = storyData[epicId];
     const { collapse } = otherData || {};
     return (
-      <Cell style={{ ...collapse ? { borderBottom: 'none', borderTop: 'none' } : {} }}>
+      <Cell style={{ ...collapse ? { borderBottom: isLastRow ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {} }}>
         {collapse ? null : (
           <div>
             <div style={{ textAlign: 'left', marginLeft: -20, height: 30 }}>
