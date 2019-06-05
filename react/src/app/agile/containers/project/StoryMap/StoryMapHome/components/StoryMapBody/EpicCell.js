@@ -32,24 +32,49 @@ class EpicCell extends Component {
       typeCode,
       adding,
     } = epicData;
+    const { storys, feature } = otherData;
+    const subIssueNum = storys.length + Object.keys(feature).length;
     return (
-      <Cell style={{ paddingLeft: 0 }}>
+      <Cell style={{ paddingLeft: 0, position: 'relative', ...collapse ? { borderBottom: 'none' } : {} }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {!adding && (
-            <div style={{ width: 20 }}>
-              <Icon type={collapse ? 'navigate_next' : 'navigate_before'} onClick={this.handleCollapse} />
-            </div>
-          )}
-          {collapse ? null : (
             <Fragment>
-              <Column style={{ minHeight: 'unset' }}>
-                {adding 
-                  ? <CreateEpic />
-                  : <EpicCard epic={epicData} />}
-              </Column>
-              {!adding && <AddCard style={{ height: 42 }} onClick={this.handleAddEpicClick} />}
+              <div style={{
+                width: 20,
+                height: 50,
+                display: 'flex',
+                alignItems: 'center',
+                ...collapse ? { marginRight: 25 } : {},                
+              }}
+              >
+                <Icon type={collapse ? 'navigate_next' : 'navigate_before'} onClick={this.handleCollapse} />
+              </div>
             </Fragment>
           )}
+          {collapse
+            ? (
+              <div style={{
+                width: 26,
+                overflow: 'hidden',
+                wordBreak: 'break-all',
+                whiteSpace: 'pre-wrap',
+                position: 'absolute',
+                top: 20,
+                marginLeft: 20,
+              }}
+              >
+                {`${epicData.summary} (${subIssueNum})`}
+              </div>
+            ) : (
+              <Fragment>
+                <Column style={{ minHeight: 'unset' }}>
+                  {adding
+                    ? <CreateEpic />
+                    : <EpicCard epic={epicData} subIssueNum={subIssueNum} />}
+                </Column>
+                {!adding && <AddCard style={{ height: 42 }} onClick={this.handleAddEpicClick} />}
+              </Fragment>
+            )}
         </div>
       </Cell>
     );

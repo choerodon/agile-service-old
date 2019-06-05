@@ -16,7 +16,7 @@ class StoryCell extends Component {
     const targetEpic = storyData[epicId];
     const { collapse } = otherData || {};
     return (
-      <Cell>
+      <Cell style={{ ...collapse ? { borderBottom: 'none', borderTop: 'none' } : {} }}>
         {collapse ? null : (
           <div style={{ display: 'flex' }}>
             {

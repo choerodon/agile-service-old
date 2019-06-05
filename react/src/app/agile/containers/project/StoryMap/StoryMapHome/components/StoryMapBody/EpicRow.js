@@ -11,7 +11,7 @@ class EpicRow extends Component {
     const { epicWithFeature } = storyMapData || {};
 
     return (
-      <tr>
+      <tr style={{ height: 60 }}>
         {epicWithFeature ? epicWithFeature.map((epicData, index) => <EpicCell index={index} epicData={epicData} otherData={storyData[epicData.issueId]} />) : null}
       </tr>
     );

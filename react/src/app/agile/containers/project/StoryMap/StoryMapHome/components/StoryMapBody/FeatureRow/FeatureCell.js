@@ -23,7 +23,7 @@ class FeatureCell extends Component {
     const { collapse } = otherData || {};
     const hasAddingFeature = find(featureCommonDOList, { adding: true });
     return (
-      <Cell>
+      <Cell style={{ ...collapse ? { borderBottom: 'none', borderTop: 'none' } : {} }}>
         {collapse ? null : (
           <div style={{ display: 'flex' }}>        
             {adding ? null : (
