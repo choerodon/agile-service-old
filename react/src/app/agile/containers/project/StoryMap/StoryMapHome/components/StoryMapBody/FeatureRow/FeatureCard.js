@@ -12,7 +12,9 @@ class FeatureCard extends Component {
     const { featureType, summary } = feature;
     return (
       <Card className={`c7nagile-StoryMap-FeatureCard ${featureType}`}>
-        {summary}
+        <div className="summary">
+          {summary}
+        </div>        
       </Card>
     );
   }

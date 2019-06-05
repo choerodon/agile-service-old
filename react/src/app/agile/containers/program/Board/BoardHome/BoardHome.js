@@ -150,6 +150,8 @@ class BoardHome extends Component {
             height: 48,
             alignItems: 'center',
             borderBottom: '1px solid rgba(0,0,0,.12)',
+            position: 'sticky',
+            left: 0,
           }}
           >
             <Select

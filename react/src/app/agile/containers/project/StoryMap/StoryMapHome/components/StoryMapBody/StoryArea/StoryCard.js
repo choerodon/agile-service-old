@@ -9,7 +9,9 @@ class StoryCard extends Component {
     const { story } = this.props;
     return (
       <Card className="c7nagile-StoryMap-StoryCard">
-        {story.summary}
+        <div className="summary">
+          {story.summary}
+        </div>     
       </Card>
     );
   }

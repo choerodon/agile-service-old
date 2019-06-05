@@ -12,4 +12,14 @@
   .c7n-input-content {
     // margin-bottom: 0;
   }
+
+  .summary {
+    height: 40px;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    word-break: break-all;
+    white-space: normal;
+  }
 }

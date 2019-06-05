@@ -23,7 +23,7 @@ class EpicCell extends Component {
 
   render() {
     const { epicData, otherData } = this.props;
-    const { collapse } = otherData || {};
+    const { collapse, storys, feature } = otherData || {};
     const {
       featureCommonDOList,
       issueId,
@@ -32,8 +32,10 @@ class EpicCell extends Component {
       typeCode,
       adding,
     } = epicData;
-    const { storys, feature } = otherData;
-    const subIssueNum = storys.length + Object.keys(feature).length;
+    let subIssueNum = 0;
+    if (storys && feature) {
+      subIssueNum = storys.length + Object.keys(feature).length;
+    }     
     return (
       <Cell style={{ paddingLeft: 0, position: 'relative', ...collapse ? { borderBottom: 'none' } : {} }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
