@@ -21,6 +21,11 @@ class EpicCell extends Component {
     StoryMapStore.addEpic(epicData);
   }
 
+  handleCreateEpic=(newEpic) => {
+    const { index } = this.props;
+    StoryMapStore.afterCreateEpic(index, newEpic);
+  }
+
   render() {
     const { epicData, otherData } = this.props;
     const { collapse, storys, feature } = otherData || {};
@@ -71,7 +76,7 @@ class EpicCell extends Component {
               <Fragment>
                 <Column style={{ minHeight: 'unset' }}>
                   {adding
-                    ? <CreateEpic />
+                    ? <CreateEpic onCreate={this.handleCreateEpic} />
                     : <EpicCard epic={epicData} subIssueNum={subIssueNum} />}
                 </Column>
                 {!adding && <AddCard style={{ height: 42 }} onClick={this.handleAddEpicClick} />}

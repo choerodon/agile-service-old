@@ -17,8 +17,8 @@ class StoryMapBody extends Component {
             <EpicRow />
             <FeatureRow />  
             <StoryArea />
-            <tr style={{ visibility: 'hidden' }} />
-          </tbody>          
+            {/* <tr style={{ visibility: 'hidden', height: 'auto' }} /> */}
+          </tbody>
         </table>        
       </div>
     );

@@ -4,12 +4,14 @@ import {
   find, findIndex, max, remove, groupBy,
 } from 'lodash';
 import { getStoryMap } from '../../../api/StoryMapApi';
-import { loadIssueTypes, loadVersions } from '../../../api/NewIssueApi';
+import { loadIssueTypes, loadVersions, loadPriorities } from '../../../api/NewIssueApi';
 
 class StoryMapStore {
   @observable swimLine = 'none';
 
   @observable issueTypes = [];
+
+  @observable prioritys = [];
 
   @observable versionList = [];
 
@@ -23,8 +25,9 @@ class StoryMapStore {
 
   getStoryMap = () => {
     this.setLoading(true);
-    Promise.all([getStoryMap(), loadIssueTypes(), loadVersions()]).then(([storyMapData, issueTypes, versionList]) => {
+    Promise.all([getStoryMap(), loadIssueTypes(), loadVersions(), loadPriorities()]).then(([storyMapData, issueTypes, versionList, prioritys]) => {
       this.issueTypes = issueTypes;
+      this.prioritys = prioritys;
       this.initVersionList(versionList);
       this.setStoryMapData(storyMapData);
       this.initStoryData(storyMapData);
@@ -52,7 +55,7 @@ class StoryMapStore {
     }]);
   }
 
-  @action initStoryData({ epicWithFeature, storyList }) {
+  @action initStoryData({ epicWithFeature, storyList, storyMapWidth }) {
     const storyData = {};
     epicWithFeature.forEach((epic) => {
       const { issueId: epicId } = epic;
@@ -60,15 +63,16 @@ class StoryMapStore {
         epicId,
         collapse: false,
         storys: [],
-        feature: {},        
+        feature: {},
       };
       const targetFeature = storyData[epicId].feature;
       epic.featureCommonDOList.forEach((feature) => {
         if (!targetFeature[feature.issueId]) {
+          const featureWithWidth = find(storyMapWidth, { issueId: feature.issueId });
           targetFeature[feature.issueId] = {
             storys: [],
             version: {},
-            // width: 2,
+            width: featureWithWidth ? featureWithWidth.width : 1,
           };
         }
       });
@@ -92,7 +96,7 @@ class StoryMapStore {
           targetFeature.version.none.push(story);
         }
         storyMapVersionDOList.forEach((version) => {
-          const { versionId } = version;            
+          const { versionId } = version;
           if (!targetFeature.version[versionId]) {
             targetFeature.version[versionId] = [];
           }
@@ -109,11 +113,11 @@ class StoryMapStore {
     this.storyData[epicId].collapse = !this.storyData[epicId].collapse;
   }
 
-  @action collapseStory(id) {    
+  @action collapseStory(id) {
     switch (this.swimLine) {
       case 'version': {
         const targetVersion = find(this.versionList, { versionId: id });
-        targetVersion.collapse = !targetVersion.collapse;       
+        targetVersion.collapse = !targetVersion.collapse;
         break;
       }
       default: break;
@@ -131,6 +135,16 @@ class StoryMapStore {
     this.storyMapData.epicWithFeature.splice(currentIndex + 1, 0, epic);
   }
 
+  @action afterCreateEpic(index, newEpic) {
+    this.storyMapData.epicWithFeature[index] = { ...newEpic, featureCommonDOList: [] };
+    this.storyData[newEpic.issueId] = {
+      epicId: newEpic.issueId,
+      collapse: false,
+      storys: [],
+      feature: {},
+    };
+  }
+
   @action addFeature(epicData) {
     const feature = {
       adding: true,
@@ -140,6 +154,18 @@ class StoryMapStore {
     const currentIndex = findIndex(this.storyMapData.epicWithFeature, { issueId: epicData.issueId });
     // console.log(currentIndex);
     this.storyMapData.epicWithFeature[currentIndex].featureCommonDOList.push(feature);
+  }
+
+  @computed get getEpicType() {
+    return find(this.issueTypes, { typeCode: 'issue_epic' });
+  }
+
+  @computed get getFeatureType() {
+    return find(this.issueTypes, { typeCode: 'feature' });
+  }
+
+  @computed get getDefaultPriority() {
+    return find(this.prioritys, { default: true }) || this.prioritys[0];
   }
 }
 

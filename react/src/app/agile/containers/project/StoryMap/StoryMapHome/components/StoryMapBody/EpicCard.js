@@ -8,7 +8,7 @@ class EpicCard extends Component {
     const { epic, subIssueNum } = this.props;
     return (
       <Card className="c7nagile-StoryMap-EpicCard" style={{ height: 42 }}>
-        {`${epic.summary} (${subIssueNum})`}
+        {`${epic.epicName} (${subIssueNum})`}
       </Card>
     );
   }

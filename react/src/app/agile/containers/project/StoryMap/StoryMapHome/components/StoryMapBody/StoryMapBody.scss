@@ -4,15 +4,15 @@
   overflow: auto;
 
   table {
-    min-height: 100%;
+    // min-height: 100%;
     table-layout: fixed;
     position: relative;
     border-collapse: separate;
     /* the default option */
     border-spacing: 0;
-    /* remove border gaps */
-    // border: 1px solid #D8D8D8;
 
+    /* remove border gaps */
+    // border: 1px solid #D8D8D8;   
     th,
     td {
       text-align: center;
@@ -32,7 +32,14 @@
       vertical-align: top;
       position: relative;
       overflow: visible;
-      height: 1px; //使td中的div可以充满td
+      height: 3px; //使td中的div可以充满td
+    }
+
+    /* FireFox */
+    @-moz-document url-prefix() {
+      td {
+        height: 100%;
+      }
     }
   }
 }

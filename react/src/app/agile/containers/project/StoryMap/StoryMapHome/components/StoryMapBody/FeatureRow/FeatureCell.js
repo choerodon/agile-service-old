@@ -17,6 +17,10 @@ class FeatureCell extends Component {
     StoryMapStore.addFeature(epicData);
   }
 
+  handleCreateFeature=(newFeature) => {
+    
+  }
+
   render() {
     const { epicData, otherData } = this.props;
     const { featureCommonDOList, adding } = epicData;
@@ -29,7 +33,7 @@ class FeatureCell extends Component {
             {adding ? null : (
               <Fragment>
                 {featureCommonDOList.filter(feature => !feature.adding).map(feature => <FeatureColumn feature={feature} otherData={otherData.feature[feature.issueId]} />)}
-                {hasAddingFeature ? <CreateFeature /> : <AddCard style={{ height: CardHeight, marginTop: 5 }} onClick={this.handleAddFeatureClick} />}
+                {hasAddingFeature ? <CreateFeature onCreate={this.handleCreateFeature} /> : <AddCard style={{ height: CardHeight, marginTop: 5 }} onClick={this.handleAddFeatureClick} />}
               </Fragment>
             )}
             
