@@ -106,6 +106,8 @@
         <id column="ai_summary" property="summary"/>
         <id column="ai_epic_id" property="epicId"/>
         <id column="ai_feature_id" property="featureId"/>
+        <id column="ai_issue_type_id" property="issueTypeId"/>
+        <id column="ai_status_id" property="statusId"/>
         <collection property="storyMapVersionDOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.StoryMapVersionDO">
             <id property="versionId" column="version_version_id"/>
             <id property="name" column="version_name"/>
@@ -152,6 +154,8 @@
         ai.issue_id as ai_issue_id,
         IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) as ai_issue_num,
         ai.summary as ai_summary,
+        ai.issue_type_id as ai_issue_type_id,
+        ai.status_id as ai_status_id,
         version_info.version_id as version_version_id,
         version_info.name as version_name
         from agile_issue ai

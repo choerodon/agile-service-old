@@ -3,13 +3,10 @@ package io.choerodon.agile.app.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.StoryMapValidator;
+import io.choerodon.agile.app.assembler.StoryMapAssembler;
 import io.choerodon.agile.app.service.StoryMapService;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
-import io.choerodon.agile.infra.dataobject.EpicWithFeatureDO;
-import io.choerodon.agile.infra.dataobject.FeatureCommonDO;
-import io.choerodon.agile.infra.dataobject.VersionIssueRelDO;
-import io.choerodon.agile.infra.dataobject.IssueDO;
-import io.choerodon.agile.infra.dataobject.StoryMapWidthDO;
+import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.StoryMapMapper;
@@ -54,6 +51,9 @@ public class StoryMapServiceImpl implements StoryMapService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private StoryMapAssembler storyMapAssembler;
 
 
     private List<FeatureCommonDO> setFeatureWithoutEpicByProgram(Long programId, Long projectId) {
@@ -118,7 +118,8 @@ public class StoryMapServiceImpl implements StoryMapService {
     @Override
     public JSONObject queryStoryMapDemand(Long projectId, SearchDTO searchDTO) {
         JSONObject result = new JSONObject(true);
-        result.put("demandStoryList", storyMapMapper.selectDemandStoryList(projectId, searchDTO));
+        List<StoryMapStoryDO> storyMapStoryDOList = storyMapMapper.selectDemandStoryList(projectId, searchDTO);
+        result.put("demandStoryList", storyMapAssembler.storyMapStoryDOToDTO(projectId, storyMapStoryDOList));
         return result;
     }
 
@@ -134,14 +135,7 @@ public class StoryMapServiceImpl implements StoryMapService {
         storyMapValidator.checkFeatureExist(featureId);
         List<Long> issueIds = storyMapDragDTO.getFeatureIssueIds();
         if (issueIds != null && !issueIds.isEmpty()) {
-            Long updateEpicId = null;
-            if (Objects.equals(featureId, 0L)) {
-                updateEpicId = 0L;
-            } else {
-                IssueDO feature = issueMapper.selectByPrimaryKey(featureId);
-                updateEpicId = (feature.getEpicId() == null ? 0L : feature.getEpicId());
-            }
-            issueRepository.batchStoryToFeature(projectId, featureId, issueIds, updateEpicId);
+            issueRepository.batchStoryToFeature(projectId, featureId, issueIds, null);
         }
     }
 
@@ -174,6 +168,8 @@ public class StoryMapServiceImpl implements StoryMapService {
         Long epicId = storyMapDragDTO.getEpicId();
         Long featureId = storyMapDragDTO.getFeatureId();
         Long versionId = storyMapDragDTO.getVersionId();
+        // 排除featureId不在epicId下的情况
+        storyMapValidator.checkFeatureUnderEpic(featureId, epicId);
         if (epicId != null) {
             dragToEpic(projectId, epicId, storyMapDragDTO);
         }

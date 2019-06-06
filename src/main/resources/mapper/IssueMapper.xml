@@ -1256,7 +1256,10 @@
 
     <update id="batchStoryToFeature">
         update agile_issue
-        set feature_id = #{featureId}, epic_id = #{updateEpicId}
+        set feature_id = #{featureId}
+        <if test="updateEpicId != null">
+            , epic_id = #{updateEpicId}
+        </if>
         where project_id = #{projectId} and type_code = 'story' and issue_id in
         <foreach collection="issueIds" item="issueId" open="("
                  separator="," close=")">
