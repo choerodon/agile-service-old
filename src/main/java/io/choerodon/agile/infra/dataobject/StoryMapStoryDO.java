@@ -18,6 +18,8 @@ public class StoryMapStoryDO {
 
     private Long featureId;
 
+    private Boolean completed;
+
     private Long issueTypeId;
 
     private Long statusId;
@@ -86,5 +88,13 @@ public class StoryMapStoryDO {
 
     public void setStatusId(Long statusId) {
         this.statusId = statusId;
+    }
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
+    }
+
+    public Boolean getCompleted() {
+        return completed;
     }
 }
