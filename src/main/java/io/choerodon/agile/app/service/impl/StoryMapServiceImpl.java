@@ -129,8 +129,13 @@ public class StoryMapServiceImpl implements StoryMapService {
         storyMapValidator.checkFeatureExist(featureId);
         List<Long> issueIds = storyMapDragDTO.getFeatureIssueIds();
         if (issueIds != null && !issueIds.isEmpty()) {
-            IssueDO feature = issueMapper.selectByPrimaryKey(featureId);
-            Long updateEpicId = (feature.getEpicId() == null ? 0L : feature.getEpicId());
+            Long updateEpicId = null;
+            if (Objects.equals(featureId, 0L)) {
+                updateEpicId = 0L;
+            } else {
+                IssueDO feature = issueMapper.selectByPrimaryKey(featureId);
+                updateEpicId = (feature.getEpicId() == null ? 0L : feature.getEpicId());
+            }
             issueRepository.batchStoryToFeature(projectId, featureId, issueIds, updateEpicId);
         }
     }
