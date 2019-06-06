@@ -177,10 +177,14 @@ class StoryMapStore {
       adding: true,
     };
     // 删掉之前正在创建的
-    remove(this.storyMapData.epicWithFeature, { adding: true });
+    this.removeAddingEpic();
     const currentIndex = findIndex(this.storyMapData.epicWithFeature, { issueId: epicData.issueId });
     // console.log(currentIndex);
     this.storyMapData.epicWithFeature.splice(currentIndex + 1, 0, epic);
+  }
+
+  @action removeAddingEpic() {
+    remove(this.storyMapData.epicWithFeature, { adding: true });
   }
 
   @action afterCreateEpic(index, newEpic) {

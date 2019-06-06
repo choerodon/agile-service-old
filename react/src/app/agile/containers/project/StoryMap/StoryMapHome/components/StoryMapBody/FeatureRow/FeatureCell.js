@@ -36,7 +36,7 @@ class FeatureCell extends Component {
                 {featureCommonDOList.filter(feature => !feature.adding).map(feature => <FeatureColumn feature={feature} otherData={otherData.feature[feature.issueId]} />)}
                 {hasAddingFeature ? <CreateFeature onCreate={this.handleCreateFeature} epicId={epicData.issueId} /> : <AddCard style={{ height: CardHeight, marginTop: 5 }} onClick={this.handleAddFeatureClick} />}
                 {/* 没有关联feature，但是关联了史诗的故事 */}
-                {otherData.feature.none.storys.length > 0 && <FeatureColumn feature={{ issueId: 'none' }} otherData={otherData.feature.none} />}
+                {otherData.feature.none && otherData.feature.none.storys.length > 0 && <FeatureColumn feature={{ issueId: 'none' }} otherData={otherData.feature.none} />}
               </Fragment>
             )}
           </div>

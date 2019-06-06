@@ -60,7 +60,10 @@ class StoryCell extends Component {
     const { issueId: epicId, featureCommonDOList, adding } = epic;
     const targetEpic = storyData[epicId];
     const { collapse } = otherData || {};
-    const epicStorys = targetEpic.feature.none.storys;
+    let epicStorys = [];
+    if (targetEpic && targetEpic.feature && targetEpic.feature.none) {
+      epicStorys = targetEpic.feature.none.storys;
+    }    
     const featureList = epicStorys.length > 0 ? featureCommonDOList.concat([{ issueId: 'none' }]) : featureCommonDOList;
     return (
       <Cell style={{ ...collapse ? { borderBottom: isLastRow ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {} }}>

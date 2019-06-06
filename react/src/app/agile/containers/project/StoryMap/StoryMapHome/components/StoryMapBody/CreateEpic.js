@@ -24,6 +24,14 @@ class CreateEpic extends Component {
         priorityId: defaultPriority.id,
       };
       createIssue(req).then((res) => {
+        if (res.failed) {
+          if (res.code === 'error.epicName.exist') {
+            Choerodon.prompt('史诗名称已存在');
+          } else {
+            Choerodon.prompt('创建失败');
+          }
+          return;
+        }
         const dto = {
           schemeCode: 'agile_issue',
           context: res.typeCode,
@@ -32,6 +40,8 @@ class CreateEpic extends Component {
         onCreate(res);
         createIssueField(res.issueId, dto);
       });
+    } else {
+      StoryMapStore.removeAddingEpic();
     }
   }
 
