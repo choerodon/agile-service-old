@@ -262,6 +262,7 @@ const { Text, Edit } = TextEditToggle;
         </div>
         <div className="c7n-value-wrapper" style={{ width: 'auto' }}>
           <TextEditToggle
+            style={{ width: '100%', maxWidth: '200px' }}
             formKey={fieldCode}
             onSubmit={this.updateIssueField}
             originData={this.transform(fieldType, value)}

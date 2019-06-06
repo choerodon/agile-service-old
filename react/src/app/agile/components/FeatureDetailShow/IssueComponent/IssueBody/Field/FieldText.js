@@ -95,6 +95,7 @@ const { TextArea } = Input;
             formKey={fieldCode}
             onSubmit={this.updateIssueField}
             originData={value}
+            style={{ width: '100%', maxWidth: '200px' }}
           >
             <Text>
               <div style={{
@@ -109,7 +110,7 @@ const { TextArea } = Input;
             </Text>
             <Edit>
               <TextArea
-                style={{ minWidth: 200 }}
+                style={{ maxWidth: 200 }}
                 autosize
                 maxLength={feature ? 100 : 44}
                 onChange={(e) => {

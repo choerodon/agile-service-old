@@ -109,6 +109,7 @@ const { Text, Edit } = TextEditToggle;
         </div>
         <div className="c7n-value-wrapper">
           <TextEditToggle
+            style={{ width: '100%', maxWidth: '200px' }}
             formKey="version"
             onSubmit={this.updateIssueVersion}
             originData={this.transToArr(influenceVersions, 'name', 'array')}
@@ -136,7 +137,7 @@ const { Text, Edit } = TextEditToggle;
                 loading={selectLoading}
                 getPopupContainer={triggerNode => triggerNode.parentNode}
                 tokenSeparators={[',']}
-                style={{ width: '180px', marginTop: 0, paddingTop: 0 }}
+                style={{ width: '100%', marginTop: 0, paddingTop: 0 }}
                 onChange={(value) => {
                   const versions = value.filter(v => v && v.trim()).map((item) => {
                     if (_.find(originVersions, { name: item })) {
