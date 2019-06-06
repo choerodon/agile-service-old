@@ -5,11 +5,30 @@ import { DragSource } from 'react-dnd';
 import { find } from 'lodash';
 import { CardWidth, CardHeight, CardMargin } from '../../../Constants';
 import { storyMove } from '../../../../../../../api/StoryMapApi';
+import AutoScroll from '../../../../../../../common/AutoScroll';
 import Card from '../Card';
 import './StoryCard.scss';
 import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
 
 class StoryCard extends Component {
+  componentDidMount() {
+    this.AutoScroll = new AutoScroll({
+      scrollElement: document.getElementsByClassName('c7nagile-StoryMapBody')[0],      
+      pos: {
+        left: 200,
+        top: 150,
+        bottom: 150,
+        right: 150,
+      },
+      type: 'drag',
+    });
+  }
+
+  handleMouseDown = (e) => {
+    console.log('down');
+    this.AutoScroll.prepare(e);
+  }
+
   handlRemoveStory = () => {
     const { story } = this.props;
     const { issueId } = story;
@@ -30,7 +49,7 @@ class StoryCard extends Component {
   render() {
     const { story, connectDragSource } = this.props;
     return (
-      <Card className="c7nagile-StoryMap-StoryCard" saveRef={connectDragSource}>
+      <Card className="c7nagile-StoryMap-StoryCard" saveRef={connectDragSource} onMouseDown={this.handleMouseDown}>
         <Icon type="close" className="c7nagile-StoryMap-StoryCard-delete" onClick={this.handlRemoveStory} />
         <div className="summary">
           {story.summary}

@@ -9,19 +9,19 @@ import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMap
 
 @observer
 class StoryColumn extends Component {
-  handleCreateStory=(newStory) => {
+  handleCreateStory = (newStory) => {
     const { epicIndex, featureIndex } = this.props;
     StoryMapStore.afterCreateStory(newStory);
   }
 
   render() {
     const {
-      storys, width, epic, feature, version, connectDropTarget,
+      storys, width, epic, feature, version, connectDropTarget, isOver,
     } = this.props;
     // console.log(storys);
-    return (  
-      <Column width={width} saveRef={connectDropTarget}>
-        <div>
+    return (
+      <Column width={width} saveRef={connectDropTarget} style={{ background: isOver ? 'rgb(240,240,240)' : 'white' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           {storys && storys.map(story => <StoryCard story={story} version={version} />)}
           <CreateStory onCreate={this.handleCreateStory} epic={epic} feature={feature} version={version} />
         </div>

@@ -70,7 +70,7 @@ class EpicCell extends Component {
                 marginLeft: 20,
               }}
               >
-                {`${epicData.summary} (${subIssueNum})`}
+                {`${epicData.epicName} (${subIssueNum})`}
               </div>
             ) : (
               <Fragment>
