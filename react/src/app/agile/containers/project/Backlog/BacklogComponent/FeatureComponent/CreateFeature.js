@@ -104,7 +104,7 @@ class CreateFeature extends Component {
           }}
           title={`创建项目“${AppState.currentMenuType.name}”的特性`}
           description="请在下面输入特性名称，创建新特性。"
-          link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/backlog/epic/"
+          link="http://v0-16.choerodon.io/zh/docs/user-guide/safe/feature-list/create-feature/"
         >
           <Form style={{ width: 512 }}>
             <FormItem>

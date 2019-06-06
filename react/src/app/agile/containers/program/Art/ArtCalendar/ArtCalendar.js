@@ -100,16 +100,36 @@ class ArtCalendar extends Component {
     });
   };
 
+  getItemStatus = (pi, sprint, todayIsBetweenPI, index, sprintListLength, ip) => {
+    if (pi.statusCode === 'doing') {
+      const todayIsBetween = moment().isBetween(sprint.startDate, sprint.endDate);
+      if (todayIsBetween) {
+        return 'doing';
+      } else if (moment().isBefore(moment(sprint.startDate))) {
+        return !todayIsBetweenPI && index === 0 ? 'doing' : 'todo';
+      } else if (moment().isAfter(moment(sprint.endDate))) {
+        return !todayIsBetweenPI && index === sprintListLength && !ip ? 'doing' : 'todo';
+      }
+    } else if (pi.statusCode === 'todo') {
+      return 'todo';
+    } else if (pi.statusCode === 'done') {
+      return 'done';
+    }
+  };
+
   getSchedules = (data) => {
     const schedules = [];
     if (data) {
       data.forEach((pi) => {
         const sprintList = pi.sprintCalendarDTOList.sort((a, b) => a.sprintId - b.sprintId);
+        const todayIsBetweenPI = moment().isBetween(pi.startDate, pi.endDate);
+        const sprintListLength = sprintList.length;
         if (sprintList) {
-          sprintList.forEach((sprint) => {
+          const ipDays = sprintList && sprintList.length > 0 ? !moment(lastSprintEndDate).isSame(pi.endDate) : false;
+          sprintList.forEach((sprint, index) => {
             schedules.push({
               id: sprint.sprintId,
-              calendarId: '0',
+              calendarId: this.getItemStatus(pi, sprint, todayIsBetweenPI, index, sprintListLength, ipDays),
               title: `${sprint.sprintName}`,
               category: 'allday',
               dueDateClass: '',
@@ -118,11 +138,10 @@ class ArtCalendar extends Component {
             });
           });
           const lastSprintEndDate = sprintList[sprintList.length - 1].endDate;
-          const piDays = sprintList && sprintList.length > 0 ? !moment(lastSprintEndDate).isSame(pi.endDate) : false;
-          if (piDays) {
+          if (ipDays) {
             schedules.push({
               id: `ip-${pi.id}`,
-              calendarId: '1',
+              calendarId: 'ip',
               title: `${pi.code}-${pi.name} IP`,
               category: 'allday',
               dueDateClass: '',
@@ -201,14 +220,26 @@ class ArtCalendar extends Component {
                       <Calendar
                         calendars={[
                           {
-                            id: '0',
+                            id: 'done',
                             name: 'Sprint',
-                            bgColor: '#E5F9F6',
+                            bgColor: '#D2F7F2',
                             borderColor: '#FFF',
                           },
                           {
-                            id: '1',
-                            name: 'PI',
+                            id: 'doing',
+                            name: 'Sprint',
+                            bgColor: '#E3EFFF',
+                            borderColor: '#FFF',
+                          },
+                          {
+                            id: 'todo',
+                            name: 'Sprint',
+                            bgColor: '#FFF4D6',
+                            borderColor: '#FFF',
+                          },
+                          {
+                            id: 'ip',
+                            name: 'IP',
                             bgColor: '#F7F7F7',
                             borderColor: '#FFF',
                           },
