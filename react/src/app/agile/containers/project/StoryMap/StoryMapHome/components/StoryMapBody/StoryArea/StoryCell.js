@@ -14,7 +14,7 @@ class StoryCell extends Component {
   renderTitle = (storyCollapse) => {
     const { swimLine } = StoryMapStore;
     const { version } = this.props;
-    
+
     switch (swimLine) {
       case 'none': {
         return null;
@@ -54,30 +54,31 @@ class StoryCell extends Component {
 
   render() {
     const {
-      epic, otherData, showTitle, version, storyCollapse, isLastRow,
+      epic, otherData, showTitle, version, storyCollapse, isLastRow, epicIndex,
     } = this.props;
     const { storyData, swimLine } = StoryMapStore;
     const { issueId: epicId, featureCommonDOList, adding } = epic;
     const targetEpic = storyData[epicId];
     const { collapse } = otherData || {};
+    const epicStorys = targetEpic.feature.none.storys;
+    const featureList = epicStorys.length > 0 ? featureCommonDOList.concat([{ issueId: 'none' }]) : featureCommonDOList;
     return (
       <Cell style={{ ...collapse ? { borderBottom: isLastRow ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {} }}>
         {collapse ? null : (
           <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             {swimLine !== 'none' && (
-            <div style={{ textAlign: 'left', marginLeft: -20, height: 30 }}>
-              {showTitle && this.renderTitle(storyCollapse)}
-            </div>
+              <div style={{ textAlign: 'left', marginLeft: -20, height: 30 }}>
+                {showTitle && this.renderTitle(storyCollapse)}
+              </div>
             )}
             <div style={{ display: 'flex', flex: 1 }}>
               {
                 adding ? null : (
                   <Fragment>
-                    {storyCollapse ? null : featureCommonDOList.filter(feature => !feature.adding).map((feature) => {
+                    {storyCollapse ? null : featureList.filter(feature => !feature.adding).map((feature, index) => {
                       const targetFeature = targetEpic.feature[feature.issueId] || {};
-                      return targetFeature && <StoryColumn storys={this.getStorys(targetFeature)} width={targetFeature.width} />;
-                    })}
-                    {/* <AddCard style={{ height: CardHeight, marginTop: 5 }} /> */}
+                      return targetFeature && <StoryColumn feature={feature} featureIndex={index} storys={this.getStorys(targetFeature)} width={targetFeature.width} {...this.props} />;
+                    })}                    
                   </Fragment>
                 )
               }

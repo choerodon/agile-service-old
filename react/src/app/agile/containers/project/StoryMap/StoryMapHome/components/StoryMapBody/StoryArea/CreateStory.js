@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import { Input } from 'choerodon-ui';
 import Card from '../Card';
 import './CreateStory.scss';
+import { createIssue, createIssueField } from '../../../../../../../api/NewIssueApi';
+import { getProjectId } from '../../../../../../../common/utils';
+import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
 
 class CreateStory extends Component {
   state = {
@@ -12,7 +15,41 @@ class CreateStory extends Component {
   handleBlur = (e) => {   
     const { value } = e.target;
     if (value) {
-      // console.log('value');
+      const { swimLine } = StoryMapStore;
+      const {
+        onCreate, epic, feature, version, 
+      } = this.props;
+      const storyType = StoryMapStore.getIssueTypeByCode('story');
+      const defaultPriority = StoryMapStore.getDefaultPriority;
+      const req = {
+        epicId: epic.issueId,
+        featureId: feature.issueId === 'none' ? 0 : feature.issueId,
+        projectId: getProjectId(),      
+        summary: value,
+        typeCode: 'story',
+        issueTypeId: storyType.id,
+        priorityCode: `priority-${defaultPriority.id}`,
+        priorityId: defaultPriority.id,
+        ...swimLine === 'version' ? {
+          versionIssueRelDTOList: [{
+            ...version,
+            relationType: 'fix',
+          }],
+        } : {},
+      };
+      createIssue(req).then((res) => {
+        const dto = {
+          schemeCode: 'agile_issue',
+          context: res.typeCode,
+          pageCode: 'agile_issue_create',
+        };
+        this.setState({
+          adding: false,
+        });
+        const { versionIssueRelDTOList } = res;
+        onCreate({ ...res, storyMapVersionDOList: versionIssueRelDTOList });
+        createIssueField(res.issueId, dto);
+      });
     } else {
       this.setState({
         adding: false,

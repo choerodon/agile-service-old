@@ -2,4 +2,18 @@
   background: #AEE9E0;
   border-radius: 2px;
   padding: 12px;
+
+  &-delete {
+    color: #4A4A4A;
+    cursor: pointer;
+    display: none;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    font-size: 12px;
+  }
+
+  &:hover &-delete {
+    display: block;
+  }
 }

@@ -21,16 +21,18 @@ class CreateFeature extends Component {
     // console.log(e.target.value);
     const { value } = e.target;
     if (value !== '') {
-      const { onCreate } = this.props;
+      const { onCreate, epicId } = this.props;
       const { featureType } = this.state;
       const featureTypeDTO = StoryMapStore.getFeatureType;
       const defaultPriority = StoryMapStore.getDefaultPriority;
       const req = {
         projectId: getProjectId(),
-        epicName: value,
-        summary: '',
+        epicId,      
+        summary: value,
         typeCode: 'feature',
-        featureType,
+        featureDTO: {
+          featureType,
+        },        
         issueTypeId: featureTypeDTO.id,
         priorityCode: `priority-${defaultPriority.id}`,
         priorityId: defaultPriority.id,
@@ -41,7 +43,7 @@ class CreateFeature extends Component {
           context: res.typeCode,
           pageCode: 'agile_issue_create',
         };
-        onCreate(res);
+        onCreate({ ...res, featureType });
         createIssueField(res.issueId, dto);
       });
     }

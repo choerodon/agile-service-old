@@ -12,7 +12,7 @@ class FeatureRow extends Component {
     
     return (
       <tr style={{ height: 82 }}>
-        {epicWithFeature ? epicWithFeature.map(epicData => <FeatureCell epicData={epicData} otherData={storyData[epicData.issueId]} />) : null}
+        {epicWithFeature ? epicWithFeature.map((epicData, index) => <FeatureCell EpicIndex={index} epicData={epicData} otherData={storyData[epicData.issueId]} />) : null}
       </tr>
     );
   }

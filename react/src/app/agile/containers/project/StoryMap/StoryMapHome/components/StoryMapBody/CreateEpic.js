@@ -17,7 +17,7 @@ class CreateEpic extends Component {
       const req = {
         projectId: getProjectId(),
         epicName: value,
-        summary: '',
+        summary: value,
         typeCode: 'issue_epic',
         issueTypeId: epicType.id,
         priorityCode: `priority-${defaultPriority.id}`,

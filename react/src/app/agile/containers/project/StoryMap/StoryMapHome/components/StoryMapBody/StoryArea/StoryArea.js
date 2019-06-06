@@ -7,7 +7,7 @@ import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMap
 @observer
 class StoryArea extends Component {
   renderWithSwimVersion=() => {
-    const { versionList, swimLine } = StoryMapStore;   
+    const { versionList } = StoryMapStore;   
     return versionList.map((version, index) => <StoryRow isLastRow={index === versionList.length - 1} version={version} storyCollapse={version.collapse} />);
   }
 
@@ -27,7 +27,6 @@ class StoryArea extends Component {
   }
 
   render() {
-    const { versionList, swimLine } = StoryMapStore;
     return this.renderStory();
   }
 }

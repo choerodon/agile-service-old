@@ -18,7 +18,8 @@ class FeatureCell extends Component {
   }
 
   handleCreateFeature=(newFeature) => {
-    
+    const { EpicIndex } = this.props;
+    StoryMapStore.afterCreateFeature(EpicIndex, newFeature);
   }
 
   render() {
@@ -33,10 +34,11 @@ class FeatureCell extends Component {
             {adding ? null : (
               <Fragment>
                 {featureCommonDOList.filter(feature => !feature.adding).map(feature => <FeatureColumn feature={feature} otherData={otherData.feature[feature.issueId]} />)}
-                {hasAddingFeature ? <CreateFeature onCreate={this.handleCreateFeature} /> : <AddCard style={{ height: CardHeight, marginTop: 5 }} onClick={this.handleAddFeatureClick} />}
+                {hasAddingFeature ? <CreateFeature onCreate={this.handleCreateFeature} epicId={epicData.issueId} /> : <AddCard style={{ height: CardHeight, marginTop: 5 }} onClick={this.handleAddFeatureClick} />}
+                {/* 没有关联feature，但是关联了史诗的故事 */}
+                {otherData.feature.none.storys.length > 0 && <FeatureColumn feature={{ issueId: 'none' }} otherData={otherData.feature.none} />}
               </Fragment>
             )}
-            
           </div>
         )}
       </Cell>
