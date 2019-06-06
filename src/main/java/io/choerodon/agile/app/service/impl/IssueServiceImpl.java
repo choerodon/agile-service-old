@@ -664,7 +664,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public List<EpicDataDTO> listEpic(Long projectId) {
         List<EpicDataDTO> epicDataList = epicDataAssembler.toTargetList(issueMapper.queryEpicList(projectId), EpicDataDTO.class);
-        ProjectDTO program = userFeignClient.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId).getBody();
+        ProjectDTO program = userRepository.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
         List<EpicDataDTO> programEpics = null;
         if (program != null) {
             programEpics = epicDataAssembler.toTargetList(issueMapper.selectEpicByProgram(program.getId()), EpicDataDTO.class);
@@ -1226,7 +1226,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<IssueFeatureDTO> listFeatureSelectData(Long projectId, Long organizationId, Long epicId) {
-        ProjectDTO program = userFeignClient.getGroupInfoByEnableProject(organizationId, projectId).getBody();
+        ProjectDTO program = userRepository.getGroupInfoByEnableProject(organizationId, projectId);
         if (program != null) {
             return issueAssembler.toTargetList(issueMapper.queryIssueFeatureSelectList(program.getId(), epicId), IssueFeatureDTO.class);
         } else {
@@ -1252,7 +1252,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<IssueFeatureDTO> listFeature(Long projectId, Long organizationId) {
-        ProjectDTO program = userFeignClient.getGroupInfoByEnableProject(organizationId, projectId).getBody();
+        ProjectDTO program = userRepository.getGroupInfoByEnableProject(organizationId, projectId);
         if (program != null) {
             List<IssueDO> programFeatureList = issueMapper.queryIssueFeatureSelectList(program.getId(), null);
             List<IssueFeatureDTO> issueFeatureDTOList = issueAssembler.toTargetList(programFeatureList, IssueFeatureDTO.class);

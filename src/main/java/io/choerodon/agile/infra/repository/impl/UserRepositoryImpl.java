@@ -5,6 +5,7 @@ import io.choerodon.agile.api.dto.ProjectDTO;
 import io.choerodon.agile.api.dto.RoleAssignmentSearchDTO;
 import io.choerodon.agile.api.dto.RoleDTO;
 import io.choerodon.agile.api.dto.UserDTO;
+import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
@@ -102,6 +103,12 @@ public class UserRepositoryImpl implements UserRepository {
     public List<UserDO> listUsersByIds(Long[] ids) {
         ResponseEntity<List<UserDO>> users = userFeignClient.listUsersByIds(ids, false);
         return users != null ? users.getBody() : new ArrayList<>();
+    }
+
+    @Override
+    public ProjectDTO getGroupInfoByEnableProject(Long organizationId, Long projectId) {
+        ResponseEntity<ProjectDTO> projectDTOResponseEntity = userFeignClient.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
+        return projectDTOResponseEntity != null ? projectDTOResponseEntity.getBody() : null;
     }
 
 }

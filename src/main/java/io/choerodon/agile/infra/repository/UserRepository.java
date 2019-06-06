@@ -52,4 +52,6 @@ public interface UserRepository {
     PageInfo<UserDTO> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO);
 
     List<UserDO> listUsersByIds(Long[] ids);
+
+    ProjectDTO getGroupInfoByEnableProject(Long organizationId, Long projectId);
 }
