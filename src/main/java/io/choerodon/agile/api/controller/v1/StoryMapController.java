@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
+import io.choerodon.agile.api.dto.SearchDTO;
 import io.choerodon.agile.api.dto.StoryMapDragDTO;
 import io.choerodon.agile.app.service.StoryMapService;
 import io.choerodon.base.annotation.Permission;
@@ -37,6 +38,17 @@ public class StoryMapController {
         return Optional.ofNullable(storyMapService.queryStoryMap(projectId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.storyMap.get"));
+    }
+
+    @ApiOperation("查询故事地图需求池")
+    @PostMapping("/demand")
+    public ResponseEntity<JSONObject> queryStoryMapDemand(@ApiParam(value = "项目id", required = true)
+                                                          @PathVariable(name = "project_id") Long projectId,
+                                                          @ApiParam(value = "search DTO", required = true)
+                                                          @RequestBody SearchDTO searchDTO) {
+        return Optional.ofNullable(storyMapService.queryStoryMapDemand(projectId, searchDTO))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.storyMapDemand.get"));
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})

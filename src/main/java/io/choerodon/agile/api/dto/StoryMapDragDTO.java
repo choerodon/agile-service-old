@@ -29,6 +29,7 @@ public class StoryMapDragDTO {
     @ApiModelProperty(value = "问题id列表，移动到版本，配合versionId使用")
     private List<Long> versionIssueIds;
 
+    @ApiModelProperty(value = "要删除的版本与问题关联数据")
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
     public Long getEpicId() {

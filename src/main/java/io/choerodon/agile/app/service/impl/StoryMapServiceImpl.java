@@ -1,10 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.ProjectDTO;
-import io.choerodon.agile.api.dto.StoryMapDragDTO;
-import io.choerodon.agile.api.dto.VersionIssueRelDTO;
-import io.choerodon.agile.api.dto.StoryMapWidthDTO;
+import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.StoryMapValidator;
 import io.choerodon.agile.app.service.StoryMapService;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
@@ -114,12 +111,16 @@ public class StoryMapServiceImpl implements StoryMapService {
             featureIds.addAll(featureCommonDOList.stream().map(FeatureCommonDO::getIssueId).collect(Collectors.toList()));
         });
         result.put("storyList", storyMapMapper.selectStoryList(projectId, epicIds, featureIds));
-        result.put("demandStoryList", storyMapMapper.selectDemandStoryList(projectId));
         result.put("storyMapWidth", setStoryMapWidth(projectId));
         return result;
     }
 
-
+    @Override
+    public JSONObject queryStoryMapDemand(Long projectId, SearchDTO searchDTO) {
+        JSONObject result = new JSONObject(true);
+        result.put("demandStoryList", storyMapMapper.selectDemandStoryList(projectId, searchDTO));
+        return result;
+    }
 
     private void dragToEpic(Long projectId, Long epicId, StoryMapDragDTO storyMapDragDTO) {
         storyMapValidator.checkEpicExist(epicId);

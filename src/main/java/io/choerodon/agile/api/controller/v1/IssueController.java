@@ -616,7 +616,7 @@ public class IssueController {
                                                                         @RequestParam Long organizationId,
                                                                         @ApiParam(value = "故事页面or待办页面 pageType:storymap,backlog", required = true)
                                                                         @RequestParam String pageType,
-                                                                        @ApiParam(value = "search item，my problem", required = false)
+                                                                        @ApiParam(value = "search item，my issues", required = false)
                                                                         @RequestParam(required = false) Long assigneeId,
                                                                         @ApiParam(value = "search item，only story", required = false)
                                                                         @RequestParam(required = false) Boolean onlyStory,

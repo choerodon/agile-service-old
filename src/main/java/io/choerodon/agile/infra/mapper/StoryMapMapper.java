@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
+import io.choerodon.agile.api.dto.SearchDTO;
 import io.choerodon.agile.infra.dataobject.EpicWithFeatureDO;
 import io.choerodon.agile.infra.dataobject.FeatureCommonDO;
 import io.choerodon.agile.infra.dataobject.StoryMapStoryDO;
@@ -21,5 +22,5 @@ public interface StoryMapMapper {
 
     List<StoryMapStoryDO> selectStoryList(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds, @Param("featureIds") List<Long> featureIds);
 
-    List<StoryMapStoryDO> selectDemandStoryList(@Param("projectId") Long projectId);
+    List<StoryMapStoryDO> selectDemandStoryList(@Param("projectId") Long projectId, @Param("searchDTO") SearchDTO searchDTO);
 }
