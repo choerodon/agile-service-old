@@ -40,6 +40,7 @@ public class StoryMapController {
                 .orElseThrow(() -> new CommonException("error.storyMap.get"));
     }
 
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询故事地图需求池")
     @PostMapping("/demand")
     public ResponseEntity<JSONObject> queryStoryMapDemand(@ApiParam(value = "项目id", required = true)
