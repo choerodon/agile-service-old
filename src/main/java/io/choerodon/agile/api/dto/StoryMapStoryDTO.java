@@ -1,4 +1,6 @@
-package io.choerodon.agile.infra.dataobject;
+package io.choerodon.agile.api.dto;
+
+import io.choerodon.agile.infra.dataobject.StoryMapVersionDO;
 
 import java.util.List;
 
@@ -6,7 +8,7 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2019/6/6.
  * Email: fuqianghuang01@gmail.com
  */
-public class StoryMapStoryDO {
+public class StoryMapStoryDTO {
 
     private Long issueId;
 
@@ -22,7 +24,11 @@ public class StoryMapStoryDO {
 
     private Long statusId;
 
-    private List<StoryMapVersionDO> storyMapVersionDOList;
+    private IssueTypeDTO issueTypeDTO;
+
+    private StatusMapDTO statusMapDTO;
+
+    private List<StoryMapVersionDTO> storyMapVersionDTOList;
 
     public Long getIssueId() {
         return issueId;
@@ -64,12 +70,12 @@ public class StoryMapStoryDO {
         this.featureId = featureId;
     }
 
-    public void setStoryMapVersionDOList(List<StoryMapVersionDO> storyMapVersionDOList) {
-        this.storyMapVersionDOList = storyMapVersionDOList;
+    public void setStoryMapVersionDTOList(List<StoryMapVersionDTO> storyMapVersionDTOList) {
+        this.storyMapVersionDTOList = storyMapVersionDTOList;
     }
 
-    public List<StoryMapVersionDO> getStoryMapVersionDOList() {
-        return storyMapVersionDOList;
+    public List<StoryMapVersionDTO> getStoryMapVersionDTOList() {
+        return storyMapVersionDTOList;
     }
 
     public Long getIssueTypeId() {
@@ -86,5 +92,21 @@ public class StoryMapStoryDO {
 
     public void setStatusId(Long statusId) {
         this.statusId = statusId;
+    }
+
+    public IssueTypeDTO getIssueTypeDTO() {
+        return issueTypeDTO;
+    }
+
+    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
+        this.issueTypeDTO = issueTypeDTO;
+    }
+
+    public StatusMapDTO getStatusMapDTO() {
+        return statusMapDTO;
+    }
+
+    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
+        this.statusMapDTO = statusMapDTO;
     }
 }

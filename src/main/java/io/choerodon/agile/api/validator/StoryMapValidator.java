@@ -49,4 +49,16 @@ public class StoryMapValidator {
             }
         }
     }
+
+    public void checkFeatureUnderEpic(Long featureId, Long epicId) {
+        if (epicId != null && epicId != 0 && featureId != null && featureId != 0) {
+            IssueDO featureDO = issueMapper.selectByPrimaryKey(featureId);
+            if (featureDO == null) {
+                throw new CommonException("error.feature.notFound");
+            }
+            if (!Objects.equals(featureDO.getEpicId(), epicId)) {
+                throw new CommonException("error.FeatureUnderEpic.notUnder");
+            }
+        }
+    }
 }
