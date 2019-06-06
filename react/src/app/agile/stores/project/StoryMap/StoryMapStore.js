@@ -9,7 +9,7 @@ import { getStoryMap, getSideIssueList } from '../../../api/StoryMapApi';
 import { loadIssueTypes, loadVersions, loadPriorities } from '../../../api/NewIssueApi';
 
 class StoryMapStore {
-  @observable swimLine = 'none';
+  @observable swimLine = localStorage.getItem('agile.StoryMap.SwimLine') || 'none';
 
   @observable sideIssueListVisible = false;
 
@@ -71,6 +71,7 @@ class StoryMapStore {
 
   @action switchSwimLine(swimLine) {
     this.swimLine = swimLine;
+    localStorage.setItem('agile.StoryMap.SwimLine', swimLine);
   }
 
   @action initVersionList(versionList) {

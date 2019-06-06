@@ -25,7 +25,6 @@ class StoryCard extends Component {
   }
 
   handleMouseDown = (e) => {
-    console.log('down');
     this.AutoScroll.prepare(e);
   }
 
