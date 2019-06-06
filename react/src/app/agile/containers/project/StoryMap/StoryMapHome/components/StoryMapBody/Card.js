@@ -5,10 +5,12 @@ import './Card.scss';
 
 class Card extends Component {
   render() {
-    const { style, className, ...otherProps } = this.props;
+    const {
+      style, className, saveRef, ...otherProps 
+    } = this.props;
     return (
       <div 
-        {...this.props}
+        ref={saveRef}
         style={{
           width: CardWidth, 
           height: CardHeight,

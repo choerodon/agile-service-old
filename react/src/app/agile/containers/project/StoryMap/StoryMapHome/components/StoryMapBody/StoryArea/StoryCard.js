@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'choerodon-ui';
+import { DragSource } from 'react-dnd';
 import { CardWidth, CardHeight, CardMargin } from '../../../Constants';
 import { storyMove } from '../../../../../../../api/StoryMapApi';
 import Card from '../Card';
@@ -26,9 +27,9 @@ class StoryCard extends Component {
   }
 
   render() {
-    const { story } = this.props;
-    return (
-      <Card className="c7nagile-StoryMap-StoryCard">
+    const { story, connectDragSource } = this.props;
+    return (    
+      <Card className="c7nagile-StoryMap-StoryCard" saveRef={connectDragSource}>
         <Icon type="close" className="c7nagile-StoryMap-StoryCard-delete" onClick={this.handlRemoveStory} />
         <div className="summary">
           {story.summary}
@@ -42,4 +43,24 @@ StoryCard.propTypes = {
 
 };
 
-export default StoryCard;
+export default DragSource(
+  'story',
+  {
+    beginDrag: props => ({ story: props.story }),
+    endDrag(props, monitor) {
+      const item = monitor.getItem();
+      const dropResult = monitor.getDropResult();
+      const { story } = item;
+      const { epicId, featureId, storyMapVersionDOList } = item;
+      const { epic, feature, version } = dropResult;
+  
+      if (dropResult) {
+        alert(`You dropped ${item.name} into ${JSON.stringify(dropResult)}!`);
+      }
+    },
+  },
+  (connect, monitor) => ({
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging(),
+  }),
+)(StoryCard);

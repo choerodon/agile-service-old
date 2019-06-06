@@ -1,6 +1,6 @@
 
 import {
-  observable, action, computed, extendObservable, 
+  observable, action, computed, extendObservable,
 } from 'mobx';
 import {
   find, findIndex, max, remove, groupBy,
@@ -79,7 +79,7 @@ class StoryMapStore {
             storys: [],
             version: this.getInitVersions(),
             width: epicWithWidth ? epicWithWidth.width : 1,
-          }, 
+          },
         },
       };
       const targetFeature = storyData[epicId].feature;
@@ -204,18 +204,19 @@ class StoryMapStore {
     remove(this.storyMapData.storyList, { issueId: story.issueId });
     if (epicId && this.storyData[epicId]) {
       const targetEpic = this.storyData[epicId];
-      const { feature } = targetEpic;      
-      const targetFeature = feature[featureId];      
+      const { feature } = targetEpic;
+      const targetFeature = feature[featureId || 'none'];
+      remove(targetFeature.storys, { issueId: story.issueId });
       // 从各个版本移除
       if (storyMapVersionDOList.length === 0) {
         if (targetFeature.version.none) {
           remove(targetFeature.version.none, { issueId: story.issueId });
-        }        
+        }
       }
       storyMapVersionDOList.forEach((version) => {
         const { versionId } = version;
         remove(targetFeature.version[versionId], { issueId: story.issueId });
-      }); 
+      });
     }
   }
 

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
+import { DropTarget } from 'react-dnd';
 import Column from '../Column';
 import StoryCard from './StoryCard';
 import CreateStory from './CreateStory';
@@ -15,11 +16,11 @@ class StoryColumn extends Component {
 
   render() {
     const {
-      storys, width, epic, feature, version,
+      storys, width, epic, feature, version, connectDropTarget,
     } = this.props;
     // console.log(storys);
-    return (
-      <Column width={width}>
+    return (  
+      <Column width={width} saveRef={connectDropTarget}>
         <div>
           {storys && storys.map(story => <StoryCard story={story} />)}
           <CreateStory onCreate={this.handleCreateStory} epic={epic} feature={feature} version={version} />
@@ -33,4 +34,14 @@ StoryColumn.propTypes = {
 
 };
 
-export default StoryColumn;
+export default DropTarget(
+  'story',
+  {
+    drop: props => ({ epic: props.epic, feature: props.feature, version: props.version }),
+  },
+  (connect, monitor) => ({
+    connectDropTarget: connect.dropTarget(),
+    isOver: monitor.isOver(),
+    canDrop: monitor.canDrop(),
+  }),
+)(StoryColumn);

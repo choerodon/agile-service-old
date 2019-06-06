@@ -74,5 +74,8 @@ class StoryMapHome extends Component {
 StoryMapHome.propTypes = {
 
 };
-
-export default StoryMapHome;
+export default ({ ...props }) => (
+  <DragDropContextProvider backend={HTML5Backend}>
+    <StoryMapHome {...props} />
+  </DragDropContextProvider>
+);
