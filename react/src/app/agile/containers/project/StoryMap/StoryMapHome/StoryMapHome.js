@@ -13,6 +13,7 @@ import Empty from '../../../../components/Empty';
 import noBoard from '../../../../assets/noBoard.svg';
 import Loading from '../../../../components/Loading';
 import StoryMapBody from './components/StoryMapBody';
+import SideIssueList from './components/SideIssueList';
 import SwitchSwimLine from './components/SwitchSwimLine';
 import StoryMapStore from '../../../../stores/project/StoryMap/StoryMapStore';
 
@@ -24,6 +25,10 @@ class StoryMapHome extends Component {
 
   handleRefresh=() => {
     StoryMapStore.getStoryMap();
+  }
+
+  handleClickIssueList=() => {
+    StoryMapStore.toggleSideIssueListVisible();
   }
 
   render() {
@@ -44,6 +49,15 @@ class StoryMapHome extends Component {
             刷新
           </Button>
           <SwitchSwimLine />
+          <Button
+            type="primary"
+            funcType="raised"
+            style={{ color: 'white', marginLeft: 'auto', marginRight: 30 }}
+            icon="view_module"
+            onClick={this.handleClickIssueList}
+          >
+              需求池
+          </Button>
         </Header>
         <Content style={{ padding: 0 }}>
           <Loading loading={loading} />
@@ -65,6 +79,7 @@ class StoryMapHome extends Component {
                 )}
             />
           )}
+          <SideIssueList />
         </Content>
       </Page>
     );

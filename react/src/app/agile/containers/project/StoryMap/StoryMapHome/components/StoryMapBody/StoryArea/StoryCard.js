@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'choerodon-ui';
 import { DragSource } from 'react-dnd';
+import { find } from 'lodash';
 import { CardWidth, CardHeight, CardMargin } from '../../../Constants';
 import { storyMove } from '../../../../../../../api/StoryMapApi';
 import Card from '../Card';
@@ -9,7 +10,7 @@ import './StoryCard.scss';
 import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
 
 class StoryCard extends Component {
-  handlRemoveStory=() => {
+  handlRemoveStory = () => {
     const { story } = this.props;
     const { issueId } = story;
     const storyMapDragDTO = {
@@ -28,12 +29,12 @@ class StoryCard extends Component {
 
   render() {
     const { story, connectDragSource } = this.props;
-    return (    
+    return (
       <Card className="c7nagile-StoryMap-StoryCard" saveRef={connectDragSource}>
         <Icon type="close" className="c7nagile-StoryMap-StoryCard-delete" onClick={this.handlRemoveStory} />
         <div className="summary">
           {story.summary}
-        </div>     
+        </div>
       </Card>
     );
   }
@@ -46,17 +47,84 @@ StoryCard.propTypes = {
 export default DragSource(
   'story',
   {
-    beginDrag: props => ({ story: props.story }),
+    beginDrag: props => ({ story: props.story, version: props.version }),
     endDrag(props, monitor) {
       const item = monitor.getItem();
       const dropResult = monitor.getDropResult();
-      const { story } = item;
-      const { epicId, featureId, storyMapVersionDOList } = item;
-      const { epic, feature, version } = dropResult;
-  
-      if (dropResult) {
-        alert(`You dropped ${item.name} into ${JSON.stringify(dropResult)}!`);
+      if (!dropResult) {
+        return;
       }
+      const { story, version: sourceVersion } = item;
+      const {
+        issueId, epicId, featureId, storyMapVersionDOList,
+      } = story;
+      const { epic: { issueId: targetEpicId }, feature: { issueId: targetFeatureId }, version } = dropResult;
+      const { versionId: targetVersionId } = version || {};
+      const storyMapDragDTO = {
+        versionIssueIds: [],
+        versionId: 0, // 要关联的版本id
+        epicId: 0, // 要关联的史诗id
+        versionIssueRelDTOList: [],
+        // 问题id列表，移动到史诗，配合epicId使用
+        epicIssueIds: [],
+        featureId: 0, // 要关联的特性id
+        // 问题id列表，移动到特性，配合featureId使用
+        featureIssueIds: [],
+      };
+      // 史诗，特性，版本都不变时
+      if (epicId === targetEpicId && featureId === targetFeatureId) {
+        if (StoryMapStore.swimLine === 'version') {
+          if (find(storyMapVersionDOList, { versionId: targetVersionId }) || (storyMapVersionDOList.length === 0 && targetVersionId === 'none')) {
+            return;
+          }
+        } else if (StoryMapStore.swimLine === 'none') {
+          return;
+        }
+      }
+      if (epicId !== targetEpicId) {
+        storyMapDragDTO.epicId = targetEpicId;
+        storyMapDragDTO.epicIssueIds = [issueId];
+      }
+      if (featureId !== targetFeatureId) {
+        // 移动到直接关联史诗的列，将史诗传过去，否则会将史诗清掉
+        if (targetFeatureId === 'none') {
+          storyMapDragDTO.epicId = targetEpicId;
+          storyMapDragDTO.epicIssueIds = [issueId];
+          storyMapDragDTO.featureId = 0;
+        } else {
+          storyMapDragDTO.featureId = targetFeatureId;
+        }
+        storyMapDragDTO.featureId = targetFeatureId === 'none' ? 0 : targetFeatureId;
+        storyMapDragDTO.featureIssueIds = [issueId];
+      }
+      // 对版本进行处理
+      if (StoryMapStore.swimLine === 'version') {
+        // 在不同的版本移动
+        if (sourceVersion.versionId !== targetVersionId) {
+          // 如果原先有版本，就移除离开的版本
+          if (storyMapVersionDOList.length > 0) {
+            const removeVersion = find(storyMapVersionDOList, { versionId: sourceVersion.versionId });
+            if (removeVersion) {
+              storyMapDragDTO.versionIssueRelDTOList = [removeVersion];
+            }
+          }
+        }
+        
+        if (!find(storyMapVersionDOList, { versionId: targetVersionId })) {          
+          storyMapDragDTO.versionIssueIds = [issueId];
+          // 拖到未规划
+          if (targetVersionId === 'none') {
+            storyMapDragDTO.versionId = 0;          
+          } else {
+            storyMapDragDTO.versionId = targetVersionId;            
+          }
+        }       
+      }
+      // console.log(storyMapDragDTO);
+      storyMove(storyMapDragDTO).then(() => {
+        // StoryMapStore.removeStoryFromStoryMap(story);
+        StoryMapStore.getStoryMap();
+      });
     },
   },
   (connect, monitor) => ({

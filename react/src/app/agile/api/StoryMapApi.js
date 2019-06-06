@@ -40,3 +40,7 @@ export function getStoryMap() {
 export function storyMove(storyMapDragDTO) {
   return axios.post(`/agile/v1/projects/${getProjectId()}/story_map/move?organizationId=${getOrganizationId()}`, storyMapDragDTO);
 }
+
+export function getSideIssueList(searchDTO) {
+  return axios.post(`/agile/v1/projects/${getProjectId()}/story_map/demand?organizationId=${getOrganizationId()}`, searchDTO);
+}

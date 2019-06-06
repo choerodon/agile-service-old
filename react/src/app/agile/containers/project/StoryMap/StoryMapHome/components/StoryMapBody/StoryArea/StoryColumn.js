@@ -22,7 +22,7 @@ class StoryColumn extends Component {
     return (  
       <Column width={width} saveRef={connectDropTarget}>
         <div>
-          {storys && storys.map(story => <StoryCard story={story} />)}
+          {storys && storys.map(story => <StoryCard story={story} version={version} />)}
           <CreateStory onCreate={this.handleCreateStory} epic={epic} feature={feature} version={version} />
         </div>
       </Column>

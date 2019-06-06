@@ -5,11 +5,21 @@ import {
 import {
   find, findIndex, max, remove, groupBy,
 } from 'lodash';
-import { getStoryMap } from '../../../api/StoryMapApi';
+import { getStoryMap, getSideIssueList } from '../../../api/StoryMapApi';
 import { loadIssueTypes, loadVersions, loadPriorities } from '../../../api/NewIssueApi';
 
 class StoryMapStore {
   @observable swimLine = 'none';
+
+  @observable sideIssueListVisible = false;
+
+  @observable sideSearchDTO = {
+    searchArgs: {
+      assigneeId: null,
+    },
+  };
+
+  @observable issueList = [];
 
   @observable issueTypes = [];
 
@@ -35,6 +45,20 @@ class StoryMapStore {
       this.initStoryData(storyMapData);
       this.setLoading(false);
     });
+  }
+
+  loadIssueList = () => {
+    getSideIssueList(this.sideSearchDTO).then((res) => {
+      this.setIssueList(res.demandStoryList);
+    });
+  }
+
+  @action setIssueList(issueList) {
+    this.issueList = issueList;
+  }
+
+  @action toggleSideIssueListVisible() {
+    this.sideIssueListVisible = !this.sideIssueListVisible;
   }
 
   @action setLoading(loading) {
