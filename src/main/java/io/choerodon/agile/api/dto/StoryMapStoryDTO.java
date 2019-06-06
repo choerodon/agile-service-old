@@ -20,6 +20,8 @@ public class StoryMapStoryDTO {
 
     private Long featureId;
 
+    private Boolean completed;
+
     private Long issueTypeId;
 
     private Long statusId;
@@ -108,5 +110,13 @@ public class StoryMapStoryDTO {
 
     public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
         this.statusMapDTO = statusMapDTO;
+    }
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
+    }
+
+    public Boolean getCompleted() {
+        return completed;
     }
 }

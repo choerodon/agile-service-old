@@ -108,6 +108,7 @@
         <id column="ai_feature_id" property="featureId"/>
         <id column="ai_issue_type_id" property="issueTypeId"/>
         <id column="ai_status_id" property="statusId"/>
+        <id column="ai_completed" property="completed"/>
         <collection property="storyMapVersionDOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.StoryMapVersionDO">
             <id property="versionId" column="version_version_id"/>
             <id property="name" column="version_name"/>
@@ -156,10 +157,12 @@
         ai.summary as ai_summary,
         ai.issue_type_id as ai_issue_type_id,
         ai.status_id as ai_status_id,
+        ais.is_completed AS ai_completed,
         version_info.version_id as version_version_id,
         version_info.name as version_name
         from agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        LEFT JOIN agile_issue_status ais ON ai.status_id = ais.status_id and ais.project_id = #{projectId}
         left join (
             select avir.issue_id, apv.version_id, apv.name
             from agile_version_issue_rel avir, agile_product_version apv
