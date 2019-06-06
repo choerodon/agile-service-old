@@ -7,6 +7,7 @@
         from agile_issue ai
         where ai.program_id = #{programId}
         and ai.type_code = 'issue_epic'
+        order by ai.issue_id desc
     </select>
 
     <select id="selectEpicIdsByProject" resultType="java.lang.Long">
@@ -66,6 +67,7 @@
                  close=")">
             #{epicId}
         </foreach>
+        order by ai.issue_id desc
     </select>
 
     <select id="selectFeatureByNoEpicByProject" resultType="io.choerodon.agile.infra.dataobject.FeatureCommonDO">
