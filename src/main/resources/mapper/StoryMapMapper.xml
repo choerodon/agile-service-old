@@ -164,7 +164,12 @@
         where ai.project_id = #{projectId} and ai.type_code = 'story'
         and (ai.epic_id is null or ai.epic_id = 0)
         and (ai.feature_id is null or ai.feature_id = 0)
-        order by ai.issue_id
+        <if test="searchDTO.searchArgs != null">
+            <if test='searchDTO.searchArgs.assigneeId != null and searchDTO.searchArgs.assigneeId != "" '>
+                AND ai.assignee_id = #{searchDTO.searchArgs.assigneeId}
+            </if>
+        </if>
+        order by ai.issue_id desc
     </select>
 
 </mapper>

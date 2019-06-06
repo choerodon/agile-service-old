@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service;
 
 import com.alibaba.fastjson.JSONObject;
+import io.choerodon.agile.api.dto.SearchDTO;
 import io.choerodon.agile.api.dto.StoryMapDragDTO;
 
 /**
@@ -10,6 +11,8 @@ import io.choerodon.agile.api.dto.StoryMapDragDTO;
 public interface StoryMapService {
 
     JSONObject queryStoryMap(Long projectId, Long organizationId);
+
+    JSONObject queryStoryMapDemand(Long projectId, SearchDTO searchDTO);
 
     void storyMapMove(Long projectId, StoryMapDragDTO storyMapDragDTO);
 
