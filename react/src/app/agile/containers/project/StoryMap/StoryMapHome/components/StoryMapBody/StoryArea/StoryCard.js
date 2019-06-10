@@ -34,8 +34,8 @@ class StoryCard extends Component {
     const storyMapDragDTO = {
       // 问题id列表，移动到版本，配合versionId使用
       // versionIssueIds: [],     
-      // epicId: 0, // 要关联的史诗id          
-      // epicIssueIds: [issueId],
+      epicId: 0, // 要关联的史诗id          
+      epicIssueIds: [issueId],
       featureId: 0, // 要关联的特性id
       // 问题id列表，移动到特性，配合featureId使用
       featureIssueIds: [issueId],

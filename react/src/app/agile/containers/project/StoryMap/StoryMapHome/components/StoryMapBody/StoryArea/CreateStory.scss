@@ -4,6 +4,7 @@
   }
 
   &:hover &-btn {
+    user-select: none;
     display: block;
   }
 }

@@ -5,10 +5,10 @@ import { ColumnWidth, ColumnMinHeight } from '../../Constants';
 class Column extends Component {
   render() {
     const {
-      width, children, style, saveRef, 
+      width, children, style, saveRef, ...otherProps,
     } = this.props;
     return (
-      <div style={{ width: ColumnWidth * width, minHeight: ColumnMinHeight, ...style }} ref={saveRef}>
+      <div {...otherProps} style={{ width: ColumnWidth * width, minHeight: ColumnMinHeight, ...style }} ref={saveRef}>
         {children}
       </div>
     );

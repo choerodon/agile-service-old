@@ -5,11 +5,20 @@ import Card from './Card';
 import { createIssue, createIssueField } from '../../../../../../api/NewIssueApi';
 import { getProjectId } from '../../../../../../common/utils';
 import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
+import clickOutSide from '../../../../../../components/CommonComponent/ClickOutSide';
 
 class CreateEpic extends Component {
-  handleBlur = (e) => {
+  state = {
+    value: '',
+  }
+
+  handleClickOutside = () => {
+    this.handleCreateIssue();
+  };
+
+  handleBlur = () => {
     // console.log(e.target.value);
-    const { value } = e.target;
+    const { value } = this.state;
     if (value !== '') {
       const { onCreate } = this.props;
       const epicType = StoryMapStore.getEpicType;
@@ -45,7 +54,14 @@ class CreateEpic extends Component {
     }
   }
 
+  handleChange=(e) => {
+    this.setState({
+      value: e.target.value,
+    });
+  }
+
   render() {
+    const { value } = this.state;
     return (
       <Card style={{
         boxShadow: '0 0 4px -2px rgba(0,0,0,0.50), 0 2px 4px 0 rgba(0,0,0,0.13)',
@@ -57,7 +73,7 @@ class CreateEpic extends Component {
         justifyContent: 'center',
       }}
       >
-        <Input autoFocus onBlur={this.handleBlur} placeholder="在此创建史诗" maxLength="22" />
+        <Input autoFocus onBlur={this.handleBlur} placeholder="在此创建史诗" maxLength="22" value={value} onChange={this.handleChange} />
       </Card>
     );
   }
@@ -67,4 +83,4 @@ CreateEpic.propTypes = {
 
 };
 
-export default CreateEpic;
+export default clickOutSide(CreateEpic);

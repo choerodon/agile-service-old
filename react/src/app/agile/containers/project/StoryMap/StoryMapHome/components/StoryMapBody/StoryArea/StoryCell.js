@@ -11,8 +11,12 @@ import './StoryCell.scss';
 
 @observer
 class StoryCell extends Component {
+  handleCreateVersionClick = () => {
+    StoryMapStore.setCreateModalVisible(true);
+  }
+
   renderTitle = (storyCollapse) => {
-    const { swimLine } = StoryMapStore;
+    const { swimLine, isFullScreen } = StoryMapStore;
     const { version } = this.props;
 
     switch (swimLine) {
@@ -30,7 +34,7 @@ class StoryCell extends Component {
               }}
             />
             {version.name}
-            {version.versionId === 'none' && <Button className="c7nagile-StoryMap-StoryCell-title-createBtn" type="primary" icon="playlist_add">创建版本</Button>}
+            {version.versionId === 'none' && !isFullScreen && <Button className="c7nagile-StoryMap-StoryCell-title-createBtn" type="primary" icon="playlist_add" onClick={this.handleCreateVersionClick}>创建版本</Button>}
           </div>
         );
       }
@@ -63,7 +67,7 @@ class StoryCell extends Component {
     let epicStorys = [];
     if (targetEpic && targetEpic.feature && targetEpic.feature.none) {
       epicStorys = targetEpic.feature.none.storys;
-    }    
+    }
     const featureList = epicStorys.length > 0 ? featureCommonDOList.concat([{ issueId: 'none' }]) : featureCommonDOList;
     return (
       <Cell style={{ ...collapse ? { borderBottom: isLastRow ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {} }}>
@@ -80,8 +84,8 @@ class StoryCell extends Component {
                   <Fragment>
                     {storyCollapse ? null : featureList.filter(feature => !feature.adding).map((feature, index) => {
                       const targetFeature = targetEpic.feature[feature.issueId] || {};
-                      return targetFeature && <StoryColumn feature={feature} featureIndex={index} storys={this.getStorys(targetFeature)} width={targetFeature.width} {...this.props} />;
-                    })}                    
+                      return targetFeature && <StoryColumn feature={feature} featureIndex={index} isLast={index === featureList.length - 1} storys={this.getStorys(targetFeature)} width={targetFeature.width} {...this.props} />;
+                    })}
                   </Fragment>
                 )
               }

@@ -1,17 +1,24 @@
 
 import {
-  observable, action, computed, extendObservable,
+  observable, action, computed, extendObservable, toJS,
 } from 'mobx';
 import {
   find, findIndex, max, remove, groupBy,
 } from 'lodash';
-import { getStoryMap, getSideIssueList } from '../../../api/StoryMapApi';
+import { getProjectId } from '../../../common/utils';
+import {
+  getStoryMap, getSideIssueList, createWidth, changeWidth,
+} from '../../../api/StoryMapApi';
 import { loadIssueTypes, loadVersions, loadPriorities } from '../../../api/NewIssueApi';
 
 class StoryMapStore {
   @observable swimLine = localStorage.getItem('agile.StoryMap.SwimLine') || 'none';
 
   @observable sideIssueListVisible = false;
+
+  @observable createModalVisible = false;
+
+  @observable isFullScreen = false;
 
   @observable sideSearchDTO = {
     searchArgs: {
@@ -31,7 +38,7 @@ class StoryMapStore {
 
   @observable storyMapData = {};
 
-  @observable storyData = null;
+  @observable storyData = {};
 
   @observable loading = false;
 
@@ -57,8 +64,20 @@ class StoryMapStore {
     this.issueList = issueList;
   }
 
+  @action setSideIssueListVisible(sideIssueListVisible) {
+    this.sideIssueListVisible = sideIssueListVisible;
+  }
+
+  @action setCreateModalVisible(createModalVisible) {
+    this.createModalVisible = createModalVisible;
+  }
+
   @action toggleSideIssueListVisible() {
     this.sideIssueListVisible = !this.sideIssueListVisible;
+  }
+
+  @action setIsFullScreen(isFullScreen) {
+    this.isFullScreen = isFullScreen;
   }
 
   @action setLoading(loading) {
@@ -75,11 +94,17 @@ class StoryMapStore {
   }
 
   @action initVersionList(versionList) {
-    this.versionList = versionList.map(version => ({ ...version, collapse: false })).concat([{
+    this.versionList = versionList.reverse().concat([{
       versionId: 'none',
       name: '未计划部分',
-      collapse: false,
-    }]);
+    }]).map((version) => {
+      const oldVersion = find(this.versionList, { versionId: version.versionId });
+      if (oldVersion) {
+        return { ...version, collapse: oldVersion.collapse };
+      } else {
+        return { ...version, collapse: false };
+      }
+    });
   }
 
   getInitVersions() {
@@ -90,6 +115,24 @@ class StoryMapStore {
     return versionObj;
   }
 
+  @action afterCreateVersion(version) {
+    this.setCreateModalVisible(false);
+    const index = this.versionList.length - 1;
+    this.versionList.splice(index, 0, {
+      ...version,
+      collapse: false,
+    });
+    Object.keys(this.storyData).forEach((epicId) => {
+      const epic = this.storyData[epicId];
+      Object.keys(epic.feature).forEach((featureId) => {
+        const feature = epic.feature[featureId];
+        extendObservable(feature.version, {
+          [version.versionId]: [],
+        });
+      });
+    });
+  }
+
   @action initStoryData({ epicWithFeature, storyList, storyMapWidth }) {
     const storyData = {};
     epicWithFeature.forEach((epic) => {
@@ -97,7 +140,7 @@ class StoryMapStore {
       const epicWithWidth = find(storyMapWidth, { issueId: epic.issueId, type: 'epic' });
       storyData[epicId] = {
         epicId,
-        collapse: false,
+        collapse: this.storyData[epicId] ? this.storyData[epicId].collapse : false,
         storys: [],
         feature: {
           none: {
@@ -135,24 +178,25 @@ class StoryMapStore {
       const targetFeature = feature[featureId || 'none'];
       if (targetFeature) {
         targetFeature.storys.push(story);
-      }
-      // 故事按照version泳道分类
-      // if (this.swimLine === 'version') {
-      if (storyMapVersionDOList.length === 0) {
-        if (!targetFeature.version.none) {
-          targetFeature.version.none = [];
+        // 故事按照version泳道分类
+        // if (this.swimLine === 'version') {
+        if (storyMapVersionDOList.length === 0) {
+          if (!targetFeature.version.none) {
+            targetFeature.version.none = [];
+          }
+          targetFeature.version.none.push(story);
         }
-        targetFeature.version.none.push(story);
+        storyMapVersionDOList.forEach((version) => {
+          const { versionId } = version;
+          // if (!targetFeature.version[versionId]) {
+          //   extendObservable(targetFeature.version, {
+          //     [versionId]: [],
+          //   }); 
+          // }
+          targetFeature.version[versionId].push(story);
+        });
       }
-      storyMapVersionDOList.forEach((version) => {
-        const { versionId } = version;
-        // if (!targetFeature.version[versionId]) {
-        //   extendObservable(targetFeature.version, {
-        //     [versionId]: [],
-        //   }); 
-        // }
-        targetFeature.version[versionId].push(story);
-      });
+
       // }
     }
   }
@@ -187,6 +231,13 @@ class StoryMapStore {
     remove(this.storyMapData.epicWithFeature, { adding: true });
   }
 
+  @action removeAddingFeature(epicId) {
+    const targetEpic = find(this.storyMapData.epicWithFeature, { issueId: epicId });
+    if (targetEpic) {
+      remove(targetEpic.featureCommonDOList, { adding: true });
+    }
+  }
+
   @action afterCreateEpic(index, newEpic) {
     this.storyMapData.epicWithFeature[index] = { ...newEpic, featureCommonDOList: [] };
     extendObservable(this.storyData, {
@@ -203,8 +254,6 @@ class StoryMapStore {
     const feature = {
       adding: true,
     };
-    // 删掉之前正在创建的
-    remove(this.storyMapData.epicWithFeature, { adding: true });
     const currentIndex = findIndex(this.storyMapData.epicWithFeature, { issueId: epicData.issueId });
     // console.log(currentIndex);
     this.storyMapData.epicWithFeature[currentIndex].featureCommonDOList.push(feature);
@@ -247,6 +296,80 @@ class StoryMapStore {
         remove(targetFeature.version[versionId], { issueId: story.issueId });
       });
     }
+  }
+
+  @action setFeatureWidth({
+    epicId,
+    featureId,
+    width,
+  }) {
+    this.storyData[epicId].feature[featureId].width = width;
+  }
+
+
+  changeWidth({
+    width,
+    issueId,
+    type,
+  }, {
+    epicId,
+    featureId,
+    initWidth,
+  }) {
+    const { storyMapWidth } = this.storyMapData;
+    const targetWidth = find(storyMapWidth, { type, issueId });
+    const targetIndex = findIndex(storyMapWidth, { type, issueId });
+    const storyMapWidthDTO = {
+      ...targetWidth,
+      projectId: getProjectId(),
+      width,
+      issueId,
+      type,
+    };
+    if (!targetWidth) {
+      createWidth(storyMapWidthDTO).then((res) => {
+        if (res.failed) {
+          this.setFeatureWidth({
+            epicId,
+            featureId,
+            width: initWidth,
+          });
+        } else {
+          this.addWidthDTO(res);
+        }
+      }).catch((err) => {
+        this.setFeatureWidth({
+          epicId,
+          featureId,
+          width: initWidth,
+        });
+      });
+    } else {
+      changeWidth(storyMapWidthDTO).then((res) => {
+        if (res.failed) {
+          this.setFeatureWidth({
+            epicId,
+            featureId,
+            width: initWidth,
+          });
+        } else {
+          action(() => {
+            storyMapWidth[targetIndex] = res;
+          })();
+        }
+      }).catch((err) => {
+        this.setFeatureWidth({
+          epicId,
+          featureId,
+          width: initWidth,
+        });
+      });
+    }
+  }
+
+  @action addWidthDTO(storyMapWidthDTO) {
+    const { storyMapWidth } = this.storyMapData;
+    storyMapWidth.push(storyMapWidthDTO);
   }
 
   getIssueTypeByCode(typeCode) {

@@ -1,0 +1,17 @@
+.c7nagile-StoryMap-StoryColumn-Resize {
+
+  &-highlight {
+    opacity: 0;
+    transition: all 0.1s ease-out;
+    background: rgb(77, 144, 254);
+    height: 100%;
+    width: 2px;
+    &.active {
+      opacity: 1;
+    }
+  }
+
+  &:hover &-highlight {
+    opacity: 1;
+  }
+}

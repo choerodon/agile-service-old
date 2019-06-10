@@ -8,6 +8,7 @@ import Cell from './Cell';
 import AddCard from './AddCard';
 import CreateEpic from './CreateEpic';
 import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
+import IsInProgramStore from '../../../../../../stores/common/program/IsInProgramStore';
 
 @observer
 class EpicCell extends Component {
@@ -29,6 +30,7 @@ class EpicCell extends Component {
   render() {
     const { epicData, otherData } = this.props;
     const { collapse, storys, feature } = otherData || {};
+    const { isInProgram } = IsInProgramStore;
     const {
       featureCommonDOList,
       issueId,
@@ -39,7 +41,7 @@ class EpicCell extends Component {
     } = epicData;
     let subIssueNum = 0;
     if (storys && feature) {
-      subIssueNum = storys.length + Object.keys(feature).length;
+      subIssueNum = storys.length + Object.keys(feature).length - 1;// 减去none
     }     
     return (
       <Cell style={{ paddingLeft: 0, position: 'relative', ...collapse ? { borderBottom: 'none' } : {} }}>
@@ -79,7 +81,7 @@ class EpicCell extends Component {
                     ? <CreateEpic onCreate={this.handleCreateEpic} />
                     : <EpicCard epic={epicData} subIssueNum={subIssueNum} />}
                 </Column>
-                {!adding && <AddCard style={{ height: 42 }} onClick={this.handleAddEpicClick} />}
+                {!adding && !isInProgram && <AddCard style={{ height: 42 }} onClick={this.handleAddEpicClick} />}
               </Fragment>
             )}
         </div>

@@ -44,3 +44,17 @@ export function storyMove(storyMapDragDTO) {
 export function getSideIssueList(searchDTO) {
   return axios.post(`/agile/v1/projects/${getProjectId()}/story_map/demand?organizationId=${getOrganizationId()}`, searchDTO);
 }
+// {
+//   "objectVersionNumber": "integer",
+//   "issueId": "integer",
+//   "width": "integer",
+//   "id": "integer",
+//   "type": "string",
+//   "projectId": "integer"
+// }
+export function createWidth(storyMapWidthDTO) {
+  return axios.post(`/agile/v1/projects/${getProjectId()}/story_map_width/?organizationId=${getOrganizationId()}`, storyMapWidthDTO);
+}
+export function changeWidth(storyMapWidthDTO) {
+  return axios.put(`/agile/v1/projects/${getProjectId()}/story_map_width/?organizationId=${getOrganizationId()}`, storyMapWidthDTO);
+}
