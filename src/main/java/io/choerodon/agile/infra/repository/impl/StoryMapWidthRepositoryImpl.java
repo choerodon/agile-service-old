@@ -32,7 +32,7 @@ public class StoryMapWidthRepositoryImpl implements StoryMapWidthRepository {
     public StoryMapWidthE updateBySelective(StoryMapWidthE storyMapWidthE) {
         StoryMapWidthDO storyMapWidthDO = ConvertHelper.convert(storyMapWidthE, StoryMapWidthDO.class);
         if (storyMapWidthMapper.updateByPrimaryKeySelective(storyMapWidthDO) != 1) {
-            throw new CommonException("error.storyMapWidthDO.insert");
+            throw new CommonException("error.storyMapWidthDO.update");
         }
         return ConvertHelper.convert(storyMapWidthMapper.selectByPrimaryKey(storyMapWidthDO.getId()), StoryMapWidthE.class);
     }
