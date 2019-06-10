@@ -24,7 +24,7 @@ class StoryRow extends Component {
     const { storyCollapse } = this.props;
     return (
       <tr style={{ ...storyCollapse ? { height: 0 } : {} }}>
-        {epicWithFeature.map((epic, index) => <StoryCell epicIndex={index} showTitle={firstNotCollapseIndex === index} epic={epic} otherData={storyData[epic.issueId]} {...this.props} />)}
+        {epicWithFeature.map((epic, index) => <StoryCell epicIndex={index} isLastColumn={index === epicWithFeature.length - 1} showTitle={firstNotCollapseIndex === index} epic={epic} otherData={storyData[epic.issueId]} {...this.props} />)}
       </tr>
     );
   }

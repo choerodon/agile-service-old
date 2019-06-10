@@ -18,7 +18,7 @@ class StoryColumn extends Component {
 
   componentDidMount() {
     this.AutoScroll = new AutoScroll({
-      scrollElement: document.getElementsByClassName('c7nagile-StoryMapBody')[0],
+      scrollElement: document.getElementsByClassName('minimap-container-scroll')[0],
       onMouseMove: this.handleMouseMove,
       onMouseUp: this.handleMouseUp,
     });
@@ -123,7 +123,7 @@ class StoryColumn extends Component {
     } = this.props;
     const { resizing } = this.state;
     return (
-      <Column width={width} saveRef={connectDropTarget} style={{ background: isOver ? 'rgb(240,240,240)' : 'white' }}>
+      <Column width={width} saveRef={connectDropTarget} style={{ background: isOver ? 'rgb(240,240,240)' : 'white', position: 'relative' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           {storys && storys.map(story => <StoryCard story={story} version={version} />)}
           <CreateStory onCreate={this.handleCreateStory} epic={epic} feature={feature} version={version} />

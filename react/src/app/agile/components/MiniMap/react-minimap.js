@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import Child from './components/Child';
-import './react-minimap.css';
+import './react-minimap.scss';
 
 export class Minimap extends React.Component {
   static propTypes = {
@@ -54,11 +54,13 @@ export class Minimap extends React.Component {
       centerOnY: onMountCenterOnY,
     }));
     window.addEventListener('resize', this.resize);
+    document.addEventListener('mouseup', this.up);
     this.init();
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.resize);
+    document.removeEventListener('mouseup', this.up);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -268,8 +270,7 @@ export class Minimap extends React.Component {
           onTouchStart={this.down}
           onTouchMove={this.move}
           onMouseMove={this.move}
-          onTouchEnd={this.up}
-          onMouseUp={this.up}
+          onTouchEnd={this.up}          
         >
           {this.state.viewport}
           {this.state.children}

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import '../react-minimap.css';
+import '../react-minimap.scss';
 
 
 export class Child extends React.Component {

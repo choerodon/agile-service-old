@@ -58,7 +58,7 @@ class StoryCell extends Component {
 
   render() {
     const {
-      epic, otherData, showTitle, version, storyCollapse, isLastRow, epicIndex,
+      epic, otherData, showTitle, version, storyCollapse, isLastRow, isLastColumn, epicIndex,
     } = this.props;
     const { storyData, swimLine } = StoryMapStore;
     const { issueId: epicId, featureCommonDOList, adding } = epic;
@@ -84,7 +84,7 @@ class StoryCell extends Component {
                   <Fragment>
                     {storyCollapse ? null : featureList.filter(feature => !feature.adding).map((feature, index) => {
                       const targetFeature = targetEpic.feature[feature.issueId] || {};
-                      return targetFeature && <StoryColumn feature={feature} featureIndex={index} isLast={index === featureList.length - 1} storys={this.getStorys(targetFeature)} width={targetFeature.width} {...this.props} />;
+                      return targetFeature && <StoryColumn feature={feature} featureIndex={index} isLast={isLastColumn && index === featureList.length - 1} storys={this.getStorys(targetFeature)} width={targetFeature.width} {...this.props} />;
                     })}
                   </Fragment>
                 )

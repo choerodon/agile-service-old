@@ -13,7 +13,7 @@ import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMap
 class StoryCard extends Component {
   componentDidMount() {
     this.AutoScroll = new AutoScroll({
-      scrollElement: document.getElementsByClassName('c7nagile-StoryMapBody')[0],      
+      scrollElement: document.getElementsByClassName('minimap-container-scroll')[0],      
       pos: {
         left: 200,
         top: 150,
