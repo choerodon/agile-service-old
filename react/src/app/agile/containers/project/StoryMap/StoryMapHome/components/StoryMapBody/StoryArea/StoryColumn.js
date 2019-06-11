@@ -120,7 +120,7 @@ class StoryColumn extends Component {
   render() {
     const {
       storys, width, epic, feature, version, connectDropTarget, isOver, rowIndex,
-    } = this.props;
+    } = this.props;  
     const { resizing } = this.state;
     return (
       <Column width={width} saveRef={connectDropTarget} style={{ background: isOver ? 'rgb(240,240,240)' : 'white', position: 'relative' }}>
@@ -173,6 +173,6 @@ export default DropTarget(
   (connect, monitor) => ({
     connectDropTarget: connect.dropTarget(),
     isOver: monitor.isOver(),
-    canDrop: monitor.canDrop(),
+    // canDrop: monitor.canDrop(), //去掉可以优化性能
   }),
 )(StoryColumn);

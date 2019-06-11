@@ -45,7 +45,7 @@ class StoryCard extends Component {
     });
   }
 
-  render() {
+  render() {   
     const {
       story, connectDragSource, index, rowIndex, 
     } = this.props;
@@ -76,8 +76,9 @@ export default DragSource(
       }
       const { story, version: sourceVersion } = item;
       const {
-        issueId, epicId, featureId, storyMapVersionDOList,
+        issueId, epicId, storyMapVersionDOList,
       } = story;
+      const featureId = story.featureId || 'none';
       const { epic: { issueId: targetEpicId }, feature: { issueId: targetFeatureId }, version } = dropResult;
       const { versionId: targetVersionId } = version || {};
       const storyMapDragDTO = {
@@ -90,7 +91,7 @@ export default DragSource(
         featureId: 0, // 要关联的特性id
         // 问题id列表，移动到特性，配合featureId使用
         featureIssueIds: [],
-      };
+      };   
       // 史诗，特性，版本都不变时
       if (epicId === targetEpicId && featureId === targetFeatureId) {
         if (StoryMapStore.swimLine === 'version') {
@@ -140,6 +141,7 @@ export default DragSource(
           }
         }       
       }
+
       // console.log(storyMapDragDTO);
       storyMove(storyMapDragDTO).then(() => {
         // StoryMapStore.removeStoryFromStoryMap(story);

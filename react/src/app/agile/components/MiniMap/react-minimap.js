@@ -82,25 +82,25 @@ export class Minimap extends React.Component {
   }
 
   init() {
-    const { childComponent, keepAspectRatio } = this.props;
+    const { childComponent, keepAspectRatio, showHeight } = this.props;
     const ChildComponent = childComponent;
-    const { 
-      scrollWidth, scrollHeight, scrollTop, scrollLeft, 
+    const {
+      scrollWidth, scrollHeight, scrollTop, scrollLeft,
     } = this.source;
     const sourceRect = this.source.getBoundingClientRect();
 
     let { width, height } = this.props;
 
     let ratioX = width / scrollWidth;
-    let ratioY = height / scrollHeight;
+    let ratioY = height / (showHeight || scrollHeight);
 
     if (keepAspectRatio) {
       if (ratioX < ratioY) {
         ratioY = ratioX;
-        height = Math.round(scrollHeight / (scrollWidth / width));
+        height = Math.round((showHeight || scrollHeight) / (scrollWidth / width));
       } else {
         ratioX = ratioY;
-        width = Math.round(scrollWidth / (scrollHeight / height));
+        width = Math.round(scrollWidth / ((showHeight || scrollHeight) / height));
       }
     }
 
@@ -111,7 +111,7 @@ export class Minimap extends React.Component {
       width,
       children: _.map(nodes, (node, key) => {
         const {
-          width, height, left, top, 
+          width, height, left, top,
         } = node.getBoundingClientRect();
 
         const wM = width * ratioX;
@@ -153,6 +153,7 @@ export class Minimap extends React.Component {
     if (this.downState === false) return;
 
     const { width, height } = this.state;
+    const { disabledVertical } = this.props;
     let event;
 
     e.preventDefault();
@@ -196,19 +197,21 @@ export class Minimap extends React.Component {
     const top = this.t / coefY;
 
     this.source.scrollLeft = Math.round(left);
-    this.source.scrollTop = Math.round(top);
+    if (!disabledVertical) {
+      this.source.scrollTop = Math.round(top);
+    }
     this.redraw();
   }
 
   synchronize(options) {
     const { width, height } = this.state;
-
+    const { showHeight, disabledVertical } = this.props;
     const rect = this.source.getBoundingClientRect();
 
-    const dims = [rect.width, rect.height];
+    const dims = [rect.width, showHeight ? rect.height : Math.min(rect.height, showHeight)];
     const scroll = [this.source.scrollLeft, this.source.scrollTop];
     const scaleX = width / this.source.scrollWidth;
-    const scaleY = height / this.source.scrollHeight;
+    const scaleY = height / (showHeight || this.source.scrollHeight);
 
     const lW = dims[0] * scaleX;
     const lH = dims[1] * scaleY;
@@ -223,7 +226,9 @@ export class Minimap extends React.Component {
       ? this.state.height
       : Math.round(lH);
     this.l = Math.round(lX);
-    this.t = Math.round(lY);
+    if (!disabledVertical) {
+      this.t = Math.round(lY);
+    }
 
     if (options !== undefined) {
       if (options.centerOnX === true) {
@@ -231,7 +236,7 @@ export class Minimap extends React.Component {
       }
 
       if (options.centerOnY === true) {
-        this.source.scrollTop = this.source.scrollHeight / 2 - dims[1] / 2;
+        this.source.scrollTop = (showHeight || this.source.scrollHeight) / 2 - dims[1] / 2;
       }
     }
 
@@ -270,10 +275,10 @@ export class Minimap extends React.Component {
             this.minimap = minimap;
           }}
           onMouseDown={this.down}
-          // onTouchStart={this.down}
-          // onTouchMove={this.move}
-          // onMouseMove={this.move}
-          // onTouchEnd={this.up}
+        // onTouchStart={this.down}
+        // onTouchMove={this.move}
+        // onMouseMove={this.move}
+        // onTouchEnd={this.up}
         >
           {this.state.viewport}
           {this.state.children}

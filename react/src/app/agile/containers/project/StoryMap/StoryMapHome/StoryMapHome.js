@@ -181,7 +181,7 @@ class StoryMapHome extends Component {
           <Loading loading={loading} />
           {storyMapData ? (
             <Fragment>
-              <Minimap keepAspectRatio height={40} className="c7nagile-StoryMap-minimap" selector=".minimapCard" childComponent={this.renderChild.bind(this)}>
+              <Minimap disabledVertical width={300} height={40} showHeight={300} className="c7nagile-StoryMap-minimap" selector=".minimapCard" childComponent={this.renderChild.bind(this)}>
                 <StoryMapBody />
               </Minimap>
             </Fragment>
