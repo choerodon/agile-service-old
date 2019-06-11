@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
+import _ from 'lodash';
 import {
   Select, Form, Input, Button, Modal, Icon, InputNumber,
   Checkbox, TimePicker, Row, Col, Radio, DatePicker, Spin,
@@ -15,7 +16,9 @@ import {
   createFieldValue, getFields,
 } from '../../../../../api/NewIssueApi';
 import { getPISelect } from '../../../../../api/PIApi';
+import { getUsers } from '../../../../../api/CommonApi';
 import { beforeTextUpload, handleFileUpload } from '../../../../../common/utils';
+import UserHead from '../../../../../components/UserHead';
 import './CreateFeature.scss';
 
 const { AppState } = stores;
@@ -24,9 +27,20 @@ const { Option } = Select;
 const { TextArea } = Input;
 const FormItem = Form.Item;
 const storyPointList = ['0.5', '1', '2', '3', '4', '5', '8', '13'];
+let sign = false;
 
 @observer
 class CreateFeature extends Component {
+  debounceFilterIssues = _.debounce((input) => {
+    this.setState({ selectLoading: true });
+    getUsers(input).then((res) => {
+      this.setState({
+        originUsers: res.list,
+        selectLoading: false,
+      });
+    });
+  }, 500);
+
   constructor(props) {
     super(props);
     this.state = {
@@ -40,6 +54,7 @@ class CreateFeature extends Component {
       selectLoading: false,
       loading: true,
       PIList: [],
+      originUsers: [],
     };
   }
 
@@ -176,6 +191,23 @@ class CreateFeature extends Component {
     }
   };
 
+  onFilterChange(input) {
+    if (!sign) {
+      this.setState({
+        selectLoading: true,
+      });
+      getUsers(input).then((res) => {
+        this.setState({
+          originUsers: res.list,
+          selectLoading: false,
+        });
+      });
+      sign = true;
+    } else {
+      this.debounceFilterIssues(input);
+    }
+  }
+
   handleEpicFilterChange = () => {
     this.setState({
       selectLoading: true,
@@ -228,6 +260,7 @@ class CreateFeature extends Component {
   };
 
   renderField = (field) => {
+    const { selectLoading, originUsers } = this.state;
     const {
       fieldOptions, fieldType, required, fieldName,
     } = field;
@@ -370,6 +403,32 @@ class CreateFeature extends Component {
           className="fieldWith"
           maxLength={255}
         />
+      );
+    } else if (field.fieldType === 'member') {
+      return (
+        <Select
+          label={fieldName}
+          loading={selectLoading}
+          filter
+          filterOption={false}
+          allowClear
+          onFilterChange={this.onFilterChange.bind(this)}
+        >
+          {originUsers.filter(user => user.id !== field.defaultValue).concat(field.defaultValueObj || []).map(user => (
+            <Option key={user.id} value={user.id}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
+                <UserHead
+                  user={{
+                    id: user.id,
+                    loginName: user.loginName,
+                    realName: user.realName,
+                    avatar: user.imageUrl,
+                  }}
+                />
+              </div>
+            </Option>
+          ))}
+        </Select>
       );
     } else {
       return (

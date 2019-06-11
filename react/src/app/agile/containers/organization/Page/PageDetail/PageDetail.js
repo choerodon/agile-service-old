@@ -71,7 +71,7 @@ class PageDetail extends Component {
         <div>
           <Checkbox
             checked={record.display}
-            disabled={record.system}
+            disabled={record.system && record.required}
             onChange={() => this.onDisplayChange(record)}
           />
         </div>

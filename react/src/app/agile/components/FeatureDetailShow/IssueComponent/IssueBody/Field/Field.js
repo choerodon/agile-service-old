@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import _ from 'lodash';
 import moment from 'moment';
 import {
   Checkbox, Select, Input, TimePicker, Row, Col, Radio, DatePicker, InputNumber,
@@ -8,18 +9,33 @@ import {
 import { injectIntl } from 'react-intl';
 import { updateFieldValue } from '../../../../../api/NewIssueApi';
 import TextEditToggle from '../../../../TextEditToggle';
+import UserHead from '../../../../UserHead';
+import { getUsers } from '../../../../../api/CommonApi';
 import './Field.scss';
 
 const { TextArea } = Input;
 const { Option } = Select;
 const { Text, Edit } = TextEditToggle;
+let sign = false;
 
 @inject('AppState')
 @observer class IssueField extends Component {
+  debounceFilterIssues = _.debounce((input) => {
+    this.setState({ selectLoading: true });
+    getUsers(input).then((res) => {
+      this.setState({
+        originUsers: res.list,
+        selectLoading: false,
+      });
+    });
+  }, 500);
+
   constructor(props) {
     super(props);
     this.state = {
       newValue: '',
+      originUsers: [],
+      selectLoading: false,
     };
   }
 
@@ -81,7 +97,25 @@ const { Text, Edit } = TextEditToggle;
     }
   };
 
+  onFilterChange(input) {
+    if (!sign) {
+      this.setState({
+        selectLoading: true,
+      });
+      getUsers(input).then((res) => {
+        this.setState({
+          originUsers: res.list,
+          selectLoading: false,
+        });
+      });
+      sign = true;
+    } else {
+      this.debounceFilterIssues(input);
+    }
+  }
+
   renderField = () => {
+    const { selectLoading, originUsers } = this.state;
     const { field } = this.props;
     const {
       fieldOptions, fieldType, required, value,
@@ -226,6 +260,32 @@ const { Text, Edit } = TextEditToggle;
           maxLength={255}
         />
       );
+    } else if (field.fieldType === 'member') {
+      return (
+        <Select
+          loading={selectLoading}
+          filter
+          filterOption={false}
+          allowClear
+          onFilterChange={this.onFilterChange.bind(this)}
+          onChange={e => this.handleChange(e)}
+        >
+          {originUsers.filter(user => user.id !== field.defaultValue).concat(field.valueStr || []).map(user => (
+            <Option key={user.id} value={user.id}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
+                <UserHead
+                  user={{
+                    id: user.id,
+                    loginName: user.loginName,
+                    realName: user.realName,
+                    avatar: user.imageUrl,
+                  }}
+                />
+              </div>
+            </Option>
+          ))}
+        </Select>
+      );
     } else {
       return (
         <Input
@@ -248,7 +308,7 @@ const { Text, Edit } = TextEditToggle;
   };
 
   render() {
-    const { field } = this.props;
+    const { field, disabled } = this.props;
     const {
       fieldCode, fieldName, value, fieldType, valueStr,
     } = field;
@@ -262,13 +322,25 @@ const { Text, Edit } = TextEditToggle;
         </div>
         <div className="c7n-value-wrapper" style={{ width: 'auto' }}>
           <TextEditToggle
+            style={{ width: '100%', maxWidth: '200px' }}
+            disabled={disabled}
             formKey={fieldCode}
             onSubmit={this.updateIssueField}
             originData={this.transform(fieldType, value)}
           >
             <Text key="text">
               <div style={{ maxWidth: 200, wordBreak: 'break-all', whiteSpace: 'pre-line' }}>
-                {valueStr || '无'}
+                {fieldType === 'member' && valueStr
+                  ? (
+                    <UserHead
+                      user={{
+                        id: valueStr.id,
+                        loginName: valueStr.loginName,
+                        realName: valueStr.realName,
+                        avatar: valueStr.imageUrl,
+                      }}
+                    />
+                  ) : (valueStr || '无')}
               </div>
             </Text>
             <Edit key="edit">

@@ -9,7 +9,9 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import {
   Content, Header, Page, stores,
 } from '@choerodon/boot';
+import _ from 'lodash';
 import moment from 'moment';
+import UserHead from '../../../../components/UserHead';
 import { randomString } from '../../../../common/utils';
 import './ObjectSchemeField.scss';
 import DragList from '../Components/DragList';
@@ -34,9 +36,21 @@ const formItemLayout = {
     sm: { span: 26 },
   },
 };
+let sign = false;
 
 @observer
 class ObjectSchemeField extends Component {
+  debounceFilterUsers = _.debounce((input) => {
+    const { ObjectSchemeStore } = this.props;
+    this.setState({ selectLoading: true });
+    ObjectSchemeStore.getUsers(input).then((res) => {
+      this.setState({
+        originUsers: res.list.filter(u => u.enabled),
+        selectLoading: false,
+      });
+    });
+  }, 500);
+
   constructor(props) {
     super(props);
     const { match } = this.props;
@@ -48,6 +62,8 @@ class ObjectSchemeField extends Component {
       dateDisable: false,
       spinning: true,
       fieldContext: [],
+      selectLoading: true,
+      originUsers: [],
     };
   }
 
@@ -114,6 +130,14 @@ class ObjectSchemeField extends Component {
           // 文本
           this.setState({
             defaultValue: data.defaultValue,
+          });
+        } else if (data.fieldType === 'member') {
+          ObjectSchemeStore.getUsers('', data.defaultValue).then((res) => {
+            this.setState({
+              originUsers: res.list.filter(u => u.enabled),
+              selectLoading: false,
+              defaultValue: Number(data.defaultValue),
+            });
           });
         }
         this.setState({
@@ -245,6 +269,24 @@ class ObjectSchemeField extends Component {
     }
   };
 
+  onFilterChangeAssignee(input) {
+    const { ObjectSchemeStore } = this.props;
+    if (!sign) {
+      this.setState({
+        selectLoading: true,
+      });
+      ObjectSchemeStore.getUsers(input).then((res) => {
+        this.setState({
+          originUsers: res.list.filter(u => u.enabled),
+          selectLoading: false,
+        });
+      });
+      sign = true;
+    } else {
+      this.debounceFilterUsers(input);
+    }
+  }
+
   render() {
     const { form, intl, ObjectSchemeStore } = this.props;
     const { getFieldDecorator } = form;
@@ -255,7 +297,7 @@ class ObjectSchemeField extends Component {
     const field = ObjectSchemeStore.getField;
     const {
       fieldOptions, submitting, defaultValue, isCheck,
-      dateDisable, spinning, fieldContext,
+      dateDisable, spinning, fieldContext, originUsers, selectLoading,
     } = this.state;
 
     return (
@@ -581,6 +623,46 @@ class ObjectSchemeField extends Component {
                         <Input
                           label={<FormattedMessage id="field.default" />}
                         />,
+                      )}
+                    </FormItem>
+                  ) : ''
+              }
+              {
+                field.fieldType === 'member'
+                  ? (
+                    <FormItem
+                      {...formItemLayout}
+                      className="issue-sidebar-form"
+                    >
+                      {getFieldDecorator('defaultValue', {
+                        initialValue: defaultValue || [],
+                      })(
+                        <Select
+                          width="512px"
+                          label={<FormattedMessage id="field.default" />}
+                          dropdownMatchSelectWidth
+                          notFoundContent="没有符合条件的用户"
+                          allowClear
+                          loading={selectLoading}
+                          filter
+                          filterOption={false}
+                          onFilterChange={this.onFilterChangeAssignee.bind(this)}
+                        >
+                          {originUsers.map(user => (
+                            <Option key={user.id} value={user.id}>
+                              <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
+                                <UserHead
+                                  user={{
+                                    id: user.id,
+                                    loginName: user.loginName,
+                                    realName: user.realName,
+                                    avatar: user.imageUrl,
+                                  }}
+                                />
+                              </div>
+                            </Option>
+                          ))}
+                        </Select>,
                       )}
                     </FormItem>
                   ) : ''

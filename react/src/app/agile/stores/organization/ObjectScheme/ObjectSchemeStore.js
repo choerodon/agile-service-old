@@ -8,6 +8,8 @@ const { AppState } = stores;
 class ObjectSchemeStore {
   @observable apiGetway = '';
 
+  @observable iamGetway = '';
+
   @observable orgId = '';
 
   @observable objectScheme = [];
@@ -22,44 +24,54 @@ class ObjectSchemeStore {
 
   @observable field = {};
 
-  @action setField(data) {
+  @action
+  setField(data) {
     this.field = data;
   }
 
-  @computed get getField() {
+  @computed
+  get getField() {
     return this.field;
   }
 
-  @computed get getFieldType() {
+  @computed
+  get getFieldType() {
     return this.fieldType.slice();
   }
 
-  @computed get getFieldContext() {
+  @computed
+  get getFieldContext() {
     return this.fieldContext.slice();
   }
 
-  @action initLookupValue(fieldType = {}, fieldContext = {}) {
+  @action
+  initLookupValue(fieldType = {}, fieldContext = {}) {
     this.fieldType = fieldType.lookupValues || [];
     this.fieldContext = fieldContext.lookupValues || [];
   }
 
-  @computed get getObjectScheme() {
+  @computed
+  get getObjectScheme() {
     return this.objectScheme.slice();
   }
 
-  @action setObjectScheme(data) {
+  @action
+  setObjectScheme(data) {
     this.objectScheme = data;
   }
 
-  @computed get getSchemeDetail() {
+  @computed
+  get getSchemeDetail() {
     return this.schemeDetail;
   }
 
-  @action setSchemeDetail(data) {
+  @action
+  setSchemeDetail(data) {
     this.schemeDetail = data;
   }
 
-  @action updateSchemeDetail(field) {
+  @action
+  updateSchemeDetail(field) {
     this.schemeDetail.content = this.schemeDetail.content.map((item) => {
       if (field.id === item.id) {
         return {
@@ -73,9 +85,11 @@ class ObjectSchemeStore {
     });
   }
 
-  @action initCurrentMenuType(data) {
+  @action
+  initCurrentMenuType(data) {
     const { type, id, organizationId } = data;
     this.apiGetway = `/foundation/v1/${type}s/${id}`;
+    this.iamGetway = `/iam/v1/${type}s/${id}`;
     this.orgId = organizationId;
   }
 
@@ -127,6 +141,8 @@ class ObjectSchemeStore {
       Choerodon.prompt('请刷新后重试！');
     }
   });
+
+  getUsers = (param, userId) => axios.get(`${this.iamGetway}/users?param=${param}${userId ? `&id=${userId}` : ''}`);
 }
 
 const objectSchemeStore = new ObjectSchemeStore();

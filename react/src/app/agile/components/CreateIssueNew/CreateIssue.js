@@ -424,7 +424,34 @@ class CreateIssue extends Component {
     }
   };
 
+  // 分派给我
+  assigneeMe = () => {
+    const {
+      id, imageUrl, loginName, realName,
+    } = AppState.userInfo;
+    const { originUsers } = this.state;
+    const { form } = this.props;
+    const newUsers = originUsers.filter(user => user.id !== id);
+    this.setState({
+      originUsers: [
+        ...newUsers,
+        {
+          id,
+          imageUrl,
+          loginName,
+          realName,
+          enabled: true,
+        },
+      ],
+    }, () => {
+      form.setFieldsValue({
+        assigneedId: id,
+      });
+    });
+  };
+
   renderField = (field) => {
+    const { selectLoading, originUsers } = this.state;
     const {
       fieldOptions, fieldType, required, fieldName,
     } = field;
@@ -568,6 +595,32 @@ class CreateIssue extends Component {
           maxLength={255}
         />
       );
+    } else if (field.fieldType === 'member') {
+      return (
+        <Select
+          label={fieldName}
+          loading={selectLoading}
+          filter
+          filterOption={false}
+          allowClear
+          onFilterChange={this.onFilterChangeAssignee.bind(this)}
+        >
+          {originUsers.filter(user => user.id !== field.defaultValue).concat(field.defaultValueObj || []).map(user => (
+            <Option key={user.id} value={user.id}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
+                <UserHead
+                  user={{
+                    id: user.id,
+                    loginName: user.loginName,
+                    realName: user.realName,
+                    avatar: user.imageUrl,
+                  }}
+                />
+              </div>
+            </Option>
+          ))}
+        </Select>
+      );
     } else {
       return (
         <Input
@@ -669,34 +722,49 @@ class CreateIssue extends Component {
         );
       case 'assignee':
         return (
-          <FormItem label="经办人" style={{ width: 520, display: 'inline-block' }}>
-            {getFieldDecorator('assigneedId', {})(
-              <Select
-                label="经办人"
-                getPopupContainer={triggerNode => triggerNode.parentNode}
-                loading={selectLoading}
-                filter
-                filterOption={false}
-                allowClear
-                onFilterChange={this.onFilterChangeAssignee.bind(this)}
-              >
-                {originUsers.map(user => (
-                  <Option key={user.id} value={user.id}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
-                      <UserHead
-                        user={{
-                          id: user.id,
-                          loginName: user.loginName,
-                          realName: user.realName,
-                          avatar: user.imageUrl,
-                        }}
-                      />
-                    </div>
-                  </Option>
-                ))}
-              </Select>,
-            )}
-          </FormItem>
+          <React.Fragment>
+            <FormItem label="经办人" style={{ width: 520, display: 'inline-block' }}>
+              {getFieldDecorator('assigneedId', {})(
+                <Select
+                  label="经办人"
+                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                  loading={selectLoading}
+                  filter
+                  filterOption={false}
+                  allowClear
+                  onFilterChange={this.onFilterChangeAssignee.bind(this)}
+                >
+                  {originUsers.map(user => (
+                    <Option key={user.id} value={user.id}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
+                        <UserHead
+                          user={{
+                            id: user.id,
+                            loginName: user.loginName,
+                            realName: user.realName,
+                            avatar: user.imageUrl,
+                          }}
+                        />
+                      </div>
+                    </Option>
+                  ))}
+                </Select>,
+              )}
+            </FormItem>
+            <span
+              onClick={this.assigneeMe}
+              role="none"
+              style={{
+                display: 'inline-block',
+                color: 'rgba(63, 81, 181)',
+                marginLeft: 10,
+                marginTop: 20,
+                cursor: 'pointer',
+              }}
+            >
+              {'分派给我'}
+            </span>
+          </React.Fragment>
         );
       case 'sprint':
         return (
