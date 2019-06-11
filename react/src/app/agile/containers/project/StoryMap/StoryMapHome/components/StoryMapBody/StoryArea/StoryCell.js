@@ -1,12 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
-import { Icon, Button } from 'choerodon-ui';
+import { Icon, Button, Tooltip } from 'choerodon-ui';
 import StoryColumn from './StoryColumn';
 import Cell from '../Cell';
 import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
-import AddCard from '../AddCard';
-import { CardHeight } from '../../../Constants';
+import { ColumnMinHeight } from '../../../Constants';
 import './StoryCell.scss';
 
 @observer
@@ -34,7 +33,17 @@ class StoryCell extends Component {
               }}
             />
             {version.name}
-            {version.versionId === 'none' && !isFullScreen && <Button className="c7nagile-StoryMap-StoryCell-title-createBtn" type="primary" icon="playlist_add" onClick={this.handleCreateVersionClick}>创建版本</Button>}
+            {version.versionId === 'none' && !isFullScreen && (
+              <Tooltip title="创建版本">
+                <Button
+                  className="c7nagile-StoryMap-StoryCell-title-createBtn" 
+                  type="primary"
+                  icon="playlist_add"
+                  onClick={this.handleCreateVersionClick}
+                  shape="circle"
+                />
+              </Tooltip>
+            )}
           </div>
         );
       }
@@ -68,11 +77,15 @@ class StoryCell extends Component {
     if (targetEpic && targetEpic.feature && targetEpic.feature.none) {
       epicStorys = targetEpic.feature.none.storys;
     }
-    const featureList = epicStorys.length > 0 ? featureCommonDOList.concat([{ issueId: 'none' }]) : featureCommonDOList;
+    // const featureList = epicStorys.length > 0 ? featureCommonDOList.concat([{ issueId: 'none' }]) : featureCommonDOList;
+    const featureList = featureCommonDOList.concat([{ issueId: 'none' }]);
     return (
       <Cell style={{ ...collapse ? { borderBottom: isLastRow ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {} }}>
         {collapse ? null : (
-          <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ 
+            minHeight: ColumnMinHeight, height: '100%', display: 'flex', flexDirection: 'column', 
+          }}
+          >
             {swimLine !== 'none' && (
               <div style={{ textAlign: 'left', marginLeft: -20, height: 30 }}>
                 {showTitle && this.renderTitle(storyCollapse)}

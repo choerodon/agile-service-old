@@ -119,13 +119,13 @@ class StoryColumn extends Component {
 
   render() {
     const {
-      storys, width, epic, feature, version, connectDropTarget, isOver,
+      storys, width, epic, feature, version, connectDropTarget, isOver, rowIndex,
     } = this.props;
     const { resizing } = this.state;
     return (
       <Column width={width} saveRef={connectDropTarget} style={{ background: isOver ? 'rgb(240,240,240)' : 'white', position: 'relative' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-          {storys && storys.map(story => <StoryCard story={story} version={version} />)}
+          {storys && storys.map((story, index) => <StoryCard index={index} rowIndex={rowIndex} story={story} version={version} />)}
           <CreateStory onCreate={this.handleCreateStory} epic={epic} feature={feature} version={version} />
         </div>
         {resizing && (

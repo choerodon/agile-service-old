@@ -7,12 +7,12 @@ import EpicCell from './EpicCell';
 @observer
 class EpicRow extends Component {
   render() {
-    const { collapseEpics, storyMapData, storyData } = StoryMapStore;
-    const { epicWithFeature } = storyMapData || {};
+    const { storyData } = StoryMapStore;
+    const epicList = StoryMapStore.getEpicList;
 
     return (
       <tr style={{ height: 60 }}>
-        {epicWithFeature ? epicWithFeature.map((epicData, index) => <EpicCell index={index} epicData={epicData} otherData={storyData[epicData.issueId]} />) : null}
+        {epicList.map((epicData, index) => <EpicCell index={index} epicData={epicData} otherData={storyData[epicData.issueId]} />)}
       </tr>
     );
   }

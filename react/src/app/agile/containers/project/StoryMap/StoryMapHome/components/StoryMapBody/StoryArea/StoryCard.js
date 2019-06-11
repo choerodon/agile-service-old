@@ -46,9 +46,11 @@ class StoryCard extends Component {
   }
 
   render() {
-    const { story, connectDragSource } = this.props;
+    const {
+      story, connectDragSource, index, rowIndex, 
+    } = this.props;
     return (
-      <Card className="c7nagile-StoryMap-StoryCard" saveRef={connectDragSource} onMouseDown={this.handleMouseDown}>
+      <Card className={`c7nagile-StoryMap-StoryCard ${index === 0 && rowIndex === 0 ? 'minimapCard' : ''}`} saveRef={connectDragSource} onMouseDown={this.handleMouseDown}>
         <Icon type="close" className="c7nagile-StoryMap-StoryCard-delete" onClick={this.handlRemoveStory} />
         <div className="summary">
           {story.summary}

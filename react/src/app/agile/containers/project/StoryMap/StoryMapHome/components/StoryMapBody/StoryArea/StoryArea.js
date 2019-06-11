@@ -8,10 +8,10 @@ import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMap
 class StoryArea extends Component {
   renderWithSwimVersion=() => {
     const { versionList } = StoryMapStore;   
-    return versionList.map((version, index) => <StoryRow isLastRow={index === versionList.length - 1} version={version} storyCollapse={version.collapse} />);
+    return versionList.map((version, index) => <StoryRow rowIndex={index} isLastRow={index === versionList.length - 1} version={version} storyCollapse={version.collapse} />);
   }
 
-  renderWithNone=() => <StoryRow isLastRow />
+  renderWithNone=() => <StoryRow isLastRow rowIndex={0} />
 
   renderStory=() => {
     const { swimLine } = StoryMapStore;

@@ -100,7 +100,7 @@ class CreateStory extends Component {
       >
         {
           adding
-            ? <Input autoFocus onBlur={this.handleBlur} placeholder="在此创建新内容" value={value} onChange={this.handleChange} />
+            ? <Input autoFocus onPressEnter={this.handleCreateIssue} placeholder="在此创建新内容" value={value} onChange={this.handleChange} />
             : (
               <div className="c7nagile-StoryMap-CreateStory-btn">
                 <span role="none" style={{ cursor: 'pointer', color: '#3F51B5' }} onClick={this.handleAddStoryClick}>新建问题</span>

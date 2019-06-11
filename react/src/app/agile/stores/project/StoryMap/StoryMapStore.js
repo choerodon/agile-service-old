@@ -18,6 +18,8 @@ class StoryMapStore {
 
   @observable createModalVisible = false;
 
+  @observable createEpicModalVisible = false;
+
   @observable isFullScreen = false;
 
   @observable sideSearchDTO = {
@@ -45,11 +47,19 @@ class StoryMapStore {
   getStoryMap = () => {
     this.setLoading(true);
     Promise.all([getStoryMap(), loadIssueTypes(), loadVersions(), loadPriorities()]).then(([storyMapData, issueTypes, versionList, prioritys]) => {
+      const { epicWithFeature, featureWithoutEpic } = storyMapData;
+      const newStoryMapData = {
+        ...storyMapData, 
+        epicWithFeature: epicWithFeature.concat({
+          issueId: 0,
+          featureCommonDOList: featureWithoutEpic,
+        }),
+      };
       this.issueTypes = issueTypes;
       this.prioritys = prioritys;
       this.initVersionList(versionList);
-      this.setStoryMapData(storyMapData);
-      this.initStoryData(storyMapData);
+      this.setStoryMapData(newStoryMapData);
+      this.initStoryData(newStoryMapData);
       this.setLoading(false);
     });
   }
@@ -72,6 +82,10 @@ class StoryMapStore {
     this.createModalVisible = createModalVisible;
   }
 
+  @action setCreateEpicModalVisible(createEpicModalVisible) {
+    this.createEpicModalVisible = createEpicModalVisible;
+  }
+
   @action toggleSideIssueListVisible() {
     this.sideIssueListVisible = !this.sideIssueListVisible;
   }
@@ -84,7 +98,7 @@ class StoryMapStore {
     this.loading = loading;
   }
 
-  @action setStoryMapData(storyMapData) {
+  @action setStoryMapData(storyMapData) {   
     this.storyMapData = storyMapData;
   }
 
@@ -133,7 +147,9 @@ class StoryMapStore {
     });
   }
 
-  @action initStoryData({ epicWithFeature, storyList, storyMapWidth }) {
+  @action initStoryData({
+    epicWithFeature, storyList, storyMapWidth, 
+  }) {
     const storyData = {};
     epicWithFeature.forEach((epic) => {
       const { issueId: epicId } = epic;
@@ -171,7 +187,7 @@ class StoryMapStore {
 
   @action addStoryToStoryData(story, storyData = this.storyData) {
     const { epicId, featureId, storyMapVersionDOList } = story;
-    if (epicId && storyData[epicId]) {
+    if (epicId !== undefined && storyData[epicId]) {
       const targetEpic = storyData[epicId];
       const { feature, storys } = targetEpic;
       storys.push(story);
@@ -250,12 +266,26 @@ class StoryMapStore {
     });
   }
 
+  @action afterCreateEpicInModal(newEpic) {
+    this.storyMapData.epicWithFeature.unshift({ ...newEpic, featureCommonDOList: [] });
+    extendObservable(this.storyData, {
+      [newEpic.issueId]: {
+        epicId: newEpic.issueId,
+        collapse: false,
+        storys: [],
+        feature: {},
+      },
+    });
+  }
+
   @action addFeature(epicData) {
     const feature = {
       adding: true,
     };
+    
     const currentIndex = findIndex(this.storyMapData.epicWithFeature, { issueId: epicData.issueId });
     // console.log(currentIndex);
+    // console.log(epicData, currentIndex);
     this.storyMapData.epicWithFeature[currentIndex].featureCommonDOList.push(feature);
   }
 
@@ -374,6 +404,11 @@ class StoryMapStore {
 
   getIssueTypeByCode(typeCode) {
     return find(this.issueTypes, { typeCode });
+  }
+
+  @computed get getEpicList() {
+    const { epicWithFeature, featureWithoutEpic } = this.storyMapData || {};
+    return epicWithFeature || [];
   }
 
   @computed get getEpicType() {

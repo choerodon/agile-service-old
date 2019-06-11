@@ -16,7 +16,7 @@ class CreateEpic extends Component {
     this.handleCreateIssue();
   };
 
-  handleBlur = () => {
+  handleCreateIssue = () => {
     // console.log(e.target.value);
     const { value } = this.state;
     if (value !== '') {
@@ -73,7 +73,7 @@ class CreateEpic extends Component {
         justifyContent: 'center',
       }}
       >
-        <Input autoFocus onBlur={this.handleBlur} placeholder="在此创建史诗" maxLength="22" value={value} onChange={this.handleChange} />
+        <Input autoFocus onPressEnter={this.handleCreateIssue} placeholder="在此创建史诗" maxLength="22" value={value} onChange={this.handleChange} />
       </Card>
     );
   }

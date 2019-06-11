@@ -117,7 +117,7 @@ class CreateFeature extends Component {
         padding: 7,
       }}
       >
-        <Input autoFocus value={value} placeholder="在此创建新内容" onChange={this.handleChange} />
+        <Input autoFocus value={value} placeholder="在此创建新内容" onChange={this.handleChange} onPressEnter={this.handleCreateIssue} />
         <Dropdown overlay={typeList} trigger={['click']} getPopupContainer={triggerNode => triggerNode.parentNode}>
           <div style={{ display: 'flex', marginTop: 5 }}>
             <TypeTag

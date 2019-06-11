@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 import { Tooltip } from 'choerodon-ui';
 import { find } from 'lodash';
 import { DragSource, DropTarget } from 'react-dnd';
 import TypeTag from '../../../../../../components/TypeTag';
+import { issueLink } from '../../../../../../common/utils';
 import { storyMove } from '../../../../../../api/StoryMapApi';
 import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 
@@ -19,14 +21,14 @@ class IssueItem extends Component {
       issue, connectDragSource, 
     } = this.props;
     const {
-      issueTypeDTO, summary, issueNum, 
+      issueTypeDTO, summary, issueNum, issueId,
     } = issue;
     // const opacity = isDragging ? 0 : 1;
     return (
       connectDragSource(  
         <div className={preFix}>
           <TypeTag data={issueTypeDTO} />
-          <span style={{ color: '#3F51B5', margin: '0 10px' }}>{issueNum}</span>            
+          <Link target="_blank" to={issueLink(issueId, issueTypeDTO.typeCode, issueNum)} style={{ color: '#3F51B5', margin: '0 10px' }}>{issueNum}</Link>            
           <div className={`${preFix}-summary`}>
             <Tooltip title={summary}>
               {summary}

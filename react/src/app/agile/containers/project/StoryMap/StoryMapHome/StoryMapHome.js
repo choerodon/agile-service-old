@@ -17,6 +17,7 @@ import StoryMapBody from './components/StoryMapBody';
 import SideIssueList from './components/SideIssueList';
 import SwitchSwimLine from './components/SwitchSwimLine';
 import CreateVersion from './components/CreateVersion';
+import CreateEpicModal from './components/CreateEpicModal';
 import StoryMapStore from '../../../../stores/project/StoryMap/StoryMapStore';
 import './StoryMapHome.scss';
 
@@ -74,8 +75,17 @@ class StoryMapHome extends Component {
     StoryMapStore.toggleSideIssueListVisible();
   }
 
+  handleCreateEpicClick=() => {
+    StoryMapStore.setCreateEpicModalVisible(true);
+  }
+
   handleCreateVersion = (version) => {
     StoryMapStore.afterCreateVersion(version);
+  }
+
+  handleCreateEpic=(newEpic) => {
+    StoryMapStore.setCreateEpicModalVisible(false);
+    StoryMapStore.afterCreateEpicInModal(newEpic);
   }
 
   handleChangeFullScreen = (e) => {
@@ -143,13 +153,19 @@ class StoryMapHome extends Component {
         <Header title="故事地图">
           <Button
             icon="refresh"
+            onClick={this.handleCreateEpicClick}
+          >
+            创建史诗
+          </Button>
+          <Button
+            icon="refresh"
             onClick={this.handleRefresh}
           >
             刷新
           </Button>
           <SwitchSwimLine />
           <Button onClick={this.handleFullScreen.bind(this)} icon={isFullScreen ? 'exit_full_screen' : 'zoom_out_map'}>
-            <span>{isFullScreen ? '退出全屏' : '全屏'}</span>
+            {isFullScreen ? '退出全屏' : '全屏'}
           </Button>
           <Button
             type="primary"
@@ -161,11 +177,11 @@ class StoryMapHome extends Component {
             需求池
           </Button>
         </Header>
-        <Content style={{ padding: 0, paddingBottom: 100 }}>
+        <Content style={{ padding: 0, paddingBottom: 49 }}>
           <Loading loading={loading} />
           {storyMapData ? (
             <Fragment>
-              <Minimap height={80} className="c7nagile-StoryMap-minimap" selector=".c7nagile-StoryMap-Card" childComponent={this.renderChild.bind(this)}>
+              <Minimap keepAspectRatio height={40} className="c7nagile-StoryMap-minimap" selector=".minimapCard" childComponent={this.renderChild.bind(this)}>
                 <StoryMapBody />
               </Minimap>
             </Fragment>
@@ -185,6 +201,7 @@ class StoryMapHome extends Component {
           )}
           <SideIssueList />
           <CreateVersion onOk={this.handleCreateVersion} />
+          <CreateEpicModal onOk={this.handleCreateEpic} />
         </Content>
       </Page>
     );

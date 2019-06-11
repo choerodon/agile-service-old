@@ -29,6 +29,10 @@ class SideIssueList extends Component {
     return issue.issueNum.indexOf(filter) > -1 || issue.summary.indexOf(filter) > -1;
   }
 
+  handleClickFilter=() => {
+    
+  }
+
   handleFilterChange = (e) => {
     this.setState({
       filter: e.target.value,

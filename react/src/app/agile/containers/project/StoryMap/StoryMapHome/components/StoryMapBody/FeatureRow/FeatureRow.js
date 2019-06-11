@@ -7,12 +7,11 @@ import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMap
 @observer
 class FeatureRow extends Component {
   render() {
-    const { collapseEpics, storyMapData, storyData } = StoryMapStore;
-    const { epicWithFeature } = storyMapData || {};
-    
+    const { storyData } = StoryMapStore;
+    const epicList = StoryMapStore.getEpicList;
     return (
       <tr style={{ height: 82 }}>
-        {epicWithFeature ? epicWithFeature.map((epicData, index) => <FeatureCell EpicIndex={index} epicData={epicData} otherData={storyData[epicData.issueId]} />) : null}
+        {epicList.map((epicData, index) => <FeatureCell EpicIndex={index} epicData={epicData} otherData={storyData[epicData.issueId]} />) }
       </tr>
     );
   }

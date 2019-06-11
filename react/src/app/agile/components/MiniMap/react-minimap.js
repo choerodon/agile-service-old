@@ -1,3 +1,4 @@
+/*eslint-disable */
 import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -140,10 +141,12 @@ export class Minimap extends React.Component {
 
     this.downState = true;
     this.move(e);
+    document.addEventListener('mousemove', this.move);
   }
 
   up() {
     this.downState = false;
+    document.removeEventListener('mousemove', this.move);
   }
 
   move(e) {
@@ -267,10 +270,10 @@ export class Minimap extends React.Component {
             this.minimap = minimap;
           }}
           onMouseDown={this.down}
-          onTouchStart={this.down}
-          onTouchMove={this.move}
-          onMouseMove={this.move}
-          onTouchEnd={this.up}          
+          // onTouchStart={this.down}
+          // onTouchMove={this.move}
+          // onMouseMove={this.move}
+          // onTouchEnd={this.up}
         >
           {this.state.viewport}
           {this.state.children}
