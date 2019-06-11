@@ -92,9 +92,8 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
           }}
           />
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
-            <Button className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateSubTaskShow(true)}>
+            <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateSubTaskShow(true)}>
               <Icon type="playlist_add icon" />
-              <span>创建子任务</span>
             </Button>
           </div>
         </div>

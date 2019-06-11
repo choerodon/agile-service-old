@@ -37,27 +37,27 @@ import TestLink from './TestLink';
             <IssueAttachment {...this.props} />
             {issueTypeDTO.typeCode && ['sub_task', 'feature'].indexOf(issueTypeDTO.typeCode) === -1
               ? <IssueWiki {...this.props} /> : ''
-             }
-            <IssueCommit {...this.props} />
-            {issueTypeDTO.typeCode && ['feature'].indexOf(issueTypeDTO.typeCode) === -1
-              ? <IssueWorkLog {...this.props} /> : ''
-             }
-            <IssueLog {...this.props} />
+            }
             {issueTypeDTO.typeCode && ['sub_task', 'feature'].indexOf(issueTypeDTO.typeCode) === -1
               ? <SubTask {...this.props} /> : ''
-             }
+            }
+            {issueTypeDTO.typeCode && ['feature'].indexOf(issueTypeDTO.typeCode) === -1
+              ? <IssueWorkLog {...this.props} /> : ''
+            }
             {issueTypeDTO.typeCode && ['story', 'task'].indexOf(issueTypeDTO.typeCode) !== -1
               ? <SubBug {...this.props} /> : ''
             }
             {issueTypeDTO.typeCode && ['feature', 'sub_task'].indexOf(issueTypeDTO.typeCode) === -1
-              ? <IssueLink {...this.props} /> : ''
-             }
-            {issueTypeDTO.typeCode && ['feature', 'sub_task'].indexOf(issueTypeDTO.typeCode) === -1
               ? <TestLink {...this.props} /> : ''
             }
+            {issueTypeDTO.typeCode && ['feature', 'sub_task'].indexOf(issueTypeDTO.typeCode) === -1
+              ? <IssueLink {...this.props} /> : ''
+            }
+            <IssueCommit {...this.props} />
+            <IssueLog {...this.props} />
             {issueTypeDTO.typeCode && ['feature'].indexOf(issueTypeDTO.typeCode) === -1
               ? <IssueBranch {...this.props} /> : ''
-             }
+            }
           </div>
         </section>
       </div>

@@ -72,18 +72,6 @@
     background: rgba(175, 76, 255, 0.2);
   }
 
-  .c7nagile-branch-icon {
-    text-align: center;
-    font-size: 13px;
-    border-radius: 50%;
-    height: 18px;
-    width: 18px;
-    display: inline-block;
-    margin-right: 6px;
-    line-height: 18px;
-    font-weight: bold;
-  }
-
   .branch-issue {
     display: inline-block;
     text-align: center;
@@ -127,4 +115,16 @@
   .c7nagile-sidebar-form {
     margin-bottom: 5px;
   }
+}
+
+.c7nagile-branch-icon {
+  text-align: center;
+  font-size: 13px;
+  border-radius: 50%;
+  height: 18px;
+  width: 18px;
+  display: inline-block;
+  margin-right: 6px;
+  line-height: 18px;
+  font-weight: bold;
 }

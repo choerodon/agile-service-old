@@ -154,22 +154,26 @@ import { updateIssue } from '../../../../../../../api/NewIssueApi';
           />
           {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px', position: 'relative' }}>
-            <Button className="leftBtn" funcType="flat" onClick={() => this.setState({ edit: true })}>
+            <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ edit: true })}>
               <Icon type="zoom_out_map icon" style={{ marginRight: 2 }} />
-              <span>全屏编辑</span>
-            </Button>            
-            <Icon
-              className="c7n-des-edit"
-              style={{ position: 'absolute', top: 8, right: -20 }}
-              role="none"
-              type="mode_edit mlr-3 pointer"
+            </Button>
+            <Button
+              style={{ padding: '0 6px' }}
+              className="leftBtn"
+              funcType="flat"
               onClick={() => {
                 this.setState({
                   editDesShow: true,
                   editDes: description,
                 });
               }}
-            />     
+            >
+              <Icon
+                className="c7n-des-edit"
+                role="none"
+                type="mode_edit icon"
+              />
+            </Button>
           </div>
           )}
         </div>

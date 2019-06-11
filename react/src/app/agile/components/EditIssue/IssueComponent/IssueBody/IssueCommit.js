@@ -110,9 +110,8 @@ import { createCommit } from '../../../../api/NewIssueApi';
           }}
           />
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
-            <Button className="leftBtn" funcType="flat" onClick={() => this.setState({ addCommit: true })}>
+            <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ addCommit: true })}>
               <Icon type="playlist_add icon" />
-              <FormattedMessage id="issue.commit.create" />
             </Button>
           </div>
         </div>

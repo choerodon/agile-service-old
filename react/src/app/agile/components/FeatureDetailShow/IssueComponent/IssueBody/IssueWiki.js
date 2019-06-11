@@ -67,16 +67,15 @@ import WikiItem from '../../../EditIssue/Component/WikiItem';
         <div className="c7n-title-wrapper">
           <div className="c7n-title-left">
             <Icon type="library_books c7n-icon-title" />
-            <span>Wiki 文档</span>
+            <span>文档</span>
           </div>
           <div style={{
             flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
           }}
           />
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
-            <Button className="leftBtn" funcType="flat" onClick={() => this.setState({ addWikiShow: true })}>
+            <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ addWikiShow: true })}>
               <Icon type="add_box icon" />
-              <span>添加文档</span>
             </Button>
           </div>
         </div>

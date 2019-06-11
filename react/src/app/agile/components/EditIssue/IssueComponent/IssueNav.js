@@ -7,8 +7,8 @@ import _ from 'lodash';
 
 const navList = [
   'detail', 'des', 'attachment', 'wiki',
-  'commit', 'log', 'data_log', 'sub_task', 'bug',
-  'link_task', 'link_test', 'branch',
+  'sub_task', 'log', 'bug', 'link_test',
+  'link_task', 'commit', 'data_log', 'branch',
 ];
 const navIcon = {
   detail: {
@@ -24,36 +24,36 @@ const navIcon = {
     icon: 'attach_file',
   },
   wiki: {
-    name: 'Wiki文档',
+    name: '文档',
     icon: 'library_books',
-  },
-  commit: {
-    name: '评论',
-    icon: 'sms_outline',
-  },
-  log: {
-    name: '工作日志',
-    icon: 'work_log',
-  },
-  data_log: {
-    name: '活动日志',
-    icon: 'insert_invitation',
   },
   sub_task: {
     name: '子任务',
     icon: 'filter_none',
   },
+  log: {
+    name: '工作日志',
+    icon: 'work_log',
+  },
   bug: {
     name: '缺陷',
     icon: 'bug_report',
+  },
+  link_test: {
+    name: '测试用例',
+    icon: 'classname',
   },
   link_task: {
     name: '问题链接',
     icon: 'link',
   },
-  link_test: {
-    name: '测试用例',
-    icon: 'classname',
+  commit: {
+    name: '评论',
+    icon: 'sms_outline',
+  },
+  data_log: {
+    name: '活动日志',
+    icon: 'insert_invitation',
   },
   branch: {
     name: '开发',
