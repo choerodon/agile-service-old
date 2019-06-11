@@ -56,7 +56,7 @@ public class StoryMapServiceImpl implements StoryMapService {
     private StoryMapAssembler storyMapAssembler;
 
 
-    private List<FeatureCommonDO> setFeatureWithoutEpicByProgram(Long programId, Long projectId) {
+    private List<FeatureCommonDO> setFeatureWithoutEpicByProgram(Long programId, Long projectId, List<Long> featureIds) {
         List<FeatureCommonDO> result = new ArrayList<>();
         List<FeatureCommonDO> programFeatureList = storyMapMapper.selectFeatureByNoEpicByProgram(programId);
         List<FeatureCommonDO> projectFeatureList = storyMapMapper.selectFeatureByNoEpicByProject(projectId);
@@ -67,6 +67,7 @@ public class StoryMapServiceImpl implements StoryMapService {
             result.addAll(projectFeatureList);
         }
         Collections.sort(result, (o1, o2) -> o2.getIssueId().compareTo(o1.getIssueId()));
+        featureIds.addAll(result.stream().map(FeatureCommonDO::getIssueId).collect(Collectors.toList()));
         return result;
     }
 
@@ -97,20 +98,26 @@ public class StoryMapServiceImpl implements StoryMapService {
             epicIds.addAll(projectEpicIds);
         }
 
-        List<EpicWithFeatureDO> epicWithFeatureDOList = storyMapMapper.selectEpicWithFeatureList(epicIds);
-        result.put("epicWithFeature", epicWithFeatureDOList);
-        if (program != null) {
-            result.put("featureWithoutEpic", setFeatureWithoutEpicByProgram(program.getId(), projectId));
+        List<Long> featureIds = new ArrayList<>();
+        if (epicIds.isEmpty()) {
+            result.put("epicWithFeature", new ArrayList<>());
         } else {
-            result.put("featureWithoutEpic", storyMapMapper.selectFeatureByNoEpicByProject(projectId));
+            List<EpicWithFeatureDO> epicWithFeatureDOList = storyMapMapper.selectEpicWithFeatureList(epicIds);
+            result.put("epicWithFeature", epicWithFeatureDOList);
+            epicWithFeatureDOList.forEach(epicWithFeatureDO -> {
+                List<FeatureCommonDO> featureCommonDOList = epicWithFeatureDO.getFeatureCommonDOList();
+                featureIds.addAll(featureCommonDOList.stream().map(FeatureCommonDO::getIssueId).collect(Collectors.toList()));
+            });
+        }
+        if (program != null) {
+            result.put("featureWithoutEpic", setFeatureWithoutEpicByProgram(program.getId(), projectId, featureIds));
+        } else {
+            List<FeatureCommonDO> featureCommonDOList = storyMapMapper.selectFeatureByNoEpicByProject(projectId);
+            featureIds.addAll(featureCommonDOList.stream().map(FeatureCommonDO::getIssueId).collect(Collectors.toList()));
+            result.put("featureWithoutEpic", featureCommonDOList);
         }
 
-        List<Long> featureIds = new ArrayList<>();
-        epicWithFeatureDOList.forEach(epicWithFeatureDO -> {
-            List<FeatureCommonDO> featureCommonDOList = epicWithFeatureDO.getFeatureCommonDOList();
-            featureIds.addAll(featureCommonDOList.stream().map(FeatureCommonDO::getIssueId).collect(Collectors.toList()));
-        });
-        result.put("storyList", storyMapMapper.selectStoryList(projectId, epicIds, featureIds));
+        result.put("storyList", !epicIds.isEmpty() || !featureIds.isEmpty() ? storyMapMapper.selectStoryList(projectId, epicIds, featureIds) : new ArrayList<>());
         result.put("storyMapWidth", setStoryMapWidth(projectId));
         return result;
     }
