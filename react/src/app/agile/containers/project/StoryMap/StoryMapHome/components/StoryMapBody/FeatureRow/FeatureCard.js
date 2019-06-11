@@ -11,7 +11,7 @@ class FeatureCard extends Component {
     const { feature } = this.props;
     const { featureType, summary } = feature;
     return (
-      <Card className={`c7nagile-StoryMap-FeatureCard ${featureType}`}>
+      <Card className={`c7nagile-StoryMap-FeatureCard minimapCard ${featureType}`}>
         <div className="summary">
           {summary}
         </div>        

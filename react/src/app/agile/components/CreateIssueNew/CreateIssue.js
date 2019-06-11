@@ -942,6 +942,7 @@ class CreateIssue extends Component {
               <Select
                 label="预估时间"
                 value={estimatedTime && estimatedTime.toString()}
+                getPopupContainer={triggerNode => triggerNode.parentNode}
                 mode="combobox"
                 ref={(e) => {
                   this.componentRef = e;
@@ -969,6 +970,7 @@ class CreateIssue extends Component {
               <Select
                 label="故事点"
                 value={storyPoints && storyPoints.toString()}
+                getPopupContainer={triggerNode => triggerNode.parentNode}
                 mode="combobox"
                 ref={(e) => {
                   this.componentRef = e;

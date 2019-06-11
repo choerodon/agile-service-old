@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'choerodon-ui';
@@ -8,6 +9,7 @@ import Cell from './Cell';
 import AddCard from './AddCard';
 import CreateEpic from './CreateEpic';
 import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
+import IsInProgramStore from '../../../../../../stores/common/program/IsInProgramStore';
 
 @observer
 class EpicCell extends Component {
@@ -21,21 +23,27 @@ class EpicCell extends Component {
     StoryMapStore.addEpic(epicData);
   }
 
+  handleCreateEpic = (newEpic) => {
+    const { index } = this.props;
+    StoryMapStore.afterCreateEpic(index, newEpic);
+  }
+
   render() {
     const { epicData, otherData } = this.props;
     const { collapse, storys, feature } = otherData || {};
+    const { isInProgram } = IsInProgramStore;
     const {
-      featureCommonDOList,
+      // featureCommonDOList,
       issueId,
-      issueNum,
-      summary,
-      typeCode,
+      // issueNum,
+      // summary,
+      // typeCode,
       adding,
     } = epicData;
     let subIssueNum = 0;
     if (storys && feature) {
-      subIssueNum = storys.length + Object.keys(feature).length;
-    }     
+      subIssueNum = Math.max(storys.length + Object.keys(feature).length - 1, 0);// 减去none
+    }
     return (
       <Cell style={{ paddingLeft: 0, position: 'relative', ...collapse ? { borderBottom: 'none' } : {} }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -46,7 +54,7 @@ class EpicCell extends Component {
                 height: 50,
                 display: 'flex',
                 alignItems: 'center',
-                ...collapse ? { marginRight: 25 } : {},                
+                ...collapse ? { marginRight: 25 } : {},
               }}
               >
                 <Icon type={collapse ? 'navigate_next' : 'navigate_before'} onClick={this.handleCollapse} />
@@ -65,16 +73,16 @@ class EpicCell extends Component {
                 marginLeft: 20,
               }}
               >
-                {`${epicData.summary} (${subIssueNum})`}
+                {`${epicData.epicName || ''} (${subIssueNum})`}
               </div>
             ) : (
               <Fragment>
                 <Column style={{ minHeight: 'unset' }}>
                   {adding
-                    ? <CreateEpic />
-                    : <EpicCard epic={epicData} subIssueNum={subIssueNum} />}
+                    ? <CreateEpic onCreate={this.handleCreateEpic} />
+                    : (issueId ? <EpicCard epic={epicData} subIssueNum={subIssueNum} /> : null)}
                 </Column>
-                {!adding && <AddCard style={{ height: 42 }} onClick={this.handleAddEpicClick} />}
+                {issueId ? (!adding && !isInProgram && <AddCard style={{ height: 42 }} onClick={this.handleAddEpicClick} />) : null}
               </Fragment>
             )}
         </div>

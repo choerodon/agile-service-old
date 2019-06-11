@@ -1,20 +1,23 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
-import { Icon, Button } from 'choerodon-ui';
+import { Icon, Button, Tooltip } from 'choerodon-ui';
 import StoryColumn from './StoryColumn';
 import Cell from '../Cell';
 import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
-import AddCard from '../AddCard';
-import { CardHeight } from '../../../Constants';
+import { ColumnMinHeight } from '../../../Constants';
 import './StoryCell.scss';
 
 @observer
 class StoryCell extends Component {
+  handleCreateVersionClick = () => {
+    StoryMapStore.setCreateModalVisible(true);
+  }
+
   renderTitle = (storyCollapse) => {
-    const { swimLine } = StoryMapStore;
+    const { swimLine, isFullScreen } = StoryMapStore;
     const { version } = this.props;
-    
+
     switch (swimLine) {
       case 'none': {
         return null;
@@ -30,7 +33,17 @@ class StoryCell extends Component {
               }}
             />
             {version.name}
-            {version.versionId === 'none' && <Button className="c7nagile-StoryMap-StoryCell-title-createBtn" type="primary" icon="playlist_add">创建版本</Button>}
+            {version.versionId === 'none' && !isFullScreen && (
+              <Tooltip title="创建版本">
+                <Button
+                  className="c7nagile-StoryMap-StoryCell-title-createBtn" 
+                  type="primary"
+                  icon="playlist_add"
+                  onClick={this.handleCreateVersionClick}
+                  shape="circle"
+                />
+              </Tooltip>
+            )}
           </div>
         );
       }
@@ -54,28 +67,38 @@ class StoryCell extends Component {
 
   render() {
     const {
-      epic, otherData, showTitle, version, storyCollapse,
+      epic, otherData, showTitle, version, storyCollapse, isLastRow, isLastColumn, epicIndex,
     } = this.props;
-    const { storyData, storyMapData } = StoryMapStore;
+    const { storyData, swimLine } = StoryMapStore;
     const { issueId: epicId, featureCommonDOList, adding } = epic;
     const targetEpic = storyData[epicId];
     const { collapse } = otherData || {};
+    let epicStorys = [];
+    if (targetEpic && targetEpic.feature && targetEpic.feature.none) {
+      epicStorys = targetEpic.feature.none.storys;
+    }
+    // const featureList = epicStorys.length > 0 ? featureCommonDOList.concat([{ issueId: 'none' }]) : featureCommonDOList;
+    const featureList = featureCommonDOList.concat([{ issueId: 'none' }]);
     return (
-      <Cell style={{ ...collapse ? { borderBottom: 'none', borderTop: 'none' } : {} }}>
+      <Cell style={{ ...collapse ? { borderBottom: isLastRow ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {} }}>
         {collapse ? null : (
-          <div>
-            <div style={{ textAlign: 'left', marginLeft: -20, height: 30 }}>
-              {showTitle && this.renderTitle(storyCollapse)}
-            </div>
-            <div style={{ display: 'flex' }}>
+          <div style={{ 
+            minHeight: ColumnMinHeight, height: '100%', display: 'flex', flexDirection: 'column', 
+          }}
+          >
+            {swimLine !== 'none' && (
+              <div style={{ textAlign: 'left', marginLeft: -20, height: 30 }}>
+                {showTitle && this.renderTitle(storyCollapse)}
+              </div>
+            )}
+            <div style={{ display: 'flex', flex: 1 }}>
               {
                 adding ? null : (
                   <Fragment>
-                    {storyCollapse ? null : featureCommonDOList.filter(feature => !feature.adding).map((feature) => {
+                    {storyCollapse ? null : featureList.filter(feature => !feature.adding).map((feature, index) => {
                       const targetFeature = targetEpic.feature[feature.issueId] || {};
-                      return targetFeature && <StoryColumn storys={this.getStorys(targetFeature)} width={targetFeature.width} />;
+                      return targetFeature && <StoryColumn feature={feature} featureIndex={index} isLast={isLastColumn && index === featureList.length - 1} storys={this.getStorys(targetFeature)} width={targetFeature.width} {...this.props} />;
                     })}
-                    {/* <AddCard style={{ height: CardHeight, marginTop: 5 }} /> */}
                   </Fragment>
                 )
               }

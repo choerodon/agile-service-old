@@ -1,0 +1,21 @@
+.c7nagile-StoryMap {
+  &-minimap {
+    border-bottom: solid 1px #D8D8D8;
+
+    .minimap {
+      bottom: 0;
+      background: white;
+      border: none;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 5px 0;
+    }
+
+    .minimap-viewport {
+      background: rgba(0, 0, 0, 0.05);
+      border: 2px solid gray;
+      border-radius: 2px;
+    }
+  }
+}

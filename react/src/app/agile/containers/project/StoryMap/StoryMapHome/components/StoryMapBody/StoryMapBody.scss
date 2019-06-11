@@ -1,29 +1,45 @@
 .c7nagile-StoryMapBody {
-  width: 100%;
-  height: 100%;
-  overflow: auto;
+  // width: 100%;
+  // height: 100%;
+  // overflow: auto;
 
   table {
-    min-height: 200px;
+    // min-height: 100%;
     table-layout: fixed;
     position: relative;
-    border: 1px solid #D8D8D8;
+    border-collapse: separate;
+    /* the default option */
+    border-spacing: 0;
 
+    /* remove border gaps */
+    // border: 1px solid #D8D8D8;   
     th,
     td {
-      border: 1px solid #D8D8D8;
       text-align: center;
       white-space: nowrap;
-      overflow: hidden;
       text-overflow: ellipsis;
       // background: rgb(245, 245, 245);
       background-clip: padding-box;
     }
 
+    td:first-child {
+      border-left: solid 1px #D8D8D8;
+    }
+
     td {
+      border-right: solid 1px #D8D8D8;
+      border-bottom: solid 1px #D8D8D8;
       vertical-align: top;
       position: relative;
       overflow: visible;
+      height: 3px; //使td中的div可以充满td
+    }
+
+    /* FireFox */
+    @-moz-document url-prefix() {
+      td {
+        height: 100%;
+      }
     }
   }
 }

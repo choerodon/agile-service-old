@@ -11,6 +11,7 @@ class IsInProgramStore {
 
   refresh=() => {
     getProjectsInProgram().then((program) => {
+      // console.log(program);
       this.setIsInProgram(Boolean(program));
       this.setProgram(program);     
     });

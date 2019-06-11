@@ -8,6 +8,7 @@ import {
   asyncRouter, asyncLocaleProvider, stores, nomatch, 
 } from '@choerodon/boot';
 import IsInProgramStore from '../stores/common/program/IsInProgramStore';
+import RunWhenProjectChange from '../common/RunWhenProjectChange';
 import './Agile.scss';
 
 const Home = asyncRouter(() => import('./Home'));
@@ -47,10 +48,12 @@ const PROJECTBOARD = asyncRouter(() => import('./project/Board'));
 
 class AGILEIndex extends React.Component {
   componentDidMount() {
+    // 切换项目查是否在项目群中
+    RunWhenProjectChange(IsInProgramStore.refresh);
     IsInProgramStore.refresh();    
   }
   
-  render() {
+  render() {  
     const { match } = this.props;
     const { AppState } = stores;
     const langauge = AppState.currentLanguage;

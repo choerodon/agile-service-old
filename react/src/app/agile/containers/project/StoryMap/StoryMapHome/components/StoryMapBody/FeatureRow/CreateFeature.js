@@ -6,17 +6,60 @@ import {
 import { find } from 'lodash';
 import TypeTag from '../../../../../../../components/TypeTag';
 import Card from '../Card';
+import { createIssue, createIssueField } from '../../../../../../../api/NewIssueApi';
+import { getProjectId } from '../../../../../../../common/utils';
+import clickOutSide from '../../../../../../../components/CommonComponent/ClickOutSide';
 import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
 
 
 class CreateFeature extends Component {
   state = {
     featureType: 'business',
+    value: '',
   }
 
+  handleClickOutside = (e) => {
+    this.handleCreateIssue();
+  };
 
-  handleBlur = (e) => {
-    // console.log(e.target.value);
+  handleCreateIssue = () => {
+    const { value } = this.state;
+    if (value !== '') {
+      const { onCreate, epicId } = this.props;
+      const { featureType } = this.state;
+      const featureTypeDTO = StoryMapStore.getFeatureType;
+      const defaultPriority = StoryMapStore.getDefaultPriority;
+      const req = {
+        projectId: getProjectId(),
+        epicId,      
+        summary: value,
+        typeCode: 'feature',
+        featureDTO: {
+          featureType,
+        },        
+        issueTypeId: featureTypeDTO.id,
+        priorityCode: `priority-${defaultPriority.id}`,
+        priorityId: defaultPriority.id,
+      };
+      createIssue(req).then((res) => {
+        const dto = {
+          schemeCode: 'agile_issue',
+          context: res.typeCode,
+          pageCode: 'agile_issue_create',
+        };
+        onCreate({ ...res, featureType });
+        createIssueField(res.issueId, dto);
+      });
+    } else {
+      const { epicId } = this.props;
+      StoryMapStore.removeAddingFeature(epicId);
+    }
+  }
+
+  handleChange=(e) => {
+    this.setState({
+      value: e.target.value,
+    });
   }
 
   handleChangeType=(type) => {   
@@ -26,7 +69,7 @@ class CreateFeature extends Component {
   }
 
   render() {
-    const { featureType: currentType } = this.state;
+    const { featureType: currentType, value } = this.state;
     const featureType = find(StoryMapStore.issueTypes, { typeCode: 'feature' });
     const types = [
       {
@@ -74,8 +117,8 @@ class CreateFeature extends Component {
         padding: 7,
       }}
       >
-        <Input autoFocus onBlur={this.handleBlur} placeholder="在此创建新内容" />
-        <Dropdown overlay={typeList} trigger={['click']}>
+        <Input autoFocus value={value} placeholder="在此创建新内容" onChange={this.handleChange} onPressEnter={this.handleCreateIssue} />
+        <Dropdown overlay={typeList} trigger={['click']} getPopupContainer={triggerNode => triggerNode.parentNode}>
           <div style={{ display: 'flex', marginTop: 5 }}>
             <TypeTag
               data={find(types, { featureType: currentType })}
@@ -97,4 +140,4 @@ CreateFeature.propTypes = {
 
 };
 
-export default CreateFeature;
+export default clickOutSide(CreateFeature);

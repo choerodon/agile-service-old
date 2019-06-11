@@ -7,11 +7,11 @@ import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMap
 @observer
 class StoryArea extends Component {
   renderWithSwimVersion=() => {
-    const { versionList, swimLine } = StoryMapStore;   
-    return versionList.map(version => <StoryRow version={version} storyCollapse={version.collapse} />);
+    const { versionList } = StoryMapStore;   
+    return versionList.map((version, index) => <StoryRow rowIndex={index} isLastRow={index === versionList.length - 1} version={version} storyCollapse={version.collapse} />);
   }
 
-  renderWithNone=() => <StoryRow />
+  renderWithNone=() => <StoryRow isLastRow rowIndex={0} />
 
   renderStory=() => {
     const { swimLine } = StoryMapStore;
@@ -27,7 +27,6 @@ class StoryArea extends Component {
   }
 
   render() {
-    const { versionList, swimLine } = StoryMapStore;
     return this.renderStory();
   }
 }
