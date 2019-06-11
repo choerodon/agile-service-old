@@ -261,7 +261,13 @@ class StoryMapStore {
         epicId: newEpic.issueId,
         collapse: false,
         storys: [],
-        feature: {},
+        feature: {
+          none: {
+            storys: [],
+            version: this.getInitVersions(),
+            width: 1,
+          },
+        },
       },
     });
   }
@@ -273,7 +279,13 @@ class StoryMapStore {
         epicId: newEpic.issueId,
         collapse: false,
         storys: [],
-        feature: {},
+        feature: {
+          none: {
+            storys: [],
+            version: this.getInitVersions(),
+            width: 1,
+          },
+        },
       },
     });
   }
@@ -407,8 +419,13 @@ class StoryMapStore {
   }
 
   @computed get getEpicList() {
-    const { epicWithFeature, featureWithoutEpic } = this.storyMapData || {};
+    const { epicWithFeature } = this.storyMapData || {};
     return epicWithFeature || [];
+  }
+
+  @computed get getIsEmpty() {
+    const { epicWithFeature } = this.storyMapData;  
+    return epicWithFeature ? epicWithFeature.filter(epic => epic.issueId).length === 0 : true;
   }
 
   @computed get getEpicType() {

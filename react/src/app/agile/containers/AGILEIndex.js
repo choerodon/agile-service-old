@@ -80,7 +80,8 @@ class AGILEIndex extends React.Component {
           <Route path={`${match.url}/fastSearch`} component={FASTSEARCHINDEX} />
           {/* 问题链接 */}
           <Route path={`${match.url}/issueLink`} component={ISSUELINKINDEX} />
-          <Route path={`${match.url}/userMap`} component={STORYMAPINDEX} />
+          <Route path={`${match.url}/userMap2`} component={STORYMAPINDEX} />
+          <Route path={`${match.url}/userMap`} component={USERMAPINDEX} />
           {/* 迭代工作台 */}
           <Route path={`${match.url}/iterationBoard/:id`} component={INERATIONBOARDINDEX} />
           <Route path={`${match.url}/reportBoard`} component={REPORTBOARD} />

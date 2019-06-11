@@ -11,7 +11,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { observer } from 'mobx-react';
 import Minimap, { Child } from '../../../../components/MiniMap';
 import Empty from '../../../../components/Empty';
-import noBoard from '../../../../assets/noBoard.svg';
+import epicPic from '../../../../assets/image/emptyStory.svg';
 import Loading from '../../../../components/Loading';
 import StoryMapBody from './components/StoryMapBody';
 import SideIssueList from './components/SideIssueList';
@@ -75,7 +75,7 @@ class StoryMapHome extends Component {
     StoryMapStore.toggleSideIssueListVisible();
   }
 
-  handleCreateEpicClick=() => {
+  handleCreateEpicClick = () => {
     StoryMapStore.setCreateEpicModalVisible(true);
   }
 
@@ -83,7 +83,7 @@ class StoryMapHome extends Component {
     StoryMapStore.afterCreateVersion(version);
   }
 
-  handleCreateEpic=(newEpic) => {
+  handleCreateEpic = (newEpic) => {
     StoryMapStore.setCreateEpicModalVisible(false);
     StoryMapStore.afterCreateEpicInModal(newEpic);
   }
@@ -141,8 +141,8 @@ class StoryMapHome extends Component {
   }
 
   render() {
-    const { loading, storyMapData, isFullScreen } = StoryMapStore;
-
+    const { loading, isFullScreen } = StoryMapStore;
+    const isEmpty = StoryMapStore.getIsEmpty;
     return (
       <Page
         className="c7nagile-StoryMap"
@@ -152,7 +152,7 @@ class StoryMapHome extends Component {
       >
         <Header title="故事地图">
           <Button
-            icon="refresh"
+            icon="playlist_add"
             onClick={this.handleCreateEpicClick}
           >
             创建史诗
@@ -179,7 +179,7 @@ class StoryMapHome extends Component {
         </Header>
         <Content style={{ padding: 0, paddingBottom: 49 }}>
           <Loading loading={loading} />
-          {storyMapData ? (
+          {!isEmpty ? (
             <Fragment>
               <Minimap disabledVertical width={300} height={40} showHeight={300} className="c7nagile-StoryMap-minimap" selector=".minimapCard" childComponent={this.renderChild.bind(this)}>
                 <StoryMapBody />
@@ -188,13 +188,13 @@ class StoryMapHome extends Component {
           ) : (
             <Empty
               style={{ background: 'white', height: 'calc(100% + 120px)', marginTop: -120 }}
-              pic={noBoard}
-              title="没有活跃的PI"
+              pic={epicPic}
+              title="欢迎使用敏捷用户故事地图"
               description={(
                 <Fragment>
-                    这是您的项目公告板。如果您想看到特性的依赖关系，可以先到
-                  {/* <Link to={artListLink()}>ART设置</Link> */}
-                    创建开启火车，再创建特性并关联到活跃的PI。
+                    用户故事地图是以史诗为基础，根据版本控制，迭代冲刺多维度对问题进行管理规划，点击
+                  <a role="none" onClick={this.handleCreateEpicClick}>创建史诗</a>
+                    进入用户故事地图。
                 </Fragment>
                 )}
             />
