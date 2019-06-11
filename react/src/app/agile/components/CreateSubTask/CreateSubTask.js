@@ -269,6 +269,7 @@ class CreateSubIssue extends Component {
   };
 
   renderField = (field) => {
+    const { selectLoading, originUsers } = this.state;
     const {
       fieldOptions, fieldType, required, fieldName,
     } = field;
@@ -411,6 +412,32 @@ class CreateSubIssue extends Component {
           className="fieldWith"
           maxLength={255}
         />
+      );
+    } else if (field.fieldType === 'member') {
+      return (
+        <Select
+          label={fieldName}
+          loading={selectLoading}
+          filter
+          filterOption={false}
+          allowClear
+          onFilterChange={this.onFilterChange.bind(this)}
+        >
+          {originUsers.filter(user => user.id !== field.defaultValue).concat(field.defaultValueObj || []).map(user => (
+            <Option key={user.id} value={user.id}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
+                <UserHead
+                  user={{
+                    id: user.id,
+                    loginName: user.loginName,
+                    realName: user.realName,
+                    avatar: user.imageUrl,
+                  }}
+                />
+              </div>
+            </Option>
+          ))}
+        </Select>
       );
     } else {
       return (
