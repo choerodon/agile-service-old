@@ -87,9 +87,8 @@ import LinkList from '../../Component/LinkList';
           }}
           />
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
-            <Button className="leftBtn" funcType="flat" onClick={() => this.setState({ createLinkTaskShow: true })}>
-              <Icon type="relate icon" />
-              <span>创建链接</span>
+            <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ createLinkTaskShow: true })}>
+              <Icon type="playlist_add icon" />
             </Button>
           </div>
         </div>

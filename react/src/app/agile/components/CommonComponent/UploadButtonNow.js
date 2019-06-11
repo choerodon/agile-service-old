@@ -75,9 +75,8 @@ class UploadButtonNow extends React.Component {
         fileList={fileList}
         className="upload-button"
       >
-        <Button>
+        <Button style={{ padding: '0 6px' }}>
           <Icon type="file_upload" />
-          {'上传附件'}
         </Button>
       </Upload>
     );

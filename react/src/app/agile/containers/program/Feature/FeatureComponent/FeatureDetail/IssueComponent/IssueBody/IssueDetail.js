@@ -32,14 +32,12 @@ import VisibleStore from '../../../../../../../stores/common/visible/VisibleStor
               flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
             }}
             />
-            <div className="c7n-title-right" style={{ marginLeft: '14px', position: 'relative' }}>
-              <Button className="leftBtn" funcType="flat" onClick={() => VisibleStore.setDetailShow(!detailShow)}>
-                <Icon type={detailShow ? 'arrow_drop_down' : 'baseline-arrow_left'} style={{ marginRight: 2 }} />
-                <span>{detailShow ? '隐藏更多' : '显示更多'}</span>
-              </Button>              
-            </div>
           </div>
           <IssueField {...this.props} />
+          <Button className="leftBtn" onClick={() => VisibleStore.setDetailShow(!detailShow)}>
+            <span>{detailShow ? '收起' : '展开'}</span>
+            <Icon type={detailShow ? 'baseline-arrow_drop_up' : 'baseline-arrow_right'} style={{ marginRight: 2 }} />
+          </Button>
         </div>
       </div>
     );

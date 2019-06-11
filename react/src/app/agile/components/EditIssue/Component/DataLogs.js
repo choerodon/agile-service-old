@@ -30,6 +30,7 @@ class DataLogs extends Component {
   }
 
   render() {
+    const { expand, user } = this.state;
     const {
       datalogs, typeCode, createdById, creationDate, 
     } = this.props;
@@ -43,8 +44,8 @@ class DataLogs extends Component {
               datalog={datalog}
               typeCode={typeCode}
               origin={datalogs}
-              expand={this.state.expand}
-              user={this.state.user}
+              expand={expand}
+              user={user}
               callback={this.setUser.bind(this)}
             />
           ))
@@ -62,21 +63,21 @@ class DataLogs extends Component {
           // </div>
         }
         {
-          datalogs.length > 5 && !this.state.expand ? (
+          datalogs.length > 5 && !expand ? (
             <div style={{ marginTop: 5 }}>
               <Button className="leftBtn" funcType="flat" onClick={() => this.setState({ expand: true })}>
-                <Icon type="baseline-arrow_drop_down icon" style={{ marginRight: 2 }} />
                 <span>展开</span>
+                <Icon type="baseline-arrow_right icon" style={{ marginRight: 2 }} />
               </Button>
             </div>
           ) : null
         }
         {
-          datalogs.length > 5 && this.state.expand ? (
+          datalogs.length > 5 && expand ? (
             <div style={{ marginTop: 5 }}>
               <Button className="leftBtn" funcType="flat" onClick={() => this.setState({ expand: false })}>
-                <Icon type="baseline-arrow_drop_up icon" style={{ marginRight: 2 }} />
                 <span>折叠</span>
+                <Icon type="baseline-arrow_drop_up icon" style={{ marginRight: 2 }} />
               </Button>
             </div>
           ) : null

@@ -82,7 +82,7 @@ const hideFields = ['priority', 'component', 'label', 'fixVersion', 'sprint', 't
     let fields = toJS(store.getFields).filter(item => hideFields.indexOf(item.fieldCode) === -1);
     const { issueId } = issue;
     if (!VisibleStore.detailShow) {
-      fields = fields.slice(0, 3);
+      fields = fields.slice(0, 4);
     }
     return (
       <div className="c7n-content-wrapper">

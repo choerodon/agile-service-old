@@ -215,7 +215,7 @@ class CreateField extends Component {
               {getFieldDecorator('fieldType', {
                 rules: [{
                   required: true,
-                  message: '显示范围为必填项！',
+                  message: '字段类型为必填项！',
                 }],
               })(
                 <Select
@@ -225,7 +225,7 @@ class CreateField extends Component {
                   size="default"
                   optionLabelProp="name"
                 >
-                  {fieldType.filter(item => item.valueCode !== 'member').map(type => (
+                  {fieldType.map(type => (
                     <Option
                       value={type.valueCode}
                       key={type.valueCode}

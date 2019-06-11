@@ -71,7 +71,7 @@ import { handleFileUpload } from '../../../../common/utils';
             <span>附件</span>
           </div>
           <div style={{
-            flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px', marginRight: '114.67px',
+            flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px', marginRight: '38px',
           }}
           />
         </div>

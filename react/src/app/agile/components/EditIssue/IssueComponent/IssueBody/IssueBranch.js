@@ -169,9 +169,8 @@ const STATUS_SHOW = {
           }}
           />
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
-            <Button className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateBranchShow(true)}>
+            <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateBranchShow(true)}>
               <Icon type="playlist_add icon" />
-              <FormattedMessage id="issue.branch.create" />
             </Button>
           </div>
         </div>

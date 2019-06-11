@@ -88,7 +88,7 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
     const { issueId } = issue;
     
     if (!VisibleStore.detailShow) {
-      fields = fields.slice(0, 3);
+      fields = fields.slice(0, 4);
     }
 
     return (
