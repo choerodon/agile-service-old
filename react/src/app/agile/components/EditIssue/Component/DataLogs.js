@@ -49,18 +49,6 @@ class DataLogs extends Component {
               callback={this.setUser.bind(this)}
             />
           ))
-          // <div className="createDataLog">
-          //      <UserHead
-          //         user={{
-          //           id: createdById,
-          //           loginName: '',
-          //           realName: datalog.name,
-          //           avatar: datalog.imageUrl,
-          //         }}
-          //         hiddenText
-          //         type="datalog"
-          //       />
-          // </div>
         }
         {
           datalogs.length > 5 && !expand ? (

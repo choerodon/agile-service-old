@@ -183,7 +183,12 @@ class ObjectSchemeField extends Component {
             }
           });
         } else if (dateList.indexOf(field.fieldType) !== -1) {
-          postData.defaultValue = data.defaultValue && data.defaultValue.format(dateFormat);
+          postData.defaultValue = (data.defaultValue && data.defaultValue.format(dateFormat)) || '';
+          if (data.check) {
+            postData.defaultValue = moment().format(dateFormat);
+          }
+        } else if (field.fieldType === 'number') {
+          postData.defaultValue = data.defaultValue === 0 || data.defaultValue ? String(data.defaultValue) : '';
         }
         ObjectSchemeStore.updateField(id, postData)
           .then(() => {
@@ -242,7 +247,11 @@ class ObjectSchemeField extends Component {
     }
   };
 
-  handleCheck = (e) => {
+  handleCheck = (e, type) => {
+    const { form } = this.props;
+    if (dateList.indexOf(type) !== -1) {
+      form.setFieldsValue({ defaultValue: moment() });
+    }
     this.setState({
       isCheck: e.target.checked,
       dateDisable: e.target.checked,
@@ -381,6 +390,7 @@ class ObjectSchemeField extends Component {
                       >
                         {getFieldDecorator('defaultValue', {
                           initialValue: defaultValue || [],
+                          rules: [{ required: field.required, message: '必填字段默认值不能为空！' }],
                         })(
                           <Select
                             label={<FormattedMessage id="field.default" />}
@@ -427,6 +437,7 @@ class ObjectSchemeField extends Component {
                       >
                         {getFieldDecorator('defaultValue', {
                           initialValue: defaultValue || [],
+                          rules: [{ required: field.required, message: '必填字段默认值不能为空！' }],
                         })(
                           <Select
                             label={<FormattedMessage id="field.default" />}
@@ -473,6 +484,7 @@ class ObjectSchemeField extends Component {
                       >
                         {getFieldDecorator('defaultValue', {
                           initialValue: defaultValue || null,
+                          rules: [{ required: field.required && !dateDisable, message: '必填字段默认值不能为空！' }],
                         })(
                           <TimePicker
                             label={<FormattedMessage id="field.default" />}
@@ -491,7 +503,7 @@ class ObjectSchemeField extends Component {
                           valuePropName: 'checked',
                           initialValue: isCheck || false,
                         })(
-                          <Checkbox onChange={this.handleCheck}>
+                          <Checkbox onChange={e => this.handleCheck(e, 'time')}>
                             <FormattedMessage id="field.useCurrentTime" />
                           </Checkbox>,
                         )}
@@ -509,6 +521,7 @@ class ObjectSchemeField extends Component {
                       >
                         {getFieldDecorator('defaultValue', {
                           initialValue: defaultValue || null,
+                          rules: [{ required: field.required && !dateDisable, message: '必填字段默认值不能为空！' }],
                         })(
                           <DatePicker
                             label={<FormattedMessage id="field.default" />}
@@ -528,7 +541,7 @@ class ObjectSchemeField extends Component {
                           valuePropName: 'checked',
                           initialValue: isCheck || false,
                         })(
-                          <Checkbox onChange={this.handleCheck}>
+                          <Checkbox onChange={e => this.handleCheck(e, 'datetime')}>
                             <FormattedMessage id="field.useCurrentDate" />
                           </Checkbox>,
                         )}
@@ -559,6 +572,7 @@ class ObjectSchemeField extends Component {
                       >
                         {getFieldDecorator('defaultValue', {
                           initialValue: defaultValue || 0,
+                          rules: [{ required: field.required, message: '必填字段默认值不能为空！' }],
                         })(
                           <InputNumber
                             step={isCheck ? 0.1 : 1}
@@ -579,6 +593,7 @@ class ObjectSchemeField extends Component {
                     >
                       {getFieldDecorator('defaultValue', {
                         initialValue: defaultValue || '',
+                        rules: [{ required: field.required, message: '必填字段默认值不能为空！' }],
                       })(
                         <Input
                           label={<FormattedMessage id="field.default" />}
@@ -597,6 +612,7 @@ class ObjectSchemeField extends Component {
                     >
                       {getFieldDecorator('defaultValue', {
                         initialValue: defaultValue || '',
+                        rules: [{ required: field.required, message: '必填字段默认值不能为空！' }],
                       })(
                         <TextArea
                           label={<FormattedMessage id="field.default" />}
@@ -617,6 +633,9 @@ class ObjectSchemeField extends Component {
                         rules: [{
                           type: 'url',
                           message: intl.formatMessage({ id: 'field.urlError' }),
+                        }, {
+                          required: field.required,
+                          message: '必填字段默认值不能为空！',
                         }],
                         initialValue: defaultValue || '',
                       })(
@@ -636,6 +655,7 @@ class ObjectSchemeField extends Component {
                     >
                       {getFieldDecorator('defaultValue', {
                         initialValue: defaultValue || [],
+                        rules: [{ required: field.required, message: '必填字段默认值不能为空！' }],
                       })(
                         <Select
                           width="512px"
