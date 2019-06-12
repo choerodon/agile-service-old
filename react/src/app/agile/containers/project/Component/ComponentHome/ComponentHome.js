@@ -109,7 +109,7 @@ class ComponentHome extends Component {
         this.setState({
           components: list,
           pagination: {
-            current: pageNum + 1,
+            current: pageNum,
             total,
             pageSize,
           },
