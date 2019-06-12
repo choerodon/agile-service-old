@@ -104,14 +104,14 @@ class ComponentHome extends Component {
     loadComponents(pagination, filters)
       .then((res) => {
         const {
-          content, number, totalElements, size,
+          list, pageNum, total, pageSize,
         } = res;
         this.setState({
-          components: content,
+          components: list,
           pagination: {
-            current: number + 1,
-            total: totalElements,
-            pageSize: size,
+            current: pageNum + 1,
+            total,
+            pageSize,
           },
           loading: false,
         });

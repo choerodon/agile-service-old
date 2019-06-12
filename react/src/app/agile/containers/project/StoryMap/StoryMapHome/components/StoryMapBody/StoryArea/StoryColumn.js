@@ -118,6 +118,7 @@ class StoryColumn extends Component {
   }
 
   render() {
+    // console.log('render');
     const {
       storys, width, epic, feature, version, connectDropTarget, isOver, rowIndex,
     } = this.props;  
