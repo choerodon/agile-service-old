@@ -54,7 +54,7 @@ class DataLog extends Component {
     if ((!oldValue && oldValue !== 0) && (newValue || newValue === 0)) {
       // null -> xxx
       if (['labels', 'Component', 'Fix Version', 'Epic Child', 'WorklogId', 'Epic Child', 'issue_epic', 'story', 'bug', 'task', 'sub_task', 'feature'].includes(field)) {
-        return '创建';
+        return '添加';
       }
       if (['Attachment'].includes(field)) {
         return '上传';
@@ -67,6 +67,10 @@ class DataLog extends Component {
       }
       if (['description', 'WorklogId', 'Comment', 'timespent'].includes(field)) {
         return '更新';
+      }
+      // 自定义字段
+      if (field && field.split('_')[0] === 'cus') {
+        return '将';
       }
       if (field === 'status') {
         if (categoryCode === 'doing') {
@@ -95,7 +99,12 @@ class DataLog extends Component {
           return '删除';
         }
       }
+      // 自定义字段
+      if (field && field.split('_')[0] === 'cus') {
+        return '移除';
+      }
     } else {
+      // 当字段为文本或数字时，oldValue和newValue均为null
       // null -> null
       if (field === 'description') {
         if (oldString && !newString) {
@@ -131,12 +140,20 @@ class DataLog extends Component {
         }
         return '移除';
       }
+      // 自定义字段
+      if (field && field.split('_')[0] === 'cus') {
+        return '将';
+      }
       return '';
     }
   }
 
   getMode2(datalog) {
-    const { field } = datalog;
+    const { field, fieldName } = datalog;
+    // 自定义字段
+    if (field && field.split('_')[0] === 'cus') {
+      return ` 【${fieldName}】 `;
+    }
     if (field === 'status') {
       return '';
     }
@@ -153,6 +170,10 @@ class DataLog extends Component {
       return '';
     } else if ((oldValue || oldValue === 0) && (newValue || newValue === 0)) {
       // xxx -> yyy
+      // 自定义字段
+      if (field && field.split('_')[0] === 'cus') {
+        return '由';
+      }
       if (['Epic Link', 'issuetype', 'Sprint', 'Pi', 'Story Points', 'timeestimate', 'summary', 'Epic Name', 'priority', 'assignee', 'reporter'].includes(field)) {
         return '由';
       } else {
@@ -187,6 +208,10 @@ class DataLog extends Component {
       if (field === 'labels') {
         return '';
       }
+      // 自定义字段
+      if (field && field.split('_')[0] === 'cus') {
+        return '由';
+      }
       return '';
     }
   }
@@ -207,9 +232,12 @@ class DataLog extends Component {
       if (['description', 'WorklogId', 'Rank', 'Comment'].includes(field)) {
         return '';
       }
-
       if (field === 'status') {
         return '';
+      }
+      // 自定义字段
+      if (field && field.split('_')[0] === 'cus') {
+        return ` 【${oldString}】 `;
       }
     } else if ((oldValue || oldValue === 0) && (!newValue && newValue !== 0)) {
       // yyy -> null
@@ -251,6 +279,10 @@ class DataLog extends Component {
         }
         return ` 【${oldString}】 `;
       }
+      // 自定义字段
+      if (field && field.split('_')[0] === 'cus') {
+        return oldString ? ` 【${oldString}】 ` : ' 空 ';
+      }
       return '';
     }
   }
@@ -265,10 +297,18 @@ class DataLog extends Component {
       if (['Epic Link', 'Sprint', 'Pi', 'Story Points', 'timeestimate', 'summary', 'Epic Name', 'assignee', 'reporter'].includes(field)) {
         return '为';
       }
+      // 自定义字段
+      if (field && field.split('_')[0] === 'cus') {
+        return '为';
+      }
       return '';
     } else if ((oldValue || oldValue === 0) && (newValue || newValue === 0)) {
       // xxx -> yyy
       if (['Epic Link', 'issuetype', 'Sprint', 'Pi', 'Story Points', 'timeestimate', 'summary', 'Epic Name', 'priority', 'assignee', 'reporter'].includes(field)) {
+        return '改变为';
+      }
+      // 自定义字段
+      if (field && field.split('_')[0] === 'cus') {
         return '改变为';
       }
       return '';
@@ -289,6 +329,10 @@ class DataLog extends Component {
         return '改变为';
       }
       if (field === 'Story Points') {
+        return '改变为';
+      }
+      // 自定义字段
+      if (field && field.split('_')[0] === 'cus') {
         return '改变为';
       }
       return '';
@@ -325,6 +369,10 @@ class DataLog extends Component {
         const attachnewArr = newString.split('_');
         return ` 【${decodeURI(attachnewArr.slice(2, attachnewArr.length).join('_'))}】 `;
       }
+      // 自定义字段
+      if (field && field.split('_')[0] === 'cus') {
+        return ` 【${newString}】 `;
+      }
     } else if ((oldValue || oldValue === 0) && (newValue || newValue === 0)) {
       // xxx -> yyy
       if (['Epic Link', 'issuetype', 'Sprint', 'Pi', 'Story Points', 'timeestimate', 'summary', 'Epic Name', 'priority', 'assignee', 'reporter', 'labels', 'Component', 'Fix Version', 'Epic Child'].includes(field)) {
@@ -335,6 +383,10 @@ class DataLog extends Component {
       }
       if (field === 'status') {
         return '';
+      }
+      // 自定义字段
+      if (field && field.split('_')[0] === 'cus') {
+        return ` 【${newString}】 `;
       }
     } else if ((oldValue || oldValue === 0) && (!newValue && newValue !== 0)) {
       // yyy -> null
@@ -368,6 +420,10 @@ class DataLog extends Component {
         }
         return '';
       }
+      // 自定义字段
+      if (field && field.split('_')[0] === 'cus') {
+        return newString ? ` 【${newString}】 ` : ' 空 ';
+      }
     }
   }
 
@@ -394,6 +450,7 @@ class DataLog extends Component {
           i > 4 && !expand ? null : (
             <div className="c7n-datalog" key={datalog.logId}>
               <div className="line-justify">
+                {/*头像*/}
                 <div className="c7n-title-log" style={{ flexShrink: 0 }}>
                   <div
                     style={{
@@ -421,6 +478,7 @@ class DataLog extends Component {
                 </div>
                 <div style={{ flex: 1, borderBottom: '1px solid rgba(0, 0, 0, 0.12)', padding: '8.5px 0' }}>
                   <div>
+                    {/*操作人*/}
                     <Popover
                       placement="bottomLeft"
                       content={(
@@ -482,21 +540,27 @@ class DataLog extends Component {
 
                     <div style={{ display: 'inline' }}>
                       <span>
+                        {/*操作*/}
                         {this.getMode1(datalog)}
                       </span>
                       <span style={{ color: '#303f9f', wordBreak: 'break-all' }}>
+                        {/*字段*/}
                         {this.getMode2(datalog)}
                       </span>
                       <span>
+                        {/*由*/}
                         {this.getMode3(datalog)}
                       </span>
                       <span style={{ color: '#303f9f', wordBreak: 'break-all' }}>
+                        {/*oldValue*/}
                         {this.getMode4(datalog)}
                       </span>
                       <span>
+                        {/*改变/为*/}
                         {this.getMode5(datalog)}
                       </span>
                       <span style={{ color: '#303f9f', wordBreak: 'break-all' }}>
+                        {/*newValue*/}
                         {this.getMode6(datalog)}
                       </span>
                     </div>

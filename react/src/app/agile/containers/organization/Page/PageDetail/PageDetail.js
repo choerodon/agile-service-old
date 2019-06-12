@@ -104,7 +104,7 @@ class PageDetail extends Component {
   };
 
   onDisplayChange = (item) => {
-    if (item.system) {
+    if (item.system && item.required) {
       return;
     }
     const { PageStore, match } = this.props;

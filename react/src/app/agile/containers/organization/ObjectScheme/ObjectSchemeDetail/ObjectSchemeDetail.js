@@ -115,6 +115,9 @@ class ObjectSchemeDetail extends Component {
     if (item.system) {
       return;
     }
+    if (!item.required && !item.defaultValue) {
+      Choerodon.prompt('必填字段请设置默认值！');
+    }
     const field = {
       required: !item.required,
       objectVersionNumber: item.objectVersionNumber,

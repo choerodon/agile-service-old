@@ -72,7 +72,7 @@ let sign = false;
     } = field;
     const { issueId } = issue;
     if (required) {
-      if (!newValue) {
+      if ((fieldType === 'number' && newValue === undefined) || (fieldType !== 'number' && !newValue)) {
         Choerodon.prompt(`${fieldName}必填！`);
         return;
       } else if (newValue instanceof Array && newValue.length === 0) {
