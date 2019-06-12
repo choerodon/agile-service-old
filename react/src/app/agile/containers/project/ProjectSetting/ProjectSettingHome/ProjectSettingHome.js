@@ -75,7 +75,7 @@ class ProjectSetting extends Component {
     getUser(assigneeId).then((res) => {
       this.setState({
         assignee: assigneeId,
-        originUsers: res.content.length ? [res.content[0]] : [],
+        originUsers: res.list.length ? [res.list[0]] : [],
       });
       this.props.form.setFieldsValue({
         assignee: assigneeId,

@@ -100,8 +100,8 @@ class EditComponent extends Component {
   loadUser(managerId) {
     getUser(managerId).then((res) => {
       this.setState({
-        managerId: JSON.stringify(res.content[0]),
-        originUsers: res.content.length ? [res.content[0]] : [],
+        managerId: JSON.stringify(res.list[0]),
+        originUsers: res.list.length ? [res.list[0]] : [],
       });
     });
   }

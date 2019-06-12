@@ -105,8 +105,8 @@ class Assignee extends Component {
     if (!assigneeId) return;
     getUser(assigneeId).then((res) => {
       this.setState({
-        assigneeId: res.content[0].id,
-        originUsers: res.content.length ? [res.content[0]] : [],
+        assigneeId: res.list[0].id,
+        originUsers: res.list.length ? [res.list[0]] : [],
       });
     });
   }
