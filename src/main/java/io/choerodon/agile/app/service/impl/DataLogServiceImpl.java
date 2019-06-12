@@ -6,7 +6,6 @@ import io.choerodon.agile.api.dto.StatusMapDTO;
 import io.choerodon.agile.app.assembler.DataLogAssembler;
 import io.choerodon.agile.app.service.DataLogService;
 import io.choerodon.agile.domain.agile.entity.DataLogE;
-import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.enums.ObjectSchemeCode;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.feign.FoundationFeignClient;
@@ -14,6 +13,7 @@ import io.choerodon.agile.infra.mapper.DataLogMapper;
 import io.choerodon.agile.infra.repository.DataLogRepository;
 import io.choerodon.core.convertor.ConvertHelper;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +44,7 @@ public class DataLogServiceImpl implements DataLogService {
 
     @Override
     public DataLogDTO create(Long projectId, DataLogCreateDTO createDTO) {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         DataLogE dataLogE = modelMapper.map(createDTO, DataLogE.class);
         dataLogE.setProjectId(projectId);
         return ConvertHelper.convert(dataLogRepository.create(dataLogE), DataLogDTO.class);
