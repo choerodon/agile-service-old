@@ -15,6 +15,7 @@ import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
 import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
+import io.choerodon.agile.infra.common.enums.ObjectSchemeCode;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
@@ -235,7 +236,6 @@ public class IssueServiceImpl implements IssueService {
     private static final String FEATURE_TYPE_ENABLER = "enabler";
 
     private ModelMapper modelMapper = new ModelMapper();
-    private static final String SCHEME_CODE = "agile_issue";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -1725,7 +1725,7 @@ public class IssueServiceImpl implements IssueService {
             ObjectMapper m = new ObjectMapper();
 
             Object content = Optional.ofNullable(foundationFeignClient
-                    .listQuery(projectId, organizationId, SCHEME_CODE)
+                    .listQuery(projectId, organizationId, ObjectSchemeCode.AGILE_ISSUE)
                     .getBody()).orElseThrow(() -> new CommonException("error.foundation.listQuery"))
                     .get("content");
 

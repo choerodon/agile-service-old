@@ -10,54 +10,48 @@ import java.util.Date;
  */
 
 public class DataLogDTO {
-
     @ApiModelProperty(value = "日志主键id")
     private Long logId;
-
     @ApiModelProperty(value = "项目id")
     private Long projectId;
-
     @ApiModelProperty(value = "问题字段")
     private String field;
-
+    @ApiModelProperty(value = "字段名称")
+    private String fieldName;
     @ApiModelProperty(value = "日志旧值")
     private String oldValue;
-
     @ApiModelProperty(value = "日志旧值")
     private String oldString;
-
     @ApiModelProperty(value = "日志新值")
     private String newValue;
-
     @ApiModelProperty(value = "日志新值")
     private String newString;
-
     @ApiModelProperty(value = "问题主键id")
     private Long issueId;
-
     @ApiModelProperty(value = "最后更新用户id")
     private Long lastUpdatedBy;
-
     @ApiModelProperty(value = "最后更新日期")
     private Date lastUpdateDate;
-
     @ApiModelProperty(value = "用户名")
     private String name;
-
     @ApiModelProperty(value = "登录名")
     private String loginName;
-
     @ApiModelProperty(value = "真实名")
     private String realName;
-
     @ApiModelProperty(value = "用户头像url")
     private String imageUrl;
-
     @ApiModelProperty(value = "状态类别")
     private String categoryCode;
-
     @ApiModelProperty(value = "用户email地址")
     private String email;
+
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
+    }
 
     public Long getLogId() {
         return logId;
