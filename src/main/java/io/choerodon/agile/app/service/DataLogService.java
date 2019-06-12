@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.service;
 
+import io.choerodon.agile.api.dto.DataLogCreateDTO;
 import io.choerodon.agile.api.dto.DataLogDTO;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  */
 public interface DataLogService {
 
-    DataLogDTO create(Long projectId, DataLogDTO dataLogDTO);
+    DataLogDTO create(Long projectId, DataLogCreateDTO createDTO);
 
     List<DataLogDTO> listByIssueId(Long projectId, Long issueId);
 

@@ -1,5 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
+import io.choerodon.agile.api.dto.DataLogCreateDTO;
 import io.choerodon.agile.api.dto.DataLogDTO;
 import io.choerodon.agile.app.service.DataLogService;
 import io.choerodon.base.annotation.Permission;
@@ -33,8 +34,8 @@ public class DataLogController {
     public ResponseEntity<DataLogDTO> createDataLog(@ApiParam(value = "项目id", required = true)
                                                      @PathVariable(name = "project_id") Long projectId,
                                                      @ApiParam(value = "data log object", required = true)
-                                                     @RequestBody DataLogDTO dataLogDTO) {
-        return Optional.ofNullable(dataLogService.create(projectId, dataLogDTO))
+                                                     @RequestBody DataLogCreateDTO createDTO) {
+        return Optional.ofNullable(dataLogService.create(projectId, createDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.dataLog.create"));
     }
