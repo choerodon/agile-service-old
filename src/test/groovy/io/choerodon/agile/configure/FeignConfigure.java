@@ -3,10 +3,8 @@ package io.choerodon.agile.configure;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.impl.IssueServiceImpl;
 import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.NotifyFeignClient;
-import io.choerodon.agile.infra.feign.StateMachineFeignClient;
-import io.choerodon.agile.infra.feign.UserFeignClient;
+import io.choerodon.agile.infra.feign.*;
+import io.choerodon.agile.infra.feign.fallback.FoundationFeignClientFallback;
 import io.choerodon.agile.infra.feign.fallback.IssueFeignClientFallback;
 import io.choerodon.agile.infra.feign.fallback.NotifyFeignClientFallback;
 import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback;
@@ -288,4 +286,14 @@ public class FeignConfigure {
         productVersionService.setSagaClient(sagaClient);
         return sagaClient;
     }
+
+    @Bean
+    @Primary
+    FoundationFeignClient foundationFeignClient() {
+        FoundationFeignClient foundationFeignClient = Mockito.mock(FoundationFeignClientFallback.class);
+        Map<String, String> map = new HashMap<>();
+        Mockito.when(foundationFeignClient.queryFieldNameMap(Matchers.anyLong(), Matchers.anyLong(), Matchers.anyString(), Matchers.anyList())).thenReturn(new ResponseEntity<>(map, HttpStatus.OK));
+        return foundationFeignClient;
+    }
+
 }

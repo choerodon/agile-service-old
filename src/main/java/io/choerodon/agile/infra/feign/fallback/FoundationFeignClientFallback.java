@@ -1,13 +1,12 @@
 package io.choerodon.agile.infra.feign.fallback;
 
-import java.util.List;
-import java.util.Map;
-
+import io.choerodon.agile.infra.feign.FoundationFeignClient;
+import io.choerodon.core.exception.CommonException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import io.choerodon.agile.infra.feign.FoundationFeignClient;
-import io.choerodon.core.exception.CommonException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by WangZhe@choerodon.io on 2019-05-16.
@@ -24,5 +23,10 @@ public class FoundationFeignClientFallback implements FoundationFeignClient {
     @Override
     public ResponseEntity<Map<Long, Map<String, String>>> queryFieldValueWithIssueIds(Long organizationId, Long projectId, List<Long> instanceIds) {
         throw new CommonException("error.foundation.CodeValue");
+    }
+
+    @Override
+    public ResponseEntity<Map<String, String>> queryFieldNameMap(Long projectId, Long organizationId, String schemeCode, List<String> fieldCodes) {
+        throw new CommonException("error.foundation.queryFieldNameMap");
     }
 }
