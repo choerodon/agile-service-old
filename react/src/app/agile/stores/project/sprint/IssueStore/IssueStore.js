@@ -108,7 +108,7 @@ class SprintCommonStore {
 
   // 分页信息存取（默认信息）
   @observable pagination = {
-    current: 0,
+    current: 1,
     pageSize: 10,
     total: 0,
   };
@@ -527,7 +527,7 @@ class SprintCommonStore {
         }))
       ],
       [
-        'component', this.issueComponents.content.map(item => ({
+        'component', this.issueComponents.list.map(item => ({
           text: item.name,
           // value: item.componentId.toString(),
           value: JSON.stringify({ id: item.componentId.toString() }),
@@ -556,9 +556,9 @@ class SprintCommonStore {
       ],
     ]);
     // 设置 issue 信息
-    this.issues = issues.content;
+    this.issues = issues.list;
     // 设置分页总数
-    this.pagination.total = issues.totalElements;
+    this.pagination.total = issues.total;
     // 当跳转为单任务时
     if (paramIssueSelected === true) {
       // 设置当前展开任务为请求返回第一项
@@ -698,10 +698,10 @@ class SprintCommonStore {
    * @param res
    */
   @action refreshTrigger(res) {
-    this.issues = res.content;
-    this.pagination.total = res.totalElements;
-    this.pagination.pageSize = res.size;
-    this.pagination.current = res.number + 1;
+    this.issues = res.list;
+    this.pagination.total = res.total;
+    this.pagination.pageSize = res.pageSize;
+    this.pagination.current = res.pageNum;
     this.loading = false;
   }
 
@@ -794,10 +794,10 @@ class SprintCommonStore {
     filterControler.update().then(
       (res) => {
         this.updateFiltedIssue({
-          current: res.number + 1,
-          pageSize: res.size,
-          total: res.totalElements,
-        }, res.content, barFilter);
+          current: res.pageNum,
+          pageSize: res.pageSize,
+          total: res.total,
+        }, res.list, barFilter);
       },
     );
   }

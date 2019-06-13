@@ -121,7 +121,7 @@ export default class IssueFilterControler {
     return IssueFilterControler.loadCurrentSetting(
       filter,
       mode,
-      IssueStore.getPagination.current - 1 > 0 ? IssueStore.getPagination.current - 1 : 0,
+      IssueStore.getPagination.current - 1 > 0 ? IssueStore.getPagination.current : 1,
       IssueStore.getPagination.pageSize,
     );
   };
@@ -205,7 +205,7 @@ export default class IssueFilterControler {
    * @param barFilters => Array => 让 Table Filter 受控的数组
    * @returns {Promise}
    */
-  update = (page = 0, size = 10, orderDTO = {}, barFilters = []) => {
+  update = (page = 1, size = 10, orderDTO = {}, barFilters = []) => {
     // 如果当前页面是从其他页跳转过来，且受控的 barFilters 中没有跳转时设定的 paramName
     // 说明用户清除了 barFilter 中跳转时的默认操作
     // 清除当前 cache 中 userFilter 里的 otherArgs，并设置进 store 中
