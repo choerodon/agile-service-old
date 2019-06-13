@@ -155,10 +155,10 @@ class IssueTable extends Component {
     ).then(
       (res) => {
         IssueStore.updateFiltedIssue({
-          current: res.number + 1,
-          pageSize: res.size,
-          total: res.totalElements,
-        }, res.content, barFilters);
+          current: res.pageNum,
+          pageSize: res.pageSize,
+          total: res.total,
+        }, res.list, barFilters);
       },
     );
   };
