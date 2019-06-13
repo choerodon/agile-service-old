@@ -57,6 +57,9 @@ public class IssueSubListDTO {
     @ApiModelProperty(value = "状态DTO")
     private StatusMapDTO statusMapDTO;
 
+    @ApiModelProperty(value = "是否已完成")
+    private Boolean completed;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -185,6 +188,14 @@ public class IssueSubListDTO {
 
     public String getRealName() {
         return realName;
+    }
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
+    }
+
+    public Boolean getCompleted() {
+        return completed;
     }
 
     @Override
