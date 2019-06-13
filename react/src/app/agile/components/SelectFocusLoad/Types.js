@@ -40,7 +40,7 @@ const issue_type_program = {
 };
 export default {
   user: {
-    request: (...args) => new Promise(resolve => getUsers(...args).then((UserData) => { resolve(UserData.list); })),
+    request: (...args) => new Promise(resolve => getUsers(...args).then((UserData) => { resolve(UserData.list.filter(user => user.enabled)); })),
     render: user => (
       <Option key={user.id} value={user.id}>
         <User user={user} />

@@ -1,18 +1,26 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Icon } from 'choerodon-ui';
+import {
+  Button, Icon, Progress, Input,
+} from 'choerodon-ui';
+import { stores } from '@choerodon/boot';
 import { injectIntl } from 'react-intl';
+import { createSubIssue, createIssueField } from '../../../../api/NewIssueApi';
 import CreateSubTask from '../../../CreateSubTask';
 import IssueList from '../../Component/IssueList';
 import VisibleStore from '../../../../stores/common/visible/VisibleStore';
+import './SubTask.scss';
 
-@inject('AppState')
+const { AppState } = stores;
+
 @observer class SubTask extends Component {
   constructor(props) {
     super(props);
     this.sign = false;
     this.state = {
+      expand: false,
+      summary: false,
     };
   }
 
@@ -76,10 +84,71 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
     }
   };
 
+  getPercent = () => {
+    const { store } = this.props;
+    const { subIssueDTOList = [] } = store.getIssue;
+    const completeList = subIssueDTOList.filter(issue => issue.completed);
+    const allLength = (subIssueDTOList && subIssueDTOList.length) || 0;
+    const completeLength = completeList.length;
+    if (allLength === 0) {
+      return 100;
+    } else {
+      return parseInt(completeLength / allLength * 100, 10);
+    }
+  };
+
+  handleCancel = () => {
+    this.setState({
+      expand: false,
+      summary: false,
+    });
+  };
+
+  handleSave = () => {
+    const { store } = this.props;
+    const { summary } = this.state;
+    const { issueId, priorityId, sprintId } = store.getIssue;
+    const subIssueType = store.getIssueTypes && store.getIssueTypes.find(t => t.typeCode === 'sub_task');
+    if (summary) {
+      const issue = {
+        summary,
+        priorityId,
+        priorityCode: `priority-${priorityId}`,
+        projectId: AppState.currentMenuType.id,
+        parentIssueId: issueId,
+        sprintId,
+        issueTypeId: subIssueType && subIssueType.id,
+      };
+      createSubIssue(issueId, issue)
+        .then((res) => {
+          const dto = {
+            schemeCode: 'agile_issue',
+            context: subIssueType && subIssueType.typeCode,
+            pageCode: 'agile_issue_create',
+          };
+          createIssueField(res.issueId, dto);
+          this.handleCancel();
+          this.handleCreateSubIssue();
+        })
+        .catch(() => {
+        });
+    } else {
+      Choerodon.prompt('子任务概要不能为空！');
+    }
+  };
+
+  onSummaryChange = (e) => {
+    this.setState({
+      summary: e.target && e.target.value && e.target.value.trim(),
+    });
+  };
+
   render() {
+    const { expand } = this.state;
     const { store } = this.props;
     const { issueId, summary } = store.getIssue;
     const { getCreateSubTaskShow: createSubTaskShow } = VisibleStore;
+    const { subIssueDTOList = [] } = store.getIssue;
     return (
       <div id="sub_task">
         <div className="c7n-title-wrapper">
@@ -97,7 +166,50 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
             </Button>
           </div>
         </div>
+        {subIssueDTOList && subIssueDTOList.length
+          ? (
+            <div className="c7n-subTask-progress">
+              <Progress percent={this.getPercent()} />
+            </div>
+          ) : ''
+        }
         {this.renderSubIssues()}
+        <div className="c7n-subTask-quickCreate">
+          {expand
+            ? (
+              <span style={{ position: 'relative' }}>
+                <Input
+                  placeholder="在此输入子任务概要"
+                  maxLength={44}
+                  onChange={this.onSummaryChange}
+                />
+                <div style={{
+                  textAlign: 'right',
+                  lineHeight: '20px',
+                  position: 'absolute',
+                  right: '0px',
+                }}
+                >
+                  <Icon type="done" className="c7n-subTask-icon" onClick={this.handleSave} />
+                  <Icon type="close" className="c7n-subTask-icon" onClick={this.handleCancel} />
+                </div>
+              </span>
+            ) : (
+              <Button
+                className="leftBtn"
+                functyp="flat"
+                onClick={() => {
+                  this.setState({
+                    expand: true,
+                  });
+                }}
+              >
+                <Icon type="playlist_add" />
+                {'创建问题'}
+              </Button>
+            )
+          }
+        </div>
         {
           createSubTaskShow ? (
             <CreateSubTask
