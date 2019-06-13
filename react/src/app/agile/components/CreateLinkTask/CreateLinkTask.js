@@ -18,9 +18,9 @@ class CreateLinkTask extends Component {
     this.setState({
       selectLoading: true,
     });
-    loadIssuesInLink(0, 20, issueId, input).then((res) => {
+    loadIssuesInLink(1, 20, issueId, input).then((res) => {
       this.setState({
-        originIssues: res.content,
+        originIssues: res.list,
         selectLoading: false,
       });
     });
@@ -51,9 +51,9 @@ class CreateLinkTask extends Component {
       this.setState({
         selectLoading: true,
       });
-      loadIssuesInLink(0, 20, issueId, input).then((res) => {
+      loadIssuesInLink(1, 20, issueId, input).then((res) => {
         this.setState({
-          originIssues: res.content,
+          originIssues: res.list,
           selectLoading: false,
         });
       });

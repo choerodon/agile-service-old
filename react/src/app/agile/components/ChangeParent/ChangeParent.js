@@ -16,9 +16,9 @@ class ChangeParent extends Component {
   debounceFilterIssues = _.debounce((input) => {
     const { issueId } = this.props;
     this.setState({ selectLoading: true });
-    loadIssuesInLink(0, 20, issueId, input).then((res) => {
+    loadIssuesInLink(1, 20, issueId, input).then((res) => {
       this.setState({
-        originIssues: res.content,
+        originIssues: res.list,
         selectLoading: false,
       });
     });
@@ -60,9 +60,9 @@ class ChangeParent extends Component {
     const { issueId } = this.props;
     if (!sign) {
       this.setState({ selectLoading: true });
-      loadIssuesInLink(0, 20, issueId, input).then((res) => {
+      loadIssuesInLink(1, 20, issueId, input).then((res) => {
         this.setState({
-          originIssues: res.content,
+          originIssues: res.list,
           selectLoading: false,
         });
       });
@@ -120,7 +120,8 @@ class ChangeParent extends Component {
                         </p>
                       </div>
                     </div>
-                  </Option>))}
+                  </Option>
+                ))}
               </Select>,
             )}
           </FormItem>
