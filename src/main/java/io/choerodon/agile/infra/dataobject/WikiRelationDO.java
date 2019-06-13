@@ -1,8 +1,6 @@
 package io.choerodon.agile.infra.dataobject;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.mybatis.entity.BaseDTO;
 
 import javax.persistence.Table;
 
@@ -10,10 +8,8 @@ import javax.persistence.Table;
  * Created by HuangFuqiang@choerodon.io on 2018/12/03.
  * Email: fuqianghuang01@gmail.com
  */
-@ModifyAudit
-@VersionAudit
 @Table(name = "agile_wiki_relation")
-public class WikiRelationDO extends AuditDomain {
+public class WikiRelationDO extends BaseDTO {
 
     private Long id;
 

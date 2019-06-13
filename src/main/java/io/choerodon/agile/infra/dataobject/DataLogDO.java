@@ -1,25 +1,18 @@
 package io.choerodon.agile.infra.dataobject;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.mybatis.entity.BaseDTO;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/6/14.
  * Email: fuqianghuang01@gmail.com
  */
-@ModifyAudit
-@VersionAudit
 @Table(name = "agile_data_log")
-public class DataLogDO extends AuditDomain {
+public class DataLogDO extends BaseDTO {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long logId;
 
     private Long projectId;

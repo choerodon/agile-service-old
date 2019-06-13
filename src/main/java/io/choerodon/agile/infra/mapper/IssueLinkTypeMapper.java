@@ -5,13 +5,13 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
-import io.choerodon.mybatis.common.BaseMapper;
+import io.choerodon.mybatis.common.Mapper;
 
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/6/14
  */
-public interface IssueLinkTypeMapper extends BaseMapper<IssueLinkTypeDO> {
+public interface IssueLinkTypeMapper extends Mapper<IssueLinkTypeDO> {
 
     /**
      * 根据项目id查询issueLinkType

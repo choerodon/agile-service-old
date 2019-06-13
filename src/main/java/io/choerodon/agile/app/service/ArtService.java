@@ -4,8 +4,8 @@ import io.choerodon.agile.api.dto.ArtDTO;
 import io.choerodon.agile.api.dto.ArtStopDTO;
 import io.choerodon.agile.api.dto.PiCalendarDTO;
 import io.choerodon.agile.api.dto.PiCreateDTO;
-import io.choerodon.core.domain.Page;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import com.github.pagehelper.PageInfo;
+import io.choerodon.base.domain.PageRequest;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public interface ArtService {
 
     ArtDTO updateArt(Long programId, ArtDTO artDTO);
 
-    Page<ArtDTO> queryArtList(Long programId, PageRequest pageRequest);
+    PageInfo<ArtDTO> queryArtList(Long programId, PageRequest pageRequest);
 
     ArtDTO queryArt(Long programId, Long id);
 

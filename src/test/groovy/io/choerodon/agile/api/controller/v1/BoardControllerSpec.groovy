@@ -95,7 +95,7 @@ class BoardControllerSpec extends Specification {
 //        roleDTO.setId(1L)
 //        roles.add(roleDTO)
 //        userRepository.listRolesWithUserCountOnProjectLevel(*_) >> roles
-//        Page<UserDTO> users = new Page<>()
+//        PageInfo<UserDTO> users = new PageInfo<>()
 //        List<UserDTO> userDOList1 = new ArrayList<>()
 //        UserDTO u = new UserDTO()
 //        u.setId(6L)

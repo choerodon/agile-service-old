@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.infra.dataobject.QuickFilterDO;
-import io.choerodon.mybatis.common.BaseMapper;
+import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2018/6/13.
  * Email: fuqianghuang01@gmail.com
  */
-public interface QuickFilterMapper extends BaseMapper<QuickFilterDO> {
+public interface QuickFilterMapper extends Mapper<QuickFilterDO> {
 
     List<String> selectSqlQueryByIds(@Param("quickFilterIds") List<Long> quickFilterIds);
 

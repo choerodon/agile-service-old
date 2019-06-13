@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.mybatis.common.BaseMapper;
+import io.choerodon.mybatis.common.Mapper;
 import io.choerodon.agile.infra.dataobject.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Param;
  * @author dinghuang123@gmail.com
  * @since 2018-05-14 21:04:00
  */
-public interface IssueLabelMapper extends BaseMapper<IssueLabelDO> {
+public interface IssueLabelMapper extends Mapper<IssueLabelDO> {
 
     /**
      * 回收没有再用的issue标签

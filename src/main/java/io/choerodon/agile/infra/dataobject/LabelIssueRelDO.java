@@ -1,16 +1,10 @@
 package io.choerodon.agile.infra.dataobject;
 
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.mybatis.entity.BaseDTO;
 
 /**
  * 敏捷开发Issue标签关联
@@ -18,14 +12,12 @@ import io.choerodon.mybatis.domain.AuditDomain;
  * @author dinghuang123@gmail.com
  * @since 2018-05-14 21:31:22
  */
-@ModifyAudit
-@VersionAudit
 @Table(name = "agile_label_issue_rel")
-public class LabelIssueRelDO extends AuditDomain {
+public class LabelIssueRelDO extends BaseDTO {
 
     /***/
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long issueId;
 
     /**

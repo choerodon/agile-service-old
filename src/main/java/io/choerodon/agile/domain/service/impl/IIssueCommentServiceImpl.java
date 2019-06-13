@@ -1,12 +1,9 @@
 package io.choerodon.agile.domain.service.impl;
 
-import io.choerodon.mybatis.service.BaseServiceImpl;
 import io.choerodon.agile.domain.service.*;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.choerodon.agile.infra.dataobject.IssueCommentDO;
 
 /**
  * 敏捷开发Issue评论
@@ -16,6 +13,6 @@ import io.choerodon.agile.infra.dataobject.IssueCommentDO;
  */
 @Service
 @Transactional(rollbackFor = CommonException.class)
-public class IIssueCommentServiceImpl extends BaseServiceImpl<IssueCommentDO> implements IIssueCommentService {
+public class IIssueCommentServiceImpl implements IIssueCommentService {
 
 }

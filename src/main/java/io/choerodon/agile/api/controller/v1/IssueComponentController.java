@@ -5,14 +5,14 @@ import io.choerodon.agile.api.dto.IssueDTO;
 import io.choerodon.agile.api.dto.SearchDTO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
-import io.choerodon.core.domain.Page;
+import com.github.pagehelper.PageInfo;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.dto.IssueComponentDTO;
 import io.choerodon.agile.app.service.IssueComponentService;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.choerodon.mybatis.pagehelper.domain.Sort;
+import io.choerodon.mybatis.annotation.SortDefault;
+import io.choerodon.base.domain.PageRequest;
+import io.choerodon.base.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -91,7 +91,7 @@ public class IssueComponentController {
     @ApiOperation("根据project id查询component")
     @CustomPageRequest
     @PostMapping(value = "/query_all")
-    public ResponseEntity<Page<ComponentForListDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PageInfo<ComponentForListDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
                                                                      @PathVariable(name = "project_id") Long projectId,
                                                                      @ApiParam(value = "当前模块id")
                                                                      @RequestParam(required = false) Long componentId,

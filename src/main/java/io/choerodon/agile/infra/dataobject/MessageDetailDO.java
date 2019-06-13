@@ -1,8 +1,6 @@
 package io.choerodon.agile.infra.dataobject;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.mybatis.entity.BaseDTO;
 
 import javax.persistence.*;
 
@@ -10,13 +8,11 @@ import javax.persistence.*;
  * Created by HuangFuqiang@choerodon.io on 2018/10/9.
  * Email: fuqianghuang01@gmail.com
  */
-@ModifyAudit
-@VersionAudit
 @Table(name = "agile_message_detail")
-public class MessageDetailDO extends AuditDomain {
+public class MessageDetailDO extends BaseDTO {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String event;

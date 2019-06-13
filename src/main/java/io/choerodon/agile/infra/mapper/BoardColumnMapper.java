@@ -4,7 +4,7 @@ import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
 import io.choerodon.agile.api.dto.SearchDTO;
 import io.choerodon.agile.domain.agile.event.RemoveStatusWithProject;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.mybatis.common.BaseMapper;
+import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
  * Email: fuqianghuang01@gmail.com
  */
-public interface BoardColumnMapper extends BaseMapper<BoardColumnDO> {
+public interface BoardColumnMapper extends Mapper<BoardColumnDO> {
 
     List selectColumnsByBoardId(@Param("projectId") Long projectId,
                                 @Param("boardId") Long boardId,

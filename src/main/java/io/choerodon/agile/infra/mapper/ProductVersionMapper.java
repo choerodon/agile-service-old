@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.api.dto.SearchDTO;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.mybatis.common.BaseMapper;
+import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * Created by jian_zhang02@163.com on 2018/5/14.
  */
-public interface ProductVersionMapper extends BaseMapper<ProductVersionDO> {
+public interface ProductVersionMapper extends Mapper<ProductVersionDO> {
 
     List queryVersionIdsByProjectId(@Param("projectId") Long projectId,
                                     @Param("searchArgs") Map<String, Object> searchArgs,

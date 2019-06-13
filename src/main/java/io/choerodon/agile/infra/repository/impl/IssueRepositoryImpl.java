@@ -14,6 +14,8 @@ import io.choerodon.agile.infra.dataobject.StoryMapMoveIssueDO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.mybatis.entity.Criteria;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +52,9 @@ public class IssueRepositoryImpl implements IssueRepository {
     @DataLog(type = "issue")
     public IssueE update(IssueE issueE, String[] fieldList) {
         IssueDO issueDO = ConvertHelper.convert(issueE, IssueDO.class);
-        if (iIssueService.updateOptional(issueDO, fieldList) != 1) {
+        Criteria criteria = new Criteria();
+        criteria.update(fieldList);
+        if (issueMapper.updateByPrimaryKeyOptions(issueDO, criteria) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
         return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDO.getIssueId()), IssueE.class);

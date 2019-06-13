@@ -6,7 +6,7 @@ import io.choerodon.agile.api.dto.IssueLinkTypeDTO
 import io.choerodon.agile.api.dto.IssueLinkTypeSearchDTO
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper
-import io.choerodon.core.domain.Page
+import io.choerodon.core.domain.PageInfo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -109,7 +109,7 @@ class IssueLinkTypeControllerSpec extends Specification {
         issueLinkTypeSearchDTO.linkName = "阻塞"
 
         when: '发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issue_link_types/query_all?issueLinkTypeId={issueLinkTypeId}', issueLinkTypeSearchDTO, Page, projectId, issueLinkTypeId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issue_link_types/query_all?issueLinkTypeId={issueLinkTypeId}', issueLinkTypeSearchDTO, PageInfo, projectId, issueLinkTypeId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()

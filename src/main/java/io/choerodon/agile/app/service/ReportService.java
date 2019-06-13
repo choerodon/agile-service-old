@@ -5,8 +5,8 @@ import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.infra.dataobject.GroupDataChartDO;
 import io.choerodon.agile.infra.dataobject.GroupDataChartListDO;
 import io.choerodon.agile.infra.mapper.ReportMapper;
-import io.choerodon.core.domain.Page;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import com.github.pagehelper.PageInfo;
+import io.choerodon.base.domain.PageRequest;
 
 import java.util.Date;
 import java.util.List;
@@ -38,7 +38,7 @@ public interface ReportService {
      */
     List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO);
 
-    Page<IssueListDTO> queryIssueByOptions(Long projectId, Long versionId, String status, String type, PageRequest pageRequest, Long organizationId);
+    PageInfo<IssueListDTO> queryIssueByOptions(Long projectId, Long versionId, String status, String type, PageRequest pageRequest, Long organizationId);
 
     Map<String, Object> queryVersionLineChart(Long projectId, Long versionId, String type);
 

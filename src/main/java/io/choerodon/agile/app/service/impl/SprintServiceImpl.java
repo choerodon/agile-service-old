@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.google.common.collect.Ordering;
+
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.IssueService;
@@ -20,12 +21,17 @@ import io.choerodon.agile.infra.repository.SprintRepository;
 import io.choerodon.agile.infra.repository.SprintWorkCalendarRefRepository;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.core.domain.Page;
+
+import com.github.pagehelper.PageInfo;
+
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
-import io.choerodon.mybatis.pagehelper.PageHelper;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
+import com.github.pagehelper.PageHelper;
+
+import io.choerodon.base.domain.PageRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -267,7 +273,7 @@ public class SprintServiceImpl implements SprintService {
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(new ArrayList<>(assigneeIds), true);
         SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
         if (sprintSearchDO != null) {
-            List<Long> activeSprintIssueIds = issueIdSprintIdDTOs.stream().filter(x->sprintSearchDO.getSprintId().equals(x.getSprintId())).map(IssueIdSprintIdDTO::getIssueId).collect(Collectors.toList());
+            List<Long> activeSprintIssueIds = issueIdSprintIdDTOs.stream().filter(x -> sprintSearchDO.getSprintId().equals(x.getSprintId())).map(IssueIdSprintIdDTO::getIssueId).collect(Collectors.toList());
             sprintSearchDO.setIssueSearchDOList(sprintMapper.queryActiveSprintIssueSearchByIssueIds(projectId, activeSprintIssueIds, sprintSearchDO.getSprintId()));
             sprintSearchDO.setAssigneeIssueDOList(sprintMapper.queryAssigneeIssueByActiveSprintId(projectId, sprintSearchDO.getSprintId()));
             SprintSearchDTO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDO, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap);
@@ -413,7 +419,7 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
-    public Page<IssueListDTO> queryIssueByOptions(Long projectId, Long sprintId, String status, PageRequest pageRequest, Long organizationId) {
+    public PageInfo<IssueListDTO> queryIssueByOptions(Long projectId, Long sprintId, String status, PageRequest pageRequest, Long organizationId) {
         SprintDO sprintDO = new SprintDO();
         sprintDO.setProjectId(projectId);
         sprintDO.setSprintId(sprintId);
@@ -424,25 +430,24 @@ public class SprintServiceImpl implements SprintService {
         Date actualEndDate = sprint.getActualEndDate() == null ? new Date() : sprint.getActualEndDate();
         sprint.setActualEndDate(actualEndDate);
         Date startDate = sprint.getStartDate();
-        Page<Long> reportIssuePage = new Page<>();
-        Page<IssueListDTO> reportPage = new Page<>();
-        pageRequest.resetOrder("ai", new HashMap<>());
+        PageInfo<Long> reportIssuePage = new PageInfo<>();
+        //pageRequest.resetOrder("ai", new HashMap<>());
         switch (status) {
             case DONE:
-                reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryReportIssueIds(projectId, sprintId, startDate, actualEndDate, true));
+                reportIssuePage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() -> reportMapper.queryReportIssueIds(projectId, sprintId, startDate, actualEndDate, true));
                 break;
             case UNFINISHED:
-                reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryReportIssueIds(projectId, sprintId, startDate, actualEndDate, false));
+                reportIssuePage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() -> reportMapper.queryReportIssueIds(projectId, sprintId, startDate, actualEndDate, false));
                 break;
             case REMOVE:
-                reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryRemoveIssueIdsDuringSprintWithOutSubEpicIssue(sprint));
+                reportIssuePage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() -> reportMapper.queryRemoveIssueIdsDuringSprintWithOutSubEpicIssue(sprint));
                 break;
             default:
                 break;
         }
-        List<Long> reportIssueIds = reportIssuePage.getContent();
+        List<Long> reportIssueIds = reportIssuePage.getList();
         if (reportIssueIds.isEmpty()) {
-            return reportPage;
+            return new PageInfo<>();
         }
         Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         //冲刺报告查询的issue
@@ -476,15 +481,9 @@ public class SprintServiceImpl implements SprintService {
             updateReportIssue(reportIssue, reportIssueStoryPointsMap, reportIssueBeforeStatusMap, reportIssueAfterStatusMap, issueIdAddList);
             return reportIssue;
         }).collect(Collectors.toList());
-        reportPage.setTotalPages(reportIssuePage.getTotalPages());
-        reportPage.setTotalElements(reportIssuePage.getTotalElements());
-        reportPage.setSize(reportIssuePage.getSize());
-        reportPage.setNumberOfElements(reportIssuePage.getNumberOfElements());
-        reportPage.setNumber(reportIssuePage.getNumber());
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        reportPage.setContent(issueAssembler.issueDoToIssueListDto(reportIssues, priorityMap, statusMapDTOMap, issueTypeDTOMap));
-        return reportPage;
+        return new PageInfo<>(issueAssembler.issueDoToIssueListDto(reportIssues, priorityMap, statusMapDTOMap, issueTypeDTOMap));
     }
 
     private void updateReportIssue(IssueDO reportIssue, Map<Long, SprintReportIssueStatusDO> reportIssueStoryPointsMap, Map<Long, SprintReportIssueStatusDO> reportIssueBeforeStatusMap, Map<Long, SprintReportIssueStatusDO> reportIssueAfterStatusMap, List<Long> issueIdAddList) {

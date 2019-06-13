@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.infra.dataobject.WorkCalendarHolidayRefDO;
-import io.choerodon.mybatis.common.BaseMapper;
+import io.choerodon.mybatis.common.Mapper;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2018/10/9
  */
-public interface WorkCalendarHolidayRefMapper extends BaseMapper<WorkCalendarHolidayRefDO> {
+public interface WorkCalendarHolidayRefMapper extends Mapper<WorkCalendarHolidayRefDO> {
 
     /**
      * 查询最新的年份

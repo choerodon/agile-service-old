@@ -1,12 +1,11 @@
 package io.choerodon.agile.infra.dataobject;
 
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.mybatis.entity.BaseDTO;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -17,14 +16,12 @@ import javax.validation.constraints.NotNull;
  * @author dinghuang123@gmail.com
  * @since 2018-05-14 21:04:00
  */
-@ModifyAudit
-@VersionAudit
 @Table(name = "agile_issue_label")
-public class IssueLabelDO extends AuditDomain {
+public class IssueLabelDO extends BaseDTO {
 
     /***/
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long labelId;
 
     /**

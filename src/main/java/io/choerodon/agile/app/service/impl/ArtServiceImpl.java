@@ -17,10 +17,10 @@ import io.choerodon.agile.infra.mapper.ArtMapper;
 import io.choerodon.agile.infra.mapper.PiMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.core.domain.Page;
+import com.github.pagehelper.PageInfo;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.mybatis.pagehelper.PageHelper;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import com.github.pagehelper.PageHelper;
+import io.choerodon.base.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -145,19 +145,11 @@ public class ArtServiceImpl implements ArtService {
 
 
     @Override
-    public Page<ArtDTO> queryArtList(Long programId, PageRequest pageRequest) {
-        Page<ArtDO> artDOPage = PageHelper.doPageAndSort(pageRequest, () ->
-                artMapper.selectArtList(programId));
-        Page<ArtDTO> dtoPage = new Page<>();
-        dtoPage.setNumber(artDOPage.getNumber());
-        dtoPage.setSize(artDOPage.getSize());
-        dtoPage.setTotalElements(artDOPage.getTotalElements());
-        dtoPage.setTotalPages(artDOPage.getTotalPages());
-        dtoPage.setNumberOfElements(artDOPage.getNumberOfElements());
-        if (artDOPage.getContent() != null && !artDOPage.getContent().isEmpty()) {
-            dtoPage.setContent(ConvertHelper.convertList(artDOPage.getContent(), ArtDTO.class));
-        }
-        return dtoPage;
+    public PageInfo<ArtDTO> queryArtList(Long programId, PageRequest pageRequest) {
+        PageInfo<ArtDO> artDOPage = PageHelper.startPage(pageRequest.getPage(),
+                pageRequest.getSize()).doSelectPageInfo(() -> artMapper.selectArtList(programId));
+        PageInfo<ArtDTO> dtoPage = new PageInfo<>();
+        return new PageInfo<>(ConvertHelper.convertList(artDOPage.getList(), ArtDTO.class));
     }
 
     @Override

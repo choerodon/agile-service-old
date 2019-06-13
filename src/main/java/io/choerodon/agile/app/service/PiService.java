@@ -5,8 +5,8 @@ import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.domain.agile.entity.PiE;
 import io.choerodon.agile.infra.dataobject.ArtDO;
 import io.choerodon.agile.infra.dataobject.SubFeatureDO;
-import io.choerodon.core.domain.Page;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import com.github.pagehelper.PageInfo;
+import io.choerodon.base.domain.PageRequest;
 
 import java.util.Date;
 import java.util.List;
@@ -25,7 +25,7 @@ public interface PiService {
 
     JSONObject queryBacklogAll(Long programId, Long organizationId, Map<String, Object> searchParamMap);
 
-    Page<PiDTO> queryArtAll(Long programId, Long artId, PageRequest pageRequest);
+    PageInfo<PiDTO> queryArtAll(Long programId, Long artId, PageRequest pageRequest);
 
     PiDTO startPi(Long programId, PiDTO piDTO);
 

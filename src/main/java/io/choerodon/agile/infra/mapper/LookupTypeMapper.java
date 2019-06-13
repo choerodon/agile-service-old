@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.mybatis.common.BaseMapper;
+import io.choerodon.mybatis.common.Mapper;
 import io.choerodon.agile.infra.dataobject.*;
 
 
@@ -10,6 +10,6 @@ import io.choerodon.agile.infra.dataobject.*;
  * @author dinghuang123@gmail.com
  * @since 2018-05-15 10:13:37
  */
-public interface LookupTypeMapper extends BaseMapper<LookupTypeDO> {
+public interface LookupTypeMapper extends Mapper<LookupTypeDO> {
 
 }

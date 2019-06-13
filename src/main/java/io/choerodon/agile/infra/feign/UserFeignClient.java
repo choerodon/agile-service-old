@@ -4,8 +4,8 @@ import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback;
-import io.choerodon.core.domain.Page;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import com.github.pagehelper.PageInfo;
+import io.choerodon.base.domain.PageRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -64,7 +64,7 @@ public interface UserFeignClient {
 
     @PostMapping(value = "/v1/projects/{project_id}/role_members/users")
     ResponseEntity<PageInfo<UserDTO>> pagingQueryUsersByRoleIdOnProjectLevel(
-            @RequestParam(name = "page") int page,
+            @RequestParam(name = "PageInfo") int PageInfo,
             @RequestParam(name = "size") int size,
             @RequestParam(name = "role_id") Long roleId,
             @PathVariable(name = "project_id") Long sourceId,
@@ -84,7 +84,7 @@ public interface UserFeignClient {
 
     @PostMapping(value = "/v1/projects/{project_id}/role_members/users/roles")
     ResponseEntity<PageInfo<UserWithRoleDTO>> pagingQueryUsersWithProjectLevelRoles(
-            @RequestParam(name = "page") int page,
+            @RequestParam(name = "PageInfo") int PageInfo,
             @RequestParam(name = "size") int size,
             @PathVariable(name = "project_id") Long sourceId,
             @RequestBody(required = false) @Valid RoleAssignmentSearchDTO roleAssignmentSearchDTO,

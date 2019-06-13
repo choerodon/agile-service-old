@@ -5,10 +5,10 @@ import java.util.Optional;
 import io.choerodon.agile.api.dto.IssueLinkTypeSearchDTO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
-import io.choerodon.core.domain.Page;
-import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.choerodon.mybatis.pagehelper.domain.Sort;
+import com.github.pagehelper.PageInfo;
+import io.choerodon.mybatis.annotation.SortDefault;
+import io.choerodon.base.domain.PageRequest;
+import io.choerodon.base.domain.Sort;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class IssueLinkTypeController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据项目id查询issueLinkType")
     @PostMapping("/query_all")
-    public ResponseEntity<Page<IssueLinkTypeDTO>> listIssueLinkType(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PageInfo<IssueLinkTypeDTO>> listIssueLinkType(@ApiParam(value = "项目id", required = true)
                                                                     @PathVariable(name = "project_id") Long projectId,
                                                                     @ApiParam(value = "不包含的issueLinkTypeId")
                                                                     @RequestParam(required = false) Long issueLinkTypeId,
