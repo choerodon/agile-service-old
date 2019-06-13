@@ -307,9 +307,11 @@
             ai.issue_type_id,
             ai.status_id,
             ai.priority_id,
-            CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num
+            CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
+            ais.is_completed as completed
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        left join agile_issue_status ais on ais.status_id = ai.status_id and ais.project_id = ai.project_id
         WHERE ai.parent_issue_id = #{issueId}
     </select>
 
