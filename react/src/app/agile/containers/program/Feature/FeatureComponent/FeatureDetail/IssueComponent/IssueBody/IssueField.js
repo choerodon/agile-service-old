@@ -80,7 +80,13 @@ const hideFields = ['priority', 'component', 'label', 'fixVersion', 'sprint', 't
     const { store } = this.props;
     const issue = store.getIssue;
     let fields = toJS(store.getFields).filter(item => hideFields.indexOf(item.fieldCode) === -1);
-    const { issueId } = issue;
+    const { issueId, typeCode } = issue;
+    // 系统字段单独控制是否显示
+    if (typeCode === 'sub_task') {
+      fields = fields.filter(field => ['component', 'epic'].indexOf(field.fieldCode) === -1);
+    } else if (typeCode === 'issue_epic') {
+      fields = fields.filter(field => field.fieldCode !== 'epic');
+    }
     if (!VisibleStore.detailShow) {
       fields = fields.slice(0, 4);
     }

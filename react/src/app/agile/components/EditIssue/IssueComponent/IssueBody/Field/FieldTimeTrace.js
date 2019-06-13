@@ -48,7 +48,7 @@ const { Text, Edit } = TextEditToggle;
             <Text>
               <div style={{ display: 'flex' }}>
                 <Progress
-                  style={{ flex: 1, maxWidth: 100 }}
+                  style={{ flex: 1, maxWidth: 100, paddingRight: 5 }}
                   percent={
                     workloads !== 0
                       ? (workloads * 100)

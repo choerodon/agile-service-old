@@ -52,21 +52,27 @@ const { AppState } = stores;
   }
 
   render() {
-    return (
-      <div id="link_test">
-        <div className="c7n-title-wrapper">
-          <div className="c7n-title-left">
-            <Icon type="classname c7n-icon-title" />
-            <span>测试用例</span>
+    const { store } = this.props;
+    const linkIssues = store.getLinkIssues.filter(i => i.applyType === 'test');
+    if (linkIssues && linkIssues.length) {
+      return (
+        <div id="link_test">
+          <div className="c7n-title-wrapper">
+            <div className="c7n-title-left">
+              <Icon type="classname c7n-icon-title" />
+              <span>测试用例</span>
+            </div>
+            <div style={{
+              flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
+            }}
+            />
           </div>
-          <div style={{
-            flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
-          }}
-          />
+          {this.renderLinkIssues()}
         </div>
-        {this.renderLinkIssues()}
-      </div>
-    );
+      );
+    } else {
+      return '';
+    }
   }
 }
 
