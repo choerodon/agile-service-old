@@ -102,7 +102,7 @@ export function loadSprint(sprintId = '') {
   return axios.get(`/agile/v1/projects/${projectId}/sprint/${sprintId}`);
 }
 
-export function loadSprintIssues(sprintId, status, page = 0, size = 99999) {
+export function loadSprintIssues(sprintId, status, page = 1, size = 99999) {
   const orgId = AppState.currentMenuType.organizationId;
   const projectId = AppState.currentMenuType.id;
   return axios.get(`/agile/v1/projects/${projectId}/sprint/${sprintId}/issues?organizationId=${orgId}&status=${status}&page=${page}&size=${size}`);

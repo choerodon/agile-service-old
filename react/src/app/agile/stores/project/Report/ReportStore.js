@@ -35,19 +35,19 @@ class ReportStore {
   };
 
   @observable donePagination = {
-    current: 0, 
+    current: 1, 
     pageSize: 10, 
     total: undefined,
   };
 
   @observable todoPagination = {
-    current: 0, 
+    current: 1, 
     pageSize: 10, 
     total: undefined,
   }; 
 
   @observable removePagination = {
-    current: 0, 
+    current: 1, 
     pageSize: 10, 
     total: undefined,
   }
@@ -153,28 +153,28 @@ class ReportStore {
     });
   }
 
-  loadDoneIssues(page = 0, size = 10) {
+  loadDoneIssues(page = 1, size = 10) {
     this.setLoading(true);
     loadSprintIssues(this.currentSprint.sprintId, 'done', page, size)
       .then((res) => {
-        this.setDoneIssues(res.content);
+        this.setDoneIssues(res.list);
         this.setDonePagination({
           ...this.donePagination,
-          total: res.totalElements,
+          total: res.total,
         });
         this.setLoading(false);
         // this.setDone(true);
       });
   }
 
-  loadTodoIssues(page = 0, size = 10) {
+  loadTodoIssues(page = 1, size = 10) {
     this.setLoading(true);
     loadSprintIssues(this.currentSprint.sprintId, 'unfinished', page, size)
       .then((res) => {
-        this.setTodoIssues(res.content);
+        this.setTodoIssues(res.list);
         this.setTodoPagination({
           ...this.todoPagination,
-          total: res.totalElements,
+          total: res.total,
         });
         this.setLoading(false);
         // this.setTodo(true);
@@ -185,10 +185,10 @@ class ReportStore {
     this.setLoading(true);
     loadSprintIssues(this.currentSprint.sprintId, 'remove', page, size)
       .then((res) => {
-        this.setRemoveIssues(res.content);
+        this.setRemoveIssues(res.list);
         this.setRemovePagination({
           ...this.removePagination,
-          total: res.totalElements,
+          total: res.total,
         });
         this.setLoading(false);
         // this.setRemove(true);
