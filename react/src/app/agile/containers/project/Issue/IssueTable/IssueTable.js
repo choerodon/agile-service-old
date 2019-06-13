@@ -148,7 +148,7 @@ class IssueTable extends Component {
     IssueStore.setLoading(true);
     // 更新函数
     this.filterControler.update(
-      pagination.current - 1,
+      pagination.current,
       pagination.pageSize,
       sorter,
       barFilters,
