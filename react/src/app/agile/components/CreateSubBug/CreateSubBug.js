@@ -420,7 +420,7 @@ class CreateSubBug extends Component {
           allowClear
           onFilterChange={this.onFilterChange.bind(this)}
         >
-          {originUsers.filter(user => user.id !== field.defaultValue).concat(field.defaultValueObj || []).map(user => (
+          {originUsers.filter(user => user.id !== field.defaultValue && user.enabled).concat(field.defaultValueObj || []).map(user => (
             <Option key={user.id} value={user.id}>
               <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
                 <UserHead
