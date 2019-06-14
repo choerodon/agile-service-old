@@ -54,14 +54,18 @@ class StoryCell extends Component {
   getStorys = (targetFeature) => {
     const { swimLine } = StoryMapStore;
     const { version } = this.props;
-    switch (swimLine) {
-      case 'none': {
-        return targetFeature.storys;
+    try {
+      switch (swimLine) {
+        case 'none': {
+          return targetFeature.storys;
+        }
+        case 'version': {
+          return targetFeature.version[version.versionId];
+        }
+        default: return [];
       }
-      case 'version': {
-        return targetFeature.version[version.versionId];
-      }
-      default: return [];
+    } catch (error) {
+      return [];
     }
   }
 
@@ -79,6 +83,7 @@ class StoryCell extends Component {
     }
     // const featureList = epicStorys.length > 0 ? featureCommonDOList.concat([{ issueId: 'none' }]) : featureCommonDOList;
     const featureList = featureCommonDOList.concat([{ issueId: 'none' }]);
+
     return (
       <Cell style={{ ...collapse ? { borderBottom: isLastRow ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {} }}>
         {collapse ? null : (

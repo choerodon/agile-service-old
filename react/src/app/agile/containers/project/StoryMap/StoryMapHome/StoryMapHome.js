@@ -18,6 +18,7 @@ import SideIssueList from './components/SideIssueList';
 import SwitchSwimLine from './components/SwitchSwimLine';
 import CreateVersion from './components/CreateVersion';
 import CreateEpicModal from './components/CreateEpicModal';
+import CreateFeatureModal from './components/CreateFeatureModal';
 import StoryMapStore from '../../../../stores/project/StoryMap/StoryMapStore';
 import './StoryMapHome.scss';
 
@@ -79,6 +80,10 @@ class StoryMapHome extends Component {
     StoryMapStore.setCreateEpicModalVisible(true);
   }
 
+  handleCreateFeatureClick=() => {
+    StoryMapStore.setCreateFeatureModalVisible(true);
+  }
+
   handleCreateVersion = (version) => {
     StoryMapStore.afterCreateVersion(version);
   }
@@ -86,6 +91,11 @@ class StoryMapHome extends Component {
   handleCreateEpic = (newEpic) => {
     StoryMapStore.setCreateEpicModalVisible(false);
     StoryMapStore.afterCreateEpicInModal(newEpic);
+  }
+
+  handleCreateFeature = () => {
+    StoryMapStore.setCreateFeatureModalVisible(false);
+    StoryMapStore.getStoryMap();
   }
 
   handleChangeFullScreen = (e) => {
@@ -151,12 +161,12 @@ class StoryMapHome extends Component {
         ]}
       >
         <Header title="故事地图">
-          <Button
+          {/* <Button
             icon="playlist_add"
             onClick={this.handleCreateEpicClick}
           >
             创建史诗
-          </Button>
+          </Button> */}
           <Button
             icon="refresh"
             onClick={this.handleRefresh}
@@ -192,8 +202,10 @@ class StoryMapHome extends Component {
               title="欢迎使用敏捷用户故事地图"
               description={(
                 <Fragment>
-                    用户故事地图是以史诗为基础，根据版本控制，迭代冲刺多维度对问题进行管理规划，点击
+                    用户故事地图是以史诗或特性为基础，根据版本控制进行管理规划，点击
                   <a role="none" onClick={this.handleCreateEpicClick}>创建史诗</a>
+                    或
+                  <a role="none" onClick={this.handleCreateFeatureClick}>创建特性</a>
                     进入用户故事地图。
                 </Fragment>
                 )}
@@ -202,6 +214,7 @@ class StoryMapHome extends Component {
           <SideIssueList />
           <CreateVersion onOk={this.handleCreateVersion} />
           <CreateEpicModal onOk={this.handleCreateEpic} />
+          <CreateFeatureModal onOk={this.handleCreateFeature} />
         </Content>
       </Page>
     );
