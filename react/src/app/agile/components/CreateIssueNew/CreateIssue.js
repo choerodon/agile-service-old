@@ -138,10 +138,10 @@ class CreateIssue extends Component {
       .then((res) => {
         this.setState({
           selectLoading: false,
-          links: res.content,
-          originLinks: res.content,
+          links: res.list,
+          originLinks: res.list,
         });
-        this.transform(res.content);
+        this.transform(res.list);
       });
   }
 
