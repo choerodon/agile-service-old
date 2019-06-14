@@ -20,6 +20,8 @@ class StoryMapStore {
 
   @observable createEpicModalVisible = false;
 
+  @observable createFeatureModalVisible = false;
+
   @observable isFullScreen = false;
 
   @observable sideSearchDTO = {
@@ -86,6 +88,10 @@ class StoryMapStore {
     this.createEpicModalVisible = createEpicModalVisible;
   }
 
+  @action setCreateFeatureModalVisible(createFeatureModalVisible) {
+    this.createFeatureModalVisible = createFeatureModalVisible;
+  }
+  
   @action toggleSideIssueListVisible() {
     this.sideIssueListVisible = !this.sideIssueListVisible;
   }
@@ -323,7 +329,7 @@ class StoryMapStore {
   @action removeStoryFromStoryMap(story) {
     const { epicId, featureId, storyMapVersionDOList } = story;
     remove(this.storyMapData.storyList, { issueId: story.issueId });
-    if (epicId && this.storyData[epicId]) {
+    if (this.storyData[epicId]) {
       const targetEpic = this.storyData[epicId];
       const { feature } = targetEpic;
       const targetFeature = feature[featureId || 'none'];
@@ -425,8 +431,11 @@ class StoryMapStore {
   }
 
   @computed get getIsEmpty() {
-    const { epicWithFeature } = this.storyMapData;  
-    return epicWithFeature ? epicWithFeature.filter(epic => epic.issueId).length === 0 : true;
+    const { epicWithFeature, featureWithoutEpic } = this.storyMapData;  
+    if (epicWithFeature && featureWithoutEpic) {
+      return featureWithoutEpic.length === 0 && epicWithFeature.filter(epic => epic.issueId).length === 0;
+    }
+    return true;   
   }
 
   @computed get getEpicType() {

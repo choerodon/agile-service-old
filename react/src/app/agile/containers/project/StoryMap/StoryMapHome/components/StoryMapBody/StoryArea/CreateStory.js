@@ -40,7 +40,7 @@ class CreateStory extends Component {
         issueTypeId: storyType.id,
         priorityCode: `priority-${defaultPriority.id}`,
         priorityId: defaultPriority.id,
-        ...swimLine === 'version' ? {
+        ...swimLine === 'version' && version.versionId !== 'none' ? {
           versionIssueRelDTOList: [{
             ...version,
             relationType: 'fix',
