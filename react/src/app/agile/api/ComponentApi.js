@@ -15,7 +15,7 @@ const { AppState } = stores;
 
 export function loadComponents(pagination, filters, componentId) {
   const { current, pageSize } = pagination;
-  const page = current - 1;
+  const page = current;
   const size = pageSize;
   if (componentId) {
     return axios.post(`/agile/v1/projects/${AppState.currentMenuType.id}/component/query_all?componentId=${componentId}&page=${page}&size=${size}&no_issue_test=true`, filters);

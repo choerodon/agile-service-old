@@ -28,7 +28,7 @@ class IssueItem extends Component {
       connectDragSource(  
         <div className={preFix}>
           <TypeTag data={issueTypeDTO} />
-          <Link target="_blank" to={issueLink(issueId, issueTypeDTO.typeCode, issueNum)} style={{ color: '#3F51B5', margin: '0 10px' }}>{issueNum}</Link>            
+          <Link target="_blank" to={issueLink(issueId, issueTypeDTO && issueTypeDTO.typeCode, issueNum)} style={{ color: '#3F51B5', margin: '0 10px' }}>{issueNum}</Link>            
           <div className={`${preFix}-summary`}>
             <Tooltip title={summary}>
               {summary}

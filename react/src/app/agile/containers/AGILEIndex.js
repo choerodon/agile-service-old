@@ -11,7 +11,7 @@ import IsInProgramStore from '../stores/common/program/IsInProgramStore';
 import RunWhenProjectChange from '../common/RunWhenProjectChange';
 import './Agile.scss';
 
-const Home = asyncRouter(() => import('./Home'));
+
 const RELEASEINDEX = asyncRouter(() => import('./project/Release'));
 const BACKLOGINDEX = asyncRouter(() => import('./project/Backlog'));
 const SCRUMBOARDINDEX = asyncRouter(() => import('./project/ScrumBoard'));
@@ -31,19 +31,11 @@ const WORKCALENDARINDEX = asyncRouter(() => import('./organization/WorkCalendar'
 const OBJECTSCHEMEINDEX = asyncRouter(() => import('./organization/ObjectScheme'));
 const PAGEINDEX = asyncRouter(() => import('./organization/Page'));
 
-const ART = asyncRouter(() => import('./program/Art')); 
-const KANBAN = asyncRouter(() => import('./program/Kanban')); 
-const PROJECTKANBAN = asyncRouter(() => import('./project/Kanban')); 
-const FEATURE = asyncRouter(() => import('./program/Feature'));
-const PIAIMS = asyncRouter(() => import('./program/PI'));
-const PROJECTPIAIMS = asyncRouter(() => import('./project/PIAims'));
-const PROGRAMSETTING = asyncRouter(() => import('./program/ProgramSetting'));
-const ARTCALENDAR = asyncRouter(() => import('./program/Art/ArtCalendar'));
-const PROJECTARTCALENDAR = asyncRouter(() => import('./project/ArtCalendar'));
-const ROADMAP = asyncRouter(() => import('./program/RoadMap'));
-const PROJECTROADMAP = asyncRouter(() => import('./project/RoadMap'));
 
-const BOARD = asyncRouter(() => import('./program/Board'));
+const PROJECTKANBAN = asyncRouter(() => import('./project/Kanban')); 
+const PROJECTPIAIMS = asyncRouter(() => import('./project/PIAims'));
+const PROJECTARTCALENDAR = asyncRouter(() => import('./project/ArtCalendar'));
+const PROJECTROADMAP = asyncRouter(() => import('./project/RoadMap'));
 const PROJECTBOARD = asyncRouter(() => import('./project/Board'));
 
 class AGILEIndex extends React.Component {
@@ -61,7 +53,6 @@ class AGILEIndex extends React.Component {
     return (
       <IntlProviderAsync>
         <Switch>
-          <Route exact path={match.url} component={Home} />
           {/* 发布版本 */}
           <Route path={`${match.url}/release`} component={RELEASEINDEX} />
           {/* 待办事项 */}
@@ -89,21 +80,10 @@ class AGILEIndex extends React.Component {
           <Route path={`${match.url}/workCalendar`} component={WORKCALENDARINDEX} />
           <Route path={`${match.url}/objectScheme`} component={OBJECTSCHEMEINDEX} />
           <Route path={`${match.url}/page`} component={PAGEINDEX} />
-
-          <Route path={`${match.url}/art`} component={ART} />
-          <Route path={`${match.url}/kanban`} component={KANBAN} />          
-          <Route path={`${match.url}/kanban_project`} component={PROJECTKANBAN} />          
-          
-          <Route path={`${match.url}/feature`} component={FEATURE} /> 
-          <Route path={`${match.url}/pi`} component={PIAIMS} />
-          <Route path={`${match.url}/pi_project`} component={PROJECTPIAIMS} />
-          
-          <Route path={`${match.url}/programSetting`} component={PROGRAMSETTING} /> 
-          <Route path={`${match.url}/artCalendar`} component={ARTCALENDAR} />
-          <Route path={`${match.url}/artCalendar_project`} component={PROJECTARTCALENDAR} />
-          <Route path={`${match.url}/roadMap`} component={ROADMAP} /> 
-          <Route path={`${match.url}/roadMap_project`} component={PROJECTROADMAP} /> 
-          <Route path={`${match.url}/board`} component={BOARD} /> 
+          <Route path={`${match.url}/kanban_project`} component={PROJECTKANBAN} />         
+          <Route path={`${match.url}/pi_project`} component={PROJECTPIAIMS} />                 
+          <Route path={`${match.url}/artCalendar_project`} component={PROJECTARTCALENDAR} />          
+          <Route path={`${match.url}/roadMap_project`} component={PROJECTROADMAP} />        
           <Route path={`${match.url}/board_project`} component={PROJECTBOARD} /> 
           
           <Route path="*" component={nomatch} />

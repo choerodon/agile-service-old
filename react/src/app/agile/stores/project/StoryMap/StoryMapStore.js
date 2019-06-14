@@ -235,6 +235,7 @@ class StoryMapStore {
   @action addEpic(epicData) {
     const epic = {
       adding: true,
+      featureCommonDOList: [],
     };
     // 删掉之前正在创建的
     this.removeAddingEpic();
