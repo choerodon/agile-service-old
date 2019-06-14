@@ -18,17 +18,17 @@ const preFix = 'c7nagile-SideIssueList-IssueItem';
 class IssueItem extends Component {
   render() {
     const {
-      issue, connectDragSource, 
+      issue, connectDragSource,
     } = this.props;
     const {
       issueTypeDTO, summary, issueNum, issueId,
     } = issue;
     // const opacity = isDragging ? 0 : 1;
     return (
-      connectDragSource(  
+      connectDragSource(
         <div className={preFix}>
           <TypeTag data={issueTypeDTO} />
-          <Link target="_blank" to={issueLink(issueId, issueTypeDTO && issueTypeDTO.typeCode, issueNum)} style={{ color: '#3F51B5', margin: '0 10px' }}>{issueNum}</Link>            
+          <Link target="_blank" to={issueLink(issueId, issueTypeDTO && issueTypeDTO.typeCode, issueNum)} style={{ color: '#3F51B5', margin: '0 10px' }}>{issueNum}</Link>
           <div className={`${preFix}-summary`}>
             <Tooltip title={summary}>
               {summary}
@@ -52,12 +52,12 @@ export default DragSource(
       issue: props.issue,
     }),
     endDrag(props, monitor) {
-      const source = monitor.getItem();       
+      const source = monitor.getItem();
       const dropResult = monitor.getDropResult();
       if (dropResult) {
         const { epic: { issueId: targetEpicId }, feature: { issueId: targetFeatureId }, version } = dropResult;
         const { versionId: targetVersionId } = version || {};
-        const { issue: { issueId, storyMapVersionDOList } } = source;          
+        const { issue: { issueId, storyMapVersionDTOList } } = source;
         const storyMapDragDTO = {
           versionIssueIds: [],
           versionId: 0, // 要关联的版本id
@@ -73,9 +73,12 @@ export default DragSource(
           storyMapDragDTO.featureId = targetFeatureId;
           storyMapDragDTO.featureIssueIds = [issueId];
         }
-        if (targetVersionId && !find(storyMapVersionDOList, { versionId: targetVersionId }) && targetVersionId !== 'none') {
+        if (targetVersionId && !find(storyMapVersionDTOList, { versionId: targetVersionId }) && targetVersionId !== 'none') {
           storyMapDragDTO.versionId = targetVersionId;
           storyMapDragDTO.versionIssueIds = [issueId];
+        }
+        if (targetVersionId === 'none' && storyMapVersionDTOList.length > 0) {
+          storyMapDragDTO.versionIssueRelDTOList = storyMapVersionDTOList.map(v => ({ ...v, issueId }));
         }
         // console.log(storyMapDragDTO);
         storyMove(storyMapDragDTO).then(() => {
