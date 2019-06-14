@@ -12,10 +12,7 @@ import io.choerodon.agile.domain.agile.entity.ArtE;
 import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
 import io.choerodon.agile.domain.agile.entity.PiE;
 import io.choerodon.agile.domain.agile.entity.SprintE;
-import io.choerodon.agile.infra.common.utils.ConvertUtil;
-import io.choerodon.agile.infra.common.utils.RankUtil;
-import io.choerodon.agile.infra.common.utils.SendMsgUtil;
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
@@ -320,7 +317,7 @@ public class PiServiceImpl implements PiService {
     public PageInfo<PiDTO> queryArtAll(Long programId, Long artId, PageRequest pageRequest) {
         PageInfo<PiDO> piDOPage = PageHelper.startPage(pageRequest.getPage(),
                 pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() -> piMapper.selectPiListInArt(programId, artId));
-        return new PageInfo<>(ConvertHelper.convertList(piDOPage.getList(), PiDTO.class));
+        return PageUtil.buildPageInfoWithPageInfoList(piDOPage, ConvertHelper.convertList(piDOPage.getList(), PiDTO.class));
     }
 
     private void createSprintWhenStartPi(Long programId, Long piId) {

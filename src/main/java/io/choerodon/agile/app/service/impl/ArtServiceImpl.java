@@ -7,6 +7,7 @@ import io.choerodon.agile.app.service.ArtService;
 import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.domain.agile.entity.ArtE;
 import io.choerodon.agile.domain.agile.entity.PiE;
+import io.choerodon.agile.infra.common.utils.PageUtil;
 import io.choerodon.agile.infra.repository.ArtRepository;
 import io.choerodon.agile.infra.repository.PiRepository;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
@@ -17,10 +18,15 @@ import io.choerodon.agile.infra.mapper.ArtMapper;
 import io.choerodon.agile.infra.mapper.PiMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.core.convertor.ConvertHelper;
+
 import com.github.pagehelper.PageInfo;
+
 import io.choerodon.core.exception.CommonException;
+
 import com.github.pagehelper.PageHelper;
+
 import io.choerodon.base.domain.PageRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -148,8 +154,7 @@ public class ArtServiceImpl implements ArtService {
     public PageInfo<ArtDTO> queryArtList(Long programId, PageRequest pageRequest) {
         PageInfo<ArtDO> artDOPage = PageHelper.startPage(pageRequest.getPage(),
                 pageRequest.getSize()).doSelectPageInfo(() -> artMapper.selectArtList(programId));
-        PageInfo<ArtDTO> dtoPage = new PageInfo<>();
-        return new PageInfo<>(ConvertHelper.convertList(artDOPage.getList(), ArtDTO.class));
+        return PageUtil.buildPageInfoWithPageInfoList(artDOPage, ConvertHelper.convertList(artDOPage.getList(), ArtDTO.class));
     }
 
     @Override

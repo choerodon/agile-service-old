@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSON;
+
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.IssueService;
@@ -8,6 +9,7 @@ import io.choerodon.agile.app.service.ProductVersionService;
 import io.choerodon.agile.domain.agile.converter.ProductVersionConverter;
 import io.choerodon.agile.domain.agile.entity.ProductVersionE;
 import io.choerodon.agile.domain.agile.event.VersionPayload;
+import io.choerodon.agile.infra.common.utils.PageUtil;
 import io.choerodon.agile.infra.repository.ProductVersionRepository;
 import io.choerodon.agile.infra.repository.VersionIssueRelRepository;
 import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
@@ -22,13 +24,18 @@ import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaClient;
 import io.choerodon.core.convertor.ConvertHelper;
+
 import com.github.pagehelper.PageInfo;
+
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
+
 import com.github.pagehelper.PageHelper;
+
 import io.choerodon.base.domain.PageRequest;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -193,8 +200,8 @@ public class ProductVersionServiceImpl implements ProductVersionService {
                 pageRequest.getSize()).doSelectPageInfo(() -> productVersionMapper.
                 queryVersionIdsByProjectId(projectId, searchDTO.getSearchArgs(),
                         searchDTO.getAdvancedSearchArgs(), searchDTO.getContents()));
-        return new PageInfo<>(productVersionPageAssembler.toTargetList(productVersionMapper.
-                        queryVersionByIds(projectId, versionIds.getList()), ProductVersionPageDTO.class));
+        return PageUtil.buildPageInfoWithPageInfoList(versionIds, productVersionPageAssembler.toTargetList(productVersionMapper.
+                queryVersionByIds(projectId, versionIds.getList()), ProductVersionPageDTO.class));
     }
 
     @Override
