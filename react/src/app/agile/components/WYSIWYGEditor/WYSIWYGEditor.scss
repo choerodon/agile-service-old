@@ -43,6 +43,7 @@
       }
     }
   }
+
   .ql-toolbar.ql-snow {
     .ql-formats {
       margin-right: 0;
@@ -50,4 +51,17 @@
   }
 
   /* link end */
+  &-read {
+    .ql-editor>* {
+      cursor: auto;
+    }
+
+    .ql-toolbar {
+      display: none;
+    }
+
+    .ql-container {
+      border: none;
+    }
+  }
 }
