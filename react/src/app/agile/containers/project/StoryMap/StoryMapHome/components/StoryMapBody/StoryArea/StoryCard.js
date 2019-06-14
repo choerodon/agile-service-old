@@ -42,6 +42,7 @@ class StoryCard extends Component {
     };
     storyMove(storyMapDragDTO).then(() => {
       StoryMapStore.removeStoryFromStoryMap(story);
+      StoryMapStore.loadIssueList();
     });
   }
 
@@ -126,7 +127,7 @@ export default DragSource(
           if (storyMapVersionDOList.length > 0) {
             const removeVersion = find(storyMapVersionDOList, { versionId: sourceVersion.versionId });
             if (removeVersion) {
-              storyMapDragDTO.versionIssueRelDTOList = [removeVersion];
+              storyMapDragDTO.versionIssueRelDTOList = [{ ...removeVersion, issueId }];
             }
           }
         }
