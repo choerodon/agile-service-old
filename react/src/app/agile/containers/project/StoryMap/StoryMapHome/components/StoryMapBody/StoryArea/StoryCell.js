@@ -82,7 +82,8 @@ class StoryCell extends Component {
       epicStorys = targetEpic.feature.none.storys;
     }
     // const featureList = epicStorys.length > 0 ? featureCommonDOList.concat([{ issueId: 'none' }]) : featureCommonDOList;
-    const featureList = featureCommonDOList.concat([{ issueId: 'none' }]);
+    // 没有史诗不显示直接关联史诗的列
+    const featureList = epicId === 0 ? featureCommonDOList : featureCommonDOList.concat([{ issueId: 'none' }]);
 
     return (
       <Cell style={{ ...collapse ? { borderBottom: isLastRow ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {} }}>
