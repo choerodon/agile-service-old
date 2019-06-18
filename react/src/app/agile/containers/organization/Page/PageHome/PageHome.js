@@ -28,7 +28,7 @@ class PageHome extends Component {
   componentDidMount() {
     this.initCurrentMenuType();
     const { pagination } = this.state;
-    this.loadPage(pagination.current - 1, pagination.pageSize);
+    this.loadPage(pagination.current, pagination.pageSize);
   }
 
   initCurrentMenuType = () => {

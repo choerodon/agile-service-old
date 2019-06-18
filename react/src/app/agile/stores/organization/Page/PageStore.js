@@ -31,7 +31,7 @@ class PageStore {
   }
 
   @action updatePageDetail(field) {
-    this.pageDetail.content = this.pageDetail.content.map((item) => {
+    this.pageDetail.list = this.pageDetail.list.map((item) => {
       if (field.fieldId === item.fieldId) {
         return {
           ...item,
@@ -54,7 +54,7 @@ class PageStore {
     `${this.apiGetway}/page?page=${page}&size=${size}&organizationId=${this.orgId}`, filter,
   ).then((data) => {
     if (data && !data.failed) {
-      this.setPage(data.content);
+      this.setPage(data.list);
     } else {
       Choerodon.prompt(data.message);
     }
