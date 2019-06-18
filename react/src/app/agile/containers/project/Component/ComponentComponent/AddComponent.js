@@ -81,7 +81,7 @@ class AddComponent extends Component {
           defaultAssigneeRole,
           description,
           managerId: managerId ? JSON.parse(managerId).id || 0 : 0,
-          name,
+          name: name.trim(),
         };
         this.setState({ createLoading: true });
         createComponent(component)
@@ -102,14 +102,18 @@ class AddComponent extends Component {
   }
   
   checkComponentNameRepeat = (rule, value, callback) => {
-    axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/component/check_name?componentName=${value}`)
-      .then((res) => {
-        if (res) {
-          callback('模块名称重复');
-        } else {
-          callback();
-        }
-      });
+    if (value && value.trim()) {
+      axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/component/check_name?componentName=${value.trim()}`)
+        .then((res) => {
+          if (res) {
+            callback('模块名称重复');
+          } else {
+            callback();
+          }
+        });
+    } else {
+      callback();
+    }
   };
 
   render() {
@@ -142,6 +146,7 @@ class AddComponent extends Component {
                 rules: [{
                   required: true,
                   message: '模块名称必填',
+                  whitespace: true,
                 }, {
                   validator: this.checkComponentNameRepeat,
                 }],

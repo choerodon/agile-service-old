@@ -41,7 +41,7 @@ class QuickCreateIssue extends Component {
     const createIssueValue = this.inputvalue.input.value;
     const { selectIssueType, featureType } = this.state;
     const currentType = IssueStore.getIssueTypes.find(t => t.typeCode === selectIssueType);
-    if (createIssueValue !== '') {
+    if (createIssueValue && createIssueValue.trim() && createIssueValue !== '') {
       const { history } = this.props;
       const {
         type, id, name, organizationId,
@@ -51,11 +51,11 @@ class QuickCreateIssue extends Component {
         priorityId: IssueStore.getDefaultPriorityId,
         projectId: id,
         sprintId: 0,
-        summary: createIssueValue,
+        summary: createIssueValue.trim(),
         issueTypeId: currentType.id,
         typeCode: currentType.typeCode,
         epicId: 0,
-        epicName: selectIssueType === 'issue_epic' ? createIssueValue : undefined,
+        epicName: selectIssueType === 'issue_epic' ? createIssueValue.trim() : undefined,
         parentIssueId: 0,
         featureDTO: {
           // benfitHypothesis: values.benfitHypothesis,

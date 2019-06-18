@@ -54,10 +54,5 @@
     ],
     "react/**/*.scss": "stylelint --syntax scss"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "peerDependencies": {}
 }

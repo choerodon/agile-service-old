@@ -119,7 +119,7 @@ class EditComponent extends Component {
           defaultAssigneeRole,
           description,
           managerId: managerId ? JSON.parse(managerId).id || 0 : 0,
-          name,
+          name: name.trim(),
         };
         this.setState({ createLoading: true });
         updateComponent(component.componentId, component)
@@ -142,9 +142,7 @@ class EditComponent extends Component {
   
   checkComponentNameRepeat = (rule, value, callback) => {
     const { name } = this.state;
-    if (name === value) {
-      callback();
-    } else {
+    if (value && value.trim() && value.trim() !== name) {
       axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/component/check_name?componentName=${value}`)
         .then((res) => {
           if (res) {
@@ -153,6 +151,8 @@ class EditComponent extends Component {
             callback();
           }
         });
+    } else {
+      callback();
     }
   };
 
@@ -186,6 +186,7 @@ class EditComponent extends Component {
                 rules: [{
                   required: true,
                   message: '模块名称必填',
+                  whitespace: true,
                 }, {
                   validator: this.checkComponentNameRepeat,
                 }],

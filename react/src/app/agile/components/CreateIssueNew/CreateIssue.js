@@ -380,7 +380,7 @@ class CreateIssue extends Component {
         const extra = {
           issueTypeId: values.typeId,
           typeCode,
-          summary: values.summary,
+          summary: values.summary.trim(),
           priorityId: values.priorityId,
           priorityCode: `priority-${values.priorityId}`,
           sprintId: values.sprintId || 0,
@@ -983,7 +983,7 @@ class CreateIssue extends Component {
         return (
           <FormItem label="概要" style={{ width: 520 }}>
             {getFieldDecorator('summary', {
-              rules: [{ required: true, message: '概要为必输项' }],
+              rules: [{ required: true, message: '概要为必输项', whitespace: true }],
             })(
               <Input autoFocus label="概要" maxLength={44} />,
             )}

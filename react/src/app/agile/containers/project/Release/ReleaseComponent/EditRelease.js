@@ -42,7 +42,7 @@ class EditRelease extends Component {
         });
         const newData = {
           description: value.description,
-          name: value.name,
+          name: value.name.trim(),
           objectVersionNumber: data.objectVersionNumber,
           projectId: AppState.currentMenuType.id,
           startDate: value.startDate ? `${moment(value.startDate).format('YYYY-MM-DD')} 00:00:00` : null,
@@ -69,8 +69,8 @@ class EditRelease extends Component {
   checkName = (rule, value, callback) => {
     const proId = AppState.currentMenuType.id;
     const data = JSON.parse(JSON.stringify(ReleaseStore.getVersionDetail));
-    if (value && data.name !== value) {
-      ReleaseStore.axiosCheckName(proId, value).then((res) => {
+    if (value && value.trim() && data.name !== value.trim()) {
+      ReleaseStore.axiosCheckName(proId, value.trim()).then((res) => {
         if (res) {
           callback('版本名称重复');
         } else {
@@ -116,6 +116,7 @@ class EditRelease extends Component {
                     rules: [{
                       required: true,
                       message: '版本名称必填',
+                      whitespace: true,
                     }, {
                       validator: this.checkName,
                     }],

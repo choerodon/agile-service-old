@@ -34,7 +34,7 @@ class AddRelease extends Component {
       if (!err) {
         const data = {
           description: values.description,
-          name: values.name,
+          name: values.name.trim(),
           projectId: AppState.currentMenuType.id,
           startDate: values.startDate ? `${moment(values.startDate).format('YYYY-MM-DD')} 00:00:00` : null,
           expectReleaseDate: values.expectReleaseDate ? `${moment(values.expectReleaseDate).format('YYYY-MM-DD')} 00:00:00` : null,
@@ -77,8 +77,8 @@ class AddRelease extends Component {
 
   checkName = (rule, value, callback) => {
     const proId = AppState.currentMenuType.id;
-    if (value) {
-      ReleaseStore.axiosCheckName(proId, value).then((res) => {
+    if (value && value.trim()) {
+      ReleaseStore.axiosCheckName(proId, value.trim()).then((res) => {
         if (res) {
           callback('版本名称重复');
         } else {
@@ -117,6 +117,7 @@ class AddRelease extends Component {
                 rules: [{
                   required: true,
                   message: '版本名称必填',
+                  whitespace: true,
                 }, {
                   validator: this.checkName,
                 }],
