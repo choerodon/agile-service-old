@@ -1,6 +1,29 @@
 # Changelog
 All notable changes about agile-service will be documented in this file.
 
+## [0.18.0] - 2019-06-21
+
+### Added
+
+- Added a new issue type feature.
+- Story map reconstruction mainly includes: supporting the planning of new issue type feature; supporting the planning of all stories; showing only no lanes and versions of lanes.
+- You can quickly create subtasks in stories.
+- Added custom fields for new staff types.
+- Added activity log of custom field modification.
+
+### Changed
+
+- Optimizing the performance of Partial Interfaces.
+- For users who have been disabled on the platform, the personnel list is no longer displayed.
+- The parent task can see progress bars for all subtasks.
+- Partial views style optimization. 
+- Partial report optimization. 
+
+### Fixed
+
+- Fixed special character error of description field in problem import.
+- Fixed the Bug that a version can be created when it has an empty name.  
+
 ## [0.17.0] - 2019-05-24
 
 ### Added
