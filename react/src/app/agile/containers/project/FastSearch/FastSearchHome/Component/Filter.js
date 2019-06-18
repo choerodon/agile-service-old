@@ -368,7 +368,7 @@ class AddComponent extends Component {
         const obj = {
           childIncluded: true,
           expressQuery: expressQueryArr.join(' '),
-          name: values.name,
+          name: values.name.trim(),
           description: `${values.description || ''}+++${json}`,
           projectId: AppState.currentMenuType.id,
           quickFilterValueDTOList: arr,
@@ -389,21 +389,25 @@ class AddComponent extends Component {
   };
 
 
-/**
- *校验快速搜索名称是否重复
- *
- * @memberof AddComponent
- */
-checkSearchNameRepeat = (rule, value, callback) => {
-  axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/quick_filter/check_name?quickFilterName=${value}`)
-    .then((res) => {
-      if (res) {
-        callback('快速搜索名称重复');
-      } else {
-        callback();
-      }
-    });
-};
+  /**
+   *校验快速搜索名称是否重复
+   *
+   * @memberof AddComponent
+   */
+  checkSearchNameRepeat = (rule, value, callback) => {
+    if (value && value.trim()) {
+      axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/quick_filter/check_name?quickFilterName=${value}`)
+        .then((res) => {
+          if (res) {
+            callback('快速搜索名称重复');
+          } else {
+            callback();
+          }
+        });
+    } else {
+      callback();
+    }
+  };
 
   /**
    * 转化关系
@@ -701,6 +705,7 @@ checkSearchNameRepeat = (rule, value, callback) => {
                 rules: [{
                   required: true,
                   message: '名称必填',
+                  whitespace: true,
                 }, {
                   validator: this.checkSearchNameRepeat,
                 }],

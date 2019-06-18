@@ -40,8 +40,8 @@ class CreateEpic extends Component {
         const epicType = issueTypes.find(t => t.typeCode === 'issue_epic');
         const req = {
           projectId: AppState.currentMenuType.id,
-          epicName: value.name,
-          summary: value.summary,
+          epicName: value.name.trim(),
+          summary: value.summary.trim(),
           typeCode: 'issue_epic',
           issueTypeId: epicType && epicType.id,
           priorityCode: `priority-${defaultPriorityId}`,
@@ -73,14 +73,18 @@ class CreateEpic extends Component {
   };
 
   checkEpicNameRepeat = (rule, value, callback) => {
-    axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/issues/check_epic_name?epicName=${value}`)
-      .then((res) => {
-        if (res) {
-          callback('史诗名称重复');
-        } else {
-          callback();
-        }
-      });
+    if (value && value.trim()) {
+      axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/issues/check_epic_name?epicName=${value.trim()}`)
+        .then((res) => {
+          if (res) {
+            callback('史诗名称重复');
+          } else {
+            callback();
+          }
+        });
+    } else {
+      callback();
+    }
   };
 
   render() {
@@ -118,7 +122,7 @@ class CreateEpic extends Component {
                 rules: [{
                   required: true,
                   message: '史诗名称不能为空',
-                  // transform: value => value && value.trim(),
+                  whitespace: true,
                 }, {
                   validator: this.checkEpicNameRepeat,
                 }],
@@ -131,7 +135,7 @@ class CreateEpic extends Component {
                 rules: [{
                   required: true,
                   message: '概要不能为空',
-                  // transform: value => value && value.trim(),
+                  whitespace: true,
                 }],
               })(
                 <TextArea autosize label="概要" maxLength={44} />,

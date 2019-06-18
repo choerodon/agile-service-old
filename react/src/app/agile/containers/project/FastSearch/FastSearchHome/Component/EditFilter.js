@@ -186,9 +186,7 @@ class AddComponent extends Component {
    */
   checkSearchNameRepeat = (rule, value, callback) => {
     const { originFilterName } = this.state;
-    if (originFilterName === value) {
-      callback();
-    } else {
+    if (value && value.trim() && value.trim() !== originFilterName) {
       axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/quick_filter/check_name?quickFilterName=${value}`)
         .then((res) => {
           if (res) {
@@ -197,6 +195,8 @@ class AddComponent extends Component {
             callback();
           }
         });
+    } else {
+      callback();
     }
   };
 
@@ -329,7 +329,7 @@ class AddComponent extends Component {
         state: 'originTypes',
       },
     };
-    const arr = state[[OPTION_FILTER[filter].state]].map(v => (
+    const arr = state[OPTION_FILTER[filter].state].map(v => (
       <Option key={v[OPTION_FILTER[filter].id]} value={v[OPTION_FILTER[filter].id]}>
         {v[OPTION_FILTER[filter].name]}
       </Option>
@@ -337,20 +337,8 @@ class AddComponent extends Component {
     if (addEmpty) {
       arr.unshift(
         <Option key="null" value="null">
-
-
-
-
-
-
-
-
-
-
-
-
           无
-                </Option>,
+        </Option>,
       );
     }
     return arr;
@@ -676,7 +664,7 @@ class AddComponent extends Component {
           childIncluded: true,
           objectVersionNumber: origin.objectVersionNumber,
           expressQuery: expressQueryArr.join(' '),
-          name: values.name,
+          name: values.name.trim(),
           description: `${values.description || ''}+++${json}`,
           projectId: AppState.currentMenuType.id,
           quickFilterValueDTOList: arrCopy,
@@ -872,6 +860,7 @@ class AddComponent extends Component {
                 rules: [{
                   required: true,
                   message: '名称必填',
+                  whitespace: true,
                 }, {
                   validator: this.checkSearchNameRepeat,
                 }],
