@@ -73,14 +73,14 @@ class EpicCell extends Component {
                 marginLeft: 20,
               }}
               >
-                {`${epicData.epicName || ''} (${subIssueNum})`}
+                {`${epicData.epicName || '无史诗'} (${subIssueNum})`}
               </div>
             ) : (
               <Fragment>
                 <Column style={{ minHeight: 'unset' }}>
                   {adding
                     ? <CreateEpic onCreate={this.handleCreateEpic} />
-                    : (issueId ? <EpicCard epic={epicData} subIssueNum={subIssueNum} /> : null)}
+                    : <EpicCard epic={epicData} subIssueNum={subIssueNum} />}
                 </Column>
                 {issueId ? (!adding && !isInProgram && <AddCard style={{ height: 42 }} onClick={this.handleAddEpicClick} />) : null}
               </Fragment>

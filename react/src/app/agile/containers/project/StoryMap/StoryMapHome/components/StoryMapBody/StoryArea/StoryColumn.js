@@ -17,11 +17,11 @@ class StoryColumn extends Component {
   }
 
   componentDidMount() {
-    this.AutoScroll = new AutoScroll({
-      scrollElement: document.getElementsByClassName('minimap-container-scroll')[0],
-      onMouseMove: this.handleMouseMove,
-      onMouseUp: this.handleMouseUp,
-    });
+    // this.AutoScroll = new AutoScroll({
+    //   scrollElement: document.getElementsByClassName('minimap-container-scroll')[0],
+    //   onMouseMove: this.handleMouseMove,
+    //   onMouseUp: this.handleMouseUp,
+    // });
   }
 
   handleCreateStory = (newStory) => {
@@ -129,7 +129,7 @@ class StoryColumn extends Component {
           {storys && storys.map((story, index) => <StoryCard index={index} rowIndex={rowIndex} story={story} version={version} />)}
           <CreateStory onCreate={this.handleCreateStory} epic={epic} feature={feature} version={version} />
         </div>
-        {resizing && (
+        {/* {resizing && (
           <div style={{
             position: 'fixed',
             top: 0,
@@ -156,7 +156,7 @@ class StoryColumn extends Component {
           role="none"
         >
           <div className={`c7nagile-StoryMap-StoryColumn-Resize-highlight ${resizing ? 'active' : ''}`} />
-        </div>
+        </div> */}
       </Column>
     );
   }

@@ -7,6 +7,10 @@
     background: #FEA;
   }
 
+  &.none {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
   border-radius: 2px;
   padding: 12px;
 }

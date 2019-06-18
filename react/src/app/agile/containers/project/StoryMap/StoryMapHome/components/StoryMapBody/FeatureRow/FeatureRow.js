@@ -11,7 +11,7 @@ class FeatureRow extends Component {
     const epicList = StoryMapStore.getEpicList;
     return (
       <tr style={{ height: 82 }}>
-        {epicList.map((epicData, index) => <FeatureCell EpicIndex={index} epicData={epicData} otherData={storyData[epicData.issueId]} />) }
+        {epicList.map((epicData, index) => <FeatureCell isLastColumn={index === epicList.length - 1} EpicIndex={index} epicData={epicData} otherData={storyData[epicData.issueId]} />) }
       </tr>
     );
   }

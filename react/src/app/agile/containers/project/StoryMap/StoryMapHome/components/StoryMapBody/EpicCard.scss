@@ -4,4 +4,8 @@
   padding: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  &.none {
+    background: rgba(0, 0, 0, 0.04);
+  }
 }
