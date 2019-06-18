@@ -63,7 +63,7 @@ export function deleteCommit(commitId, projectId = AppState.currentMenuType.id) 
 export function loadComponents() {
   const projectId = AppState.currentMenuType.id;
   return axios.post(
-    `/agile/v1/projects/${projectId}/component/query_all?size=${999}&page=${0}`, {
+    `/agile/v1/projects/${projectId}/component/query_all?size=${999}&page=${1}`, {
       advancedSearchArgs: {},
       searchArgs: {},
       content: '',
