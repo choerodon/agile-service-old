@@ -14,6 +14,8 @@ public class EpicWithFeatureDO {
 
     private String epicName;
 
+    private Long programId;
+
     private List<FeatureCommonDO> featureCommonDOList;
 
     public Long getIssueId() {
@@ -62,5 +64,13 @@ public class EpicWithFeatureDO {
 
     public void setFeatureCommonDOList(List<FeatureCommonDO> featureCommonDOList) {
         this.featureCommonDOList = featureCommonDOList;
+    }
+
+    public void setProgramId(Long programId) {
+        this.programId = programId;
+    }
+
+    public Long getProgramId() {
+        return programId;
     }
 }

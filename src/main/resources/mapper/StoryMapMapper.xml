@@ -24,12 +24,14 @@
         <id column="ai_type_code" property="typeCode"/>
         <id column="ai_summary" property="summary"/>
         <id column="ai_epic_name" property="epicName"/>
+        <id column="ai_program_id" property="programId"/>
         <collection property="featureCommonDOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.FeatureCommonDO">
             <id property="issueId" column="feature_issue_id"/>
             <id property="issueNum" column="feature_issue_num"/>
             <id property="typeCode" column="feature_type_code"/>
             <id property="summary" column="feature_summary"/>
             <id property="featureType" column="feature_feature_type"/>
+            <id property="programId" column="feature_program_id"/>
         </collection>
     </resultMap>
 
@@ -40,11 +42,13 @@
             ai.type_code as ai_type_code,
             ai.summary as ai_summary,
             ai.epic_name as ai_epic_name,
+            ai.program_id as ai_program_id,
             feature_info.issue_id as feature_issue_id,
             feature_info.issue_num as feature_issue_num,
             feature_info.type_code as feature_type_code,
             feature_info.summary as feature_summary,
-            feature_info.feature_type as feature_feature_type
+            feature_info.feature_type as feature_feature_type,
+            feature_info.program_id as feature_program_id
         from agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         left join
@@ -54,6 +58,7 @@
               ai2.type_code,
               ai2.summary,
               ai2.epic_id,
+              ai2.program_id,
               af.feature_type
              from agile_issue ai2, agile_feature af, agile_project_info api2
              where ai2.type_code in ('feature') and ai2.issue_id = af.issue_id and ai2.project_id = api2.project_id and ai2.epic_id in
@@ -91,6 +96,7 @@
           IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) as issue_num,
           ai.type_code,
           ai.summary,
+          ai.program_id,
           af.feature_type
         from agile_issue ai, agile_project_info api, agile_feature af
         where ai.type_code = 'feature'
