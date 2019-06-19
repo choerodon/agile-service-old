@@ -687,7 +687,7 @@ class AddComponent extends Component {
   loadQuickFilter() {
     const projectId = AppState.currentMenuType.id;
     const orgId = AppState.currentMenuType.organizationId;
-    axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?page=1&size=0`).then(res => this.setState({ originUsers: res.content }));
+    axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?page=1&size=0`).then(res => this.setState({ originUsers: res.list }));
     axios.get(`/issue/v1/projects/${projectId}/priority/list_by_org`).then(res => this.setState({ originPriorities: res }));
     axios.get(`/issue/v1/projects/${projectId}/schemes/query_status_by_project_id?apply_type=agile`).then(res => this.setState({ originStatus: res }));
     axios.get(`/agile/v1/projects/${projectId}/issues/epics/select_data`).then(res => this.setState({ originEpics: res }));
