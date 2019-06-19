@@ -27,7 +27,7 @@ import io.choerodon.agile.infra.mapper.IssueSprintRelMapper
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper
 import io.choerodon.agile.infra.mapper.SprintMapper
 import io.choerodon.asgard.saga.feign.SagaClient
-import io.choerodon.core.domain.Page
+import com.github.pagehelper.PageInfo
 import org.mockito.Matchers
 import org.mockito.Mockito
 
@@ -290,7 +290,7 @@ class SprintControllerSpec extends Specification {
 
         when: '发送请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/{sprintId}/issues?status={status}&&organizationId={organizationId}',
-                Page, projectId, sprintId, "sprint_planning", organizationId)
+                PageInfo, projectId, sprintId, "sprint_planning", organizationId)
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()

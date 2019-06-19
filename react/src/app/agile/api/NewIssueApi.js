@@ -63,7 +63,7 @@ export function deleteCommit(commitId, projectId = AppState.currentMenuType.id) 
 export function loadComponents() {
   const projectId = AppState.currentMenuType.id;
   return axios.post(
-    `/agile/v1/projects/${projectId}/component/query_all?size=${999}&page=${0}`, {
+    `/agile/v1/projects/${projectId}/component/query_all?size=${999}&page=${1}`, {
       advancedSearchArgs: {},
       searchArgs: {},
       content: '',
@@ -102,7 +102,7 @@ export function loadSprint(sprintId = '') {
   return axios.get(`/agile/v1/projects/${projectId}/sprint/${sprintId}`);
 }
 
-export function loadSprintIssues(sprintId, status, page = 0, size = 99999) {
+export function loadSprintIssues(sprintId, status, page = 1, size = 99999) {
   const orgId = AppState.currentMenuType.organizationId;
   const projectId = AppState.currentMenuType.id;
   return axios.get(`/agile/v1/projects/${projectId}/sprint/${sprintId}/issues?organizationId=${orgId}&status=${status}&page=${page}&size=${size}`);
@@ -228,7 +228,7 @@ export function loadIssues(page = 0, size = 10, searchDTO, orderField, orderType
   });
 }
 
-export function loadIssuesInLink(page = 0, size = 10, issueId, content) {
+export function loadIssuesInLink(page = 1, size = 10, issueId, content) {
   const projectId = AppState.currentMenuType.id;
   if (issueId && content) {
     return axios.get(`/agile/v1/projects/${projectId}/issues/agile/summary?issueId=${issueId}&self=false&content=${content}&page=${page}&size=${size}`);

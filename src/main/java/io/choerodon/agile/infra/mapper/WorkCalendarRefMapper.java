@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.infra.dataobject.WorkCalendarRefDO;
-import io.choerodon.mybatis.common.BaseMapper;
+import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -11,7 +11,7 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2018/10/10
  */
-public interface WorkCalendarRefMapper extends BaseMapper<WorkCalendarRefDO> {
+public interface WorkCalendarRefMapper extends Mapper<WorkCalendarRefDO> {
 
     /**
      * 根据冲刺id查询冲刺加班日期

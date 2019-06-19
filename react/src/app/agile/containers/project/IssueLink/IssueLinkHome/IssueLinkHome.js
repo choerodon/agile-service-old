@@ -41,7 +41,7 @@ class Link extends Component {
 
   componentDidMount() {
     const { filterName, barFilters, pagination } = this.state;
-    this.loadLinks(pagination.current - 1, pagination.pageSize);
+    this.loadLinks(pagination.current, pagination.pageSize);
   }
 
   handleTableChange = (pagination, filters, sorter, barFilters) => {
@@ -50,7 +50,7 @@ class Link extends Component {
       filterName: filters.linkName && filters.linkName[0],
       barFilters,
     }, () => {
-      this.loadLinks(pagination.current - 1, pagination.pageSize);
+      this.loadLinks(pagination.current, pagination.pageSize);
     });
   }
 
@@ -75,7 +75,7 @@ class Link extends Component {
     this.loadLinks();
   }
 
-  loadLinks(page = 0, size = 10) {
+  loadLinks(page = 1, size = 10) {
     const { filterName, barFilters } = this.state;
     this.setState({
       loading: true,
@@ -87,12 +87,12 @@ class Link extends Component {
       })
       .then((res) => {
         this.setState({
-          links: res.content,
+          links: res.list,
           loading: false,
           pagination: {
-            current: res.number + 1,
-            pageSize: res.size,
-            total: res.totalElements,
+            current: res.pageNum,
+            pageSize: res.pageSize,
+            total: res.total,
           },
         });
       })

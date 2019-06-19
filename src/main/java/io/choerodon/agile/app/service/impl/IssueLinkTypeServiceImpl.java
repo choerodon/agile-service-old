@@ -1,9 +1,12 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.IssueLinkTypeSearchDTO;
-import io.choerodon.core.domain.Page;
-import io.choerodon.mybatis.pagehelper.PageHelper;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
+import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.PageHelper;
+
+import io.choerodon.base.domain.PageRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +37,9 @@ public class IssueLinkTypeServiceImpl implements IssueLinkTypeService {
     private IssueLinkTypeAssembler issueLinkTypeAssembler;
 
     @Override
-    public Page<IssueLinkTypeDTO> listIssueLinkType(Long projectId, Long issueLinkTypeId, IssueLinkTypeSearchDTO issueLinkTypeSearchDTO, PageRequest pageRequest) {
-        return PageHelper.doPageAndSort(pageRequest, () -> issueLinkTypeMapper.queryIssueLinkTypeByProjectId(projectId, issueLinkTypeId, issueLinkTypeSearchDTO.getLinkName(), issueLinkTypeSearchDTO.getContents()));
+    public PageInfo<IssueLinkTypeDTO> listIssueLinkType(Long projectId, Long issueLinkTypeId, IssueLinkTypeSearchDTO issueLinkTypeSearchDTO, PageRequest pageRequest) {
+        return PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(), pageRequest.getSort().toSql()).
+                doSelectPageInfo(() -> issueLinkTypeMapper.queryIssueLinkTypeByProjectId(projectId, issueLinkTypeId, issueLinkTypeSearchDTO.getLinkName(), issueLinkTypeSearchDTO.getContents()));
     }
 
     @Override

@@ -10,16 +10,20 @@ import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.mapper.ComponentIssueRelMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.convertor.ConvertPageHelper;
-import io.choerodon.core.domain.Page;
-import io.choerodon.core.domain.PageInfo;
+
+import com.github.pagehelper.PageInfo;
+
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.app.service.IssueComponentService;
 import io.choerodon.agile.domain.agile.entity.IssueComponentE;
 import io.choerodon.agile.infra.repository.IssueComponentRepository;
 import io.choerodon.agile.infra.dataobject.IssueComponentDO;
 import io.choerodon.agile.infra.mapper.IssueComponentMapper;
-import io.choerodon.mybatis.pagehelper.PageHelper;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
+import com.github.pagehelper.PageHelper;
+
+import io.choerodon.base.domain.PageRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -127,18 +131,19 @@ public class IssueComponentServiceImpl implements IssueComponentService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Page<ComponentForListDTO> queryComponentByProjectId(Long projectId, Long componentId, Boolean noIssueTest, SearchDTO searchDTO, PageRequest pageRequest) {
+    public PageInfo<ComponentForListDTO> queryComponentByProjectId(Long projectId, Long componentId, Boolean noIssueTest, SearchDTO searchDTO, PageRequest pageRequest) {
         //处理用户搜索
         Boolean condition = handleSearchUser(searchDTO, projectId);
-        if(condition){
-            Page<ComponentForListDTO> componentForListDTOPage = ConvertPageHelper.convertPage(PageHelper.doPageAndSort(pageRequest, () ->
+        if (condition) {
+            PageInfo<ComponentForListDTO> componentForListDTOPage = ConvertPageHelper.convertPageInfo(PageHelper.startPage(pageRequest.getPage(),
+                    pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() ->
                     issueComponentMapper.queryComponentByOption(projectId, noIssueTest, componentId, searchDTO.getSearchArgs(),
                             searchDTO.getAdvancedSearchArgs(), searchDTO.getContents())), ComponentForListDTO.class);
-            if ((componentForListDTOPage.getContent() != null) && !componentForListDTOPage.getContent().isEmpty()) {
-                List<Long> assigneeIds = componentForListDTOPage.getContent().stream().filter(componentForListDTO -> componentForListDTO.getManagerId() != null
+            if ((componentForListDTOPage.getList() != null) && !componentForListDTOPage.getList().isEmpty()) {
+                List<Long> assigneeIds = componentForListDTOPage.getList().stream().filter(componentForListDTO -> componentForListDTO.getManagerId() != null
                         && !Objects.equals(componentForListDTO.getManagerId(), 0L)).map(ComponentForListDTO::getManagerId).distinct().collect(Collectors.toList());
                 Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
-                componentForListDTOPage.getContent().forEach(componentForListDTO -> {
+                componentForListDTOPage.getList().forEach(componentForListDTO -> {
                     UserMessageDO userMessageDO = usersMap.get(componentForListDTO.getManagerId());
                     String assigneeName = userMessageDO != null ? userMessageDO.getName() : null;
                     String assigneeLoginName = userMessageDO != null ? userMessageDO.getLoginName() : null;
@@ -151,8 +156,8 @@ public class IssueComponentServiceImpl implements IssueComponentService {
                 });
             }
             return componentForListDTOPage;
-        }else{
-            return new Page<>(new ArrayList<>(), new PageInfo(0,20) , 0);
+        } else {
+            return new PageInfo<>();
         }
 
     }
@@ -160,7 +165,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     private Boolean handleSearchUser(SearchDTO searchDTO, Long projectId) {
         if (searchDTO.getSearchArgs() != null && searchDTO.getSearchArgs().get(MANAGER) != null) {
             String userName = (String) searchDTO.getSearchArgs().get(MANAGER);
-            if (userName != null && !"" .equals(userName)) {
+            if (userName != null && !"".equals(userName)) {
                 List<UserDTO> userDTOS = userRepository.queryUsersByNameAndProjectId(projectId, userName);
                 if (userDTOS != null && !userDTOS.isEmpty()) {
                     searchDTO.getAdvancedSearchArgs().put("managerId", userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));

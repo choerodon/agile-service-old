@@ -11,8 +11,8 @@ import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
-import io.choerodon.core.domain.Page;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import com.github.pagehelper.PageInfo;
+import io.choerodon.base.domain.PageRequest;
 
 /**
  * 敏捷开发Issue
@@ -49,7 +49,7 @@ public interface IssueService {
      * @param pageRequest pageRequest
      * @return IssueListDTO
      */
-    Page<IssueListDTO> listIssueWithSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId);
+    PageInfo<IssueListDTO> listIssueWithSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId);
 
     List<EpicDataDTO> listEpic(Long projectId);
 
@@ -160,7 +160,7 @@ public interface IssueService {
      */
     IssueE queryIssueByProjectIdAndIssueId(Long projectId, Long issueId);
 
-    Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Boolean onlyActiveSprint, Boolean self, String content, PageRequest pageRequest);
+    PageInfo<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Boolean onlyActiveSprint, Boolean self, String content, PageRequest pageRequest);
 
     void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response, Long organizationId);
 
@@ -205,9 +205,9 @@ public interface IssueService {
      * @param pageRequest pageRequest
      * @return IssueListDTO
      */
-    Page<IssueListTestDTO> listIssueWithoutSubToTestComponent(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId);
+    PageInfo<IssueListTestDTO> listIssueWithoutSubToTestComponent(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId);
 
-    Page<IssueListTestWithSprintVersionDTO> listIssueWithLinkedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId);
+    PageInfo<IssueListTestWithSprintVersionDTO> listIssueWithLinkedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId);
 
     List<IssueCreationNumDTO> queryIssueNumByTimeSlot(Long projectId, String typeCode, Integer timeSlot);
 
@@ -222,7 +222,7 @@ public interface IssueService {
      * @param pageRequest pageRequest
      * @return IssueNumDTO
      */
-    Page<IssueNumDTO> queryIssueByOptionForAgile(Long projectId, Long issueId, String issueNum,
+    PageInfo<IssueNumDTO> queryIssueByOptionForAgile(Long projectId, Long issueId, String issueNum,
                                                  Boolean self, String content, PageRequest pageRequest);
 
     /**
@@ -252,7 +252,7 @@ public interface IssueService {
      * @param pageRequest pageRequest
      * @return IssueComponentDetailTO
      */
-    Page<IssueComponentDetailDTO> listIssueWithoutSubDetail(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
+    PageInfo<IssueComponentDetailDTO> listIssueWithoutSubDetail(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
 
     List<StoryMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId, List<Long> assigneeFilterIds);
 
@@ -264,7 +264,7 @@ public interface IssueService {
 
     List<Long> queryIssueIdsByOptions(Long projectId, SearchDTO searchDTO);
 
-    Page<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId, PageRequest pageRequest);
+    PageInfo<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId, PageRequest pageRequest);
 
     List<UnfinishedIssueDTO> queryUnfinishedIssues(Long projectId, Long assigneeId);
 
@@ -314,7 +314,7 @@ public interface IssueService {
 
     Boolean checkEpicName(Long projectId, String epicName);
 
-    Page<FeatureCommonDTO> queryFeatureList(Long programId, Long organizationId, PageRequest pageRequest, SearchDTO searchDTO);
+    PageInfo<FeatureCommonDTO> queryFeatureList(Long programId, Long organizationId, PageRequest pageRequest, SearchDTO searchDTO);
 
     List<FeatureCommonDTO> queryFeatureListByPiId(Long programId, Long organizationId, Long piId);
 }

@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.assembler.ReportAssembler;
@@ -9,6 +10,7 @@ import io.choerodon.agile.domain.agile.converter.SprintConverter;
 import io.choerodon.agile.domain.agile.entity.ReportIssueE;
 import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.infra.feign.UserFeignClient;
+import io.choerodon.agile.infra.common.utils.PageUtil;
 import io.choerodon.agile.infra.repository.DataLogRepository;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
@@ -18,10 +20,15 @@ import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.core.domain.Page;
+
+import com.github.pagehelper.PageInfo;
+
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.mybatis.pagehelper.PageHelper;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
+import com.github.pagehelper.PageHelper;
+
+import io.choerodon.base.domain.PageRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -372,7 +379,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public Page<IssueListDTO> queryIssueByOptions(Long projectId, Long versionId, String status, String type, PageRequest pageRequest, Long organizationId) {
+    public PageInfo<IssueListDTO> queryIssueByOptions(Long projectId, Long versionId, String status, String type, PageRequest pageRequest, Long organizationId) {
         ProductVersionDO versionDO = new ProductVersionDO();
         versionDO.setProjectId(projectId);
         versionDO.setVersionId(versionId);
@@ -380,19 +387,15 @@ public class ReportServiceImpl implements ReportService {
         if (versionDO == null || Objects.equals(versionDO.getStatusCode(), VERSION_ARCHIVED_CODE)) {
             throw new CommonException(VERSION_REPORT_ERROR);
         }
-        pageRequest.resetOrder("ai", new HashMap<>());
-        Page<IssueDO> reportIssuePage = PageHelper.doPageAndSort(pageRequest, () -> reportMapper.queryReportIssues(projectId, versionId, status, type));
-        Page<IssueListDTO> reportPage = new Page<>();
-        reportPage.setTotalPages(reportIssuePage.getTotalPages());
-        reportPage.setTotalElements(reportIssuePage.getTotalElements());
-        reportPage.setSize(reportIssuePage.getSize());
-        reportPage.setNumberOfElements(reportIssuePage.getNumberOfElements());
-        reportPage.setNumber(reportIssuePage.getNumber());
+        pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), "ai", new HashMap<>()));
+        //pageRequest.resetOrder("ai", new HashMap<>());
+        PageInfo<IssueDO> reportIssuePage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
+                pageRequest.getSort().toSql()).doSelectPageInfo(() -> reportMapper.
+                queryReportIssues(projectId, versionId, status, type));
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        reportPage.setContent(issueAssembler.issueDoToIssueListDto(reportIssuePage.getContent(), priorityMap, statusMapDTOMap, issueTypeDTOMap));
-        return reportPage;
+        return PageUtil.buildPageInfoWithPageInfoList(reportIssuePage, issueAssembler.issueDoToIssueListDto(reportIssuePage.getList(), priorityMap, statusMapDTOMap, issueTypeDTOMap));
     }
 
     @Override

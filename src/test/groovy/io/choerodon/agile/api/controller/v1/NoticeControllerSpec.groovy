@@ -48,7 +48,7 @@ class NoticeControllerSpec extends Specification {
 
 //    def setup() {
 //        userRepository.listRolesWithUserCountOnProjectLevel(*_) >> new ArrayList<RoleDTO>()
-//        userRepository.pagingQueryUsersByRoleIdOnProjectLevel(*_) >> new Page<UserDTO>()
+//        userRepository.pagingQueryUsersByRoleIdOnProjectLevel(*_) >> new PageInfo<UserDTO>()
 //    }
 
     def 'updateNotice'() {

@@ -3383,7 +3383,7 @@
         where ai.program_id = #{programId} and ai.type_code in ('feature', 'issue_epic')
         <if test="searchDTO.searchArgs != null">
             <if test='searchDTO.searchArgs.summary != null and searchDTO.searchArgs.summary != "" '>
-                AND position(#{searchDTO.searchArgs.summary} IN ai.summary)
+                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.summary}) ,'%')
             </if>
         </if>
         <if test='searchDTO.advancedSearchArgs != null'>

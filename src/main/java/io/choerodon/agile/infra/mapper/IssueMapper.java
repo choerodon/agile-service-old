@@ -3,7 +3,7 @@ package io.choerodon.agile.infra.mapper;
 import io.choerodon.agile.api.dto.IssueIdSprintIdDTO;
 import io.choerodon.agile.api.dto.SearchDTO;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.mybatis.common.BaseMapper;
+import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -17,7 +17,7 @@ import java.util.Map;
  * @author dinghuang123@gmail.com
  * @since 2018-05-14 20:30:48
  */
-public interface IssueMapper extends BaseMapper<IssueDO> {
+public interface IssueMapper extends Mapper<IssueDO> {
 
     int removeFromSprint(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 

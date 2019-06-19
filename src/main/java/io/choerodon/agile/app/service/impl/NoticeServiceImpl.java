@@ -9,7 +9,7 @@ import io.choerodon.agile.infra.dataobject.MessageDO;
 import io.choerodon.agile.infra.dataobject.MessageDetailDO;
 import io.choerodon.agile.infra.mapper.NoticeDetailMapper;
 import io.choerodon.agile.infra.mapper.NoticeMapper;
-import io.choerodon.core.domain.Page;
+import com.github.pagehelper.PageInfo;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -13,8 +13,8 @@ import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.feign.IssueFeignClient
 import io.choerodon.agile.infra.mapper.*
 import io.choerodon.asgard.saga.feign.SagaClient
-import io.choerodon.core.domain.Page
-import io.choerodon.mybatis.pagehelper.domain.PageRequest
+import com.github.pagehelper.PageInfo
+import io.choerodon.base.domain.PageRequest
 import org.mockito.Matchers
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
@@ -422,7 +422,7 @@ class IssueControllerSpec extends Specification {
         searchDTO.searchArgs = searchMap
         searchDTO.otherArgs = otherMap
         when: '向开始查询分页过滤查询issue列表的接口发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/include_sub?organizationId={organizationId}', searchDTO, Page, projectId, organizationId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/include_sub?organizationId={organizationId}', searchDTO, PageInfo, projectId, organizationId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -438,7 +438,7 @@ class IssueControllerSpec extends Specification {
         when: '向分页搜索查询issue列表的接口发请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/summary?onlyActiveSprint={onlyActiveSprint}&self={self}' +
                 '&issueId={issueId}&content={content}&page={page}&size={size}',
-                Page, projectId, false, false, issueIdList[0], "测试", 0, 10)
+                PageInfo, projectId, false, false, issueIdList[0], "测试", 0, 10)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -453,7 +453,7 @@ class IssueControllerSpec extends Specification {
         when: '向分页搜索查询issue列表的接口发请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/agile/summary?self={self}' +
                 '&issueId={issueId}&content={content}&page={page}&size={size}',
-                Page, projectId, false, issueIdList[0], "测试", 0, 10)
+                PageInfo, projectId, false, issueIdList[0], "测试", 0, 10)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -736,7 +736,7 @@ class IssueControllerSpec extends Specification {
 
         when: '分页过滤查询issue列表提供给测试模块用'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/test_component/no_sub?organizationId={organizationId}',
-                searchDTO, Page, projectId, organizationId)
+                searchDTO, PageInfo, projectId, organizationId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -830,7 +830,7 @@ class IssueControllerSpec extends Specification {
         SearchDTO searchDTO = new SearchDTO()
 
         when: '分页过滤查询issue列表提供给测试模块用'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/test_component/no_sub_detail', searchDTO, Page, projectId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/test_component/no_sub_detail', searchDTO, PageInfo, projectId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -1012,7 +1012,7 @@ class IssueControllerSpec extends Specification {
 
         when:
         def entity = restTemplate.postForEntity("/v1/projects/{project_id}/issues/test_component/filter_linked?pageRequest={pageRequest}&&organizationId={organizationId}",
-                searchDTO, Page.class, projectId, pageRequest, organizationId)
+                searchDTO, PageInfo.class, projectId, pageRequest, organizationId)
 
         then:
         entity.statusCode.is2xxSuccessful()
@@ -1274,13 +1274,13 @@ class IssueControllerSpec extends Specification {
 
     def 'queryUnDistributedIssues'() {
         when: '查询未分配的问题，类型为story,task,bug'
-        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/undistributed", Page, projectId, 1L)
+        def entity = restTemplate.getForEntity("/v1/projects/{project_id}/issues/undistributed", PageInfo, projectId, 1L)
 
         then:
         entity.statusCode.is2xxSuccessful()
 
         and:
-        Page<UnfinishedIssueDTO> result = entity.body
+        PageInfo<UnfinishedIssueDTO> result = entity.body
 
         expect:
         result.getContent().size() == 1

@@ -28,7 +28,7 @@ class ObjectSchemeHome extends Component {
   componentDidMount() {
     const { pagination } = this.state;
     this.initCurrentMenuType();
-    this.loadObjectScheme(pagination.current - 1, pagination.pageSize);
+    this.loadObjectScheme(pagination.current, pagination.pageSize);
   }
 
   initCurrentMenuType = () => {

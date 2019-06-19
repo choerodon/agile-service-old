@@ -45,7 +45,7 @@ class SprintDetails extends Component {
 
   getPagination = (pagination, res) => { // 注意：pagination
     if (pagination == undefined) {
-      return res.content.length > 10 ? { current: 1, pageSize: 10 } : false;
+      return res.list.length > 10 ? { current: 1, pageSize: 10 } : false;
     } else {
       return { current: pagination.page + 1, pageSize: pagination.size };
     }
@@ -95,7 +95,7 @@ class SprintDetails extends Component {
       loadSprintIssues(sprintId, 'done')
         .then((res) => {
           this.setState({
-            doneIssues: res.content,
+            doneIssues: res.list,
             loading: false,
             pagination: this.getPagination(pagination, res),
           });
@@ -117,7 +117,7 @@ class SprintDetails extends Component {
       loadSprintIssues(sprintId, 'unfinished')
         .then((res) => {
           this.setState({
-            undoIssues: res.content,
+            undoIssues: res.list,
             loading: false,
             pagination: this.getPagination(pagination, res),
           });
@@ -138,7 +138,7 @@ class SprintDetails extends Component {
       loadSprintIssues(sprintId, 'unfinished')
         .then((res) => {
           this.setState({
-            undoAndNotEstimatedIssues: res.content.filter(item => (item.storyPoints === 0 && item.typeCode === 'story') || (item.remainTime === null && item.typeCode === 'task')),
+            undoAndNotEstimatedIssues: res.list.filter(item => (item.storyPoints === 0 && item.typeCode === 'story') || (item.remainTime === null && item.typeCode === 'task')),
             loading: false,
             pagination: this.getPagination(pagination, res),
           });

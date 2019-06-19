@@ -6,12 +6,12 @@ import io.choerodon.agile.app.service.ProductVersionService;
 import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
-import io.choerodon.core.domain.Page;
+import com.github.pagehelper.PageInfo;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.choerodon.mybatis.pagehelper.domain.Sort;
+import io.choerodon.mybatis.annotation.SortDefault;
+import io.choerodon.base.domain.PageRequest;
+import io.choerodon.base.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -100,7 +100,7 @@ public class ProductVersionController {
     @CustomPageRequest
     @ApiOperation(value = "根据项目id查找version")
     @PostMapping(value = "/versions")
-    public ResponseEntity<Page<ProductVersionPageDTO>> listByOptions(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PageInfo<ProductVersionPageDTO>> listByOptions(@ApiParam(value = "项目id", required = true)
                                                                      @PathVariable(name = "project_id") Long projectId,
                                                                      @ApiParam(value = "查询参数")
                                                                      @RequestBody(required = false) SearchDTO searchDTO,

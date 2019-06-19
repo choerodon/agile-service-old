@@ -9,7 +9,7 @@ import io.choerodon.agile.domain.agile.entity.ProductVersionE;
 import io.choerodon.agile.infra.repository.ProductVersionRepository;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;
-import io.choerodon.mybatis.helper.OptionalHelper;
+import io.choerodon.mybatis.entity.Criteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -59,8 +59,9 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     @Override
     public ProductVersionE updateVersion(ProductVersionE versionE, List<String> fieldList) {
         ProductVersionDO version = versionConverter.entityToDo(versionE);
-        OptionalHelper.optional(fieldList);
-        if (versionMapper.updateOptional(version) != 1) {
+        Criteria criteria = new Criteria();
+        criteria.update(fieldList.toArray(new String[0]));
+        if (versionMapper.updateByPrimaryKeyOptions(version,criteria) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
         redisUtil.deleteRedisCache(new String[]{PIECHART + versionE.getProjectId() + ':' + FIX_VERSION + "*"});

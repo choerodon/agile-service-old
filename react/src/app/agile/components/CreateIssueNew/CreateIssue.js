@@ -48,9 +48,9 @@ class CreateIssue extends Component {
     this.setState({
       selectLoading: true,
     });
-    loadIssuesInLink(0, 20, undefined, input).then((res) => {
+    loadIssuesInLink(1, 20, undefined, input).then((res) => {
       this.setState({
-        originIssues: res.content,
+        originIssues: res.list,
         selectLoading: false,
       });
     });
@@ -115,9 +115,9 @@ class CreateIssue extends Component {
       this.setState({
         selectLoading: true,
       });
-      loadIssuesInLink(0, 20, undefined, input).then((res) => {
+      loadIssuesInLink(1, 20, undefined, input).then((res) => {
         this.setState({
-          originIssues: res.content,
+          originIssues: res.list,
           selectLoading: false,
         });
       });
@@ -138,10 +138,10 @@ class CreateIssue extends Component {
       .then((res) => {
         this.setState({
           selectLoading: false,
-          links: res.content,
-          originLinks: res.content,
+          links: res.list,
+          originLinks: res.list,
         });
-        this.transform(res.content);
+        this.transform(res.list);
       });
   }
 
@@ -958,7 +958,7 @@ class CreateIssue extends Component {
                   });
                   loadComponents().then((res) => {
                     this.setState({
-                      originComponents: res.content,
+                      originComponents: res.list,
                       selectLoading: false,
                     });
                   });

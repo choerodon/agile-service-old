@@ -38,7 +38,7 @@ const { Text, Edit } = TextEditToggle;
   loadIssueComponents = () => {
     loadComponents().then((res) => {
       this.setState({
-        originComponents: res.content,
+        originComponents: res.list,
         selectLoading: false,
       });
     });

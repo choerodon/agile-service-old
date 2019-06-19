@@ -44,7 +44,7 @@ class DeleteLink extends Component {
     })
       .then((res) => {
         this.setState({
-          originComponents: res.content,
+          originComponents: res.list,
         });
       });
   }

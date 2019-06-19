@@ -9,7 +9,7 @@ import io.choerodon.agile.infra.dataobject.IssueComponentDO
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.IssueComponentMapper
-import io.choerodon.core.domain.Page
+import com.github.pagehelper.PageInfo
 import org.mockito.Matchers
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
@@ -182,7 +182,7 @@ class IssueComponentControllerSpec extends Specification {
         searchParamMap.put("content", "")
 
         when: '根据project id查询component'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/component/query_all', searchParamMap, Page, projectIds)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/component/query_all', searchParamMap, PageInfo, projectIds)
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()

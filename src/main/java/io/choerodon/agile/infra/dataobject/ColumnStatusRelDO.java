@@ -1,9 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.mybatis.entity.BaseDTO;
 
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -12,10 +10,8 @@ import javax.persistence.Transient;
  * Created by HuangFuqiang@choerodon.io on 2018/5/15.
  * Email: fuqianghuang01@gmail.com
  */
-@VersionAudit
-@ModifyAudit
 @Table(name = "agile_board_column_status_rel")
-public class ColumnStatusRelDO extends AuditDomain {
+public class ColumnStatusRelDO extends BaseDTO {
 
     private Integer position;
 

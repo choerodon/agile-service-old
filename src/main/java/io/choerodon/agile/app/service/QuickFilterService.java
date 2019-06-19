@@ -3,8 +3,8 @@ package io.choerodon.agile.app.service;
 import io.choerodon.agile.api.dto.QuickFilterDTO;
 import io.choerodon.agile.api.dto.QuickFilterSearchDTO;
 import io.choerodon.agile.api.dto.QuickFilterSequenceDTO;
-import io.choerodon.core.domain.Page;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import com.github.pagehelper.PageInfo;
+import io.choerodon.base.domain.PageRequest;
 
 import java.util.List;
 

@@ -1,15 +1,9 @@
 package io.choerodon.agile.infra.dataobject;
 
-
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.mybatis.entity.BaseDTO;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 /**
  * 敏捷开发Issue链接
@@ -17,14 +11,12 @@ import javax.persistence.Transient;
  * @author dinghuang123@gmail.com
  * @since 2018-05-14 21:50:34
  */
-@ModifyAudit
-@VersionAudit
 @Table(name = "agile_issue_link")
-public class IssueLinkDO extends AuditDomain {
+public class IssueLinkDO extends BaseDTO {
 
     /***/
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long linkId;
 
 

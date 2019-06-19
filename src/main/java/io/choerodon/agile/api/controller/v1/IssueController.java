@@ -19,12 +19,12 @@ import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
-import io.choerodon.core.domain.Page;
+import com.github.pagehelper.PageInfo;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.choerodon.mybatis.pagehelper.domain.Sort;
+import io.choerodon.mybatis.annotation.SortDefault;
+import io.choerodon.base.domain.PageRequest;
+import io.choerodon.base.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -164,7 +164,7 @@ public class IssueController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("分页查询问题列表，包含子任务")
     @PostMapping(value = "/include_sub")
-    public ResponseEntity<Page<IssueListDTO>> listIssueWithSub(@ApiIgnore
+    public ResponseEntity<PageInfo<IssueListDTO>> listIssueWithSub(@ApiIgnore
                                                                @ApiParam(value = "分页信息", required = true)
                                                                @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
                                                                        PageRequest pageRequest,
@@ -183,7 +183,7 @@ public class IssueController {
     @ApiOperation("分页搜索查询issue列表(包含子任务)")
     @CustomPageRequest
     @GetMapping(value = "/summary")
-    public ResponseEntity<Page<IssueNumDTO>> queryIssueByOption(@ApiIgnore
+    public ResponseEntity<PageInfo<IssueNumDTO>> queryIssueByOption(@ApiIgnore
                                                                 @ApiParam(value = "分页信息", required = true)
                                                                 @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
                                                                         PageRequest pageRequest,
@@ -208,7 +208,7 @@ public class IssueController {
     @ApiOperation("分页搜索查询issue列表")
     @CustomPageRequest
     @GetMapping(value = "/agile/summary")
-    public ResponseEntity<Page<IssueNumDTO>> queryIssueByOptionForAgile(@ApiIgnore
+    public ResponseEntity<PageInfo<IssueNumDTO>> queryIssueByOptionForAgile(@ApiIgnore
                                                                         @ApiParam(value = "分页信息", required = true)
                                                                         @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
                                                                                 PageRequest pageRequest,
@@ -513,7 +513,7 @@ public class IssueController {
     @ApiOperation("分页过滤查询issue列表提供给测试模块用")
     @CustomPageRequest
     @PostMapping(value = "/test_component/no_sub")
-    public ResponseEntity<Page<IssueListTestDTO>> listIssueWithoutSubToTestComponent(@ApiIgnore
+    public ResponseEntity<PageInfo<IssueListTestDTO>> listIssueWithoutSubToTestComponent(@ApiIgnore
                                                                                      @ApiParam(value = "分页信息", required = true)
                                                                                      @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
                                                                                              PageRequest pageRequest,
@@ -533,7 +533,7 @@ public class IssueController {
     @ApiOperation("分页过滤查询issue列表, 测试项目接口，过滤linked issue")
     @CustomPageRequest
     @PostMapping(value = "/test_component/filter_linked")
-    public ResponseEntity<Page<IssueListTestWithSprintVersionDTO>> listIssueWithLinkedIssues(@ApiIgnore
+    public ResponseEntity<PageInfo<IssueListTestWithSprintVersionDTO>> listIssueWithLinkedIssues(@ApiIgnore
                                                                                              @ApiParam(value = "分页信息", required = true)
                                                                                              @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
                                                                                                      PageRequest pageRequest,
@@ -592,7 +592,7 @@ public class IssueController {
     @ApiOperation("分页过滤查询issue列表(不包含子任务，包含详情),测试模块用")
     @CustomPageRequest
     @PostMapping(value = "/test_component/no_sub_detail")
-    public ResponseEntity<Page<IssueComponentDetailDTO>> listIssueWithoutSubDetail(@ApiIgnore
+    public ResponseEntity<PageInfo<IssueComponentDetailDTO>> listIssueWithoutSubDetail(@ApiIgnore
                                                                                    @ApiParam(value = "分页信息", required = true)
                                                                                    @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
                                                                                            PageRequest pageRequest,
@@ -677,7 +677,7 @@ public class IssueController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询未分配的问题，类型为story,task,bug")
     @GetMapping(value = "/undistributed")
-    public ResponseEntity<Page<UndistributedIssueDTO>> queryUnDistributedIssues(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PageInfo<UndistributedIssueDTO>> queryUnDistributedIssues(@ApiParam(value = "项目id", required = true)
                                                                                 @PathVariable(name = "project_id") Long projectId,
                                                                                 @ApiParam(value = "分页信息", required = true)
                                                                                 @ApiIgnore PageRequest pageRequest) {
@@ -736,7 +736,7 @@ public class IssueController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询feature列表")
     @PostMapping(value = "/program")
-    public ResponseEntity<Page<FeatureCommonDTO>> queryFeatureList(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PageInfo<FeatureCommonDTO>> queryFeatureList(@ApiParam(value = "项目id", required = true)
                                                                    @PathVariable(name = "project_id") Long projectId,
                                                                    @ApiParam(value = "组织id", required = true)
                                                                    @RequestParam Long organizationId,

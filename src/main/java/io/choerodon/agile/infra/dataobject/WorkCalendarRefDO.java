@@ -1,11 +1,10 @@
 package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.mybatis.entity.BaseDTO;
 
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -13,13 +12,11 @@ import javax.persistence.Table;
  * @author dinghuang123@gmail.com
  * @since 2018/10/10
  */
-@VersionAudit
-@ModifyAudit
 @Table(name = "agile_work_calendar_ref")
-public class WorkCalendarRefDO extends AuditDomain {
+public class WorkCalendarRefDO extends BaseDTO {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long calendarId;
 
     private Long sprintId;

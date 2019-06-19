@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.assembler.*;
@@ -28,17 +29,22 @@ import io.choerodon.agile.infra.repository.*;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaClient;
+import io.choerodon.base.domain.Sort;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.core.domain.Page;
-import io.choerodon.core.domain.PageInfo;
+
+import com.github.pagehelper.PageInfo;
+
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
-import io.choerodon.mybatis.pagehelper.PageHelper;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
+import com.github.pagehelper.PageHelper;
+
+import io.choerodon.base.domain.PageRequest;
 import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -431,7 +437,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public Page<IssueListDTO> listIssueWithSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
+    public PageInfo<IssueListDTO> listIssueWithSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
         if (organizationId == null) {
             organizationId = ConvertUtil.getOrganizationId(projectId);
         }
@@ -439,8 +445,6 @@ public class IssueServiceImpl implements IssueService {
         Boolean condition = handleSearchUser(searchDTO, projectId);
         if (condition) {
             //处理表映射
-            Map<String, String> order = new HashMap<>(1);
-            order.put("issueId", "search.issue_issue_id");
             String filterSql = null;
             //处理自定义搜索
             if (searchDTO.getQuickFilterIds() != null && !searchDTO.getQuickFilterIds().isEmpty()) {
@@ -449,26 +453,27 @@ public class IssueServiceImpl implements IssueService {
             //处理未匹配的筛选
             handleOtherArgs(searchDTO);
             final String searchSql = filterSql;
-            pageRequest.resetOrder(SEARCH, order);
-            Page<Long> issueIdPage = PageHelper.doPageAndSort(pageRequest, () -> issueMapper.queryIssueIdsListWithSub
+            Map<String, String> order = new HashMap<>(1);
+            order.put("issueId", "search.issue_issue_id");
+            //pageRequest.resetOrder(SEARCH, order);
+            pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), SEARCH, order));
+            PageInfo<Long> issueIdPage = PageHelper.startPage(pageRequest.getPage(),
+                    pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() -> issueMapper.queryIssueIdsListWithSub
                     (projectId, searchDTO, searchSql, searchDTO.getAssigneeFilterIds()));
-            Page<IssueListDTO> issueListDTOPage = new Page<>();
-            if (issueIdPage.getContent() != null && !issueIdPage.getContent().isEmpty()) {
-                List<IssueDO> issueDOList = issueMapper.queryIssueListWithSubByIssueIds(issueIdPage.getContent());
+            PageInfo<IssueListDTO> issueListDTOPage;
+            if (issueIdPage.getList() != null && !issueIdPage.getList().isEmpty()) {
+                List<IssueDO> issueDOList = issueMapper.queryIssueListWithSubByIssueIds(issueIdPage.getList());
                 Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
                 Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
                 Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-                issueListDTOPage.setContent(issueAssembler.issueDoToIssueListDto(issueDOList, priorityMap, statusMapDTOMap, issueTypeDTOMap));
+                issueListDTOPage = PageUtil.buildPageInfoWithPageInfoList(issueIdPage,
+                        issueAssembler.issueDoToIssueListDto(issueDOList, priorityMap, statusMapDTOMap, issueTypeDTOMap));
             } else {
-                issueListDTOPage.setContent(new ArrayList<>());
+                issueListDTOPage = new PageInfo<>();
             }
-            issueListDTOPage.setSize(issueIdPage.getSize());
-            issueListDTOPage.setNumber(issueIdPage.getNumber());
-            issueListDTOPage.setTotalElements(issueIdPage.getTotalElements());
-            issueListDTOPage.setTotalPages(issueIdPage.getTotalPages());
             return issueListDTOPage;
         } else {
-            return new Page<>(new ArrayList<>(), new PageInfo(0, 20), 0);
+            return new PageInfo<>();
         }
     }
 
@@ -1576,9 +1581,10 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public Page<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Boolean onlyActiveSprint, Boolean self, String content, PageRequest pageRequest) {
+    public PageInfo<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Boolean onlyActiveSprint, Boolean self, String content, PageRequest pageRequest) {
         //连表查询需要设置主表别名
-        pageRequest.resetOrder("ai", new HashMap<>());
+        pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), "ai", new HashMap<>()));
+        //pageRequest.resetOrder("ai", new HashMap<>());
         IssueNumDO issueNumDO = null;
         if (self) {
             issueNumDO = issueMapper.queryIssueByIssueNumOrIssueId(projectId, issueId, issueNum);
@@ -1587,20 +1593,15 @@ public class IssueServiceImpl implements IssueService {
             }
         }
         Long activeSprintId = onlyActiveSprint ? getActiveSprintId(projectId) : null;
-        Page<IssueNumDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
-                issueMapper.queryIssueByOption(projectId, issueId, issueNum, activeSprintId, self, content));
+        PageInfo<IssueNumDO> issueDOPage = PageHelper.startPage(pageRequest.getPage(),
+                pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() -> issueMapper.
+                queryIssueByOption(projectId, issueId, issueNum, activeSprintId, self, content));
         if (self && issueNumDO != null) {
-            issueDOPage.getContent().add(0, issueNumDO);
+            issueDOPage.getList().add(0, issueNumDO);
             issueDOPage.setSize(issueDOPage.getSize() + 1);
         }
-        Page<IssueNumDTO> issueListDTOPage = new Page<>();
-        issueListDTOPage.setNumber(issueDOPage.getNumber());
-        issueListDTOPage.setNumberOfElements(issueDOPage.getNumberOfElements());
-        issueListDTOPage.setSize(issueDOPage.getSize());
-        issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
-        issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
-        issueListDTOPage.setContent(issueAssembler.issueNumDoToDto(issueDOPage.getContent(), projectId));
-        return issueListDTOPage;
+
+        return PageUtil.buildPageInfoWithPageInfoList(issueDOPage, issueAssembler.issueNumDoToDto(issueDOPage.getList(), projectId));
     }
 
     @Override
@@ -2055,44 +2056,34 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public Page<IssueListTestDTO> listIssueWithoutSubToTestComponent(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
+    public PageInfo<IssueListTestDTO> listIssueWithoutSubToTestComponent(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
         //连表查询需要设置主表别名
-        pageRequest.resetOrder(SEARCH, new HashMap<>());
-        Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () -> issueMapper.listIssueWithoutSubToTestComponent(projectId, searchDTO.getSearchArgs(),
+        pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), SEARCH, new HashMap<>()));
+        //pageRequest.resetOrder(SEARCH, new HashMap<>());
+        PageInfo<IssueDO> issueDOPage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
+                pageRequest.getSort().toSql()).doSelectPageInfo(() -> issueMapper.listIssueWithoutSubToTestComponent(projectId, searchDTO.getSearchArgs(),
                 searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContents()));
         return handleIssueListTestDoToDto(issueDOPage, organizationId, projectId);
     }
 
-    private Page<IssueListTestDTO> handleIssueListTestDoToDto(Page<IssueDO> issueDOPage, Long organizationId, Long projectId) {
-        Page<IssueListTestDTO> issueListTestDTOSPage = new Page<>();
-        issueListTestDTOSPage.setNumber(issueDOPage.getNumber());
-        issueListTestDTOSPage.setNumberOfElements(issueDOPage.getNumberOfElements());
-        issueListTestDTOSPage.setSize(issueDOPage.getSize());
-        issueListTestDTOSPage.setTotalElements(issueDOPage.getTotalElements());
-        issueListTestDTOSPage.setTotalPages(issueDOPage.getTotalPages());
+    private PageInfo<IssueListTestDTO> handleIssueListTestDoToDto(PageInfo<IssueDO> issueDOPage, Long organizationId, Long projectId) {
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.TEST);
-        issueListTestDTOSPage.setContent(issueAssembler.issueDoToIssueTestListDto(issueDOPage.getContent(), priorityMap, statusMapDTOMap, issueTypeDTOMap));
-        return issueListTestDTOSPage;
+        return PageUtil.buildPageInfoWithPageInfoList(issueDOPage, issueAssembler.issueDoToIssueTestListDto(issueDOPage.getList(), priorityMap, statusMapDTOMap, issueTypeDTOMap));
     }
 
     @Override
-    public Page<IssueListTestWithSprintVersionDTO> listIssueWithLinkedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
-        pageRequest.resetOrder(SEARCH, new HashMap<>());
-        Page<IssueDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
+    public PageInfo<IssueListTestWithSprintVersionDTO> listIssueWithLinkedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
+        pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), SEARCH, new HashMap<>()));
+        //pageRequest.resetOrder(SEARCH, new HashMap<>());
+        PageInfo<IssueDO> issueDOPage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() ->
                 issueMapper.listIssueWithLinkedIssues(projectId, searchDTO.getSearchArgs(),
                         searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContents()));
         return handleILTDTOToILTWSVDTO(projectId, handleIssueListTestDoToDto(issueDOPage, organizationId, projectId));
     }
 
-    private Page<IssueListTestWithSprintVersionDTO> handleILTDTOToILTWSVDTO(Long projectId, Page<IssueListTestDTO> issueListTestDTOSPage) {
-        Page<IssueListTestWithSprintVersionDTO> issueListTestWithSprintVersionDTOPage = new Page<>();
-        issueListTestWithSprintVersionDTOPage.setNumber(issueListTestDTOSPage.getNumber());
-        issueListTestWithSprintVersionDTOPage.setNumberOfElements(issueListTestDTOSPage.getNumberOfElements());
-        issueListTestWithSprintVersionDTOPage.setSize(issueListTestDTOSPage.getSize());
-        issueListTestWithSprintVersionDTOPage.setTotalElements(issueListTestDTOSPage.getTotalElements());
-        issueListTestWithSprintVersionDTOPage.setTotalPages(issueListTestDTOSPage.getTotalPages());
+    private PageInfo<IssueListTestWithSprintVersionDTO> handleILTDTOToILTWSVDTO(Long projectId, PageInfo<IssueListTestDTO> issueListTestDTOSPage) {
 
 //        Map<Long, ProductVersionDataDTO> versionIssueRelDTOMap = productVersionService
 //                .queryVersionByProjectId(projectId).stream().collect(
@@ -2100,12 +2091,11 @@ public class IssueServiceImpl implements IssueService {
 
         Map<Long, SprintDO> sprintDoMap = sprintMapper.getSprintByProjectId(projectId).stream().collect(
                 Collectors.toMap(SprintDO::getSprintId, x -> x));
-        ;
 
         List<IssueListTestWithSprintVersionDTO> issueListTestWithSprintVersionDTOS = new ArrayList<>();
 
-        for (int a = 0; a < issueListTestDTOSPage.size(); a++) {
-            IssueListTestWithSprintVersionDTO issueListTestWithSprintVersionDTO = new IssueListTestWithSprintVersionDTO(issueListTestDTOSPage.get(a));
+        for (int a = 0; a < issueListTestDTOSPage.getSize(); a++) {
+            IssueListTestWithSprintVersionDTO issueListTestWithSprintVersionDTO = new IssueListTestWithSprintVersionDTO(issueListTestDTOSPage.getList().get(a));
 
             List<VersionIssueRelDTO> versionList = new ArrayList<>();
             List<IssueSprintDTO> sprintList = new ArrayList<>();
@@ -2134,8 +2124,7 @@ public class IssueServiceImpl implements IssueService {
 
             issueListTestWithSprintVersionDTOS.add(issueListTestWithSprintVersionDTO);
         }
-        issueListTestWithSprintVersionDTOPage.setContent(issueListTestWithSprintVersionDTOS);
-        return issueListTestWithSprintVersionDTOPage;
+        return PageUtil.buildPageInfoWithPageInfoList(issueListTestDTOSPage, issueListTestWithSprintVersionDTOS);
     }
 
     @Override
@@ -2146,8 +2135,9 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public Page<IssueNumDTO> queryIssueByOptionForAgile(Long projectId, Long issueId, String issueNum, Boolean self, String content, PageRequest pageRequest) {
-        pageRequest.resetOrder("search", new HashMap<>());
+    public PageInfo<IssueNumDTO> queryIssueByOptionForAgile(Long projectId, Long issueId, String issueNum, Boolean self, String content, PageRequest pageRequest) {
+        pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), SEARCH, new HashMap<>()));
+        //pageRequest.resetOrder("search", new HashMap<>());
         IssueNumDO issueNumDO = null;
         if (self) {
             issueNumDO = issueMapper.queryIssueByIssueNumOrIssueId(projectId, issueId, issueNum);
@@ -2155,20 +2145,14 @@ public class IssueServiceImpl implements IssueService {
                 pageRequest.setSize(pageRequest.getSize() - 1);
             }
         }
-        Page<IssueNumDO> issueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
+        PageInfo<IssueNumDO> issueDOPage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
+                pageRequest.getSort().toSql()).doSelectPageInfo(() ->
                 issueMapper.queryIssueByOptionForAgile(projectId, issueId, issueNum, self, content));
         if (self && issueNumDO != null) {
-            issueDOPage.getContent().add(0, issueNumDO);
+            issueDOPage.getList().add(0, issueNumDO);
             issueDOPage.setSize(issueDOPage.getSize() + 1);
         }
-        Page<IssueNumDTO> issueListDTOPage = new Page<>();
-        issueListDTOPage.setNumber(issueDOPage.getNumber());
-        issueListDTOPage.setNumberOfElements(issueDOPage.getNumberOfElements());
-        issueListDTOPage.setSize(issueDOPage.getSize());
-        issueListDTOPage.setTotalElements(issueDOPage.getTotalElements());
-        issueListDTOPage.setTotalPages(issueDOPage.getTotalPages());
-        issueListDTOPage.setContent(issueAssembler.issueNumDoToDto(issueDOPage.getContent(), projectId));
-        return issueListDTOPage;
+        return PageUtil.buildPageInfoWithPageInfoList(issueDOPage, issueAssembler.issueNumDoToDto(issueDOPage.getList(), projectId));
     }
 
     @Override
@@ -2201,23 +2185,18 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public Page<IssueComponentDetailDTO> listIssueWithoutSubDetail(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
+    public PageInfo<IssueComponentDetailDTO> listIssueWithoutSubDetail(Long projectId, SearchDTO searchDTO, PageRequest pageRequest) {
         //连表查询需要设置主表别名
-        pageRequest.resetOrder(SEARCH, new HashMap<>());
-        Page<Long> issueIds = PageHelper.doPageAndSort(pageRequest, () -> issueMapper.listIssueIdsWithoutSubDetail(projectId, searchDTO.getSearchArgs(),
+        pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), SEARCH, new HashMap<>()));
+        //pageRequest.resetOrder(SEARCH, new HashMap<>());
+        PageInfo<Long> issueIds = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
+                pageRequest.getSort().toSql()).doSelectPageInfo(() -> issueMapper.listIssueIdsWithoutSubDetail(projectId, searchDTO.getSearchArgs(),
                 searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContents()));
-        List<IssueComponentDetailDO> issueComponentDetailDOS = new ArrayList<>(issueIds.getContent().size());
-        if (issueIds.getContent() != null && !issueIds.getContent().isEmpty()) {
-            issueComponentDetailDOS.addAll(issueMapper.listIssueWithoutSubDetailByIssueIds(issueIds));
+        List<IssueComponentDetailDO> issueComponentDetailDOS = new ArrayList<>(issueIds.getList().size());
+        if (issueIds.getList() != null && !issueIds.getList().isEmpty()) {
+            issueComponentDetailDOS.addAll(issueMapper.listIssueWithoutSubDetailByIssueIds(issueIds.getList()));
         }
-        Page<IssueComponentDetailDTO> issueComponentDetailDTOPage = new Page<>();
-        issueComponentDetailDTOPage.setNumber(issueIds.getNumber());
-        issueComponentDetailDTOPage.setNumberOfElements(issueIds.getNumberOfElements());
-        issueComponentDetailDTOPage.setSize(issueIds.getSize());
-        issueComponentDetailDTOPage.setTotalElements(issueIds.getTotalElements());
-        issueComponentDetailDTOPage.setTotalPages(issueIds.getTotalPages());
-        issueComponentDetailDTOPage.setContent(issueAssembler.issueComponentDetailDoToDto(projectId, issueComponentDetailDOS));
-        return issueComponentDetailDTOPage;
+        return PageUtil.buildPageInfoWithPageInfoList(issueIds, issueAssembler.issueComponentDetailDoToDto(projectId, issueComponentDetailDOS));
     }
 
 
@@ -2367,18 +2346,12 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public Page<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId, PageRequest pageRequest) {
-        Page<UndistributedIssueDO> undistributedIssueDOPage = PageHelper.doPageAndSort(pageRequest, () ->
+    public PageInfo<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId, PageRequest pageRequest) {
+        PageInfo<UndistributedIssueDO> undistributedIssueDOPage = PageHelper.startPage(pageRequest.getPage(),
+                pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() ->
                 issueMapper.queryUnDistributedIssues(projectId)
         );
-        Page<UndistributedIssueDTO> result = new Page<>();
-        result.setTotalPages(undistributedIssueDOPage.getTotalPages());
-        result.setSize(undistributedIssueDOPage.getSize());
-        result.setContent(issueAssembler.undistributedIssueDOToDto(undistributedIssueDOPage.getContent(), projectId));
-        result.setNumber(undistributedIssueDOPage.getNumber());
-        result.setNumberOfElements(undistributedIssueDOPage.getNumberOfElements());
-        result.setTotalElements(undistributedIssueDOPage.getTotalElements());
-        return result;
+        return PageUtil.buildPageInfoWithPageInfoList(undistributedIssueDOPage, issueAssembler.undistributedIssueDOToDto(undistributedIssueDOPage.getList(), projectId));
     }
 
     @Override
@@ -2521,21 +2494,16 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public Page<FeatureCommonDTO> queryFeatureList(Long programId, Long organizationId, PageRequest pageRequest, SearchDTO searchDTO) {
-        pageRequest.resetOrder("issue_page", new HashMap<>());
-        Page<Long> featureCommonDOPage = PageHelper.doPageAndSort(pageRequest, () ->
+    public PageInfo<FeatureCommonDTO> queryFeatureList(Long programId, Long organizationId, PageRequest pageRequest, SearchDTO searchDTO) {
+        pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), "issue_page", new HashMap<>()));
+        //pageRequest.resetOrder("issue_page", new HashMap<>());
+        PageInfo<Long> featureCommonDOPage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
+                pageRequest.getSort().toSql()).doSelectPageInfo(() ->
                 issueMapper.selectFeatureIdsByPage(programId, searchDTO)
         );
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        Page<FeatureCommonDTO> result = new Page<>();
-        result.setNumberOfElements(featureCommonDOPage.getNumberOfElements());
-        result.setNumber(featureCommonDOPage.getNumber());
-        result.setContent(featureCommonDOPage.getContent() != null && !featureCommonDOPage.getContent().isEmpty() ? featureCommonAssembler.featureCommonDOToDTO(issueMapper.selectFeatureList(programId, featureCommonDOPage.getContent()), statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
-        result.setTotalPages(featureCommonDOPage.getTotalPages());
-        result.setSize(featureCommonDOPage.getSize());
-        result.setTotalElements(featureCommonDOPage.getTotalElements());
-        return result;
+        return PageUtil.buildPageInfoWithPageInfoList(featureCommonDOPage, featureCommonDOPage.getList() != null && !featureCommonDOPage.getList().isEmpty() ? featureCommonAssembler.featureCommonDOToDTO(issueMapper.selectFeatureList(programId, featureCommonDOPage.getList()), statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
     }
 
     @Override

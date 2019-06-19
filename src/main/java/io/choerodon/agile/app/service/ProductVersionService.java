@@ -1,8 +1,8 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.dto.*;
-import io.choerodon.core.domain.Page;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import com.github.pagehelper.PageInfo;
+import io.choerodon.base.domain.PageRequest;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public interface ProductVersionService {
 
     ProductVersionDetailDTO updateVersion(Long projectId, Long versionId, ProductVersionUpdateDTO versionUpdateDTO, List<String> fieldList);
 
-    Page<ProductVersionPageDTO> queryByProjectId(Long projectId, PageRequest pageRequest, SearchDTO searchDTO);
+    PageInfo<ProductVersionPageDTO> queryByProjectId(Long projectId, PageRequest pageRequest, SearchDTO searchDTO);
 
     Boolean repeatName(Long projectId, String name);
 

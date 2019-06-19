@@ -72,7 +72,7 @@ class ObjectSchemeStore {
 
   @action
   updateSchemeDetail(field) {
-    this.schemeDetail.content = this.schemeDetail.content.map((item) => {
+    this.schemeDetail.list = this.schemeDetail.list.map((item) => {
       if (field.id === item.id) {
         return {
           ...item,
@@ -97,7 +97,7 @@ class ObjectSchemeStore {
     `${this.apiGetway}/object_scheme?page=${page}&size=${size}&organizationId=${this.orgId}`, filter,
   ).then((data) => {
     if (data && !data.failed) {
-      this.setObjectScheme(data.content);
+      this.setObjectScheme(data.list);
     } else {
       Choerodon.prompt(data.message);
     }

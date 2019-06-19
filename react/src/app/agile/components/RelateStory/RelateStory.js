@@ -58,7 +58,7 @@ class RelateStory extends Component {
       });
       loadIssues(0, 10, this.filters)
         .then((res) => {
-          const storys = res.content;
+          const storys = res.list;
           if (storys) {
             const { issue } = this.props;
             if (issue.relateIssueId) {
@@ -82,13 +82,13 @@ class RelateStory extends Component {
               } else {
                 this.setState({
                   selectLoading: false,
-                  storys: res.content,
+                  storys: res.list,
                 }, this.setInitValue.bind(this, isInit));
               }
             } else {
               this.setState({
                 selectLoading: false,
-                storys: res.content,
+                storys: res.list,
               });
             }
           }

@@ -1,7 +1,5 @@
 package io.choerodon.agile.domain.service.impl;
 
-import io.choerodon.agile.infra.dataobject.LabelIssueRelDO;
-import io.choerodon.mybatis.service.BaseServiceImpl;
 import io.choerodon.agile.domain.service.*;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.stereotype.Service;
@@ -16,6 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional(rollbackFor = CommonException.class)
-public class ILabelIssueRelServiceImpl extends BaseServiceImpl<LabelIssueRelDO> implements ILabelIssueRelService {
+public class ILabelIssueRelServiceImpl implements ILabelIssueRelService {
 
 }

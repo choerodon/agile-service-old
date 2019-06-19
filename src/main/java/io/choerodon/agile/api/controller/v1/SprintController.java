@@ -5,13 +5,13 @@ import io.choerodon.agile.app.service.TimeZoneWorkCalendarService;
 import io.choerodon.agile.domain.agile.rule.SprintRule;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
-import io.choerodon.core.domain.Page;
+import com.github.pagehelper.PageInfo;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.agile.app.service.SprintService;
-import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.choerodon.mybatis.pagehelper.domain.Sort;
+import io.choerodon.mybatis.annotation.SortDefault;
+import io.choerodon.base.domain.PageRequest;
+import io.choerodon.base.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -165,7 +165,7 @@ public class SprintController {
     @CustomPageRequest
     @ApiOperation(value = "根据状态查已完成冲刺issue信息")
     @GetMapping(value = "/{sprintId}/issues")
-    public ResponseEntity<Page<IssueListDTO>> queryIssueByOptions(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PageInfo<IssueListDTO>> queryIssueByOptions(@ApiParam(value = "项目id", required = true)
                                                                   @PathVariable(name = "project_id") Long projectId,
                                                                   @ApiParam(value = "冲刺id", required = true)
                                                                   @PathVariable Long sprintId,

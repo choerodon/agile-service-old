@@ -19,9 +19,9 @@ import emptyVersion from '../../../../assets/image/emptyVersion.svg';
 import DeleteReleaseWithIssues from '../ReleaseComponent/DeleteReleaseWithIssues';
 import CombineRelease from '../ReleaseComponent/CombineRelease';
 
-const confirm = Modal.confirm;
+const { confirm } = Modal;
 const RadioGroup = Radio.Group;
-const Option = Select.Option;
+const { Option } = Select;
 const { Sidebar } = Modal;
 const { AppState } = stores;
 const COLOR_MAP = {
@@ -67,16 +67,16 @@ class ReleaseHome extends Component {
       loading: true,
     });
     ReleaseStore.axiosGetVersionList({
-      page: pagination.current - 1,
+      page: pagination.current,
       size: pagination.pageSize,
     }).then((data) => {
-      ReleaseStore.setVersionList(data.content);
+      ReleaseStore.setVersionList(data.list);
       this.setState({
         loading: false,
         pagination: {
           current: pagination.current,
           pageSize: pagination.pageSize,
-          total: data.totalElements,
+          total: data.total,
         },
       });
     }).catch((error) => {

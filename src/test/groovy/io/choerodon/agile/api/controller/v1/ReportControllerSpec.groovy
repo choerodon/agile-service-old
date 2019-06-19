@@ -11,7 +11,7 @@ import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.mapper.*
-import io.choerodon.core.domain.Page
+import com.github.pagehelper.PageInfo
 import org.mockito.Matchers
 import org.mockito.Mock
 import org.mockito.Mockito
@@ -262,7 +262,7 @@ class ReportControllerSpec extends Specification {
     def 'queryIssueByOptions'() {
         when: '向根据状态查版本下issue列表的接口发请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/{versionId}/issues?' +
-                'status={status}&type={type}&&organizationId={organizationId}', Page, projectId, versionId, status, type, organizationId)
+                'status={status}&type={type}&&organizationId={organizationId}', PageInfo, projectId, versionId, status, type, organizationId)
 
         then: '接口是否请求成功'
         entity.statusCode.is2xxSuccessful()

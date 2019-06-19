@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.PiValidator;
 import io.choerodon.agile.app.assembler.PiAssembler;
@@ -11,10 +12,7 @@ import io.choerodon.agile.domain.agile.entity.ArtE;
 import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
 import io.choerodon.agile.domain.agile.entity.PiE;
 import io.choerodon.agile.domain.agile.entity.SprintE;
-import io.choerodon.agile.infra.common.utils.ConvertUtil;
-import io.choerodon.agile.infra.common.utils.RankUtil;
-import io.choerodon.agile.infra.common.utils.SendMsgUtil;
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
@@ -25,13 +23,18 @@ import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.infra.repository.PiRepository;
 import io.choerodon.agile.infra.repository.SprintRepository;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.core.domain.Page;
+
+import com.github.pagehelper.PageInfo;
+
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
-import io.choerodon.mybatis.pagehelper.PageHelper;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
+import com.github.pagehelper.PageHelper;
+
+import io.choerodon.base.domain.PageRequest;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -311,19 +314,14 @@ public class PiServiceImpl implements PiService {
     }
 
     @Override
-    public Page<PiDTO> queryArtAll(Long programId, Long artId, PageRequest pageRequest) {
-        Page<PiDO> piDOPage = PageHelper.doPageAndSort(pageRequest, () ->
-                piMapper.selectPiListInArt(programId, artId));
-        Page<PiDTO> dtoPage = new Page<>();
-        dtoPage.setNumber(piDOPage.getNumber());
-        dtoPage.setSize(piDOPage.getSize());
-        dtoPage.setTotalElements(piDOPage.getTotalElements());
-        dtoPage.setTotalPages(piDOPage.getTotalPages());
-        dtoPage.setNumberOfElements(piDOPage.getNumberOfElements());
-        if (piDOPage.getContent() != null && !piDOPage.getContent().isEmpty()) {
-            dtoPage.setContent(ConvertHelper.convertList(piDOPage.getContent(), PiDTO.class));
+    public PageInfo<PiDTO> queryArtAll(Long programId, Long artId, PageRequest pageRequest) {
+        PageInfo<PiDO> piDOPage = PageHelper.startPage(pageRequest.getPage(),
+                pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() -> piMapper.selectPiListInArt(programId, artId));
+        if (piDOPage.getList() != null && !piDOPage.getList().isEmpty()) {
+            return PageUtil.buildPageInfoWithPageInfoList(piDOPage, ConvertHelper.convertList(piDOPage.getList(), PiDTO.class));
+        } else {
+            return new PageInfo<>();
         }
-        return dtoPage;
     }
 
     private void createSprintWhenStartPi(Long programId, Long piId) {
