@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { Content, stores } from '@choerodon/boot';
 import _ from 'lodash';
 import {
-  Form, Modal, Input, Select, 
+  Form, Modal, Input, Select,
 } from 'choerodon-ui';
 import ScrumBoardStore from '../../../../../stores/project/scrumBoard/ScrumBoardStore';
 
@@ -23,18 +23,21 @@ class EditStatus extends Component {
 
   handleEditStatus(e) {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
+    const {
+      form, data, onChangeVisible, refresh,
+    } = this.props;
+    form.validateFields((err, values) => {
       if (!err) {
         const params = {
-          id: this.props.data.id,
-          objectVersionNumber: this.props.data.objectVersionNumber,
+          id: data.id,
+          objectVersionNumber: data.objectVersionNumber,
           name: values.name,
           projectId: AppState.currentMenuType.id,
           categoryCode: values.categoryCode,
         };
-        ScrumBoardStore.axiosUpdateIssueStatus(this.props.data.id, params).then((data) => {
-          this.props.onChangeVisible(false);
-          this.props.refresh();
+        ScrumBoardStore.axiosUpdateIssueStatus(data.id, params).then((res) => {
+          onChangeVisible(false, this.statusInput);
+          refresh();
         }).catch((error) => {
         });
       }
@@ -42,9 +45,10 @@ class EditStatus extends Component {
   }
 
   checkStatusName(rule, value, callback) {
+    const { changeName } = this.state;
     ScrumBoardStore.axiosCheckRepeatName(value).then((res) => {
       if (res) {
-        if (this.state.changeName) {
+        if (changeName) {
           callback('状态名称重复');
         } else {
           callback();
@@ -101,18 +105,23 @@ class EditStatus extends Component {
   }
 
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const {
+      form, visible, onChangeVisible, data,
+    } = this.props;
+    const { changeName } = this.state;
+    const { getFieldDecorator } = form;
     let name;
     for (let index = 0, len = ScrumBoardStore.getBoardList.length; index < len; index += 1) {
       if (ScrumBoardStore.getBoardList[index].boardId === ScrumBoardStore.getSelectedBoard) {
+        // eslint-disable-next-line prefer-destructuring
         name = ScrumBoardStore.getBoardList[index].name;
       }
     }
     return (
       <Sidebar
         title="修改状态"
-        visible={this.props.visible}
-        onCancel={this.props.onChangeVisible.bind(this, false)}
+        visible={visible}
+        onCancel={onChangeVisible.bind(this, false, this.statusInput)}
         onOk={this.handleEditStatus.bind(this)}
         okText="修改"
         cancelText="取消"
@@ -126,7 +135,7 @@ class EditStatus extends Component {
           <Form style={{ width: 512 }}>
             <FormItem>
               {getFieldDecorator('name', {
-                initialValue: this.props.data.name ? this.props.data.name : undefined,
+                initialValue: data.name ? data.name : undefined,
                 rules: [{
                   required: true, message: '状态名称是必填的',
                 }, {
@@ -136,8 +145,9 @@ class EditStatus extends Component {
                 <Input
                   label="状态名称"
                   placeholder="请输入状态名称"
+                  ref={(ref) => { this.statusInput = ref; }}
                   onChange={() => {
-                    if (!this.state.changeName) {
+                    if (!changeName) {
                       this.setState({
                         changeName: true,
                       });
@@ -148,8 +158,8 @@ class EditStatus extends Component {
             </FormItem>
             <FormItem>
               {getFieldDecorator('categoryCode', {
-                initialValue: this.props.data.categoryCode
-                  ? this.props.data.categoryCode : undefined,
+                initialValue: data.categoryCode
+                  ? data.categoryCode : undefined,
                 rules: [{
                   required: true, message: '类别是必填的',
                 }],

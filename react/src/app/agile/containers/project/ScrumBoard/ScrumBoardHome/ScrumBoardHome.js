@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import { observer, inject } from 'mobx-react';
 import {
   Page, Header, Content, stores,
@@ -116,7 +117,7 @@ class ScrumBoardHome extends Component {
         });
       }
     });
-  }
+  };
 
   onQuickSearchChange = (onlyMeChecked = false, onlyStoryChecked = false, moreChecked) => {
     const { quickSearchObj } = this.state;
@@ -128,7 +129,7 @@ class ScrumBoardHome extends Component {
     const { quickSearchObj } = this.state;
     ScrumBoardStore.addAssigneeFilter(value);
     this.refresh(ScrumBoardStore.getBoardList.get(ScrumBoardStore.getSelectedBoard));
-  }
+  };
 
   /**
    *完成冲刺
@@ -282,6 +283,9 @@ class ScrumBoardHome extends Component {
             onClick={() => {
               this.setState({
                 addBoard: true,
+              });
+              setTimeout(() => {
+                this.boardInput.focus();
               });
             }}
           >
@@ -530,10 +534,11 @@ class ScrumBoardHome extends Component {
                     validator: this.checkBoardNameRepeat,
                   }],
                 })(
-                  <Input                   
+                  <Input
                     style={{
                       width: 512,
                     }}
+                    ref={(input) => { this.boardInput = input; }}
                     label="看板名称"
                     maxLength={30}
                   />,
