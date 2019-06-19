@@ -48,5 +48,16 @@
   },
   "author": "",
   "license": "ISC",
+  "lint-staged": {
+    "react/**/*.{js,jsx}": [
+      "npm run lint-staged:es"
+    ],
+    "react/**/*.scss": "stylelint --syntax scss"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "peerDependencies": {}
 }
