@@ -317,7 +317,11 @@ public class PiServiceImpl implements PiService {
     public PageInfo<PiDTO> queryArtAll(Long programId, Long artId, PageRequest pageRequest) {
         PageInfo<PiDO> piDOPage = PageHelper.startPage(pageRequest.getPage(),
                 pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() -> piMapper.selectPiListInArt(programId, artId));
-        return PageUtil.buildPageInfoWithPageInfoList(piDOPage, ConvertHelper.convertList(piDOPage.getList(), PiDTO.class));
+        if (piDOPage.getList() != null && !piDOPage.getList().isEmpty()) {
+            return PageUtil.buildPageInfoWithPageInfoList(piDOPage, ConvertHelper.convertList(piDOPage.getList(), PiDTO.class));
+        } else {
+            return new PageInfo<>();
+        }
     }
 
     private void createSprintWhenStartPi(Long programId, Long piId) {

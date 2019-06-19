@@ -13,7 +13,7 @@ import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.feign.IssueFeignClient
 import io.choerodon.agile.infra.mapper.*
 import io.choerodon.asgard.saga.feign.SagaClient
-import io.choerodon.core.domain.PageInfo
+import com.github.pagehelper.PageInfo
 import io.choerodon.base.domain.PageRequest
 import org.mockito.Matchers
 import org.mockito.Mockito
@@ -437,7 +437,7 @@ class IssueControllerSpec extends Specification {
     def 'queryIssueByOption'() {
         when: '向分页搜索查询issue列表的接口发请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/summary?onlyActiveSprint={onlyActiveSprint}&self={self}' +
-                '&issueId={issueId}&content={content}&PageInfo={PageInfo}&size={size}',
+                '&issueId={issueId}&content={content}&page={page}&size={size}',
                 PageInfo, projectId, false, false, issueIdList[0], "测试", 0, 10)
 
         then: '返回值'
@@ -452,7 +452,7 @@ class IssueControllerSpec extends Specification {
     def 'queryIssueByOptionForAgile'() {
         when: '向分页搜索查询issue列表的接口发请求'
         def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/agile/summary?self={self}' +
-                '&issueId={issueId}&content={content}&PageInfo={PageInfo}&size={size}',
+                '&issueId={issueId}&content={content}&page={page}&size={size}',
                 PageInfo, projectId, false, issueIdList[0], "测试", 0, 10)
 
         then: '返回值'
@@ -1000,7 +1000,7 @@ class IssueControllerSpec extends Specification {
         given:
         PageRequest pageRequest = new PageRequest()
         pageRequest.size = 10
-        pageRequest.PageInfo = 0
+        pageRequest.page = 0
         SearchDTO searchDTO = new SearchDTO()
         Map<String, Object> searchArgsMap = new HashMap<>()
         searchDTO.searchArgs = searchArgsMap

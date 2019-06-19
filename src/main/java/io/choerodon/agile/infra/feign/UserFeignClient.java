@@ -64,7 +64,7 @@ public interface UserFeignClient {
 
     @PostMapping(value = "/v1/projects/{project_id}/role_members/users")
     ResponseEntity<PageInfo<UserDTO>> pagingQueryUsersByRoleIdOnProjectLevel(
-            @RequestParam(name = "PageInfo") int PageInfo,
+            @RequestParam(name = "page") int page,
             @RequestParam(name = "size") int size,
             @RequestParam(name = "role_id") Long roleId,
             @PathVariable(name = "project_id") Long sourceId,
@@ -84,7 +84,7 @@ public interface UserFeignClient {
 
     @PostMapping(value = "/v1/projects/{project_id}/role_members/users/roles")
     ResponseEntity<PageInfo<UserWithRoleDTO>> pagingQueryUsersWithProjectLevelRoles(
-            @RequestParam(name = "PageInfo") int PageInfo,
+            @RequestParam(name = "page") int page,
             @RequestParam(name = "size") int size,
             @PathVariable(name = "project_id") Long sourceId,
             @RequestBody(required = false) @Valid RoleAssignmentSearchDTO roleAssignmentSearchDTO,

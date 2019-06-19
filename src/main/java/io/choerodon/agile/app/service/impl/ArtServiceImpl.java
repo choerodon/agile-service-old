@@ -154,7 +154,11 @@ public class ArtServiceImpl implements ArtService {
     public PageInfo<ArtDTO> queryArtList(Long programId, PageRequest pageRequest) {
         PageInfo<ArtDO> artDOPage = PageHelper.startPage(pageRequest.getPage(),
                 pageRequest.getSize()).doSelectPageInfo(() -> artMapper.selectArtList(programId));
-        return PageUtil.buildPageInfoWithPageInfoList(artDOPage, ConvertHelper.convertList(artDOPage.getList(), ArtDTO.class));
+        if (artDOPage.getList() != null && !artDOPage.getList().isEmpty()) {
+            return PageUtil.buildPageInfoWithPageInfoList(artDOPage, ConvertHelper.convertList(artDOPage.getList(), ArtDTO.class));
+        } else {
+            return new PageInfo<>();
+        }
     }
 
     @Override

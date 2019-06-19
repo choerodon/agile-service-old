@@ -9,7 +9,7 @@ import io.choerodon.agile.infra.dataobject.VersionIssueRelDO
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.ProductVersionMapper
 import io.choerodon.agile.infra.mapper.VersionIssueRelMapper
-import io.choerodon.core.domain.PageInfo
+import com.github.pagehelper.PageInfo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
@@ -388,7 +388,7 @@ class ProductVersionControllerSpec extends Specification {
         HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(searchParamMap)
 
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/versions?PageInfo=0&size=10",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/versions?page=0&size=10",
                 HttpMethod.POST,
                 httpEntity,
                 PageInfo,

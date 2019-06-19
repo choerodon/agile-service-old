@@ -11,7 +11,7 @@ import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.mapper.*
-import io.choerodon.core.domain.PageInfo
+import com.github.pagehelper.PageInfo
 import org.mockito.Matchers
 import org.mockito.Mock
 import org.mockito.Mockito

@@ -27,7 +27,7 @@ import io.choerodon.agile.infra.mapper.IssueSprintRelMapper
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper
 import io.choerodon.agile.infra.mapper.SprintMapper
 import io.choerodon.asgard.saga.feign.SagaClient
-import io.choerodon.core.domain.PageInfo
+import com.github.pagehelper.PageInfo
 import org.mockito.Matchers
 import org.mockito.Mockito
 

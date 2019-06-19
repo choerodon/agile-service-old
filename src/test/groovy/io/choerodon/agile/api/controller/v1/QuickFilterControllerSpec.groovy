@@ -9,7 +9,7 @@ import io.choerodon.agile.api.dto.QuickFilterValueDTO
 import io.choerodon.agile.infra.mapper.QuickFilterFieldMapper
 import io.choerodon.agile.infra.mapper.QuickFilterMapper
 import io.choerodon.core.convertor.ConvertHelper
-import io.choerodon.core.domain.PageInfo
+import com.github.pagehelper.PageInfo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate

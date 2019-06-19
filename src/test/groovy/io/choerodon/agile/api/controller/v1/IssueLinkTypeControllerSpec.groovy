@@ -6,7 +6,7 @@ import io.choerodon.agile.api.dto.IssueLinkTypeDTO
 import io.choerodon.agile.api.dto.IssueLinkTypeSearchDTO
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper
-import io.choerodon.core.domain.PageInfo
+import com.github.pagehelper.PageInfo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
