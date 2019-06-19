@@ -59,9 +59,9 @@ class StoryMapStore {
       };
       this.issueTypes = issueTypes;
       this.prioritys = prioritys;
-      this.initVersionList(versionList);
-      this.setStoryMapData(newStoryMapData);
+      this.initVersionList(versionList);      
       this.initStoryData(newStoryMapData);
+      this.setStoryMapData(newStoryMapData);
       this.setLoading(false);
     });
   }

@@ -1190,6 +1190,7 @@ class CreateIssue extends Component {
                               filter
                               filterOption={false}
                               onFilterChange={this.onIssueSelectFilterChange.bind(this)}
+                              getPopupContainer={triggerNode => triggerNode.parentNode}
                             >
                               {originIssues.map(issue => (
                                 <Option

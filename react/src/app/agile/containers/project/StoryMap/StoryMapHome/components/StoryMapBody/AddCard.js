@@ -16,6 +16,7 @@ class AddCard extends Component {
           background: 'rgba(0,0,0,0.04)',
           borderRadius: 2, 
           cursor: 'pointer',
+          marginLeft: 4,
           ...style,
         }}
         {...otherProps}

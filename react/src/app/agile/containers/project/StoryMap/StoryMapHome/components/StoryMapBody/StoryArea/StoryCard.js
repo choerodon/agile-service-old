@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { Icon } from 'choerodon-ui';
 import { DragSource } from 'react-dnd';
 import { find } from 'lodash';
+import { Link } from 'react-router-dom';
+import { programIssueLink, issueLink, getProjectId } from '../../../../../../../common/utils';
 import { CardWidth, CardHeight, CardMargin } from '../../../Constants';
 import { storyMove } from '../../../../../../../api/StoryMapApi';
 import AutoScroll from '../../../../../../../common/AutoScroll';
@@ -50,11 +52,18 @@ class StoryCard extends Component {
     const {
       story, connectDragSource, index, rowIndex, 
     } = this.props;
+    const { issueId, issueNum, summary } = story;
     return (
       <Card className={`c7nagile-StoryMap-StoryCard ${index === 0 && rowIndex === 0 ? 'minimapCard' : ''}`} saveRef={connectDragSource} onMouseDown={this.handleMouseDown}>
-        <Icon type="close" className="c7nagile-StoryMap-StoryCard-delete" onClick={this.handlRemoveStory} />
+        <Icon type="close" className="c7nagile-StoryMap-StoryCard-delete" onClick={this.handlRemoveStory} />        
         <div className="summary">
-          {story.summary}
+          {issueId && issueNum ? (
+            <Link to={issueLink(issueId, 'story', issueNum)} style={{ marginRight: 5 }} target="_blank">
+          #
+              {issueNum}
+            </Link>
+          ) : null}
+          {summary}
         </div>
       </Card>
     );
