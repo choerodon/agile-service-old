@@ -1,5 +1,6 @@
 package io.choerodon.agile.infra.feign.fallback;
 
+import io.choerodon.agile.api.dto.FieldDataLogDTO;
 import io.choerodon.agile.infra.feign.FoundationFeignClient;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class FoundationFeignClientFallback implements FoundationFeignClient {
     }
 
     @Override
-    public ResponseEntity<Map<String, String>> queryFieldNameMap(Long projectId, Long organizationId, String schemeCode, List<String> fieldCodes) {
-        throw new CommonException("error.foundation.queryFieldNameMap");
+    public ResponseEntity<List<FieldDataLogDTO>> queryDataLogByInstanceId(Long projectId, Long instanceId, String schemeCode) {
+        throw new CommonException("error.foundation.queryDataLogByInstanceId");
     }
 }

@@ -287,13 +287,4 @@ public class FeignConfigure {
         return sagaClient;
     }
 
-    @Bean
-    @Primary
-    FoundationFeignClient foundationFeignClient() {
-        FoundationFeignClient foundationFeignClient = Mockito.mock(FoundationFeignClientFallback.class);
-        Map<String, String> map = new HashMap<>();
-        Mockito.when(foundationFeignClient.queryFieldNameMap(Matchers.anyLong(), Matchers.anyLong(), Matchers.anyString(), Matchers.anyList())).thenReturn(new ResponseEntity<>(map, HttpStatus.OK));
-        return foundationFeignClient;
-    }
-
 }
