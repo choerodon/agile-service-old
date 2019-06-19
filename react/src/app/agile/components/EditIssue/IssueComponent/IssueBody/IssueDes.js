@@ -69,62 +69,66 @@ import { updateIssue } from '../../../../api/NewIssueApi';
     if (!description || editDesShow) {
       return (
         editDesShow && (
-        <div
-          className="line-start mt-10 two-to-one"
-        >
-          <div style={{
-            width: '100%',
-            position: 'absolute',
-            top: 0,
-            bottom: 0, 
-            marginBottom: 25, 
-          }}
+          <div
+            className="line-start mt-10 two-to-one"
           >
-            <WYSIWYGEditor
-              autoFocus
-              bottomBar
-              value={text2Delta(editDes)}
-              style={{
-                height: '100%', width: '100%', 
-              }}      
-              onChange={(value) => {
-                this.setState({ editDes: value });
-              }}
-              handleDelete={() => {
-                this.setState({
-                  editDesShow: false,
-                  editDes: description,
-                });
-              }}
-              handleSave={() => {
-                this.setState({
-                  editDesShow: false,
-                  description: editDes || '',
-                });
-                this.updateIssueDes();
-              }}
-              handleClickOutSide={() => {
-                this.setState({
-                  editDesShow: false,
-                  description: editDes || '',
-                });
-                this.updateIssueDes();
-              }}
-            />
+            <div style={{
+              width: '100%',
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              marginBottom: 25,
+            }}
+            >
+              <WYSIWYGEditor               
+                autoFocus
+                bottomBar
+                value={text2Delta(editDes)}
+                style={{
+                  height: '100%', width: '100%',
+                }}
+                onChange={(value) => {
+                  this.setState({ editDes: value });
+                }}
+                handleDelete={() => {
+                  this.setState({
+                    editDesShow: false,
+                    editDes: description,
+                  });
+                }}
+                handleSave={() => {
+                  this.setState({
+                    editDesShow: false,
+                    description: editDes || '',
+                  });
+                  this.updateIssueDes();
+                }}
+                handleClickOutSide={() => {
+                  this.setState({
+                    editDesShow: false,
+                    description: editDes || '',
+                  });
+                  this.updateIssueDes();
+                }}
+              />
+            </div>
           </div>
-        </div>
         )
       );
     } else {
       const delta = delta2Html(description);
       return (
         <div className="c7n-content-wrapper" style={{ maxHeight: 400, overflow: 'auto' }}>
-          <div
+          {/* <div
             className="mt-10 c7n-description"
             role="none"
-          >
-            <IssueDescription data={delta} />
-          </div>
+          > */}
+          <WYSIWYGEditor
+            mode="read"                
+            value={text2Delta(editDes)}
+            style={{ height: 'auto', width: '100%' }}
+          />
+          {/* </div> */}
         </div>
       );
     }

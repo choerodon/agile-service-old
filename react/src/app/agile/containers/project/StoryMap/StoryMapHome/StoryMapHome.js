@@ -20,6 +20,7 @@ import CreateVersion from './components/CreateVersion';
 import CreateEpicModal from './components/CreateEpicModal';
 import CreateFeatureModal from './components/CreateFeatureModal';
 import StoryMapStore from '../../../../stores/project/StoryMap/StoryMapStore';
+import IsInProgramStore from '../../../../stores/common/program/IsInProgramStore';
 import './StoryMapHome.scss';
 
 function toFullScreen(dom) {
@@ -205,7 +206,7 @@ class StoryMapHome extends Component {
                     用户故事地图是以史诗或特性为基础，根据版本控制进行管理规划，点击
                   <a role="none" onClick={this.handleCreateEpicClick}>创建史诗</a>
                     或
-                  <a role="none" onClick={this.handleCreateFeatureClick}>创建特性</a>
+                  <a role="none" onClick={this.handleCreateFeatureClick} disabled={IsInProgramStore.isInProgram}>创建特性</a>
                     进入用户故事地图。
                 </Fragment>
                 )}
