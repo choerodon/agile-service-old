@@ -110,7 +110,7 @@ const { Text, Edit } = TextEditToggle;
     const { store } = this.props;
     const issue = store.getIssue;
     const {
-      epicColor, epicId, epicName, typeCode,
+      epicColor, epicId, issueEpicName, typeCode,
       featureId, featureName,
     } = issue;
     return (
@@ -192,7 +192,7 @@ const { Text, Edit } = TextEditToggle;
                         display: 'inline-block',
                       }}
                     >
-                      {epicName}
+                      {issueEpicName}
                     </div>
                   ) : (
                     <div>

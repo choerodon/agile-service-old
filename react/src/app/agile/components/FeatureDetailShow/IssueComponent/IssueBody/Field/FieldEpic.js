@@ -60,7 +60,7 @@ const { Text, Edit } = TextEditToggle;
     const { selectLoading, originEpics } = this.state;
     const { store, disabled } = this.props;
     const issue = store.getIssue;
-    const { epicColor, epicId, epicName } = issue;
+    const { epicColor, epicId, issueEpicName } = issue;
     return (
       <div className="line-start mt-10">
         <div className="c7n-property-wrapper">
@@ -91,7 +91,7 @@ const { Text, Edit } = TextEditToggle;
                       display: 'inline-block',
                     }}
                   >
-                    {epicName}
+                    {issueEpicName}
                   </div>
                 ) : (
                   <div>
