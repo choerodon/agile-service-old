@@ -32,9 +32,9 @@ public interface FoundationFeignClient {
     ResponseEntity<Map<String, String>> queryFieldNameMap(@ApiParam(value = "项目id", required = true)
                                                           @PathVariable("project_id") Long projectId,
                                                           @ApiParam(value = "组织id", required = true)
-                                                          @RequestParam Long organizationId,
+                                                          @RequestParam("organizationId") Long organizationId,
                                                           @ApiParam(value = "方案编码", required = true)
-                                                          @RequestParam String schemeCode,
+                                                          @RequestParam("schemeCode") String schemeCode,
                                                           @ApiParam(value = "字段编码列表", required = true)
                                                           @RequestBody List<String> fieldCodes);
 }
