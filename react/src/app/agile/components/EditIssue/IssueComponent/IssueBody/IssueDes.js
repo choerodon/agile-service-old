@@ -119,16 +119,17 @@ import { updateIssue } from '../../../../api/NewIssueApi';
       const delta = delta2Html(description);
       return (
         <div className="c7n-content-wrapper" style={{ maxHeight: 400, overflow: 'auto' }}>
-          {/* <div
+          <div
             className="mt-10 c7n-description"
             role="none"
-          > */}
-          <WYSIWYGEditor
+          >
+            <IssueDescription data={delta} />          
+          </div>
+          {/* <WYSIWYGEditor
             mode="read"                
             value={text2Delta(editDes)}
             style={{ height: 'auto', width: '100%' }}
-          />
-          {/* </div> */}
+          /> */}
         </div>
       );
     }
