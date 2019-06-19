@@ -453,11 +453,10 @@ public class IssueServiceImpl implements IssueService {
             //处理未匹配的筛选
             handleOtherArgs(searchDTO);
             final String searchSql = filterSql;
-            for (Sort.Order order : pageRequest.getSort()) {
-                if (order.getProperty().equals("issueId")) {
-                    (order).setProperty("search.issue_issue_id");
-                }
-            }
+            Map<String, String> order = new HashMap<>(1);
+            order.put("issueId", "search.issue_issue_id");
+            //pageRequest.resetOrder(SEARCH, order);
+            pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), SEARCH, order));
             PageInfo<Long> issueIdPage = PageHelper.startPage(pageRequest.getPage(),
                     pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() -> issueMapper.queryIssueIdsListWithSub
                     (projectId, searchDTO, searchSql, searchDTO.getAssigneeFilterIds()));

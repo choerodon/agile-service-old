@@ -200,8 +200,12 @@ public class ProductVersionServiceImpl implements ProductVersionService {
                 pageRequest.getSize()).doSelectPageInfo(() -> productVersionMapper.
                 queryVersionIdsByProjectId(projectId, searchDTO.getSearchArgs(),
                         searchDTO.getAdvancedSearchArgs(), searchDTO.getContents()));
-        return PageUtil.buildPageInfoWithPageInfoList(versionIds, productVersionPageAssembler.toTargetList(productVersionMapper.
-                queryVersionByIds(projectId, versionIds.getList()), ProductVersionPageDTO.class));
+        if ((versionIds.getList() != null) && !versionIds.getList().isEmpty()) {
+            return PageUtil.buildPageInfoWithPageInfoList(versionIds, productVersionPageAssembler.toTargetList(productVersionMapper.
+                    queryVersionByIds(projectId, versionIds.getList()), ProductVersionPageDTO.class));
+        } else {
+            return new PageInfo<>();
+        }
     }
 
     @Override
