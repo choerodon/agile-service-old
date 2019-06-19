@@ -45,8 +45,6 @@ class ReleaseHome extends Component {
       selectItem: {},
       versionDelInfo: {},
       publicVersion: false,
-      radioChose: null,
-      selectChose: null,
       combineVisible: false,
       loading: false,
       sourceList: [],
@@ -55,7 +53,8 @@ class ReleaseHome extends Component {
   }
 
   componentDidMount() {
-    this.refresh(this.state.pagination);
+    const { pagination } = this.state;
+    this.refresh(pagination);
   }
 
   componentWillUnmount() {
@@ -83,36 +82,8 @@ class ReleaseHome extends Component {
     });
   }
 
-  MyTable = (props) => {
-    if (ReleaseStore.getVersionList.length === 0 && !this.state.loading) {
-      // fixed 会渲染两张表，所以要判断子元素有没有这个属性
-      // 如果有的话禁止渲染，防止 Empty 重复渲染
-      if (!props.children[0].props.fixed) {
-        return (
-          <EmptyBlock
-            style={{ marginTop: 60 }}
-            border
-            pic={pic}
-            title="您还没有为此项目添加任何版本"
-            des="尝试修改您
-            的过滤选项或者在下面创建新的问题"
-          />
-        );
-      } else {
-        return null;
-      }
-    }
-    const renderNarrow = (
-      <div style={props.style} className={props.className}>
-        {props.children[1]}
-        {props.children[2]}
-      </div>
-    );
-    return expand ? renderNarrow : (<table {...props} />);
-  };
-
   handleClickMenu(record, e) {
-    const that = this;
+    const { pagination } = this.state;
     if (e.key.indexOf('0') !== -1) {
       if (record.statusCode === 'version_planning') {
         ReleaseStore.axiosGetPublicVersionDetail(record.versionId)
@@ -126,7 +97,7 @@ class ReleaseHome extends Component {
         ReleaseStore.axiosUnPublicRelease(
           record.versionId,
         ).then((res2) => {
-          this.refresh(this.state.pagination);
+          this.refresh(pagination);
         }).catch((error) => {
         });
       }
@@ -159,13 +130,13 @@ class ReleaseHome extends Component {
       if (record.statusCode === 'archived') {
         // 撤销归档
         ReleaseStore.axiosUnFileVersion(record.versionId).then((res) => {
-          this.refresh(this.state.pagination);
+          this.refresh(pagination);
         }).catch((error) => {
         });
       } else {
         // 归档
         ReleaseStore.axiosFileVersion(record.versionId).then((res) => {
-          this.refresh(this.state.pagination);
+          this.refresh(pagination);
         }).catch((error) => {
         });
       }
@@ -175,9 +146,11 @@ class ReleaseHome extends Component {
   handleChangeTable(pagination, filters, sorter, barFilters) {
     const searchArgs = {};
     if (filters && filters.name && filters.name.length > 0) {
+      // eslint-disable-next-line prefer-destructuring
       searchArgs.name = filters.name[0];
     }
     if (filters && filters.description && filters.description.length > 0) {
+      // eslint-disable-next-line prefer-destructuring
       searchArgs.description = filters.description[0];
     }
     ReleaseStore.setFilters({
@@ -313,7 +286,7 @@ class ReleaseHome extends Component {
       render: text => (
         <Tooltip mouseEnterDelay={0.5} title={`描述：${text}`}>
           <p style={{
-            marginBottom: 0, maxWidth: '120px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', 
+            marginBottom: 0, maxWidth: '120px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
           }}
           >
             {text}
@@ -400,7 +373,7 @@ class ReleaseHome extends Component {
               {'版本合并'}
             </Button>
           </Permission>
-          <Button className="leftBtn2" funcType="flat" onClick={this.refresh.bind(this, this.state.pagination)}>
+          <Button className="leftBtn2" funcType="flat" onClick={this.refresh.bind(this, pagination)}>
             <Icon type="refresh" />
             {'刷新'}
           </Button>
