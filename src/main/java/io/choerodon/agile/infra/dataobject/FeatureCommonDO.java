@@ -44,6 +44,8 @@ public class FeatureCommonDO {
 
     private List<PiNameDO> piNameDOList;
 
+    private Long programId;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -178,5 +180,13 @@ public class FeatureCommonDO {
 
     public void setLastUpdateDate(Date lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public void setProgramId(Long programId) {
+        this.programId = programId;
+    }
+
+    public Long getProgramId() {
+        return programId;
     }
 }
