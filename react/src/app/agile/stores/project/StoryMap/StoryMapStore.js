@@ -46,6 +46,11 @@ class StoryMapStore {
 
   @observable loading = false;
 
+  @action clear() {
+    this.storyMapData = {};
+    this.storyData = {};
+  }
+
   getStoryMap = () => {
     this.setLoading(true);
     Promise.all([getStoryMap(), loadIssueTypes(), loadVersions(), loadPriorities()]).then(([storyMapData, issueTypes, versionList, prioritys]) => {

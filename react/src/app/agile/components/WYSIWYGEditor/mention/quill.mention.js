@@ -1,6 +1,6 @@
 import Quill from 'quill';
 import Keys from './constants/keys';
-import './quill.mention.css';
+import './quill.mention.scss';
 import './blots/mention';
 
 const numberIsNaN = require('./imports/numberisnan.js');

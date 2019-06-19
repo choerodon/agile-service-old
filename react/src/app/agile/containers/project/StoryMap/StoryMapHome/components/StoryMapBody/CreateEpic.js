@@ -46,7 +46,7 @@ class CreateEpic extends Component {
           context: res.typeCode,
           pageCode: 'agile_issue_create',
         };
-        onCreate(res);
+        onCreate({ ...res, epicName: value });
         createIssueField(res.issueId, dto);
       });
     } else {
