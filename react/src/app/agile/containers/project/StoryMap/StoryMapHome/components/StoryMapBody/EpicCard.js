@@ -20,7 +20,7 @@ class EpicCard extends Component {
         }}
       >
         <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          <Tooltip title={`${epicName || '无史诗'}`}>
+          <Tooltip title={`${epicName || '无史诗'}`} getPopupContainer={trigger => trigger.parentNode}>
             {issueId && issueNum ? (
               <Link to={programId ? programIssueLink(issueId, issueNum, programId) : issueLink(issueId, 'story', issueNum)} style={{ marginRight: 5 }} target="_blank">
           #

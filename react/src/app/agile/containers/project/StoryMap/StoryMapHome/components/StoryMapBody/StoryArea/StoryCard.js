@@ -71,7 +71,7 @@ class StoryCard extends Component {
       <Card className={`c7nagile-StoryMap-StoryCard ${index === 0 && rowIndex === 0 ? 'minimapCard' : ''}`} saveRef={this.saveRef} onMouseDown={this.handleMouseDown}>
         <Icon type="close" className="c7nagile-StoryMap-StoryCard-delete" onClick={this.handlRemoveStory} />        
         <div className="summary">
-          <Tooltip title={summary}>
+          <Tooltip title={summary} getPopupContainer={trigger => trigger.parentNode}>
             {issueId && issueNum ? (
               <Link to={issueLink(issueId, 'story', issueNum)} style={{ marginRight: 5 }} target="_blank">
                   #

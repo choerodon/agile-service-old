@@ -19,7 +19,7 @@ class FeatureCard extends Component {
     return (
       <Card className={`c7nagile-StoryMap-FeatureCard minimapCard ${featureType || 'none'}`}>
         <div className="summary">
-          <Tooltip title={`${summary || '无特性'}`}>
+          <Tooltip title={`${summary || '无特性'}`} getPopupContainer={trigger => trigger.parentNode}>
             {issueId && issueNum ? (
               <Link to={programId ? programIssueLink(issueId, issueNum, programId) : issueLink(issueId, 'story', issueNum)} style={{ marginRight: 5 }} target="_blank">
           #
