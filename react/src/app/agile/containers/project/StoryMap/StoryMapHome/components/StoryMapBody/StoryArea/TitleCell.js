@@ -58,6 +58,8 @@ class TitleCell extends Component {
     return (
       <Cell style={{
         borderRight: 'none',
+        borderBottom: storyCollapse ? '1px solid #D8D8D8' : 'none',
+        padding: '10px 0',
         ...collapse ? { borderLeft: '1px solid #D8D8D8', borderBottom: 'none', borderTop: 'none' } : {},
         ...showTitle ? {
           position: 'sticky',
@@ -68,9 +70,7 @@ class TitleCell extends Component {
         // 最后一列或下一个展示版本或折叠
         ...isLastColumn || nextShowTitle || collapse ? {
           borderRight: '1px solid #D8D8D8',
-        } : {},       
-        borderBottom: 'none',
-        padding: '10px 0',
+        } : {},      
       }}
       >
         {collapse ? null : (
