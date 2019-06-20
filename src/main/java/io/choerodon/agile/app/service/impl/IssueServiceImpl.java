@@ -2348,7 +2348,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public PageInfo<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId, PageRequest pageRequest) {
         PageInfo<UndistributedIssueDO> undistributedIssueDOPage = PageHelper.startPage(pageRequest.getPage(),
-                pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() ->
+                pageRequest.getSize()).doSelectPageInfo(() ->
                 issueMapper.queryUnDistributedIssues(projectId)
         );
         return PageUtil.buildPageInfoWithPageInfoList(undistributedIssueDOPage, issueAssembler.undistributedIssueDOToDto(undistributedIssueDOPage.getList(), projectId));
