@@ -119,7 +119,7 @@ class StoryMapStore {
   }
 
   @action initVersionList(versionList) {
-    this.versionList = versionList.reverse().concat([{
+    this.versionList = versionList.concat([{
       versionId: 'none',
       name: '未计划部分',
     }]).map((version) => {

@@ -89,7 +89,7 @@ class StoryCell extends Component {
       <Cell style={{ ...collapse ? { borderBottom: isLastRow ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {} }}>
         {collapse ? null : (
           <div style={{ 
-            minHeight: ColumnMinHeight, height: '100%', display: 'flex', flexDirection: 'column', 
+            height: '100%', display: 'flex', flexDirection: 'column', 
           }}
           >
             {swimLine !== 'none' && (
