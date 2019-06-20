@@ -14,43 +14,6 @@ class StoryCell extends Component {
     StoryMapStore.setCreateModalVisible(true);
   }
 
-  renderTitle = (storyCollapse) => {
-    const { swimLine, isFullScreen } = StoryMapStore;
-    const { version } = this.props;
-
-    switch (swimLine) {
-      case 'none': {
-        return null;
-      }
-      case 'version': {
-        return (
-          <div className="c7nagile-StoryMap-StoryCell-title">
-            <Icon
-              style={{ marginRight: 15 }}
-              type={storyCollapse ? 'expand_less' : 'expand_more'}
-              onClick={() => {
-                StoryMapStore.collapseStory(version.versionId);
-              }}
-            />
-            {version.name}
-            {version.versionId === 'none' && !isFullScreen && (
-              <Tooltip title="创建版本">
-                <Button
-                  className="c7nagile-StoryMap-StoryCell-title-createBtn" 
-                  type="primary"
-                  icon="playlist_add"
-                  onClick={this.handleCreateVersionClick}
-                  shape="circle"
-                />
-              </Tooltip>
-            )}
-          </div>
-        );
-      }
-      default: return null;
-    }
-  }
-
   getStorys = (targetFeature) => {
     const { swimLine } = StoryMapStore;
     const { version } = this.props;
@@ -71,47 +34,44 @@ class StoryCell extends Component {
 
   render() {
     const {
-      epic, otherData, showTitle, version, storyCollapse, isLastRow, isLastColumn, epicIndex,
+      epic, otherData, storyCollapse, isLastRow, isLastColumn, epicIndex,
     } = this.props;
-    const { storyData, swimLine } = StoryMapStore;
+    const { storyData } = StoryMapStore;
     const { issueId: epicId, featureCommonDOList, adding } = epic;
     const targetEpic = storyData[epicId];
     const { collapse } = otherData || {};
-    let epicStorys = [];
-    if (targetEpic && targetEpic.feature && targetEpic.feature.none) {
-      epicStorys = targetEpic.feature.none.storys;
-    }
+    // let epicStorys = [];
+    // if (targetEpic && targetEpic.feature && targetEpic.feature.none) {
+    //   epicStorys = targetEpic.feature.none.storys;
+    // }
     // const featureList = epicStorys.length > 0 ? featureCommonDOList.concat([{ issueId: 'none' }]) : featureCommonDOList;
     // 没有史诗不显示直接关联史诗的列
     const featureList = epicId === 0 ? featureCommonDOList : featureCommonDOList.concat([{ issueId: 'none' }]);
 
     return (
-      <Cell style={{ ...collapse ? { borderBottom: isLastRow ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {} }}>
-        {collapse ? null : (
-          <div style={{ 
-            height: '100%', display: 'flex', flexDirection: 'column', 
-          }}
-          >
-            {swimLine !== 'none' && (
-              <div style={{ textAlign: 'left', marginLeft: -20, height: 30 }}>
-                {showTitle && this.renderTitle(storyCollapse)}
+      !storyCollapse && (
+        <Cell style={{ ...collapse ? { borderBottom: isLastRow ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {} }}>
+          {collapse ? null : (
+            <div style={{
+              minHeight: ColumnMinHeight, height: '100%', display: 'flex', flexDirection: 'column',
+            }}
+            >
+              <div style={{ display: 'flex', flex: 1 }}>
+                {
+                  adding ? null : (
+                    <Fragment>
+                      {featureList.filter(feature => !feature.adding).map((feature, index) => {
+                        const targetFeature = targetEpic.feature[feature.issueId] || {};
+                        return targetFeature && <StoryColumn feature={feature} featureIndex={index} isLast={isLastColumn && index === featureList.length - 1} storys={this.getStorys(targetFeature)} width={targetFeature.width} {...this.props} />;
+                      })}
+                    </Fragment>
+                  )
+                }
               </div>
-            )}
-            <div style={{ display: 'flex', flex: 1 }}>
-              {
-                adding ? null : (
-                  <Fragment>
-                    {storyCollapse ? null : featureList.filter(feature => !feature.adding).map((feature, index) => {
-                      const targetFeature = targetEpic.feature[feature.issueId] || {};
-                      return targetFeature && <StoryColumn feature={feature} featureIndex={index} isLast={isLastColumn && index === featureList.length - 1} storys={this.getStorys(targetFeature)} width={targetFeature.width} {...this.props} />;
-                    })}
-                  </Fragment>
-                )
-              }
             </div>
-          </div>
-        )}
-      </Cell>
+          )}
+        </Cell>
+      )
     );
   }
 }
