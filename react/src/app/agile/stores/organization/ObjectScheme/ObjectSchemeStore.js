@@ -72,7 +72,7 @@ class ObjectSchemeStore {
 
   @action
   updateSchemeDetail(field) {
-    this.schemeDetail.list = this.schemeDetail.list.map((item) => {
+    this.schemeDetail.content = this.schemeDetail.content.map((item) => {
       if (field.id === item.id) {
         return {
           ...item,
