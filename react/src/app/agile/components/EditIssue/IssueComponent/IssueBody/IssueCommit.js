@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Icon, Button } from 'choerodon-ui';
+import { Icon, Button, Tooltip } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import WYSIWYGEditor from '../../../WYSIWYGEditor';
 import Comment from '../../Component/Comment';
@@ -110,9 +110,11 @@ import { createCommit } from '../../../../api/NewIssueApi';
           }}
           />
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
-            <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ addCommit: true })}>
-              <Icon type="playlist_add icon" />
-            </Button>
+            <Tooltip title="添加评论" getPopupContainer={triggerNode => triggerNode.parentNode}>
+              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ addCommit: true })}>
+                <Icon type="playlist_add icon" />
+              </Button>
+            </Tooltip>
           </div>
         </div>
         {this.renderCommits()}

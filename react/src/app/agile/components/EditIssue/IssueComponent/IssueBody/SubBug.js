@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Button, Icon } from 'choerodon-ui';
+import { Button, Icon, Tooltip } from 'choerodon-ui';
 import { injectIntl } from 'react-intl';
 import CreateSubBug from '../../../CreateSubBug';
 import IssueList from '../../Component/IssueList';
@@ -87,9 +87,11 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
           }}
           />
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
-            <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateSubBugShow(true)}>
-              <Icon type="playlist_add icon" />
-            </Button>
+            <Tooltip title="创建缺陷" getPopupContainer={triggerNode => triggerNode.parentNode}>
+              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateSubBugShow(true)}>
+                <Icon type="playlist_add icon" />
+              </Button>
+            </Tooltip>
           </div>
         </div>
         {this.renderSubIssues()}

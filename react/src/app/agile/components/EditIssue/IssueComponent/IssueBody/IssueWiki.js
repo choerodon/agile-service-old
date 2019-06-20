@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Icon, Button } from 'choerodon-ui';
+import { Icon, Button, Tooltip } from 'choerodon-ui';
 import { injectIntl } from 'react-intl';
 import { deleteWiki, loadWikies } from '../../../../api/NewIssueApi';
 import Wiki from '../../../Wiki';
@@ -74,9 +74,11 @@ import WikiItem from '../../Component/WikiItem';
           }}
           />
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
-            <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ addWikiShow: true })}>
-              <Icon type="playlist_add icon" />
-            </Button>
+            <Tooltip title="添加文档" getPopupContainer={triggerNode => triggerNode.parentNode}>
+              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ addWikiShow: true })}>
+                <Icon type="playlist_add icon" />
+              </Button>
+            </Tooltip>
           </div>
         </div>
         {this.renderWiki()}

@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Upload, Button, Icon } from 'choerodon-ui';
+import {
+  Upload, Button, Icon, Tooltip, 
+} from 'choerodon-ui';
 import { deleteFile } from '../../api/FileApi';
 
 class UploadButtonNow extends React.Component {
@@ -75,9 +77,11 @@ class UploadButtonNow extends React.Component {
         fileList={fileList}
         className="upload-button"
       >
-        <Button style={{ padding: '0 6px' }}>
-          <Icon type="file_upload" />
-        </Button>
+        <Tooltip title="上传附件" getPopupContainer={triggerNode => triggerNode.parentNode}>
+          <Button style={{ padding: '0 6px' }}>
+            <Icon type="file_upload" />
+          </Button>
+        </Tooltip>
       </Upload>
     );
   }

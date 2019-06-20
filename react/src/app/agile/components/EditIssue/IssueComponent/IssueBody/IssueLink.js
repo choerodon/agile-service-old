@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Icon, Button } from 'choerodon-ui';
+import { Icon, Button, Tooltip } from 'choerodon-ui';
 import _ from 'lodash';
 import { injectIntl } from 'react-intl';
 import CreateLinkTask from '../../../CreateLinkTask';
@@ -87,9 +87,11 @@ import LinkList from '../../Component/LinkList';
           }}
           />
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
-            <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ createLinkTaskShow: true })}>
-              <Icon type="playlist_add icon" />
-            </Button>
+            <Tooltip title="创建链接" getPopupContainer={triggerNode => triggerNode.parentNode}>
+              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ createLinkTaskShow: true })}>
+                <Icon type="playlist_add icon" />
+              </Button>
+            </Tooltip>
           </div>
         </div>
         {this.renderLinkIssues()}

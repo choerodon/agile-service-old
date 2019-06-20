@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Icon, Button } from 'choerodon-ui';
+import { Icon, Button, Tooltip } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import DailyLog from '../../../DailyLog';
 import Log from '../../Component/Log';
@@ -55,9 +55,11 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
           }}
           />
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
-            <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setWorkLogShow(true)}>
-              <Icon type="playlist_add icon" />
-            </Button>
+            <Tooltip title="登记工作" getPopupContainer={triggerNode => triggerNode.parentNode}>
+              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setWorkLogShow(true)}>
+                <Icon type="playlist_add icon" />
+              </Button>
+            </Tooltip>
           </div>
         </div>
         {this.renderLogs()}
