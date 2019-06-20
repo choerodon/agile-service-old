@@ -2036,7 +2036,7 @@
         )search where 1=1
         <if test='searchArgs != null'>
             <if test='searchArgs.issueNum != null and searchArgs.issueNum != ""'>
-                AND position(#{searchArgs.issueNum} IN search.issue_num)
+                AND search.issue_num LIKE CONCAT(CONCAT('%' ,#{searchArgs.issueNum}) ,'%')
             </if>
         </if>
         <if test='contents != null and contents.size != 0'>
@@ -2149,7 +2149,7 @@
         )search where 1=1
         <if test='searchArgs != null'>
             <if test='searchArgs.issueNum != null and searchArgs.issueNum != ""'>
-                AND position(#{searchArgs.issueNum} IN search.issue_num)
+                AND search.issue_num LIKE CONCAT(CONCAT('%' ,#{searchArgs.issueNum}) ,'%')
             </if>
         </if>
         <if test='contents != null and contents.size != 0'>
@@ -2256,7 +2256,7 @@
         )search where 1=1
         <if test='searchArgs != null'>
             <if test='searchArgs.issueNum != null and searchArgs.issueNum != ""'>
-                AND position(#{searchArgs.issueNum} IN search.issue_num)
+                AND search.issue_num LIKE CONCAT(CONCAT('%' ,#{searchArgs.issueNum}) ,'%')
             </if>
         </if>
         <if test='contents != null and contents.size != 0'>
@@ -2785,7 +2785,7 @@
         )search where 1=1
         <if test='otherArgs != null'>
             <if test='otherArgs.issueNum != null and otherArgs.issueNum != ""'>
-                AND position(#{otherArgs.issueNum} IN search.issue_num)
+                AND search.issue_num LIKE CONCAT(CONCAT('%' ,#{otherArgs.issueNum}) ,'%')
             </if>
         </if>
         <if test='contents != null and contents.size != 0'>
@@ -3448,7 +3448,7 @@
         </if>) issue_page where 1=1
         <if test='searchDTO.searchArgs != null'>
             <if test='searchDTO.searchArgs.issueNum != null and searchDTO.searchArgs.issueNum != ""'>
-                AND position(#{searchDTO.searchArgs.issueNum} IN issue_page.issue_num)
+                AND issue_page.issue_num LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.issueNum}) ,'%')
             </if>
         </if>
         <if test='searchDTO.contents != null and searchDTO.contents.size != 0'>
