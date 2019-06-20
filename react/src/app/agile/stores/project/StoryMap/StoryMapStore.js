@@ -57,10 +57,10 @@ class StoryMapStore {
       const { epicWithFeature, featureWithoutEpic } = storyMapData;
       const newStoryMapData = {
         ...storyMapData, 
-        epicWithFeature: epicWithFeature.concat({
+        epicWithFeature: featureWithoutEpic.length > 0 ? epicWithFeature.concat({
           issueId: 0,
           featureCommonDOList: featureWithoutEpic,
-        }),
+        }) : epicWithFeature,
       };
       this.issueTypes = issueTypes;
       this.prioritys = prioritys;
@@ -169,13 +169,13 @@ class StoryMapStore {
         epicId,
         collapse: this.storyData[epicId] ? this.storyData[epicId].collapse : false,
         storys: [],
-        feature: {
+        feature: epicId ? { // 无史诗不显示无特性
           none: {
             storys: [],
             version: this.getInitVersions(),
             width: epicWithWidth ? epicWithWidth.width : 1,
           },
-        },
+        } : {},
       };
       const targetFeature = storyData[epicId].feature;
       epic.featureCommonDOList.forEach((feature) => {
