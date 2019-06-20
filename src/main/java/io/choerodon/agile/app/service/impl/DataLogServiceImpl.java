@@ -72,7 +72,7 @@ public class DataLogServiceImpl implements DataLogService {
             dataLogDTOS.add(dataLogDTO);
         }
         fillUserAndStatus(projectId, dataLogDTOS);
-        return dataLogDTOS.stream().sorted(Comparator.comparing(DataLogDTO::getCreationDate)).collect(Collectors.toList());
+        return dataLogDTOS.stream().sorted(Comparator.comparing(DataLogDTO::getCreationDate).reversed()).collect(Collectors.toList());
     }
 
     /**
