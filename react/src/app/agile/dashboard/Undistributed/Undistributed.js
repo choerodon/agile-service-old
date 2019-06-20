@@ -44,14 +44,14 @@ class Undistributed extends Component {
     axios.get(`/agile/v1/projects/${projectId}/issues/undistributed?size=${pageSize}&page=${current - 1}`)
       .then((res) => {
         const {
-          content, totalElements, number, size,
+          list, total, pageNum,
         } = res;
         this.setState({
-          issues: content,
+          issues: list,
           pagination: {
-            current: number + 1,
-            total: totalElements,
-            pageSize: size,
+            current: pageNum,
+            total,
+            pageSize: res.pageSize,
           },
           loading: false,
         });
@@ -138,10 +138,10 @@ class Undistributed extends Component {
     return (
       <div className="c7n-agile-dashboard-undistributed">
         {this.renderContent()}
-   
+
         <div style={{ textAlign: 'right', paddingRight: 15 }}>
           <Pagination
-            hideOnSinglePage 
+            hideOnSinglePage
             showSizeChanger={false}
             total={total}
             current={current}
