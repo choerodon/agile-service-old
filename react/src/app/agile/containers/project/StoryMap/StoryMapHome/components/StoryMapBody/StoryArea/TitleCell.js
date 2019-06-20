@@ -51,7 +51,7 @@ class TitleCell extends Component {
 
   render() {
     const {
-      otherData, showTitle, nextShowTitle, storyCollapse, isLastColumn,
+      otherData, showTitle, nextShowTitle, storyCollapse, isLastColumn, isLastRow,
     } = this.props;
     const { collapse } = otherData || {};
 
@@ -60,7 +60,7 @@ class TitleCell extends Component {
         borderRight: 'none',
         borderBottom: storyCollapse ? '1px solid #D8D8D8' : 'none',
         padding: '10px 0',
-        ...collapse ? { borderLeft: '1px solid #D8D8D8', borderBottom: 'none', borderTop: 'none' } : {},
+        ...collapse ? { borderLeft: '1px solid #D8D8D8', borderBottom: isLastRow && storyCollapse ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {},
         ...showTitle ? {
           position: 'sticky',
           zIndex: 5,
