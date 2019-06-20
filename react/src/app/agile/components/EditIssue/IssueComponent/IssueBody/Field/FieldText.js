@@ -111,6 +111,7 @@ const { TextArea } = Input;
               <TextArea
                 style={{ minWidth: 200 }}
                 autosize
+                autoFocus
                 maxLength={feature ? 100 : 44}
                 size="small"
                 onChange={(e) => {

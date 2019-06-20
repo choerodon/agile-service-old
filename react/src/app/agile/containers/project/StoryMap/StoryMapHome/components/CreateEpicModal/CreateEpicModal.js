@@ -19,6 +19,15 @@ class CreateEpicModal extends Component {
     };
   }
 
+  componentDidUpdate(prevProps) {
+    // eslint-disable-next-line react/destructuring-assignment
+    if (this.props.visible && !prevProps.visible) {
+      setTimeout(() => {
+        this.input.focus();
+      });   
+    }
+  }
+
   handleCreateEpic =(e) => {
     const {
       form, onOk, epicType, defaultPriority, 
@@ -114,7 +123,7 @@ class CreateEpicModal extends Component {
                   validator: this.checkEpicNameRepeat,
                 }],
               })(
-                <Input label="史诗名称" maxLength={20} />,
+                <Input ref={(input) => { this.input = input; }} label="史诗名称" maxLength={20} />,
               )}
             </FormItem>
             <FormItem>

@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 import { Link } from 'react-router-dom';
-import { programIssueLink, issueLink, getProjectId } from '../../../../../../../common/utils';
+import { Tooltip } from 'choerodon-ui';
+import { programIssueLink, issueLink } from '../../../../../../../common/utils';
 import Card from '../Card';
 import './FeatureCard.scss';
 
@@ -18,13 +19,15 @@ class FeatureCard extends Component {
     return (
       <Card className={`c7nagile-StoryMap-FeatureCard minimapCard ${featureType || 'none'}`}>
         <div className="summary">
-          {issueId && issueNum ? (
-            <Link to={programId ? programIssueLink(issueId, issueNum, programId) : issueLink(issueId, 'story', issueNum)} style={{ marginRight: 5 }} target="_blank">
+          <Tooltip title={`${summary || '无特性'}`}>
+            {issueId && issueNum ? (
+              <Link to={programId ? programIssueLink(issueId, issueNum, programId) : issueLink(issueId, 'story', issueNum)} style={{ marginRight: 5 }} target="_blank">
           #
-              {issueNum}
-            </Link>
-          ) : null}
-          {summary || '无特性'}
+                {issueNum}
+              </Link>
+            ) : null}
+            {summary || '无特性'}
+          </Tooltip>
         </div>        
       </Card>
     );

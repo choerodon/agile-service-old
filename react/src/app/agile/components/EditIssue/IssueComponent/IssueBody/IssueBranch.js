@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import TimeAgo from 'timeago-react';
-import { Button, Icon, Popover } from 'choerodon-ui';
+import {
+  Button, Icon, Popover, Tooltip, 
+} from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import CreateBranch from '../../../CreateBranch';
 import Commits from '../../../Commits';
@@ -169,9 +171,11 @@ const STATUS_SHOW = {
           }}
           />
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
-            <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateBranchShow(true)}>
-              <Icon type="playlist_add icon" />
-            </Button>
+            <Tooltip title="创建分支" getPopupContainer={triggerNode => triggerNode.parentNode}>
+              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateBranchShow(true)}>
+                <Icon type="playlist_add icon" />
+              </Button>
+            </Tooltip>
           </div>
         </div>
         {this.renderBranchs()}

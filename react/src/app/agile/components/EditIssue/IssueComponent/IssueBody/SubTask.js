@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import {
-  Button, Icon, Progress, Input,
+  Button, Icon, Progress, Input, Tooltip,
 } from 'choerodon-ui';
 import { stores } from '@choerodon/boot';
 import { injectIntl } from 'react-intl';
@@ -161,9 +161,11 @@ const { AppState } = stores;
           }}
           />
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
-            <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateSubTaskShow(true)}>
-              <Icon type="playlist_add icon" />
-            </Button>
+            <Tooltip title="创建子任务" getPopupContainer={triggerNode => triggerNode.parentNode}>
+              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateSubTaskShow(true)}>
+                <Icon type="playlist_add icon" />
+              </Button>
+            </Tooltip>
           </div>
         </div>
         {subIssueDTOList && subIssueDTOList.length

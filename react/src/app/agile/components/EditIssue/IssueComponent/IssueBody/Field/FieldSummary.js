@@ -95,6 +95,7 @@ const { TextArea } = Input;
             <Edit>
               <TextArea
                 autosize
+                autoFocus
                 maxLength="44"
                 size="small"
                 onChange={(e) => {

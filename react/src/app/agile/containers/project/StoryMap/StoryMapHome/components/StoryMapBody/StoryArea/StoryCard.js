@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from 'choerodon-ui';
+import { Icon, Tooltip } from 'choerodon-ui';
 import { DragSource } from 'react-dnd';
 import { find } from 'lodash';
 import { Link } from 'react-router-dom';
@@ -24,6 +24,20 @@ class StoryCard extends Component {
       },
       type: 'drag',
     });
+  }
+
+  setZIndex=() => {
+    this.container.style.zIndex = 9999;   
+  }
+
+  resetZIndex=() => {
+    this.container.style.zIndex = 'unset';   
+  }
+
+  saveRef=(ref) => {
+    const { connectDragSource } = this.props;
+    connectDragSource(ref);
+    this.container = ref;
   }
 
   handleMouseDown = (e) => {
@@ -54,16 +68,18 @@ class StoryCard extends Component {
     } = this.props;
     const { issueId, issueNum, summary } = story;
     return (
-      <Card className={`c7nagile-StoryMap-StoryCard ${index === 0 && rowIndex === 0 ? 'minimapCard' : ''}`} saveRef={connectDragSource} onMouseDown={this.handleMouseDown}>
+      <Card className={`c7nagile-StoryMap-StoryCard ${index === 0 && rowIndex === 0 ? 'minimapCard' : ''}`} saveRef={this.saveRef} onMouseDown={this.handleMouseDown}>
         <Icon type="close" className="c7nagile-StoryMap-StoryCard-delete" onClick={this.handlRemoveStory} />        
         <div className="summary">
-          {issueId && issueNum ? (
-            <Link to={issueLink(issueId, 'story', issueNum)} style={{ marginRight: 5 }} target="_blank">
-          #
-              {issueNum}
-            </Link>
-          ) : null}
-          {summary}
+          <Tooltip title={summary}>
+            {issueId && issueNum ? (
+              <Link to={issueLink(issueId, 'story', issueNum)} style={{ marginRight: 5 }} target="_blank">
+                  #
+                {issueNum}
+              </Link>
+            ) : null}
+            {summary}
+          </Tooltip>       
         </div>
       </Card>
     );
@@ -77,7 +93,16 @@ StoryCard.propTypes = {
 export default DragSource(
   'story',
   {
-    beginDrag: props => ({ story: props.story, version: props.version }),
+    beginDrag: (props, monitor, component) => {
+      if (component && component.resetZIndex) {
+        component.setZIndex();
+        setTimeout(() => {
+          component.resetZIndex();
+        });
+      }
+      
+      return { story: props.story, version: props.version };
+    },
     endDrag(props, monitor) {
       const item = monitor.getItem();
       const dropResult = monitor.getDropResult();

@@ -291,8 +291,7 @@ public class FeignConfigure {
     @Primary
     FoundationFeignClient foundationFeignClient() {
         FoundationFeignClient foundationFeignClient = Mockito.mock(FoundationFeignClientFallback.class);
-        Map<String, String> map = new HashMap<>();
-        Mockito.when(foundationFeignClient.queryFieldNameMap(Matchers.anyLong(), Matchers.anyLong(), Matchers.anyString(), Matchers.anyList())).thenReturn(new ResponseEntity<>(map, HttpStatus.OK));
+        Mockito.when(foundationFeignClient.queryDataLogByInstanceId(Matchers.anyLong(), Matchers.anyLong(), Matchers.anyString())).thenReturn(new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK));
         return foundationFeignClient;
     }
 

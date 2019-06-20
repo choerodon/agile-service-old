@@ -26,6 +26,8 @@ class EditBoardName extends Component {
 
   componentDidMount() {
     const initialBoardName = ScrumBoardStore.getBoardList.get(ScrumBoardStore.getSelectedBoard).name;
+    const { saveRef } = this.props;
+    saveRef(this.boardName);
     this.setState({
       initialBoardName,
       lastBoardName: initialBoardName,
@@ -120,6 +122,7 @@ class EditBoardName extends Component {
                     })(
                       <Input
                         label="看板名称"
+                        ref={(ref) => { this.boardName = ref; }}
                         maxLength={10}
                       />,
                     )}

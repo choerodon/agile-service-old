@@ -5,7 +5,7 @@ import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ImageDrop from './ImageDrop';
 import Link from './Link';
-import mention from './mention';
+// import mention from './mention';
 import './WYSIWYGEditor.scss';
 import cls from '../CommonComponent/ClickOutSide';
 
@@ -20,38 +20,38 @@ const hashValues = [
 ];
 Quill.register('modules/imageDrop', ImageDrop);
 Quill.register('formats/link', Link);
-Quill.register('modules/mention', mention);
+// Quill.register('modules/mention', mention);
 const modules = {
   toolbar: [
     ['bold', 'italic', 'underline', 'strike', 'blockquote'],
     [{ list: 'ordered' }, { list: 'bullet' }, 'image', 'link', { color: [] }],
   ],
-  mention: {
-    allowedChars: /^[A-Za-z\s\u4e00-\u9fa5]*$/,
-    mentionDenotationChars: ['@', '#'],
-    source(searchTerm, renderList, mentionChar) {
-      let values;
+  // mention: {
+  //   allowedChars: /^[A-Za-z\s\u4e00-\u9fa5]*$/,
+  //   mentionDenotationChars: ['@', '#'],
+  //   source(searchTerm, renderList, mentionChar) {
+  //     let values;
 
-      if (mentionChar === '@') {
-        values = atValues;
-      } else {
-        values = hashValues;
-      }
+  //     if (mentionChar === '@') {
+  //       values = atValues;
+  //     } else {
+  //       values = hashValues;
+  //     }
 
-      if (searchTerm.length === 0) {
-        renderList(values, searchTerm);
-      } else {
-        const matches = [];
-        for (let i = 0; i < values.length; i += 1) {
-          // eslint-disable-next-line no-bitwise
-          if (~values[i].value.toLowerCase().indexOf(searchTerm.toLowerCase())) {
-            matches.push(values[i]);
-          }
-        }
-        renderList(matches, searchTerm);
-      }
-    },
-  },
+  //     if (searchTerm.length === 0) {
+  //       renderList(values, searchTerm);
+  //     } else {
+  //       const matches = [];
+  //       for (let i = 0; i < values.length; i += 1) {
+  //         // eslint-disable-next-line no-bitwise
+  //         if (~values[i].value.toLowerCase().indexOf(searchTerm.toLowerCase())) {
+  //           matches.push(values[i]);
+  //         }
+  //       }
+  //       renderList(matches, searchTerm);
+  //     }
+  //   },
+  // },
   imageDrop: true,
 };
 // "[{"insert":{"mention":{"index":"0","denotationChar":"@","id":"1","value":"Fredrik Sundqvist"}}},{"insert":" \n"}]"

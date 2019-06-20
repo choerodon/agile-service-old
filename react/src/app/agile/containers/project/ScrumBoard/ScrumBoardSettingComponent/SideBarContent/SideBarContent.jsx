@@ -23,6 +23,12 @@ class SideBarContent extends Component {
     this.checkStatusDebounce = false;
   }
 
+  componentDidMount() {
+    setTimeout(() => {
+      this.nameInputRef.focus();
+    });
+  }
+
   handleAddColumn = (e) => {
     const {
       form, store, onChangeVisible, refresh,
@@ -69,7 +75,7 @@ class SideBarContent extends Component {
         }
       }
     });
-  }
+  };
 
   handleAddStatus = (e) => {
     e.preventDefault();
@@ -101,7 +107,7 @@ class SideBarContent extends Component {
         });
       }
     });
-  }
+  };
 
   checkStatusName(rule, value, callback) {
     if (!value) {
@@ -217,7 +223,7 @@ class SideBarContent extends Component {
                 },
                 ],
               })(
-                <Input label={`${modifiedName}名称`} placeholder={`请输入${modifiedName}名称`} maxLength={10} />,
+                <Input label={`${modifiedName}名称`} placeholder={`请输入${modifiedName}名称`} maxLength={10} ref={(ref) => { this.nameInputRef = ref; }} />,
               )}
             </FormItem>
             <FormItem>

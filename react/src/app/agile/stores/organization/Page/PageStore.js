@@ -31,7 +31,7 @@ class PageStore {
   }
 
   @action updatePageDetail(field) {
-    this.pageDetail.list = this.pageDetail.list.map((item) => {
+    this.pageDetail.content = this.pageDetail.content.map((item) => {
       if (field.fieldId === item.fieldId) {
         return {
           ...item,

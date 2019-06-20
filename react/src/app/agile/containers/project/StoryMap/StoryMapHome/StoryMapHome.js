@@ -63,6 +63,7 @@ class StoryMapHome extends Component {
   }
 
   componentWillUnmount() {
+    StoryMapStore.clear();
     document.removeEventListener('fullscreenchange', this.handleChangeFullScreen);
     document.removeEventListener('webkitfullscreenchange', this.handleChangeFullScreen);
     document.removeEventListener('mozfullscreenchange', this.handleChangeFullScreen);

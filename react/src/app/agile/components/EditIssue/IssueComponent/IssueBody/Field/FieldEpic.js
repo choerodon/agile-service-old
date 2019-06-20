@@ -110,7 +110,7 @@ const { Text, Edit } = TextEditToggle;
     const { store } = this.props;
     const issue = store.getIssue;
     const {
-      epicColor, epicId, epicName, typeCode,
+      epicColor, epicId, issueEpicName, typeCode,
       featureId, featureName,
     } = issue;
     return (
@@ -171,7 +171,7 @@ const { Text, Edit } = TextEditToggle;
           </div>
           <div className="c7n-value-wrapper">
             <TextEditToggle
-              disabled={IsInProgramStore.isInProgram || featureId}
+              disabled={featureId}
               formKey="epic"
               onSubmit={this.updateIssueEpic}
               originData={epicId || []}
@@ -192,7 +192,7 @@ const { Text, Edit } = TextEditToggle;
                         display: 'inline-block',
                       }}
                     >
-                      {epicName}
+                      {issueEpicName}
                     </div>
                   ) : (
                     <div>
