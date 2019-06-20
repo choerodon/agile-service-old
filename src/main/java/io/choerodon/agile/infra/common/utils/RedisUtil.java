@@ -25,6 +25,13 @@ public class RedisUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisUtil.class);
 
+    public RedisTemplate<String, Object> getRedisTemplate() {
+        return redisTemplate;
+    }
+
+    public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     /**
      * 查询key,支持模糊查询
