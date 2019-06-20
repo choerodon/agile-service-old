@@ -449,16 +449,18 @@ class ReleaseHome extends Component {
               data={selectItem}
             />
           ) : ''}
-          <PublicRelease
-            visible={publicVersion}
-            release={release}
-            onCancel={() => {
-              this.setState({
-                publicVersion: false,
-              });
-            }}
-            refresh={this.refresh.bind(this, pagination)}
-          />
+          {publicVersion ? (
+            <PublicRelease
+              visible={publicVersion}
+              release={release}
+              onCancel={() => {
+                this.setState({
+                  publicVersion: false,
+                });
+              }}
+              refresh={this.refresh.bind(this, pagination)}
+            />
+          ) : null}
         </Content>
       </Page>
     );
