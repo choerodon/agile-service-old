@@ -78,6 +78,8 @@ public class IssueDetailDO {
 
     private String epicName;
 
+    private String issueEpicName;
+
     private String color;
 
     private String epicColor;
@@ -322,6 +324,14 @@ public class IssueDetailDO {
 
     public void setEpicName(String epicName) {
         this.epicName = epicName;
+    }
+
+    public void setIssueEpicName(String issueEpicName) {
+        this.issueEpicName = issueEpicName;
+    }
+
+    public String getIssueEpicName() {
+        return issueEpicName;
     }
 
     public String getColor() {

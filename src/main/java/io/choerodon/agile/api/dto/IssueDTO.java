@@ -109,6 +109,9 @@ public class IssueDTO {
     @ApiModelProperty(value = "史诗名称")
     private String epicName;
 
+    @ApiModelProperty(value = "关联史诗名称")
+    private String issueEpicName;
+
     @ApiModelProperty(value = "史诗颜色")
     private String color;
 
@@ -438,6 +441,14 @@ public class IssueDTO {
 
     public void setEpicName(String epicName) {
         this.epicName = epicName;
+    }
+
+    public void setIssueEpicName(String issueEpicName) {
+        this.issueEpicName = issueEpicName;
+    }
+
+    public String getIssueEpicName() {
+        return issueEpicName;
     }
 
     public String getColor() {

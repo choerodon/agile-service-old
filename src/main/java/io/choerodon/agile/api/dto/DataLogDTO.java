@@ -32,6 +32,10 @@ public class DataLogDTO {
     private Long lastUpdatedBy;
     @ApiModelProperty(value = "最后更新日期")
     private Date lastUpdateDate;
+    @ApiModelProperty(value = "创建日期")
+    private Date creationDate;
+    @ApiModelProperty(value = "创建用户")
+    private Long createdBy;
     @ApiModelProperty(value = "用户名")
     private String name;
     @ApiModelProperty(value = "登录名")
@@ -44,6 +48,40 @@ public class DataLogDTO {
     private String categoryCode;
     @ApiModelProperty(value = "用户email地址")
     private String email;
+    @ApiModelProperty(value = "是否自定义字段日志")
+    private Boolean isCusLog;
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Long getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Boolean getCusLog() {
+        return isCusLog;
+    }
+
+    public void setCusLog(Boolean cusLog) {
+        isCusLog = cusLog;
+    }
+
+    public Boolean getIsCusLog() {
+        return isCusLog;
+    }
+
+    public void setIsCusLog(Boolean cusLog) {
+        isCusLog = cusLog;
+    }
 
     public String getFieldName() {
         return fieldName;

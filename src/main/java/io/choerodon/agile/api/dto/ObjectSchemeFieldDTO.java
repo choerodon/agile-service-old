@@ -29,12 +29,22 @@ public class ObjectSchemeFieldDTO {
     private String contextName;
     @ApiModelProperty(value = "对象方案编码")
     private String schemeCode;
+    @ApiModelProperty(value = "默认值")
+    private String defaultValue;
     @ApiModelProperty(value = "项目id")
     private Long projectId;
     @ApiModelProperty(value = "组织id")
     private Long organizationId;
     @ApiModelProperty(value = "乐观锁")
     private Long objectVersionNumber;
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
 
     public Long getObjectVersionNumber() {
         return objectVersionNumber;

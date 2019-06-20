@@ -31,16 +31,16 @@ const FormItem = Form.Item;
     e.preventDefault();
     const { form, handleCreateIssue } = this.props;
     const { currentType } = this.state;
-    if (values.summary && values.summary.trim()) {
-      form.validateFields((err, values) => {
+    form.validateFields((err, values) => {
+      if (values.summary && values.summary.trim()) {
         if (!err) {
           this.setState({
             loading: true,
           });
           handleCreateIssue.bind(this, currentType, values.summary.trim())();
         }
-      });
-    }
+      }
+    });
   };
 
   render() {

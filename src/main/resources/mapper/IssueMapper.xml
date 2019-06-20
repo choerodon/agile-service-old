@@ -17,7 +17,8 @@
         <id column="story_points" property="storyPoints"/>
         <id column="estimate_time" property="estimateTime"/>
         <id column="remaining_time" property="remainingTime"/>
-        <id column="issue_epic_name" property="epicName"/>
+        <id column="epic_name" property="epicName"/>
+        <id column="issue_epic_name" property="issueEpicName"/>
         <id column="color_value" property="color"/>
         <id column="epic_color" property="epicColor"/>
         <id column="parent_issue_num" property="parentIssueNum"/>
