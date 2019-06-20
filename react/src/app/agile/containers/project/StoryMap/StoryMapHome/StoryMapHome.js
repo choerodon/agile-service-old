@@ -205,7 +205,7 @@ class StoryMapHome extends Component {
               description={(
                 <Fragment>
                     用户故事地图是以史诗或特性为基础，根据版本控制进行管理规划，点击
-                  <a role="none" onClick={this.handleCreateEpicClick}>创建史诗</a>
+                  <a role="none" onClick={this.handleCreateEpicClick} disabled={IsInProgramStore.isInProgram}>创建史诗</a>
                     或
                   <a role="none" onClick={this.handleCreateFeatureClick} disabled={IsInProgramStore.isInProgram}>创建特性</a>
                     进入用户故事地图。
