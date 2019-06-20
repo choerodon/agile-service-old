@@ -27,13 +27,12 @@
     }
 
     td {
-      // border-right: solid 1px #D8D8D8;
-      // border-bottom: solid 1px #D8D8D8;
-      border: solid 1px #D8D8D8;
+      border-right: solid 1px #D8D8D8;
+      border-bottom: solid 1px #D8D8D8;
+      // border: solid 1px #D8D8D8;
       vertical-align: top;
       position: relative;
       overflow: visible;
-      background: white;
       height: 3px; //使td中的div可以充满td
     }
 

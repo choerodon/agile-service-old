@@ -36,7 +36,7 @@ class StoryCell extends Component {
     const {
       epic, otherData, storyCollapse, isLastRow, isLastColumn, epicIndex,
     } = this.props;
-    const { storyData } = StoryMapStore;
+    const { storyData, swimLine } = StoryMapStore;
     const { issueId: epicId, featureCommonDOList, adding } = epic;
     const targetEpic = storyData[epicId];
     const { collapse } = otherData || {};
@@ -50,7 +50,7 @@ class StoryCell extends Component {
 
     return (
       !storyCollapse && (
-        <Cell style={{ ...collapse ? { borderBottom: isLastRow ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {} }}>
+        <Cell style={{ ...collapse ? { borderBottom: isLastRow ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : { borderTop: swimLine === 'none' ? 'none' : '1px solid #D8D8D8' } }}>
           {collapse ? null : (
             <div style={{
               minHeight: ColumnMinHeight, height: '100%', display: 'flex', flexDirection: 'column',

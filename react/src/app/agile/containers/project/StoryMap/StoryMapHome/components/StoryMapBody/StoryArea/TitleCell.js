@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import { Icon, Button, Tooltip } from 'choerodon-ui';
 import Cell from '../Cell';
 import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
+import './TitleCell.scss';
 
 @observer
 class TitleCell extends Component {
@@ -21,7 +22,7 @@ class TitleCell extends Component {
       }
       case 'version': {
         return (
-          <div className="c7nagile-StoryMap-StoryCell-title">
+          <div>
             <Icon
               style={{ marginRight: 15 }}
               type={storyCollapse ? 'expand_less' : 'expand_more'}
@@ -32,10 +33,9 @@ class TitleCell extends Component {
             {version.name}
             {version.versionId === 'none' && !isFullScreen && (
               <Tooltip title="创建版本">
-                <Button
-                  className="c7nagile-StoryMap-StoryCell-title-createBtn"
-                  type="primary"
-                  icon="playlist_add"
+                <Icon
+                  className="c7nagile-StoryMap-TitleCell-createBtn"
+                  type="playlist_add"                 
                   onClick={this.handleCreateVersionClick}
                   shape="circle"
                 />
@@ -51,27 +51,31 @@ class TitleCell extends Component {
 
   render() {
     const {
-      otherData, showTitle, storyCollapse, isLastRow,
+      otherData, showTitle, nextShowTitle, storyCollapse, isLastColumn,
     } = this.props;
     const { collapse } = otherData || {};
 
     return (
       <Cell style={{
-        ...collapse ? { borderBottom: isLastRow ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {},
+        borderRight: 'none',
+        ...collapse ? { borderLeft: '1px solid #D8D8D8', borderBottom: 'none', borderTop: 'none' } : {},
         ...showTitle ? {
           position: 'sticky',
           zIndex: 5,
-          left: 0,
-          borderRight: 'none',
-        } : {},
+          left: 0,         
+          // background: 'white',
+        } : {},        
+        // 最后一列或下一个展示版本或折叠
+        ...isLastColumn || nextShowTitle || collapse ? {
+          borderRight: '1px solid #D8D8D8',
+        } : {},       
+        borderBottom: 'none',
+        padding: '10px 0',
       }}
       >
         {collapse ? null : (
-          <div style={{
-            height: '100%', display: 'flex', flexDirection: 'column',
-          }}
-          >
-            <div style={{ textAlign: 'left', marginLeft: -20, height: 30 }}>
+          <div style={{ display: 'flex' }} className="c7nagile-StoryMap-TitleCell">
+            <div style={{ textAlign: 'left' }}>
               {showTitle && this.renderTitle(storyCollapse)}
             </div>
           </div>

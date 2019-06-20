@@ -1,0 +1,16 @@
+.c7nagile-StoryMap-TitleCell {
+
+  i {
+    cursor: pointer;
+  }
+
+  &-createBtn {
+    margin-left: 10px;
+    display: none;
+    color: #3f51b5;
+  }
+
+  &:hover &-createBtn {
+    display: inline-block;
+  }
+}

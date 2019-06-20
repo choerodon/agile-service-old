@@ -29,11 +29,29 @@ class StoryRow extends Component {
         {/* 标题行 */}
         {['version'].includes(swimLine) && (
           <tr>
-            {epicList.map((epic, index) => <TitleCell epicIndex={index} isLastColumn={index === epicWithFeature.length - 1} showTitle={firstNotCollapseIndex === index} epic={epic} otherData={storyData[epic.issueId]} {...this.props} />)}
+            {epicList.map((epic, index) => (
+              <TitleCell
+                isLastColumn={index === epicWithFeature.length - 1}
+                nextShowTitle={firstNotCollapseIndex - 1 === index}
+                showTitle={firstNotCollapseIndex === index}
+                otherData={storyData[epic.issueId]}
+                nextCollapse={epicList[index + 1] ? storyData[epicList[index + 1].issueId].collapse : false}
+                {...this.props}
+              />
+            ))}
           </tr>
         )}
         <tr style={{ ...storyCollapse ? { height: 0 } : {} }}>
-          {epicList.map((epic, index) => <StoryCell epicIndex={index} isLastColumn={index === epicWithFeature.length - 1} showTitle={firstNotCollapseIndex === index} epic={epic} otherData={storyData[epic.issueId]} {...this.props} />)}
+          {epicList.map((epic, index) => (
+            <StoryCell 
+              epicIndex={index}
+              isLastColumn={index === epicWithFeature.length - 1}
+              showTitle={firstNotCollapseIndex === index}
+              epic={epic}
+              otherData={storyData[epic.issueId]}            
+              {...this.props}
+            />
+          ))}
         </tr>        
       </Fragment>
     );
