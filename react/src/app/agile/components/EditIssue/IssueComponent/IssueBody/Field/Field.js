@@ -245,6 +245,7 @@ let sign = false;
     } else if (field.fieldType === 'number') {
       return (
         <InputNumber
+          autoFocus
           onChange={e => this.handleChange(e)}
           className="fieldWith"
           step={field.extraConfig === '1' ? 0.1 : 1}
@@ -254,6 +255,7 @@ let sign = false;
     } else if (field.fieldType === 'text') {
       return (
         <TextArea
+          autoFocus
           autosize
           className="fieldWith"
           onChange={e => this.handleChange(e)}
@@ -289,6 +291,7 @@ let sign = false;
     } else {
       return (
         <Input
+          autoFocus
           maxLength={100}
           className="fieldWith"
           onChange={e => this.handleChange(e)}
