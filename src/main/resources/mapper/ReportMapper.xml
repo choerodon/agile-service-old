@@ -979,7 +979,7 @@
             FROM
             agile_data_log adl
             WHERE
-            adl.project_id = 28
+            adl.project_id = #{projectId}
             AND adl.field = 'status'
             GROUP BY
             adl.issue_id

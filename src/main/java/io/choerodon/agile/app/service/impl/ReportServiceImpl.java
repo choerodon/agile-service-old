@@ -283,7 +283,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-    @Cacheable(cacheNames = AGILE, key = "'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()")
+//    @Cacheable(cacheNames = AGILE, key = "'CumulativeFlowDiagram' + #projectId + ':' + #cumulativeFlowFilterDTO.toString()")
     public List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
         //获取当前符合条件的所有issueIds
         String filterSql = null;
@@ -367,8 +367,8 @@ public class ReportServiceImpl implements ReportService {
         List<BoardColumnStatusRelDO> relDOs = boardColumnMapper.queryRelByColumnIds(columnIds);
         Map<Long, Long> relMap = relDOs.stream().collect(Collectors.toMap(BoardColumnStatusRelDO::getStatusId, BoardColumnStatusRelDO::getColumnId));
         changeIssueDuringDate.parallelStream().forEach(changeDto -> {
-            Long columnTo = relMap.get(changeDto.getNewValue());
-            Long columnFrom = relMap.get(changeDto.getOldValue());
+            Long columnTo = relMap.get(Long.parseLong(changeDto.getNewValue()));
+            Long columnFrom = relMap.get(Long.parseLong(changeDto.getOldValue()));
             changeDto.setColumnTo(columnTo == null ? "0" : columnTo + "");
             changeDto.setColumnFrom(columnFrom == null ? "0" : columnFrom + "");
         });
