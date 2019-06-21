@@ -272,7 +272,7 @@ let sign = false;
           onFilterChange={this.onFilterChange.bind(this)}
           onChange={e => this.handleChange(e)}
         >
-          {originUsers.filter(user => user.id !== field.defaultValue && user.enabled).concat(field.valueStr || []).map(user => (
+          {originUsers.filter(user => (field.valueStr && user.id !== field.valueStr.id) && user.enabled).concat(field.valueStr || []).map(user => (
             <Option key={user.id} value={user.id}>
               <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
                 <UserHead
