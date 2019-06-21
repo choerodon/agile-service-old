@@ -34,8 +34,7 @@ class StoryRow extends Component {
                 isLastColumn={index === epicWithFeature.length - 1}
                 nextShowTitle={firstNotCollapseIndex - 1 === index}
                 showTitle={firstNotCollapseIndex === index}
-                otherData={storyData[epic.issueId]}
-                nextCollapse={epicList[index + 1] ? storyData[epicList[index + 1].issueId].collapse : false}
+                otherData={storyData[epic.issueId]}                
                 {...this.props}
               />
             ))}
