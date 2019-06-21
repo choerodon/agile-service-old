@@ -3,6 +3,7 @@ import { Button } from 'choerodon-ui';
 import PropTypes from 'prop-types';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import LightBox from 'react-image-lightbox';
 import ImageDrop from './ImageDrop';
 import Link from './Link';
 // import mention from './mention';
@@ -101,6 +102,8 @@ class WYSIWYGEditor extends Component {
     super(props);
     this.state = {
       loading: false,
+      imgOpen: false,
+      src: '',
       value: props.value || '',
     };
   }
@@ -119,6 +122,22 @@ class WYSIWYGEditor extends Component {
     if (autoFocus && this.editor) {
       setTimeout(() => {
         this.editor.focus();
+      });
+    }
+    document.addEventListener('click', this.handleOpenLightBox);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.handleOpenLightBox);
+  }
+  
+  openLightBox=(e) => {
+    e.stopPropagation();
+    if (e.target.nodeName === 'IMG') {
+      e.stopPropagation();
+      this.setState({
+        imgOpen: true,
+        src: e.target.src,
       });
     }
   }
@@ -174,7 +193,9 @@ class WYSIWYGEditor extends Component {
       mode,
     } = this.props;
     const readOnly = mode === 'read';
-    const { loading, value } = this.state;
+    const {
+      loading, value, imgOpen, src, 
+    } = this.state;
     const newStyle = { ...defaultStyle, ...style };
     const editHeight = newStyle.height === '100%' ? `calc(100% - ${toolbarHeight || '42px'})` : (newStyle.height - (toolbarHeight || 42));
     return (
@@ -224,6 +245,15 @@ class WYSIWYGEditor extends Component {
                 {'保存'}
               </Button>
             </div>
+          )
+        }
+        {
+          imgOpen && (
+            <LightBox
+              mainSrc={src}
+              onCloseRequest={() => this.setState({ imgOpen: false })}
+              imageTitle="images"
+            />
           )
         }
       </div>
