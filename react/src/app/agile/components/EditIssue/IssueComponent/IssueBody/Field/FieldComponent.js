@@ -124,7 +124,7 @@ const { Text, Edit } = TextEditToggle;
                 mode="multiple"
                 getPopupContainer={triggerNode => triggerNode.parentNode}
                 tokenSeparators={[',']}
-                style={{ width: '150px', marginTop: 0, paddingTop: 0 }}
+                style={{ marginTop: 0, paddingTop: 0 }}
                 onChange={(value) => {
                   const newComponents = value.filter(v => v && v.trim()).map((item) => {
                     if (_.find(originComponents, { name: item })) {

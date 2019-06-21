@@ -577,13 +577,13 @@
         WHERE ai.project_id = #{projectId} AND ai.apply_type = 'agile'
         <if test='searchDTO.searchArgs != null'>
             <if test='searchDTO.searchArgs.summary != null and searchDTO.searchArgs.summary != "" '>
-                AND position(#{searchDTO.searchArgs.summary} IN ai.summary)
+                AND ai.summary LIKE concat(concat('%',#{searchDTO.searchArgs.summary}),'%')
             </if>
             <if test='searchDTO.searchArgs.storyPoints != null and searchDTO.searchArgs.storyPoints != "" '>
-                AND position(#{searchDTO.searchArgs.storyPoints} IN ai.story_points)
+                AND ai.story_points LIKE concat(concat('%',#{searchDTO.searchArgs.storyPoints}),'%')
             </if>
             <if test='searchDTO.searchArgs.remainingTime != null and searchDTO.searchArgs.remainingTime != "" '>
-                AND position(#{searchDTO.searchArgs.remainingTime} IN ai.remaining_time)
+                AND ai.remaining_time LIKE concat(concat('%',#{searchDTO.searchArgs.remainingTime}),'%')
             </if>
         </if>
         <if test='searchDTO.onlyStory != null and searchDTO.onlyStory'>

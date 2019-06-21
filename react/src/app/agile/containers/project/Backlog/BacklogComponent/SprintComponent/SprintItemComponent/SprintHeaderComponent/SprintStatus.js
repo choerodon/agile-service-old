@@ -96,28 +96,32 @@ import StartSprint from '../../StartSprint';
             </div>
           </React.Fragment>
         )}
-        <StartSprint
-          store={store}
-          visible={startSprintVisible}
-          onCancel={() => {
-            this.setState({
-              startSprintVisible: false,
-            });
-          }}
-          data={data}
-          refresh={refresh}
-        />
-        <CloseSprint
-          store={store}
-          visible={finishSprintVisible}
-          onCancel={() => {
-            this.setState({
-              finishSprintVisible: false,
-            });
-          }}
-          data={data}
-          refresh={refresh}
-        />
+        {startSprintVisible && (
+          <StartSprint
+            store={store}
+            visible={startSprintVisible}
+            onCancel={() => {
+              this.setState({
+                startSprintVisible: false,
+              });
+            }}
+            data={data}
+            refresh={refresh}
+          />
+        )}
+        {finishSprintVisible && (
+          <CloseSprint
+            store={store}
+            visible={finishSprintVisible}
+            onCancel={() => {
+              this.setState({
+                finishSprintVisible: false,
+              });
+            }}
+            data={data}
+            refresh={refresh}
+          />
+        )}
       </div>
     );
   }
