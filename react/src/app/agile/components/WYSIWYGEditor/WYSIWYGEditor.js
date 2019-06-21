@@ -131,7 +131,7 @@ class WYSIWYGEditor extends Component {
     document.removeEventListener('click', this.handleOpenLightBox);
   }
   
-  openLightBox=(e) => {
+  handleOpenLightBox=(e) => {
     e.stopPropagation();
     if (e.target.nodeName === 'IMG') {
       e.stopPropagation();
