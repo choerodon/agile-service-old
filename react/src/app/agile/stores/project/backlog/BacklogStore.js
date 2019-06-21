@@ -548,10 +548,9 @@ class BacklogStore {
     this.spinIf = true;
     if (data.length > 0) {
       this.filterSelected = true;
-    } else if (!this.Judge.onlyMeChecked && !this.Judge.moreChecked.length && (!this.Judge.onlyStoryChecked || this.whichVisible === 'feature')) {
+    } else if (!this.Judge || (!this.Judge.onlyMeChecked && !this.Judge.moreChecked.length && (!this.Judge.onlyStoryChecked || this.whichVisible === 'feature'))) {
       this.filterSelected = false;
-    }
-    
+    }    
     this.assigneeFilterIds = data;
   }
 
