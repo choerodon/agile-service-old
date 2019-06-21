@@ -136,7 +136,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         Boolean condition = handleSearchUser(searchDTO, projectId);
         if (condition) {
             PageInfo<ComponentForListDTO> componentForListDTOPage = ConvertPageHelper.convertPageInfo(PageHelper.startPage(pageRequest.getPage(),
-                    pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() ->
+                    pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() ->
                     issueComponentMapper.queryComponentByOption(projectId, noIssueTest, componentId, searchDTO.getSearchArgs(),
                             searchDTO.getAdvancedSearchArgs(), searchDTO.getContents())), ComponentForListDTO.class);
             if ((componentForListDTOPage.getList() != null) && !componentForListDTOPage.getList().isEmpty()) {

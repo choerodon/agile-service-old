@@ -42,4 +42,12 @@ public class PageUtil {
         }
         return sort;
     }
+
+    public static String sortToSql(Sort sort) {
+        if (sort == null) {
+            return "";
+        } else {
+            return sort.toSql();
+        }
+    }
 }

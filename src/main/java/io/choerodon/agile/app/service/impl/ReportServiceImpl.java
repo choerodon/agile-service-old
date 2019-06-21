@@ -390,7 +390,7 @@ public class ReportServiceImpl implements ReportService {
         pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), "ai", new HashMap<>()));
         //pageRequest.resetOrder("ai", new HashMap<>());
         PageInfo<IssueDO> reportIssuePage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
-                pageRequest.getSort().toSql()).doSelectPageInfo(() -> reportMapper.
+                PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> reportMapper.
                 queryReportIssues(projectId, versionId, status, type));
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
