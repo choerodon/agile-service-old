@@ -120,6 +120,7 @@ const { Text, Edit } = TextEditToggle;
             </Text>
             <Edit>
               <Select
+                dropdownMatchSelectWidth={false}
                 loading={selectLoading}
                 mode="multiple"
                 getPopupContainer={triggerNode => triggerNode.parentNode}
