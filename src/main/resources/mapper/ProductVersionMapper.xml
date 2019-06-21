@@ -8,10 +8,10 @@
         WHERE project_id = #{projectId}
         <if test='searchArgs != null'>
             <if test='searchArgs.name != null and searchArgs.name != "" '>
-                AND position(#{searchArgs.name} IN name)
+                AND name LIKE CONCAT(CONCAT('%' ,#{searchArgs.name}) ,'%')
             </if>
             <if test='searchArgs.description != null and searchArgs.description != ""'>
-                AND position(#{searchArgs.description} IN description)
+                AND description LIKE CONCAT(CONCAT('%' ,#{searchArgs.description}) ,'%')
             </if>
         </if>
         <if test='advancedSearchArgs != null'>
@@ -228,7 +228,7 @@
         </if>
         <if test='searchDTO.searchArgs != null'>
             <if test='searchDTO.searchArgs.summary != null and searchDTO.searchArgs.summary != "" '>
-                AND position(#{searchDTO.searchArgs.summary} IN ai.summary)
+                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.summary}) ,'%')
             </if>
         </if>
         <if test='searchDTO.advancedSearchArgs != null'>
