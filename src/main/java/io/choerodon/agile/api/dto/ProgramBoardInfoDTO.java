@@ -2,6 +2,7 @@ package io.choerodon.agile.api.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,6 +26,14 @@ public class ProgramBoardInfoDTO {
     private List<SprintDTO> filterSprintList;
     @ApiModelProperty(value = "团队筛选列表")
     private List<TeamProjectDTO> filterTeamList;
+
+    public ProgramBoardInfoDTO() {
+        sprints = new ArrayList<>();
+        teamProjects = new ArrayList<>();
+        boardDepends = new ArrayList<>();
+        filterSprintList = new ArrayList<>();
+        filterTeamList = new ArrayList<>();
+    }
 
     public Long getPiId() {
         return piId;
