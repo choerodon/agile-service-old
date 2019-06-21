@@ -12,7 +12,19 @@ const { Sidebar, confirm } = Modal;
 const { Option } = Select;
 const { AppState } = stores;
 
+function debounce(fn, delay) {
+  let timer;
+  return function (...args) {
+    const context = this;
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn.apply(context, args);
+    }, delay);
+  };
+}
+
 @observer
+@Form.create({})
 class SideBarContent extends Component {
   constructor(props) {
     super(props);
@@ -20,13 +32,13 @@ class SideBarContent extends Component {
       loading: false,
       statusType: false,
     };
-    this.checkStatusDebounce = false;
   }
 
   componentDidMount() {
     setTimeout(() => {
       this.nameInputRef.focus();
     });
+    this.debounceCheckStatusName = debounce(this.checkStatusName, 500);
   }
 
   handleAddColumn = (e) => {
@@ -109,39 +121,33 @@ class SideBarContent extends Component {
     });
   };
 
-  checkStatusName(rule, value, callback) {
+  checkStatusName = (rule, value, callback) => {
     if (!value) {
       callback();
       return;
     }
     const { store, form } = this.props;
-    if (this.checkStatusDebounce) {
-      clearTimeout(this.checkStatusDebounce);
-      this.checkStatusDebounce = null;
-    }
-    this.checkStatusDebounce = setTimeout(() => {
-      axios.get(`state/v1/projects/${AppState.currentMenuType.id}/status/project_check_name?organization_id=${AppState.currentMenuType.organizationId}&name=${value}`).then((res) => {
-        if (res.statusExist) {
-          this.setState({
-            statusType: res.type,
-          }, () => {
-            form.setFieldsValue({
-              categoryCode: res.type,
-            });
+    axios.get(`state/v1/projects/${AppState.currentMenuType.id}/status/project_check_name?organization_id=${AppState.currentMenuType.organizationId}&name=${value}`).then((res) => {
+      if (res.statusExist) {
+        this.setState({
+          statusType: res.type,
+        }, () => {
+          form.setFieldsValue({
+            categoryCode: res.type,
           });
-        } else {
-          this.setState({
-            statusType: false,
-          }, () => {
-            // form.setFieldsValue({
-            //   categoryCode: '',
-            // });
-            // form.validateFields(['categoryCode']);
-          });
-        }
-        callback();
-      });
-    }, 300);
+        });
+      } else {
+        this.setState({
+          statusType: false,
+        }, () => {
+          // form.setFieldsValue({
+          //   categoryCode: '',
+          // });
+          // form.validateFields(['categoryCode']);
+        });
+      }
+      callback();
+    });
   }
 
   renderOptions() {
@@ -219,7 +225,7 @@ class SideBarContent extends Component {
                   required: true, message: `${modifiedName}名称是必填的`,
                 },
                 {
-                  validator: type === 'Status' && this.checkStatusName.bind(this),
+                  validator: type === 'Status' && this.debounceCheckStatusName,
                 },
                 ],
               })(
@@ -248,4 +254,4 @@ class SideBarContent extends Component {
   }
 }
 
-export default Form.create()(SideBarContent);
+export default SideBarContent;
