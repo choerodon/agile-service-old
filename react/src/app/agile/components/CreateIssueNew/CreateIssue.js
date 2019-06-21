@@ -605,7 +605,7 @@ class CreateIssue extends Component {
           allowClear
           onFilterChange={this.onFilterChangeAssignee.bind(this)}
         >
-          {originUsers.filter(user => user.id !== field.defaultValue && user.enabled).concat(field.defaultValueObj || []).map(user => (
+          {originUsers.filter(user => (field.defaultValueObj && user.id !== field.defaultValueObj.id) && user.enabled).concat(field.defaultValueObj || []).map(user => (
             <Option key={user.id} value={user.id}>
               <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
                 <UserHead
