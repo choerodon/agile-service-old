@@ -7,7 +7,7 @@
 import { axios, stores } from '@choerodon/boot';
 import IssueStore from '../../../stores/project/sprint/IssueStore';
 import {
-  loadIssueTypes, loadStatusList, loadPriorities, loadLabels, loadComponents, loadVersions, loadEpics, loadSprints, 
+  loadIssueTypes, loadStatusList, loadPriorities, loadLabels, loadComponents, loadVersions, loadEpics, loadSprints,
 } from '../../../api/NewIssueApi';
 import { getUsers } from '../../../api/CommonApi';
 
@@ -48,11 +48,11 @@ export default class IssueFilterControler {
       });
     });
 
-    const { 
+    const {
       paramChoose, paramCurrentVersion, paramCurrentSprint, paramId,
       paramType, paramIssueId, paramName, paramOpenIssueId,
     } = paramObj;
-    
+
     if (paramChoose) {
       if (paramChoose === 'version' && paramCurrentVersion) {
         filter.otherArgs[paramChoose] = [paramCurrentVersion];
@@ -136,7 +136,7 @@ export default class IssueFilterControler {
    * @param size => Number => 当前每页显示数量，
    * @returns Promise.all / Promise
    */
-  static loadCurrentSetting(filters, mode, page = 0, size = 10) {
+  static loadCurrentSetting(filters, mode, page = 1, size = 10) {
     if (mode === 'init') {
       const loadIssue = axios.post(
         `/agile/v1/projects/${AppState.currentMenuType.id}/issues/include_sub?organizationId=${AppState.currentMenuType.organizationId}&page=${page}&size=${size}`, filters,
@@ -158,7 +158,7 @@ export default class IssueFilterControler {
     const filter = Object.keys(this.cache.get('paramFilter')).length ? this.cache.get('paramFilter') : this.cache.get('filter');
     return (modes, data) => {
       switch (modes) {
-        case 'advArgs':        
+        case 'advArgs':
           Object.assign(filter.advancedSearchArgs, data);
           this.updateCache(filter);
           break;
@@ -176,17 +176,17 @@ export default class IssueFilterControler {
           break;
         case 'quickFilterIds':
           Object.assign(filter.quickFilterIds, data);
-          this.updateCache(filter);          
+          this.updateCache(filter);
           break;
         case 'assigneeFilterIds':
           Object.assign(filter.assigneeFilterIds, data);
-          this.updateCache(filter);             
+          this.updateCache(filter);
           break;
         case 'searchArgs':
           Object.assign(filter.searchArgs, data);
-          this.updateCache(filter);             
+          this.updateCache(filter);
           break;
-        case 'args': 
+        case 'args':
           this.updateCache(
             Object.assign(filter, data),
           );
@@ -235,7 +235,7 @@ export default class IssueFilterControler {
    * 将传入的值设置到 cache 中健为 userFilter 的部分
    * @param data
    */
-  updateCache = (data) => {   
+  updateCache = (data) => {
     this.cache.set('userFilter', data);
   };
 
@@ -301,9 +301,9 @@ export default class IssueFilterControler {
 
   /**
    * 更新上边的高级搜索条件
-   * @param {*} issueTypeId 
-   * @param {*} statusId 
-   * @param {*} priorityId 
+   * @param {*} issueTypeId
+   * @param {*} statusId
+   * @param {*} priorityId
    */
   advancedSearchArgsFilterUpdate(issueTypeId, statusId, priorityId) {
     const filter = Object.keys(this.cache.get('paramFilter')).length ? this.cache.get('paramFilter') : this.cache.get('filter');
@@ -321,8 +321,8 @@ export default class IssueFilterControler {
 
   /**
  * 设置创建创建时间范围变化时的搜索条件
- * @param {*} createStartDate 
- * @param {*} createEndDate 
+ * @param {*} createStartDate
+ * @param {*} createEndDate
  */
   searchArgsFilterUpdate(createStartDate, createEndDate) {
     const filter = Object.keys(this.cache.get('paramFilter')).length ? this.cache.get('paramFilter') : this.cache.get('filter');

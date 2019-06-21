@@ -3,7 +3,7 @@ import { stores, axios, Content } from '@choerodon/boot';
 import { find, debounce } from 'lodash';
 import { Select, Form, Modal } from 'choerodon-ui';
 import {
-  updateIssue, loadIssueTypes, loadIssues, loadIssue, 
+  updateIssue, loadIssueTypes, loadIssues, loadIssue,
 } from '../../api/NewIssueApi';
 import TypeTag from '../TypeTag';
 import './RelateStory.scss';
@@ -56,7 +56,7 @@ class RelateStory extends Component {
       this.setState({
         selectLoading: true,
       });
-      loadIssues(0, 10, this.filters)
+      loadIssues(1, 10, this.filters)
         .then((res) => {
           const storys = res.list;
           if (storys) {
@@ -100,11 +100,11 @@ class RelateStory extends Component {
     const { form, issue, onOk } = this.props;
     form.validateFields((err, values) => {
       if (!err) {
-        const { relateIssueId } = values;       
+        const { relateIssueId } = values;
         this.setState({ createLoading: true });
         const { issueId, objectVersionNumber } = issue;
-        updateIssue({   
-          issueId,       
+        updateIssue({
+          issueId,
           objectVersionNumber,
           relateIssueId: relateIssueId || 0,
         })
@@ -126,8 +126,8 @@ class RelateStory extends Component {
         this.types = types;
         this.filters = {
           advancedSearchArgs: {
-            issueTypeId: types.map(type => type.id),        
-          },     
+            issueTypeId: types.map(type => type.id),
+          },
         };
         this.loadIssues(true);
       }
@@ -136,12 +136,12 @@ class RelateStory extends Component {
 
   render() {
     const {
-      form, visible, onCancel, 
+      form, visible, onCancel,
     } = this.props;
     const { getFieldDecorator } = form;
     const {
       createLoading, selectLoading, storys,
-    } = this.state;  
+    } = this.state;
     return (
       <Sidebar
         className="c7n-RelateStory"
@@ -163,16 +163,16 @@ class RelateStory extends Component {
               {getFieldDecorator('relateIssueId', {})(
                 <Select
                   label="问题"
-                  allowClear                  
+                  allowClear
                   dropdownClassName="issueSelectDropDown"
-                  loading={selectLoading}                 
+                  loading={selectLoading}
                   filter
                   filterOption={false}
-                  onFilterChange={this.onFilterChange.bind(this)}      
-                  getPopupContainer={() => document.getElementsByClassName('c7n-RelateStory')[0]}          
+                  onFilterChange={this.onFilterChange.bind(this)}
+                  getPopupContainer={() => document.getElementsByClassName('c7n-RelateStory')[0]}
                 >
                   {storys.map(issue => (
-                    <Option                
+                    <Option
                       value={issue.issueId}
                     >
                       <div style={{ display: 'inline-block', width: '100%' }}>
@@ -188,14 +188,14 @@ class RelateStory extends Component {
                             />
                           </div>
                           <div style={{
-                            paddingLeft: 12, paddingRight: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', 
+                            paddingLeft: 12, paddingRight: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           }}
                           >
                             {issue.issueNum}
                           </div>
                           <div style={{ overflow: 'hidden', flex: 1 }}>
                             <p style={{
-                              paddingRight: '25px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 0, maxWidth: 'unset', 
+                              paddingRight: '25px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 0, maxWidth: 'unset',
                             }}
                             >
                               {issue.summary}

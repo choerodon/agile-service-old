@@ -367,8 +367,8 @@ public class ReportServiceImpl implements ReportService {
         List<BoardColumnStatusRelDO> relDOs = boardColumnMapper.queryRelByColumnIds(columnIds);
         Map<Long, Long> relMap = relDOs.stream().collect(Collectors.toMap(BoardColumnStatusRelDO::getStatusId, BoardColumnStatusRelDO::getColumnId));
         changeIssueDuringDate.parallelStream().forEach(changeDto -> {
-            Long columnTo = relMap.get(changeDto.getNewValue());
-            Long columnFrom = relMap.get(changeDto.getOldValue());
+            Long columnTo = relMap.get(Long.parseLong(changeDto.getNewValue()));
+            Long columnFrom = relMap.get(Long.parseLong(changeDto.getOldValue()));
             changeDto.setColumnTo(columnTo == null ? "0" : columnTo + "");
             changeDto.setColumnFrom(columnFrom == null ? "0" : columnFrom + "");
         });
