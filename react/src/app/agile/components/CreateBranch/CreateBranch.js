@@ -41,7 +41,7 @@ class CreateBranch extends Component {
     };
   }
 
-  componentDidMount() {   
+  componentDidMount() {
     setTimeout(() => {
       this.Select.focus();
     });
@@ -169,7 +169,7 @@ class CreateBranch extends Component {
               {getFieldDecorator('branch', {
                 rules: [{ required: true, message: '请选择分支来源' }],
               })(
-                <Select                  
+                <Select
                   label="分支来源"
                   allowClear
                   disabled={!form.getFieldValue('app')}
@@ -181,7 +181,7 @@ class CreateBranch extends Component {
                     this.setState({
                       branchsInput: input,
                     });
-                    axios.post(`/devops/v1/projects/${AppState.currentMenuType.id}/apps/${form.getFieldValue('app')}/git/branches?page=0&size=5`, {
+                    axios.post(`/devops/v1/projects/${AppState.currentMenuType.id}/apps/${form.getFieldValue('app')}/git/branches?page=1&size=5`, {
                       searchParam: {
                         branchName: [input],
                       },
@@ -190,8 +190,8 @@ class CreateBranch extends Component {
                       .then((res) => {
                         if (res && !res.failed) {
                           this.setState({
-                            branchs: res.content,
-                            branchsSize: res.numberOfElements,
+                            branchs: res.list,
+                            branchsSize: res.total,
                             // branchsShowMore: res.totalPages !== 1,
                             branchsObj: res,
                             branchLoading: false,
@@ -200,7 +200,7 @@ class CreateBranch extends Component {
                           Choerodon.prompt(res.message);
                         }
                       });
-                    axios.post(`/devops/v1/projects/${AppState.currentMenuType.id}/apps/${form.getFieldValue('app')}/git/tags_list_options?page=0&size=5`, {
+                    axios.post(`/devops/v1/projects/${AppState.currentMenuType.id}/apps/${form.getFieldValue('app')}/git/tags_list_options?page=1&size=5`, {
                       searchParam: {
                         tagName: [input],
                       },
@@ -209,8 +209,8 @@ class CreateBranch extends Component {
                       .then((res) => {
                         if (res && !res.failed) {
                           this.setState({
-                            tags: res.content || [],
-                            tagsSize: res.numberOfElements,
+                            tags: res.list || [],
+                            tagsSize: res.pageSize,
                             // tagsShowMore: res.totalPages !== 1,
                             tagsObj: res,
                           });
@@ -239,7 +239,7 @@ class CreateBranch extends Component {
                             }}
                             onClick={(e) => {
                               e.stopPropagation();
-                              axios.post(`/devops/v1/projects/${AppState.currentMenuType.id}/apps/${form.getFieldValue('app')}/git/branches?page=0&size=${branchsSize + 5}`, {
+                              axios.post(`/devops/v1/projects/${AppState.currentMenuType.id}/apps/${form.getFieldValue('app')}/git/branches?page=1&size=${branchsSize + 5}`, {
                                 searchParam: {
                                   branchName: [branchsInput],
                                 },
@@ -284,7 +284,7 @@ class CreateBranch extends Component {
                             }}
                             onClick={(e) => {
                               e.stopPropagation();
-                              axios.post(`/devops/v1/projects/${AppState.currentMenuType.id}/apps/${form.getFieldValue('app')}/git/tags_list_options?page=0&size=${tagsSize + 5}`, {
+                              axios.post(`/devops/v1/projects/${AppState.currentMenuType.id}/apps/${form.getFieldValue('app')}/git/tags_list_options?page=1&size=${tagsSize + 5}`, {
                                 searchParam: {
                                   tagName: [branchsInput],
                                 },
