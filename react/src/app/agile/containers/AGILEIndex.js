@@ -33,6 +33,10 @@ const PAGEINDEX = asyncRouter(() => import('./organization/Page'));
 
 
 class AGILEIndex extends React.Component {
+  componentDidCatch(error, info) {
+    // Choerodon.prompt(error.message);
+  }
+  
   componentDidMount() {
     // 切换项目查是否在项目群中
     RunWhenProjectChange(IsInProgramStore.refresh);
