@@ -2071,7 +2071,7 @@
         WHERE ai.project_id = #{projectId} AND ai.type_code in ('story', 'task', 'bug', 'issue_test')
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
-                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchArgs.summary}))
+                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchArgs.summary}) ,'%')
             </if>
             <if test='searchArgs.assigneeId != null and searchArgs.assigneeId != ""'>
                 AND ai.assignee_id = #{searchArgs.assigneeId}
