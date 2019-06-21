@@ -21,7 +21,7 @@ class FeatureCard extends Component {
         <div className="summary">
           <Tooltip title={`${summary || '无特性'}`} getPopupContainer={trigger => trigger.parentNode}>
             {issueId && issueNum ? (
-              <Link to={programId ? programIssueLink(issueId, issueNum, programId) : issueLink(issueId, 'story', issueNum)} style={{ marginRight: 5 }} target="_blank">
+              <Link disabled={programId} to={programId ? programIssueLink(issueId, issueNum, programId) : issueLink(issueId, 'story', issueNum)} style={{ marginRight: 5 }} target="_blank">
           #
                 {issueNum}
               </Link>
