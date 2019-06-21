@@ -469,11 +469,11 @@ public class IssueServiceImpl implements IssueService {
                 issueListDTOPage = PageUtil.buildPageInfoWithPageInfoList(issueIdPage,
                         issueAssembler.issueDoToIssueListDto(issueDOList, priorityMap, statusMapDTOMap, issueTypeDTOMap));
             } else {
-                issueListDTOPage = new PageInfo<>();
+                issueListDTOPage = new PageInfo<>(new ArrayList<>());
             }
             return issueListDTOPage;
         } else {
-            return new PageInfo<>();
+            return new PageInfo<>(new ArrayList<>());
         }
     }
 

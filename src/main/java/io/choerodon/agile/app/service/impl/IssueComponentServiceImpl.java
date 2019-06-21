@@ -158,7 +158,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
             }
             return componentForListDTOPage;
         } else {
-            return new PageInfo<>();
+            return new PageInfo<>(new ArrayList<>());
         }
 
     }
