@@ -430,13 +430,13 @@ public class SprintServiceImpl implements SprintService {
         //pageRequest.resetOrder("ai", new HashMap<>());
         switch (status) {
             case DONE:
-                reportIssuePage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() -> reportMapper.queryReportIssueIds(projectId, sprintId, startDate, actualEndDate, true));
+                reportIssuePage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> reportMapper.queryReportIssueIds(projectId, sprintId, startDate, actualEndDate, true));
                 break;
             case UNFINISHED:
-                reportIssuePage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() -> reportMapper.queryReportIssueIds(projectId, sprintId, startDate, actualEndDate, false));
+                reportIssuePage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> reportMapper.queryReportIssueIds(projectId, sprintId, startDate, actualEndDate, false));
                 break;
             case REMOVE:
-                reportIssuePage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() -> reportMapper.queryRemoveIssueIdsDuringSprintWithOutSubEpicIssue(sprint));
+                reportIssuePage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> reportMapper.queryRemoveIssueIdsDuringSprintWithOutSubEpicIssue(sprint));
                 break;
             default:
                 break;

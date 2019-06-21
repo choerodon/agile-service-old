@@ -7,8 +7,6 @@ import io.choerodon.agile.app.assembler.StoryMapAssembler;
 import io.choerodon.agile.app.service.StoryMapService;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.feign.UserFeignClient;
-import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.StoryMapMapper;
 import io.choerodon.agile.infra.mapper.StoryMapWidthMapper;
 import io.choerodon.agile.infra.repository.IssueRepository;
@@ -32,9 +30,6 @@ public class StoryMapServiceImpl implements StoryMapService {
     private StoryMapMapper storyMapMapper;
 
     @Autowired
-    private UserFeignClient userFeignClient;
-
-    @Autowired
     private IssueRepository issueRepository;
 
     @Autowired
@@ -45,9 +40,6 @@ public class StoryMapServiceImpl implements StoryMapService {
 
     @Autowired
     private StoryMapWidthMapper storyMapWidthMapper;
-
-    @Autowired
-    private IssueMapper issueMapper;
 
     @Autowired
     private UserRepository userRepository;

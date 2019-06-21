@@ -458,7 +458,7 @@ public class IssueServiceImpl implements IssueService {
             //pageRequest.resetOrder(SEARCH, order);
             pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), SEARCH, order));
             PageInfo<Long> issueIdPage = PageHelper.startPage(pageRequest.getPage(),
-                    pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() -> issueMapper.queryIssueIdsListWithSub
+                    pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> issueMapper.queryIssueIdsListWithSub
                     (projectId, searchDTO, searchSql, searchDTO.getAssigneeFilterIds()));
             PageInfo<IssueListDTO> issueListDTOPage;
             if (issueIdPage.getList() != null && !issueIdPage.getList().isEmpty()) {
@@ -1594,7 +1594,7 @@ public class IssueServiceImpl implements IssueService {
         }
         Long activeSprintId = onlyActiveSprint ? getActiveSprintId(projectId) : null;
         PageInfo<IssueNumDO> issueDOPage = PageHelper.startPage(pageRequest.getPage(),
-                pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() -> issueMapper.
+                pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> issueMapper.
                 queryIssueByOption(projectId, issueId, issueNum, activeSprintId, self, content));
         if (self && issueNumDO != null) {
             issueDOPage.getList().add(0, issueNumDO);
@@ -2061,7 +2061,7 @@ public class IssueServiceImpl implements IssueService {
         pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), SEARCH, new HashMap<>()));
         //pageRequest.resetOrder(SEARCH, new HashMap<>());
         PageInfo<IssueDO> issueDOPage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
-                pageRequest.getSort().toSql()).doSelectPageInfo(() -> issueMapper.listIssueWithoutSubToTestComponent(projectId, searchDTO.getSearchArgs(),
+                PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> issueMapper.listIssueWithoutSubToTestComponent(projectId, searchDTO.getSearchArgs(),
                 searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContents()));
         return handleIssueListTestDoToDto(issueDOPage, organizationId, projectId);
     }
@@ -2077,7 +2077,7 @@ public class IssueServiceImpl implements IssueService {
     public PageInfo<IssueListTestWithSprintVersionDTO> listIssueWithLinkedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
         pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), SEARCH, new HashMap<>()));
         //pageRequest.resetOrder(SEARCH, new HashMap<>());
-        PageInfo<IssueDO> issueDOPage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() ->
+        PageInfo<IssueDO> issueDOPage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() ->
                 issueMapper.listIssueWithLinkedIssues(projectId, searchDTO.getSearchArgs(),
                         searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContents()));
         return handleILTDTOToILTWSVDTO(projectId, handleIssueListTestDoToDto(issueDOPage, organizationId, projectId));
@@ -2146,7 +2146,7 @@ public class IssueServiceImpl implements IssueService {
             }
         }
         PageInfo<IssueNumDO> issueDOPage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
-                pageRequest.getSort().toSql()).doSelectPageInfo(() ->
+                PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() ->
                 issueMapper.queryIssueByOptionForAgile(projectId, issueId, issueNum, self, content));
         if (self && issueNumDO != null) {
             issueDOPage.getList().add(0, issueNumDO);
@@ -2190,7 +2190,7 @@ public class IssueServiceImpl implements IssueService {
         pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), SEARCH, new HashMap<>()));
         //pageRequest.resetOrder(SEARCH, new HashMap<>());
         PageInfo<Long> issueIds = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
-                pageRequest.getSort().toSql()).doSelectPageInfo(() -> issueMapper.listIssueIdsWithoutSubDetail(projectId, searchDTO.getSearchArgs(),
+                PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> issueMapper.listIssueIdsWithoutSubDetail(projectId, searchDTO.getSearchArgs(),
                 searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContents()));
         List<IssueComponentDetailDO> issueComponentDetailDOS = new ArrayList<>(issueIds.getList().size());
         if (issueIds.getList() != null && !issueIds.getList().isEmpty()) {
@@ -2498,7 +2498,7 @@ public class IssueServiceImpl implements IssueService {
         pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), "issue_page", new HashMap<>()));
         //pageRequest.resetOrder("issue_page", new HashMap<>());
         PageInfo<Long> featureCommonDOPage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
-                pageRequest.getSort().toSql()).doSelectPageInfo(() ->
+                PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() ->
                 issueMapper.selectFeatureIdsByPage(programId, searchDTO)
         );
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
