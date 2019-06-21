@@ -169,7 +169,7 @@ class ScrumBoardHome extends Component {
         this.setState({
           checkResult: res,
         });
-        if (res) {
+        if (res && value !== '') {
           callback('看板名称重复');
         } else {
           callback();
@@ -507,46 +507,50 @@ class ScrumBoardHome extends Component {
             </Modal>
           ) : null
         }
-        <Sidebar
-          title="创建看板"
-          visible={addBoard}
-          onCancel={() => {
-            this.setState({
-              addBoard: false,
-            });
-          }}
-          okText="创建"
-          cancelText="取消"
-          onOk={this.handleCreateBoard.bind(this)}
-        >
-          <Content
-            style={{ padding: 0 }}
-            title={`创建项目“${AppState.currentMenuType.name}”的看板`}
-            description="请在下面输入看板名称，创建一个新的board。新的board会默认为您创建'待处理'、'处理中'、'已完成'三个列，同时将todo、doing、done三个类别的状态自动关联入三个列中。"
-            link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/sprint/create-kanban/"
+        {addBoard ? (
+          <Sidebar
+            title="创建看板"
+            visible={addBoard}
+            onCancel={() => {
+              this.setState({
+                addBoard: false,
+              });
+            }}
+            okText="创建"
+            cancelText="取消"
+            onOk={this.handleCreateBoard.bind(this)}
           >
-            <Form>
-              <FormItem>
-                {getFieldDecorator('name', {
-                  rules: [{
-                    required: true, message: '看板名是必填的',
-                  }, {
-                    validator: this.checkBoardNameRepeat,
-                  }],
-                })(
-                  <Input
-                    style={{
-                      width: 512,
-                    }}
-                    ref={(input) => { this.boardInput = input; }}
-                    label="看板名称"
-                    maxLength={30}
-                  />,
-                )}
-              </FormItem>
-            </Form>
-          </Content>
-        </Sidebar>
+            <Content
+              style={{ padding: 0 }}
+              title={`创建项目“${AppState.currentMenuType.name}”的看板`}
+              description="请在下面输入看板名称，创建一个新的board。新的board会默认为您创建'待处理'、'处理中'、'已完成'三个列，同时将todo、doing、done三个类别的状态自动关联入三个列中。"
+              link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/sprint/create-kanban/"
+            >
+              <Form>
+                <FormItem>
+                  {getFieldDecorator('name', {
+                    rules: [{
+                      required: true,
+                      whitespace: true,
+                      message: '看板名是必填的',
+                    }, {
+                      validator: this.checkBoardNameRepeat,
+                    }],
+                  })(
+                    <Input
+                      style={{
+                        width: 512,
+                      }}
+                      ref={(input) => { this.boardInput = input; }}
+                      label="看板名称"
+                      maxLength={30}
+                    />,
+                  )}
+                </FormItem>
+              </Form>
+            </Content>
+          </Sidebar>
+        ) : null}
       </Page>
     );
   }

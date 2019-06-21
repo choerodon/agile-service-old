@@ -41,7 +41,7 @@ class Undistributed extends Component {
     const projectId = AppState.currentMenuType.id;
     this.setState({ loading: true });
     const { current, pageSize } = pagination;
-    axios.get(`/agile/v1/projects/${projectId}/issues/undistributed?size=${pageSize}&page=${current - 1}`)
+    axios.get(`/agile/v1/projects/${projectId}/issues/undistributed?size=${pageSize}&page=${current}`)
       .then((res) => {
         const {
           list, total, pageNum,
