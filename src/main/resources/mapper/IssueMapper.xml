@@ -657,13 +657,13 @@
                 AND ai.issue_id in (
                 SELECT aisr.issue_id FROM agile_issue_sprint_rel aisr,agile_sprint as2
                 where aisr.sprint_id = as2.sprint_id
-                AND as2.sprint_name LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.sprint}) )
+                AND as2.sprint_name LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.sprint}) ,'%') )
             </if>
             <if test='searchDTO.searchArgs.label != null and searchDTO.searchArgs.label != "" '>
                 AND ai.issue_id in (
                 SELECT alir.issue_id FROM agile_label_issue_rel alir,agile_issue_label ail
                 where alir.label_id = ail.label_id
-                AND ail.label_name LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.label}) )
+                AND ail.label_name LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.label}) ,'%') )
             </if>
         </if>
         <if test='searchDTO.otherArgs != null'>
@@ -1958,7 +1958,7 @@
         AND ai.type_code in ('story', 'task', 'bug', 'issue_test')
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
-                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchArgs.summary})
+                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchArgs.summary}) ,'%')
             </if>
             <if test='searchArgs.assigneeId != null and searchArgs.assigneeId != ""'>
                 AND ai.assignee_id = #{searchArgs.assigneeId}
@@ -2071,7 +2071,7 @@
         WHERE ai.project_id = #{projectId} AND ai.type_code in ('story', 'task', 'bug', 'issue_test')
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
-                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchArgs.summary})
+                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchArgs.summary}))
             </if>
             <if test='searchArgs.assigneeId != null and searchArgs.assigneeId != ""'>
                 AND ai.assignee_id = #{searchArgs.assigneeId}
@@ -2178,7 +2178,7 @@
         WHERE ai.project_id = #{projectId} and ai.type_code in ('story', 'task', 'bug', 'issue_test')
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
-                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchArgs.summary})
+                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchArgs.summary}) ,'%')
             </if>
             <if test='searchArgs.assigneeId != null and searchArgs.assigneeId != ""'>
                 AND ai.assignee_id = #{searchArgs.assigneeId}
@@ -2777,7 +2777,7 @@
                 </foreach>
             </if>
             <if test='otherArgs.summary != null and otherArgs.summary != ""'>
-                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{otherArgs.summary})
+                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{otherArgs.summary}) ,'%')
             </if>
             <if test='otherArgs.label != null and otherArgs.label.size > 0'>
                 AND ai.issue_id in ( SELECT alir2.issue_id FROM
