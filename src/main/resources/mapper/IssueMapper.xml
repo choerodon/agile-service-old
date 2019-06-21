@@ -1955,7 +1955,7 @@
         from agile_issue_link ail, agile_issue ai2
         where ai2.project_id = #{projectId} and ail.issue_id = ai2.issue_id and ai2.apply_type = 'test'
         )
-        AND ai.type_code in ('story', 'task', 'bug', 'issue_test')
+        AND ai.type_code in ('story', 'task', 'bug', 'issue_test', 'issue_auto_test')
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
                 AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchArgs.summary}) ,'%')
@@ -2068,7 +2068,7 @@
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE ai.project_id = #{projectId} AND ai.type_code in ('story', 'task', 'bug', 'issue_test')
+        WHERE ai.project_id = #{projectId} AND ai.type_code in ('story', 'task', 'bug', 'issue_test', 'issue_auto_test')
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
                 AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchArgs.summary}) ,'%')
@@ -2175,7 +2175,7 @@
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE ai.project_id = #{projectId} and ai.type_code in ('story', 'task', 'bug', 'issue_test')
+        WHERE ai.project_id = #{projectId} and ai.type_code in ('story', 'task', 'bug', 'issue_test', 'issue_auto_test')
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
                 AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchArgs.summary}) ,'%')
