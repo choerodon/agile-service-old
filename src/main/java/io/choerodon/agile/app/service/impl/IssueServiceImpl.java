@@ -3,8 +3,9 @@ package io.choerodon.agile.app.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
-
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.assembler.*;
@@ -29,22 +30,14 @@ import io.choerodon.agile.infra.repository.*;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaClient;
-import io.choerodon.base.domain.Sort;
+import io.choerodon.base.domain.PageRequest;
 import io.choerodon.core.convertor.ConvertHelper;
-
-import com.github.pagehelper.PageInfo;
-
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
-
-import com.github.pagehelper.PageHelper;
-
-import io.choerodon.base.domain.PageRequest;
 import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -1515,6 +1508,7 @@ public class IssueServiceImpl implements IssueService {
                         versionIssueRelRepository.delete(versionIssueRelDO);
                     }
                 });
+                versionIssueRelES.forEach(rel -> rel.setRelationType(versionType));
                 handleVersionIssueRel(versionIssueRelES, projectId, issueId);
             } else {
                 VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
