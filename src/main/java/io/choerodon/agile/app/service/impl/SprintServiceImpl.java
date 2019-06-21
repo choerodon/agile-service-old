@@ -425,7 +425,7 @@ public class SprintServiceImpl implements SprintService {
         Date actualEndDate = sprint.getActualEndDate() == null ? new Date() : sprint.getActualEndDate();
         sprint.setActualEndDate(actualEndDate);
         Date startDate = sprint.getStartDate();
-        PageInfo<Long> reportIssuePage = new PageInfo<>();
+        PageInfo<Long> reportIssuePage = new PageInfo<>(new ArrayList<>());
         pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), "ai", new HashMap<>()));
         //pageRequest.resetOrder("ai", new HashMap<>());
         switch (status) {
@@ -443,7 +443,7 @@ public class SprintServiceImpl implements SprintService {
         }
         List<Long> reportIssueIds = reportIssuePage.getList();
         if (reportIssueIds.isEmpty()) {
-            return new PageInfo<>();
+            return new PageInfo<>(new ArrayList<>());
         }
         Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         //冲刺报告查询的issue

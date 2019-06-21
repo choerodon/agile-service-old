@@ -204,7 +204,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             return PageUtil.buildPageInfoWithPageInfoList(versionIds, productVersionPageAssembler.toTargetList(productVersionMapper.
                     queryVersionByIds(projectId, versionIds.getList()), ProductVersionPageDTO.class));
         } else {
-            return new PageInfo<>();
+            return new PageInfo<>(new ArrayList<>());
         }
     }
 

@@ -320,7 +320,7 @@ public class PiServiceImpl implements PiService {
         if (piDOPage.getList() != null && !piDOPage.getList().isEmpty()) {
             return PageUtil.buildPageInfoWithPageInfoList(piDOPage, ConvertHelper.convertList(piDOPage.getList(), PiDTO.class));
         } else {
-            return new PageInfo<>();
+            return new PageInfo<>(new ArrayList<>());
         }
     }
 
