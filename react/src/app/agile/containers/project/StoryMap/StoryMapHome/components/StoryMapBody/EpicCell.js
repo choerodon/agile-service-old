@@ -29,7 +29,7 @@ class EpicCell extends Component {
   }
 
   render() {
-    const { epicData, otherData } = this.props;
+    const { epicData, otherData, isLastEpic } = this.props;
     const { collapse, storys, feature } = otherData || {};
     const { isInProgram } = IsInProgramStore;
     const {
@@ -52,7 +52,8 @@ class EpicCell extends Component {
         zIndex: 6,
         background: 'white',
         boxShadow: 'inset 0 -1px 0 #D8D8D8,inset 1px 0 0 #D8D8D8', 
-        border: 'none',
+        border: 'none',     
+        ...isLastEpic ? { borderRight: 'solid 1px #D8D8D8' } : {},
         ...collapse ? { boxShadow: 'inset 1px 0 0 #D8D8D8' } : {}, 
       }}
       >
@@ -67,24 +68,35 @@ class EpicCell extends Component {
                 ...collapse ? { marginRight: 25 } : {},
               }}
               >
-                <Icon type={collapse ? 'navigate_next' : 'navigate_before'} onClick={this.handleCollapse} />
+                <Icon style={{ position: 'relative', zIndex: 10 }} type={collapse ? 'navigate_next' : 'navigate_before'} onClick={this.handleCollapse} />
               </div>
             </Fragment>
           )}
           {collapse
             ? (
-              <div style={{
-                width: 26,
-                overflow: 'hidden',
-                wordBreak: 'break-all',
-                whiteSpace: 'pre-wrap',
-                position: 'absolute',
-                top: 20,
-                marginLeft: 20,
-              }}
-              >
-                {`${epicData.epicName || '无史诗'} (${subIssueNum})`}
-              </div>
+              <Fragment>
+                <div style={{
+                  position: 'absolute',
+                  width: '100%',
+                  height: '100vh',
+                  top: 0,
+                  // background: 'wheat',
+                }} 
+                >
+                  <div style={{
+                    width: 26,
+                    overflow: 'hidden',
+                    wordBreak: 'break-all',
+                    whiteSpace: 'pre-wrap',
+                    position: 'absolute',
+                    top: 20,
+                    marginLeft: 20,
+                  }}
+                  >
+                    {`${epicData.epicName || '无史诗'} (${subIssueNum})`}
+                  </div>                  
+                </div>
+              </Fragment>
             ) : (
               <Fragment>
                 <Column style={{ minHeight: 'unset' }}>
