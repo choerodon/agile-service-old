@@ -53,7 +53,7 @@ class EpicCell extends Component {
         background: 'white',
         boxShadow: 'inset 0 -1px 0 #D8D8D8,inset 1px 0 0 #D8D8D8', 
         border: 'none',
-        ...collapse ? { boxShadow: 'none' } : {}, 
+        ...collapse ? { boxShadow: 'inset 1px 0 0 #D8D8D8' } : {}, 
       }}
       >
         <div style={{ display: 'flex', alignItems: 'center' }}>
