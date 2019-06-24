@@ -77,6 +77,7 @@ const { Text, Edit } = TextEditToggle;
           if (reloadIssue) {
             reloadIssue(issueId);
           }
+          this.loadIssuePriorities();
         });
     }
   };

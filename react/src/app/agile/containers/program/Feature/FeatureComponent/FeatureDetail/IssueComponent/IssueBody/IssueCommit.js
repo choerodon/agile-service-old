@@ -77,7 +77,7 @@ import { createCommit } from '../../../../../../../api/NewIssueApi';
                   });
                 }}
                 handleSave={() => this.handleCreateCommit()}
-                handleClickOutSide={() => this.handleCreateCommit()}
+                // handleClickOutSide={() => this.handleCreateCommit()}
               />
             </div>
           )

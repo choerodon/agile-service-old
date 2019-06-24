@@ -329,7 +329,7 @@ class AddComponent extends Component {
         state: 'originTypes',
       },
     };
-    const arr = state[[OPTION_FILTER[filter].state]].map(v => (
+    const arr = state[OPTION_FILTER[filter].state].map(v => (
       <Option key={v[OPTION_FILTER[filter].id]} value={v[OPTION_FILTER[filter].id]}>
         {v[OPTION_FILTER[filter].name]}
       </Option>
@@ -337,20 +337,8 @@ class AddComponent extends Component {
     if (addEmpty) {
       arr.unshift(
         <Option key="null" value="null">
-
-
-
-
-
-
-
-
-
-
-
-
           无
-                </Option>,
+        </Option>,
       );
     }
     return arr;
@@ -699,7 +687,7 @@ class AddComponent extends Component {
   loadQuickFilter() {
     const projectId = AppState.currentMenuType.id;
     const orgId = AppState.currentMenuType.organizationId;
-    axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?page=1&size=0`).then(res => this.setState({ originUsers: res.content }));
+    axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?page=1&size=0`).then(res => this.setState({ originUsers: res.list }));
     axios.get(`/issue/v1/projects/${projectId}/priority/list_by_org`).then(res => this.setState({ originPriorities: res }));
     axios.get(`/issue/v1/projects/${projectId}/schemes/query_status_by_project_id?apply_type=agile`).then(res => this.setState({ originStatus: res }));
     axios.get(`/agile/v1/projects/${projectId}/issues/epics/select_data`).then(res => this.setState({ originEpics: res }));
