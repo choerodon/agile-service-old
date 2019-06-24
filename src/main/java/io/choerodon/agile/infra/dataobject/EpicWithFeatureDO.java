@@ -16,6 +16,10 @@ public class EpicWithFeatureDO {
 
     private Long programId;
 
+    private String epicRank;
+
+    private Long epicRankObjectVersionNumber;
+
     private List<FeatureCommonDO> featureCommonDOList;
 
     public Long getIssueId() {
@@ -72,5 +76,21 @@ public class EpicWithFeatureDO {
 
     public Long getProgramId() {
         return programId;
+    }
+
+    public String getEpicRank() {
+        return epicRank;
+    }
+
+    public void setEpicRank(String epicRank) {
+        this.epicRank = epicRank;
+    }
+
+    public Long getEpicRankObjectVersionNumber() {
+        return epicRankObjectVersionNumber;
+    }
+
+    public void setEpicRankObjectVersionNumber(Long epicRankObjectVersionNumber) {
+        this.epicRankObjectVersionNumber = epicRankObjectVersionNumber;
     }
 }

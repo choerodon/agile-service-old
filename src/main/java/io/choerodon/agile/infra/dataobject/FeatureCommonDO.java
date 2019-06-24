@@ -46,6 +46,10 @@ public class FeatureCommonDO {
 
     private Long programId;
 
+    private String featureRank;
+
+    private Long featureRankObjectVersionNumber;
+
     public Long getIssueId() {
         return issueId;
     }
@@ -188,5 +192,21 @@ public class FeatureCommonDO {
 
     public Long getProgramId() {
         return programId;
+    }
+
+    public String getFeatureRank() {
+        return featureRank;
+    }
+
+    public void setFeatureRank(String featureRank) {
+        this.featureRank = featureRank;
+    }
+
+    public Long getFeatureRankObjectVersionNumber() {
+        return featureRankObjectVersionNumber;
+    }
+
+    public void setFeatureRankObjectVersionNumber(Long featureRankObjectVersionNumber) {
+        this.featureRankObjectVersionNumber = featureRankObjectVersionNumber;
     }
 }

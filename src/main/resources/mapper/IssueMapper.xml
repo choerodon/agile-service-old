@@ -888,10 +888,13 @@
             ai.epic_name,
             alv.name AS color,
             ai.object_version_number,
-            ai.epic_sequence
+            ai.epic_sequence,
+            ar.rank as epic_rank,
+            ar.object_version_number as epic_ran_object_version_number
         FROM agile_issue ai
         LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        left join agile_rank ar on ai.issue_id = ar.issue_id and ar.type = 'epic'
         WHERE ai.project_id = #{projectId} AND ai.type_code = 'issue_epic'
         ORDER BY ai.epic_sequence DESC
     </select>
@@ -1462,9 +1465,13 @@
         SELECT
         ai.issue_id,
         ai.summary,
-        ai.epic_id
+        ai.epic_id,
+        ar.rank as feature_rank,
+        ar.object_version_number as feature_rank_object_version_number
         FROM
-        agile_issue ai, agile_issue_status ais
+        agile_issue ai
+        left join agile_rank ar on ai.issue_id = ar.issue_id and ar.type = 'feature'
+        , agile_issue_status ais
         WHERE
         ai.program_id = #{programId}
         AND ai.type_code = 'feature' and ai.status_id = ais.status_id and ais.project_id = #{programId} and ais.category_code in ('todo', 'doing')
@@ -1477,8 +1484,12 @@
     <select id="selectFeatureListByAgileProject" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
         select
           ai.issue_id,
-          ai.summary
-        from agile_issue ai, agile_issue_status ais
+          ai.summary,
+          ar.rank as feature_rank,
+          ar.object_version_number as feature_rank_object_version_number
+        from agile_issue ai
+        left join agile_rank ar on ai.issue_id = ar.issue_id and ar.type = 'feature'
+        , agile_issue_status ais
         where ai.project_id = #{projectId}
           and ai.type_code = 'feature' and ai.status_id = ais.status_id and ais.project_id = #{projectId} and ais.category_code in ('todo', 'doing')
         ORDER BY ai.issue_id DESC
@@ -3599,10 +3610,13 @@
             ai.epic_name,
             alv.name AS color,
             ai.object_version_number,
-            ai.epic_sequence
+            ai.epic_sequence,
+            ar.rank as epic_rank,
+            ar.object_version_number as epic_rank_object_version_number
         FROM agile_issue ai
         LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
         LEFT JOIN agile_project_info api ON ai.program_id = api.project_id
+        left join agile_rank ar on ai.issue_id = ar.issue_id and ar.type = 'epic'
         WHERE ai.program_id = #{programId} AND ai.type_code = 'issue_epic'
         ORDER BY ai.epic_sequence DESC
     </select>

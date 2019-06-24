@@ -13,6 +13,8 @@ public class EpicDataDO {
     private String color;
     private Long objectVersionNumber;
     private Integer epicSequence;
+    private String epicRank;
+    private Long epicRankObjectVersionNumber;
 
     public Integer getEpicSequence() {
         return epicSequence;
@@ -84,5 +86,21 @@ public class EpicDataDO {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public String getEpicRank() {
+        return epicRank;
+    }
+
+    public void setEpicRank(String epicRank) {
+        this.epicRank = epicRank;
+    }
+
+    public Long getEpicRankObjectVersionNumber() {
+        return epicRankObjectVersionNumber;
+    }
+
+    public void setEpicRankObjectVersionNumber(Long epicRankObjectVersionNumber) {
+        this.epicRankObjectVersionNumber = epicRankObjectVersionNumber;
     }
 }

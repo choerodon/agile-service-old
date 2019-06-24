@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.choerodon.agile.infra.mapper.RankMapper">
+
+    <select id="selectRankByIssueId" resultType="io.choerodon.agile.infra.dataobject.RankDO">
+        select ar.*
+        from agile_rank ar
+        where ar.project_id = #{projectId}
+        and ar.type = #{type}
+        and ar.issue_id = #{issueId}
+    </select>
+
+    <select id="selectEpicIdsByProgram" resultType="java.lang.Long">
+        select ai.issue_id
+        from agile_issue ai
+        where ai.program_id = #{programId}
+        and ai.type_code = 'issue_epic'
+        order by ai.issue_id desc
+    </select>
+
+    <select id="selectEpicIdsByProject" resultType="java.lang.Long">
+        select ai.issue_id
+        from agile_issue ai
+        where ai.project_id = #{projectId}
+        and ai.type_code = 'issue_epic'
+        order by ai.issue_id desc
+    </select>
+
+    <select id="checkRankEmpty" resultType="java.lang.Long">
+        select ar.issue_id
+        from agile_rank ar
+        where ar.project_id = #{projectId}
+        and ar.type = #{type}
+    </select>
+
+    <insert id="batchInsertRank">
+        insert into agile_rank
+        (project_id, type, issue_id, rank)
+        values
+        <foreach collection="insertRankList" item="insertRank" index="index"
+                 separator=",">
+            (#{projectId}, #{type}, #{insertRank.issueId}, #{insertRank.rank})
+        </foreach>
+    </insert>
+
+    <select id="selectLeftRank" resultType="java.lang.String">
+        select ar.rank
+        from agile_rank ar
+        where ar.project_id = #{projectId}
+        and ar.type = #{type}
+        and ar.rank &lt; #{rank}
+        order by ar.rank desc
+        limit 1
+    </select>
+
+    <select id="selectRightRank" resultType="java.lang.String">
+        select ar.rank
+        from agile_rank ar
+        where ar.project_id = #{projectId}
+        and ar.type = #{type}
+        and ar.rank &gt; #{rank}
+        order by ar.rank
+        limit 1
+    </select>
+
+    <select id="selectMinRank" resultType="java.lang.String">
+        select ar.rank
+        from agile_rank ar
+        where ar.project_id = #{projectId}
+        and ar.type = #{type}
+        order by ar.rank
+        limit 1
+    </select>
+
+    <select id="selectFeatureIdsByProgram" resultType="java.lang.Long">
+        select ai.issue_id
+        from agile_issue ai
+        where ai.program_id = #{programId}
+        and ai.type_code = 'feature'
+        order by ai.issue_id desc
+    </select>
+
+    <select id="selectFeatureIdsByProject" resultType="java.lang.Long">
+        select ai.issue_id
+        from agile_issue ai
+        where ai.project_id = #{projectId}
+        and ai.type_code = 'feature'
+        order by ai.issue_id desc
+    </select>
+
+    <delete id="deleteRankByIssueId">
+        delete from agile_rank
+        where issue_id = #{issueId}
+    </delete>
+</mapper>

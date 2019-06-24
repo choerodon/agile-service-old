@@ -2,6 +2,7 @@ package io.choerodon.agile.api.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.Transient;
 import java.math.BigDecimal;
 
 /**
@@ -29,6 +30,12 @@ public class IssueFeatureDTO {
 
     @ApiModelProperty(value = "故事点和")
     private BigDecimal totalStoryPoints;
+
+    @Transient
+    private String featureRank;
+
+    @Transient
+    private Long featureRankObjectVersionNumber;
 
     public Long getIssueId() {
         return issueId;
@@ -84,5 +91,21 @@ public class IssueFeatureDTO {
 
     public void setTotalStoryPoints(BigDecimal totalStoryPoints) {
         this.totalStoryPoints = totalStoryPoints;
+    }
+
+    public String getFeatureRank() {
+        return featureRank;
+    }
+
+    public void setFeatureRank(String featureRank) {
+        this.featureRank = featureRank;
+    }
+
+    public Long getFeatureRankObjectVersionNumber() {
+        return featureRankObjectVersionNumber;
+    }
+
+    public void setFeatureRankObjectVersionNumber(Long featureRankObjectVersionNumber) {
+        this.featureRankObjectVersionNumber = featureRankObjectVersionNumber;
     }
 }

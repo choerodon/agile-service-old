@@ -48,6 +48,10 @@ public class EpicDataDTO {
     @ApiModelProperty(value = "史诗排序字段")
     private Integer epicSequence;
 
+    private String epicRank;
+
+    private Long epicRankObjectVersionNumber;
+
     public Integer getEpicSequence() {
         return epicSequence;
     }
@@ -150,5 +154,21 @@ public class EpicDataDTO {
 
     public BigDecimal getTotalEstimate() {
         return totalEstimate;
+    }
+
+    public String getEpicRank() {
+        return epicRank;
+    }
+
+    public void setEpicRank(String epicRank) {
+        this.epicRank = epicRank;
+    }
+
+    public Long getEpicRankObjectVersionNumber() {
+        return epicRankObjectVersionNumber;
+    }
+
+    public void setEpicRankObjectVersionNumber(Long epicRankObjectVersionNumber) {
+        this.epicRankObjectVersionNumber = epicRankObjectVersionNumber;
     }
 }

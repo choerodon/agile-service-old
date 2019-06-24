@@ -171,6 +171,18 @@ public class IssueDO extends BaseDTO {
     @Transient
     private String featureType;
 
+    @Transient
+    private String featureRank;
+
+    @Transient
+    private Long featureRankObjectVersionNumber;
+
+    @Transient
+    private String epicRank;
+
+    @Transient
+    private Long epicRankObjectVersionNumber;
+
     public List<LabelIssueRelDO> getLabelIssueRelDOS() {
         return labelIssueRelDOS;
     }
@@ -529,6 +541,38 @@ public class IssueDO extends BaseDTO {
 
     public String getFeatureType() {
         return featureType;
+    }
+
+    public String getFeatureRank() {
+        return featureRank;
+    }
+
+    public void setFeatureRank(String featureRank) {
+        this.featureRank = featureRank;
+    }
+
+    public Long getFeatureRankObjectVersionNumber() {
+        return featureRankObjectVersionNumber;
+    }
+
+    public void setFeatureRankObjectVersionNumber(Long featureRankObjectVersionNumber) {
+        this.featureRankObjectVersionNumber = featureRankObjectVersionNumber;
+    }
+
+    public String getEpicRank() {
+        return epicRank;
+    }
+
+    public void setEpicRank(String epicRank) {
+        this.epicRank = epicRank;
+    }
+
+    public Long getEpicRankObjectVersionNumber() {
+        return epicRankObjectVersionNumber;
+    }
+
+    public void setEpicRankObjectVersionNumber(Long epicRankObjectVersionNumber) {
+        this.epicRankObjectVersionNumber = epicRankObjectVersionNumber;
     }
 
     @Override

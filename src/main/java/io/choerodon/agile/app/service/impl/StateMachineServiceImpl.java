@@ -17,12 +17,16 @@ import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.common.utils.EnumUtil;
+import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
+import io.choerodon.agile.infra.dataobject.RankDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
+import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
+import io.choerodon.agile.infra.mapper.RankMapper;
 import io.choerodon.agile.infra.repository.FeatureRepository;
 import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.infra.repository.PiFeatureRepository;
@@ -92,6 +96,41 @@ public class StateMachineServiceImpl implements StateMachineService {
     private FeatureRepository featureRepository;
     @Autowired
     private PiFeatureRepository piFeatureRepository;
+    @Autowired
+    private UserFeignClient userFeignClient;
+    @Autowired
+    private RankMapper rankMapper;
+
+    private void insertEpicRank(Long projectId, Long issueId, String type) {
+        List<RankDO> rankDOList = new ArrayList<>();
+        String minRank = rankMapper.selectMinRank(projectId, type);
+        String rank = null;
+        if (minRank == null) {
+            rank = RankUtil.mid();
+        } else {
+            rank = RankUtil.genPre(minRank);
+        }
+        RankDO rankDO = new RankDO();
+        rankDO.setIssueId(issueId);
+        rankDO.setRank(rank);
+        rankDOList.add(rankDO);
+        rankMapper.batchInsertRank(projectId, type, rankDOList);
+    }
+
+    private void initRank(IssueCreateDTO issueCreateDTO, Long issueId, String type) {
+        if (issueCreateDTO.getProgramId() != null) {
+            List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(issueCreateDTO.getProgramId()), issueCreateDTO.getProgramId(), true).getBody();
+            if (projectRelationshipDTOList == null || projectRelationshipDTOList.isEmpty()) {
+                return;
+            }
+            for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
+                insertEpicRank(projectRelationshipDTO.getProjectId(), issueId, type);
+            }
+        } else if (issueCreateDTO.getProjectId() != null) {
+            insertEpicRank(issueCreateDTO.getProjectId(), issueId, type);
+        }
+    }
+
 
     /**
      * 创建issue，用于敏捷和测试
@@ -132,6 +171,10 @@ public class StateMachineServiceImpl implements StateMachineService {
         issueE.setApplyType(applyType);
         issueService.handleInitIssue(issueE, initStatusId, projectInfoE);
         Long issueId = issueRepository.create(issueE).getIssueId();
+        // 创建史诗，初始化排序
+        if ("issue_epic".equals(issueCreateDTO.getTypeCode())) {
+            initRank(issueCreateDTO, issueId, "epic");
+        }
 
         // if issueType is feature, create extends table
         if (ISSUE_FEATURE.equals(issueCreateDTO.getTypeCode())) {
@@ -145,6 +188,7 @@ public class StateMachineServiceImpl implements StateMachineService {
             if (issueCreateDTO.getPiId() != null && issueCreateDTO.getPiId() != 0L) {
                 piFeatureRepository.create(new PiFeatureE(issueId, issueCreateDTO.getPiId(), projectId));
             }
+            initRank(issueCreateDTO, issueId, "feature");
         }
 
         CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE);
