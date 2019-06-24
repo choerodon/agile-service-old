@@ -36,6 +36,7 @@ public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository 
         query.setVersionId(versionIssueRelDO.getVersionId());
         query.setIssueId(versionIssueRelDO.getIssueId());
         query.setProjectId(versionIssueRelDO.getProjectId());
+        query.setRelationType(versionIssueRelDO.getRelationType());
         return ConvertHelper.convert(versionIssueRelMapper.selectOne(query), VersionIssueRelE.class);
     }
 

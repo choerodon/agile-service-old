@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Icon, Button } from 'choerodon-ui';
+import { Icon, Button, Tooltip } from 'choerodon-ui';
 import { injectIntl } from 'react-intl';
 import WYSIWYGEditor from '../../../WYSIWYGEditor';
 import { text2Delta, delta2Html, returnBeforeTextUpload } from '../../../../common/utils';
@@ -119,16 +119,17 @@ import { updateIssue } from '../../../../api/NewIssueApi';
       const delta = delta2Html(description);
       return (
         <div className="c7n-content-wrapper" style={{ maxHeight: 400, overflow: 'auto' }}>
-          {/* <div
+          <div
             className="mt-10 c7n-description"
             role="none"
-          > */}
-          <WYSIWYGEditor
+          >
+            <IssueDescription data={delta} />          
+          </div>
+          {/* <WYSIWYGEditor
             mode="read"                
             value={text2Delta(editDes)}
             style={{ height: 'auto', width: '100%' }}
-          />
-          {/* </div> */}
+          /> */}
         </div>
       );
     }
@@ -159,27 +160,31 @@ import { updateIssue } from '../../../../api/NewIssueApi';
           }}
           />
           <div className="c7n-title-right" style={{ marginLeft: '14px', position: 'relative' }}>
-            <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ edit: true })}>
-              <Icon type="zoom_out_map icon" style={{ marginRight: 2 }} />
-            </Button>
-            <Button
-              style={{ padding: '0 6px' }}
-              className="leftBtn"
-              funcType="flat"
-              onClick={() => {
-                this.setState({
-                  editDesShow: true,
-                  editDes: description,
-                });
-              }}
-            >
-              <Icon
-                className="c7n-des-edit"
+            <Tooltip title="全屏编辑" getPopupContainer={triggerNode => triggerNode.parentNode}>
+              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ edit: true })}>
+                <Icon type="zoom_out_map icon" style={{ marginRight: 2 }} />
+              </Button>
+            </Tooltip>
+            <Tooltip title="编辑" getPopupContainer={triggerNode => triggerNode.parentNode.parentNode}>
+              <Button
+                style={{ padding: '0 6px' }}
+                className="leftBtn"
+                funcType="flat"
+                onClick={() => {
+                  this.setState({
+                    editDesShow: true,
+                    editDes: description,
+                  });
+                }}
+              >
+                <Icon
+                  className="c7n-des-edit"
                 // style={{ position: 'absolute', top: 8, right: -20 }}
-                role="none"
-                type="mode_edit icon"
-              />
-            </Button>
+                  role="none"
+                  type="mode_edit icon"
+                />
+              </Button>
+            </Tooltip>
           </div>
         </div>
         {this.renderDes()}

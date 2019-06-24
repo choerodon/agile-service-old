@@ -284,6 +284,7 @@ class DailyLog extends Component {
             <div className="line-info">
               <Select                
                 defaultOpen
+                getPopupContainer={trigger => trigger.parentNode}
                 label="耗费时间*"
                 value={dissipate && dissipate.toString()}
                 mode="combobox"
@@ -432,7 +433,7 @@ class DailyLog extends Component {
                   <div className="clear-p-mw">
                     <WYSIWYGEditor                      
                       value={delta}
-                      style={{ height: 200, width: '100%' }}
+                      style={{ width: '100%' }}
                       onChange={(value) => {
                         this.setState({ delta: value });
                       }}

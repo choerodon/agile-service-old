@@ -140,6 +140,11 @@ class ScrumBoardSetting extends Component {
               display: 'flex', flexDirection: 'column', height: '100%', overflow: 'auto',
             }}
             defaultActiveKey="1"
+            onChange={(key) => {
+              if (key === '4') {
+                this.input.focus();
+              }
+            }}
           >
             <TabPane tab="列配置" key="1">
               <Spin spinning={loading}>
@@ -159,7 +164,12 @@ class ScrumBoardSetting extends Component {
               ) : null
             }
             <TabPane tab="看板名称" key="4">
-              <EditBoardName editBoardNameDisabled={!hasPermission} />
+              <EditBoardName
+                editBoardNameDisabled={!hasPermission}
+                saveRef={(ref) => {
+                  this.input = ref;
+                }}
+              />
             </TabPane>
           </Tabs>
         </Content>

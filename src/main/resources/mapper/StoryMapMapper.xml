@@ -72,7 +72,7 @@
                  close=")">
             #{epicId}
         </foreach>
-        order by ai.issue_id desc
+        order by ai.issue_id desc, feature_info.issue_id desc
     </select>
 
     <select id="selectFeatureByNoEpicByProject" resultType="io.choerodon.agile.infra.dataobject.FeatureCommonDO">
@@ -88,6 +88,7 @@
         and ai.project_id = #{projectId}
         and (ai.epic_id is null or ai.epic_id = 0)
         and ai.issue_id = af.issue_id
+        order by ai.issue_id desc
     </select>
 
     <select id="selectFeatureByNoEpicByProgram" resultType="io.choerodon.agile.infra.dataobject.FeatureCommonDO">

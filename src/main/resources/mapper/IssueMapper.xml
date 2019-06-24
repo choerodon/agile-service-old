@@ -17,7 +17,8 @@
         <id column="story_points" property="storyPoints"/>
         <id column="estimate_time" property="estimateTime"/>
         <id column="remaining_time" property="remainingTime"/>
-        <id column="issue_epic_name" property="epicName"/>
+        <id column="epic_name" property="epicName"/>
+        <id column="issue_epic_name" property="issueEpicName"/>
         <id column="color_value" property="color"/>
         <id column="epic_color" property="epicColor"/>
         <id column="parent_issue_num" property="parentIssueNum"/>
@@ -576,13 +577,13 @@
         WHERE ai.project_id = #{projectId} AND ai.apply_type = 'agile'
         <if test='searchDTO.searchArgs != null'>
             <if test='searchDTO.searchArgs.summary != null and searchDTO.searchArgs.summary != "" '>
-                AND position(#{searchDTO.searchArgs.summary} IN ai.summary)
+                AND ai.summary LIKE concat(concat('%',#{searchDTO.searchArgs.summary}),'%')
             </if>
             <if test='searchDTO.searchArgs.storyPoints != null and searchDTO.searchArgs.storyPoints != "" '>
-                AND position(#{searchDTO.searchArgs.storyPoints} IN ai.story_points)
+                AND ai.story_points LIKE concat(concat('%',#{searchDTO.searchArgs.storyPoints}),'%')
             </if>
             <if test='searchDTO.searchArgs.remainingTime != null and searchDTO.searchArgs.remainingTime != "" '>
-                AND position(#{searchDTO.searchArgs.remainingTime} IN ai.remaining_time)
+                AND ai.remaining_time LIKE concat(concat('%',#{searchDTO.searchArgs.remainingTime}),'%')
             </if>
         </if>
         <if test='searchDTO.onlyStory != null and searchDTO.onlyStory'>
@@ -637,27 +638,32 @@
             <if test='searchDTO.searchArgs.component != null and searchDTO.searchArgs.component != "" '>
                 AND ai.issue_id in (
                 SELECT acir.issue_id FROM agile_component_issue_rel acir,agile_issue_component aic
-                where acir.component_id = aic.component_id and position(#{searchDTO.searchArgs.component} IN aic.name) )
+                where acir.component_id = aic.component_id
+                AND aic.name LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.component}) ,'%') )
             </if>
             <if test='searchDTO.searchArgs.epic != null and searchDTO.searchArgs.epic != "" '>
                 AND ai.issue_id in (
                 SELECT ai3.issue_id FROM agile_issue ai3 ,agile_issue ai4
-                where ai3.epic_id = ai4.issue_id and position(#{searchDTO.searchArgs.epic} IN ai4.epic_name) )
+                where ai3.epic_id = ai4.issue_id
+                AND ai4.epic_name LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.epic}) ,'%') )
             </if>
             <if test='searchDTO.searchArgs.version != null and searchDTO.searchArgs.version != "" '>
                 AND ai.issue_id in (
                 SELECT avir.issue_id FROM agile_version_issue_rel avir,agile_product_version apv
-                where avir.version_id = apv.version_id and position(#{searchDTO.searchArgs.version} IN apv.name) )
+                where avir.version_id = apv.version_id
+                AND apv.name LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.version}) ,'%') )
             </if>
             <if test='searchDTO.searchArgs.sprint != null and searchDTO.searchArgs.sprint != "" '>
                 AND ai.issue_id in (
                 SELECT aisr.issue_id FROM agile_issue_sprint_rel aisr,agile_sprint as2
-                where aisr.sprint_id = as2.sprint_id and position(#{searchDTO.searchArgs.sprint} IN as2.sprint_name) )
+                where aisr.sprint_id = as2.sprint_id
+                AND as2.sprint_name LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.sprint}) ,'%') )
             </if>
             <if test='searchDTO.searchArgs.label != null and searchDTO.searchArgs.label != "" '>
                 AND ai.issue_id in (
                 SELECT alir.issue_id FROM agile_label_issue_rel alir,agile_issue_label ail
-                where alir.label_id = ail.label_id and position(#{searchDTO.searchArgs.label} IN ail.label_name) )
+                where alir.label_id = ail.label_id
+                AND ail.label_name LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.label}) ,'%') )
             </if>
         </if>
         <if test='searchDTO.otherArgs != null'>
@@ -804,7 +810,7 @@
         )search where 1=1
         <if test='searchDTO.searchArgs != null'>
             <if test='searchDTO.searchArgs.issueNum != null and searchDTO.searchArgs.issueNum != ""'>
-                AND position(#{searchDTO.searchArgs.issueNum} IN search.issue_num)
+                AND search.issue_num LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.issueNum}) ,'%')
             </if>
         </if>
         <if test='searchDTO.contents != null and searchDTO.contents.size != 0'>
@@ -1949,10 +1955,10 @@
         from agile_issue_link ail, agile_issue ai2
         where ai2.project_id = #{projectId} and ail.issue_id = ai2.issue_id and ai2.apply_type = 'test'
         )
-        AND ai.type_code in ('story', 'task', 'bug', 'issue_test')
+        AND ai.type_code in ('story', 'task', 'bug', 'issue_test', 'issue_auto_test')
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
-                AND position(#{searchArgs.summary} IN ai.summary)
+                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchArgs.summary}) ,'%')
             </if>
             <if test='searchArgs.assigneeId != null and searchArgs.assigneeId != ""'>
                 AND ai.assignee_id = #{searchArgs.assigneeId}
@@ -2036,7 +2042,7 @@
         )search where 1=1
         <if test='searchArgs != null'>
             <if test='searchArgs.issueNum != null and searchArgs.issueNum != ""'>
-                AND position(#{searchArgs.issueNum} IN search.issue_num)
+                AND search.issue_num LIKE CONCAT(CONCAT('%' ,#{searchArgs.issueNum}) ,'%')
             </if>
         </if>
         <if test='contents != null and contents.size != 0'>
@@ -2062,10 +2068,10 @@
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE ai.project_id = #{projectId} AND ai.type_code in ('story', 'task', 'bug', 'issue_test')
+        WHERE ai.project_id = #{projectId} AND ai.type_code in ('story', 'task', 'bug', 'issue_test', 'issue_auto_test')
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
-                AND position(#{searchArgs.summary} IN ai.summary)
+                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchArgs.summary}) ,'%')
             </if>
             <if test='searchArgs.assigneeId != null and searchArgs.assigneeId != ""'>
                 AND ai.assignee_id = #{searchArgs.assigneeId}
@@ -2149,7 +2155,7 @@
         )search where 1=1
         <if test='searchArgs != null'>
             <if test='searchArgs.issueNum != null and searchArgs.issueNum != ""'>
-                AND position(#{searchArgs.issueNum} IN search.issue_num)
+                AND search.issue_num LIKE CONCAT(CONCAT('%' ,#{searchArgs.issueNum}) ,'%')
             </if>
         </if>
         <if test='contents != null and contents.size != 0'>
@@ -2169,10 +2175,10 @@
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        WHERE ai.project_id = #{projectId} and ai.type_code in ('story', 'task', 'bug', 'issue_test')
+        WHERE ai.project_id = #{projectId} and ai.type_code in ('story', 'task', 'bug', 'issue_test', 'issue_auto_test')
         <if test='searchArgs != null'>
             <if test='searchArgs.summary != null and searchArgs.summary != "" '>
-                AND position(#{searchArgs.summary} IN ai.summary)
+                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchArgs.summary}) ,'%')
             </if>
             <if test='searchArgs.assigneeId != null and searchArgs.assigneeId != ""'>
                 AND ai.assignee_id = #{searchArgs.assigneeId}
@@ -2256,7 +2262,7 @@
         )search where 1=1
         <if test='searchArgs != null'>
             <if test='searchArgs.issueNum != null and searchArgs.issueNum != ""'>
-                AND position(#{searchArgs.issueNum} IN search.issue_num)
+                AND search.issue_num LIKE CONCAT(CONCAT('%' ,#{searchArgs.issueNum}) ,'%')
             </if>
         </if>
         <if test='contents != null and contents.size != 0'>
@@ -2771,7 +2777,7 @@
                 </foreach>
             </if>
             <if test='otherArgs.summary != null and otherArgs.summary != ""'>
-                AND position(#{otherArgs.summary} IN ai.summary)
+                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{otherArgs.summary}) ,'%')
             </if>
             <if test='otherArgs.label != null and otherArgs.label.size > 0'>
                 AND ai.issue_id in ( SELECT alir2.issue_id FROM
@@ -2785,7 +2791,7 @@
         )search where 1=1
         <if test='otherArgs != null'>
             <if test='otherArgs.issueNum != null and otherArgs.issueNum != ""'>
-                AND position(#{otherArgs.issueNum} IN search.issue_num)
+                AND search.issue_num LIKE CONCAT(CONCAT('%' ,#{otherArgs.issueNum}) ,'%')
             </if>
         </if>
         <if test='contents != null and contents.size != 0'>
@@ -3448,7 +3454,7 @@
         </if>) issue_page where 1=1
         <if test='searchDTO.searchArgs != null'>
             <if test='searchDTO.searchArgs.issueNum != null and searchDTO.searchArgs.issueNum != ""'>
-                AND position(#{searchDTO.searchArgs.issueNum} IN issue_page.issue_num)
+                AND issue_page.issue_num LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.issueNum}) ,'%')
             </if>
         </if>
         <if test='searchDTO.contents != null and searchDTO.contents.size != 0'>

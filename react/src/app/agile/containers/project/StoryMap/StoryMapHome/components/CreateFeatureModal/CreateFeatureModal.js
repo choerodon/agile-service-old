@@ -21,6 +21,15 @@ class CreateFeatureModal extends Component {
     };
   }
 
+  componentDidUpdate(prevProps) {
+    // eslint-disable-next-line react/destructuring-assignment
+    if (this.props.visible && !prevProps.visible) {
+      setTimeout(() => {
+        this.input.focus();
+      });   
+    }
+  }
+
   /**
    *
    * 创建特性
@@ -113,7 +122,7 @@ class CreateFeatureModal extends Component {
                 // }
                 ],
               })(
-                <Input label="特性名称" maxLength={44} />,
+                <Input ref={(input) => { this.input = input; }} label="特性名称" maxLength={44} />,
               )}
             </FormItem>
             <FormItem style={{ width: 520 }}>

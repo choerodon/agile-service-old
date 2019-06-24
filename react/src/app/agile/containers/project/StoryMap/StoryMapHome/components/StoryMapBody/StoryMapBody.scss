@@ -7,7 +7,7 @@
     // min-height: 100%;
     table-layout: fixed;
     position: relative;
-    border-collapse: separate;
+    // border-collapse: separate;
     /* the default option */
     border-spacing: 0;
 
@@ -29,6 +29,7 @@
     td {
       border-right: solid 1px #D8D8D8;
       border-bottom: solid 1px #D8D8D8;
+      // border: solid 1px #D8D8D8;
       vertical-align: top;
       position: relative;
       overflow: visible;

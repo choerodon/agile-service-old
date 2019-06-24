@@ -197,14 +197,14 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     public PageInfo<ProductVersionPageDTO> queryByProjectId(Long projectId, PageRequest pageRequest, SearchDTO searchDTO) {
         //过滤查询和排序
         PageInfo<Long> versionIds = PageHelper.startPage(pageRequest.getPage(),
-                pageRequest.getSize()).doSelectPageInfo(() -> productVersionMapper.
+                pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> productVersionMapper.
                 queryVersionIdsByProjectId(projectId, searchDTO.getSearchArgs(),
                         searchDTO.getAdvancedSearchArgs(), searchDTO.getContents()));
         if ((versionIds.getList() != null) && !versionIds.getList().isEmpty()) {
             return PageUtil.buildPageInfoWithPageInfoList(versionIds, productVersionPageAssembler.toTargetList(productVersionMapper.
                     queryVersionByIds(projectId, versionIds.getList()), ProductVersionPageDTO.class));
         } else {
-            return new PageInfo<>();
+            return new PageInfo<>(new ArrayList<>());
         }
     }
 

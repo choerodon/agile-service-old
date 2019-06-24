@@ -247,9 +247,7 @@ class ReleaseDetail extends Component {
               </span>
               <span>
                 {
-                  ReleaseStore.getOriginIssue.filter(
-                    issues => issues.statusMapDTO && issues.statusMapDTO.id === item && item.id,
-                  ).length
+                  ReleaseStore.getOriginIssue.filter(issues => (issues.statusMapDTO && item.id && issues.statusMapDTO.id === item.id)).length
                 }
                 {'个'}
               </span>

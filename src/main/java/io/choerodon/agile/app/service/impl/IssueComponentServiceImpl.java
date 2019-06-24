@@ -3,6 +3,7 @@ package io.choerodon.agile.app.service.impl;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueComponentValidator;
 import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
+import io.choerodon.agile.infra.common.utils.PageUtil;
 import io.choerodon.agile.infra.repository.ComponentIssueRelRepository;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.ComponentIssueRelDO;
@@ -136,7 +137,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         Boolean condition = handleSearchUser(searchDTO, projectId);
         if (condition) {
             PageInfo<ComponentForListDTO> componentForListDTOPage = ConvertPageHelper.convertPageInfo(PageHelper.startPage(pageRequest.getPage(),
-                    pageRequest.getSize(), pageRequest.getSort().toSql()).doSelectPageInfo(() ->
+                    pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() ->
                     issueComponentMapper.queryComponentByOption(projectId, noIssueTest, componentId, searchDTO.getSearchArgs(),
                             searchDTO.getAdvancedSearchArgs(), searchDTO.getContents())), ComponentForListDTO.class);
             if ((componentForListDTOPage.getList() != null) && !componentForListDTOPage.getList().isEmpty()) {
@@ -157,7 +158,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
             }
             return componentForListDTOPage;
         } else {
-            return new PageInfo<>();
+            return new PageInfo<>(new ArrayList<>());
         }
 
     }

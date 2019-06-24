@@ -157,7 +157,7 @@ public class ArtServiceImpl implements ArtService {
         if (artDOPage.getList() != null && !artDOPage.getList().isEmpty()) {
             return PageUtil.buildPageInfoWithPageInfoList(artDOPage, ConvertHelper.convertList(artDOPage.getList(), ArtDTO.class));
         } else {
-            return new PageInfo<>();
+            return new PageInfo<>(new ArrayList<>());
         }
     }
 

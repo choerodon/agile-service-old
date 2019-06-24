@@ -46,10 +46,10 @@
         </if>
         <if test='searchArgs != null'>
             <if test='searchArgs.name != null and searchArgs.name != "" '>
-                AND position(#{searchArgs.name} IN aic.name)
+                AND aic.name LIKE CONCAT(CONCAT('%' ,#{searchArgs.name}) ,'%')
             </if>
             <if test='searchArgs.description != null and searchArgs.description != ""'>
-                AND position(#{searchArgs.description} IN aic.description)
+                AND aic.description LIKE CONCAT(CONCAT('%' ,#{searchArgs.description}) ,'%')
             </if>
         </if>
         <if test='advancedSearchArgs != null'>

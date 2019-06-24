@@ -32,13 +32,11 @@ const OBJECTSCHEMEINDEX = asyncRouter(() => import('./organization/ObjectScheme'
 const PAGEINDEX = asyncRouter(() => import('./organization/Page'));
 
 
-const PROJECTKANBAN = asyncRouter(() => import('./project/Kanban')); 
-const PROJECTPIAIMS = asyncRouter(() => import('./project/PIAims'));
-const PROJECTARTCALENDAR = asyncRouter(() => import('./project/ArtCalendar'));
-const PROJECTROADMAP = asyncRouter(() => import('./project/RoadMap'));
-const PROJECTBOARD = asyncRouter(() => import('./project/Board'));
-
 class AGILEIndex extends React.Component {
+  componentDidCatch(error, info) {
+    // Choerodon.prompt(error.message);
+  }
+  
   componentDidMount() {
     // 切换项目查是否在项目群中
     RunWhenProjectChange(IsInProgramStore.refresh);
@@ -80,11 +78,6 @@ class AGILEIndex extends React.Component {
           <Route path={`${match.url}/workCalendar`} component={WORKCALENDARINDEX} />
           <Route path={`${match.url}/objectScheme`} component={OBJECTSCHEMEINDEX} />
           <Route path={`${match.url}/page`} component={PAGEINDEX} />
-          <Route path={`${match.url}/kanban_project`} component={PROJECTKANBAN} />         
-          <Route path={`${match.url}/pi_project`} component={PROJECTPIAIMS} />                 
-          <Route path={`${match.url}/artCalendar_project`} component={PROJECTARTCALENDAR} />          
-          <Route path={`${match.url}/roadMap_project`} component={PROJECTROADMAP} />        
-          <Route path={`${match.url}/board_project`} component={PROJECTBOARD} /> 
           
           <Route path="*" component={nomatch} />
         </Switch>

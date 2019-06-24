@@ -49,7 +49,7 @@ class DataLog extends Component {
 
   getMode1(datalog) {
     const {
-      field, oldString, oldValue, newString, newValue, categoryCode,
+      field, oldString, oldValue, newString, newValue, categoryCode, isCusLog,
     } = datalog;
     if ((!oldValue && oldValue !== 0) && (newValue || newValue === 0)) {
       // null -> xxx
@@ -69,7 +69,7 @@ class DataLog extends Component {
         return '更新';
       }
       // 自定义字段
-      if (field && field.split('_')[0] === 'cus') {
+      if (isCusLog) {
         return '将';
       }
       if (field === 'status') {
@@ -100,7 +100,7 @@ class DataLog extends Component {
         }
       }
       // 自定义字段
-      if (field && field.split('_')[0] === 'cus') {
+      if (isCusLog) {
         return '移除';
       }
     } else {
@@ -141,7 +141,7 @@ class DataLog extends Component {
         return '移除';
       }
       // 自定义字段
-      if (field && field.split('_')[0] === 'cus') {
+      if (isCusLog) {
         return '将';
       }
       return '';
@@ -149,9 +149,9 @@ class DataLog extends Component {
   }
 
   getMode2(datalog) {
-    const { field, fieldName } = datalog;
+    const { field, fieldName, isCusLog } = datalog;
     // 自定义字段
-    if (field && field.split('_')[0] === 'cus') {
+    if (isCusLog) {
       return ` 【${fieldName}】 `;
     }
     if (field === 'status') {
@@ -163,7 +163,7 @@ class DataLog extends Component {
   // ['由', '']
   getMode3(datalog) {
     const {
-      field, oldString, oldValue, newString, newValue,
+      field, oldString, oldValue, newString, newValue, isCusLog,
     } = datalog;
     if ((!oldValue && oldValue !== 0) && (newValue || newValue === 0)) {
       // null -> xxx
@@ -171,7 +171,7 @@ class DataLog extends Component {
     } else if ((oldValue || oldValue === 0) && (newValue || newValue === 0)) {
       // xxx -> yyy
       // 自定义字段
-      if (field && field.split('_')[0] === 'cus') {
+      if (isCusLog) {
         return '由';
       }
       if (['Epic Link', 'issuetype', 'Sprint', 'Pi', 'Story Points', 'timeestimate', 'summary', 'Epic Name', 'priority', 'assignee', 'reporter'].includes(field)) {
@@ -209,7 +209,7 @@ class DataLog extends Component {
         return '';
       }
       // 自定义字段
-      if (field && field.split('_')[0] === 'cus') {
+      if (isCusLog) {
         return '由';
       }
       return '';
@@ -219,7 +219,7 @@ class DataLog extends Component {
   // 原值，只有移除和修改可能出现
   getMode4(datalog) {
     const {
-      field, oldString, oldValue, newString, newValue,
+      field, oldString, oldValue, newString, newValue, isCusLog,
     } = datalog;
     if ((!oldValue && oldValue !== 0) && (newValue || newValue === 0)) {
       // null -> xxx
@@ -236,7 +236,7 @@ class DataLog extends Component {
         return '';
       }
       // 自定义字段
-      if (field && field.split('_')[0] === 'cus') {
+      if (isCusLog) {
         return ` 【${oldString}】 `;
       }
     } else if ((oldValue || oldValue === 0) && (!newValue && newValue !== 0)) {
@@ -280,7 +280,7 @@ class DataLog extends Component {
         return ` 【${oldString}】 `;
       }
       // 自定义字段
-      if (field && field.split('_')[0] === 'cus') {
+      if (isCusLog) {
         return oldString ? ` 【${oldString}】 ` : ' 空 ';
       }
       return '';
@@ -290,7 +290,7 @@ class DataLog extends Component {
   // ['改变为', '为', '']
   getMode5(datalog) {
     const {
-      field, oldString, oldValue, newString, newValue,
+      field, oldString, oldValue, newString, newValue, isCusLog,
     } = datalog;
     if ((!oldValue && oldValue !== 0) && (newValue || newValue === 0)) {
       // null -> xxx
@@ -298,7 +298,7 @@ class DataLog extends Component {
         return '为';
       }
       // 自定义字段
-      if (field && field.split('_')[0] === 'cus') {
+      if (isCusLog) {
         return '为';
       }
       return '';
@@ -308,7 +308,7 @@ class DataLog extends Component {
         return '改变为';
       }
       // 自定义字段
-      if (field && field.split('_')[0] === 'cus') {
+      if (isCusLog) {
         return '改变为';
       }
       return '';
@@ -332,7 +332,7 @@ class DataLog extends Component {
         return '改变为';
       }
       // 自定义字段
-      if (field && field.split('_')[0] === 'cus') {
+      if (isCusLog) {
         return '改变为';
       }
       return '';
@@ -342,7 +342,7 @@ class DataLog extends Component {
   // 新值，只有新增和修改可能出现
   getMode6(datalog) {
     const {
-      field, oldString, oldValue, newString, newValue,
+      field, oldString, oldValue, newString, newValue, isCusLog,
     } = datalog;
     const { typeCode } = this.props;
     const TYPEARR = {
@@ -370,7 +370,7 @@ class DataLog extends Component {
         return ` 【${decodeURI(attachnewArr.slice(2, attachnewArr.length).join('_'))}】 `;
       }
       // 自定义字段
-      if (field && field.split('_')[0] === 'cus') {
+      if (isCusLog) {
         return ` 【${newString}】 `;
       }
     } else if ((oldValue || oldValue === 0) && (newValue || newValue === 0)) {
@@ -385,7 +385,7 @@ class DataLog extends Component {
         return '';
       }
       // 自定义字段
-      if (field && field.split('_')[0] === 'cus') {
+      if (isCusLog) {
         return ` 【${newString}】 `;
       }
     } else if ((oldValue || oldValue === 0) && (!newValue && newValue !== 0)) {
@@ -421,7 +421,7 @@ class DataLog extends Component {
         return '';
       }
       // 自定义字段
-      if (field && field.split('_')[0] === 'cus') {
+      if (isCusLog) {
         return newString ? ` 【${newString}】 ` : ' 空 ';
       }
     }

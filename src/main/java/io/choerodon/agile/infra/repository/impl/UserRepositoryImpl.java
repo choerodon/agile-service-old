@@ -94,7 +94,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public PageInfo<UserDTO> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO) {
         ResponseEntity<PageInfo<UserDTO>> users = userFeignClient.pagingQueryUsersByRoleIdOnProjectLevel(page, size, roleId, sourceId, roleAssignmentSearchDTO);
-        return users != null ? users.getBody() : new PageInfo<>();
+        return users != null ? users.getBody() : new PageInfo<>(new ArrayList<>());
     }
 
     @Override

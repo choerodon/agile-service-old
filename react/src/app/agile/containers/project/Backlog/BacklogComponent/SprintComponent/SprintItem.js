@@ -75,11 +75,16 @@ class SprintItem extends Component {
         displayList = start;
       }
     }
+    const visible = Object.keys(BacklogStore.getClickIssueDetail).length > 0;
 
     return (
       <div
         role="none"
-        style={{
+        style={visible ? {
+          // 440 => EditIssue最小宽度
+          // 11px => 拖动组件最小宽度
+          width: 'calc(100% - 429px)',
+        } : {
           width: '100%',
         }}
         onClick={() => {

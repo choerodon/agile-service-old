@@ -1,6 +1,6 @@
 .react-quill-editor {
   .quill {
-    height: 100%;
+    height: calc(100% - 42px) !important;
   }
 
   //.ql-container {
@@ -52,7 +52,7 @@
 
   /* link end */
   &-read {
-    .ql-editor>* {
+    .ql-editor >* {
       cursor: auto;
     }
 
