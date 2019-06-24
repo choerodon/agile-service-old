@@ -30,7 +30,16 @@ class FeatureCell extends Component {
     const hasAddingFeature = find(featureCommonDOList, { adding: true });
     const { isInProgram } = IsInProgramStore;
     return (
-      <Cell style={{ ...collapse ? { borderBottom: 'none', borderTop: 'none' } : {} }}>
+      <Cell style={{
+        position: 'sticky',
+        top: 60,
+        zIndex: 6,
+        background: 'white',
+        boxShadow: 'inset 0 -1px 0 #D8D8D8,inset 1px 0 0 #D8D8D8',
+        border: 'none',       
+        ...collapse ? { boxShadow: 'none' } : {}, 
+      }}
+      >
         {collapse ? null : (
           <div style={{ display: 'flex' }}>        
             {adding ? null : (

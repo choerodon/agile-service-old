@@ -45,7 +45,17 @@ class EpicCell extends Component {
       subIssueNum = Math.max(storys.length + Object.keys(feature).length - 1, 0);// 减去none
     }
     return (
-      <Cell style={{ paddingLeft: 0, position: 'relative', ...collapse ? { borderBottom: 'none' } : {} }}>
+      <Cell style={{
+        paddingLeft: 0,
+        position: 'sticky',
+        top: 0,
+        zIndex: 6,
+        background: 'white',
+        boxShadow: 'inset 0 -1px 0 #D8D8D8,inset 1px 0 0 #D8D8D8', 
+        border: 'none',
+        ...collapse ? { boxShadow: 'none' } : {}, 
+      }}
+      >
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {!adding && (
             <Fragment>
