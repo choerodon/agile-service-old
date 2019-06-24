@@ -180,6 +180,8 @@ public class IssueServiceImpl implements IssueService {
     private StoryMapWidthMapper storyMapWidthMapper;
     @Autowired
     private StoryMapMapper storyMapMapper;
+    @Autowired
+    private RankMapper rankMapper;
 
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
@@ -802,6 +804,8 @@ public class IssueServiceImpl implements IssueService {
         //删除日志信息
         dataLogDeleteByIssueId(projectId, issueId);
         issueRepository.delete(projectId, issueE.getIssueId());
+        //删除rank数据
+        rankMapper.deleteRankByIssueId(issueId);
         //删除issue发送消息
         IssuePayload issuePayload = new IssuePayload();
         issuePayload.setIssueId(issueId);
