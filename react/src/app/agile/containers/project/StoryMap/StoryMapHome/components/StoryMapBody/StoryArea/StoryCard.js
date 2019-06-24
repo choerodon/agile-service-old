@@ -3,9 +3,6 @@ import PropTypes from 'prop-types';
 import { Icon, Tooltip } from 'choerodon-ui';
 import { DragSource } from 'react-dnd';
 import { find } from 'lodash';
-import { Link } from 'react-router-dom';
-import { programIssueLink, issueLink, getProjectId } from '../../../../../../../common/utils';
-import { CardWidth, CardHeight, CardMargin } from '../../../Constants';
 import { storyMove } from '../../../../../../../api/StoryMapApi';
 import AutoScroll from '../../../../../../../common/AutoScroll';
 import Card from '../Card';
@@ -26,15 +23,15 @@ class StoryCard extends Component {
     });
   }
 
-  setZIndex=() => {
-    this.container.style.zIndex = 9999;   
+  setZIndex = () => {
+    this.container.style.zIndex = 9999;
   }
 
-  resetZIndex=() => {
-    this.container.style.zIndex = 'unset';   
+  resetZIndex = () => {
+    this.container.style.zIndex = 'unset';
   }
 
-  saveRef=(ref) => {
+  saveRef = (ref) => {
     const { connectDragSource } = this.props;
     connectDragSource(ref);
     this.container = ref;
@@ -62,24 +59,29 @@ class StoryCard extends Component {
     });
   }
 
-  render() {   
+  handleClick = () => {
+    const { story } = this.props;
+    StoryMapStore.setClickIssue(story);
+  }
+
+  render() {
     const {
-      story, connectDragSource, index, rowIndex, 
+      story, connectDragSource, index, rowIndex,
     } = this.props;
     const { issueId, issueNum, summary } = story;
     return (
-      <Card className={`c7nagile-StoryMap-StoryCard ${index === 0 && rowIndex === 0 ? 'minimapCard' : ''}`} saveRef={this.saveRef} onMouseDown={this.handleMouseDown}>
-        <Icon type="close" className="c7nagile-StoryMap-StoryCard-delete" onClick={this.handlRemoveStory} />        
+      <Card className={`c7nagile-StoryMap-StoryCard ${index === 0 && rowIndex === 0 ? 'minimapCard' : ''}`} saveRef={this.saveRef} onClick={this.handleClick} onMouseDown={this.handleMouseDown}>
+        <Icon type="close" className="c7nagile-StoryMap-StoryCard-delete" onClick={this.handlRemoveStory} />
         <div className="summary">
           <Tooltip title={summary} getPopupContainer={trigger => trigger.parentNode}>
-            {issueId && issueNum ? (
+            {/* {issueId && issueNum ? (
               <Link to={issueLink(issueId, 'story', issueNum)} style={{ marginRight: 5 }} target="_blank">
-                  #
+                #
                 {issueNum}
               </Link>
-            ) : null}
+            ) : null} */}
             {summary}
-          </Tooltip>       
+          </Tooltip>
         </div>
       </Card>
     );
@@ -100,7 +102,7 @@ export default DragSource(
           component.resetZIndex();
         });
       }
-      
+
       return { story: props.story, version: props.version };
     },
     endDrag(props, monitor) {
@@ -126,7 +128,7 @@ export default DragSource(
         featureId: 0, // 要关联的特性id
         // 问题id列表，移动到特性，配合featureId使用
         featureIssueIds: [],
-      };   
+      };
       // 史诗，特性，版本都不变时
       if (epicId === targetEpicId && featureId === targetFeatureId) {
         if (StoryMapStore.swimLine === 'version') {
@@ -165,16 +167,16 @@ export default DragSource(
             }
           }
         }
-        
-        if (!find(storyMapVersionDOList, { versionId: targetVersionId })) {          
+
+        if (!find(storyMapVersionDOList, { versionId: targetVersionId })) {
           storyMapDragDTO.versionIssueIds = [issueId];
           // 拖到未规划
           if (targetVersionId === 'none') {
-            storyMapDragDTO.versionId = 0;          
+            storyMapDragDTO.versionId = 0;
           } else {
-            storyMapDragDTO.versionId = targetVersionId;            
+            storyMapDragDTO.versionId = targetVersionId;
           }
-        }       
+        }
       }
 
       // console.log(storyMapDragDTO);
