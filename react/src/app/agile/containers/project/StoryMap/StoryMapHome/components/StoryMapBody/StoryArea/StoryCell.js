@@ -50,7 +50,7 @@ class StoryCell extends Component {
 
     return (
       !storyCollapse && (
-        <Cell lastCollapse={lastCollapse} collapse={collapse}>
+        <Cell epicIndex={epicIndex} lastCollapse={lastCollapse} collapse={collapse}>
           {collapse ? null : (
             <div style={{
               minHeight: ColumnMinHeight, height: '100%', display: 'flex', flexDirection: 'column',

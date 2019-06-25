@@ -5,15 +5,15 @@ import { CellPadding } from '../../Constants';
 class Cell extends Component {
   render() {
     const {
-      children, style, lastCollapse, collapse, 
+      children, style, lastCollapse, collapse, epicIndex,
     } = this.props;
     return (
       <td
         {...this.props}
         style={{
           padding: CellPadding, 
-          boxShadow: 'inset 0 -1px 0 #D8D8D8,inset 1px 0 0 #D8D8D8', 
-          border: 'none',     
+          boxShadow: epicIndex === 0 ? 'inset 0 -1px 0 #D8D8D8' : 'inset 0 -1px 0 #D8D8D8,inset 1px 0 0 #D8D8D8', 
+          // border: 'none',     
           // ...isLastEpic ? { borderRight: 'solid 1px #D8D8D8' } : {},
           ...lastCollapse ? { boxShadow: 'inset 0 -1px 0 #D8D8D8' } : {},
           ...collapse ? { boxShadow: 'none' } : {},

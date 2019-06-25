@@ -56,14 +56,11 @@ class TitleCell extends Component {
     const { collapse } = otherData || {};
 
     return (
-      <Cell style={{
-        borderRight: 'none',
-        borderBottom: storyCollapse ? '1px solid #D8D8D8' : 'none',
+      <Cell style={{        
+        // borderBottom: storyCollapse ? '1px solid #D8D8D8' : 'none',
         padding: '10px 0',
-        boxShadow: 'none',
-        borderLeft: 'solid 1px #D8D8D8',
-        ...lastCollapse ? { borderLeft: 'none' } : { },
-        // ...collapse ? { borderBottom: isLastRow && storyCollapse ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {},
+        boxShadow: storyCollapse ? 'inset 0 -1px 0 #D8D8D8,inset 1px 0 0 #D8D8D8' : 'inset 1px 0 0 #D8D8D8',
+        ...lastCollapse || epicIndex === 0 ? { boxShadow: storyCollapse ? 'inset 0 -1px 0 #D8D8D8' : 'none' } : { },       
         ...showTitle ? {
           position: 'sticky',
           zIndex: 5,

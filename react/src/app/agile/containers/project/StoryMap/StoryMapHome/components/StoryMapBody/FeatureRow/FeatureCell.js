@@ -19,13 +19,13 @@ class FeatureCell extends Component {
   }
 
   handleCreateFeature=(newFeature) => {
-    const { EpicIndex } = this.props;
-    StoryMapStore.afterCreateFeature(EpicIndex, newFeature);
+    const { epicIndex } = this.props;
+    StoryMapStore.afterCreateFeature(epicIndex, newFeature);
   }
 
   render() {
     const {
-      epicData, otherData, isLastColumn, lastCollapse,
+      epicData, otherData, isLastColumn, lastCollapse, epicIndex,
     } = this.props;
     const { featureCommonDOList, adding } = epicData;
     const { collapse } = otherData || {};
@@ -33,6 +33,7 @@ class FeatureCell extends Component {
     const { isInProgram } = IsInProgramStore;
     return (
       <Cell
+        epicIndex={epicIndex}
         lastCollapse={lastCollapse}
         collapse={collapse}
         style={{

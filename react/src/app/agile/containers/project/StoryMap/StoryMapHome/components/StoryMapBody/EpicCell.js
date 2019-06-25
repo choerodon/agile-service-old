@@ -29,7 +29,9 @@ class EpicCell extends Component {
   }
 
   render() {
-    const { epicData, otherData, lastCollapse } = this.props;
+    const {
+      epicData, otherData, lastCollapse, index, 
+    } = this.props;
     const { collapse, storys, feature } = otherData || {};
     const { isInProgram } = IsInProgramStore;
     const {
@@ -46,6 +48,7 @@ class EpicCell extends Component {
     }
     return (
       <Cell 
+        epicIndex={index}
         lastCollapse={lastCollapse}
         collapse={collapse}
         style={{

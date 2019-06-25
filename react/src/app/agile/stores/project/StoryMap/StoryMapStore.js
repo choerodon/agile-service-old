@@ -315,10 +315,10 @@ class StoryMapStore {
     this.storyMapData.epicWithFeature[currentIndex].featureCommonDOList.push(feature);
   }
 
-  @action afterCreateFeature(EpicIndex, newFeature) {
-    const { length } = this.storyMapData.epicWithFeature[EpicIndex].featureCommonDOList;
-    this.storyMapData.epicWithFeature[EpicIndex].featureCommonDOList[length - 1] = newFeature;
-    const { issueId: epicId } = this.storyMapData.epicWithFeature[EpicIndex];
+  @action afterCreateFeature(epicIndex, newFeature) {
+    const { length } = this.storyMapData.epicWithFeature[epicIndex].featureCommonDOList;
+    this.storyMapData.epicWithFeature[epicIndex].featureCommonDOList[length - 1] = newFeature;
+    const { issueId: epicId } = this.storyMapData.epicWithFeature[epicIndex];
     extendObservable(this.storyData[epicId].feature, {
       [newFeature.issueId]: {
         storys: [],
