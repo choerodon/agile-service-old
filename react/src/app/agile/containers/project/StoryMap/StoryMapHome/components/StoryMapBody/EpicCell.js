@@ -29,7 +29,7 @@ class EpicCell extends Component {
   }
 
   render() {
-    const { epicData, otherData, isLastEpic } = this.props;
+    const { epicData, otherData, lastCollapse } = this.props;
     const { collapse, storys, feature } = otherData || {};
     const { isInProgram } = IsInProgramStore;
     const {
@@ -45,17 +45,16 @@ class EpicCell extends Component {
       subIssueNum = Math.max(storys.length + Object.keys(feature).length - 1, 0);// 减去none
     }
     return (
-      <Cell style={{
-        paddingLeft: 0,
-        position: 'sticky',
-        top: 0,
-        zIndex: 6,
-        background: 'white',
-        boxShadow: 'inset 0 -1px 0 #D8D8D8,inset 1px 0 0 #D8D8D8', 
-        border: 'none',     
-        ...isLastEpic ? { borderRight: 'solid 1px #D8D8D8' } : {},
-        ...collapse ? { boxShadow: 'inset 1px 0 0 #D8D8D8' } : {}, 
-      }}
+      <Cell 
+        lastCollapse={lastCollapse}
+        collapse={collapse}
+        style={{
+          paddingLeft: 0,
+          position: 'sticky',
+          top: 0,
+          zIndex: 6,
+          background: 'white',          
+        }}
       >
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {!adding && (
@@ -77,10 +76,13 @@ class EpicCell extends Component {
               <Fragment>
                 <div style={{
                   position: 'absolute',
-                  width: '100%',
-                  height: '100vh',
+                  width: 'calc(100% - 1px)',
+                  height: 'calc(100vh)',
                   top: 0,
-                  // background: 'wheat',
+                  cursor: 'move',
+                  borderLeft: lastCollapse ? 'none' : 'solid 1px #D8D8D8',
+                  borderRight: 'solid 1px #D8D8D8',
+                  background: 'white',
                 }} 
                 >
                   <div style={{
@@ -90,7 +92,7 @@ class EpicCell extends Component {
                     whiteSpace: 'pre-wrap',
                     position: 'absolute',
                     top: 20,
-                    marginLeft: 20,
+                    marginLeft: 20,                 
                   }}
                   >
                     {`${epicData.epicName || '无史诗'} (${subIssueNum})`}

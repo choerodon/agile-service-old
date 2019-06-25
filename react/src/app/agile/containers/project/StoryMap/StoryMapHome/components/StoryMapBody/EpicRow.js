@@ -12,7 +12,15 @@ class EpicRow extends Component {
 
     return (
       <tr style={{ height: 60 }}>
-        {epicList.map((epicData, index) => <EpicCell isLastEpic={index === epicList.length - 1} index={index} epicData={epicData} otherData={storyData[epicData.issueId]} />)}
+        {epicList.map((epicData, index) => (
+          <EpicCell 
+            lastCollapse={index > 0 ? storyData[epicList[index - 1].issueId].collapse : false}
+            isLastEpic={index === epicList.length - 1}
+            index={index}
+            epicData={epicData}
+            otherData={storyData[epicData.issueId]}
+          />
+        ))}
       </tr>
     );
   }

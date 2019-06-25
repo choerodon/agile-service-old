@@ -51,7 +51,7 @@ class TitleCell extends Component {
 
   render() {
     const {
-      otherData, showTitle, nextShowTitle, storyCollapse, isLastColumn, isLastRow,
+      otherData, showTitle, storyCollapse, epicIndex, isLastRow, lastCollapse,
     } = this.props;
     const { collapse } = otherData || {};
 
@@ -60,17 +60,17 @@ class TitleCell extends Component {
         borderRight: 'none',
         borderBottom: storyCollapse ? '1px solid #D8D8D8' : 'none',
         padding: '10px 0',
-        ...collapse ? { borderLeft: '1px solid #D8D8D8', borderBottom: isLastRow && storyCollapse ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {},
+        boxShadow: 'none',
+        borderLeft: 'solid 1px #D8D8D8',
+        ...lastCollapse ? { borderLeft: 'none' } : { },
+        // ...collapse ? { borderBottom: isLastRow && storyCollapse ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {},
         ...showTitle ? {
           position: 'sticky',
           zIndex: 5,
           left: 0,         
           // background: 'white',
         } : {},        
-        // 最后一列或下一个展示版本或折叠
-        ...isLastColumn || nextShowTitle || collapse ? {
-          borderRight: '1px solid #D8D8D8',
-        } : {},      
+       
       }}
       >
         {collapse ? null : (
