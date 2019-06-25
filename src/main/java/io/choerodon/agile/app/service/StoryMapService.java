@@ -10,7 +10,7 @@ import io.choerodon.agile.api.dto.StoryMapDragDTO;
  */
 public interface StoryMapService {
 
-    JSONObject queryStoryMap(Long projectId, Long organizationId);
+    JSONObject queryStoryMap(Long projectId, Long organizationId, SearchDTO searchDTO);
 
     JSONObject queryStoryMapDemand(Long projectId, SearchDTO searchDTO);
 

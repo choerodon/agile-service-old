@@ -20,7 +20,7 @@ public interface StoryMapMapper {
 
     List<FeatureCommonDO> selectFeatureByNoEpicByProgram(@Param("programId") Long programId);
 
-    List<StoryMapStoryDO> selectStoryList(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds, @Param("featureIds") List<Long> featureIds);
+    List<StoryMapStoryDO> selectStoryList(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds, @Param("featureIds") List<Long> featureIds, @Param("searchDTO") SearchDTO searchDTO);
 
     List<StoryMapStoryDO> selectDemandStoryList(@Param("projectId") Long projectId, @Param("searchDTO") SearchDTO searchDTO);
 }
