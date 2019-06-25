@@ -42,7 +42,7 @@ import WikiItem from '../../Component/WikiItem';
       <div>
         {
           wikies && wikies.wikiRelationList
-          && wikies.wikiRelationList.map(wiki => (
+          && wikies.wikiRelationList.filter(item => item.spaceId).map(wiki => (
             <WikiItem
               key={wiki.id}
               wiki={wiki}
@@ -89,7 +89,7 @@ import WikiItem from '../../Component/WikiItem';
               visible={addWikiShow}
               onCancel={() => this.setState({ addWikiShow: false })}
               onOk={this.onWikiCreate}
-              checkIds={wikies ? wikies.wikiRelationList.map(wiki => wiki.wikiUrl) : []}
+              checkIds={wikies ? wikies.wikiRelationList.map(wiki => wiki.spaceId) : []}
             />
           ) : null
         }

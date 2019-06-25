@@ -16,8 +16,6 @@ class Wiki extends Component {
     this.state = {
       createLoading: false,
       data: [],
-      expendIds: [],
-      idAddress: {},
       selectedRows: [],
       selectedRowKeys: props.checkIds || [],
       loading: false,
@@ -28,64 +26,21 @@ class Wiki extends Component {
     this.loadWiki();
   }
 
-  loadWiki = async (id) => {
+  loadWiki = async () => {
     const menu = AppState.currentMenuType;
-    const { loginName } = AppState.userInfo;
-    const { name, id: proId, organizationId } = menu;
-    const { data, idAddress } = this.state;
+    const { id: proId } = menu;
     this.setState({
       loading: true,
     });
-    const postData = {
-      organizationId,
-      projectName: name,
-      username: loginName,
-    };
-    if (id) {
-      postData.menuId = id;
-    }
-    const dataSource = [];
-    const newData = await axios.post(`/wiki/v1/projects/${proId}/space/menus`, postData);
+    const newData = await axios.get(`/knowledge/v1/projects/${proId}/work_space/project_space`);
     if (newData && !newData.failed) {
-      let idIndex = idAddress;
-      newData.forEach((item, index) => {
-        idIndex = {
-          ...idIndex,
-          [item.id]: idAddress[id] ? [...idAddress[id], index] : [index],
-        };
-        dataSource.push({
-          id: item.id,
-          children: item.children ? [] : false,
-          href: item.a_attr ? item.a_attr.href : '',
-          name: item.text,
-        });
+      this.setState({
+        data: newData,
+        loading: false,
       });
-      if (id) {
-        let goalData = data;
-        if (idIndex[id] && idIndex[id].length) {
-          idIndex[id].forEach((i, index) => {
-            if (index === 0) {
-              goalData = goalData[i];
-            } else {
-              goalData = goalData.children[i];
-            }
-          });
-        }
-        goalData.children = dataSource;
-        this.setState({
-          data,
-          idAddress: idIndex,
-          loading: false,
-        });
-      } else {
-        this.setState({
-          data: dataSource,
-          idAddress: idIndex,
-          loading: false,
-        });
-      }
     } else {
       this.setState({
+        data: [],
         loading: false,
       });
     }
@@ -114,16 +69,6 @@ class Wiki extends Component {
     });
   };
 
-  onExpand = (expand, data) => {
-    const { expendIds } = this.state;
-    if (expand && expendIds.indexOf(data.id) === -1) {
-      this.setState({
-        expendIds: [...expendIds, data.id],
-      });
-      this.loadWiki(data.id);
-    }
-  };
-
   handleCreateWiki = () => {
     const menu = AppState.currentMenuType;
     const { id: proId } = menu;
@@ -135,12 +80,13 @@ class Wiki extends Component {
     if (selectedRows && selectedRows.length) {
       const postData = [];
       selectedRows.forEach((row) => {
-        if (checkIds.indexOf(row.href) === -1) {
+        if (checkIds.indexOf(row.id) === -1) {
           postData.push({
             issueId,
             wikiName: row.name,
-            wikiUrl: row.href,
+            wikiUrl: '',
             projectId: proId,
+            spaceId: row.id,
           });
         }
       });
@@ -150,7 +96,7 @@ class Wiki extends Component {
         });
         onOk();
       }).catch(() => {
-        Choerodon.prompt('关联wiki文档失败');
+        Choerodon.prompt('关联文档失败');
         this.setState({
           createLoading: false,
         });
@@ -185,7 +131,7 @@ class Wiki extends Component {
     return (
       <Sidebar
         className="c7n-wikiDoc"
-        title="添加wiki文档"
+        title="添加文档"
         visible={visible || false}
         onOk={this.handleCreateWiki}
         onCancel={onCancel}
@@ -194,13 +140,13 @@ class Wiki extends Component {
         confirmLoading={createLoading}
       >
         <div>
-          <p>{`你当前项目为"${name}"，wiki文档的内容所属为当前项目。`}</p>
+          <p>{`你当前项目为"${name}"，文档的内容所属为当前项目。`}</p>
           <Table
             dataSource={data}
             columns={this.getColumn()}
             rowSelection={rowSelection}
-            onExpand={this.onExpand}
-            rowKey={record => record.href}
+            // onExpand={this.onExpand}
+            rowKey={record => record.id}
             pagination={false}
             loading={loading}
           />

@@ -25,14 +25,13 @@ class Log extends Component {
         <Icon type="filter_none" className="c7n-wikiItem-icon" />
         <a
           className={`c7n-wikiItem-text c7n-wikiItem-${type}`}
-          href={`${wikiHost}${wiki.wikiUrl}`}
           target="_blank"
           rel="noopener noreferrer"
         >
           {wiki.wikiName}
         </a>
         <Popconfirm
-          title="确认删除wiki链接吗？"
+          title="确认删除文档关联吗？"
           onConfirm={() => onDeleteWiki(wiki.id)}
           okText="确认"
           cancelText="取消"
