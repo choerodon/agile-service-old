@@ -181,6 +181,7 @@ class StoryMapHome extends Component {
           <Button onClick={this.handleFullScreen.bind(this)} icon={isFullScreen ? 'exit_full_screen' : 'zoom_out_map'}>
             {isFullScreen ? '退出全屏' : '全屏'}
           </Button>
+          {!StoryMapStore.isFullScreen && (
           <Button
             type="primary"
             funcType="raised"
@@ -190,6 +191,7 @@ class StoryMapHome extends Component {
           >
             需求池
           </Button>
+          )}
         </Header>
         <Content style={{
           padding: 0, paddingBottom: 49, 

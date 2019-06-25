@@ -158,7 +158,7 @@ class AdvancedSearch extends Component {
     render() {
       const editFilterInfo = IssueStore.getEditFilterInfo;
       const projectInfo = IssueStore.getProjectInfo;
-      const issueTypes = IssueStore.getIssueTypes;
+      const issueTypes = IssueStore.getIssueTypes.filter(item => item.typeCode !== 'feature');
       const statusLists = IssueStore.getIssueStatus;
       const prioritys = IssueStore.getIssuePriority;      
       const selectedIssueType = IssueStore.getSelectedIssueType;

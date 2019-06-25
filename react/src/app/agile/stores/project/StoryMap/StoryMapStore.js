@@ -208,8 +208,9 @@ class StoryMapStore {
       if (targetFeature) {
         targetFeature.storys.push(story);
         // 故事按照version泳道分类
-        // if (this.swimLine === 'version') {
+        // if (this.swimLine === 'version') {          
         if (storyMapVersionDOList.length === 0) {
+          this.addStoryNumToVersion('none');
           if (!targetFeature.version.none) {
             targetFeature.version.none = [];
           }
@@ -222,11 +223,22 @@ class StoryMapStore {
           //     [versionId]: [],
           //   }); 
           // }
+          this.addStoryNumToVersion(versionId);
           targetFeature.version[versionId].push(story);
         });
       }
 
       // }
+    }
+  }
+
+  @action addStoryNumToVersion(versionId) {
+    const version = find(this.versionList, { versionId: 'none' });
+    if (version) {
+      if (!version.storyNum) {
+        version.storyNum = 0;
+      }
+      version.storyNum += 1;
     }
   }
 

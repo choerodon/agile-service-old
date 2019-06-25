@@ -28,7 +28,7 @@ class StoryColumn extends Component {
       >
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           {storys && storys.map((story, index) => <StoryCard index={index} rowIndex={rowIndex} story={story} version={version} />)}
-          <CreateStory onCreate={this.handleCreateStory} epic={epic} feature={feature} version={version} />
+          {!StoryMapStore.isFullScreen && <CreateStory onCreate={this.handleCreateStory} epic={epic} feature={feature} version={version} />}
         </div>
       </Column>
     );
