@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.BoardValidator;
 import io.choerodon.agile.app.service.BoardColumnService;
@@ -24,6 +25,7 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.statemachine.dto.InputDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -651,7 +653,17 @@ public class BoardServiceImpl implements BoardService {
         if (piDO != null) {
             activePiId = piDO.getId();
         }
+        List<Long> epicIds = new ArrayList<>();
         List<ColumnAndIssueDO> columns = boardColumnMapper.selectBoardByProgram(projectId, boardId, activePiId, searchDTO);
+        columns.forEach(columnAndIssueDO -> {
+            columnAndIssueDO.getSubStatuses().forEach(subStatus -> {
+                subStatus.getIssues().forEach(issueForBoardDO -> {
+                    if (issueForBoardDO.getEpicId() != null && !epicIds.contains(issueForBoardDO.getEpicId())) {
+                        epicIds.add(issueForBoardDO.getEpicId());
+                    }
+                });
+            });
+        });
         // get status map from organization
         Map<Long, StatusMapDTO> statusMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
@@ -660,6 +672,7 @@ public class BoardServiceImpl implements BoardService {
         columns.sort(Comparator.comparing(ColumnAndIssueDO::getSequence));
         result.put("columnsData", columns);
         result.put("activePi", piDO);
+        result.put("epicInfo", !epicIds.isEmpty() ? boardColumnMapper.selectEpicBatchByIds(epicIds) : null);
         handleUserSetting(boardId, projectId);
         return result;
     }
