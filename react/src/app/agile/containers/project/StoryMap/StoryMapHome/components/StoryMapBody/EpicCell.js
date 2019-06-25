@@ -9,7 +9,8 @@ import EpicCard from './EpicCard';
 import Cell from './Cell';
 import AddCard from './AddCard';
 import CreateEpic from './CreateEpic';
-import { ColumnWidth } from '../../Constants';
+import EpicDrag from './EpicDrag';
+import { ColumnWidth, CellPadding } from '../../Constants';
 import AutoScroll from '../../../../../../common/AutoScroll';
 import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 import IsInProgramStore from '../../../../../../stores/common/program/IsInProgramStore';
@@ -25,6 +26,16 @@ class EpicCell extends Component {
       scrollElement: document.getElementsByClassName('minimap-container-scroll')[0],
       onMouseMove: this.handleMouseMove,
       onMouseUp: this.handleMouseUp,
+    });
+    this.DragAutoScroll = new AutoScroll({
+      scrollElement: document.getElementsByClassName('minimap-container-scroll')[0],
+      pos: {
+        left: 200,
+        top: 150,
+        bottom: 150,
+        right: 150,
+      },
+      type: 'drag',
     });
   }
 
@@ -71,7 +82,7 @@ class EpicCell extends Component {
     const { otherData: { feature: { none: { width } } } } = this.props;
     this.initWidth = width;
     this.initScrollPosition = {
-      x: e.clientX,     
+      x: e.clientX,
     };
     this.setState({
       resizing: true,
@@ -81,7 +92,7 @@ class EpicCell extends Component {
   handleMouseMove = (e, { left: scrollPos }) => {
     this.fireResize(e, scrollPos);
   }
-  
+
   // 触发item的宽度变化
   fireResize = ({ clientX }, scrollPos) => {
     const { isLast } = this.props;
@@ -115,18 +126,22 @@ class EpicCell extends Component {
     const { epicData, otherData: { feature: { none: { width } } } } = this.props;
 
     // 只在数据变化时才请求
-    if (this.initWidth !== width) {    
+    if (this.initWidth !== width) {
       const { issueId } = epicData;
       const type = 'epic';
       StoryMapStore.changeWidth({
-        width,       
+        width,
         issueId,
         type,
       }, {
-        epicId: issueId,     
+        epicId: issueId,
         initWidth: this.initWidth,
-      });      
+      });
     }
+  }
+
+  handleMouseDown = (e) => {
+    this.DragAutoScroll.prepare(e);
   }
 
   render() {
@@ -148,19 +163,33 @@ class EpicCell extends Component {
     if (storys && feature) {
       subIssueNum = Math.max(storys.length + Object.keys(feature).length - 1, 0);// 减去none
     }
+    const DragCell = EpicDrag(({ connectDragSource }) => connectDragSource(
+      <div
+        role="none"
+        onMouseDown={this.handleMouseDown}
+        style={{
+          position: 'absolute',
+          height: '100%',
+          top: 0,
+          left: 0,
+          width: '100%',
+        }}
+      />,
+    ));
+
     return (
-      <Cell 
-        saveRef={connectDropTarget} 
+      <Cell
+        saveRef={connectDropTarget}
         epicIndex={index}
         lastCollapse={lastCollapse}
         collapse={collapse}
-        rowspan={collapse ? '0' : '1'}
+        rowSpan={collapse ? '0' : '1'}
         style={{
-          paddingLeft: 0,
+          padding: CellPadding,
           position: 'sticky',
           top: 0,
           zIndex: 6,
-          background: isOver ? 'pink' : 'white',   
+          background: isOver ? 'pink' : 'white',
           ...collapse ? {
             borderLeft: lastCollapse ? 'none' : 'solid 1px #D8D8D8',
             borderRight: 'solid 1px #D8D8D8',
@@ -168,53 +197,56 @@ class EpicCell extends Component {
           } : {},
         }}
       >
-        <div style={{
-          display: 'flex',
-          alignItems: 'center', 
-          position: 'sticky',
-          top: 5, 
-        }}
-        >
-          {!adding && (
+
+        {!adding && (
+          <span
+            style={{
+              ...collapse ? {
+                position: 'sticky',
+                marginLeft: -50,   
+                top: 18,
+                zIndex: 10,
+              } : {
+                position: 'absolute',
+                left: 0,
+                top: 18,
+              },
+            }}          
+          >
+            <Icon              
+              type={collapse ? 'navigate_next' : 'navigate_before'}
+              onClick={this.handleCollapse}
+            />
+          </span>
+          
+        )}
+        {collapse && <div style={{ width: 50 }} />}
+        {collapse
+          ? (
             <Fragment>
               <div style={{
-                width: 10,
-                height: 50,
-                display: 'flex',
-                alignItems: 'center',
-                ...collapse ? { marginRight: 35 } : {},
+                width: 26,
+                overflow: 'hidden',
+                wordBreak: 'break-all',
+                whiteSpace: 'pre-wrap',
+                position: 'sticky',
+                top: 20,
+                marginLeft: 20,
+                ...collapse ? { marginTop: -10 } : {},
               }}
               >
-                <Icon style={{ position: 'relative', zIndex: 10 }} type={collapse ? 'navigate_next' : 'navigate_before'} onClick={this.handleCollapse} />
+                {`${epicData.epicName || '无史诗'} (${subIssueNum})`}
               </div>
             </Fragment>
-          )}
-          {collapse
-            ? (
-              <Fragment>                
-                <div style={{
-                  width: 26,
-                  overflow: 'hidden',
-                  wordBreak: 'break-all',
-                  whiteSpace: 'pre-wrap',
-                  position: 'absolute',
-                  top: 20,
-                  marginLeft: 20,                 
-                }}
-                >
-                  {`${epicData.epicName || '无史诗'} (${subIssueNum})`}
-                </div>                  
-                {/* </div> */}
-              </Fragment>
-            ) : (
-              <Fragment>
-                <Column style={{ minHeight: 'unset' }}>
-                  {adding
-                    ? <CreateEpic onCreate={this.handleCreateEpic} />
-                    : <EpicCard epic={epicData} subIssueNum={subIssueNum} />}
-                </Column>
-                {issueId && !StoryMapStore.isFullScreen ? (!adding && !isInProgram && <AddCard style={{ height: 42 }} onClick={this.handleAddEpicClick} />) : null}
-                {resizing && (
+          ) : (
+            <Fragment>
+              <Column style={{ minHeight: 'unset' }}>
+                {adding
+                  ? <CreateEpic onCreate={this.handleCreateEpic} />
+                  : <EpicCard epic={epicData} subIssueNum={subIssueNum} />}
+              </Column>
+              {issueId && !StoryMapStore.isFullScreen ? (!adding && !isInProgram && <AddCard style={{ height: 42 }} onClick={this.handleAddEpicClick} />) : null}
+              {resizing && (
                 <div style={{
                   position: 'fixed',
                   top: 0,
@@ -225,29 +257,29 @@ class EpicCell extends Component {
                   cursor: 'col-resize',
                 }}
                 />
-                )}
-                {!isInProgram && issueId ? (
-                  <div   
-                    className="c7nagile-StoryMap-FeatureColumn-Resize"       
-                    style={{
-                      top: 0,
-                      height: '100%',
-                      width: 20,
-                      position: 'absolute',
-                      zIndex: 2,
-                      cursor: 'col-resize',
-                      right: -5,
-                    }}
-                    onMouseDown={this.handleMouseDown.bind(this, 'right')}
-                    role="none"
-                  >
-                    <div className={`c7nagile-StoryMap-FeatureColumn-Resize-highlight ${resizing ? 'active' : ''}`} />
-                  </div>
-                ) : null}
+              )}
+              {!isInProgram && issueId ? (
+                <div
+                  className="c7nagile-StoryMap-FeatureColumn-Resize"
+                  style={{
+                    top: 0,
+                    height: '100%',
+                    width: 20,
+                    position: 'absolute',
+                    zIndex: 2,
+                    cursor: 'col-resize',
+                    right: -5,
+                  }}
+                  onMouseDown={this.handleMouseDown.bind(this, 'right')}
+                  role="none"
+                >
+                  <div className={`c7nagile-StoryMap-FeatureColumn-Resize-highlight ${resizing ? 'active' : ''}`} />
+                </div>
+              ) : null}
+            </Fragment>
+          )}
 
-              </Fragment>
-            )}
-        </div>
+        {collapse && <DragCell />}
       </Cell>
     );
   }

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Tooltip } from 'choerodon-ui';
 import { DragSource } from 'react-dnd';
+import EpicDrag from './EpicDrag';
 import { programIssueLink, issueLink } from '../../../../../../common/utils';
 import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 import AutoScroll from '../../../../../../common/AutoScroll';
@@ -85,25 +86,4 @@ EpicCard.propTypes = {
 
 };
 
-export default DragSource(
-  'epic',
-  {
-    beginDrag: (props, monitor, component) => {
-      if (component && component.resetZIndex) {
-        component.setZIndex();
-        setTimeout(() => {
-          component.resetZIndex();
-        });
-      }
-
-      return { story: props.story, version: props.version };
-    },
-    endDrag(props, monitor) {
-      
-    },
-  },
-  (connect, monitor) => ({
-    connectDragSource: connect.dragSource(),
-    isDragging: monitor.isDragging(),
-  }),
-)(EpicCard);
+export default EpicDrag(EpicCard);
