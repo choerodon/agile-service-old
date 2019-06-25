@@ -101,13 +101,6 @@ import { updateIssue } from '../../../../api/NewIssueApi';
                 });
                 this.updateIssueDes();
               }}
-              handleClickOutSide={() => {
-                this.setState({
-                  editDesShow: false,
-                  description: editDes || '',
-                });
-                this.updateIssueDes();
-              }}
             />
           </div>
         </div>

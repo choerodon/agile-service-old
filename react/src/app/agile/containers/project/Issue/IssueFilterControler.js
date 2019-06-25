@@ -308,6 +308,7 @@ export default class IssueFilterControler {
   advancedSearchArgsFilterUpdate(issueTypeId, statusId, priorityId) {
     const filter = Object.keys(this.cache.get('paramFilter')).length ? this.cache.get('paramFilter') : this.cache.get('filter');
     const advancedSearchArgs = {
+      ...filter.advancedSearchArgs,
       statusId,
       priorityId,
       issueTypeId,

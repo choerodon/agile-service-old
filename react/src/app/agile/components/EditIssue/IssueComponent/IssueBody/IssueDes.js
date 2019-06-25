@@ -103,13 +103,6 @@ import { updateIssue } from '../../../../api/NewIssueApi';
                   });
                   this.updateIssueDes();
                 }}
-                handleClickOutSide={() => {
-                  this.setState({
-                    editDesShow: false,
-                    description: editDes || '',
-                  });
-                  this.updateIssueDes();
-                }}
               />
             </div>
           </div>
@@ -125,11 +118,6 @@ import { updateIssue } from '../../../../api/NewIssueApi';
           >
             <IssueDescription data={delta} />          
           </div>
-          {/* <WYSIWYGEditor
-            mode="read"                
-            value={text2Delta(editDes)}
-            style={{ height: 'auto', width: '100%' }}
-          /> */}
         </div>
       );
     }
