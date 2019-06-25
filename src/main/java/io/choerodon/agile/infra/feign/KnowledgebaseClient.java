@@ -1,0 +1,16 @@
+package io.choerodon.agile.infra.feign;
+
+import io.choerodon.agile.infra.dataobject.WorkSpaceDO;
+import io.choerodon.agile.infra.feign.fallback.FoundationFeignClientFallback;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.List;
+
+@FeignClient(value = "knowledgebase-service", fallback = FoundationFeignClientFallback.class)
+public interface KnowledgebaseClient {
+
+    @GetMapping("/v1/fix_data/all_project_space")
+    ResponseEntity<List<WorkSpaceDO>> queryAllSpaceByProject();
+}
