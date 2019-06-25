@@ -179,6 +179,25 @@
                </foreach>
            </if>
         )
+        <if test='serachDTO.advancedSearchArgs.versionList != null and serachDTO.advancedSearchArgs.versionList.size > 0'>
+            and ai.issue_id in (
+                 select avir2.issue_id
+                 from agile_version_issue_rel avir2
+                 where avir2 in
+                 <foreach collection="searchDTO.advancedSearchArgs.versionList" item="versionId" open="(" separator=","
+                         close=")">
+                     #{versionId}
+                 </foreach>
+            )
+        </if>
+        <if test='serachDTO.advancedSearchArgs.statusList != null and serachDTO.advancedSearchArgs.statusList.size > 0'>
+            and ai.status_id in (
+            <foreach collection="searchDTO.advancedSearchArgs.statusList" item="statusId" open="(" separator=","
+                     close=")">
+                #{statusId}
+            </foreach>
+            )
+        </if>
         order by ai.issue_id
     </select>
 

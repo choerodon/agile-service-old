@@ -73,7 +73,7 @@ public class StoryMapServiceImpl implements StoryMapService {
     }
 
     @Override
-    public JSONObject queryStoryMap(Long projectId, Long organizationId) {
+    public JSONObject queryStoryMap(Long projectId, Long organizationId, SearchDTO searchDTO) {
         JSONObject result = new JSONObject(true);
         List<Long> epicIds = new ArrayList<>();
         // get program epic
@@ -109,7 +109,7 @@ public class StoryMapServiceImpl implements StoryMapService {
             result.put("featureWithoutEpic", featureCommonDOList);
         }
 
-        result.put("storyList", !epicIds.isEmpty() || !featureIds.isEmpty() ? storyMapMapper.selectStoryList(projectId, epicIds, featureIds) : new ArrayList<>());
+        result.put("storyList", !epicIds.isEmpty() || !featureIds.isEmpty() ? storyMapMapper.selectStoryList(projectId, epicIds, featureIds, searchDTO) : new ArrayList<>());
         result.put("storyMapWidth", setStoryMapWidth(projectId));
         return result;
     }

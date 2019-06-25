@@ -34,8 +34,10 @@ public class StoryMapController {
     public ResponseEntity<JSONObject> queryStoryMap(@ApiParam(value = "项目id", required = true)
                                                     @PathVariable(name = "project_id") Long projectId,
                                                     @ApiParam(value = "组织id", required = true)
-                                                    @RequestParam Long organizationId) {
-        return Optional.ofNullable(storyMapService.queryStoryMap(projectId, organizationId))
+                                                    @RequestParam Long organizationId,
+                                                    @ApiParam(value = "search DTO", required = true)
+                                                    @RequestBody SearchDTO searchDTO) {
+        return Optional.ofNullable(storyMapService.queryStoryMap(projectId, organizationId, searchDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.storyMap.get"));
     }
