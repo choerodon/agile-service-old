@@ -115,7 +115,7 @@ const { Text, Edit } = TextEditToggle;
     } = issue;
     return (
       <React.Fragment>
-        {typeCode === 'story'
+        {typeCode === 'story' && IsInProgramStore.isInProgram
           ? (
             <div className="line-start mt-10">
               <div className="c7n-property-wrapper">
