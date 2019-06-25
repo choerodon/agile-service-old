@@ -18,7 +18,6 @@ import SideIssueList from './components/SideIssueList';
 import SwitchSwimLine from './components/SwitchSwimLine';
 import CreateVersion from './components/CreateVersion';
 import CreateEpicModal from './components/CreateEpicModal';
-import CreateFeatureModal from './components/CreateFeatureModal';
 import IssueDetail from './components/IssueDetail';
 import Search from './components/Search';
 import StoryMapStore from '../../../../stores/project/StoryMap/StoryMapStore';
@@ -212,11 +211,8 @@ class StoryMapHome extends Component {
               title="欢迎使用敏捷用户故事地图"
               description={(
                 <Fragment>
-                    用户故事地图是以史诗或特性为基础，根据版本控制进行管理规划，点击
-                  <a role="none" onClick={this.handleCreateEpicClick} disabled={IsInProgramStore.isInProgram}>创建史诗</a>
-                    或
-                  <a role="none" onClick={this.handleCreateFeatureClick} disabled={IsInProgramStore.isInProgram}>创建特性</a>
-                    进入用户故事地图。
+                    用户故事地图是以史诗为基础，根据版本控制进行管理规划，点击
+                  <a role="none" onClick={this.handleCreateEpicClick} disabled={IsInProgramStore.isInProgram}>创建史诗</a>                    
                 </Fragment>
                 )}
             />
@@ -224,7 +220,6 @@ class StoryMapHome extends Component {
           <SideIssueList />
           <CreateVersion onOk={this.handleCreateVersion} />
           <CreateEpicModal onOk={this.handleCreateEpic} />
-          <CreateFeatureModal onOk={this.handleCreateFeature} />
           <IssueDetail />
         </Content>
       </Page>

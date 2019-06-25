@@ -152,7 +152,7 @@ class EpicCell extends Component {
         epicIndex={index}
         lastCollapse={lastCollapse}
         collapse={collapse}
-        rowspan={collapse ? '9999' : '1'}
+        rowspan={collapse ? '0' : '1'}
         style={{
           paddingLeft: 0,
           position: 'sticky',
