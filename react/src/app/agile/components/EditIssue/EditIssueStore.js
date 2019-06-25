@@ -81,7 +81,7 @@ class EditIssueStore {
   }
 
   @computed get getLinkIssues() {
-    return this.linkIssues;
+    return toJS(this.linkIssues);
   }
 
   @action setBranches(data) {
@@ -96,7 +96,7 @@ class EditIssueStore {
     this.wiki = wiki;
     this.workLogs = workLogs;
     this.dataLogs = dataLogs;
-    this.linkIssues = linkIssues;
+    this.linkIssues = linkIssues || [];
     this.branches = branches;
   }
 }

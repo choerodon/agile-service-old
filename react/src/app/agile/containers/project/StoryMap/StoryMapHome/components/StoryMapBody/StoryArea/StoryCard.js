@@ -70,7 +70,12 @@ class StoryCard extends Component {
     } = this.props;
     const { issueId, issueNum, summary } = story;
     return (
-      <Card className={`c7nagile-StoryMap-StoryCard ${index === 0 && rowIndex === 0 ? 'minimapCard' : ''}`} saveRef={this.saveRef} onClick={this.handleClick} onMouseDown={this.handleMouseDown}>
+      <Card
+        className={`c7nagile-StoryMap-StoryCard ${index === 0 && rowIndex === 0 ? 'minimapCard' : ''}`}
+        saveRef={this.saveRef}
+        onClick={this.handleClick} 
+        onMouseDown={this.handleMouseDown}
+      >
         <Icon type="close" className="c7nagile-StoryMap-StoryCard-delete" onClick={this.handlRemoveStory} />
         <div className="summary">
           <Tooltip title={summary} getPopupContainer={trigger => trigger.parentNode}>

@@ -3,6 +3,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'choerodon-ui';
 import { observer } from 'mobx-react';
+import { DropTarget } from 'react-dnd';
 import Column from './Column';
 import EpicCard from './EpicCard';
 import Cell from './Cell';
@@ -130,7 +131,7 @@ class EpicCell extends Component {
 
   render() {
     const {
-      epicData, otherData, lastCollapse, index, 
+      epicData, otherData, lastCollapse, index, connectDropTarget, isOver,
     } = this.props;
     const { resizing } = this.state;
     const { collapse, storys, feature } = otherData || {};
@@ -149,6 +150,7 @@ class EpicCell extends Component {
     }
     return (
       <Cell 
+        saveRef={connectDropTarget} 
         epicIndex={index}
         lastCollapse={lastCollapse}
         collapse={collapse}
@@ -158,7 +160,7 @@ class EpicCell extends Component {
           position: 'sticky',
           top: 0,
           zIndex: 6,
-          background: 'white',   
+          background: isOver ? 'pink' : 'white',   
           ...collapse ? {
             borderLeft: lastCollapse ? 'none' : 'solid 1px #D8D8D8',
             borderRight: 'solid 1px #D8D8D8',
@@ -255,4 +257,14 @@ EpicCell.propTypes = {
 
 };
 
-export default EpicCell;
+export default DropTarget(
+  'story',
+  {
+    drop: props => ({ epic: props.epic, feature: props.feature, version: props.version }),
+  },
+  (connect, monitor) => ({
+    connectDropTarget: connect.dropTarget(),
+    isOver: monitor.isOver(),
+    // canDrop: monitor.canDrop(), //去掉可以优化性能
+  }),
+)(EpicCell);

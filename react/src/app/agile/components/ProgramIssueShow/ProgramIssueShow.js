@@ -97,7 +97,7 @@ const defaultProps = {
         // loadLinkIssues(id, projectId),
       ])
         .then(axios.spread((dataLogs) => {
-          store.initIssueAttribute([], dataLogs, []);
+          store.initIssueAttribute([], [], dataLogs, [], []);
         }));
     });
   };
