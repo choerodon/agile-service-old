@@ -63,11 +63,11 @@ class EpicCell extends Component {
           {!adding && (
             <Fragment>
               <div style={{
-                width: 20,
+                width: 10,
                 height: 50,
                 display: 'flex',
                 alignItems: 'center',
-                ...collapse ? { marginRight: 25 } : {},
+                ...collapse ? { marginRight: 35 } : {},
               }}
               >
                 <Icon style={{ position: 'relative', zIndex: 10 }} type={collapse ? 'navigate_next' : 'navigate_before'} onClick={this.handleCollapse} />
