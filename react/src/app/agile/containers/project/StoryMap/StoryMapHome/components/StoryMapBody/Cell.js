@@ -5,11 +5,11 @@ import { CellPadding } from '../../Constants';
 class Cell extends Component {
   render() {
     const {
-      children, style, lastCollapse, collapse, epicIndex,
+      children, style, lastCollapse, collapse, epicIndex, ...otherProps
     } = this.props;
     return (
       <td
-        {...this.props}
+        {...otherProps}
         style={{
           padding: CellPadding, 
           boxShadow: epicIndex === 0 ? 'inset 0 -1px 0 #D8D8D8' : 'inset 0 -1px 0 #D8D8D8,inset 1px 0 0 #D8D8D8', 

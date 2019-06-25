@@ -20,6 +20,7 @@ import CreateVersion from './components/CreateVersion';
 import CreateEpicModal from './components/CreateEpicModal';
 import CreateFeatureModal from './components/CreateFeatureModal';
 import IssueDetail from './components/IssueDetail';
+import Search from './components/Search';
 import StoryMapStore from '../../../../stores/project/StoryMap/StoryMapStore';
 import IsInProgramStore from '../../../../stores/common/program/IsInProgramStore';
 import './StoryMapHome.scss';
@@ -190,10 +191,14 @@ class StoryMapHome extends Component {
             需求池
           </Button>
         </Header>
-        <Content style={{ padding: 0, paddingBottom: 49 }}>
+        <Content style={{
+          padding: 0, paddingBottom: 49, 
+        }}
+        >
           <Loading loading={loading} />
           {!isEmpty ? (
             <Fragment>
+              <Search />
               <Minimap disabledVertical width={300} height={40} showHeight={300} className="c7nagile-StoryMap-minimap" selector=".minimapCard" childComponent={this.renderChild.bind(this)}>
                 <StoryMapBody />
               </Minimap>
