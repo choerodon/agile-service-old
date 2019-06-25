@@ -62,7 +62,24 @@ class StoryCell extends Component {
                     <Fragment>
                       {featureList.filter(feature => !feature.adding).map((feature, index) => {
                         const targetFeature = targetEpic.feature[feature.issueId] || {};
-                        return targetFeature && <StoryColumn feature={feature} featureIndex={index} isLast={isLastColumn && index === featureList.length - 1} storys={this.getStorys(targetFeature)} width={targetFeature.width} {...this.props} />;
+                        if (targetFeature) {
+                          const storys = this.getStorys(targetFeature);
+                          if (feature.issueId === 'none' && storys.length === 0) {
+                            return null;
+                          }
+                          return (
+                            <StoryColumn 
+                              feature={feature}
+                              featureIndex={index}
+                              isLast={isLastColumn && index === featureList.length - 1}
+                              storys={storys}
+                              width={targetFeature.width}
+                              {...this.props}
+                            />
+                          );
+                        } else {
+                          return null;
+                        }              
                       })}
                     </Fragment>
                   )
