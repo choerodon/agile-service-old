@@ -6,6 +6,8 @@ import io.choerodon.agile.api.dto.WikiMenuDTO;
 import io.choerodon.agile.api.dto.WikiRelationDTO;
 import io.choerodon.agile.app.service.WikiRelationService;
 import io.choerodon.agile.domain.agile.entity.WikiRelationE;
+import io.choerodon.agile.infra.dataobject.WorkSpaceDO;
+import io.choerodon.agile.infra.feign.KnowledgebaseClient;
 import io.choerodon.agile.infra.repository.WikiRelationRepository;
 import io.choerodon.agile.infra.common.utils.HttpRequestUtil;
 import io.choerodon.agile.infra.dataobject.WikiRelationDO;
@@ -47,6 +49,9 @@ public class WikiRelationServiceImpl implements WikiRelationService {
     @Autowired
     private UserFeignClient userFeignClient;
 
+    @Autowired
+    private KnowledgebaseClient knowledgebaseClient;
+
     @Value("${services.wiki.host}")
     private String wikiHost;
 
@@ -57,7 +62,7 @@ public class WikiRelationServiceImpl implements WikiRelationService {
         WikiRelationDO wikiRelationDO = new WikiRelationDO();
         wikiRelationDO.setProjectId(wikiRelationE.getProjectId());
         wikiRelationDO.setIssueId(wikiRelationE.getIssueId());
-        wikiRelationDO.setWikiUrl(wikiRelationE.getWikiUrl());
+        wikiRelationDO.setSpaceId(wikiRelationE.getSpaceId());
         WikiRelationDO res = wikiRelationMapper.selectOne(wikiRelationDO);
         return res != null;
     }
@@ -123,5 +128,28 @@ public class WikiRelationServiceImpl implements WikiRelationService {
         otherHeaders.put("username", wikiMenuDTO.getUsername());
         otherHeaders.put("wikitoken", wikiToken);
         return httpRequestUtil.sendGet(url, param, otherHeaders);
+    }
+
+    @Override
+    public void moveWikiRelation() {
+        List<WikiRelationDO> wikiRelationDOList = wikiRelationMapper.selectAll();
+        if (wikiRelationDOList == null || wikiRelationDOList.isEmpty()) {
+            return;
+        }
+        ResponseEntity<List<WorkSpaceDO>> responseEntity = knowledgebaseClient.queryAllSpaceByProject();
+        if (responseEntity == null) {
+            return;
+        }
+        List<WorkSpaceDO> workSpaceDOList = responseEntity.getBody();
+        if (workSpaceDOList != null && !workSpaceDOList.isEmpty()) {
+            for (WikiRelationDO wikiRelationDO : wikiRelationDOList) {
+                for (WorkSpaceDO workSpaceDO : workSpaceDOList) {
+                    if (workSpaceDO.getProjectId() != null && wikiRelationDO.getProjectId().equals(workSpaceDO.getProjectId()) && wikiRelationDO.getWikiName().equals(workSpaceDO.getName())) {
+                        wikiRelationMapper.updateByOptions(wikiRelationDO.getId(), workSpaceDO.getId());
+                        break;
+                    }
+                }
+            }
+        }
     }
 }
