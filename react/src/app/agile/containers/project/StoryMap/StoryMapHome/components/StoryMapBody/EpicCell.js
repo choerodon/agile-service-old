@@ -258,7 +258,7 @@ EpicCell.propTypes = {
 };
 
 export default DropTarget(
-  'story',
+  'epic',
   {
     drop: props => ({ epic: props.epic, feature: props.feature, version: props.version }),
   },
