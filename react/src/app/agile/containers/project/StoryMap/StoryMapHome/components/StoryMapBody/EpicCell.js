@@ -51,15 +51,27 @@ class EpicCell extends Component {
         epicIndex={index}
         lastCollapse={lastCollapse}
         collapse={collapse}
+        rowspan={collapse ? '9999' : '1'}
         style={{
           paddingLeft: 0,
           position: 'sticky',
           top: 0,
           zIndex: 6,
-          background: 'white',          
+          background: 'white',   
+          ...collapse ? {
+            borderLeft: lastCollapse ? 'none' : 'solid 1px #D8D8D8',
+            borderRight: 'solid 1px #D8D8D8',
+            boxShadow: 'rgb(216, 216, 216) 0px -1px 0px inset',
+          } : {},
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center', 
+          position: 'sticky',
+          top: 5, 
+        }}
+        >
           {!adding && (
             <Fragment>
               <div style={{
@@ -76,31 +88,20 @@ class EpicCell extends Component {
           )}
           {collapse
             ? (
-              <Fragment>
+              <Fragment>                
                 <div style={{
+                  width: 26,
+                  overflow: 'hidden',
+                  wordBreak: 'break-all',
+                  whiteSpace: 'pre-wrap',
                   position: 'absolute',
-                  width: 'calc(100% - 1px)',
-                  height: 'calc(100vh)',
-                  top: 0,
-                  cursor: 'move',
-                  borderLeft: lastCollapse ? 'none' : 'solid 1px #D8D8D8',
-                  borderRight: 'solid 1px #D8D8D8',
-                  background: 'white',
-                }} 
+                  top: 20,
+                  marginLeft: 20,                 
+                }}
                 >
-                  <div style={{
-                    width: 26,
-                    overflow: 'hidden',
-                    wordBreak: 'break-all',
-                    whiteSpace: 'pre-wrap',
-                    position: 'absolute',
-                    top: 20,
-                    marginLeft: 20,                 
-                  }}
-                  >
-                    {`${epicData.epicName || '无史诗'} (${subIssueNum})`}
-                  </div>                  
-                </div>
+                  {`${epicData.epicName || '无史诗'} (${subIssueNum})`}
+                </div>                  
+                {/* </div> */}
               </Fragment>
             ) : (
               <Fragment>

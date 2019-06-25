@@ -49,7 +49,7 @@ class StoryCell extends Component {
     const featureList = epicId === 0 ? featureCommonDOList : featureCommonDOList.concat([{ issueId: 'none' }]);
 
     return (
-      !storyCollapse && (
+      !storyCollapse && !collapse && (
         <Cell epicIndex={epicIndex} lastCollapse={lastCollapse} collapse={collapse}>
           {collapse ? null : (
             <div style={{

@@ -56,28 +56,27 @@ class TitleCell extends Component {
     const { collapse } = otherData || {};
 
     return (
-      <Cell style={{        
-        // borderBottom: storyCollapse ? '1px solid #D8D8D8' : 'none',
-        padding: '10px 0',
-        boxShadow: storyCollapse ? 'inset 0 -1px 0 #D8D8D8,inset 1px 0 0 #D8D8D8' : 'inset 1px 0 0 #D8D8D8',
-        ...lastCollapse || epicIndex === 0 ? { boxShadow: storyCollapse ? 'inset 0 -1px 0 #D8D8D8' : 'none' } : { },       
-        ...showTitle ? {
-          position: 'sticky',
-          zIndex: 5,
-          left: 0,         
-          // background: 'white',
-        } : {},        
-       
-      }}
-      >
-        {collapse ? null : (
+      collapse ? null : (
+        <Cell style={{        
+          // borderBottom: storyCollapse ? '1px solid #D8D8D8' : 'none',
+          padding: '10px 0',
+          boxShadow: storyCollapse ? 'inset 0 -1px 0 #D8D8D8,inset 1px 0 0 #D8D8D8' : 'inset 1px 0 0 #D8D8D8',
+          ...lastCollapse || epicIndex === 0 ? { boxShadow: storyCollapse ? 'inset 0 -1px 0 #D8D8D8' : 'none' } : { },       
+          ...showTitle ? {
+            position: 'sticky',
+            zIndex: 5,
+            left: 0,         
+            // background: 'white',
+          } : {}, 
+        }}
+        > 
           <div style={{ display: 'flex' }} className="c7nagile-StoryMap-TitleCell">
             <div style={{ textAlign: 'left' }}>
               {showTitle && this.renderTitle(storyCollapse)}
             </div>
-          </div>
-        )}
-      </Cell>
+          </div>   
+        </Cell>
+      )
     );
   }
 }
