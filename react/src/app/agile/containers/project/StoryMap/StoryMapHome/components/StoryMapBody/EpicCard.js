@@ -31,7 +31,7 @@ class EpicCard extends Component {
         onClick={this.handleClick}
       >
         <div className="summary">
-          <Tooltip title={`${epicName || '无史诗'}`} getPopupContainer={trigger => trigger.parentNode}>            
+          <Tooltip title={`${epicName || '无史诗'}`} getPopupContainer={() => document.getElementsByClassName('minimap-container-scroll')[0]}>            
             {`${epicName || '无史诗'}`}
           </Tooltip>
         </div>
