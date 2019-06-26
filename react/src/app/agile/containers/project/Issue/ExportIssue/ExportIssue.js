@@ -20,6 +20,7 @@ const radioStyle = {
 class ExportIssue extends Component {
   state = {
     mode: 'all',
+    loading: false,
   }
 
   handleExportChange = (e) => {
@@ -45,6 +46,9 @@ class ExportIssue extends Component {
       ...searchParam,
       exportFieldCodes: tableShowColumns,
     };
+    this.setState({
+      loading: true,
+    });
     axios.post(`/zuul/agile/v1/projects/${projectId}/issues/export?organizationId=${orgId}`, search, { responseType: 'arraybuffer' })
       .then((data) => {
         const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -52,11 +56,15 @@ class ExportIssue extends Component {
         FileSaver.saveAs(blob, fileName);
         Choerodon.prompt('导出成功');
         IssueStore.setExportModalVisible(false);
+      }).finally(() => {
+        this.setState({
+          loading: false,
+        });
       });
   };
 
   render() {
-    const { mode } = this.state;
+    const { mode, loading } = this.state;
     const visible = IssueStore.exportModalVisible;
     const projectName = AppState.currentMenuType.name;
     return (
@@ -65,6 +73,7 @@ class ExportIssue extends Component {
         visible={visible}
         onOk={this.exportExcel}
         onCancel={this.handleCancel}
+        confirmLoading={loading}
       >
         <div style={{ margin: '10px 0' }}>
 
@@ -76,7 +85,7 @@ class ExportIssue extends Component {
 
 
           的问题，请选择你需要导出的字段
-                </div>
+        </div>
         <RadioGroup onChange={this.handleExportChange} value={mode}>
           <Radio style={radioStyle} value="show">当前页面显示字段</Radio>
           <Radio style={radioStyle} value="all">全部字段</Radio>
