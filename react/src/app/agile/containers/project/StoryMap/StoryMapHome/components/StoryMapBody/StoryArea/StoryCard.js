@@ -44,7 +44,8 @@ class StoryCard extends Component {
     this.AutoScroll.prepare(e);
   }
 
-  handlRemoveStory = () => {
+  handlRemoveStory = (e) => {
+    e.stopPropagation();
     const { story } = this.props;
     const { issueId } = story;
     const storyMapDragDTO = {
