@@ -82,7 +82,7 @@ class StoryMapHome extends Component {
     StoryMapStore.setCreateEpicModalVisible(true);
   }
 
-  handleCreateFeatureClick=() => {
+  handleCreateFeatureClick = () => {
     StoryMapStore.setCreateFeatureModalVisible(true);
   }
 
@@ -152,6 +152,10 @@ class StoryMapHome extends Component {
     );
   }
 
+  handleIssueRefresh = () => {
+    this.handleRefresh();
+  }
+
   render() {
     const { loading, isFullScreen } = StoryMapStore;
     const isEmpty = StoryMapStore.getIsEmpty;
@@ -180,15 +184,15 @@ class StoryMapHome extends Component {
             {isFullScreen ? '退出全屏' : '全屏'}
           </Button>
           {!isFullScreen && (
-          <Button
-            type="primary"
-            funcType="raised"
-            style={{ color: 'white', marginLeft: 'auto', marginRight: 30 }}
-            icon="view_module"
-            onClick={this.handleClickIssueList}
-          >
-            需求池
-          </Button>
+            <Button
+              type="primary"
+              funcType="raised"
+              style={{ color: 'white', marginLeft: 'auto', marginRight: 30 }}
+              icon="view_module"
+              onClick={this.handleClickIssueList}
+            >
+              需求池
+            </Button>
           )}
         </Header>
         <Content style={{ padding: 0, paddingBottom: 49 }}>
@@ -207,7 +211,7 @@ class StoryMapHome extends Component {
               description={(
                 <Fragment>
                     用户故事地图是以史诗为基础，根据版本控制进行管理规划，点击
-                  <a role="none" onClick={this.handleCreateEpicClick} disabled={IsInProgramStore.isInProgram}>创建史诗</a>                    
+                  <a role="none" onClick={this.handleCreateEpicClick} disabled={IsInProgramStore.isInProgram}>创建史诗</a>
                 </Fragment>
                 )}
             />
@@ -215,7 +219,7 @@ class StoryMapHome extends Component {
           <SideIssueList />
           <CreateVersion onOk={this.handleCreateVersion} />
           <CreateEpicModal onOk={this.handleCreateEpic} />
-          <IssueDetail />
+          <IssueDetail refresh={this.handleIssueRefresh} />
         </Content>
       </Page>
     );

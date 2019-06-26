@@ -26,9 +26,6 @@ class IssueDetail extends Component {
     StoryMapStore.setClickIssue(null);
   }
 
-  handleDeleteIssue=() => {
-    
-  }
 
   render() {
     const { refresh } = this.props;
@@ -45,7 +42,7 @@ class IssueDetail extends Component {
           }}
           issueId={issueId}
           onCancel={this.handleCancel}
-          onDeleteIssue={this.handleDeleteIssue}
+          onDeleteIssue={refresh}
           onUpdate={refresh}
         />
       ) : null

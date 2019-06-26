@@ -431,7 +431,9 @@ class StoryMapStore {
 
   @action setClickIssue(clickIssue) {    
     this.selectedIssueMap.clear();
-    this.selectedIssueMap.set(clickIssue.issueId, clickIssue);    
+    if (clickIssue) {
+      this.selectedIssueMap.set(clickIssue.issueId, clickIssue);    
+    }
   }
 
   getIssueTypeByCode(typeCode) {
