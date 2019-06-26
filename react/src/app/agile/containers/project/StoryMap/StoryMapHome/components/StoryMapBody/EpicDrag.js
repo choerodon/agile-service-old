@@ -11,10 +11,20 @@ const EpicDrag = Component => DragSource(
         });
       }
   
-      return { story: props.story, version: props.version };
+      return { epic: props.epic, index: props.index };
     },
     endDrag(props, monitor) {
-        
+      const item = monitor.getItem();
+      const dropResult = monitor.getDropResult();
+      if (!dropResult) {
+        return;
+      }
+      const { epic, index } = item;
+      const { epic: targetEpic, index: targetIndex } = dropResult;
+      // console.log({
+      //   source: item,
+      //   destination: dropResult,
+      // });
     },
   },
   (connect, monitor) => ({

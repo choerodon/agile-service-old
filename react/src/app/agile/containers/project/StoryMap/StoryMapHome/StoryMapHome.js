@@ -226,7 +226,7 @@ class StoryMapHome extends Component {
           <CreateVersion onOk={this.handleCreateVersion} />
           <CreateEpicModal onOk={this.handleCreateEpic} />
           <IssueDetail refresh={this.handleIssueRefresh} />
-          <CustomDragLayer />
+          {/* <CustomDragLayer /> */}
         </Content>
       </Page>
     );

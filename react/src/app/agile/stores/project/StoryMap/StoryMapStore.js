@@ -316,14 +316,14 @@ class StoryMapStore {
     });
   }
 
-  @action addFeature(epicData) {
+  @action addFeature(epic) {
     const feature = {
       adding: true,
     };
 
-    const currentIndex = findIndex(this.storyMapData.epicWithFeature, { issueId: epicData.issueId });
+    const currentIndex = findIndex(this.storyMapData.epicWithFeature, { issueId: epic.issueId });
     // console.log(currentIndex);
-    // console.log(epicData, currentIndex);
+    // console.log(epic, currentIndex);
     this.storyMapData.epicWithFeature[currentIndex].featureCommonDOList.push(feature);
   }
 

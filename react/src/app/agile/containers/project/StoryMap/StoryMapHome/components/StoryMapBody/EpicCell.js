@@ -42,13 +42,13 @@ class EpicCell extends Component {
   }
 
   handleCollapse = () => {
-    const { epicData, collapse } = this.props;
-    StoryMapStore.collapse(epicData.issueId);
+    const { epic, collapse } = this.props;
+    StoryMapStore.collapse(epic.issueId);
   }
 
   handleAddEpicClick = () => {
-    const { epicData } = this.props;
-    StoryMapStore.addEpic(epicData);
+    const { epic } = this.props;
+    StoryMapStore.addEpic(epic);
   }
 
   handleCreateEpic = (newEpic) => {
@@ -62,7 +62,7 @@ class EpicCell extends Component {
    * @parameter multiple 变几个 => 1
    */
   handleItemResize = (mode, multiple) => {
-    const { epicData } = this.props;
+    const { epic } = this.props;
     let width = this.initWidth;
     switch (mode) {
       case 'right': {
@@ -73,7 +73,7 @@ class EpicCell extends Component {
     }
     // 最小为一
     if (width > 0) {
-      StoryMapStore.setFeatureWidth({ epicId: epicData.issueId, featureId: 'none', width });
+      StoryMapStore.setFeatureWidth({ epicId: epic.issueId, featureId: 'none', width });
     }
   }
 
@@ -125,11 +125,11 @@ class EpicCell extends Component {
     this.setState({
       resizing: false,
     });
-    const { epicData, otherData: { feature: { none: { width } } } } = this.props;
+    const { epic, otherData: { feature: { none: { width } } } } = this.props;
 
     // 只在数据变化时才请求
     if (this.initWidth !== width) {
-      const { issueId } = epicData;
+      const { issueId } = epic;
       const type = 'epic';
       StoryMapStore.changeWidth({
         width,
@@ -148,7 +148,7 @@ class EpicCell extends Component {
 
   render() {
     const {
-      epicData, otherData, lastCollapse, index, connectDropTarget, isOver,
+      epic, otherData, lastCollapse, index, connectDropTarget, isOver,
     } = this.props;
     const { resizing } = this.state;
     const { collapse, storys, feature } = otherData || {};
@@ -160,7 +160,7 @@ class EpicCell extends Component {
       // summary,
       // typeCode,
       adding,
-    } = epicData;
+    } = epic;
     let subIssueNum = 0;
     if (storys && feature) {
       subIssueNum = Math.max(storys.length + Object.keys(feature).length - 1, 0);// 减去none
@@ -224,7 +224,7 @@ class EpicCell extends Component {
                 ...collapse ? { marginTop: -10 } : {},
               }}
               >
-                {`${epicData.epicName || '无史诗'} (${subIssueNum})`}
+                {`${epic.epicName || '无史诗'} (${subIssueNum})`}
               </div>
             </Fragment>
           ) : (
@@ -233,7 +233,7 @@ class EpicCell extends Component {
                 <Column style={{ minHeight: 'unset' }}>
                   {adding
                     ? <CreateEpic onCreate={this.handleCreateEpic} />
-                    : <EpicCard epic={epicData} subIssueNum={subIssueNum} />}
+                    : <EpicCard epic={epic} subIssueNum={subIssueNum} index={index} />}
                 </Column>
                 {issueId && !StoryMapStore.isFullScreen ? (!adding && !isInProgram && <AddCard style={{ height: 42 }} onClick={this.handleAddEpicClick} />) : null}
                 {resizing && (
@@ -270,7 +270,7 @@ class EpicCell extends Component {
             </Fragment>
           )}
 
-        {collapse && <EpicDragCollapse />}
+        {collapse && <EpicDragCollapse epic={epic} index={index} />}
       </Cell>
     );
   }
@@ -283,7 +283,7 @@ EpicCell.propTypes = {
 export default DropTarget(
   'epic',
   {
-    drop: props => ({ epic: props.epic, feature: props.feature, version: props.version }),
+    drop: props => ({ epic: props.epic, index: props.index }),
   },
   (connect, monitor) => ({
     connectDropTarget: connect.dropTarget(),
