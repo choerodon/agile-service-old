@@ -20,9 +20,9 @@ class FeatureCard extends Component {
     const {
       featureType, summary, issueId, issueNum, programId, 
     } = feature;
-    
+    const { selectedIssueMap } = StoryMapStore;
     return (
-      <Card className={`c7nagile-StoryMap-FeatureCard minimapCard ${featureType || 'none'}`} onClick={this.handleClick}>
+      <Card className={`c7nagile-StoryMap-FeatureCard minimapCard ${featureType || 'none'} ${selectedIssueMap.has(issueId) ? 'selected' : ''}`} onClick={this.handleClick}>
         <div className="summary">
           <Tooltip title={`${summary || '无特性'}`} getPopupContainer={trigger => trigger.parentNode}>
             {summary || '无特性'}

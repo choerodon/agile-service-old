@@ -154,6 +154,10 @@ class StoryMapHome extends Component {
     );
   }
 
+  handleIssueRefresh = () => {
+    this.handleRefresh();
+  }
+
   render() {
     const { loading, isFullScreen } = StoryMapStore;
     const isEmpty = StoryMapStore.getIsEmpty;
@@ -221,7 +225,7 @@ class StoryMapHome extends Component {
           <SideIssueList />
           <CreateVersion onOk={this.handleCreateVersion} />
           <CreateEpicModal onOk={this.handleCreateEpic} />
-          <IssueDetail />
+          <IssueDetail refresh={this.handleIssueRefresh} />
           <CustomDragLayer />
         </Content>
       </Page>

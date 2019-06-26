@@ -3,12 +3,14 @@ import PropTypes from 'prop-types';
 import { Icon, Tooltip } from 'choerodon-ui';
 import { DragSource } from 'react-dnd';
 import { find } from 'lodash';
+import { observer } from 'mobx-react';
 import { storyMove } from '../../../../../../../api/StoryMapApi';
 import AutoScroll from '../../../../../../../common/AutoScroll';
 import Card from '../Card';
 import './StoryCard.scss';
 import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
 
+@observer
 class StoryCard extends Component {
   componentDidMount() {
     this.AutoScroll = new AutoScroll({
@@ -41,7 +43,8 @@ class StoryCard extends Component {
     this.AutoScroll.prepare(e);
   }
 
-  handlRemoveStory = () => {
+  handlRemoveStory = (e) => {
+    e.stopPropagation();
     const { story } = this.props;
     const { issueId } = story;
     const storyMapDragDTO = {
@@ -69,9 +72,10 @@ class StoryCard extends Component {
       story, connectDragSource, index, rowIndex,
     } = this.props;
     const { issueId, issueNum, summary } = story;
+    const { selectedIssueMap } = StoryMapStore;
     return (
       <Card
-        className={`c7nagile-StoryMap-StoryCard ${index === 0 && rowIndex === 0 ? 'minimapCard' : ''}`}
+        className={`c7nagile-StoryMap-StoryCard ${index === 0 && rowIndex === 0 ? 'minimapCard' : ''} ${selectedIssueMap.has(issueId) ? 'selected' : ''}`}
         saveRef={this.saveRef}
         onClick={this.handleClick} 
         onMouseDown={this.handleMouseDown}

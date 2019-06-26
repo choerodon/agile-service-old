@@ -1,6 +1,6 @@
 
 import {
-  observable, action, computed, extendObservable, toJS,
+  observable, action, computed, set, toJS,
 } from 'mobx';
 import {
   find, findIndex, max, remove, groupBy,
@@ -46,7 +46,7 @@ class StoryMapStore {
 
   @observable loading = false;
 
-  @observable clickIssue = null;
+  @observable selectedIssueMap = observable.map({});
 
   @action clear() {
     this.storyMapData = {};
@@ -153,7 +153,7 @@ class StoryMapStore {
       const epic = this.storyData[epicId];
       Object.keys(epic.feature).forEach((featureId) => {
         const feature = epic.feature[featureId];
-        extendObservable(feature.version, {
+        set(feature.version, {
           [version.versionId]: [],
         });
       });
@@ -219,7 +219,7 @@ class StoryMapStore {
         storyMapVersionDOList.forEach((version) => {
           const { versionId } = version;
           // if (!targetFeature.version[versionId]) {
-          //   extendObservable(targetFeature.version, {
+          //   set(targetFeature.version, {
           //     [versionId]: [],
           //   }); 
           // }
@@ -282,7 +282,7 @@ class StoryMapStore {
 
   @action afterCreateEpic(index, newEpic) {
     this.storyMapData.epicWithFeature[index] = { ...newEpic, featureCommonDOList: [] };
-    extendObservable(this.storyData, {
+    set(this.storyData, {
       [newEpic.issueId]: {
         epicId: newEpic.issueId,
         collapse: false,
@@ -300,7 +300,7 @@ class StoryMapStore {
 
   @action afterCreateEpicInModal(newEpic) {
     this.storyMapData.epicWithFeature.unshift({ ...newEpic, featureCommonDOList: [] });
-    extendObservable(this.storyData, {
+    set(this.storyData, {
       [newEpic.issueId]: {
         epicId: newEpic.issueId,
         collapse: false,
@@ -331,7 +331,7 @@ class StoryMapStore {
     const { length } = this.storyMapData.epicWithFeature[epicIndex].featureCommonDOList;
     this.storyMapData.epicWithFeature[epicIndex].featureCommonDOList[length - 1] = newFeature;
     const { issueId: epicId } = this.storyMapData.epicWithFeature[epicIndex];
-    extendObservable(this.storyData[epicId].feature, {
+    set(this.storyData[epicId].feature, {
       [newFeature.issueId]: {
         storys: [],
         version: this.getInitVersions(),
@@ -441,7 +441,10 @@ class StoryMapStore {
   }
 
   @action setClickIssue(clickIssue) {
-    this.clickIssue = clickIssue;
+    this.selectedIssueMap.clear();
+    if (clickIssue) {
+      this.selectedIssueMap.set(clickIssue.issueId, clickIssue);    
+    }
   }
 
   getIssueTypeByCode(typeCode) {

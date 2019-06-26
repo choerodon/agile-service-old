@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Tooltip } from 'choerodon-ui';
 import { DragSource } from 'react-dnd';
+import { observer } from 'mobx-react';
 import EpicDrag from './EpicDrag';
 import { programIssueLink, issueLink } from '../../../../../../common/utils';
 import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
@@ -10,6 +11,7 @@ import AutoScroll from '../../../../../../common/AutoScroll';
 import Card from './Card';
 import './EpicCard.scss';
 
+@observer
 class EpicCard extends Component {
   componentDidMount() {
     this.AutoScroll = new AutoScroll({
@@ -54,9 +56,10 @@ class EpicCard extends Component {
     const {
       issueId, epicName, issueNum, programId, 
     } = epic;
+    const { selectedIssueMap } = StoryMapStore;
     return (
       <Card
-        className={`c7nagile-StoryMap-EpicCard minimapCard ${issueId ? '' : 'none'}`}
+        className={`c7nagile-StoryMap-EpicCard minimapCard ${issueId ? '' : 'none'} ${selectedIssueMap.has(issueId) ? 'selected' : ''}`}
         style={{
           height: 42, display: 'flex', alignItems: 'center', padding: '0 12px', 
         }}

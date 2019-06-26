@@ -32,9 +32,9 @@ class IssueDetail extends Component {
 
   render() {
     const { refresh } = this.props;
-    const { clickIssue } = StoryMapStore;
-    const visible = clickIssue;
-    const { programId } = clickIssue || {};
+    const { selectedIssueMap } = StoryMapStore;
+    const visible = selectedIssueMap.size;
+    const { programId, issueId } = selectedIssueMap.values().next().value || {};
     const TargetComponent = programId ? ProgramIssueShow : EditIssue;
     return (
       visible ? (
@@ -43,7 +43,7 @@ class IssueDetail extends Component {
           onRef={(ref) => {
             this.editIssue = ref;
           }}
-          issueId={clickIssue.issueId}
+          issueId={issueId}
           onCancel={this.handleCancel}
           onDeleteIssue={this.handleDeleteIssue}
           onUpdate={refresh}
