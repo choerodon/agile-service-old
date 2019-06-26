@@ -77,7 +77,7 @@ class StoryMapHome extends Component {
   }
 
   handleClickIssueList = () => {
-    StoryMapStore.toggleSideIssueListVisible();
+    StoryMapStore.toggleSideIssueListVisible();    
   }
 
   handleCreateEpicClick = () => {
