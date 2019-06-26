@@ -25,4 +25,10 @@ databaseChangeLog(logicalFilePath:'agile_wiki_relation.groovy') {
             column(name: "last_update_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
     }
+
+    changeSet(id: '2019-06-25-agile-wiki-relation-add-column', author: 'fuqianghuang01@gmail.com') {
+        addColumn(tableName: 'agile_wiki_relation') {
+            column(name: 'space_id', type: 'BIGINT UNSIGNED', remarks: 'kb space id')
+        }
+    }
 }

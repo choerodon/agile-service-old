@@ -16,6 +16,8 @@ public class WikiRelationE {
 
     private String wikiUrl;
 
+    private Long spaceId;
+
     public Long getId() {
         return id;
     }
@@ -54,5 +56,13 @@ public class WikiRelationE {
 
     public void setWikiUrl(String wikiUrl) {
         this.wikiUrl = wikiUrl;
+    }
+
+    public void setSpaceId(Long spaceId) {
+        this.spaceId = spaceId;
+    }
+
+    public Long getSpaceId() {
+        return spaceId;
     }
 }

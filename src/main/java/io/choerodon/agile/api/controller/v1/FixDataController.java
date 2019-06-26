@@ -1,10 +1,12 @@
 package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.app.service.ReportService;
+import io.choerodon.agile.app.service.WikiRelationService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.iam.InitRoleCode;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +25,22 @@ public class FixDataController {
     @Autowired
     private ReportService reportService;
 
+    @Autowired
+    private WikiRelationService wikiRelationService;
+
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR, InitRoleCode.SITE_DEVELOPER})
     @ApiOperation("修复累积流图脏数据")
     @PostMapping(value = "/fix_cumulative_flow_diagram")
     public ResponseEntity fixCumulativeFlowDiagram() {
         reportService.fixCumulativeFlowDiagram();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    @ApiOperation("迁移xwiki关联数据")
+    @PostMapping("/move_wiki_relation")
+    public ResponseEntity moveWikiRelation() {
+        wikiRelationService.moveWikiRelation();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
