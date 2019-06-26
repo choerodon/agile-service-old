@@ -60,22 +60,13 @@ class EpicCard extends Component {
     return (
       <Card
         className={`c7nagile-StoryMap-EpicCard minimapCard ${issueId ? '' : 'none'} ${selectedIssueMap.has(issueId) ? 'selected' : ''}`}
-        style={{
-          height: 42, display: 'flex', alignItems: 'center', padding: '0 12px', 
-        }}
+        style={{ display: 'flex' }}
         onClick={this.handleClick}
         saveRef={this.saveRef}
         onMouseDown={this.handleMouseDown}
       >
-        <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          <Tooltip title={`${epicName || '无史诗'}`} getPopupContainer={trigger => trigger.parentNode}>
-            {/* {issueId && issueNum ? (
-              <Link disabled={programId} to={programId ? programIssueLink(issueId, issueNum, programId) : issueLink(issueId, 'story', issueNum)} style={{ marginRight: 5 }} target="_blank">
-          #
-                {issueNum}
-              </Link>
-            ) : null} */}
-          
+        <div className="summary">
+          <Tooltip title={`${epicName || '无史诗'}`} getPopupContainer={trigger => trigger.parentNode}>          
             {`${epicName || '无史诗'}`}
           </Tooltip>
         </div>

@@ -25,7 +25,7 @@
     "quill-delta-to-html": "^0.8.4",
     "rc-progress": "^2.2.6",
     "react-beautiful-dnd": "8.0.7",
-    "react-dnd": "^5.0.0",
+    "react-dnd": "7.5.0",
     "react-dnd-html5-backend": "^5.0.1",
     "react-fast-compare": "^2.0.4",
     "react-image-lightbox": "^4.6.0",

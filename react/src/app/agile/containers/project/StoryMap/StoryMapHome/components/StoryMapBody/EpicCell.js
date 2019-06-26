@@ -192,13 +192,13 @@ class EpicCell extends Component {
             style={{
               ...collapse ? {
                 position: 'sticky',
-                marginLeft: -50,   
-                top: 18,
+                marginLeft: -40,   
+                top: 28,
                 zIndex: 10,
               } : {
                 position: 'absolute',
                 left: 0,
-                top: 18,
+                top: 28,
               },
             }}          
           >
@@ -209,7 +209,7 @@ class EpicCell extends Component {
           </span>
           
         )}
-        {collapse && <div style={{ width: 50 }} />}
+        {collapse && <div style={{ width: 40 }} />}
         {collapse
           ? (
             <Fragment>
@@ -220,7 +220,7 @@ class EpicCell extends Component {
                 whiteSpace: 'pre-wrap',
                 position: 'sticky',
                 top: 20,
-                marginLeft: 20,
+                marginLeft: 10,
                 ...collapse ? { marginTop: -10 } : {},
               }}
               >
@@ -270,7 +270,7 @@ class EpicCell extends Component {
             </Fragment>
           )}
 
-        {collapse && <EpicDragCollapse epic={epic} index={index} />}
+        {collapse && <EpicDragCollapse epic={epic} index={index} subIssueNum={subIssueNum} />}
       </Cell>
     );
   }

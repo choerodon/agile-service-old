@@ -1,29 +1,33 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
+import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
-import { DropTarget } from 'react-dnd';
+import { DropTarget, DragPreviewImage } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import EpicDrag from './EpicDrag';
+import EpicCard from './EpicCard';
+import dom2canvas from './dom2canvas';
+// import img from '../../../../../../assets/noPI.svg';
+
 
 class EpicDragCollapse extends Component {
+  state={
+    src: '',
+  }
+
   componentDidMount() {
-    const { connectDragPreview } = this.props;
-    if (connectDragPreview) {
-      // Use empty image as a drag preview so browsers don't draw it
-      // and we can draw whatever we want on the custom drag layer instead.
-      connectDragPreview(getEmptyImage(), {
-        // IE fallback: specify that we'd rather screenshot the node
-        // when it already knows it's being dragged so we can hide it with CSS.
-        captureDraggingState: true,
-      });
-    }
+    // eslint-disable-next-line react/no-find-dom-node
+    const src = dom2canvas(findDOMNode(this.CardPreview));
+    this.setState({
+      src,
+    });
   }
   
   render() {
-    const { connectDragSource } = this.props;
-    return connectDragSource(
+    const { connectDragSource, connectDragPreview } = this.props;
+    const { src } = this.state;
+    return connectDragSource(      
       <div
-        role="none"
-        // onMouseDown={this.handleMouseDown}
+        role="none"      
         style={{
           position: 'absolute',
           height: '100%',
@@ -31,7 +35,13 @@ class EpicDragCollapse extends Component {
           left: 0,
           width: '100%',
         }}
-      />,
+      >
+        <DragPreviewImage connect={connectDragPreview} src={src} />
+        {/* 隐藏元素,用来生成preview */}
+        <div style={{ position: 'fixed', top: -9999, left: -9999 }}>
+          <EpicCard ref={(CardPreview) => { this.CardPreview = CardPreview; }} {...this.props} />
+        </div>
+      </div>,     
     );
   }
 }
