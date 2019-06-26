@@ -11,7 +11,15 @@ class FeatureRow extends Component {
     const epicList = StoryMapStore.getEpicList;
     return (
       <tr style={{ height: 82 }}>
-        {epicList.map((epicData, index) => <FeatureCell lastCollapse={index > 0 ? storyData[epicList[index - 1].issueId].collapse : false} isLastColumn={index === epicList.length - 1} epicIndex={index} epicData={epicData} otherData={storyData[epicData.issueId]} />) }
+        {epicList.map((epicData, index) => (
+          <FeatureCell
+            lastCollapse={index > 0 ? storyData[epicList[index - 1].issueId] && storyData[epicList[index - 1].issueId].collapse : false}
+            isLastColumn={index === epicList.length - 1} 
+            epicIndex={index}
+            epicData={epicData}
+            otherData={storyData[epicData.issueId]}
+          />
+        )) }
       </tr>
     );
   }

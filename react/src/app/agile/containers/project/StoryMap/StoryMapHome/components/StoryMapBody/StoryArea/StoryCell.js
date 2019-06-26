@@ -64,9 +64,9 @@ class StoryCell extends Component {
                         const targetFeature = targetEpic.feature[feature.issueId] || {};
                         if (targetFeature) {
                           const storys = this.getStorys(targetFeature);
-                          if (feature.issueId === 'none' && storys.length === 0) {
-                            return null;
-                          }
+                          // if (feature.issueId === 'none' && storys.length === 0) {
+                          //   return null;
+                          // }
                           return (
                             <StoryColumn 
                               feature={feature}

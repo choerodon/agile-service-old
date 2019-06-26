@@ -33,7 +33,7 @@ class StoryRow extends Component {
               <TitleCell
                 epicIndex={index}
                 isLastColumn={index === epicWithFeature.length - 1}
-                lastCollapse={index > 0 ? storyData[epicList[index - 1].issueId].collapse : false}
+                lastCollapse={index > 0 ? storyData[epicList[index - 1].issueId] && storyData[epicList[index - 1].issueId].collapse : false}
                 showTitle={firstNotCollapseIndex === index}
                 otherData={storyData[epic.issueId]}                
                 {...this.props}
@@ -46,7 +46,7 @@ class StoryRow extends Component {
             <StoryCell 
               rowIndex={rowIndex}
               epicIndex={index}
-              lastCollapse={index > 0 ? storyData[epicList[index - 1].issueId].collapse : false}
+              lastCollapse={index > 0 ? storyData[epicList[index - 1].issueId] && storyData[epicList[index - 1].issueId].collapse : false}
               isLastColumn={index === epicWithFeature.length - 1}
               showTitle={firstNotCollapseIndex === index}
               epic={epic}

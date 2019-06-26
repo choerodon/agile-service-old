@@ -229,13 +229,14 @@ class EpicCell extends Component {
             </Fragment>
           ) : (
             <Fragment>
-              <Column style={{ minHeight: 'unset' }}>
-                {adding
-                  ? <CreateEpic onCreate={this.handleCreateEpic} />
-                  : <EpicCard epic={epicData} subIssueNum={subIssueNum} />}
-              </Column>
-              {issueId && !StoryMapStore.isFullScreen ? (!adding && !isInProgram && <AddCard style={{ height: 42 }} onClick={this.handleAddEpicClick} />) : null}
-              {resizing && (
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Column style={{ minHeight: 'unset' }}>
+                  {adding
+                    ? <CreateEpic onCreate={this.handleCreateEpic} />
+                    : <EpicCard epic={epicData} subIssueNum={subIssueNum} />}
+                </Column>
+                {issueId && !StoryMapStore.isFullScreen ? (!adding && !isInProgram && <AddCard style={{ height: 42 }} onClick={this.handleAddEpicClick} />) : null}
+                {resizing && (
                 <div style={{
                   position: 'fixed',
                   top: 0,
@@ -246,25 +247,26 @@ class EpicCell extends Component {
                   cursor: 'col-resize',
                 }}
                 />
-              )}
-              {!isInProgram && issueId ? (
-                <div
-                  className="c7nagile-StoryMap-FeatureColumn-Resize"
-                  style={{
-                    top: 0,
-                    height: '100%',
-                    width: 20,
-                    position: 'absolute',
-                    zIndex: 2,
-                    cursor: 'col-resize',
-                    right: -5,
-                  }}
-                  onMouseDown={this.handleMouseDown.bind(this, 'right')}
-                  role="none"
-                >
-                  <div className={`c7nagile-StoryMap-FeatureColumn-Resize-highlight ${resizing ? 'active' : ''}`} />
-                </div>
-              ) : null}
+                )}
+                {!isInProgram && issueId ? (
+                  <div
+                    className="c7nagile-StoryMap-FeatureColumn-Resize"
+                    style={{
+                      top: 0,
+                      height: '100%',
+                      width: 20,
+                      position: 'absolute',
+                      zIndex: 2,
+                      cursor: 'col-resize',
+                      right: -5,
+                    }}
+                    onMouseDown={this.handleMouseDown.bind(this, 'right')}
+                    role="none"
+                  >
+                    <div className={`c7nagile-StoryMap-FeatureColumn-Resize-highlight ${resizing ? 'active' : ''}`} />
+                  </div>
+                ) : null}
+              </div>              
             </Fragment>
           )}
 
