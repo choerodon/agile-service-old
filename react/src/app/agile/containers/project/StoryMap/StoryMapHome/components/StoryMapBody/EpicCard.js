@@ -27,12 +27,10 @@ class EpicCard extends Component {
     return (
       <Card
         className={`c7nagile-StoryMap-EpicCard minimapCard ${issueId ? '' : 'none'} ${selectedIssueMap.has(issueId) ? 'selected' : ''}`}
-        style={{
-          height: 42, display: 'flex', alignItems: 'center', padding: '0 12px', 
-        }}
+        style={{ display: 'flex' }}
         onClick={this.handleClick}
       >
-        <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <div className="summary">
           <Tooltip title={`${epicName || '无史诗'}`} getPopupContainer={trigger => trigger.parentNode}>            
             {`${epicName || '无史诗'}`}
           </Tooltip>
