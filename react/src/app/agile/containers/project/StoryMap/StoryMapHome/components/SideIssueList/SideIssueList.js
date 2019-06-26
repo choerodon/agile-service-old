@@ -103,8 +103,7 @@ class SideIssueList extends Component {
           <div className="c7nagile-SideIssueList-content-list">
             {issueList.filter(this.handleFilter).map(issue => <IssueItem issue={issue} />) }  
           </div>
-        </div>
-        
+        </div>        
       </div>
     );
   }
@@ -113,5 +112,5 @@ class SideIssueList extends Component {
 SideIssueList.propTypes = {
 
 };
-const SideIssueListContainer = observer(({ ...props }) => (StoryMapStore.sideIssueListVisible ? <SideIssueList {...props} /> : null));
+const SideIssueListContainer = observer(({ ...props }) => (StoryMapStore.sideIssueListVisible && !StoryMapStore.isFullScreen ? <SideIssueList {...props} /> : null));
 export default SideIssueListContainer;

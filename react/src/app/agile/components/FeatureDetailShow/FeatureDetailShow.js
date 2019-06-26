@@ -15,11 +15,16 @@ import IssueHeader from './IssueComponent/IssueHeader';
 import IssueBody from './IssueComponent/IssueBody/IssueBody';
 import VisibleStore from '../../stores/common/visible/VisibleStore';
 import ResizeAble from '../ResizeAble';
+import EditIssueStore from '../EditIssue/EditIssueStore';
 
 const { AppState } = stores;
-
+const store = EditIssueStore;
 let loginUserId;
 let hasPermission;
+const defaultProps = {
+  disabled: true,
+};
+
 @observer class FeatureDetailShow extends Component {
   constructor(props) {
     super(props);
@@ -65,7 +70,7 @@ let hasPermission;
   }
 
   loadIssueDetail = (paramIssueId) => {
-    const { store, issueId, programId } = this.props;
+    const { issueId, programId } = this.props;
     const id = paramIssueId || issueId;
     this.setState({
       issueLoading: true,
@@ -89,7 +94,7 @@ let hasPermission;
         // loadLinkIssues(id, projectId),
       ])
         .then(axios.spread((dataLogs) => {
-          store.initIssueAttribute([], dataLogs, []);
+          store.initIssueAttribute([], [], dataLogs, [], []);
         }));
     });
   };
@@ -123,7 +128,6 @@ let hasPermission;
 
   render() {
     const {
-      store,
       backUrl,
       onCancel,
       style,
@@ -237,4 +241,5 @@ let hasPermission;
     );
   }
 }
+FeatureDetailShow.defaultProps = defaultProps;
 export default withRouter(FeatureDetailShow);

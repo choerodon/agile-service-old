@@ -3,15 +3,15 @@ import PropTypes from 'prop-types';
 import { Icon, Tooltip } from 'choerodon-ui';
 import { DragSource } from 'react-dnd';
 import { find } from 'lodash';
-import { Link } from 'react-router-dom';
-import { programIssueLink, issueLink, getProjectId } from '../../../../../../../common/utils';
-import { CardWidth, CardHeight, CardMargin } from '../../../Constants';
+import { observer } from 'mobx-react';
 import { storyMove } from '../../../../../../../api/StoryMapApi';
 import AutoScroll from '../../../../../../../common/AutoScroll';
 import Card from '../Card';
 import './StoryCard.scss';
 import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
 
+
+@observer
 class StoryCard extends Component {
   componentDidMount() {
     this.AutoScroll = new AutoScroll({
@@ -62,24 +62,29 @@ class StoryCard extends Component {
     });
   }
 
+  handleClick = () => {
+    const { story } = this.props;
+    StoryMapStore.setClickIssue(story);
+  }
+
   render() {   
     const {
       story, connectDragSource, index, rowIndex, 
     } = this.props;
     const { issueId, issueNum, summary } = story;
+    const { selectedIssueMap } = StoryMapStore;
     return (
-      <Card className={`c7nagile-StoryMap-StoryCard ${index === 0 && rowIndex === 0 ? 'minimapCard' : ''}`} saveRef={this.saveRef} onMouseDown={this.handleMouseDown}>
+      <Card
+        className={`c7nagile-StoryMap-StoryCard ${index === 0 && rowIndex === 0 ? 'minimapCard' : ''} ${selectedIssueMap.has(issueId) ? 'selected' : ''}`} 
+        saveRef={this.saveRef}
+        onMouseDown={this.handleMouseDown}
+        onClick={this.handleClick}
+      >
         <Icon type="close" className="c7nagile-StoryMap-StoryCard-delete" onClick={this.handlRemoveStory} />        
         <div className="summary">
-          <Tooltip title={summary} getPopupContainer={trigger => trigger.parentNode}>
-            {issueId && issueNum ? (
-              <Link to={issueLink(issueId, 'story', issueNum)} style={{ marginRight: 5 }} target="_blank">
-                  #
-                {issueNum}
-              </Link>
-            ) : null}
+          <Tooltip title={summary} getPopupContainer={trigger => trigger.parentNode}>            
             {summary}
-          </Tooltip>       
+          </Tooltip>
         </div>
       </Card>
     );

@@ -18,6 +18,7 @@ import SideIssueList from './components/SideIssueList';
 import SwitchSwimLine from './components/SwitchSwimLine';
 import CreateVersion from './components/CreateVersion';
 import CreateEpicModal from './components/CreateEpicModal';
+import IssueDetail from './components/IssueDetail';
 import StoryMapStore from '../../../../stores/project/StoryMap/StoryMapStore';
 import IsInProgramStore from '../../../../stores/common/program/IsInProgramStore';
 import './StoryMapHome.scss';
@@ -178,6 +179,7 @@ class StoryMapHome extends Component {
           <Button onClick={this.handleFullScreen.bind(this)} icon={isFullScreen ? 'exit_full_screen' : 'zoom_out_map'}>
             {isFullScreen ? '退出全屏' : '全屏'}
           </Button>
+          {!isFullScreen && (
           <Button
             type="primary"
             funcType="raised"
@@ -187,6 +189,7 @@ class StoryMapHome extends Component {
           >
             需求池
           </Button>
+          )}
         </Header>
         <Content style={{ padding: 0, paddingBottom: 49 }}>
           <Loading loading={loading} />
@@ -212,6 +215,7 @@ class StoryMapHome extends Component {
           <SideIssueList />
           <CreateVersion onOk={this.handleCreateVersion} />
           <CreateEpicModal onOk={this.handleCreateEpic} />
+          <IssueDetail />
         </Content>
       </Page>
     );
