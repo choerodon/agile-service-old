@@ -39,7 +39,7 @@ class FeatureCell extends Component {
           collapse={collapse}
           style={{
             position: 'sticky',
-            top: 60,
+            top: 82,
             zIndex: 6,
             background: 'white',
             ...collapse ? { zIndex: 'unset' } : {}, 
