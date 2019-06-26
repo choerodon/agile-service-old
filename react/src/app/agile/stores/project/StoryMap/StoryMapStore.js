@@ -101,6 +101,9 @@ class StoryMapStore {
   }
 
   @action toggleSideIssueListVisible() {
+    if (!this.sideIssueListVisible) {
+      this.setClickIssue();
+    }
     this.sideIssueListVisible = !this.sideIssueListVisible;
   }
 
@@ -432,6 +435,7 @@ class StoryMapStore {
   @action setClickIssue(clickIssue) {    
     this.selectedIssueMap.clear();
     if (clickIssue) {
+      this.sideIssueListVisible = false;
       this.selectedIssueMap.set(clickIssue.issueId, clickIssue);    
     }
   }
