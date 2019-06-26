@@ -1,9 +1,9 @@
 
 import {
-  observable, action, computed, extendObservable, toJS,
+  observable, action, computed, set,
 } from 'mobx';
 import {
-  find, findIndex, max, remove, groupBy,
+  find, findIndex, remove,
 } from 'lodash';
 import { getProjectId } from '../../../common/utils';
 import {
@@ -154,7 +154,7 @@ class StoryMapStore {
       const epic = this.storyData[epicId];
       Object.keys(epic.feature).forEach((featureId) => {
         const feature = epic.feature[featureId];
-        extendObservable(feature.version, {
+        set(feature.version, {
           [version.versionId]: [],
         });
       });
@@ -271,7 +271,7 @@ class StoryMapStore {
 
   @action afterCreateEpic(index, newEpic) {
     this.storyMapData.epicWithFeature[index] = { ...newEpic, featureCommonDOList: [] };
-    extendObservable(this.storyData, {
+    set(this.storyData, {
       [newEpic.issueId]: {
         epicId: newEpic.issueId,
         collapse: false,
@@ -289,7 +289,7 @@ class StoryMapStore {
 
   @action afterCreateEpicInModal(newEpic) {
     this.storyMapData.epicWithFeature.unshift({ ...newEpic, featureCommonDOList: [] });
-    extendObservable(this.storyData, {
+    set(this.storyData, {
       [newEpic.issueId]: {
         epicId: newEpic.issueId,
         collapse: false,
@@ -320,7 +320,7 @@ class StoryMapStore {
     const { length } = this.storyMapData.epicWithFeature[EpicIndex].featureCommonDOList;
     this.storyMapData.epicWithFeature[EpicIndex].featureCommonDOList[length - 1] = newFeature;
     const { issueId: epicId } = this.storyMapData.epicWithFeature[EpicIndex];
-    extendObservable(this.storyData[epicId].feature, {
+    set(this.storyData[epicId].feature, {
       [newFeature.issueId]: {
         storys: [],
         version: this.getInitVersions(),
