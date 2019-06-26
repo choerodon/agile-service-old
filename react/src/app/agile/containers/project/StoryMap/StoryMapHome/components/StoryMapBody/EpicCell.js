@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Icon } from 'choerodon-ui';
 import { observer } from 'mobx-react';
 import { DropTarget } from 'react-dnd';
+import { getEmptyImage } from 'react-dnd-html5-backend';
 import Column from './Column';
 import EpicCard from './EpicCard';
 import Cell from './Cell';
@@ -12,6 +13,7 @@ import CreateEpic from './CreateEpic';
 import EpicDrag from './EpicDrag';
 import { ColumnWidth, CellPadding } from '../../Constants';
 import AutoScroll from '../../../../../../common/AutoScroll';
+import EpicDragCollapse from './EpicDragCollapse';
 import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 import IsInProgramStore from '../../../../../../stores/common/program/IsInProgramStore';
 
@@ -163,19 +165,6 @@ class EpicCell extends Component {
     if (storys && feature) {
       subIssueNum = Math.max(storys.length + Object.keys(feature).length - 1, 0);// 减去none
     }
-    const DragCell = EpicDrag(({ connectDragSource }) => connectDragSource(
-      <div
-        role="none"
-        onMouseDown={this.handleMouseDown}
-        style={{
-          position: 'absolute',
-          height: '100%',
-          top: 0,
-          left: 0,
-          width: '100%',
-        }}
-      />,
-    ));
 
     return (
       <Cell
@@ -279,7 +268,7 @@ class EpicCell extends Component {
             </Fragment>
           )}
 
-        {collapse && <DragCell />}
+        {collapse && <EpicDragCollapse />}
       </Cell>
     );
   }

@@ -19,6 +19,7 @@ const EpicDrag = Component => DragSource(
   },
   (connect, monitor) => ({
     connectDragSource: connect.dragSource(),
+    connectDragPreview: connect.dragPreview(),
     isDragging: monitor.isDragging(),
   }),
 )(Component);
