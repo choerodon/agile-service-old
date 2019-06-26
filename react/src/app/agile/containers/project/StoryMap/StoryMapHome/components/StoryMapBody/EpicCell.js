@@ -152,7 +152,7 @@ class EpicCell extends Component {
             <Fragment>
               <div style={{
                 width: 20,
-                height: 50,
+                height: 70,
                 display: 'flex',
                 alignItems: 'center',
                 ...collapse ? {
@@ -188,7 +188,7 @@ class EpicCell extends Component {
                     ? <CreateEpic onCreate={this.handleCreateEpic} />
                     : <EpicCard epic={epicData} subIssueNum={subIssueNum} />}
                 </Column>
-                {issueId ? (!adding && !isInProgram && <AddCard style={{ height: 42 }} onClick={this.handleAddEpicClick} />) : null}
+                {issueId ? (!adding && !isInProgram && <AddCard style={{ height: 64 }} onClick={this.handleAddEpicClick} />) : null}
                 {resizing && (
                 <div style={{
                   position: 'fixed',
