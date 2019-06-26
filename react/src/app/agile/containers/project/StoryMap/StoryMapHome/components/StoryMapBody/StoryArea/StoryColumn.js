@@ -123,6 +123,7 @@ class StoryColumn extends Component {
       storys, width, epic, feature, version, connectDropTarget, isOver, rowIndex,
     } = this.props;  
     const { resizing } = this.state;
+    // const { selectedIssueMap } = StoryMapStore;
     return (
       <Column width={width} saveRef={connectDropTarget} style={{ background: isOver ? 'rgb(240,240,240)' : 'white', position: 'relative' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>

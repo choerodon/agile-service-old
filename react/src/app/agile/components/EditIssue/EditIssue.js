@@ -8,7 +8,7 @@ import { throttle } from 'lodash';
 import './EditIssue.scss';
 import {
   loadBranchs, loadDatalogs, loadLinkIssues,
-  loadIssue, loadWorklogs, loadWikies, getFieldAndValue,
+  loadIssue, loadWorklogs, loadWikies, getFieldAndValue, loadIssueTypes,
 } from '../../api/NewIssueApi';
 import RelateStory from '../RelateStory';
 import CopyIssue from '../CopyIssue';
@@ -21,12 +21,13 @@ import IssueSidebar from './IssueComponent/IssueSidebar';
 import IssueHeader from './IssueComponent/IssueHeader';
 import IssueBody from './IssueComponent/IssueBody/IssueBody';
 import VisibleStore from '../../stores/common/visible/VisibleStore';
+import EditIssueStore from './EditIssueStore';
 // 项目加入群之后，不关联自己的史诗和特性，只能关联项目群的，不能改关联的史诗
 const { AppState } = stores;
 
 let loginUserId;
 let hasPermission;
-
+const store = EditIssueStore;
 @observer
 class EditIssue extends Component {
   constructor(props) {
@@ -58,10 +59,12 @@ class EditIssue extends Component {
         projectId: AppState.currentMenuType.id,
         resourceType: 'project',
       }]),
+      loadIssueTypes(),
     ])
-      .then(axios.spread((users, permission) => {
+      .then(axios.spread((users, permission, issueTypes) => {
         loginUserId = users.id;
         hasPermission = permission[0].approve || permission[1].approve;
+        store.setIssueTypes(issueTypes);
       }));
     this.setQuery();
   }
@@ -74,7 +77,7 @@ class EditIssue extends Component {
   }
 
   loadIssueDetail = (paramIssueId) => {
-    const { store, issueId } = this.props;
+    const { issueId } = this.props;
     const id = paramIssueId || issueId;
     this.setState({
       issueLoading: true,
@@ -160,8 +163,7 @@ class EditIssue extends Component {
   
 
   render() {
-    const {
-      store,
+    const {     
       backUrl,
       onCancel,
       style,

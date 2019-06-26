@@ -58,7 +58,7 @@ import WikiItem from '../../../EditIssue/Component/WikiItem';
 
   render() {
     const { addWikiShow } = this.state;
-    const { store } = this.props;
+    const { store, disabled } = this.props;
     const { issueId } = store.getIssue;
     const wikies = store.getWiki;
 
@@ -73,11 +73,13 @@ import WikiItem from '../../../EditIssue/Component/WikiItem';
             flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
           }}
           />
+          {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ addWikiShow: true })}>
               <Icon type="add_box icon" />
             </Button>
           </div>
+          )}
         </div>
         {this.renderWiki()}
         {

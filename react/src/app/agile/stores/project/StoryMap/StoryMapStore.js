@@ -46,6 +46,9 @@ class StoryMapStore {
 
   @observable loading = false;
 
+  selectedIssueMap = observable.map({}); // 使用map减少选中的渲染
+
+
   @action clear() {
     this.storyMapData = {};
     this.storyData = {};
@@ -56,7 +59,7 @@ class StoryMapStore {
     Promise.all([getStoryMap(), loadIssueTypes(), loadVersions(), loadPriorities()]).then(([storyMapData, issueTypes, versionList, prioritys]) => {
       const { epicWithFeature, featureWithoutEpic } = storyMapData;
       const newStoryMapData = {
-        ...storyMapData, 
+        ...storyMapData,
         epicWithFeature: featureWithoutEpic.length > 0 ? epicWithFeature.concat({
           issueId: 0,
           featureCommonDOList: featureWithoutEpic,
@@ -64,7 +67,7 @@ class StoryMapStore {
       };
       this.issueTypes = issueTypes;
       this.prioritys = prioritys;
-      this.initVersionList(versionList);      
+      this.initVersionList(versionList);
       this.initStoryData(newStoryMapData);
       this.setStoryMapData(newStoryMapData);
       this.setLoading(false);
@@ -96,7 +99,7 @@ class StoryMapStore {
   @action setCreateFeatureModalVisible(createFeatureModalVisible) {
     this.createFeatureModalVisible = createFeatureModalVisible;
   }
-  
+
   @action toggleSideIssueListVisible() {
     this.sideIssueListVisible = !this.sideIssueListVisible;
   }
@@ -109,7 +112,7 @@ class StoryMapStore {
     this.loading = loading;
   }
 
-  @action setStoryMapData(storyMapData) {   
+  @action setStoryMapData(storyMapData) {
     this.storyMapData = storyMapData;
   }
 
@@ -159,7 +162,7 @@ class StoryMapStore {
   }
 
   @action initStoryData({
-    epicWithFeature, storyList, storyMapWidth, 
+    epicWithFeature, storyList, storyMapWidth,
   }) {
     const storyData = {};
     epicWithFeature.forEach((epic) => {
@@ -306,7 +309,7 @@ class StoryMapStore {
     const feature = {
       adding: true,
     };
-    
+
     const currentIndex = findIndex(this.storyMapData.epicWithFeature, { issueId: epicData.issueId });
     // console.log(currentIndex);
     // console.log(epicData, currentIndex);
@@ -426,6 +429,11 @@ class StoryMapStore {
     storyMapWidth.push(storyMapWidthDTO);
   }
 
+  @action setClickIssue(clickIssue) {    
+    this.selectedIssueMap.clear();
+    this.selectedIssueMap.set(clickIssue.issueId, clickIssue);    
+  }
+
   getIssueTypeByCode(typeCode) {
     return find(this.issueTypes, { typeCode });
   }
@@ -436,11 +444,11 @@ class StoryMapStore {
   }
 
   @computed get getIsEmpty() {
-    const { epicWithFeature, featureWithoutEpic } = this.storyMapData;  
+    const { epicWithFeature, featureWithoutEpic } = this.storyMapData;
     if (epicWithFeature && featureWithoutEpic) {
       return featureWithoutEpic.length === 0 && epicWithFeature.filter(epic => epic.issueId).length === 0;
     }
-    return true;   
+    return true;
   }
 
   @computed get getEpicType() {
