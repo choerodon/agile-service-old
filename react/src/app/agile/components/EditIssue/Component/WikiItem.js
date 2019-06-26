@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import { Icon, Popconfirm } from 'choerodon-ui';
 import { AppState } from '@choerodon/boot';
 import './WikiItem.scss';
 
 
-class Log extends Component {
+class WikiItem extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -13,6 +14,27 @@ class Log extends Component {
 
   componentDidMount() {
   }
+
+  paramConverter = (url) => {
+    const reg = /[^?&]([^=&#]+)=([^&#]*)/g;
+    const retObj = {};
+    url.match(reg).forEach((item) => {
+      const [tempKey, paramValue] = item.split('=');
+      const paramKey = tempKey[0] !== '&' ? tempKey : tempKey.substring(1);
+      Object.assign(retObj, {
+        [paramKey]: paramValue,
+      });
+    });
+    return retObj;
+  };
+
+  getUrl = (id) => {
+    const { origin } = window.location;
+    const { location } = this.props;
+    const { search } = location;
+    const params = this.paramConverter(search);
+    return `${origin}#/knowledge/project?docId=${id}&type=project&id=${params.id}&name=${params.name}&category=${params.category}&organizationId=${params.organizationId}`;
+  };
 
   render() {
     const {
@@ -25,6 +47,7 @@ class Log extends Component {
         <Icon type="filter_none" className="c7n-wikiItem-icon" />
         <a
           className={`c7n-wikiItem-text c7n-wikiItem-${type}`}
+          href={this.getUrl(wiki.spaceId)}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -45,4 +68,4 @@ class Log extends Component {
   }
 }
 
-export default Log;
+export default withRouter(WikiItem);

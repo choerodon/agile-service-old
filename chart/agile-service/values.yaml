@@ -54,6 +54,7 @@ env:
     WORKH_APIKEY: dc135fefba469b4e48d07f7100af31e2
     WORKH_ENABLED: true
     WORKH_CRON: 59 59 23 15 12 *
+    SERVICES_ATTACHMENT_URL: http://minio.example.choerodon.io/agile-service/
     SERVICES_WIKI_HOST: example.com
     SERVICES_WIKI_TOKEN: token
 #    PRO_API_HOST: gateway.example.com.cn
