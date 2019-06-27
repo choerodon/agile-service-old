@@ -8,7 +8,7 @@ import {
 import moment from 'moment';
 import { UploadButton } from '../CommonComponent';
 import {
-  handleFileUpload, beforeTextUpload, randomString,  
+  handleFileUpload, beforeTextUpload, randomString,
 } from '../../common/utils';
 import IsInProgramStore from '../../stores/common/program/IsInProgramStore';
 
@@ -632,10 +632,12 @@ class CreateIssue extends Component {
     }
   };
 
-  getIssueTypes=() => {
+  getIssueTypes = () => {
     const createTypes = [];
     const { originIssueTypes } = this.state;
-    return originIssueTypes.filter(type => (!['issue_epic', 'feature', 'sub_task'].includes(type.typeCode))); 
+    return IsInProgramStore.isInProgram
+      ? originIssueTypes.filter(type => (!['issue_epic', 'feature', 'sub_task'].includes(type.typeCode)))
+      : originIssueTypes.filter(type => (!['feature', 'sub_task'].includes(type.typeCode)));
   }
 
   getFieldComponent = (field) => {
@@ -659,7 +661,7 @@ class CreateIssue extends Component {
                 rules: [{ required: true, message: '问题类型为必输项' }],
                 initialValue: defaultTypeId || '',
               })(
-                <Select                
+                <Select
                   label="问题类型"
                   getPopupContainer={triggerNode => triggerNode.parentNode}
                   onChange={((value) => {
@@ -691,7 +693,7 @@ class CreateIssue extends Component {
                   ))}
                 </Select>,
               )}
-            </FormItem>, 
+            </FormItem>,
             newIssueTypeCode === 'feature' ? (
               <FormItem style={{ width: 520 }}>
                 {getFieldDecorator('featureType', {
@@ -703,10 +705,10 @@ class CreateIssue extends Component {
                     getPopupContainer={triggerNode => triggerNode.parentNode}
                   >
                     <Option key="business" value="business">
-                    特性
+                      特性
                     </Option>
                     <Option key="enabler" value="enabler">
-                    使能
+                      使能
                     </Option>
                   </Select>,
                 )}

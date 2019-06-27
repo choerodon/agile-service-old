@@ -7,7 +7,7 @@ import {
 } from 'lodash';
 import { getProjectId } from '../../../common/utils';
 import {
-  getStoryMap, getSideIssueList, createWidth, changeWidth,
+  getStoryMap, getSideIssueList, createWidth, changeWidth, sort,
 } from '../../../api/StoryMapApi';
 import { loadIssueTypes, loadVersions, loadPriorities } from '../../../api/NewIssueApi';
 
@@ -55,8 +55,10 @@ class StoryMapStore {
 
   getStoryMap = () => {
     this.setLoading(true);
-    Promise.all([getStoryMap(), loadIssueTypes(), loadVersions(), loadPriorities()]).then(([storyMapData, issueTypes, versionList, prioritys]) => {
-      const { epicWithFeature, featureWithoutEpic } = storyMapData;
+    Promise.all([getStoryMap({}), loadIssueTypes(), loadVersions(), loadPriorities()]).then(([storyMapData, issueTypes, versionList, prioritys]) => {
+      let { epicWithFeature } = storyMapData;
+      const { featureWithoutEpic } = storyMapData;
+      epicWithFeature = epicWithFeature.sort((a, b) => a.rank - b.rank);
       const newStoryMapData = {
         ...storyMapData,
         epicWithFeature: featureWithoutEpic.length > 0 ? epicWithFeature.concat({
@@ -451,6 +453,29 @@ class StoryMapStore {
       this.sideIssueListVisible = false;
       this.selectedIssueMap.set(clickIssue.issueId, clickIssue);    
     }
+  }
+
+  sortEpic(source, destination) {
+    if (!source || !destination || source.issueId === destination.issueId) {
+      return;
+    }
+    const sortDTO = {
+      projectId: getProjectId(),
+      objectVersionNumber: source.objectVersionNumber, // 乐观锁     
+      issueId: source.issueId,
+      type: 'epic',
+      before: false, // 是否拖动到第一个
+      referenceIssueId: destination.issueId,
+    };
+    const {
+      index: sourceIndex,
+    } = source;
+    const {
+      index: destinationIndex, issueId: destinationId,
+    } = destination;
+    sort(sortDTO).then(() => {
+
+    });
   }
 
   getIssueTypeByCode(typeCode) {

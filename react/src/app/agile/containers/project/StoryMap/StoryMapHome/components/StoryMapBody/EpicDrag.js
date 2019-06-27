@@ -1,4 +1,5 @@
 import { DragSource } from 'react-dnd';
+import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 
 const EpicDrag = Component => DragSource(
   'epic',
@@ -25,6 +26,7 @@ const EpicDrag = Component => DragSource(
       //   source: item,
       //   destination: dropResult,
       // });
+      StoryMapStore.sortEpic(item, dropResult);
     },
   },
   (connect, monitor) => ({

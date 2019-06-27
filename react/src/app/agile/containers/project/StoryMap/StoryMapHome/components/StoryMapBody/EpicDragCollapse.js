@@ -29,6 +29,7 @@ class EpicDragCollapse extends Component {
       <div
         role="none"      
         style={{
+          cursor: 'grab',
           position: 'absolute',
           height: '100%',
           top: 0,

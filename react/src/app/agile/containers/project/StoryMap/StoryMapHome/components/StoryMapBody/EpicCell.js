@@ -190,6 +190,7 @@ class EpicCell extends Component {
         {!adding && (
           <span
             style={{
+              cursor: 'pointer',
               ...collapse ? {
                 position: 'sticky',
                 marginLeft: -50,   
