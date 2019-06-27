@@ -16,7 +16,7 @@ class Search extends Component {
       }}
       >
         Search
-        <FiltersProvider fields={['issueStatus', 'version']}>
+        {/* <FiltersProvider fields={['issueStatus', 'version']}>
           {([issueStatus, versionList]) => (
             <div>
               <Select placeholder="状态">
@@ -27,7 +27,7 @@ class Search extends Component {
               </Select>
             </div>
           )}
-        </FiltersProvider>
+        </FiltersProvider> */}
       </div>
     );
   }

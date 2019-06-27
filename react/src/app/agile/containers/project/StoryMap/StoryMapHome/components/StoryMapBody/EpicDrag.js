@@ -23,10 +23,10 @@ const EpicDrag = Component => DragSource(
       const { epic, index } = item;
       const { epic: targetEpic, index: targetIndex } = dropResult;
       // console.log({
-      //   source: item,
-      //   destination: dropResult,
+      //   source: epic,
+      //   destination: targetEpic,
       // });
-      StoryMapStore.sortEpic(item, dropResult);
+      StoryMapStore.sortEpic(epic, targetEpic);
     },
   },
   (connect, monitor) => ({

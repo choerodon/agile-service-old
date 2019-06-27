@@ -45,21 +45,38 @@ class StoryCard extends Component {
 
   handlRemoveStory = (e) => {
     e.stopPropagation();
-    const { story } = this.props;
-    const { issueId } = story;
-    const storyMapDragDTO = {
-      // 问题id列表，移动到版本，配合versionId使用
-      // versionIssueIds: [],     
-      epicId: 0, // 要关联的史诗id          
-      epicIssueIds: [issueId],
-      featureId: 0, // 要关联的特性id
-      // 问题id列表，移动到特性，配合featureId使用
-      featureIssueIds: [issueId],
-    };
-    storyMove(storyMapDragDTO).then(() => {
-      StoryMapStore.removeStoryFromStoryMap(story);
-      StoryMapStore.loadIssueList();
-    });
+    const { story, version } = this.props;
+    const { issueId, storyMapVersionDOList } = story;
+    const { swimLine } = StoryMapStore;
+    // 未规划或无泳道
+    if (swimLine === 'none' || storyMapVersionDOList.length === 0) {
+      const storyMapDragDTO = {
+        // 问题id列表，移动到版本，配合versionId使用
+        // versionIssueIds: [],     
+        epicId: 0, // 要关联的史诗id          
+        epicIssueIds: [issueId],
+        featureId: 0, // 要关联的特性id
+        // 问题id列表，移动到特性，配合featureId使用
+        featureIssueIds: [issueId],
+      }; 
+      storyMove(storyMapDragDTO).then(() => {
+        StoryMapStore.removeStoryFromStoryMap(story);
+        StoryMapStore.loadIssueList();
+      });
+    } else if (swimLine === 'version') {
+      const storyMapDragDTO = {
+        versionId: 0,
+        versionIssueRelDTOList: [],
+      };
+      if (storyMapVersionDOList.length > 0) {
+        const removeVersion = find(storyMapVersionDOList, { versionId: version.versionId });        
+        storyMapDragDTO.versionIssueRelDTOList = [{ ...removeVersion, issueId }];        
+      }
+      storyMove(storyMapDragDTO).then(() => {
+        StoryMapStore.removeStoryFromStoryMap(story, version.versionId);
+        StoryMapStore.loadIssueList();
+      });    
+    }
   }
 
   handleClick = () => {
