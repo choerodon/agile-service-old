@@ -37,6 +37,7 @@ public class FixDataController {
     }
 
 
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR, InitRoleCode.SITE_DEVELOPER})
     @ApiOperation("迁移xwiki关联数据")
     @PostMapping("/move_wiki_relation")
     public ResponseEntity moveWikiRelation() {
