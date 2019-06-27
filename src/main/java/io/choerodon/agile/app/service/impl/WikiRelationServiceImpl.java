@@ -155,6 +155,6 @@ public class WikiRelationServiceImpl implements WikiRelationService {
                 }
             }
         }
-        LOGGER.info("===================== xwiki关联关系迁移完成! =====================");
+        LOGGER.info("==================================== Finished to fix wiki relation by agile! =============================================");
     }
 }
