@@ -15,6 +15,8 @@ import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.WikiRelationMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,8 @@ import java.util.Map;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class WikiRelationServiceImpl implements WikiRelationService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(WikiRelationServiceImpl.class);
 
     private static final String ENC = "utf-8";
 
@@ -151,5 +155,6 @@ public class WikiRelationServiceImpl implements WikiRelationService {
                 }
             }
         }
+        LOGGER.info("==================================== Finished to fix wiki relation by agile! =============================================");
     }
 }

@@ -3599,7 +3599,8 @@
             ai.epic_name,
             alv.name AS color,
             ai.object_version_number,
-            ai.epic_sequence
+            ai.epic_sequence,
+            ai.program_id
         FROM agile_issue ai
         LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
         LEFT JOIN agile_project_info api ON ai.program_id = api.project_id
