@@ -337,24 +337,40 @@ class StoryMapStore {
     this.storyMapData.storyList.push(newStory);
   }
 
-  @action removeStoryFromStoryMap(story) {
+  @action removeStoryFromStoryMap(story, targetVersionId) {
     const { epicId, featureId, storyMapVersionDOList } = story;
-    remove(this.storyMapData.storyList, { issueId: story.issueId });
-    if (this.storyData[epicId]) {
-      const targetEpic = this.storyData[epicId];
-      const { feature } = targetEpic;
-      const targetFeature = feature[featureId || 'none'];
-      remove(targetFeature.storys, { issueId: story.issueId });
-      // 从各个版本移除
-      if (storyMapVersionDOList.length === 0) {
-        if (targetFeature.version.none) {
-          remove(targetFeature.version.none, { issueId: story.issueId });
+    if (targetVersionId) {
+      this.getStoryMap();
+      this.setClickIssue();
+      // if (this.storyData[epicId]) {
+      //   const targetEpic = this.storyData[epicId];
+      //   const { feature } = targetEpic;
+      //   const targetFeature = feature[featureId || 'none'];      
+      //   remove(targetFeature.version[targetVersionId], { issueId: story.issueId });
+      //   remove(storyMapVersionDOList, { versionId: targetVersionId });  
+      //   // 版本全删掉后，移到未规划
+      //   if (story.storyMapVersionDOList.length === 0) {
+      //     targetFeature.version.none.push(story);
+      //   }
+      // }
+    } else {
+      remove(this.storyMapData.storyList, { issueId: story.issueId });
+      if (this.storyData[epicId]) {
+        const targetEpic = this.storyData[epicId];
+        const { feature } = targetEpic;
+        const targetFeature = feature[featureId || 'none'];
+        remove(targetFeature.storys, { issueId: story.issueId });  
+        // 从各个版本移除
+        if (storyMapVersionDOList.length === 0) {
+          if (targetFeature.version.none) {
+            remove(targetFeature.version.none, { issueId: story.issueId });
+          }
         }
+        storyMapVersionDOList.forEach((version) => {
+          const { versionId } = version;
+          remove(targetFeature.version[versionId], { issueId: story.issueId });
+        });
       }
-      storyMapVersionDOList.forEach((version) => {
-        const { versionId } = version;
-        remove(targetFeature.version[versionId], { issueId: story.issueId });
-      });
     }
   }
 
