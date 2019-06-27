@@ -54,7 +54,7 @@ class Feature extends Component {
           <div className="c7n-backlog-epicTitle">
             <p style={{ fontWeight: 'bold' }}>特性</p>
             <div className="c7n-backlog-epicRight">
-              {!isInProgram && (
+              {/* {!isInProgram && (
               <p
                 style={{ color: '#3F51B5', cursor: 'pointer', whiteSpace: 'nowrap' }}
                 role="none"
@@ -66,7 +66,7 @@ class Feature extends Component {
               >
                 创建特性
               </p>
-              )}
+              )} */}
               <Icon
                 type="first_page"
                 role="none"
