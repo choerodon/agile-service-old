@@ -30,7 +30,7 @@ public class StoryMapController {
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询故事地图整体")
-    @GetMapping("/main")
+    @PostMapping("/main")
     public ResponseEntity<JSONObject> queryStoryMap(@ApiParam(value = "项目id", required = true)
                                                     @PathVariable(name = "project_id") Long projectId,
                                                     @ApiParam(value = "组织id", required = true)
