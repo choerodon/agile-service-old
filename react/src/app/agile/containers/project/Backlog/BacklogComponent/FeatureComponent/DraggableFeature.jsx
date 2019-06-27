@@ -29,7 +29,6 @@ class DraggableFeature extends Component {
    */
   clickMenu = (e) => {
     const { item } = this.props;
-
     e.domEvent.stopPropagation();
     if (e.key === '1') {
       this.setState({
@@ -39,6 +38,11 @@ class DraggableFeature extends Component {
     if (e.key === '2') {
       BacklogStore.setClickIssueDetail(item);
     }
+  }
+
+  handleClickDetail=() => {
+    const { item } = this.props;
+    BacklogStore.setClickIssueDetail(item);
   }
 
   /**
@@ -212,6 +216,7 @@ class DraggableFeature extends Component {
               {_.isNull(item.summary) ? '没有描述' : item.summary}
             </p> */}
             <p className="c7n-backlog-epicItemDetail">计数详情</p>
+            <div role="none" onClick={this.handleClickDetail}>查看详情</div>
             <div className="c7n-backlog-epicItemParams">
               <div className="c7n-backlog-epicItemParam">
                 <p className="c7n-backlog-epicItemParamKey">问题数</p>

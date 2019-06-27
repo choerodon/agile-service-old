@@ -55,7 +55,14 @@ class StoryMapStore {
 
   getStoryMap = () => {
     this.setLoading(true);
-    Promise.all([getStoryMap({}), loadIssueTypes(), loadVersions(), loadPriorities()]).then(([storyMapData, issueTypes, versionList, prioritys]) => {
+    Promise.all([getStoryMap(
+      {
+        advancedSearchArgs: {
+          versionList: [],
+          statusList: [],
+        }, 
+      },
+    ), loadIssueTypes(), loadVersions(), loadPriorities()]).then(([storyMapData, issueTypes, versionList, prioritys]) => {
       let { epicWithFeature } = storyMapData;
       const { featureWithoutEpic } = storyMapData;
       epicWithFeature = epicWithFeature.sort((a, b) => a.rank - b.rank);

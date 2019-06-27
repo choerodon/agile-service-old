@@ -335,6 +335,7 @@ class BacklogHome extends Component {
                 {'史诗'}
               </p>
               )}   
+              {isInProgram && (
               <p
                 style={{
                   marginTop: 12,
@@ -345,7 +346,8 @@ class BacklogHome extends Component {
                 }}
               >
                 {'特性'}
-              </p>         
+              </p>
+              )}         
             </div>
             <Version
               store={BacklogStore}

@@ -68,7 +68,7 @@ function transform(type, data) {
   const {
     isContent, textField, valueField, formatter, 
   } = requests[type];
-  const list = isContent ? data.content : data;
+  const list = isContent ? data.list : data;
   if (formatter) {
     return list.map(formatter);
   } else {
