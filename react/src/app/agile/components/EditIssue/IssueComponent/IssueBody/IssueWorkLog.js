@@ -38,7 +38,7 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
   }
 
   render() {
-    const { store, reloadIssue } = this.props;
+    const { store, reloadIssue, disabled } = this.props;
     const workLogShow = VisibleStore.getWorkLogShow;
     const issue = store.getIssue;
     const { issueNum, issueId } = issue;
@@ -54,6 +54,7 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
             flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
           }}
           />
+          {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="登记工作" getPopupContainer={triggerNode => triggerNode.parentNode}>
               <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setWorkLogShow(true)}>
@@ -61,6 +62,7 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
               </Button>
             </Tooltip>
           </div>
+          )}
         </div>
         {this.renderLogs()}
         {

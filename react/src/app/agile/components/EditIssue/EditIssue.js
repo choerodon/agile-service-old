@@ -22,6 +22,7 @@ import IssueHeader from './IssueComponent/IssueHeader';
 import IssueBody from './IssueComponent/IssueBody/IssueBody';
 import VisibleStore from '../../stores/common/visible/VisibleStore';
 import EditIssueStore from './EditIssueStore';
+import IsInProgramStore from '../../stores/common/program/IsInProgramStore';
 // 项目加入群之后，不关联自己的史诗和特性，只能关联项目群的，不能改关联的史诗
 const { AppState } = stores;
 
@@ -33,7 +34,7 @@ class EditIssue extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      issueLoading: false,
+      issueLoading: false,     
     };
     this.container = React.createRef();
     this.line = React.createRef();
@@ -87,7 +88,7 @@ class EditIssue extends Component {
           schemeCode: 'agile_issue',
           context: res.typeCode,
           pageCode: 'agile_issue_edit',
-        };
+        };        
         getFieldAndValue(id, param).then((fields) => {
           this.setState({
             issueLoading: false,
@@ -172,12 +173,12 @@ class EditIssue extends Component {
       onDeleteSubIssue,
     } = this.props;
     const {
-      issueLoading,
+      issueLoading, 
     } = this.state;
     const issue = store.getIssue;
     const {
       issueId, issueNum, summary,
-      assigneeId, objectVersionNumber,
+      assigneeId, objectVersionNumber, createdBy, typeCode,
     } = issue;
     const linkIssues = store.getLinkIssues;
 
@@ -189,7 +190,7 @@ class EditIssue extends Component {
       getTransformFromSubIssueShow: transformFromSubIssueShow,
       getRelateStoryShow: relateStoryShow,
     } = VisibleStore;
-
+    const disabled = IsInProgramStore.isInProgram && typeCode === 'issue_epic' && !hasPermission && createdBy !== AppState.userInfo.id;
     return (
       <div style={{
         position: 'absolute',
@@ -239,12 +240,14 @@ class EditIssue extends Component {
               ) : null
             }
             <IssueSidebar
+              disabled={disabled}
               store={store}
               reloadIssue={this.loadIssueDetail}
               onUpdate={onUpdate}
             />
             <div className="c7n-content">
               <IssueHeader
+                disabled={disabled}
                 store={store}
                 reloadIssue={this.loadIssueDetail}
                 backUrl={backUrl}
@@ -255,6 +258,7 @@ class EditIssue extends Component {
                 onUpdate={onUpdate}
               />
               <IssueBody
+                disabled={disabled}
                 store={store}
                 reloadIssue={this.loadIssueDetail}
                 onUpdate={onUpdate}

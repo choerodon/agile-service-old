@@ -152,7 +152,7 @@ const STATUS_SHOW = {
   render() {
     const { mergeRequestShow, commitShow } = this.state;
     const {
-      store, reloadIssue,
+      store, reloadIssue, disabled,
     } = this.props;
     const branchs = store.getBranches;
     const { commitUpdateTime, totalMergeRequest } = branchs;
@@ -170,6 +170,7 @@ const STATUS_SHOW = {
             flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
           }}
           />
+          {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="创建分支" getPopupContainer={triggerNode => triggerNode.parentNode}>
               <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateBranchShow(true)}>
@@ -177,6 +178,7 @@ const STATUS_SHOW = {
               </Button>
             </Tooltip>
           </div>
+          )}
         </div>
         {this.renderBranchs()}
         {

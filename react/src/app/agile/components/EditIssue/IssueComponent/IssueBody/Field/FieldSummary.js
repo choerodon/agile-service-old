@@ -69,7 +69,7 @@ const { TextArea } = Input;
 
   render() {
     const {
-      store, field, feature,
+      store, field, feature, disabled,
     } = this.props;
     const { fieldCode } = field;
     const issue = store.getIssue;
@@ -80,6 +80,7 @@ const { TextArea } = Input;
       <div className="line-start mt-10" style={{ width: '100%', fontSize: 20, fontWeight: 500 }}>
         <div className="c7n-value-wrapper">
           <TextEditToggle
+            disabled={disabled}
             saveRef={(e) => {
               this.TextEditToggle = e;
             }}

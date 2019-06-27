@@ -58,7 +58,7 @@ import WikiItem from '../../Component/WikiItem';
 
   render() {
     const { addWikiShow } = this.state;
-    const { store } = this.props;
+    const { store, disabled } = this.props;
     const { issueId } = store.getIssue;
     const wikies = store.getWiki;
 
@@ -73,6 +73,7 @@ import WikiItem from '../../Component/WikiItem';
             flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
           }}
           />
+          {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="添加文档" getPopupContainer={triggerNode => triggerNode.parentNode}>
               <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ addWikiShow: true })}>
@@ -80,6 +81,7 @@ import WikiItem from '../../Component/WikiItem';
               </Button>
             </Tooltip>
           </div>
+          )}
         </div>
         {this.renderWiki()}
         {

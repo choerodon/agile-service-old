@@ -68,7 +68,7 @@ const { Text, Edit } = TextEditToggle;
 
   render() {
     const {
-      store, field, feature, showTitle = true,
+      store, field, feature, showTitle = true, disabled,
     } = this.props;
     const { fieldCode, fieldName } = field;
     const issue = store.getIssue;
@@ -88,6 +88,7 @@ const { Text, Edit } = TextEditToggle;
         }
         <div className="c7n-value-wrapper">
           <TextEditToggle
+            disabled={disabled}
             saveRef={(e) => {
               this.TextEditToggle = e;
             }}

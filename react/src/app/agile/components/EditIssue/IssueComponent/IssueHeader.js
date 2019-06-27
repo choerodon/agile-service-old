@@ -85,7 +85,7 @@ const { confirm } = Modal;
   render() {
     const {
       resetIssue, backUrl, onCancel, loginUserId, hasPermission,
-      store, AppState, type = 'narrow', reloadIssue,
+      store, AppState, type = 'narrow', reloadIssue, disabled,
     } = this.props;
     const urlParams = AppState.currentMenuType;
     const issue = store.getIssue;
@@ -211,9 +211,11 @@ const { confirm } = Modal;
                 field={{ fieldCode: 'summary', fieldName: '概要' }}
               />
               <div style={{ flexShrink: 0, color: 'rgba(0, 0, 0, 0.65)' }}>
+                {!disabled && (
                 <Dropdown overlay={getMenu()} trigger={['click']}>
                   <Button icon="more_vert" />
                 </Dropdown>
+                )}
               </div>
             </div>
             {/* 故事点 */}

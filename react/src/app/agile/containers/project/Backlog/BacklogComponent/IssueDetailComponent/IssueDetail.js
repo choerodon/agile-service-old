@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import EditIssue from '../../../../../components/EditIssue';
+import FeatureDetailShow from '../../../../../components/FeatureDetailShow';
 import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
 
 @inject('AppState')
@@ -37,15 +38,19 @@ class IssueDetail extends Component {
     // const { paramOpenIssueId } = this.state;
     const { cancelCallback, refresh } = this.props;
     const visible = Object.keys(BacklogStore.getClickIssueDetail).length > 0;
+    const { programId, issueId } = BacklogStore.getClickIssueDetail || {};
+    const TargetComponent = programId ? FeatureDetailShow : EditIssue;
+    const disabled = false;
     return (
-
       visible ? (
-        <EditIssue
+        <TargetComponent
           store={BacklogStore}
           onRef={(ref) => {
             this.editIssue = ref;
           }}
           issueId={BacklogStore.getClickIssueId}
+          disabled={programId || disabled}
+          programId={programId}        
           onCancel={() => {
             BacklogStore.setClickIssueDetail({});
             BacklogStore.setIsLeaveSprint(false);

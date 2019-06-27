@@ -97,6 +97,7 @@ import { createCommit } from '../../../../api/NewIssueApi';
   }
 
   render() {
+    const { disabled } = this.props;
     return (
       <div id="commit">
         <div className="c7n-title-wrapper">
@@ -108,6 +109,7 @@ import { createCommit } from '../../../../api/NewIssueApi';
             flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
           }}
           />
+          {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="添加评论" getPopupContainer={triggerNode => triggerNode.parentNode}>
               <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ addCommit: true })}>
@@ -115,6 +117,7 @@ import { createCommit } from '../../../../api/NewIssueApi';
               </Button>
             </Tooltip>
           </div>
+          )}
         </div>
         {this.renderCommits()}
       </div>
