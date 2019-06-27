@@ -15,5 +15,17 @@ public class RankValidator {
         if (rankDTO.getReferenceIssueId() == null) {
             throw new CommonException("error.referenceIssueId.isNull");
         }
+        if (rankDTO.getProjectId() == null) {
+            throw new CommonException("error.projectId.isNull");
+        }
+        if (rankDTO.getType() == null) {
+            throw new CommonException("error.type.isNull");
+        }
+        if (rankDTO.getBefore() == null) {
+            throw new CommonException("error.before.isNull");
+        }
+        if (rankDTO.getIssueId() == null) {
+            throw new CommonException("error.issueId.isNull");
+        }
     }
 }
