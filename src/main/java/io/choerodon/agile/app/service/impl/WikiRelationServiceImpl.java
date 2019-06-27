@@ -148,7 +148,7 @@ public class WikiRelationServiceImpl implements WikiRelationService {
         if (workSpaceDOList != null && !workSpaceDOList.isEmpty()) {
             for (WikiRelationDO wikiRelationDO : wikiRelationDOList) {
                 for (WorkSpaceDO workSpaceDO : workSpaceDOList) {
-                    if (workSpaceDO.getProjectId() != null && wikiRelationDO.getProjectId().equals(workSpaceDO.getProjectId()) && wikiRelationDO.getWikiName().equals(workSpaceDO.getName())) {
+                    if (workSpaceDO.getProjectId() != null && wikiRelationDO.getProjectId() != null  && wikiRelationDO.getProjectId().equals(workSpaceDO.getProjectId()) && wikiRelationDO.getWikiName() != null && workSpaceDO.getName() != null && wikiRelationDO.getWikiName().equals(workSpaceDO.getName())) {
                         wikiRelationMapper.updateByOptions(wikiRelationDO.getId(), workSpaceDO.getId());
                         break;
                     }
