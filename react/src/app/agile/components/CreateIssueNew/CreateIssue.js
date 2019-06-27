@@ -635,7 +635,9 @@ class CreateIssue extends Component {
   getIssueTypes=() => {
     const createTypes = [];
     const { originIssueTypes } = this.state;
-    return originIssueTypes.filter(type => (!['issue_epic', 'feature', 'sub_task'].includes(type.typeCode)));   
+    return IsInProgramStore.isInProgram
+      ? originIssueTypes.filter(type => (!['issue_epic', 'feature', 'sub_task'].includes(type.typeCode)))
+      : originIssueTypes.filter(type => (!['feature', 'sub_task'].includes(type.typeCode)));  
   }
 
   getFieldComponent = (field) => {
