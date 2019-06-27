@@ -20,7 +20,6 @@ import CreateVersion from './components/CreateVersion';
 import CreateEpicModal from './components/CreateEpicModal';
 import IssueDetail from './components/IssueDetail';
 import Search from './components/Search';
-import CustomDragLayer from './components/StoryMapBody/CustomDragLayer';
 import StoryMapStore from '../../../../stores/project/StoryMap/StoryMapStore';
 import IsInProgramStore from '../../../../stores/common/program/IsInProgramStore';
 import './StoryMapHome.scss';
@@ -226,7 +225,6 @@ class StoryMapHome extends Component {
           <CreateVersion onOk={this.handleCreateVersion} />
           <CreateEpicModal onOk={this.handleCreateEpic} />
           <IssueDetail refresh={this.handleIssueRefresh} />
-          {/* <CustomDragLayer /> */}
         </Content>
       </Page>
     );

@@ -178,7 +178,7 @@ class EpicCell extends Component {
           position: 'sticky',
           top: 0,
           zIndex: 6,
-          background: isOver ? 'pink' : 'white',
+          background: isOver ? 'rgb(240,240,240)' : 'white',
           ...collapse ? {
             borderLeft: lastCollapse ? 'none' : 'solid 1px #D8D8D8',
             borderRight: 'solid 1px #D8D8D8',

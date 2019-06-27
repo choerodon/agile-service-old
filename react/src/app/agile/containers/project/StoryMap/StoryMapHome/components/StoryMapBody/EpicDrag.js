@@ -26,6 +26,9 @@ const EpicDrag = Component => DragSource(
       //   source: epic,
       //   destination: targetEpic,
       // });
+      if (index === targetIndex || index === targetIndex - 1) {
+        return; 
+      }
       StoryMapStore.sortEpic(epic, targetEpic);
     },
   },

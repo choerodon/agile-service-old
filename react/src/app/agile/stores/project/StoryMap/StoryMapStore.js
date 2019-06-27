@@ -3,7 +3,7 @@ import {
   observable, action, computed, set, toJS,
 } from 'mobx';
 import {
-  find, findIndex, max, remove, groupBy,
+  find, findIndex, max, remove, groupBy, sortBy,
 } from 'lodash';
 import { getProjectId } from '../../../common/utils';
 import {
@@ -69,7 +69,7 @@ class StoryMapStore {
     ), loadIssueTypes(), loadVersions(), loadPriorities()]).then(([storyMapData, issueTypes, versionList, prioritys]) => {
       let { epicWithFeature } = storyMapData;
       const { featureWithoutEpic } = storyMapData;
-      epicWithFeature = epicWithFeature.sort((a, b) => a.epicRank - b.epicRank);
+      epicWithFeature = sortBy(epicWithFeature, 'epicRank');
       const newStoryMapData = {
         ...storyMapData,
         epicWithFeature: featureWithoutEpic.length > 0 ? epicWithFeature.concat({
@@ -491,13 +491,13 @@ class StoryMapStore {
       objectVersionNumber: source.objectVersionNumber, // 乐观锁     
       issueId: source.issueId,
       type: 'epic',
-      before: false, // 是否拖动到第一个
-      after: true,
+      before: true, // 是否拖动到第一个
+      after: false,
       referenceIssueId: destination.issueId,
     };
     
     sort(sortDTO).then(() => {
-
+      this.getStoryMap();
     });
   }
 
