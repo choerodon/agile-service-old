@@ -89,6 +89,8 @@ public class IssueCreateDTO {
 
     private Long relateIssueId;
 
+    private RankDTO rankDTO;
+
     public List<IssueLinkCreateDTO> getIssueLinkCreateDTOList() {
         return issueLinkCreateDTOList;
     }
@@ -295,6 +297,14 @@ public class IssueCreateDTO {
 
     public Long getRelateIssueId() {
         return relateIssueId;
+    }
+
+    public void setRankDTO(RankDTO rankDTO) {
+        this.rankDTO = rankDTO;
+    }
+
+    public RankDTO getRankDTO() {
+        return rankDTO;
     }
 
     @Override

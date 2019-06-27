@@ -12,14 +12,11 @@ public class RankDTO {
 
     private Boolean before;
 
-    private Boolean after;
-
     private Long referenceIssueId;
 
     private Long issueId;
 
     private Long objectVersionNumber;
-
 
     public Long getProjectId() {
         return projectId;
@@ -43,14 +40,6 @@ public class RankDTO {
 
     public void setBefore(Boolean before) {
         this.before = before;
-    }
-
-    public Boolean getAfter() {
-        return after;
-    }
-
-    public void setAfter(Boolean after) {
-        this.after = after;
     }
 
     public Long getReferenceIssueId() {

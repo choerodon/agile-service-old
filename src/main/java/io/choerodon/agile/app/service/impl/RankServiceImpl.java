@@ -93,7 +93,8 @@ public class RankServiceImpl implements RankService {
         }
     }
 
-    private RankDO getReferenceRank(Long projectId, String type, Long referenceIssueId) {
+    @Override
+    public RankDO getReferenceRank(Long projectId, String type, Long referenceIssueId) {
         RankDO rankDO = rankMapper.selectRankByIssueId(projectId, type, referenceIssueId);
         if (rankDO == null) {
             switch (type) {
@@ -133,23 +134,13 @@ public class RankServiceImpl implements RankService {
         RankDO referenceRank = getReferenceRank(projectId, rankDTO.getType(), referenceIssueId);
         if (rankDTO.getBefore()) {
             String leftRank = rankMapper.selectLeftRank(projectId, rankDTO.getType(), referenceRank.getRank());
-            String rank = null;
-            if (leftRank == null) {
-                rank = RankUtil.genPre(referenceRank.getRank());
-            } else {
-                rank = RankUtil.between(leftRank, referenceRank.getRank());
-            }
+            String rank = (leftRank == null ? RankUtil.genPre(referenceRank.getRank()) : RankUtil.between(leftRank, referenceRank.getRank()));
             RankDO rankDO = rankMapper.selectRankByIssueId(projectId, rankDTO.getType(), rankDTO.getIssueId());
             Long objectVersionNumber = rankDTO.getObjectVersionNumber() == null ? rankDO.getObjectVersionNumber() : rankDTO.getObjectVersionNumber();
             rankMapper.updateByPrimaryKeySelective(new RankDO(rankDO.getId(), rank, objectVersionNumber));
-        } else if (rankDTO.getAfter()) {
+        } else {
             String rightRank = rankMapper.selectRightRank(projectId, rankDTO.getType(), referenceRank.getRank());
-            String rank = null;
-            if (rightRank == null) {
-                rank = RankUtil.genNext(referenceRank.getRank());
-            } else {
-                rank = RankUtil.between(referenceRank.getRank(), rightRank);
-            }
+            String rank = (rightRank == null ? RankUtil.genNext(referenceRank.getRank()) : RankUtil.between(referenceRank.getRank(), rightRank));
             RankDO rankDO = rankMapper.selectRankByIssueId(projectId, rankDTO.getType(), rankDTO.getIssueId());
             Long objectVersionNumber = rankDTO.getObjectVersionNumber() == null ? rankDO.getObjectVersionNumber() : rankDTO.getObjectVersionNumber();
             rankMapper.updateByPrimaryKeySelective(new RankDO(rankDO.getId(), rank, objectVersionNumber));
