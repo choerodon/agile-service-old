@@ -179,7 +179,7 @@
                </foreach>
            </if>
         )
-        <if test='serachDTO.advancedSearchArgs.versionList != null and serachDTO.advancedSearchArgs.versionList.size > 0'>
+        <if test='searchDTO.advancedSearchArgs.versionList != null and searchDTO.advancedSearchArgs.versionList.size > 0'>
             and ai.issue_id in (
                  select avir2.issue_id
                  from agile_version_issue_rel avir2
@@ -190,7 +190,7 @@
                  </foreach>
             )
         </if>
-        <if test='serachDTO.advancedSearchArgs.statusList != null and serachDTO.advancedSearchArgs.statusList.size > 0'>
+        <if test='searchDTO.advancedSearchArgs.statusList != null and searchDTO.advancedSearchArgs.statusList.size > 0'>
             and ai.status_id in (
             <foreach collection="searchDTO.advancedSearchArgs.statusList" item="statusId" open="(" separator=","
                      close=")">
@@ -227,7 +227,7 @@
                 AND ai.assignee_id = #{searchDTO.searchArgs.assigneeId}
             </if>
         </if>
-        <if test='serachDTO.advancedSearchArgs.versionList != null and serachDTO.advancedSearchArgs.versionList.size > 0'>
+        <if test='searchDTO.advancedSearchArgs.versionList != null and searchDTO.advancedSearchArgs.versionList.size > 0'>
             and ai.issue_id in (
             select avir2.issue_id
             from agile_version_issue_rel avir2
@@ -238,7 +238,7 @@
             </foreach>
             )
         </if>
-        <if test='serachDTO.advancedSearchArgs.statusList != null and serachDTO.advancedSearchArgs.statusList.size > 0'>
+        <if test='searchDTO.advancedSearchArgs.statusList != null and searchDTO.advancedSearchArgs.statusList.size > 0'>
             and ai.status_id in (
             <foreach collection="searchDTO.advancedSearchArgs.statusList" item="statusId" open="(" separator=","
                      close=")">
