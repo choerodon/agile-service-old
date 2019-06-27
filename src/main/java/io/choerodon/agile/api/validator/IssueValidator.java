@@ -1,7 +1,11 @@
 package io.choerodon.agile.api.validator;
 
+import io.choerodon.agile.api.dto.IssueCreateDTO;
+import io.choerodon.agile.api.dto.RankDTO;
 import io.choerodon.agile.api.dto.StoryMapMoveDTO;
+import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
+import io.choerodon.agile.infra.common.utils.EnumUtil;
 import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;
@@ -27,6 +31,10 @@ public class IssueValidator {
     private static final String ERROR_PARENT_ISSUE_ISTEST = "error.parentIssue.isTest";
     private static final String ERROR_SPRINTIDANDVERSIONID_ALLNOTNULL = "error.sprintIdAndVersionId.allNotNull";
     private static final String ERROR_PARENT_ISSUE_NOT_EXIST = "error.parentIssue.get";
+
+    @Autowired
+    private IssueService issueService;
+
 
     public static void checkStoryMapMove(StoryMapMoveDTO storyMapMoveDTO) {
         if (storyMapMoveDTO.getSprintId() != null && storyMapMoveDTO.getVersionId() != null) {
@@ -64,6 +72,30 @@ public class IssueValidator {
         productVersionDO.setVersionId(versionId);
         if (productVersionMapper.selectByPrimaryKey(productVersionDO) == null) {
             throw new CommonException("error.issueValidator.versionNotFound");
+        }
+    }
+
+    public void checkIssueCreate(IssueCreateDTO issueCreateDTO, String applyType) {
+        if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
+            throw new CommonException("error.applyType.illegal");
+        }
+        if (SchemeApplyType.AGILE.equals(applyType) && issueCreateDTO.getEpicName() != null && issueService.checkEpicName(issueCreateDTO.getProjectId(), issueCreateDTO.getEpicName())) {
+            throw new CommonException("error.epicName.exist");
+        }
+        if (issueCreateDTO.getRankDTO() != null) {
+            RankDTO rankDTO = issueCreateDTO.getRankDTO();
+            if (rankDTO.getReferenceIssueId() == null) {
+                throw new CommonException("error.referenceIssueId.isNull");
+            }
+            if (rankDTO.getBefore() == null) {
+                throw new CommonException("error.before.isNull");
+            }
+            if (rankDTO.getType() == null) {
+                throw new CommonException("error.type.isNull");
+            }
+            if (rankDTO.getProjectId() == null) {
+                throw new CommonException("error.projectId.isNull");
+            }
         }
     }
 }

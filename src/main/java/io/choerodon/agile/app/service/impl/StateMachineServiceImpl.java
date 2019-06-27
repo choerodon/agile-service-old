@@ -3,8 +3,10 @@ package io.choerodon.agile.app.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.service.IssueService;
+import io.choerodon.agile.app.service.RankService;
 import io.choerodon.agile.app.service.StateMachineService;
 import io.choerodon.agile.domain.agile.entity.FeatureE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
@@ -100,15 +102,26 @@ public class StateMachineServiceImpl implements StateMachineService {
     private UserFeignClient userFeignClient;
     @Autowired
     private RankMapper rankMapper;
+    @Autowired
+    private RankService rankService;
+    @Autowired
+    private IssueValidator issueValidator;
 
-    private void insertEpicRank(Long projectId, Long issueId, String type) {
+    private void insertRank(Long projectId, Long issueId, String type, RankDTO rankDTO) {
         List<RankDO> rankDOList = new ArrayList<>();
-        String minRank = rankMapper.selectMinRank(projectId, type);
         String rank = null;
-        if (minRank == null) {
-            rank = RankUtil.mid();
+        if (rankDTO == null) {
+            String minRank = rankMapper.selectMinRank(projectId, type);
+            rank = (minRank == null ? RankUtil.mid() : RankUtil.genPre(minRank));
         } else {
-            rank = RankUtil.genPre(minRank);
+            RankDO referenceRank = rankService.getReferenceRank(projectId, rankDTO.getType(), rankDTO.getReferenceIssueId());
+            if (rankDTO.getBefore()) {
+                String leftRank = rankMapper.selectLeftRank(projectId, rankDTO.getType(), referenceRank.getRank());
+                rank = (leftRank == null ? RankUtil.genPre(referenceRank.getRank()) : RankUtil.between(leftRank, referenceRank.getRank()));
+            } else {
+                String rightRank = rankMapper.selectRightRank(projectId, rankDTO.getType(), referenceRank.getRank());
+                rank = (rightRank == null ? RankUtil.genNext(referenceRank.getRank()) : RankUtil.between(referenceRank.getRank(), rightRank));
+            }
         }
         RankDO rankDO = new RankDO();
         rankDO.setIssueId(issueId);
@@ -124,10 +137,10 @@ public class StateMachineServiceImpl implements StateMachineService {
                 return;
             }
             for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
-                insertEpicRank(projectRelationshipDTO.getProjectId(), issueId, type);
+                insertRank(projectRelationshipDTO.getProjectId(), issueId, type, issueCreateDTO.getRankDTO());
             }
         } else if (issueCreateDTO.getProjectId() != null) {
-            insertEpicRank(issueCreateDTO.getProjectId(), issueId, type);
+            insertRank(issueCreateDTO.getProjectId(), issueId, type, issueCreateDTO.getRankDTO());
         }
     }
 
@@ -141,12 +154,13 @@ public class StateMachineServiceImpl implements StateMachineService {
      */
     @Override
     public IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType) {
-        if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
-            throw new CommonException("error.applyType.illegal");
-        }
-        if (SchemeApplyType.AGILE.equals(applyType) && issueCreateDTO.getEpicName() != null && issueService.checkEpicName(issueCreateDTO.getProjectId(), issueCreateDTO.getEpicName())) {
-            throw new CommonException("error.epicName.exist");
-        }
+//        if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
+//            throw new CommonException("error.applyType.illegal");
+//        }
+//        if (SchemeApplyType.AGILE.equals(applyType) && issueCreateDTO.getEpicName() != null && issueService.checkEpicName(issueCreateDTO.getProjectId(), issueCreateDTO.getEpicName())) {
+//            throw new CommonException("error.epicName.exist");
+//        }
+        issueValidator.checkIssueCreate(issueCreateDTO, applyType);
         IssueE issueE = issueAssembler.toTarget(issueCreateDTO, IssueE.class);
         Long projectId = issueE.getProjectId();
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
