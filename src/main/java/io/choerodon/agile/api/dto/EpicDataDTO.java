@@ -48,6 +48,9 @@ public class EpicDataDTO {
     @ApiModelProperty(value = "史诗排序字段")
     private Integer epicSequence;
 
+    @ApiModelProperty(value = "项目群id")
+    private Long programId;
+
     public Integer getEpicSequence() {
         return epicSequence;
     }
@@ -150,5 +153,13 @@ public class EpicDataDTO {
 
     public BigDecimal getTotalEstimate() {
         return totalEstimate;
+    }
+
+    public void setProgramId(Long programId) {
+        this.programId = programId;
+    }
+
+    public Long getProgramId() {
+        return programId;
     }
 }
