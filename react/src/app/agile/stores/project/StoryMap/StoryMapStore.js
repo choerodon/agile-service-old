@@ -488,7 +488,7 @@ class StoryMapStore {
     }
     const sortDTO = {
       projectId: getProjectId(),
-      objectVersionNumber: source.objectVersionNumber, // 乐观锁     
+      objectVersionNumber: source.epicRankObjectVersionNumber, // 乐观锁     
       issueId: source.issueId,
       type: 'epic',
       before: true, // 是否拖动到第一个
