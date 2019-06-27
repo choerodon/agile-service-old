@@ -22,7 +22,7 @@ class TitleCell extends Component {
       }
       case 'version': {
         return (
-          <div>
+          <Fragment>
             <Icon
               style={{ marginRight: 15 }}
               type={storyCollapse ? 'expand_less' : 'expand_more'}
@@ -41,7 +41,7 @@ class TitleCell extends Component {
                 />
               </Tooltip>
             )}
-          </div>
+          </Fragment>
         );
       }
       default: return null;
@@ -70,10 +70,8 @@ class TitleCell extends Component {
           } : {}, 
         }}
         > 
-          <div style={{ display: 'flex' }} className="c7nagile-StoryMap-TitleCell">
-            <div style={{ textAlign: 'left' }}>
-              {showTitle && this.renderTitle(storyCollapse)}
-            </div>
+          <div style={{ display: 'flex' }} className="c7nagile-StoryMap-TitleCell">        
+            {showTitle && this.renderTitle(storyCollapse)}       
           </div>   
         </Cell>
       )

@@ -1,31 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import { Tooltip } from 'choerodon-ui';
-import { DragSource } from 'react-dnd';
 import { observer } from 'mobx-react';
 import EpicDrag from './EpicDrag';
-import { programIssueLink, issueLink } from '../../../../../../common/utils';
 import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
-import AutoScroll from '../../../../../../common/AutoScroll';
 import Card from './Card';
 import './EpicCard.scss';
 
 @observer
 class EpicCard extends Component {
-  componentDidMount() {
-    this.AutoScroll = new AutoScroll({
-      scrollElement: document.getElementsByClassName('minimap-container-scroll')[0],      
-      pos: {
-        left: 200,
-        top: 150,
-        bottom: 150,
-        right: 150,
-      },
-      type: 'drag',
-    });
-  }
-  
   handleClick = () => {
     const { epic } = this.props;
     if (epic.issueId) {
@@ -47,12 +30,9 @@ class EpicCard extends Component {
     this.container = ref;
   }
 
-  handleMouseDown = (e) => {
-    this.AutoScroll.prepare(e);
-  }
 
   render() {
-    const { epic, subIssueNum } = this.props;
+    const { epic, subIssueNum, onMouseDown } = this.props;
     const {
       issueId, epicName, issueNum, programId, 
     } = epic;
@@ -63,7 +43,7 @@ class EpicCard extends Component {
         style={{ display: 'flex' }}
         onClick={this.handleClick}
         saveRef={this.saveRef}
-        onMouseDown={this.handleMouseDown}
+        onMouseDown={onMouseDown}
       >
         <div className="summary">
           <Tooltip title={`${epicName || '无史诗'}`} getPopupContainer={trigger => trigger.parentNode}>          

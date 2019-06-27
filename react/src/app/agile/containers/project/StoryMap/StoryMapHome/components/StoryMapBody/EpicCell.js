@@ -33,7 +33,7 @@ class EpicCell extends Component {
       scrollElement: document.getElementsByClassName('minimap-container-scroll')[0],
       pos: {
         left: 200,
-        top: 150,
+        top: 0,
         bottom: 150,
         right: 150,
       },
@@ -192,12 +192,12 @@ class EpicCell extends Component {
             style={{
               ...collapse ? {
                 position: 'sticky',
-                marginLeft: -40,   
+                marginLeft: -50,   
                 top: 28,
                 zIndex: 10,
               } : {
                 position: 'absolute',
-                left: 0,
+                left: 4,
                 top: 28,
               },
             }}          
@@ -233,9 +233,9 @@ class EpicCell extends Component {
                 <Column style={{ minHeight: 'unset' }}>
                   {adding
                     ? <CreateEpic onCreate={this.handleCreateEpic} />
-                    : <EpicCard epic={epic} subIssueNum={subIssueNum} index={index} />}
+                    : <EpicCard epic={epic} subIssueNum={subIssueNum} index={index} onMouseDown={this.handleMouseDown} />}
                 </Column>
-                {issueId && !StoryMapStore.isFullScreen ? (!adding && !isInProgram && <AddCard style={{ height: 42 }} onClick={this.handleAddEpicClick} />) : null}
+                {issueId && !StoryMapStore.isFullScreen ? (!adding && !isInProgram && <AddCard style={{ height: 64 }} onClick={this.handleAddEpicClick} />) : null}
                 {resizing && (
                 <div style={{
                   position: 'fixed',
@@ -270,7 +270,7 @@ class EpicCell extends Component {
             </Fragment>
           )}
 
-        {collapse && <EpicDragCollapse epic={epic} index={index} subIssueNum={subIssueNum} />}
+        {collapse && <EpicDragCollapse epic={epic} index={index} subIssueNum={subIssueNum} onMouseDown={this.handleMouseDown} />}
       </Cell>
     );
   }

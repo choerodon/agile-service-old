@@ -23,7 +23,7 @@ class EpicDragCollapse extends Component {
   }
   
   render() {
-    const { connectDragSource, connectDragPreview } = this.props;
+    const { connectDragSource, connectDragPreview, onMouseDown } = this.props;
     const { src } = this.state;
     return connectDragSource(      
       <div
@@ -35,6 +35,7 @@ class EpicDragCollapse extends Component {
           left: 0,
           width: '100%',
         }}
+        onMouseDown={onMouseDown}
       >
         <DragPreviewImage connect={connectDragPreview} src={src} />
         {/* 隐藏元素,用来生成preview */}
