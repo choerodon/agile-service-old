@@ -68,7 +68,7 @@ import './IssueComponent.scss';
 
   render() {
     const {
-      store, type = 'narrow',
+      store, type = 'narrow', disabled,
     } = this.props;
 
     const issueTypes = store.getIssueTypes ? store.getIssueTypes : [];
@@ -127,7 +127,7 @@ import './IssueComponent.scss';
       <div className="c7n-nav">
         {/* 转换类型 */}
         <div>
-          <Dropdown overlay={typeList} trigger={['click']} disabled={typeCode === 'sub_task'}>
+          <Dropdown overlay={typeList} trigger={['click']} disabled={typeCode === 'sub_task' || disabled}>
             <div
               className={type === 'narrow' ? 'issue-nav-narrow' : 'issue-nav-wide'}
             >

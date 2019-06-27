@@ -71,7 +71,7 @@ import LinkList from '../../Component/LinkList';
 
   render() {
     const { createLinkTaskShow } = this.state;
-    const { store } = this.props;
+    const { store, disabled } = this.props;
     const issue = store.getIssue;
     const { issueId } = issue;
 
@@ -86,6 +86,7 @@ import LinkList from '../../Component/LinkList';
             flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
           }}
           />
+          {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="创建链接" getPopupContainer={triggerNode => triggerNode.parentNode}>
               <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ createLinkTaskShow: true })}>
@@ -93,6 +94,7 @@ import LinkList from '../../Component/LinkList';
               </Button>
             </Tooltip>
           </div>
+          )}
         </div>
         {this.renderLinkIssues()}
         {

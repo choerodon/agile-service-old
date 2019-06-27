@@ -311,7 +311,7 @@ let sign = false;
   };
 
   render() {
-    const { field } = this.props;
+    const { field, disabled } = this.props;
     const {
       fieldCode, fieldName, value, fieldType, valueStr,
     } = field;
@@ -325,6 +325,7 @@ let sign = false;
         </div>
         <div className="c7n-value-wrapper" style={{ width: 'auto' }}>
           <TextEditToggle
+            disabled={disabled}
             style={{ width: '100%', maxWidth: '200px' }}
             formKey={fieldCode}
             onSubmit={this.updateIssueField}

@@ -69,7 +69,7 @@ const { Text, Edit } = TextEditToggle;
 
   render() {
     const { selectLoading, originStatus } = this.state;
-    const { store } = this.props;
+    const { store, disabled } = this.props;
     const issue = store.getIssue;
     const { statusMapDTO = {}, statusId } = issue;
     const { type, name } = statusMapDTO;
@@ -82,6 +82,7 @@ const { Text, Edit } = TextEditToggle;
         </div>
         <div className="c7n-value-wrapper">
           <TextEditToggle
+            disabled={disabled}
             formKey="status"
             onSubmit={this.updateIssueStatus}
             originData={statusId}

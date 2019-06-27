@@ -125,7 +125,7 @@ import { updateIssue } from '../../../../api/NewIssueApi';
 
   render() {
     const { edit, description, editDes } = this.state;
-
+    const { disabled } = this.props;
     const callback = (value) => {
       this.setState({
         description: value,
@@ -147,6 +147,7 @@ import { updateIssue } from '../../../../api/NewIssueApi';
             flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
           }}
           />
+          {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px', position: 'relative' }}>
             <Tooltip title="全屏编辑" getPopupContainer={triggerNode => triggerNode.parentNode}>
               <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ edit: true })}>
@@ -174,6 +175,7 @@ import { updateIssue } from '../../../../api/NewIssueApi';
               </Button>
             </Tooltip>
           </div>
+          )}
         </div>
         {this.renderDes()}
         {

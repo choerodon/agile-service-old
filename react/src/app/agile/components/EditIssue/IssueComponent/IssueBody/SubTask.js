@@ -145,7 +145,7 @@ const { AppState } = stores;
 
   render() {
     const { expand } = this.state;
-    const { store } = this.props;
+    const { store, disabled } = this.props;
     const { issueId, summary } = store.getIssue;
     const { getCreateSubTaskShow: createSubTaskShow } = VisibleStore;
     const { subIssueDTOList = [] } = store.getIssue;
@@ -160,6 +160,7 @@ const { AppState } = stores;
             flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
           }}
           />
+          {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="创建子任务" getPopupContainer={triggerNode => triggerNode.parentNode}>
               <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateSubTaskShow(true)}>
@@ -167,6 +168,7 @@ const { AppState } = stores;
               </Button>
             </Tooltip>
           </div>
+          )}
         </div>
         {subIssueDTOList && subIssueDTOList.length
           ? (

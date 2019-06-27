@@ -107,7 +107,7 @@ const { Text, Edit } = TextEditToggle;
     const {
       selectLoading, originEpics, originFeatures, 
     } = this.state;
-    const { store } = this.props;
+    const { store, disabled } = this.props;
     const issue = store.getIssue;
     const {
       epicColor, epicId, issueEpicName, typeCode,
@@ -124,7 +124,8 @@ const { Text, Edit } = TextEditToggle;
                 </span>
               </div>
               <div className="c7n-value-wrapper">
-                <TextEditToggle                  
+                <TextEditToggle    
+                  disabled={disabled}              
                   formKey="feature"
                   onSubmit={this.updateIssueFeature}
                   originData={featureId || []}
@@ -171,7 +172,7 @@ const { Text, Edit } = TextEditToggle;
           </div>
           <div className="c7n-value-wrapper">
             <TextEditToggle
-              disabled={featureId}
+              disabled={featureId || disabled}
               formKey="epic"
               onSubmit={this.updateIssueEpic}
               originData={epicId || []}
