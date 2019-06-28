@@ -11,3 +11,4 @@ export { default as cascade } from './field-10.png';
 export { default as url } from './field-11.png';
 export { default as label } from './field-12.png';
 export { default as member } from './field-13.png';
+export { default as date } from './calender.svg';
