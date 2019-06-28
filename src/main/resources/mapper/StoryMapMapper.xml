@@ -183,7 +183,7 @@
             and ai.issue_id in (
                  select avir2.issue_id
                  from agile_version_issue_rel avir2
-                 where avir2 in
+                 where avir2.version_id in
                  <foreach collection="searchDTO.advancedSearchArgs.versionList" item="versionId" open="(" separator=","
                          close=")">
                      #{versionId}
@@ -231,7 +231,7 @@
             and ai.issue_id in (
             select avir2.issue_id
             from agile_version_issue_rel avir2
-            where avir2 in
+            where avir2.version_id in
             <foreach collection="searchDTO.advancedSearchArgs.versionList" item="versionId" open="(" separator=","
                      close=")">
                 #{versionId}
