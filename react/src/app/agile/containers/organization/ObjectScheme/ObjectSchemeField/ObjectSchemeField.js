@@ -298,7 +298,7 @@ class ObjectSchemeField extends Component {
 
   render() {
     const { form, intl, ObjectSchemeStore } = this.props;
-    const { getFieldDecorator } = form;
+    const { getFieldDecorator, getFieldValue } = form;
     const menu = AppState.currentMenuType;
     const {
       type, id, organizationId, name,
@@ -308,7 +308,7 @@ class ObjectSchemeField extends Component {
       fieldOptions, submitting, defaultValue, isCheck,
       dateDisable, spinning, fieldContext, originUsers, selectLoading,
     } = this.state;
-
+    const selectedContext = getFieldValue('context') || [];
     return (
       <Page>
         <Header
@@ -366,11 +366,13 @@ class ObjectSchemeField extends Component {
                     style={{ width: 520 }}
                     label={<FormattedMessage id="field.context" />}
                     dropdownMatchSelectWidth
+                    showCheckAll={false}
                     size="default"
                     mode="multiple"
                   >
                     {fieldContext.map(ctx => (
                       <Option
+                        disabled={ctx.valueCode === 'global' ? selectedContext.length > 0 && !selectedContext.includes('global') : selectedContext.includes('global')}
                         value={ctx.valueCode}
                         key={ctx.valueCode}
                       >

@@ -1,16 +1,55 @@
 import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import {
-  Table, Spin, Tooltip, Button, Checkbox, Modal, Icon,
+  Table, Spin, Tooltip, Button, Checkbox, Modal, Icon, Tag, 
 } from 'choerodon-ui';
 import {
   Page, Header, Content, stores,
 } from '@choerodon/boot';
 import './ObjectSchemeDetail.scss';
 import CreateField from '../Components/CreateField';
+import TypeTag from '../../../../components/TypeTag';
 
 const { confirm } = Modal;
 const { AppState } = stores;
+const showIcons = {
+  史诗: {
+    icon: 'agile_epic',
+    colour: '#743be7',
+    typeCode: 'issue_epic',
+    name: '史诗',
+  }, 
+  故事: {
+    icon: 'agile_story',
+    colour: '#00bfa5',
+    typeCode: 'story',
+    name: '故事',
+  }, 
+  特性: {
+    icon: 'agile-feature',
+    colour: '#29B6F6',
+    typeCode: 'feature',
+    name: '特性',
+  }, 
+  缺陷: {
+    icon: 'agile_fault',
+    colour: '#f44336',
+    typeCode: 'bug',
+    name: '缺陷',
+  }, 
+  任务: {
+    icon: 'agile_task',
+    colour: '#4d90fe',
+    typeCode: 'task',
+    name: '任务',
+  },
+  子任务: {
+    icon: 'agile_subtask',
+    colour: '#4d90fe',
+    typeCode: 'sub_task',
+    name: '子任务',
+  },
+};
 
 @observer
 class ObjectSchemeDetail extends Component {
@@ -56,36 +95,35 @@ class ObjectSchemeDetail extends Component {
     {
       title: '字段',
       dataIndex: 'name',
-      width: '25%',
+      // width: '15%',
+    },
+    {
+      title: '字段来源',
+      render: ({ projectId, system }) => (
+        // eslint-disable-next-line no-nested-ternary
+        system 
+          ? <Tag style={{ color: 'rgba(0,0,0,0.65)', borderColor: '#d9d9d9', background: '#fafafa' }}>系统</Tag>
+          : projectId  
+            ? <Tag color="orange">项目</Tag> 
+            : <Tag color="geekblue">组织</Tag>
+      ),
     },
     {
       title: '显示范围',
       dataIndex: 'contextName',
-      width: '25%',
+      // width: '25%',
       render: contextName => (
         <Fragment>
           {contextName.split(',').map(name => (
-            <div style={{
-              color: 'rgb(0, 191, 165)',
-              border: '1px solid  rgb(0, 191, 165)',  
-              borderRadius: 2,
-              fontSize: '13px',
-              lineHeight: '20px',
-              padding: '0px 8px',
-              margin: '0 5px',
-              display: 'inline-block',
-            }}
-            >
-              {name}
-            </div>
+            showIcons[name] ? <TypeTag data={showIcons[name]} showName /> : name
           ))}
         </Fragment>
       ),
-    },
+    },    
     {
       title: '字段类型',
       dataIndex: 'fieldTypeName',
-      width: '25%',
+      // width: '25%',
     },
     {
       title: '必填项',
