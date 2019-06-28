@@ -149,7 +149,7 @@ class CreateField extends Component {
 
   render() {
     const { form } = this.props;
-    const { getFieldDecorator } = form;
+    const { getFieldDecorator, getFieldValue } = form;
 
     const {
       visible, intl, store,
@@ -157,7 +157,7 @@ class CreateField extends Component {
     const { submitting } = this.state;
     const fieldType = store.getFieldType;
     const fieldContext = store.getFieldContext;
-
+    const selectedContext = getFieldValue('context') || [];
     return (
       <Sidebar
         title={<FormattedMessage id="field.create" />}
@@ -254,11 +254,13 @@ class CreateField extends Component {
                   style={{ width: 520 }}
                   label={<FormattedMessage id="field.context" />}
                   dropdownMatchSelectWidth
+                  showCheckAll={false}
                   size="default"
                   mode="multiple"
                 >
                   {fieldContext.map(ctx => (
                     <Option
+                      disabled={ctx.valueCode === 'global' ? selectedContext.length > 0 && !selectedContext.includes('global') : selectedContext.includes('global')}
                       value={ctx.valueCode}
                       key={ctx.valueCode}
                     >
