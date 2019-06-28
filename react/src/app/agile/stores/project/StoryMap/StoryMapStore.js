@@ -26,13 +26,20 @@ class StoryMapStore {
 
   @observable sideSearchDTO = {
     searchArgs: {
-      assigneeId: null,      
+      assigneeId: null,
     },
     advancedSearchArgs: {
       versionList: [],
       statusList: [],
     },
   };
+
+  @observable searchDTO = {
+    advancedSearchArgs: {
+      versionList: [],
+      statusList: [],
+    },
+  }
 
   @observable issueList = [];
 
@@ -59,14 +66,7 @@ class StoryMapStore {
 
   getStoryMap = () => {
     this.setLoading(true);
-    Promise.all([getStoryMap(
-      {
-        advancedSearchArgs: {
-          versionList: [],
-          statusList: [],
-        }, 
-      },
-    ), loadIssueTypes(), loadVersions(), loadPriorities()]).then(([storyMapData, issueTypes, versionList, prioritys]) => {
+    Promise.all([getStoryMap(this.searchDTO), loadIssueTypes(), loadVersions(), loadPriorities()]).then(([storyMapData, issueTypes, versionList, prioritys]) => {
       let { epicWithFeature } = storyMapData;
       const { featureWithoutEpic } = storyMapData;
       epicWithFeature = sortBy(epicWithFeature, 'epicRank');
@@ -92,6 +92,18 @@ class StoryMapStore {
     });
   }
 
+  @action
+  handleFilterChange = (field, values) => {
+    this.searchDTO.advancedSearchArgs[field] = values;
+    this.getStoryMap();
+  }
+
+  @action
+  handleSideFilterChange = (field, values) => {
+    this.sideSearchDTO.advancedSearchArgs[field] = values;
+    this.loadIssueList();
+  }
+  
   @action setIssueList(issueList) {
     this.issueList = issueList;
   }
@@ -117,7 +129,7 @@ class StoryMapStore {
     if (!this.sideIssueListVisible) {
       this.setClickIssue();
     }
-    
+
     this.sideIssueListVisible = !this.sideIssueListVisible;
   }
 
@@ -385,7 +397,7 @@ class StoryMapStore {
         const targetEpic = this.storyData[epicId];
         const { feature } = targetEpic;
         const targetFeature = feature[featureId || 'none'];
-        remove(targetFeature.storys, { issueId: story.issueId });  
+        remove(targetFeature.storys, { issueId: story.issueId });
         // 从各个版本移除
         if (storyMapVersionDOList.length === 0) {
           if (targetFeature.version.none) {
@@ -478,7 +490,7 @@ class StoryMapStore {
     this.selectedIssueMap.clear();
     if (clickIssue) {
       this.sideIssueListVisible = false;
-      this.selectedIssueMap.set(clickIssue.issueId, clickIssue);    
+      this.selectedIssueMap.set(clickIssue.issueId, clickIssue);
     }
   }
 
@@ -495,7 +507,7 @@ class StoryMapStore {
       after: false,
       referenceIssueId: destination.issueId,
     };
-    
+
     sort(sortDTO).then(() => {
       this.getStoryMap();
     });

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { stores } from '@choerodon/boot';
 import { DeltaOperation } from 'react-quill';
+import { find } from 'lodash';
 import { uploadImage, uploadFile } from '../api/FileApi';
 import { SERVICES_URL } from './Constant';
 
@@ -155,7 +156,7 @@ export function handleFileUpload(propFileList, func, config) {
 }
 export function text2Delta(description) {
   let temp = description;
-  try {    
+  try {
     temp = JSON.parse(description.replace(/\\n/g, '\\n')
       .replace(/\\'/g, "\\'")
       .replace(/\\"/g, '\\"')
@@ -164,7 +165,7 @@ export function text2Delta(description) {
       .replace(/\\t/g, '\\t')
       .replace(/\\b/g, '\\b')
       .replace(/\\f/g, '\\f'));
-  } catch (error) {    
+  } catch (error) {
     temp = description;
   }
   // return temp;
@@ -267,33 +268,33 @@ export function commonLink(link) {
 
   return encodeURI(`/agile${link}?type=${type}&id=${projectId}&organizationId=${organizationId}&name=${name}`);
 }
-export function editArtLink(artId) { 
+export function editArtLink(artId) {
   return commonLink(`/art/edit/${artId}`);
 }
-export function artListLink() { 
+export function artListLink() {
   return commonLink('/art');
 }
 
-export function PIDetailLink(id) { 
+export function PIDetailLink(id) {
   return commonLink(`/pi/detail/${id}`);
 }
-export function PICalendarLink(id, ArtName) { 
+export function PICalendarLink(id, ArtName) {
   const menu = AppState.currentMenuType;
   const {
     type, id: projectId, name, organizationId,
   } = menu;
   return encodeURI(`/agile/art/calendar/${id}?type=${type}&id=${projectId}&organizationId=${organizationId}&name=${name}&ArtName=${ArtName}`);
 }
-export function PIListLink() { 
+export function PIListLink() {
   return commonLink('/pi');
 }
-export function ProgramBoardLink() { 
+export function ProgramBoardLink() {
   return commonLink('/kanban');
 }
-export function ProgramBoardSettingLink() { 
+export function ProgramBoardSettingLink() {
   return commonLink('/kanban/setting');
 }
-export function ProgramFeatureListLink() { 
+export function ProgramFeatureListLink() {
   return commonLink('/feature');
 }
 export function issueLink(issueId, typeCode, issueName = null) {
@@ -321,3 +322,25 @@ export const getProjectId = () => Number(AppState.currentMenuType.id);
 export const getProjectName = () => AppState.currentMenuType.name;
 export const getOrganizationId = () => AppState.currentMenuType.organizationId;
 export const getIsInProgram = () => true;
+// 选择主题
+export function configTheme({
+  list = [],
+  textField = 'text',
+  valueFiled = 'value',
+} = {}) {
+  const renderPlaceHolder = (ommittedValues) => {
+    const values = [];
+    for (const value of ommittedValues) {
+      const target = find(list, { [valueFiled]: value })[textField];
+      if (target) {
+        values.push(target);
+      }
+    }
+    return values.join(', ');
+  };
+  return {
+    className: 'SelectTheme',
+    maxTagCount: 0,
+    maxTagPlaceholder: renderPlaceHolder,
+  };
+}
