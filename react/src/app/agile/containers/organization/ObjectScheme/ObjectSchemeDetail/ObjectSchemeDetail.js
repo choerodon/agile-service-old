@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
 import {
   Table, Spin, Tooltip, Button, Checkbox, Modal, Icon,
@@ -62,6 +62,25 @@ class ObjectSchemeDetail extends Component {
       title: '显示范围',
       dataIndex: 'contextName',
       width: '25%',
+      render: contextName => (
+        <Fragment>
+          {contextName.split(',').map(name => (
+            <div style={{
+              color: 'rgb(0, 191, 165)',
+              border: '1px solid  rgb(0, 191, 165)',  
+              borderRadius: 2,
+              fontSize: '13px',
+              lineHeight: '20px',
+              padding: '0px 8px',
+              margin: '0 5px',
+              display: 'inline-block',
+            }}
+            >
+              {name}
+            </div>
+          ))}
+        </Fragment>
+      ),
     },
     {
       title: '字段类型',

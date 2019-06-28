@@ -192,7 +192,7 @@ class CreateSubIssue extends Component {
         fields.forEach((item) => {
           if (!item.system) {
             let value = form.getFieldValue(item.fieldCode);
-            if (item.fieldType === 'time' || item.fieldType === 'datetime') {
+            if (item.fieldType === 'time' || item.fieldType === 'datetime' || item.fieldType === 'date') {
               value = value && value.format('YYYY-MM-DD HH:mm:ss');
             }
             fieldList.push({
@@ -281,15 +281,15 @@ class CreateSubIssue extends Component {
             className="fieldWith"
           >
             {fieldOptions && fieldOptions.length > 0
-            && fieldOptions.filter(option => option.enabled).map(item => (
-              <Radio
-                className="radioStyle"
-                value={item.id}
-                key={item.id}
-              >
-                {item.value}
-              </Radio>
-            ))}
+              && fieldOptions.filter(option => option.enabled).map(item => (
+                <Radio
+                  className="radioStyle"
+                  value={item.id}
+                  key={item.id}
+                >
+                  {item.value}
+                </Radio>
+              ))}
           </Radio.Group>
         );
       } else {
@@ -311,20 +311,20 @@ class CreateSubIssue extends Component {
           >
             <Row>
               {fieldOptions && fieldOptions.length > 0
-              && fieldOptions.filter(option => option.enabled).map(item => (
-                <Col
-                  span={24}
-                  key={item.id}
-                >
-                  <Checkbox
-                    value={item.id}
+                && fieldOptions.filter(option => option.enabled).map(item => (
+                  <Col
+                    span={24}
                     key={item.id}
-                    className="checkboxStyle"
                   >
-                    {item.value}
-                  </Checkbox>
-                </Col>
-              ))}
+                    <Checkbox
+                      value={item.id}
+                      key={item.id}
+                      className="checkboxStyle"
+                    >
+                      {item.value}
+                    </Checkbox>
+                  </Col>
+                ))}
             </Row>
           </Checkbox.Group>
         );
@@ -357,6 +357,15 @@ class CreateSubIssue extends Component {
           allowClear={!required}
         />
       );
+    } else if (field.fieldType === 'date') {
+      return (
+        <DatePicker
+          label={fieldName}
+          format="YYYY-MM-DD"
+          className="fieldWith"
+          allowClear={!required}
+        />
+      );
     } else if (field.fieldType === 'single') {
       return (
         <Select
@@ -366,14 +375,14 @@ class CreateSubIssue extends Component {
           allowClear={!required}
         >
           {field.fieldOptions && field.fieldOptions.length > 0
-          && field.fieldOptions.filter(option => option.enabled).map(item => (
-            <Option
-              value={item.id}
-              key={item.id}
-            >
-              {item.value}
-            </Option>
-          ))}
+            && field.fieldOptions.filter(option => option.enabled).map(item => (
+              <Option
+                value={item.id}
+                key={item.id}
+              >
+                {item.value}
+              </Option>
+            ))}
         </Select>
       );
     } else if (field.fieldType === 'multiple') {
@@ -385,14 +394,14 @@ class CreateSubIssue extends Component {
           className="fieldWith"
         >
           {field.fieldOptions && field.fieldOptions.length > 0
-          && field.fieldOptions.filter(option => option.enabled).map(item => (
-            <Option
-              value={item.id}
-              key={item.id}
-            >
-              {item.value}
-            </Option>
-          ))}
+            && field.fieldOptions.filter(option => option.enabled).map(item => (
+              <Option
+                value={item.id}
+                key={item.id}
+              >
+                {item.value}
+              </Option>
+            ))}
         </Select>
       );
     } else if (field.fieldType === 'number') {
@@ -423,7 +432,7 @@ class CreateSubIssue extends Component {
           allowClear
           onFilterChange={this.onFilterChange.bind(this)}
         >
-          {originUsers.filter(user => (field.defaultValueObj && user.id !== field.defaultValueObj.id) && user.enabled).concat(field.defaultValueObj || []).map(user => (
+          {originUsers.filter(user => (field.defaultValueObj ? user.id !== field.defaultValueObj.id : true) && user.enabled).concat(field.defaultValueObj || []).map(user => (
             <Option key={user.id} value={user.id}>
               <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
                 <UserHead
@@ -691,7 +700,7 @@ class CreateSubIssue extends Component {
 
   transformValue = (fieldType, value) => {
     if (value) {
-      if (fieldType === 'time' || fieldType === 'datetime') {
+      if (fieldType === 'time' || fieldType === 'datetime' || fieldType === 'date') {
         return value ? moment(value) : undefined;
       } else if (value instanceof Array) {
         return value.slice();
@@ -750,7 +759,7 @@ class CreateSubIssue extends Component {
           <Form layout="vertical">
             {fields && fields.map(field => this.getFieldComponent(field))}
           </Form>
-          
+
           <div className="sign-upload" style={{ marginTop: 20 }}>
             <div style={{ display: 'flex', marginBottom: 13, alignItems: 'center' }}>
               <div style={{ fontWeight: 'bold' }}>附件</div>
