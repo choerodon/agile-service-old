@@ -18,7 +18,7 @@ import SideIssueList from './components/SideIssueList';
 import SwitchSwimLine from './components/SwitchSwimLine';
 import CreateVersion from './components/CreateVersion';
 import CreateEpicModal from './components/CreateEpicModal';
-import CreateFeatureModal from './components/CreateFeatureModal';
+import IssueDetail from './components/IssueDetail';
 import StoryMapStore from '../../../../stores/project/StoryMap/StoryMapStore';
 import IsInProgramStore from '../../../../stores/common/program/IsInProgramStore';
 import './StoryMapHome.scss';
@@ -82,7 +82,7 @@ class StoryMapHome extends Component {
     StoryMapStore.setCreateEpicModalVisible(true);
   }
 
-  handleCreateFeatureClick=() => {
+  handleCreateFeatureClick = () => {
     StoryMapStore.setCreateFeatureModalVisible(true);
   }
 
@@ -152,6 +152,10 @@ class StoryMapHome extends Component {
     );
   }
 
+  handleIssueRefresh = () => {
+    this.handleRefresh();
+  }
+
   render() {
     const { loading, isFullScreen } = StoryMapStore;
     const isEmpty = StoryMapStore.getIsEmpty;
@@ -179,15 +183,17 @@ class StoryMapHome extends Component {
           <Button onClick={this.handleFullScreen.bind(this)} icon={isFullScreen ? 'exit_full_screen' : 'zoom_out_map'}>
             {isFullScreen ? '退出全屏' : '全屏'}
           </Button>
-          <Button
-            type="primary"
-            funcType="raised"
-            style={{ color: 'white', marginLeft: 'auto', marginRight: 30 }}
-            icon="view_module"
-            onClick={this.handleClickIssueList}
-          >
-            需求池
-          </Button>
+          {!isFullScreen && (
+            <Button
+              type="primary"
+              funcType="raised"
+              style={{ color: 'white', marginLeft: 'auto', marginRight: 30 }}
+              icon="view_module"
+              onClick={this.handleClickIssueList}
+            >
+              需求池
+            </Button>
+          )}
         </Header>
         <Content style={{ padding: 0, paddingBottom: 49 }}>
           <Loading loading={loading} />
@@ -204,11 +210,8 @@ class StoryMapHome extends Component {
               title="欢迎使用敏捷用户故事地图"
               description={(
                 <Fragment>
-                    用户故事地图是以史诗或特性为基础，根据版本控制进行管理规划，点击
+                    用户故事地图是以史诗为基础，根据版本控制进行管理规划，点击
                   <a role="none" onClick={this.handleCreateEpicClick} disabled={IsInProgramStore.isInProgram}>创建史诗</a>
-                    或
-                  <a role="none" onClick={this.handleCreateFeatureClick} disabled={IsInProgramStore.isInProgram}>创建特性</a>
-                    进入用户故事地图。
                 </Fragment>
                 )}
             />
@@ -216,7 +219,7 @@ class StoryMapHome extends Component {
           <SideIssueList />
           <CreateVersion onOk={this.handleCreateVersion} />
           <CreateEpicModal onOk={this.handleCreateEpic} />
-          <CreateFeatureModal onOk={this.handleCreateFeature} />
+          <IssueDetail refresh={this.handleIssueRefresh} />
         </Content>
       </Page>
     );

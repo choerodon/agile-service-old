@@ -56,6 +56,7 @@ const zh_CN = {
   'field.checkbox': '复选框',
   'field.time': '时间选择器',
   'field.datetime': '日期时间选择器',
+  'field.date': '日期选择器',
   'field.number': '数字输入框',
   'field.input': '文本框（单行）',
   'field.text': '文本框（多行）',

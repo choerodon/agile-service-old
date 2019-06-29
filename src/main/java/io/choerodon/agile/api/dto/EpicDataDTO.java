@@ -52,6 +52,9 @@ public class EpicDataDTO {
 
     private Long epicRankObjectVersionNumber;
 
+    @ApiModelProperty(value = "项目群id")
+    private Long programId;
+
     public Integer getEpicSequence() {
         return epicSequence;
     }
@@ -170,5 +173,13 @@ public class EpicDataDTO {
 
     public void setEpicRankObjectVersionNumber(Long epicRankObjectVersionNumber) {
         this.epicRankObjectVersionNumber = epicRankObjectVersionNumber;
+    }
+
+    public void setProgramId(Long programId) {
+        this.programId = programId;
+    }
+
+    public Long getProgramId() {
+        return programId;
     }
 }

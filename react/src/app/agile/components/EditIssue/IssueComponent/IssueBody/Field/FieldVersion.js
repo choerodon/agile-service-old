@@ -93,7 +93,7 @@ const { Text, Edit } = TextEditToggle;
 
   render() {
     const { selectLoading, originVersions } = this.state;
-    const { store, hasPermission } = this.props;
+    const { store, hasPermission, disabled } = this.props;
     const issue = store.getIssue;
     const { versionIssueRelDTOList = [] } = issue;
     const influenceVersions = _.filter(versionIssueRelDTOList, { relationType: 'influence' }) || [];
@@ -109,6 +109,7 @@ const { Text, Edit } = TextEditToggle;
         </div>
         <div className="c7n-value-wrapper">
           <TextEditToggle
+            disabled={disabled}
             style={{ width: '100%', maxWidth: '200px' }}
             formKey="version"
             onSubmit={this.updateIssueVersion}

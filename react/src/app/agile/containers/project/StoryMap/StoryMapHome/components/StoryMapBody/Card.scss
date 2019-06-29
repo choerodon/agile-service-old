@@ -1,5 +1,6 @@
 .c7nagile-StoryMap-Card {
   position: relative;
+
   .c7n-input-underline {
     display: none;
   }
@@ -13,7 +14,9 @@
   .c7n-input-content {
     // margin-bottom: 0;
   }
-
+  .c7n-input-length-info {
+    display: none;
+  }
   .summary {
     height: 40px;
     overflow: hidden;
@@ -22,5 +25,9 @@
     display: -webkit-box;
     word-break: break-all;
     white-space: normal;
+  }
+
+  &.selected {
+    border: 2px solid #3F51B5;
   }
 }

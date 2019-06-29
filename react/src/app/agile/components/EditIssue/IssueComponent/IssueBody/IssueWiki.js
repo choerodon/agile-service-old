@@ -42,7 +42,7 @@ import WikiItem from '../../Component/WikiItem';
       <div>
         {
           wikies && wikies.wikiRelationList
-          && wikies.wikiRelationList.map(wiki => (
+          && wikies.wikiRelationList.filter(item => item.spaceId).map(wiki => (
             <WikiItem
               key={wiki.id}
               wiki={wiki}
@@ -58,7 +58,7 @@ import WikiItem from '../../Component/WikiItem';
 
   render() {
     const { addWikiShow } = this.state;
-    const { store } = this.props;
+    const { store, disabled } = this.props;
     const { issueId } = store.getIssue;
     const wikies = store.getWiki;
 
@@ -73,6 +73,7 @@ import WikiItem from '../../Component/WikiItem';
             flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
           }}
           />
+          {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="添加文档" getPopupContainer={triggerNode => triggerNode.parentNode}>
               <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ addWikiShow: true })}>
@@ -80,6 +81,7 @@ import WikiItem from '../../Component/WikiItem';
               </Button>
             </Tooltip>
           </div>
+          )}
         </div>
         {this.renderWiki()}
         {
@@ -89,7 +91,7 @@ import WikiItem from '../../Component/WikiItem';
               visible={addWikiShow}
               onCancel={() => this.setState({ addWikiShow: false })}
               onOk={this.onWikiCreate}
-              checkIds={wikies ? wikies.wikiRelationList.map(wiki => wiki.wikiUrl) : []}
+              checkIds={wikies ? wikies.wikiRelationList.map(wiki => wiki.spaceId) : []}
             />
           ) : null
         }

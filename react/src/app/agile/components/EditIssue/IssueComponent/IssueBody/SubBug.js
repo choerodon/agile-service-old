@@ -72,7 +72,7 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
   };
 
   render() {
-    const { store } = this.props;
+    const { store, disabled } = this.props;
     const { issueId, summary } = store.getIssue;
     const { getCreateSubBugShow: createSubBugShow } = VisibleStore;
     return (
@@ -86,6 +86,7 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
             flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
           }}
           />
+          {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="创建缺陷" getPopupContainer={triggerNode => triggerNode.parentNode}>
               <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateSubBugShow(true)}>
@@ -93,6 +94,7 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
               </Button>
             </Tooltip>
           </div>
+          )}
         </div>
         {this.renderSubIssues()}
         {

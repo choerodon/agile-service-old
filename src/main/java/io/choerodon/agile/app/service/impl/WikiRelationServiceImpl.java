@@ -6,6 +6,8 @@ import io.choerodon.agile.api.dto.WikiMenuDTO;
 import io.choerodon.agile.api.dto.WikiRelationDTO;
 import io.choerodon.agile.app.service.WikiRelationService;
 import io.choerodon.agile.domain.agile.entity.WikiRelationE;
+import io.choerodon.agile.infra.dataobject.WorkSpaceDO;
+import io.choerodon.agile.infra.feign.KnowledgebaseClient;
 import io.choerodon.agile.infra.repository.WikiRelationRepository;
 import io.choerodon.agile.infra.common.utils.HttpRequestUtil;
 import io.choerodon.agile.infra.dataobject.WikiRelationDO;
@@ -13,6 +15,8 @@ import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.WikiRelationMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +37,8 @@ import java.util.Map;
 @Transactional(rollbackFor = Exception.class)
 public class WikiRelationServiceImpl implements WikiRelationService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(WikiRelationServiceImpl.class);
+
     private static final String ENC = "utf-8";
 
     @Autowired
@@ -47,6 +53,9 @@ public class WikiRelationServiceImpl implements WikiRelationService {
     @Autowired
     private UserFeignClient userFeignClient;
 
+    @Autowired
+    private KnowledgebaseClient knowledgebaseClient;
+
     @Value("${services.wiki.host}")
     private String wikiHost;
 
@@ -57,7 +66,7 @@ public class WikiRelationServiceImpl implements WikiRelationService {
         WikiRelationDO wikiRelationDO = new WikiRelationDO();
         wikiRelationDO.setProjectId(wikiRelationE.getProjectId());
         wikiRelationDO.setIssueId(wikiRelationE.getIssueId());
-        wikiRelationDO.setWikiUrl(wikiRelationE.getWikiUrl());
+        wikiRelationDO.setSpaceId(wikiRelationE.getSpaceId());
         WikiRelationDO res = wikiRelationMapper.selectOne(wikiRelationDO);
         return res != null;
     }
@@ -123,5 +132,29 @@ public class WikiRelationServiceImpl implements WikiRelationService {
         otherHeaders.put("username", wikiMenuDTO.getUsername());
         otherHeaders.put("wikitoken", wikiToken);
         return httpRequestUtil.sendGet(url, param, otherHeaders);
+    }
+
+    @Override
+    public void moveWikiRelation() {
+        List<WikiRelationDO> wikiRelationDOList = wikiRelationMapper.selectAll();
+        if (wikiRelationDOList == null || wikiRelationDOList.isEmpty()) {
+            return;
+        }
+        ResponseEntity<List<WorkSpaceDO>> responseEntity = knowledgebaseClient.queryAllSpaceByProject();
+        if (responseEntity == null) {
+            return;
+        }
+        List<WorkSpaceDO> workSpaceDOList = responseEntity.getBody();
+        if (workSpaceDOList != null && !workSpaceDOList.isEmpty()) {
+            for (WikiRelationDO wikiRelationDO : wikiRelationDOList) {
+                for (WorkSpaceDO workSpaceDO : workSpaceDOList) {
+                    if (workSpaceDO.getProjectId() != null && wikiRelationDO.getProjectId() != null  && wikiRelationDO.getProjectId().equals(workSpaceDO.getProjectId()) && wikiRelationDO.getWikiName() != null && workSpaceDO.getName() != null && wikiRelationDO.getWikiName().equals(workSpaceDO.getName())) {
+                        wikiRelationMapper.updateByOptions(wikiRelationDO.getId(), workSpaceDO.getId());
+                        break;
+                    }
+                }
+            }
+        }
+        LOGGER.info("==================================== Finished to fix wiki relation by agile! =============================================");
     }
 }

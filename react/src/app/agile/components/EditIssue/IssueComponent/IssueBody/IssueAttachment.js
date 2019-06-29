@@ -56,7 +56,7 @@ import { handleFileUpload } from '../../../../common/utils';
 
   render() {
     const { fileList } = this.state;
-    const { store } = this.props;
+    const { store, disabled } = this.props;
     const { issueAttachmentDTOList = [] } = store.getIssue;
     const files = fileList || _.map(issueAttachmentDTOList, issueAttachment => ({
       uid: issueAttachment.attachmentId,
@@ -75,6 +75,7 @@ import { handleFileUpload } from '../../../../common/utils';
           }}
           />
         </div>
+        {!disabled && (
         <div className="c7n-content-wrapper" style={{ marginTop: '-47px', justifyContent: 'flex-end' }}>
           <UploadButtonNow
             onRemove={this.setFileList}
@@ -83,6 +84,7 @@ import { handleFileUpload } from '../../../../common/utils';
             fileList={files}
           />
         </div>
+        )}
       </div>
     );
   }

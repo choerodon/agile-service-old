@@ -22,7 +22,7 @@ const { TextArea } = Input;
 const { Option } = Select;
 const singleList = ['radio', 'single'];
 const multipleList = ['checkbox', 'multiple'];
-const dateList = ['time', 'datetime'];
+const dateList = ['time', 'datetime', 'date'];
 const textList = ['input', 'text', 'url'];
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 
@@ -298,7 +298,7 @@ class ObjectSchemeField extends Component {
 
   render() {
     const { form, intl, ObjectSchemeStore } = this.props;
-    const { getFieldDecorator } = form;
+    const { getFieldDecorator, getFieldValue } = form;
     const menu = AppState.currentMenuType;
     const {
       type, id, organizationId, name,
@@ -308,7 +308,7 @@ class ObjectSchemeField extends Component {
       fieldOptions, submitting, defaultValue, isCheck,
       dateDisable, spinning, fieldContext, originUsers, selectLoading,
     } = this.state;
-
+    const selectedContext = getFieldValue('context') || [];
     return (
       <Page>
         <Header
@@ -366,11 +366,13 @@ class ObjectSchemeField extends Component {
                     style={{ width: 520 }}
                     label={<FormattedMessage id="field.context" />}
                     dropdownMatchSelectWidth
+                    showCheckAll={false}
                     size="default"
                     mode="multiple"
                   >
                     {fieldContext.map(ctx => (
                       <Option
+                        disabled={ctx.valueCode === 'global' ? selectedContext.length > 0 && !selectedContext.includes('global') : selectedContext.includes('global')}
                         value={ctx.valueCode}
                         key={ctx.valueCode}
                       >
@@ -399,19 +401,19 @@ class ObjectSchemeField extends Component {
                             allowClear
                           >
                             {fieldOptions && fieldOptions.length > 0
-                            && fieldOptions.map((item) => {
-                              if (item.enabled) {
-                                return (
-                                  <Option
-                                    value={item.tempKey || item.id}
-                                    key={item.tempKey || item.id}
-                                  >
-                                    {item.value}
-                                  </Option>
-                                );
-                              }
-                              return [];
-                            })}
+                              && fieldOptions.map((item) => {
+                                if (item.enabled) {
+                                  return (
+                                    <Option
+                                      value={item.tempKey || item.id}
+                                      key={item.tempKey || item.id}
+                                    >
+                                      {item.value}
+                                    </Option>
+                                  );
+                                }
+                                return [];
+                              })}
                           </Select>,
                         )}
                       </FormItem>
@@ -446,19 +448,19 @@ class ObjectSchemeField extends Component {
                             notFoundContent={intl.formatMessage({ id: 'field.value.null' })}
                           >
                             {fieldOptions && fieldOptions.length > 0
-                            && fieldOptions.map((item) => {
-                              if (item.enabled) {
-                                return (
-                                  <Option
-                                    value={item.tempKey || String(item.id)}
-                                    key={item.tempKey || String(item.id)}
-                                  >
-                                    {item.value}
-                                  </Option>
-                                );
-                              }
-                              return [];
-                            })}
+                              && fieldOptions.map((item) => {
+                                if (item.enabled) {
+                                  return (
+                                    <Option
+                                      value={item.tempKey || String(item.id)}
+                                      key={item.tempKey || String(item.id)}
+                                    >
+                                      {item.value}
+                                    </Option>
+                                  );
+                                }
+                                return [];
+                              })}
                           </Select>,
                         )}
                       </FormItem>
@@ -527,6 +529,43 @@ class ObjectSchemeField extends Component {
                             label={<FormattedMessage id="field.default" />}
                             format="YYYY-MM-DD HH:mm:ss"
                             showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+                            style={{ width: 520 }}
+                            disabled={dateDisable}
+                            allowClear
+                          />,
+                        )}
+                      </FormItem>
+                      <FormItem
+                        {...formItemLayout}
+                        className="issue-sidebar-form"
+                      >
+                        {getFieldDecorator('check', {
+                          valuePropName: 'checked',
+                          initialValue: isCheck || false,
+                        })(
+                          <Checkbox onChange={e => this.handleCheck(e, 'datetime')}>
+                            <FormattedMessage id="field.useCurrentDate" />
+                          </Checkbox>,
+                        )}
+                      </FormItem>
+                    </Fragment>
+                  ) : ''
+              }
+              {
+                field.fieldType === 'date'
+                  ? (
+                    <Fragment>
+                      <FormItem
+                        {...formItemLayout}
+                        className="issue-sidebar-form"
+                      >
+                        {getFieldDecorator('defaultValue', {
+                          initialValue: defaultValue || null,
+                          rules: [{ required: field.required && !dateDisable, message: '必填字段默认值不能为空！' }],
+                        })(
+                          <DatePicker
+                            label={<FormattedMessage id="field.default" />}
+                            format="YYYY-MM-DD"                            
                             style={{ width: 520 }}
                             disabled={dateDisable}
                             allowClear

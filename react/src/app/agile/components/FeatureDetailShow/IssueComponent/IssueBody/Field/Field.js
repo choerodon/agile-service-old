@@ -46,7 +46,7 @@ let sign = false;
   handleChange = (e) => {
     const { field } = this.props;
     const { fieldType } = field;
-    if (fieldType === 'time' || fieldType === 'datetime') {
+    if (fieldType === 'time' || fieldType === 'datetime' || fieldType === 'date') {
       this.setState({
         newValue: e && e.format('YYYY-MM-DD HH:mm:ss'),
       });
@@ -128,15 +128,15 @@ let sign = false;
             onChange={e => this.handleChange(e)}
           >
             {fieldOptions && fieldOptions.length > 0
-            && fieldOptions.map(item => (
-              <Radio
-                className="radioStyle"
-                value={item.id}
-                key={item.id}
-              >
-                {item.value}
-              </Radio>
-            ))}
+              && fieldOptions.map(item => (
+                <Radio
+                  className="radioStyle"
+                  value={item.id}
+                  key={item.id}
+                >
+                  {item.value}
+                </Radio>
+              ))}
           </Radio.Group>
         );
       } else {
@@ -158,20 +158,20 @@ let sign = false;
           >
             <Row>
               {fieldOptions && fieldOptions.length > 0
-              && fieldOptions.map(item => (
-                <Col
-                  span={24}
-                  key={item.id}
-                >
-                  <Checkbox
-                    value={item.id}
+                && fieldOptions.map(item => (
+                  <Col
+                    span={24}
                     key={item.id}
-                    className="checkboxStyle"
                   >
-                    {item.value}
-                  </Checkbox>
-                </Col>
-              ))}
+                    <Checkbox
+                      value={item.id}
+                      key={item.id}
+                      className="checkboxStyle"
+                    >
+                      {item.value}
+                    </Checkbox>
+                  </Col>
+                ))}
             </Row>
           </Checkbox.Group>
         );
@@ -204,6 +204,15 @@ let sign = false;
           onChange={e => this.handleChange(e)}
         />
       );
+    } else if (field.fieldType === 'date') {
+      return (
+        <DatePicker
+          format="YYYY-MM-DD"
+          className="fieldWith"
+          allowClear={!required}
+          onChange={e => this.handleChange(e)}
+        />
+      );
     } else if (field.fieldType === 'single') {
       return (
         <Select
@@ -213,14 +222,14 @@ let sign = false;
           onChange={e => this.handleChange(e)}
         >
           {field.fieldOptions && field.fieldOptions.length > 0
-          && field.fieldOptions.filter(option => option.enabled || option.id === value).map(item => (
-            <Option
-              value={item.id}
-              key={item.id}
-            >
-              {item.value}
-            </Option>
-          ))}
+            && field.fieldOptions.filter(option => option.enabled || option.id === value).map(item => (
+              <Option
+                value={item.id}
+                key={item.id}
+              >
+                {item.value}
+              </Option>
+            ))}
         </Select>
       );
     } else if (field.fieldType === 'multiple') {
@@ -232,14 +241,14 @@ let sign = false;
           onChange={e => this.handleChange(e)}
         >
           {field.fieldOptions && field.fieldOptions.length > 0
-          && field.fieldOptions.filter(option => option.enabled || (value && value.indexOf(option.id) !== -1)).map(item => (
-            <Option
-              value={item.id}
-              key={item.id}
-            >
-              {item.value}
-            </Option>
-          ))}
+            && field.fieldOptions.filter(option => option.enabled || (value && value.indexOf(option.id) !== -1)).map(item => (
+              <Option
+                value={item.id}
+                key={item.id}
+              >
+                {item.value}
+              </Option>
+            ))}
         </Select>
       );
     } else if (field.fieldType === 'number') {
@@ -270,7 +279,7 @@ let sign = false;
           onFilterChange={this.onFilterChange.bind(this)}
           onChange={e => this.handleChange(e)}
         >
-          {originUsers.filter(user => (field.valueStr && user.id !== field.valueStr.id) && user.enabled).concat(field.valueStr || []).map(user => (
+          {originUsers.filter(user => (field.valueStr ? user.id !== field.valueStr.id : true) && user.enabled).concat(field.valueStr || []).map(user => (
             <Option key={user.id} value={user.id}>
               <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
                 <UserHead
@@ -298,7 +307,7 @@ let sign = false;
   };
 
   transform = (fieldType, value) => {
-    if (fieldType === 'time' || fieldType === 'datetime') {
+    if (fieldType === 'time' || fieldType === 'datetime' || fieldType === 'date') {
       return value ? moment(value) : undefined;
     } else if (value instanceof Array) {
       return value.slice();

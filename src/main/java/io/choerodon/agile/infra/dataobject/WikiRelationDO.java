@@ -21,6 +21,8 @@ public class WikiRelationDO extends BaseDTO {
 
     private String wikiUrl;
 
+    private Long spaceId;
+
     public Long getId() {
         return id;
     }
@@ -59,5 +61,13 @@ public class WikiRelationDO extends BaseDTO {
 
     public void setWikiUrl(String wikiUrl) {
         this.wikiUrl = wikiUrl;
+    }
+
+    public void setSpaceId(Long spaceId) {
+        this.spaceId = spaceId;
+    }
+
+    public Long getSpaceId() {
+        return spaceId;
     }
 }

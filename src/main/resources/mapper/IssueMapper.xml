@@ -3612,7 +3612,8 @@
             ai.object_version_number,
             ai.epic_sequence,
             ar.rank as epic_rank,
-            ar.object_version_number as epic_rank_object_version_number
+            ar.object_version_number as epic_rank_object_version_number,
+            ai.program_id
         FROM agile_issue ai
         LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
         LEFT JOIN agile_project_info api ON ai.program_id = api.project_id

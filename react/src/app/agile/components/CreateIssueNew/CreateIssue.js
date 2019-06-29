@@ -8,7 +8,7 @@ import {
 import moment from 'moment';
 import { UploadButton } from '../CommonComponent';
 import {
-  handleFileUpload, beforeTextUpload, randomString,  
+  handleFileUpload, beforeTextUpload, randomString,
 } from '../../common/utils';
 import IsInProgramStore from '../../stores/common/program/IsInProgramStore';
 
@@ -161,7 +161,7 @@ class CreateIssue extends Component {
         fields.forEach((item) => {
           if (!item.system) {
             let value = form.getFieldValue(item.fieldCode);
-            if (item.fieldType === 'time' || item.fieldType === 'datetime') {
+            if (item.fieldType === 'time' || item.fieldType === 'datetime' || item.fieldType === 'date') {
               value = value && value.format('YYYY-MM-DD HH:mm:ss');
             }
             fieldList.push({
@@ -539,6 +539,15 @@ class CreateIssue extends Component {
           allowClear={!required}
         />
       );
+    } else if (field.fieldType === 'date') {
+      return (
+        <DatePicker
+          label={fieldName}
+          format="YYYY-MM-DD"
+          className="fieldWith"
+          allowClear={!required}
+        />
+      );
     } else if (field.fieldType === 'single') {
       return (
         <Select
@@ -605,7 +614,7 @@ class CreateIssue extends Component {
           allowClear
           onFilterChange={this.onFilterChangeAssignee.bind(this)}
         >
-          {originUsers.filter(user => (field.defaultValueObj && user.id !== field.defaultValueObj.id) && user.enabled).concat(field.defaultValueObj || []).map(user => (
+          {originUsers.filter(user => (field.defaultValueObj ? user.id !== field.defaultValueObj.id : true) && user.enabled).concat(field.defaultValueObj || []).map(user => (
             <Option key={user.id} value={user.id}>
               <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
                 <UserHead
@@ -632,17 +641,12 @@ class CreateIssue extends Component {
     }
   };
 
-  getIssueTypes=() => {
+  getIssueTypes = () => {
     const createTypes = [];
     const { originIssueTypes } = this.state;
-    originIssueTypes.forEach((type) => {
-      const { typeCode } = type;
-      if ((IsInProgramStore.isInProgram && ['issue_epic', 'feature'].includes(typeCode)) || ['sub_task'].includes(typeCode)) {
-        return;
-      }
-      createTypes.push(type);
-    });
-    return createTypes;
+    return IsInProgramStore.isInProgram
+      ? originIssueTypes.filter(type => (!['issue_epic', 'feature', 'sub_task'].includes(type.typeCode)))
+      : originIssueTypes.filter(type => (!['feature', 'sub_task'].includes(type.typeCode)));
   }
 
   getFieldComponent = (field) => {
@@ -666,7 +670,7 @@ class CreateIssue extends Component {
                 rules: [{ required: true, message: '问题类型为必输项' }],
                 initialValue: defaultTypeId || '',
               })(
-                <Select                
+                <Select
                   label="问题类型"
                   getPopupContainer={triggerNode => triggerNode.parentNode}
                   onChange={((value) => {
@@ -698,7 +702,7 @@ class CreateIssue extends Component {
                   ))}
                 </Select>,
               )}
-            </FormItem>, 
+            </FormItem>,
             newIssueTypeCode === 'feature' ? (
               <FormItem style={{ width: 520 }}>
                 {getFieldDecorator('featureType', {
@@ -710,10 +714,10 @@ class CreateIssue extends Component {
                     getPopupContainer={triggerNode => triggerNode.parentNode}
                   >
                     <Option key="business" value="business">
-                    特性
+                      特性
                     </Option>
                     <Option key="enabler" value="enabler">
-                    使能
+                      使能
                     </Option>
                   </Select>,
                 )}
@@ -1102,7 +1106,7 @@ class CreateIssue extends Component {
 
   transformValue = (fieldType, value) => {
     if (value) {
-      if (fieldType === 'time' || fieldType === 'datetime') {
+      if (fieldType === 'time' || fieldType === 'datetime' || fieldType === 'date') {
         return value ? moment(value) : undefined;
       } else if (value instanceof Array) {
         return value.slice();

@@ -50,12 +50,13 @@ env:
 #      -Dskywalking.collector.backend_service=oap.skywalking:11800
     SPRING_REDIS_HOST: redis.tools
     SPRING_REDIS_PORT: 6379
+    # 定时任务配置，同步法定假日
     WORKH_TYPE: juhe
     WORKH_APIKEY: dc135fefba469b4e48d07f7100af31e2
     WORKH_ENABLED: true
     WORKH_CRON: 59 59 23 15 12 *
-    SERVICES_WIKI_HOST: example.com
-    SERVICES_WIKI_TOKEN: token
+    # minio地址，地址中agile-service为minio bucket
+    SERVICES_ATTACHMENT_URL: http://minio.example.choerodon.io/agile-service/
 #    PRO_API_HOST: gateway.example.com.cn
 #    PRO_AGILE_HOST: http://minio.example.com/agile-service/
 #    PRO_CLIENT_ID: agile

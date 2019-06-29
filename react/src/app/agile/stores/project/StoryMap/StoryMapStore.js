@@ -1,9 +1,9 @@
 
 import {
-  observable, action, computed, extendObservable, toJS,
+  observable, action, computed, set,
 } from 'mobx';
 import {
-  find, findIndex, max, remove, groupBy,
+  find, findIndex, remove,
 } from 'lodash';
 import { getProjectId } from '../../../common/utils';
 import {
@@ -46,6 +46,9 @@ class StoryMapStore {
 
   @observable loading = false;
 
+  selectedIssueMap = observable.map({}); // 使用map减少选中的渲染
+
+
   @action clear() {
     this.storyMapData = {};
     this.storyData = {};
@@ -56,7 +59,7 @@ class StoryMapStore {
     Promise.all([getStoryMap(), loadIssueTypes(), loadVersions(), loadPriorities()]).then(([storyMapData, issueTypes, versionList, prioritys]) => {
       const { epicWithFeature, featureWithoutEpic } = storyMapData;
       const newStoryMapData = {
-        ...storyMapData, 
+        ...storyMapData,
         epicWithFeature: featureWithoutEpic.length > 0 ? epicWithFeature.concat({
           issueId: 0,
           featureCommonDOList: featureWithoutEpic,
@@ -64,7 +67,7 @@ class StoryMapStore {
       };
       this.issueTypes = issueTypes;
       this.prioritys = prioritys;
-      this.initVersionList(versionList);      
+      this.initVersionList(versionList);
       this.initStoryData(newStoryMapData);
       this.setStoryMapData(newStoryMapData);
       this.setLoading(false);
@@ -96,8 +99,11 @@ class StoryMapStore {
   @action setCreateFeatureModalVisible(createFeatureModalVisible) {
     this.createFeatureModalVisible = createFeatureModalVisible;
   }
-  
+
   @action toggleSideIssueListVisible() {
+    if (!this.sideIssueListVisible) {
+      this.setClickIssue();
+    }
     this.sideIssueListVisible = !this.sideIssueListVisible;
   }
 
@@ -109,7 +115,7 @@ class StoryMapStore {
     this.loading = loading;
   }
 
-  @action setStoryMapData(storyMapData) {   
+  @action setStoryMapData(storyMapData) {
     this.storyMapData = storyMapData;
   }
 
@@ -151,7 +157,7 @@ class StoryMapStore {
       const epic = this.storyData[epicId];
       Object.keys(epic.feature).forEach((featureId) => {
         const feature = epic.feature[featureId];
-        extendObservable(feature.version, {
+        set(feature.version, {
           [version.versionId]: [],
         });
       });
@@ -159,7 +165,7 @@ class StoryMapStore {
   }
 
   @action initStoryData({
-    epicWithFeature, storyList, storyMapWidth, 
+    epicWithFeature, storyList, storyMapWidth,
   }) {
     const storyData = {};
     epicWithFeature.forEach((epic) => {
@@ -268,7 +274,7 @@ class StoryMapStore {
 
   @action afterCreateEpic(index, newEpic) {
     this.storyMapData.epicWithFeature[index] = { ...newEpic, featureCommonDOList: [] };
-    extendObservable(this.storyData, {
+    set(this.storyData, {
       [newEpic.issueId]: {
         epicId: newEpic.issueId,
         collapse: false,
@@ -286,7 +292,7 @@ class StoryMapStore {
 
   @action afterCreateEpicInModal(newEpic) {
     this.storyMapData.epicWithFeature.unshift({ ...newEpic, featureCommonDOList: [] });
-    extendObservable(this.storyData, {
+    set(this.storyData, {
       [newEpic.issueId]: {
         epicId: newEpic.issueId,
         collapse: false,
@@ -306,7 +312,7 @@ class StoryMapStore {
     const feature = {
       adding: true,
     };
-    
+
     const currentIndex = findIndex(this.storyMapData.epicWithFeature, { issueId: epicData.issueId });
     // console.log(currentIndex);
     // console.log(epicData, currentIndex);
@@ -317,7 +323,7 @@ class StoryMapStore {
     const { length } = this.storyMapData.epicWithFeature[EpicIndex].featureCommonDOList;
     this.storyMapData.epicWithFeature[EpicIndex].featureCommonDOList[length - 1] = newFeature;
     const { issueId: epicId } = this.storyMapData.epicWithFeature[EpicIndex];
-    extendObservable(this.storyData[epicId].feature, {
+    set(this.storyData[epicId].feature, {
       [newFeature.issueId]: {
         storys: [],
         version: this.getInitVersions(),
@@ -331,24 +337,40 @@ class StoryMapStore {
     this.storyMapData.storyList.push(newStory);
   }
 
-  @action removeStoryFromStoryMap(story) {
+  @action removeStoryFromStoryMap(story, targetVersionId) {
     const { epicId, featureId, storyMapVersionDOList } = story;
-    remove(this.storyMapData.storyList, { issueId: story.issueId });
-    if (this.storyData[epicId]) {
-      const targetEpic = this.storyData[epicId];
-      const { feature } = targetEpic;
-      const targetFeature = feature[featureId || 'none'];
-      remove(targetFeature.storys, { issueId: story.issueId });
-      // 从各个版本移除
-      if (storyMapVersionDOList.length === 0) {
-        if (targetFeature.version.none) {
-          remove(targetFeature.version.none, { issueId: story.issueId });
+    if (targetVersionId) {
+      this.getStoryMap();
+      this.setClickIssue();
+      // if (this.storyData[epicId]) {
+      //   const targetEpic = this.storyData[epicId];
+      //   const { feature } = targetEpic;
+      //   const targetFeature = feature[featureId || 'none'];      
+      //   remove(targetFeature.version[targetVersionId], { issueId: story.issueId });
+      //   remove(storyMapVersionDOList, { versionId: targetVersionId });  
+      //   // 版本全删掉后，移到未规划
+      //   if (story.storyMapVersionDOList.length === 0) {
+      //     targetFeature.version.none.push(story);
+      //   }
+      // }
+    } else {
+      remove(this.storyMapData.storyList, { issueId: story.issueId });
+      if (this.storyData[epicId]) {
+        const targetEpic = this.storyData[epicId];
+        const { feature } = targetEpic;
+        const targetFeature = feature[featureId || 'none'];
+        remove(targetFeature.storys, { issueId: story.issueId });  
+        // 从各个版本移除
+        if (storyMapVersionDOList.length === 0) {
+          if (targetFeature.version.none) {
+            remove(targetFeature.version.none, { issueId: story.issueId });
+          }
         }
+        storyMapVersionDOList.forEach((version) => {
+          const { versionId } = version;
+          remove(targetFeature.version[versionId], { issueId: story.issueId });
+        });
       }
-      storyMapVersionDOList.forEach((version) => {
-        const { versionId } = version;
-        remove(targetFeature.version[versionId], { issueId: story.issueId });
-      });
     }
   }
 
@@ -426,6 +448,14 @@ class StoryMapStore {
     storyMapWidth.push(storyMapWidthDTO);
   }
 
+  @action setClickIssue(clickIssue) {    
+    this.selectedIssueMap.clear();
+    if (clickIssue) {
+      this.sideIssueListVisible = false;
+      this.selectedIssueMap.set(clickIssue.issueId, clickIssue);    
+    }
+  }
+
   getIssueTypeByCode(typeCode) {
     return find(this.issueTypes, { typeCode });
   }
@@ -436,11 +466,11 @@ class StoryMapStore {
   }
 
   @computed get getIsEmpty() {
-    const { epicWithFeature, featureWithoutEpic } = this.storyMapData;  
+    const { epicWithFeature, featureWithoutEpic } = this.storyMapData;
     if (epicWithFeature && featureWithoutEpic) {
       return featureWithoutEpic.length === 0 && epicWithFeature.filter(epic => epic.issueId).length === 0;
     }
-    return true;   
+    return true;
   }
 
   @computed get getEpicType() {
