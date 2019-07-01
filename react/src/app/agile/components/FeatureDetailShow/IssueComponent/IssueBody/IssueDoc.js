@@ -3,51 +3,50 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Icon, Button } from 'choerodon-ui';
 import { injectIntl } from 'react-intl';
-import { deleteWiki, loadWikies } from '../../../../api/NewIssueApi';
-import Wiki from '../../../Wiki';
-import WikiItem from '../../../EditIssue/Component/WikiItem';
+import { deleteDoc, loadDocs } from '../../../../api/NewIssueApi';
+import Doc from '../../../Doc';
+import DocItem from '../../../EditIssue/Component/DocItem';
 
 @inject('AppState')
 @observer class IssueCommit extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      addWikiShow: false,
+      addDocShow: false,
     };
   }
 
   componentDidMount() {
   }
 
-  onDeleteWiki = async (id) => {
+  onDeleteDoc = async (id) => {
     const { store } = this.props;
     const { issueId } = store.getIssue;
-    await deleteWiki(id);
-    const res = await loadWikies(issueId);
-    store.setWiki(res || []);
+    await deleteDoc(id);
+    const res = await loadDocs(issueId);
+    store.setDoc(res || []);
   };
 
-  onWikiCreate = async () => {
+  onDocCreate = async () => {
     const { store } = this.props;
     const { issueId } = store.getIssue;
-    this.setState({ addWikiShow: false });
-    const res = await loadWikies(issueId);
-    store.setWiki(res || []);
+    this.setState({ addDocShow: false });
+    const res = await loadDocs(issueId);
+    store.setDoc(res || []);
   };
 
-  renderWiki = () => {
+  renderDoc = () => {
     const { store } = this.props;
-    const wikies = store.getWiki;
+    const docs = store.getDoc;
     return (
       <div>
         {
-          wikies && wikies.wikiRelationList
-          && wikies.wikiRelationList.map(wiki => (
-            <WikiItem
-              key={wiki.id}
-              wiki={wiki}
-              onDeleteWiki={this.onDeleteWiki}
-              wikiHost={wikies.wikiHost}
+          docs && docs.knowledgeRelationList
+          && docs.knowledgeRelationList.map(doc => (
+            <DocItem
+              key={doc.id}
+              doc={doc}
+              onDeleteDoc={this.onDeleteDoc}
               type="narrow"
             />
           ))
@@ -57,13 +56,13 @@ import WikiItem from '../../../EditIssue/Component/WikiItem';
   };
 
   render() {
-    const { addWikiShow } = this.state;
+    const { addDocShow } = this.state;
     const { store, disabled } = this.props;
     const { issueId } = store.getIssue;
-    const wikies = store.getWiki;
+    const docs = store.getDoc;
 
     return (
-      <div id="wiki">
+      <div id="doc">
         <div className="c7n-title-wrapper">
           <div className="c7n-title-left">
             <Icon type="library_books c7n-icon-title" />
@@ -75,21 +74,21 @@ import WikiItem from '../../../EditIssue/Component/WikiItem';
           />
           {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
-            <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ addWikiShow: true })}>
+            <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ addDocShow: true })}>
               <Icon type="add_box icon" />
             </Button>
           </div>
           )}
         </div>
-        {this.renderWiki()}
+        {this.renderDoc()}
         {
-          addWikiShow ? (
-            <Wiki
+          addDocShow ? (
+            <Doc
               issueId={issueId}
-              visible={addWikiShow}
-              onCancel={() => this.setState({ addWikiShow: false })}
-              onOk={this.onWikiCreate}
-              checkIds={wikies ? wikies.wikiRelationList.map(wiki => wiki.wikiUrl) : []}
+              visible={addDocShow}
+              onCancel={() => this.setState({ addDocShow: false })}
+              onOk={this.onDocCreate}
+              checkIds={docs ? docs.knowledgeRelationList.map(doc => doc.spaceId) : []}
             />
           ) : null
         }

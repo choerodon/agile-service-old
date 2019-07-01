@@ -32,7 +32,7 @@ class BacklogStore {
   }
 
   // issue attribute
-  @observable wiki = {};
+  @observable doc = {};
 
   @observable workLogs = [];
 
@@ -42,12 +42,12 @@ class BacklogStore {
 
   @observable branches = {};
 
-  @action setWiki(data) {
-    this.wiki = data;
+  @action setDoc(data) {
+    this.doc = data;
   }
 
-  @computed get getWiki() {
-    return this.wiki;
+  @computed get getDoc() {
+    return this.doc;
   }
 
   @action setWorkLogs(data) {
@@ -82,8 +82,8 @@ class BacklogStore {
     return this.branches;
   }
 
-  @action initIssueAttribute(wiki, workLogs, dataLogs, linkIssues, branches) {
-    this.wiki = wiki;
+  @action initIssueAttribute(doc, workLogs, dataLogs, linkIssues, branches) {
+    this.doc = doc;
     this.workLogs = workLogs;
     this.dataLogs = dataLogs;
     this.linkIssues = linkIssues;

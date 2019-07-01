@@ -28,18 +28,18 @@ class FeatureStore {
   }
 
   // issue attribute
-  @observable wiki = {};
+  @observable doc = {};
 
   @observable dataLogs = [];
 
   @observable linkIssues = [];
 
-  @action setWiki(data) {
-    this.wiki = data;
+  @action setDoc(data) {
+    this.doc = data;
   }
 
-  @computed get getWiki() {
-    return this.wiki;
+  @computed get getDoc() {
+    return this.doc;
   }
 
   @action setDataLogs(data) {
@@ -58,8 +58,8 @@ class FeatureStore {
     return this.linkIssues;
   }
 
-  @action initIssueAttribute(wiki, dataLogs, linkIssues) {
-    this.wiki = wiki;
+  @action initIssueAttribute(doc, dataLogs, linkIssues) {
+    this.doc = doc;
     this.dataLogs = dataLogs;
     this.linkIssues = linkIssues;
   }

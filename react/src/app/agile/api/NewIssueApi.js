@@ -184,12 +184,12 @@ export function loadBranchs(issueId, projectId = AppState.currentMenuType.id) {
   return axios.get(`/devops/v1/project/${projectId}/issue/${issueId}/commit_and_merge_request/count`);
 }
 
-export function loadWikies(issueId, projectId = AppState.currentMenuType.id) {
-  return axios.get(`/agile/v1/projects/${projectId}/wiki_relation/issue/${issueId}`);
+export function loadDocs(issueId, projectId = AppState.currentMenuType.id) {
+  return axios.get(`/agile/v1/projects/${projectId}/knowledge_relation/issue/${issueId}`);
 }
 
-export function deleteWiki(wikiId, projectId = AppState.currentMenuType.id) {
-  return axios.delete(`/agile/v1/projects/${projectId}/wiki_relation/${wikiId}`);
+export function deleteDoc(id, projectId = AppState.currentMenuType.id) {
+  return axios.delete(`/agile/v1/projects/${projectId}/knowledge_relation/${id}`);
 }
 
 export function updateWorklog(logId, worklog, projectId = AppState.currentMenuType.id) {

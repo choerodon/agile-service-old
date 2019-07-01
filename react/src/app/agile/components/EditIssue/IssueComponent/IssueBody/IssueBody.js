@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import IssueDetail from './IssueDetail';
 import IssueDes from './IssueDes';
 import IssueAttachment from './IssueAttachment';
-import IssueWiki from './IssueWiki';
+import IssueDoc from './IssueDoc';
 import IssueCommit from './IssueCommit';
 import IssueWorkLog from './IssueWorkLog';
 import IssueLog from './IssueLog';
@@ -36,7 +36,7 @@ import TestLink from './TestLink';
             <IssueDes {...this.props} />
             <IssueAttachment {...this.props} />
             {issueTypeDTO.typeCode && ['sub_task', 'feature'].indexOf(issueTypeDTO.typeCode) === -1
-              ? <IssueWiki {...this.props} /> : ''
+              ? <IssueDoc {...this.props} /> : ''
             }
             {issueTypeDTO.typeCode && ['sub_task', 'feature'].indexOf(issueTypeDTO.typeCode) === -1
               ? <SubTask {...this.props} /> : ''

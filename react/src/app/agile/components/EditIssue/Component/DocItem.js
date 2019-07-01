@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Icon, Popconfirm } from 'choerodon-ui';
 import { AppState } from '@choerodon/boot';
-import './WikiItem.scss';
+import './DocItem.scss';
 
 
-class WikiItem extends Component {
+class DocItem extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -38,34 +38,34 @@ class WikiItem extends Component {
 
   render() {
     const {
-      wiki, wikiHost, type, onDeleteWiki,
+      doc, type, onDeleteDoc,
     } = this.props;
     return (
       <div
-        className="c7n-wikiItem"
+        className="c7n-docItem"
       >
-        <Icon type="filter_none" className="c7n-wikiItem-icon" />
+        <Icon type="filter_none" className="c7n-docItem-icon" />
         <a
-          className={`c7n-wikiItem-text c7n-wikiItem-${type}`}
-          href={this.getUrl(wiki.spaceId)}
+          className={`c7n-docItem-text c7n-docItem-${type}`}
+          href={this.getUrl(doc.spaceId)}
           target="_blank"
           rel="noopener noreferrer"
         >
-          {wiki.wikiName}
+          {doc.workSpaceDTO ? doc.workSpaceDTO.name : doc.wikiName}
         </a>
         <Popconfirm
           title="确认删除文档关联吗？"
-          onConfirm={() => onDeleteWiki(wiki.id)}
+          onConfirm={() => onDeleteDoc(doc.id)}
           okText="确认"
           cancelText="取消"
           placement="topRight"
           arrowPointAtCenter
         >
-          <Icon type="delete" className="c7n-wikiItem-delete" />
+          <Icon type="delete" className="c7n-docItem-delete" />
         </Popconfirm>
       </div>
     );
   }
 }
 
-export default withRouter(WikiItem);
+export default withRouter(DocItem);

@@ -45,7 +45,7 @@ class SprintCommonStore {
   }
 
   // issue attribute
-  @observable wiki = {};
+  @observable doc = {};
 
   @observable workLogs = [];
 
@@ -55,12 +55,12 @@ class SprintCommonStore {
 
   @observable branches = {};
 
-  @action setWiki(data) {
-    this.wiki = data;
+  @action setDoc(data) {
+    this.doc = data;
   }
 
-  @computed get getWiki() {
-    return this.wiki;
+  @computed get getDoc() {
+    return this.doc;
   }
 
   @action setWorkLogs(data) {
@@ -95,8 +95,8 @@ class SprintCommonStore {
     return this.branches;
   }
 
-  @action initIssueAttribute(wiki, workLogs, dataLogs, linkIssues, branches) {
-    this.wiki = wiki;
+  @action initIssueAttribute(doc, workLogs, dataLogs, linkIssues, branches) {
+    this.doc = doc;
     this.workLogs = workLogs;
     this.dataLogs = dataLogs;
     this.linkIssues = linkIssues;
@@ -311,21 +311,21 @@ class SprintCommonStore {
     const transform = {
       issueNum: 'issueNum',
       summary: 'summary',
-      //  "description": 
+      //  "description":
       issueTypeId: 'typeName',
       //  "projectName":
       assignee: 'assigneeName',
-      // "assigneeRealName": 
+      // "assigneeRealName":
       reporter: 'reporterName',
       //  "reporterRealName":
-      //   "resolution": 
+      //   "resolution":
       statusId: 'statusName',
       sprint: 'sprintName',
-      // "creationDate": 
+      // "creationDate":
       lastUpdateDate: 'lastUpdateDate',
       priorityId: 'priorityName',
-      //  "subTask": 
-      //  "remainingTime": 
+      //  "subTask":
+      //  "remainingTime":
       version: 'versionName',
       epic: 'epicName',
       label: 'labelName',
@@ -827,7 +827,7 @@ class SprintCommonStore {
     const myFilters = this.getMyFilters;
     if (myFilters.length === 0) {
       this.setIsExistFilter(false);
-    } 
+    }
     const filter = this.getFilterMap.get('userFilter');
     const filterAdvancedSearchArgs = _.pick(filter.advancedSearchArgs, ['issueTypeId', 'priorityId', 'statusId']);
     const filterAssigneeFilterIds = filter.assigneeFilterIds || [];
@@ -872,9 +872,9 @@ class SprintCommonStore {
       for (let i = 0; i < myFilters.length; i += 1) {
         if (myFilters[i].personalFilterSearchDTO) {
           const {
-            advancedSearchArgs, searchArgs, otherArgs, contents, 
+            advancedSearchArgs, searchArgs, otherArgs, contents,
           } = myFilters[i].personalFilterSearchDTO;
-            
+
           const advancedSearchArgsIsEqual = _.pull(Object.keys(advancedSearchArgs), 'reporterIds', 'assigneeIds').every(key => _.isEqual(advancedSearchArgs[key].sort(), filterAdvancedSearchArgs[key].map(item => Number(item)).sort()));
           const assigneeIdsIsEqual = _.isEqual(advancedSearchArgs.assigneeIds.sort(), filterAssigneeFilterIds.map(item => Number(item)).sort());
           const createStartDateIsEqual = !filterSearchArgs.createStartDate || moment(searchArgs.createStartDate).format('YYYY-MM-DD') === moment(filterSearchArgs.createStartDate).format('YYYY-MM-DD');
@@ -882,14 +882,14 @@ class SprintCommonStore {
           const searchArgsIsEqual = createStartDateIsEqual && createEndDateIsEqual && _.pull(Object.keys(searchArgs), 'createStartDate', 'createEndDate', 'assignee').every(key => (searchArgs[key] || '') === (filterSearchArgs[key] || ''));
           const otherArgsIsEqual = (otherArgs === null && Object.keys(filterOtherArgs).every(key => filterOtherArgs[key].length === 0)) || (Boolean(otherArgs) && Object.keys(_.pick(otherArgs, ['component', 'epic', 'version', 'sprint', 'label'])).every(key => _.isEqual(otherArgs[key].sort(), filterOtherArgs[key].map(item => Number(item)).sort())));
           const contentsIsEqual = (contents === null && filterContents.length === 0) || (Boolean(contents) && _.isEqual(contents.sort(), filterContents.sort()));
-            
+
           const itemIsEqual = advancedSearchArgsIsEqual && assigneeIdsIsEqual && searchArgsIsEqual && otherArgsIsEqual && contentsIsEqual;
-      
+
           if (itemIsEqual) {
             const { filterId, personalFilterSearchDTO } = myFilters[i];
             // const advSearchArgs = personalFilterSearchDTO.advancedSearchArgs;
             this.setSelectedFilterId(filterId);
-               
+
             this.setIsExistFilter(true);
             break;
           } else if (i === myFilters.length - 1 && !itemIsEqual) {
