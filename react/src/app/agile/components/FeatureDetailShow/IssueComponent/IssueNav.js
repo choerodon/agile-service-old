@@ -6,7 +6,7 @@ import { injectIntl } from 'react-intl';
 import _ from 'lodash';
 
 const navList = [
-  'detail', 'des', 'attachment', 'wiki',
+  'detail', 'des', 'attachment', 'doc',
   'sub_task', 'log', 'link_task', 'commit',
   'data_log', 'branch',
 ];
@@ -23,7 +23,7 @@ const navIcon = {
     name: '附件',
     icon: 'attach_file',
   },
-  wiki: {
+  doc: {
     name: '文档',
     icon: 'library_books',
   },
@@ -54,7 +54,7 @@ const navIcon = {
 };
 
 const noDisplay = {
-  feature: ['sub_task', 'wiki', 'branch', 'log', 'link_task'],
+  feature: ['sub_task', 'doc', 'branch', 'log', 'link_task'],
   issue_epic: ['sub_task', 'branch', 'log', 'link_task'],
 };
 let sign = true;

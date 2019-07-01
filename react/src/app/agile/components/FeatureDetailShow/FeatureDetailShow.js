@@ -89,9 +89,7 @@ const defaultProps = {
         });
       });
       axios.all([
-        // loadWikies(id, projectId),
         loadDatalogs(id, programId),
-        // loadLinkIssues(id, projectId),
       ])
         .then(axios.spread((dataLogs) => {
           store.initIssueAttribute([], [], dataLogs, [], []);

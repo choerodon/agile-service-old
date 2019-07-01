@@ -5,12 +5,12 @@ import {
   Table,
   message,
 } from 'choerodon-ui';
-import './Wiki.scss';
+import './Doc.scss';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
 
-class Wiki extends Component {
+class Doc extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -23,16 +23,16 @@ class Wiki extends Component {
   }
 
   componentDidMount() {
-    this.loadWiki();
+    this.loadDoc();
   }
 
-  loadWiki = async () => {
+  loadDoc = async () => {
     const menu = AppState.currentMenuType;
     const { id: proId } = menu;
     this.setState({
       loading: true,
     });
-    const newData = await axios.get(`/knowledge/v1/projects/${proId}/work_space/project_space`);
+    const newData = await axios.get(`/knowledge/v1/projects/${proId}/work_space`);
     if (newData && !newData.failed) {
       this.setState({
         data: newData,
@@ -69,7 +69,7 @@ class Wiki extends Component {
     });
   };
 
-  handleCreateWiki = () => {
+  handleCreateDoc = () => {
     const menu = AppState.currentMenuType;
     const { id: proId } = menu;
     const { selectedRows } = this.state;
@@ -90,7 +90,7 @@ class Wiki extends Component {
           });
         }
       });
-      axios.post(`/agile/v1/projects/${proId}/wiki_relation`, postData).then(() => {
+      axios.post(`/agile/v1/projects/${proId}/knowledge_relation`, postData).then(() => {
         this.setState({
           createLoading: false,
         });
@@ -130,10 +130,10 @@ class Wiki extends Component {
 
     return (
       <Sidebar
-        className="c7n-wikiDoc"
+        className="c7n-agile-doc"
         title="添加文档"
         visible={visible || false}
-        onOk={this.handleCreateWiki}
+        onOk={this.handleCreateDoc}
         onCancel={onCancel}
         okText="创建"
         cancelText="取消"
@@ -155,4 +155,4 @@ class Wiki extends Component {
     );
   }
 }
-export default Wiki;
+export default Doc;

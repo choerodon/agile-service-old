@@ -34,7 +34,7 @@ class EditIssueStore {
   @observable issueTypes = [];
 
   // issue attribute
-  @observable wiki = {};
+  @observable doc = {};
 
   @observable workLogs = [];
 
@@ -52,12 +52,12 @@ class EditIssueStore {
     return this.issueTypes;
   }
 
-  @action setWiki(data) {
-    this.wiki = data;
+  @action setDoc(data) {
+    this.doc = data;
   }
 
-  @computed get getWiki() {
-    return this.wiki;
+  @computed get getDoc() {
+    return this.doc;
   }
 
   @action setWorkLogs(data) {
@@ -92,8 +92,8 @@ class EditIssueStore {
     return this.branches;
   }
 
-  @action initIssueAttribute(wiki, workLogs, dataLogs, linkIssues, branches) {
-    this.wiki = wiki;
+  @action initIssueAttribute(doc, workLogs, dataLogs, linkIssues, branches) {
+    this.doc = doc;
     this.workLogs = workLogs;
     this.dataLogs = dataLogs;
     this.linkIssues = linkIssues || [];

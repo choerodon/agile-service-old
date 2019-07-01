@@ -6,7 +6,7 @@ const en_US = {
   "issue.detail": 'Detail',
   "issue.des": 'Description',
   "issue.attachment": 'Attachment',
-  "issue.wiki": 'Wiki Docs',
+  "issue.doc": 'Docs',
   "issue.commit": 'Commit',
   "issue.log": 'Work Log',
   "issue.data_log": 'Log',

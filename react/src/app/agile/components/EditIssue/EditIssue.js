@@ -8,7 +8,7 @@ import { throttle } from 'lodash';
 import './EditIssue.scss';
 import {
   loadBranchs, loadDatalogs, loadLinkIssues,
-  loadIssue, loadWorklogs, loadWikies, getFieldAndValue, loadIssueTypes,
+  loadIssue, loadWorklogs, loadDocs, getFieldAndValue, loadIssueTypes,
 } from '../../api/NewIssueApi';
 import RelateStory from '../RelateStory';
 import CopyIssue from '../CopyIssue';
@@ -97,14 +97,14 @@ class EditIssue extends Component {
         });
       });
       axios.all([
-        loadWikies(id),
+        loadDocs(id),
         loadWorklogs(id),
         loadDatalogs(id),
         loadLinkIssues(id),
         loadBranchs(id),
       ])
-        .then(axios.spread((wiki, workLogs, dataLogs, linkIssues, branches) => {
-          store.initIssueAttribute(wiki, workLogs, dataLogs, linkIssues, branches);
+        .then(axios.spread((doc, workLogs, dataLogs, linkIssues, branches) => {
+          store.initIssueAttribute(doc, workLogs, dataLogs, linkIssues, branches);
         }));
     });
   };
