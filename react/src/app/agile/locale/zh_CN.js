@@ -32,7 +32,7 @@ const zh_CN = {
   "issue.detail": '详情',
   "issue.des": '描述',
   "issue.attachment": '附件',
-  "issue.wiki": 'Wiki文档',
+  "issue.wiki": '知识文档',
   "issue.commit": '评论',
   "issue.log": '工作日志',
   "issue.data_log": '活动日志',
