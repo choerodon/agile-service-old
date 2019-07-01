@@ -77,6 +77,7 @@ public class WikiRelationServiceImpl implements WikiRelationService {
                 WikiRelationDTO wikiRelationDTO = new WikiRelationDTO();
                 BeanUtils.copyProperties(wikiRelation, wikiRelationDTO);
                 wikiRelationDTO.setWorkSpaceDTO(workSpaceMap.get(wikiRelationDTO.getSpaceId()));
+                result.add(wikiRelationDTO);
             }
         }
         jsonObject.put("wikiRelationList", result);
