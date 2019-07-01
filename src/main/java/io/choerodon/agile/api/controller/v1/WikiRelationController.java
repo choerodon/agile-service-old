@@ -1,7 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.WikiMenuDTO;
 import io.choerodon.agile.api.dto.WikiRelationDTO;
 import io.choerodon.agile.app.service.WikiRelationService;
 import io.choerodon.base.annotation.Permission;
