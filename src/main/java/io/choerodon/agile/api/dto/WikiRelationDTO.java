@@ -18,6 +18,8 @@ public class WikiRelationDTO {
 
     private Long spaceId;
 
+    private WorkSpaceDTO workSpaceDTO;
+
     public Long getId() {
         return id;
     }
@@ -64,5 +66,13 @@ public class WikiRelationDTO {
 
     public Long getSpaceId() {
         return spaceId;
+    }
+
+    public void setWorkSpaceDTO(WorkSpaceDTO workSpaceDTO) {
+        this.workSpaceDTO = workSpaceDTO;
+    }
+
+    public WorkSpaceDTO getWorkSpaceDTO() {
+        return workSpaceDTO;
     }
 }
