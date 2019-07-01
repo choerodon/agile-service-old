@@ -3,6 +3,7 @@ package io.choerodon.agile.api.controller.v1;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.*;
+import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
@@ -44,7 +45,7 @@ public class ProjectInvokeProgramController {
     private ArtService artService;
 
     @Autowired
-    private PiObjectiveService piObjectiveService;
+    private UserRepository userRepository;
 
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
@@ -171,6 +172,18 @@ public class ProjectInvokeProgramController {
         return Optional.ofNullable(piService.queryUnfinishedOfProgram(programId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.unfinishedPiDTOList.get"));
+    }
+
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation("项目层获取项目群信息")
+    @GetMapping(value = "/get_group_info")
+    public ResponseEntity<ProjectDTO> getGroupInfoByEnableProject(@ApiParam(value = "项目id", required = true)
+                                                                  @PathVariable(name = "project_id") Long projectId,
+                                                                  @ApiParam(value = "组织id", required = true)
+                                                                  @RequestParam Long organizationId) {
+        return Optional.ofNullable(userRepository.getGroupInfoByEnableProject(organizationId, projectId))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.groupInfo.get"));
     }
 
 }
