@@ -347,7 +347,7 @@ class BacklogHome extends Component {
               >
                 {'特性'}
               </p>
-              )}         
+              )} 
             </div>
             <Version
               store={BacklogStore}

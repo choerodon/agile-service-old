@@ -98,9 +98,12 @@ class Feature extends Component {
             <DragDropContext
               onDragEnd={(result) => {
                 const { destination, source } = result;
+                if (!destination || !source) {
+                  return;
+                }
                 const { index: destinationIndex } = destination;
                 const { index: sourceIndex } = source;
-                BacklogStore.moveEpic(sourceIndex, destinationIndex);
+                BacklogStore.moveFeature(sourceIndex, destinationIndex);
               }}
             >
               <Droppable droppableId="feature">
