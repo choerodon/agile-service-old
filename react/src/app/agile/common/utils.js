@@ -327,6 +327,7 @@ export function configTheme({
   list = [],
   textField = 'text',
   valueFiled = 'value',
+  primary = false,
 } = {}) {
   const renderPlaceHolder = (ommittedValues) => {
     const values = [];
@@ -339,7 +340,7 @@ export function configTheme({
     return values.join(', ');
   };
   return {
-    className: 'SelectTheme',
+    className: `SelectTheme ${primary ? 'primary' : ''}`,
     maxTagCount: 0,
     maxTagPlaceholder: renderPlaceHolder,
   };

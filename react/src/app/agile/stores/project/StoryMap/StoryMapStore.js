@@ -62,6 +62,12 @@ class StoryMapStore {
   @action clear() {
     this.storyMapData = {};
     this.storyData = {};
+    this.searchDTO = {
+      advancedSearchArgs: {
+        versionList: [],
+        statusList: [],
+      },
+    };
   }
 
   getStoryMap = () => {
@@ -102,6 +108,18 @@ class StoryMapStore {
   handleSideFilterChange = (field, values) => {
     this.sideSearchDTO.advancedSearchArgs[field] = values;
     this.loadIssueList();
+  }
+
+  clearSideFilter = () => {
+    this.sideSearchDTO = {
+      searchArgs: {
+        assigneeId: null,
+      },
+      advancedSearchArgs: {
+        versionList: [],
+        statusList: [],
+      },
+    };
   }
   
   @action setIssueList(issueList) {

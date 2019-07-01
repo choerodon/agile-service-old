@@ -7,6 +7,7 @@ import { observer } from 'mobx-react';
 import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 import FiltersProvider from '../../../../../../components/FiltersProvider';
 import Loading from '../../../../../../components/Loading';
+import { configTheme } from '../../../../../../common/utils';
 import IssueItem from './IssueItem';
 import './SideIssueList.scss';
 
@@ -22,6 +23,10 @@ class SideIssueList extends Component {
     StoryMapStore.loadIssueList();
   }
 
+  componentWillUnmount() {
+    StoryMapStore.clearSideFilter();
+  }
+  
 
   handleCollapseClick = () => {
     StoryMapStore.setIssueListCollapse(!StoryMapStore.issueListCollapse);
@@ -103,20 +108,28 @@ class SideIssueList extends Component {
             </div>
           </Popover>         */}
         </div>   
-        <div style={{ display: 'flex' }}>
-          <Select              
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{
+            fontWeight: 600, fontSize: '14px', marginRight: 20, marginLeft: 18, 
+          }}
+          >
+          搜索:
+          </div>    
+          <Select       
+            {...configTheme({ list: issueStatus, primary: true })} 
             allowClear
             mode="multiple"
-            style={{ width: 150 }}
+            style={{ width: 100 }}
             onChange={this.setFilter.bind(this, 'statusList')}
             placeholder="状态"
           >
             {issueStatus.map(({ text, value }) => <Option value={value}>{text}</Option>)}
           </Select>
           <Select             
+            {...configTheme({ list: versionList, primary: true })} 
             allowClear
             mode="multiple"
-            style={{ width: 150 }}
+            style={{ width: 100 }}
             onChange={this.setFilter.bind(this, 'versionList')}
             placeholder="版本"
           >

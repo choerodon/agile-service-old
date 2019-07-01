@@ -23,10 +23,12 @@ class Search extends Component {
         alignItems: 'center', 
       }}
       >
-        快速搜索        
+        <div style={{ fontWeight: 600, fontSize: '14px', marginRight: 20 }}>
+        搜索:
+        </div>                
         <div style={{ display: 'flex' }}>
           <Select
-            {...configTheme({ list: issueStatus })} 
+            {...configTheme({ list: issueStatus, primary: true })} 
             allowClear
             mode="multiple"
             style={{ width: 100 }}
@@ -36,7 +38,7 @@ class Search extends Component {
             {issueStatus.map(({ text, value }) => <Option value={value}>{text}</Option>)}
           </Select>
           <Select
-            {...configTheme({ list: versionList })} 
+            {...configTheme({ list: versionList, primary: true })} 
             allowClear
             mode="multiple"
             style={{ width: 100 }}
