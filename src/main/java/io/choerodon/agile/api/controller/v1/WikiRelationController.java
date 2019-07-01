@@ -63,15 +63,4 @@ public class WikiRelationController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("查询wiki menus列表")
-    @PostMapping("/menus")
-    public ResponseEntity<String> queryWikiMenus(@ApiParam(value = "项目id", required = true)
-                                                 @PathVariable(name = "project_id") Long projectId,
-                                                 @ApiParam(value = "wiki menu dto", required = true)
-                                                 @RequestBody WikiMenuDTO wikiMenuDTO) {
-        return Optional.ofNullable(wikiRelationService.queryWikiMenus(projectId, wikiMenuDTO))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.wikiMenus.get"));
-    }
 }

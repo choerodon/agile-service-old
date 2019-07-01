@@ -1,33 +1,29 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.OrganizationDTO;
-import io.choerodon.agile.api.dto.WikiMenuDTO;
 import io.choerodon.agile.api.dto.WikiRelationDTO;
+import io.choerodon.agile.api.dto.WorkSpaceDTO;
 import io.choerodon.agile.app.service.WikiRelationService;
 import io.choerodon.agile.domain.agile.entity.WikiRelationE;
 import io.choerodon.agile.infra.dataobject.WorkSpaceDO;
 import io.choerodon.agile.infra.feign.KnowledgebaseClient;
 import io.choerodon.agile.infra.repository.WikiRelationRepository;
-import io.choerodon.agile.infra.common.utils.HttpRequestUtil;
 import io.choerodon.agile.infra.dataobject.WikiRelationDO;
-import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.WikiRelationMapper;
 import io.choerodon.core.convertor.ConvertHelper;
-import io.choerodon.core.exception.CommonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/12/03.
@@ -39,8 +35,6 @@ public class WikiRelationServiceImpl implements WikiRelationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WikiRelationServiceImpl.class);
 
-    private static final String ENC = "utf-8";
-
     @Autowired
     private WikiRelationRepository wikiRelationRepository;
 
@@ -48,19 +42,7 @@ public class WikiRelationServiceImpl implements WikiRelationService {
     private WikiRelationMapper wikiRelationMapper;
 
     @Autowired
-    private HttpRequestUtil httpRequestUtil;
-
-    @Autowired
-    private UserFeignClient userFeignClient;
-
-    @Autowired
     private KnowledgebaseClient knowledgebaseClient;
-
-    @Value("${services.wiki.host}")
-    private String wikiHost;
-
-    @Value("${services.wiki.token}")
-    private String wikiToken;
 
     private Boolean checkRepeat(WikiRelationE wikiRelationE) {
         WikiRelationDO wikiRelationDO = new WikiRelationDO();
@@ -87,8 +69,17 @@ public class WikiRelationServiceImpl implements WikiRelationService {
         WikiRelationDO wikiRelationDO = new WikiRelationDO();
         wikiRelationDO.setIssueId(issueId);
         List<WikiRelationDO> wikiRelationDOList = wikiRelationMapper.select(wikiRelationDO);
-        jsonObject.put("wikiHost", wikiHost);
-        jsonObject.put("wikiRelationList", ConvertHelper.convertList(wikiRelationDOList, WikiRelationDTO.class));
+        List<WikiRelationDTO> result = new ArrayList<>();
+        if (wikiRelationDOList != null && !wikiRelationDOList.isEmpty()) {
+            List<Long> spaceIds = wikiRelationDOList.stream().map(WikiRelationDO::getSpaceId).collect(Collectors.toList());
+            Map<Long, WorkSpaceDTO> workSpaceMap = knowledgebaseClient.querySpaceByIds(projectId, spaceIds).getBody().stream().collect(Collectors.toMap(WorkSpaceDTO::getId, Function.identity()));
+            for (WikiRelationDO wikiRelation : wikiRelationDOList) {
+                WikiRelationDTO wikiRelationDTO = new WikiRelationDTO();
+                BeanUtils.copyProperties(wikiRelation, wikiRelationDTO);
+                wikiRelationDTO.setWorkSpaceDTO(workSpaceMap.get(wikiRelationDTO.getSpaceId()));
+            }
+        }
+        jsonObject.put("wikiRelationList", result);
         return jsonObject;
     }
 
@@ -98,40 +89,6 @@ public class WikiRelationServiceImpl implements WikiRelationService {
         wikiRelationE.setProjectId(projectId);
         wikiRelationE.setId(id);
         wikiRelationRepository.delete(wikiRelationE);
-    }
-
-    @Override
-    public String queryWikiMenus(Long projectId, WikiMenuDTO wikiMenuDTO) {
-        String url = wikiHost + "/bin/get";
-        String param = "outputSyntax=plain&sheet=XWiki.DocumentTree&showAttachments=false&showTranslations=false&data=children&limit=999&id=";
-        if (wikiMenuDTO.getMenuId() == null) {
-            ResponseEntity<OrganizationDTO> organizationDTOResponseEntity = userFeignClient.query(wikiMenuDTO.getOrganizationId());
-            if (organizationDTOResponseEntity == null) {
-                throw new CommonException("error.organization.get");
-            }
-            OrganizationDTO organizationDTO = organizationDTOResponseEntity.getBody();
-            String organizationName = null;
-            String projectName = null;
-            try {
-                organizationName = URLEncoder.encode(organizationDTO.getName(), ENC);
-                projectName = URLEncoder.encode(wikiMenuDTO.getProjectName(), ENC);
-            } catch (UnsupportedEncodingException u) {
-                throw new CommonException(u.getMessage());
-            }
-            param = param + "document:xwiki:O-" + organizationName + ".P-" + projectName + ".WebHome";
-        } else {
-            String menuIdStr = null;
-            try {
-                menuIdStr = URLEncoder.encode(wikiMenuDTO.getMenuId(), ENC);
-            } catch (UnsupportedEncodingException n) {
-                throw new CommonException(n.getMessage());
-            }
-            param = param + menuIdStr;
-        }
-        Map<String, String> otherHeaders = new HashMap<>();
-        otherHeaders.put("username", wikiMenuDTO.getUsername());
-        otherHeaders.put("wikitoken", wikiToken);
-        return httpRequestUtil.sendGet(url, param, otherHeaders);
     }
 
     @Override

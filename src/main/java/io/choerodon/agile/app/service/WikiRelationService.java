@@ -18,7 +18,5 @@ public interface WikiRelationService {
 
     void deleteById(Long projectId, Long id);
 
-    String queryWikiMenus(Long projectId, WikiMenuDTO wikiMenuDTO);
-
     void moveWikiRelation();
 }
