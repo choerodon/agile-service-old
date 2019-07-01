@@ -23,8 +23,8 @@
       transform: scale(0.999);
     }
 
-    td:first-child {
-      // border-left: solid 1px #D8D8D8;
+    td:last-child {
+      border-right: solid 1px #D8D8D8;
     }
     td {
       // border-right: solid 1px #D8D8D8;

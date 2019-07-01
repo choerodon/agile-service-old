@@ -233,7 +233,7 @@ class EpicCell extends Component {
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Column style={{ minHeight: 'unset' }}>
                   {adding
-                    ? <CreateEpic onCreate={this.handleCreateEpic} />
+                    ? <CreateEpic index={index} onCreate={this.handleCreateEpic} />
                     : <EpicCard epic={epic} subIssueNum={subIssueNum} index={index} onMouseDown={this.handleMouseDown} />}
                 </Column>
                 {issueId && !StoryMapStore.isFullScreen ? (!adding && !isInProgram && <AddCard style={{ height: 64 }} onClick={this.handleAddEpicClick} />) : null}

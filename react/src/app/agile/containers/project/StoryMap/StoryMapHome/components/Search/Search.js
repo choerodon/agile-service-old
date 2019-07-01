@@ -29,7 +29,7 @@ class Search extends Component {
             {...configTheme({ list: issueStatus })} 
             allowClear
             mode="multiple"
-            style={{ width: 150 }}
+            style={{ width: 100 }}
             onChange={this.setFilter.bind(this, 'statusList')}
             placeholder="状态"
           >
@@ -39,7 +39,7 @@ class Search extends Component {
             {...configTheme({ list: versionList })} 
             allowClear
             mode="multiple"
-            style={{ width: 150 }}
+            style={{ width: 100 }}
             onChange={this.setFilter.bind(this, 'versionList')}
             placeholder="版本"
           >
