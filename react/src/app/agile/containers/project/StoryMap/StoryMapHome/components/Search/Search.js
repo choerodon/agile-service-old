@@ -23,7 +23,7 @@ class Search extends Component {
         alignItems: 'center', 
       }}
       >
-        Search        
+        快速搜索        
         <div style={{ display: 'flex' }}>
           <Select
             {...configTheme({ list: issueStatus })} 

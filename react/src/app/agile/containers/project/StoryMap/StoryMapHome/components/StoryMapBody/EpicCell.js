@@ -142,7 +142,7 @@ class EpicCell extends Component {
     }
   }
 
-  handleMouseDown = (e) => {
+  handleDragMouseDown = (e) => {
     this.DragAutoScroll.prepare(e);
   }
 
@@ -234,7 +234,7 @@ class EpicCell extends Component {
                 <Column style={{ minHeight: 'unset' }}>
                   {adding
                     ? <CreateEpic index={index} onCreate={this.handleCreateEpic} />
-                    : <EpicCard epic={epic} subIssueNum={subIssueNum} index={index} onMouseDown={this.handleMouseDown} />}
+                    : <EpicCard epic={epic} subIssueNum={subIssueNum} index={index} onMouseDown={this.handleDragMouseDown} />}
                 </Column>
                 {issueId && !StoryMapStore.isFullScreen ? (!adding && !isInProgram && <AddCard style={{ height: 64 }} onClick={this.handleAddEpicClick} />) : null}
                 {resizing && (
@@ -271,7 +271,7 @@ class EpicCell extends Component {
             </Fragment>
           )}
 
-        {collapse && <EpicDragCollapse epic={epic} index={index} subIssueNum={subIssueNum} onMouseDown={this.handleMouseDown} />}
+        {collapse && <EpicDragCollapse epic={epic} index={index} subIssueNum={subIssueNum} onMouseDown={this.handleDragMouseDown} />}
       </Cell>
     );
   }
