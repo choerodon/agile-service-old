@@ -40,7 +40,7 @@ class DataLogs extends Component {
           datalogs.map((datalog, i) => (
             <DataLog
               i={i}
-              key={datalog.logId}
+              // key={datalog.logId}
               datalog={datalog}
               typeCode={typeCode}
               origin={datalogs}
