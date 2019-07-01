@@ -181,9 +181,8 @@ public class ProjectInvokeProgramController {
                                                                   @PathVariable(name = "project_id") Long projectId,
                                                                   @ApiParam(value = "组织id", required = true)
                                                                   @RequestParam Long organizationId) {
-        return Optional.ofNullable(userRepository.getGroupInfoByEnableProject(organizationId, projectId))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.groupInfo.get"));
+        userRepository.getGroupInfoByEnableProject(organizationId, projectId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
