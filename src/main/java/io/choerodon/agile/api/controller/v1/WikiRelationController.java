@@ -22,25 +22,25 @@ import java.util.Optional;
  * Email: fuqianghuang01@gmail.com
  */
 @RestController
-@RequestMapping(value = "/v1/projects/{project_id}/wiki_relation")
+@RequestMapping(value = "/v1/projects/{project_id}/knowledge_relation")
 public class WikiRelationController {
 
     @Autowired
     private WikiRelationService wikiRelationService;
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("添加wiki relation")
+    @ApiOperation("添加knowledge relation")
     @PostMapping
     public ResponseEntity create(@ApiParam(value = "项目id", required = true)
                                  @PathVariable(name = "project_id") Long projectId,
-                                 @ApiParam(value = "wiki relation dto list", required = true)
+                                 @ApiParam(value = "knowledge relation dto list", required = true)
                                  @RequestBody List<WikiRelationDTO> wikiRelationDTOList) {
         wikiRelationService.create(projectId, wikiRelationDTOList);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("根据issue id查询wiki relation")
+    @ApiOperation("根据issue id查询knowledge relation")
     @GetMapping("/issue/{issueId}")
     public ResponseEntity<JSONObject> queryByIssueId(@ApiParam(value = "项目id", required = true)
                                                      @PathVariable(name = "project_id") Long projectId,
@@ -48,15 +48,15 @@ public class WikiRelationController {
                                                      @PathVariable Long issueId) {
         return Optional.ofNullable(wikiRelationService.queryByIssueId(projectId, issueId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.wikiRelationList.get"));
+                .orElseThrow(() -> new CommonException("error.knowledgeRelationList.get"));
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation("根据id删除wiki relation")
+    @ApiOperation("根据id删除knowledge relation")
     @DeleteMapping("/{id}")
     public ResponseEntity deleteById(@ApiParam(value = "项目id", required = true)
                                      @PathVariable(name = "project_id") Long projectId,
-                                     @ApiParam(value = "wiki id", required = true)
+                                     @ApiParam(value = "relation id", required = true)
                                      @PathVariable Long id) {
         wikiRelationService.deleteById(projectId, id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

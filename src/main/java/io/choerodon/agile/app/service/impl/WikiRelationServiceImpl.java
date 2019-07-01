@@ -80,7 +80,7 @@ public class WikiRelationServiceImpl implements WikiRelationService {
                 result.add(wikiRelationDTO);
             }
         }
-        jsonObject.put("wikiRelationList", result);
+        jsonObject.put("knowledgeRelationList", result);
         return jsonObject;
     }
 
