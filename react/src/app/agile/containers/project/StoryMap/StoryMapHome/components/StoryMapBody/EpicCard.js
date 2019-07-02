@@ -25,14 +25,19 @@ class EpicCard extends Component {
   }
 
   saveRef = (ref) => {
-    const { connectDragSource } = this.props;
+    const { connectDragSource, saveRef } = this.props;
     connectDragSource(ref);
+    if (saveRef) {
+      saveRef(ref);
+    }
     this.container = ref;
   }
 
 
   render() {
-    const { epic, subIssueNum, onMouseDown } = this.props;
+    const {
+      epic, subIssueNum, onMouseDown,  
+    } = this.props;
     const {
       issueId, epicName, issueNum, programId, 
     } = epic;
@@ -41,7 +46,9 @@ class EpicCard extends Component {
       <Card
         className={`c7nagile-StoryMap-EpicCard minimapCard ${issueId ? '' : 'none'} ${selectedIssueMap.has(issueId) ? 'selected' : ''}`}
         style={{ display: 'flex' }}
-        onClick={this.handleClick}
+        onClick={this.handleClick}    
+        saveRef={this.saveRef}    
+        onMouseDown={onMouseDown}
       >
         <div className="summary">
           <Tooltip title={`${epicName || '无史诗'}`} getPopupContainer={() => document.getElementsByClassName('minimap-container-scroll')[0]}>            

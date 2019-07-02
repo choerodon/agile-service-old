@@ -1,24 +1,33 @@
 import React, { Component, Fragment } from 'react';
-import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
-import { DropTarget, DragPreviewImage } from 'react-dnd';
-import { getEmptyImage } from 'react-dnd-html5-backend';
 import EpicDrag from './EpicDrag';
 import EpicCard from './EpicCard';
 import dom2canvas from './dom2canvas';
-// import img from '../../../../../../assets/noPI.svg';
 
+const DragPreviewImage = React.memo(({ connect, src }) => {
+  const img = new Image();
+  img.src = src;
+  img.onload = function () { return connect(img); };
+  return null;
+});
 
 class EpicDragCollapse extends Component {
-  state={
-    src: '',
+  constructor() {
+    super();
+    this.CardPreview = React.createRef();
+    this.state = {
+      src: '',
+    };
   }
+  
 
   componentDidMount() {
     // eslint-disable-next-line react/no-find-dom-node
-    const src = dom2canvas(findDOMNode(this.CardPreview));
-    this.setState({
-      src,
+    setTimeout(() => {     
+      const src = dom2canvas(this.CardPreview.current);
+      this.setState({
+        src,
+      });
     });
   }
   
@@ -39,9 +48,10 @@ class EpicDragCollapse extends Component {
         onMouseDown={onMouseDown}
       >
         <DragPreviewImage connect={connectDragPreview} src={src} />
+        {/* {connectDragPreview(<img src={src} />)} */}
         {/* 隐藏元素,用来生成preview */}
-        <div style={{ position: 'fixed', top: -9999, left: -9999 }}>
-          <EpicCard ref={(CardPreview) => { this.CardPreview = CardPreview; }} {...this.props} />
+        <div style={{ position: 'fixed', top: -9999, left: -9999 }}>  
+          <EpicCard saveRef={this.CardPreview} {...this.props} />
         </div>
       </div>,     
     );
