@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
-import { Link } from 'react-router-dom';
 import { Tooltip } from 'choerodon-ui';
-import { programIssueLink, issueLink } from '../../../../../../../common/utils';
 import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
 import Card from '../Card';
 import './FeatureCard.scss';
-
 
 @observer
 class FeatureCard extends Component {
@@ -25,12 +22,9 @@ class FeatureCard extends Component {
     } = feature;
     const { selectedIssueMap } = StoryMapStore;
     return (
-      <Card
-        className={`c7nagile-StoryMap-FeatureCard minimapCard ${featureType || 'none'} ${selectedIssueMap.has(issueId) ? 'selected' : ''}`}      
-        onClick={this.handleClick}
-      >
+      <Card className={`c7nagile-StoryMap-FeatureCard minimapCard ${featureType || 'none'} ${selectedIssueMap.has(issueId) ? 'selected' : ''}`} onClick={this.handleClick}>
         <div className="summary">
-          <Tooltip title={`${summary || '无特性'}`} getPopupContainer={trigger => trigger.parentNode}>            
+          <Tooltip title={`${summary || '无特性'}`} getPopupContainer={trigger => trigger.parentNode}>
             {summary || '无特性'}
           </Tooltip>
         </div>        

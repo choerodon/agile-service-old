@@ -76,8 +76,9 @@
   &-content {
     overflow-y: auto;
     overflow-x: hidden;
-    height: calc(100% - 75px);
+    height: calc(100% - 108px);
     padding: 16px;
+    padding-top: 0;
     position: relative;
 
     &-pi {

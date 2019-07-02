@@ -1,16 +1,9 @@
 import React, { Component } from 'react';
-import { stores, axios, store } from '@choerodon/boot';
-import { observer, inject } from 'mobx-react';
-import { Droppable, Draggable, DragDropContext } from 'react-beautiful-dnd';
-import {
-  Dropdown, Menu, Input, Icon, message,
-} from 'choerodon-ui';
-import _ from 'lodash';
+import { observer } from 'mobx-react';
+import { Draggable } from 'react-beautiful-dnd';
 import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
 import DraggableEpic from './DraggableEpic';
 
-const { AppState } = stores;
-// @inject('AppState')
 @observer
 class EpicItem extends Component {
   /**

@@ -3,13 +3,17 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'choerodon-ui';
 import { observer } from 'mobx-react';
+import { DropTarget } from 'react-dnd';
+import { getEmptyImage } from 'react-dnd-html5-backend';
 import Column from './Column';
 import EpicCard from './EpicCard';
 import Cell from './Cell';
 import AddCard from './AddCard';
 import CreateEpic from './CreateEpic';
-import { ColumnWidth } from '../../Constants';
+import EpicDrag from './EpicDrag';
+import { ColumnWidth, CellPadding } from '../../Constants';
 import AutoScroll from '../../../../../../common/AutoScroll';
+import EpicDragCollapse from './EpicDragCollapse';
 import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 import IsInProgramStore from '../../../../../../stores/common/program/IsInProgramStore';
 
@@ -25,16 +29,26 @@ class EpicCell extends Component {
       onMouseMove: this.handleMouseMove,
       onMouseUp: this.handleMouseUp,
     });
+    this.DragAutoScroll = new AutoScroll({
+      scrollElement: document.getElementsByClassName('minimap-container-scroll')[0],
+      pos: {
+        left: 200,
+        top: 0,
+        bottom: 150,
+        right: 150,
+      },
+      type: 'drag',
+    });
   }
 
   handleCollapse = () => {
-    const { epicData, collapse } = this.props;
-    StoryMapStore.collapse(epicData.issueId);
+    const { epic, collapse } = this.props;
+    StoryMapStore.collapse(epic.issueId);
   }
 
   handleAddEpicClick = () => {
-    const { epicData } = this.props;
-    StoryMapStore.addEpic(epicData);
+    const { epic } = this.props;
+    StoryMapStore.addEpic(epic);
   }
 
   handleCreateEpic = (newEpic) => {
@@ -48,7 +62,7 @@ class EpicCell extends Component {
    * @parameter multiple 变几个 => 1
    */
   handleItemResize = (mode, multiple) => {
-    const { epicData } = this.props;
+    const { epic } = this.props;
     let width = this.initWidth;
     switch (mode) {
       case 'right': {
@@ -59,7 +73,7 @@ class EpicCell extends Component {
     }
     // 最小为一
     if (width > 0) {
-      StoryMapStore.setFeatureWidth({ epicId: epicData.issueId, featureId: 'none', width });
+      StoryMapStore.setFeatureWidth({ epicId: epic.issueId, featureId: 'none', width });
     }
   }
 
@@ -70,7 +84,7 @@ class EpicCell extends Component {
     const { otherData: { feature: { none: { width } } } } = this.props;
     this.initWidth = width;
     this.initScrollPosition = {
-      x: e.clientX,     
+      x: e.clientX,
     };
     this.setState({
       resizing: true,
@@ -80,7 +94,7 @@ class EpicCell extends Component {
   handleMouseMove = (e, { left: scrollPos }) => {
     this.fireResize(e, scrollPos);
   }
-  
+
   // 触发item的宽度变化
   fireResize = ({ clientX }, scrollPos) => {
     const { isLast } = this.props;
@@ -111,25 +125,31 @@ class EpicCell extends Component {
     this.setState({
       resizing: false,
     });
-    const { epicData, otherData: { feature: { none: { width } } } } = this.props;
+    const { epic, otherData: { feature: { none: { width } } } } = this.props;
 
     // 只在数据变化时才请求
-    if (this.initWidth !== width) {    
-      const { issueId } = epicData;
+    if (this.initWidth !== width) {
+      const { issueId } = epic;
       const type = 'epic';
       StoryMapStore.changeWidth({
-        width,       
+        width,
         issueId,
         type,
       }, {
-        epicId: issueId,     
+        epicId: issueId,
         initWidth: this.initWidth,
-      });      
+      });
     }
   }
 
+  handleDragMouseDown = (e) => {
+    this.DragAutoScroll.prepare(e);
+  }
+
   render() {
-    const { epicData, otherData } = this.props;
+    const {
+      epic, otherData, lastCollapse, index, connectDropTarget, isOver,
+    } = this.props;
     const { resizing } = this.state;
     const { collapse, storys, feature } = otherData || {};
     const { isInProgram } = IsInProgramStore;
@@ -140,55 +160,83 @@ class EpicCell extends Component {
       // summary,
       // typeCode,
       adding,
-    } = epicData;
+    } = epic;
     let subIssueNum = 0;
     if (storys && feature) {
       subIssueNum = Math.max(storys.length + Object.keys(feature).length - 1, 0);// 减去none
     }
+
     return (
-      <Cell style={{ paddingLeft: 0, position: 'relative', ...collapse ? { borderBottom: 'none' } : {} }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          {!adding && (
+      <Cell
+        saveRef={connectDropTarget}
+        epicIndex={index}
+        lastCollapse={lastCollapse}
+        collapse={collapse}
+        rowSpan={collapse ? '0' : '1'}
+        style={{
+          padding: CellPadding,
+          position: 'sticky',
+          top: 0,
+          zIndex: 6,
+          background: isOver ? 'rgb(240,240,240)' : 'white',
+          ...collapse ? {
+            borderLeft: lastCollapse ? 'none' : 'solid 1px #D8D8D8',
+            borderRight: 'solid 1px #D8D8D8',
+            boxShadow: 'rgb(216, 216, 216) 0px -1px 0px inset',
+          } : {},
+        }}
+      >
+
+        {!adding && (
+          <span
+            style={{
+              cursor: 'pointer',
+              ...collapse ? {
+                position: 'sticky',
+                marginLeft: -50,   
+                top: 28,
+                zIndex: 10,
+              } : {
+                position: 'absolute',
+                left: 4,
+                top: 28,
+              },
+            }}          
+          >
+            <Icon              
+              type={collapse ? 'navigate_next' : 'navigate_before'}
+              onClick={this.handleCollapse}
+            />
+          </span>
+          
+        )}
+        {collapse && <div style={{ width: 40 }} />}
+        {collapse
+          ? (
             <Fragment>
-              <div style={{
-                width: 20,
-                height: 70,
-                display: 'flex',
-                alignItems: 'center',
-                ...collapse ? {
-                  marginRight: 25,
-                  // alignItems: 'flex-start', 
-                  // height: 150,
-                  // marginTop: 16,
-                } : {},
-              }}
-              >
-                <Icon type={collapse ? 'navigate_next' : 'navigate_before'} onClick={this.handleCollapse} />
-              </div>
-            </Fragment>
-          )}    
-          {collapse
-            ? (
               <div style={{
                 width: 26,
                 overflow: 'hidden',
                 wordBreak: 'break-all',
                 whiteSpace: 'pre-wrap',
-                position: 'absolute',
+                position: 'sticky',
                 top: 20,
-                marginLeft: 20,
+                marginLeft: 10,
+                ...collapse ? { marginTop: -10 } : {},
               }}
               >
-                {`${epicData.epicName || '无史诗'} (${subIssueNum})`}
+                {`${epic.epicName || '无史诗'} (${subIssueNum})`}
               </div>
-            ) : (
-              <Fragment>
+            </Fragment>
+          ) : (
+            <Fragment>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Column style={{ minHeight: 'unset' }}>
                   {adding
-                    ? <CreateEpic onCreate={this.handleCreateEpic} />
-                    : <EpicCard epic={epicData} subIssueNum={subIssueNum} />}
+                    ? <CreateEpic index={index} onCreate={this.handleCreateEpic} />
+                    : <EpicCard epic={epic} subIssueNum={subIssueNum} index={index} onMouseDown={this.handleDragMouseDown} />}
                 </Column>
-                {issueId ? (!adding && !isInProgram && <AddCard style={{ height: 64 }} onClick={this.handleAddEpicClick} />) : null}
+                {issueId && !StoryMapStore.isFullScreen ? (!adding && !isInProgram && <AddCard style={{ height: 64 }} onClick={this.handleAddEpicClick} />) : null}
                 {resizing && (
                 <div style={{
                   position: 'fixed',
@@ -202,8 +250,8 @@ class EpicCell extends Component {
                 />
                 )}
                 {!isInProgram && issueId ? (
-                  <div   
-                    className="c7nagile-StoryMap-FeatureColumn-Resize"       
+                  <div
+                    className="c7nagile-StoryMap-FeatureColumn-Resize"
                     style={{
                       top: 0,
                       height: '100%',
@@ -219,9 +267,11 @@ class EpicCell extends Component {
                     <div className={`c7nagile-StoryMap-FeatureColumn-Resize-highlight ${resizing ? 'active' : ''}`} />
                   </div>
                 ) : null}
-              </Fragment>
-            )}          
-        </div>
+              </div>              
+            </Fragment>
+          )}
+
+        {collapse && <EpicDragCollapse epic={epic} index={index} subIssueNum={subIssueNum} onMouseDown={this.handleDragMouseDown} />}
       </Cell>
     );
   }
@@ -231,4 +281,14 @@ EpicCell.propTypes = {
 
 };
 
-export default EpicCell;
+export default DropTarget(
+  'epic',
+  {
+    drop: props => ({ epic: props.epic, index: props.index }),
+  },
+  (connect, monitor) => ({
+    connectDropTarget: connect.dropTarget(),
+    isOver: monitor.isOver(),
+    // canDrop: monitor.canDrop(), //去掉可以优化性能
+  }),
+)(EpicCell);

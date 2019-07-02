@@ -5,8 +5,8 @@ import { getProjectId, getOrganizationId } from '../common/utils';
 /**
  * @returns
  */
-export function getStoryMap() {
-  return axios.get(`/agile/v1/projects/${getProjectId()}/story_map/main?organizationId=${getOrganizationId()}`);
+export function getStoryMap(searchDTO) {
+  return axios.post(`/agile/v1/projects/${getProjectId()}/story_map/main?organizationId=${getOrganizationId()}`, searchDTO);
 }
 /** {
   //问题id列表，移动到版本，配合versionId使用
@@ -57,4 +57,16 @@ export function createWidth(storyMapWidthDTO) {
 }
 export function changeWidth(storyMapWidthDTO) {
   return axios.put(`/agile/v1/projects/${getProjectId()}/story_map_width/?organizationId=${getOrganizationId()}`, storyMapWidthDTO);
+}
+// {
+//   "projectId": 28,
+//   "type": "feature",
+//   "before": false,
+//   "after": true,
+//   "referenceIssueId": 65768,
+//   "issueId": 65771,
+//   "objectVersionNumber": null
+//  }
+export function sort(sortDTO) {
+  return axios.post(`/agile/v1/projects/${getProjectId()}/rank`, sortDTO);
 }

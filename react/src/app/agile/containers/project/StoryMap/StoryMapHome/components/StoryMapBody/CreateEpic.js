@@ -20,9 +20,10 @@ class CreateEpic extends Component {
     // console.log(e.target.value);
     const { value } = this.state;
     if (value !== '') {
-      const { onCreate } = this.props;
+      const { onCreate, index } = this.props;
       const epicType = StoryMapStore.getEpicType;
       const defaultPriority = StoryMapStore.getDefaultPriority;
+      const preEpic = StoryMapStore.getEpicList[index - 1];
       const req = {
         projectId: getProjectId(),
         epicName: value,
@@ -31,6 +32,14 @@ class CreateEpic extends Component {
         issueTypeId: epicType.id,
         priorityCode: `priority-${defaultPriority.id}`,
         priorityId: defaultPriority.id,
+        rankDTO: {
+          projectId: getProjectId(),
+          // objectVersionNumber: source.epicRankObjectVersionNumber, // 乐观锁     
+          // issueId: source.issueId,
+          type: 'epic',
+          before: false, // 是否拖动到第一个  
+          referenceIssueId: preEpic ? preEpic.issueId : 0,
+        },
       };
       createIssue(req).then((res) => {
         if (res.failed) {

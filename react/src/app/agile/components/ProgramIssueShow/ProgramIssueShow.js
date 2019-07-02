@@ -9,6 +9,7 @@ import '../EditIssue/EditIssue.scss';
 import {
   loadDatalogs, loadIssue, getFieldAndValue,
 } from '../../api/QueryProgramApi';
+// import { loadIssueTypes } from '../../api/NewIssueApi';
 import CopyIssue from '../CopyIssue';
 import IssueSidebar from './IssueComponent/IssueSidebar';
 import IssueHeader from './IssueComponent/IssueHeader';
@@ -54,10 +55,12 @@ const defaultProps = {
         projectId: AppState.currentMenuType.id,
         resourceType: 'project',
       }]),
+      // loadIssueTypes('program'),
     ])
       .then(axios.spread((users, permission) => {
         loginUserId = users.id;
         hasPermission = permission[0].approve || permission[1].approve;
+        // store.setIssueTypes(issueTypes);
       }));
     this.setQuery();
   }
@@ -106,13 +109,13 @@ const defaultProps = {
     this.loadIssueDetail();
   };
 
-  handleResizeEnd=(size) => {
+  handleResizeEnd = (size) => {
     const { width } = size;
     localStorage.setItem('agile.EditIssue.width', `${width}px`);
   }
 
-  setQuery=(width = this.container.current.clientWidth) => {
-    if (width <= 600) {      
+  setQuery = (width = this.container.current.clientWidth) => {
+    if (width <= 600) {
       this.container.current.setAttribute('max-width', '600px');
     } else {
       this.container.current.removeAttribute('max-width');
@@ -171,25 +174,25 @@ const defaultProps = {
           <div className="choerodon-modal-editIssue" style={style} ref={this.container}>
             <div className="choerodon-modal-editIssue-divider" />
             {
-          issueLoading ? (
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-                background: 'rgba(255, 255, 255, 0.65)',
-                zIndex: 9999,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Spin />
-            </div>
-          ) : null
-        }
+              issueLoading ? (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    background: 'rgba(255, 255, 255, 0.65)',
+                    zIndex: 9999,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Spin />
+                </div>
+              ) : null
+            }
             <IssueSidebar
               disabled={disabled}
               store={store}
@@ -219,20 +222,20 @@ const defaultProps = {
               />
             </div>
             {
-          copyIssueShow ? (
-            <CopyIssue
-              issueId={issueId}
-              issueNum={issueNum}
-              issue={issue}
-              issueLink={linkIssues}
-              issueSummary={summary}
-              visible={copyIssueShow}
-              onCancel={() => VisibleStore.setCopyIssueShow(false)}
-              onOk={this.handleCopyIssue.bind(this)}
-              applyType="program"
-            />
-          ) : null
-        }
+              copyIssueShow ? (
+                <CopyIssue
+                  issueId={issueId}
+                  issueNum={issueNum}
+                  issue={issue}
+                  issueLink={linkIssues}
+                  issueSummary={summary}
+                  visible={copyIssueShow}
+                  onCancel={() => VisibleStore.setCopyIssueShow(false)}
+                  onOk={this.handleCopyIssue.bind(this)}
+                  applyType="program"
+                />
+              ) : null
+            }
           </div>
         </ResizeAble>
       </div>

@@ -61,7 +61,7 @@ class FeatureItem extends Component {
             this.handleClickFeature(item.issueId);
           }}
         >
-          <Draggable isDragDisabled draggableId={`epicItem-${index}`} key={item.issueId} index={index}>
+          <Draggable draggableId={item.issueId} key={item.issueId} index={index}>
             {(draggableProvided, draggableSnapshot) => (
               <DraggableFeature
                 item={item}

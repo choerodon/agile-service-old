@@ -1,6 +1,7 @@
 .c7nagile-StoryMap {
   &-minimap {
     border-bottom: solid 1px #D8D8D8;
+    height: calc(100% - 50px);
 
     .minimap {
       bottom: 0;

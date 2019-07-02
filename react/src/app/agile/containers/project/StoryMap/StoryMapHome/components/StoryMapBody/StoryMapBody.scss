@@ -10,7 +10,7 @@
     // border-collapse: separate;
     /* the default option */
     border-spacing: 0;
-
+    overflow: auto;
     /* remove border gaps */
     // border: 1px solid #D8D8D8;   
     th,
@@ -19,16 +19,16 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       // background: rgb(245, 245, 245);
-      background-clip: padding-box;
+      background-clip: padding-box !important;
+      transform: scale(0.999);
     }
 
-    td:first-child {
-      border-left: solid 1px #D8D8D8;
-    }
-
-    td {
+    td:last-child {
       border-right: solid 1px #D8D8D8;
-      border-bottom: solid 1px #D8D8D8;
+    }
+    td {
+      // border-right: solid 1px #D8D8D8;
+      // border-bottom: solid 1px #D8D8D8;
       // border: solid 1px #D8D8D8;
       vertical-align: top;
       position: relative;

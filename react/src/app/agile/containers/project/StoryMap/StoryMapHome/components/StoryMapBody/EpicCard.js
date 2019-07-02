@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import { observer } from 'mobx-react';
 import { Tooltip } from 'choerodon-ui';
-import { programIssueLink, issueLink } from '../../../../../../common/utils';
+import { observer } from 'mobx-react';
+import EpicDrag from './EpicDrag';
 import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 import Card from './Card';
 import './EpicCard.scss';
-
 
 @observer
 class EpicCard extends Component {
@@ -18,8 +16,23 @@ class EpicCard extends Component {
     }
   }
 
+  setZIndex = () => {
+    this.container.style.zIndex = 9999;
+  }
+
+  resetZIndex = () => {
+    this.container.style.zIndex = 'unset';
+  }
+
+  saveRef = (ref) => {
+    const { connectDragSource } = this.props;
+    connectDragSource(ref);
+    this.container = ref;
+  }
+
+
   render() {
-    const { epic, subIssueNum } = this.props;
+    const { epic, subIssueNum, onMouseDown } = this.props;
     const {
       issueId, epicName, issueNum, programId, 
     } = epic;
@@ -45,4 +58,4 @@ EpicCard.propTypes = {
 
 };
 
-export default EpicCard;
+export default EpicDrag(EpicCard);

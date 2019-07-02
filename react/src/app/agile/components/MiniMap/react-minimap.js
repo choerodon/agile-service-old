@@ -85,12 +85,15 @@ export class Minimap extends React.Component {
     const { childComponent, keepAspectRatio, showHeight } = this.props;
     const ChildComponent = childComponent;
     const {
-      scrollWidth, scrollHeight, scrollTop, scrollLeft,
+      scrollWidth, scrollHeight, scrollLeft,
     } = this.source;
+    let scrollTop = this.source.scrollTop;
     const sourceRect = this.source.getBoundingClientRect();
 
-    let { width, height } = this.props;
-
+    let { width, height, disabledVertical } = this.props;
+    // if (disabledVertical) {
+    //   scrollTop = 0
+    // }
     let ratioX = width / scrollWidth;
     let ratioY = height / (showHeight || scrollHeight);
 
@@ -113,11 +116,11 @@ export class Minimap extends React.Component {
         const {
           width, height, left, top,
         } = node.getBoundingClientRect();
-
+        const { position } = getComputedStyle(node);        
         const wM = width * ratioX;
         const hM = height * ratioY;
         const xM = (left + scrollLeft - sourceRect.left) * ratioX;
-        const yM = (top + scrollTop - sourceRect.top) * ratioY;
+        const yM = (top + node.classList.contains('c7nagile-StoryMap-EpicCard')||node.classList.contains('c7nagile-StoryMap-FeatureCard') ? 0 : scrollTop - sourceRect.top) * ratioY;
 
         return (
           <ChildComponent

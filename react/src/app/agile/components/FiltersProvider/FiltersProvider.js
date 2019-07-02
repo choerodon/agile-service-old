@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  loadIssueTypes, loadStatusList, loadPriorities, loadLabels, loadComponents, loadVersions, loadEpics, loadSprints, 
+  loadIssueTypes, loadStatusList, loadPriorities, loadLabels, loadComponents, loadVersions, loadEpics, loadSprints,
 } from '../../api/NewIssueApi';
 import { getUsers } from '../../api/CommonApi';
 import { getAllPIList } from '../../api/PIApi';
@@ -34,41 +34,36 @@ const requests = {
   },
   version: {
     textField: 'name',
-    valueField: 'id',
+    valueField: 'versionId',
     request: loadVersions,
   },
   label: {
     textField: 'labelName',
     valueField: 'labelId',
-    request: loadLabels, 
+    request: loadLabels,
   },
   component: {
     isContent: true,
     textField: 'name',
     valueField: 'componentId',
-    request: loadComponents, 
+    request: loadComponents,
   },
   epic: {
     textField: 'epicName',
     valueField: 'issueId',
-    request: loadEpics, 
+    request: loadEpics,
   },
   pi: {
     formatter: pi => ({ value: pi.id, text: `${pi.code}-${pi.name}` }),
-    request: getAllPIList,     
+    request: getAllPIList,
   },
 };
-const propTypes = {
-  fields: PropTypes.arrayOf(PropTypes.string),
-};
-const defaultProps = {
-  fields: [],
-};
+
 function transform(type, data) {
   const {
-    isContent, textField, valueField, formatter, 
+    isContent, textField, valueField, formatter,
   } = requests[type];
-  const list = isContent ? data.content : data;
+  const list = isContent ? data.list : data;
   if (formatter) {
     return list.map(formatter);
   } else {
@@ -79,17 +74,26 @@ function transform(type, data) {
   }
 }
 
-class FiltersProvider extends Component {
-  state={
-    filters: {},
-  }
-
+const FiltersProviderHOC = (fields = []) => Component => class FiltersProvider extends React.Component {
+  constructor() {
+    super();
+    const filters = {};
+    fields.forEach((field) => {
+      if (typeof field === 'string') {
+        filters[field] = [];
+      } else {
+        filters[field.key] = [];
+      } 
+    });
+    this.state = {
+      filters,
+    };
+  } 
 
   componentDidMount() {
-    const { fields } = this.props;
     const keys = fields.map(field => (typeof field === 'string' ? field : field.key));
     const args = fields.map(field => (typeof field === 'string' ? undefined : field.args));
-    // console.log(args);
+    
     const requestQueue = keys.map((key, i) => requests[key].request.apply(null, args[i]));
     Promise.all(requestQueue).then((values) => {
       const filters = {};
@@ -105,12 +109,9 @@ class FiltersProvider extends Component {
 
   render() {
     const { filters } = this.state;
-    const { children } = this.props;
-    return children(filters);
+    return <Component {...this.props} filters={filters} />;
   }
-}
+};
 
-FiltersProvider.propTypes = propTypes;
-FiltersProvider.defaultProps = defaultProps;
 
-export default FiltersProvider;
+export default FiltersProviderHOC;

@@ -7,7 +7,8 @@ import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMap
 @observer
 class StoryArea extends Component {
   renderWithSwimVersion=() => {
-    const { versionList } = StoryMapStore;   
+    const { isFullScreen } = StoryMapStore;
+    const versionList = isFullScreen ? StoryMapStore.versionList.filter(version => version.storyNum) : StoryMapStore.versionList;
     return versionList.map((version, index) => <StoryRow rowIndex={index} isLastRow={index === versionList.length - 1} version={version} storyCollapse={version.collapse} />);
   }
 

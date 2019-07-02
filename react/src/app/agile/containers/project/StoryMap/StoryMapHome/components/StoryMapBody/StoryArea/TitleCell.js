@@ -22,7 +22,7 @@ class TitleCell extends Component {
       }
       case 'version': {
         return (
-          <div>
+          <Fragment>
             <Icon
               style={{ marginRight: 15 }}
               type={storyCollapse ? 'expand_less' : 'expand_more'}
@@ -41,7 +41,7 @@ class TitleCell extends Component {
                 />
               </Tooltip>
             )}
-          </div>
+          </Fragment>
         );
       }
       default: return null;
@@ -51,36 +51,30 @@ class TitleCell extends Component {
 
   render() {
     const {
-      otherData, showTitle, nextShowTitle, storyCollapse, isLastColumn, isLastRow,
+      otherData, showTitle, storyCollapse, epicIndex, isLastRow, lastCollapse,
     } = this.props;
     const { collapse } = otherData || {};
 
     return (
-      <Cell style={{
-        borderRight: 'none',
-        borderBottom: storyCollapse ? '1px solid #D8D8D8' : 'none',
-        padding: '10px 0',
-        ...collapse ? { borderLeft: '1px solid #D8D8D8', borderBottom: isLastRow && storyCollapse ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : {},
-        ...showTitle ? {
-          position: 'sticky',
-          zIndex: 5,
-          left: 0,         
-          // background: 'white',
-        } : {},        
-        // 最后一列或下一个展示版本或折叠
-        ...isLastColumn || nextShowTitle || collapse ? {
-          borderRight: '1px solid #D8D8D8',
-        } : {},      
-      }}
-      >
-        {collapse ? null : (
-          <div style={{ display: 'flex' }} className="c7nagile-StoryMap-TitleCell">
-            <div style={{ textAlign: 'left' }}>
-              {showTitle && this.renderTitle(storyCollapse)}
-            </div>
-          </div>
-        )}
-      </Cell>
+      collapse ? null : (
+        <Cell style={{        
+          // borderBottom: storyCollapse ? '1px solid #D8D8D8' : 'none',
+          padding: '10px 0',
+          boxShadow: storyCollapse ? 'inset 0 -1px 0 #D8D8D8,inset 1px 0 0 #D8D8D8' : 'inset 1px 0 0 #D8D8D8',
+          ...lastCollapse || epicIndex === 0 ? { boxShadow: storyCollapse ? 'inset 0 -1px 0 #D8D8D8' : 'none' } : { },       
+          ...showTitle ? {
+            position: 'sticky',
+            zIndex: 5,
+            left: 0,         
+            // background: 'white',
+          } : {}, 
+        }}
+        > 
+          <div style={{ display: 'flex' }} className="c7nagile-StoryMap-TitleCell">        
+            {showTitle && this.renderTitle(storyCollapse)}       
+          </div>   
+        </Cell>
+      )
     );
   }
 }

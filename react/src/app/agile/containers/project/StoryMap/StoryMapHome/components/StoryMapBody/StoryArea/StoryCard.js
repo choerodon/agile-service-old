@@ -10,7 +10,6 @@ import Card from '../Card';
 import './StoryCard.scss';
 import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
 
-
 @observer
 class StoryCard extends Component {
   componentDidMount() {
@@ -26,15 +25,15 @@ class StoryCard extends Component {
     });
   }
 
-  setZIndex=() => {
-    this.container.style.zIndex = 9999;   
+  setZIndex = () => {
+    this.container.style.zIndex = 9999;
   }
 
-  resetZIndex=() => {
-    this.container.style.zIndex = 'unset';   
+  resetZIndex = () => {
+    this.container.style.zIndex = 'unset';
   }
 
-  saveRef=(ref) => {
+  saveRef = (ref) => {
     const { connectDragSource } = this.props;
     connectDragSource(ref);
     this.container = ref;
@@ -85,22 +84,28 @@ class StoryCard extends Component {
     StoryMapStore.setClickIssue(story);
   }
 
-  render() {   
+  render() {
     const {
-      story, connectDragSource, index, rowIndex, 
+      story, connectDragSource, index, rowIndex,
     } = this.props;
     const { issueId, issueNum, summary } = story;
     const { selectedIssueMap } = StoryMapStore;
     return (
       <Card
-        className={`c7nagile-StoryMap-StoryCard ${index === 0 && rowIndex === 0 ? 'minimapCard' : ''} ${selectedIssueMap.has(issueId) ? 'selected' : ''}`} 
+        className={`c7nagile-StoryMap-StoryCard ${index === 0 && rowIndex === 0 ? 'minimapCard' : ''} ${selectedIssueMap.has(issueId) ? 'selected' : ''}`}
         saveRef={this.saveRef}
+        onClick={this.handleClick} 
         onMouseDown={this.handleMouseDown}
-        onClick={this.handleClick}
       >
-        <Icon type="close" className="c7nagile-StoryMap-StoryCard-delete" onClick={this.handlRemoveStory} />        
+        <Icon type="close" className="c7nagile-StoryMap-StoryCard-delete" onClick={this.handlRemoveStory} />
         <div className="summary">
-          <Tooltip title={summary} getPopupContainer={trigger => trigger.parentNode}>            
+          <Tooltip title={summary} getPopupContainer={trigger => trigger.parentNode}>
+            {/* {issueId && issueNum ? (
+              <Link to={issueLink(issueId, 'story', issueNum)} style={{ marginRight: 5 }} target="_blank">
+                #
+                {issueNum}
+              </Link>
+            ) : null} */}
             {summary}
           </Tooltip>
         </div>
@@ -123,7 +128,7 @@ export default DragSource(
           component.resetZIndex();
         });
       }
-      
+
       return { story: props.story, version: props.version };
     },
     endDrag(props, monitor) {
@@ -149,7 +154,7 @@ export default DragSource(
         featureId: 0, // 要关联的特性id
         // 问题id列表，移动到特性，配合featureId使用
         featureIssueIds: [],
-      };   
+      };
       // 史诗，特性，版本都不变时
       if (epicId === targetEpicId && featureId === targetFeatureId) {
         if (StoryMapStore.swimLine === 'version') {
@@ -188,16 +193,16 @@ export default DragSource(
             }
           }
         }
-        
-        if (!find(storyMapVersionDOList, { versionId: targetVersionId })) {          
+
+        if (!find(storyMapVersionDOList, { versionId: targetVersionId })) {
           storyMapDragDTO.versionIssueIds = [issueId];
           // 拖到未规划
           if (targetVersionId === 'none') {
-            storyMapDragDTO.versionId = 0;          
+            storyMapDragDTO.versionId = 0;
           } else {
-            storyMapDragDTO.versionId = targetVersionId;            
+            storyMapDragDTO.versionId = targetVersionId;
           }
-        }       
+        }
       }
 
       // console.log(storyMapDragDTO);

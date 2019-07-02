@@ -124,25 +124,25 @@ import '../../EditIssue/IssueComponent/IssueComponent.scss';
       <div className="c7n-nav">
         {/* 转换类型 */}
         <div>
-          <Dropdown overlay={typeList} trigger={['click']} disabled={disabled || issueTypeDTO.typeCode === 'issue_epic'}>
-            <div
-              style={{
-                height: 50,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <TypeTag
-                data={currentIssueType}
-              />
-              <Icon
-                type="arrow_drop_down"
-                style={{ fontSize: 16 }}
-              />
-            </div>
-          </Dropdown>
+          {/* <Dropdown overlay={typeList} trigger={['click']} disabled={disabled || issueTypeDTO.typeCode === 'issue_epic'}> */}
+          <div
+            style={{
+              height: 50,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <TypeTag
+              data={currentIssueType}
+            />
+            {/* <Icon
+              type="arrow_drop_down"
+              style={{ fontSize: 16 }}
+            /> */}
+          </div>
+          {/* </Dropdown> */}
         </div>
         {/* 锚点 */}
         <IssueNav typeCode={issueTypeDTO.typeCode} />

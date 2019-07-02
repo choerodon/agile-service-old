@@ -1,13 +1,13 @@
 
 import {
-  observable, action, computed, set,
+  observable, action, computed, set, toJS,
 } from 'mobx';
 import {
-  find, findIndex, remove,
+  find, findIndex, max, remove, groupBy, sortBy,
 } from 'lodash';
 import { getProjectId } from '../../../common/utils';
 import {
-  getStoryMap, getSideIssueList, createWidth, changeWidth,
+  getStoryMap, getSideIssueList, createWidth, changeWidth, sort,
 } from '../../../api/StoryMapApi';
 import { loadIssueTypes, loadVersions, loadPriorities } from '../../../api/NewIssueApi';
 
@@ -28,7 +28,18 @@ class StoryMapStore {
     searchArgs: {
       assigneeId: null,
     },
+    advancedSearchArgs: {
+      versionList: [],
+      statusList: [],
+    },
   };
+
+  @observable searchDTO = {
+    advancedSearchArgs: {
+      versionList: [],
+      statusList: [],
+    },
+  }
 
   @observable issueList = [];
 
@@ -46,18 +57,25 @@ class StoryMapStore {
 
   @observable loading = false;
 
-  selectedIssueMap = observable.map({}); // 使用map减少选中的渲染
-
+  @observable selectedIssueMap = observable.map({});
 
   @action clear() {
     this.storyMapData = {};
     this.storyData = {};
+    this.searchDTO = {
+      advancedSearchArgs: {
+        versionList: [],
+        statusList: [],
+      },
+    };
   }
 
   getStoryMap = () => {
     this.setLoading(true);
-    Promise.all([getStoryMap(), loadIssueTypes(), loadVersions(), loadPriorities()]).then(([storyMapData, issueTypes, versionList, prioritys]) => {
-      const { epicWithFeature, featureWithoutEpic } = storyMapData;
+    Promise.all([getStoryMap(this.searchDTO), loadIssueTypes(), loadVersions(), loadPriorities()]).then(([storyMapData, issueTypes, versionList, prioritys]) => {
+      let { epicWithFeature } = storyMapData;
+      const { featureWithoutEpic } = storyMapData;
+      epicWithFeature = sortBy(epicWithFeature, 'epicRank');
       const newStoryMapData = {
         ...storyMapData,
         epicWithFeature: featureWithoutEpic.length > 0 ? epicWithFeature.concat({
@@ -80,6 +98,30 @@ class StoryMapStore {
     });
   }
 
+  @action
+  handleFilterChange = (field, values) => {
+    this.searchDTO.advancedSearchArgs[field] = values;
+    this.getStoryMap();
+  }
+
+  @action
+  handleSideFilterChange = (field, values) => {
+    this.sideSearchDTO.advancedSearchArgs[field] = values;
+    this.loadIssueList();
+  }
+
+  clearSideFilter = () => {
+    this.sideSearchDTO = {
+      searchArgs: {
+        assigneeId: null,
+      },
+      advancedSearchArgs: {
+        versionList: [],
+        statusList: [],
+      },
+    };
+  }
+  
   @action setIssueList(issueList) {
     this.issueList = issueList;
   }
@@ -101,9 +143,11 @@ class StoryMapStore {
   }
 
   @action toggleSideIssueListVisible() {
+    // 关闭Issue详情侧边
     if (!this.sideIssueListVisible) {
       this.setClickIssue();
     }
+
     this.sideIssueListVisible = !this.sideIssueListVisible;
   }
 
@@ -212,8 +256,9 @@ class StoryMapStore {
       if (targetFeature) {
         targetFeature.storys.push(story);
         // 故事按照version泳道分类
-        // if (this.swimLine === 'version') {
+        // if (this.swimLine === 'version') {          
         if (storyMapVersionDOList.length === 0) {
+          this.addStoryNumToVersion('none');
           if (!targetFeature.version.none) {
             targetFeature.version.none = [];
           }
@@ -222,15 +267,26 @@ class StoryMapStore {
         storyMapVersionDOList.forEach((version) => {
           const { versionId } = version;
           // if (!targetFeature.version[versionId]) {
-          //   extendObservable(targetFeature.version, {
+          //   set(targetFeature.version, {
           //     [versionId]: [],
           //   }); 
           // }
+          this.addStoryNumToVersion(versionId);
           targetFeature.version[versionId].push(story);
         });
       }
 
       // }
+    }
+  }
+
+  @action addStoryNumToVersion(versionId) {
+    const version = find(this.versionList, { versionId: 'none' });
+    if (version) {
+      if (!version.storyNum) {
+        version.storyNum = 0;
+      }
+      version.storyNum += 1;
     }
   }
 
@@ -308,21 +364,21 @@ class StoryMapStore {
     });
   }
 
-  @action addFeature(epicData) {
+  @action addFeature(epic) {
     const feature = {
       adding: true,
     };
 
-    const currentIndex = findIndex(this.storyMapData.epicWithFeature, { issueId: epicData.issueId });
+    const currentIndex = findIndex(this.storyMapData.epicWithFeature, { issueId: epic.issueId });
     // console.log(currentIndex);
-    // console.log(epicData, currentIndex);
+    // console.log(epic, currentIndex);
     this.storyMapData.epicWithFeature[currentIndex].featureCommonDOList.push(feature);
   }
 
-  @action afterCreateFeature(EpicIndex, newFeature) {
-    const { length } = this.storyMapData.epicWithFeature[EpicIndex].featureCommonDOList;
-    this.storyMapData.epicWithFeature[EpicIndex].featureCommonDOList[length - 1] = newFeature;
-    const { issueId: epicId } = this.storyMapData.epicWithFeature[EpicIndex];
+  @action afterCreateFeature(epicIndex, newFeature) {
+    const { length } = this.storyMapData.epicWithFeature[epicIndex].featureCommonDOList;
+    this.storyMapData.epicWithFeature[epicIndex].featureCommonDOList[length - 1] = newFeature;
+    const { issueId: epicId } = this.storyMapData.epicWithFeature[epicIndex];
     set(this.storyData[epicId].feature, {
       [newFeature.issueId]: {
         storys: [],
@@ -359,7 +415,7 @@ class StoryMapStore {
         const targetEpic = this.storyData[epicId];
         const { feature } = targetEpic;
         const targetFeature = feature[featureId || 'none'];
-        remove(targetFeature.storys, { issueId: story.issueId });  
+        remove(targetFeature.storys, { issueId: story.issueId });
         // 从各个版本移除
         if (storyMapVersionDOList.length === 0) {
           if (targetFeature.version.none) {
@@ -448,12 +504,31 @@ class StoryMapStore {
     storyMapWidth.push(storyMapWidthDTO);
   }
 
-  @action setClickIssue(clickIssue) {    
+  @action setClickIssue(clickIssue) {
     this.selectedIssueMap.clear();
     if (clickIssue) {
       this.sideIssueListVisible = false;
-      this.selectedIssueMap.set(clickIssue.issueId, clickIssue);    
+      this.selectedIssueMap.set(clickIssue.issueId, clickIssue);
     }
+  }
+
+  sortEpic(source, destination) {
+    if (!source || !destination || source.issueId === destination.issueId) {
+      return;
+    }
+    const sortDTO = {
+      projectId: getProjectId(),
+      objectVersionNumber: source.epicRankObjectVersionNumber, // 乐观锁     
+      issueId: source.issueId,
+      type: 'epic',
+      before: true, // 是否拖动到第一个
+      after: false,
+      referenceIssueId: destination.issueId,
+    };
+
+    sort(sortDTO).then(() => {
+      this.getStoryMap();
+    });
   }
 
   getIssueTypeByCode(typeCode) {

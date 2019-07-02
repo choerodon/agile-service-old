@@ -23,7 +23,7 @@ class StoryRow extends Component {
     const { epicWithFeature } = storyMapData || {};
     const epicList = StoryMapStore.getEpicList;
     const firstNotCollapseIndex = this.getFirstNotCollapseIndex();
-    const { storyCollapse } = this.props;
+    const { storyCollapse, rowIndex } = this.props;
     return (
       <Fragment>
         {/* 标题行 */}
@@ -31,8 +31,9 @@ class StoryRow extends Component {
           <tr>
             {epicList.map((epic, index) => (
               <TitleCell
+                epicIndex={index}
                 isLastColumn={index === epicWithFeature.length - 1}
-                nextShowTitle={firstNotCollapseIndex - 1 === index}
+                lastCollapse={index > 0 ? storyData[epicList[index - 1].issueId] && storyData[epicList[index - 1].issueId].collapse : false}
                 showTitle={firstNotCollapseIndex === index}
                 otherData={storyData[epic.issueId]}                
                 {...this.props}
@@ -43,7 +44,9 @@ class StoryRow extends Component {
         <tr style={{ ...storyCollapse ? { height: 0 } : {} }}>
           {epicList.map((epic, index) => (
             <StoryCell 
+              rowIndex={rowIndex}
               epicIndex={index}
+              lastCollapse={index > 0 ? storyData[epicList[index - 1].issueId] && storyData[epicList[index - 1].issueId].collapse : false}
               isLastColumn={index === epicWithFeature.length - 1}
               showTitle={firstNotCollapseIndex === index}
               epic={epic}

@@ -34,7 +34,7 @@ class StoryCell extends Component {
 
   render() {
     const {
-      epic, otherData, storyCollapse, isLastRow, isLastColumn, epicIndex,
+      epic, otherData, storyCollapse, isLastRow, isLastColumn, epicIndex, lastCollapse,
     } = this.props;
     const { storyData, swimLine } = StoryMapStore;
     const { issueId: epicId, featureCommonDOList, adding } = epic;
@@ -49,8 +49,8 @@ class StoryCell extends Component {
     const featureList = epicId === 0 ? featureCommonDOList : featureCommonDOList.concat([{ issueId: 'none' }]);
 
     return (
-      !storyCollapse && (
-        <Cell style={{ ...collapse ? { borderBottom: isLastRow ? '1px solid #D8D8D8' : 'none', borderTop: 'none' } : { borderTop: swimLine === 'none' ? 'none' : '1px solid #D8D8D8' } }}>
+      !storyCollapse && !collapse && (
+        <Cell epicIndex={epicIndex} lastCollapse={lastCollapse} collapse={collapse}>
           {collapse ? null : (
             <div style={{
               minHeight: ColumnMinHeight, height: '100%', display: 'flex', flexDirection: 'column',
@@ -62,7 +62,24 @@ class StoryCell extends Component {
                     <Fragment>
                       {featureList.filter(feature => !feature.adding).map((feature, index) => {
                         const targetFeature = targetEpic.feature[feature.issueId] || {};
-                        return targetFeature && <StoryColumn feature={feature} featureIndex={index} isLast={isLastColumn && index === featureList.length - 1} storys={this.getStorys(targetFeature)} width={targetFeature.width} {...this.props} />;
+                        if (targetFeature) {
+                          const storys = this.getStorys(targetFeature);
+                          // if (feature.issueId === 'none' && storys.length === 0) {
+                          //   return null;
+                          // }
+                          return (
+                            <StoryColumn 
+                              feature={feature}
+                              featureIndex={index}
+                              isLast={isLastColumn && index === featureList.length - 1}
+                              storys={storys}
+                              width={targetFeature.width}
+                              {...this.props}
+                            />
+                          );
+                        } else {
+                          return null;
+                        }              
                       })}
                     </Fragment>
                   )

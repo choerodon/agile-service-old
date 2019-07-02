@@ -9,34 +9,49 @@ import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMap
 @observer
 class FeatureCell extends Component {
   handleAddFeatureClick=() => {
-    const { epicData, otherData } = this.props;
-    const { epicId } = epicData;
-    StoryMapStore.addFeature(epicData);
+    const { epic, otherData } = this.props;
+    const { epicId } = epic;
+    StoryMapStore.addFeature(epic);
   }
 
   handleCreateFeature=(newFeature) => {
-    const { EpicIndex } = this.props;
-    StoryMapStore.afterCreateFeature(EpicIndex, newFeature);
+    const { epicIndex } = this.props;
+    StoryMapStore.afterCreateFeature(epicIndex, newFeature);
   }
 
   render() {
-    const { epicData, otherData, isLastColumn } = this.props;
-    const { featureCommonDOList, adding } = epicData;
+    const {
+      epic, otherData, isLastColumn, lastCollapse, epicIndex,
+    } = this.props;
+    const { featureCommonDOList, adding } = epic;
     const { collapse } = otherData || {};
     return (
-      <Cell style={{ ...collapse ? { borderBottom: 'none', borderTop: 'none' } : {} }}>
-        {collapse ? null : (
-          <div style={{ display: 'flex' }}>        
-            {adding ? null : (
-              <Fragment>
-                {featureCommonDOList.filter(feature => !feature.adding).map(feature => <FeatureColumn epic={epicData} feature={feature} otherData={otherData.feature[feature.issueId]} />)}             
-                {/* 没有关联feature，但是关联了史诗的故事 */}
-                {otherData.feature.none ? <FeatureColumn isLast={isLastColumn} epic={epicData} feature={{ issueId: 'none' }} otherData={otherData.feature.none} /> : null}              
-              </Fragment>
-            )}
-          </div>
+      collapse ? null : (
+        <Cell
+          epicIndex={epicIndex}
+          lastCollapse={lastCollapse}
+          collapse={collapse}
+          style={{
+            position: 'sticky',
+            top: 82,
+            zIndex: 6,
+            background: 'white',
+            ...collapse ? { zIndex: 'unset' } : {}, 
+          }}
+        >
+          { (
+            <div style={{ display: 'flex' }}>        
+              {adding ? null : (
+                <Fragment>
+                  {featureCommonDOList.filter(feature => !feature.adding).map(feature => <FeatureColumn epic={epic} feature={feature} otherData={otherData.feature[feature.issueId]} />)}             
+                  {/* 没有关联feature，但是关联了史诗的故事 */}
+                  {otherData.feature.none && otherData.feature.none.storys.length > 0 ? <FeatureColumn isLast={isLastColumn} epic={epic} feature={{ issueId: 'none' }} otherData={otherData.feature.none} /> : null}                  
+                </Fragment>
+              )}
+            </div>
         )}
-      </Cell>
+        </Cell>
+      )
     );
   }
 }

@@ -2,7 +2,11 @@ import axios from 'axios';
 import {
   observable, action, computed, toJS, reaction,
 } from 'mobx';
+import { sortBy } from 'lodash';
 import { store, stores } from '@choerodon/boot';
+import { getFeaturesInProject } from '../../../api/FeatureApi';
+import { sort } from '../../../api/StoryMapApi';
+import { getProjectId } from '../../../common/utils';
 
 const { AppState } = stores;
 
@@ -497,11 +501,11 @@ class BacklogStore {
   }
 
   @action setEpicData(data) {
-    this.epicList = data;
+    this.epicList = sortBy(data, 'epicRank');
   }
 
   @action setFeatureData(data) {
-    this.featureList = data;
+    this.featureList = sortBy(data, 'featureRank');
   }
 
   axiosGetEpic() {
@@ -558,8 +562,6 @@ class BacklogStore {
     const orgId = AppState.currentMenuType.organizationId;
     return axios.post(`/agile/v1/projects/${AppState.currentMenuType.id}/sprint/issues?organizationId=${orgId}&quickFilterIds=${this.quickFilters}${this.assigneeFilterIds.length > 0 ? `&assigneeFilterIds=${this.assigneeFilterIds}` : ''}`, this.filter);
   }
-
-  handleEpicDrap = data => axios.put(`/agile/v1/projects/${AppState.currentMenuType.id}/issues/epic_drag`, data);
 
 
   handleVersionDrap = data => axios.put(`/agile/v1/projects/${AppState.currentMenuType.id}/product_version/drag`, data);
@@ -862,7 +864,7 @@ class BacklogStore {
 
   @action initEpicList(epiclist, { lookupValues }) {
     this.colorLookupValue = lookupValues;
-    this.epicList = epiclist;
+    this.epicList = sortBy(epiclist, 'epicRank');
   }
 
   @computed get getEpicData() {
@@ -881,16 +883,20 @@ class BacklogStore {
 
   @action moveEpic(sourceIndex, destinationIndex) {
     const movedItem = this.epicList[sourceIndex];
-    const { issueId, objectVersionNumber } = movedItem;
+    const { issueId, epicRankObjectVersionNumber } = movedItem;
     this.epicList.splice(sourceIndex, 1);
     this.epicList.splice(destinationIndex, 0, movedItem);
-    const req = {
-      beforeSequence: destinationIndex !== 0 ? this.epicList[destinationIndex - 1].epicSequence : null,
-      afterSequence: destinationIndex !== (this.epicList.length - 1) ? this.epicList[destinationIndex + 1].epicSequence : null,
-      epicId: issueId,
-      objectVersionNumber,
+    const before = destinationIndex < this.epicList.length - 1;
+    const referenceIssueId = before ? this.epicList[destinationIndex + 1].issueId : this.epicList[destinationIndex - 1].issueId;
+    const sortDTO = {
+      projectId: getProjectId(),
+      objectVersionNumber: epicRankObjectVersionNumber, // 乐观锁     
+      issueId,
+      type: 'epic',
+      before,     
+      referenceIssueId,
     };
-    this.handleEpicDrap(req).then(
+    sort(sortDTO).then(
       action('fetchSuccess', (res) => {
         if (!res.message) {
           this.axiosGetEpic().then((epics) => {
@@ -899,6 +905,35 @@ class BacklogStore {
         } else {
           this.epicList.splice(destinationIndex, 1);
           this.epicList.splice(sourceIndex, 0, movedItem);
+        }
+      }),
+    );
+  }
+
+  @action moveFeature(sourceIndex, destinationIndex) {
+    const movedItem = this.featureList[sourceIndex];
+    const { issueId, featureRankObjectVersionNumber } = movedItem;
+    this.featureList.splice(sourceIndex, 1);
+    this.featureList.splice(destinationIndex, 0, movedItem);
+    const before = destinationIndex < this.featureList.length - 1;
+    const referenceIssueId = before ? this.featureList[destinationIndex + 1].issueId : this.featureList[destinationIndex - 1].issueId;
+    const sortDTO = {
+      projectId: getProjectId(),
+      objectVersionNumber: featureRankObjectVersionNumber, // 乐观锁     
+      issueId,
+      type: 'feature',
+      before,     
+      referenceIssueId,
+    };
+    sort(sortDTO).then(
+      action('fetchSuccess', (res) => {
+        if (!res.message) {
+          getFeaturesInProject().then((data) => {
+            this.setFeatureData(data);
+          });
+        } else {
+          this.featureList.splice(destinationIndex, 1);
+          this.featureList.splice(sourceIndex, 0, movedItem);
         }
       }),
     );
