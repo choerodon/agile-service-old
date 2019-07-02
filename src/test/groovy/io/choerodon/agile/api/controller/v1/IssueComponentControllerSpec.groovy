@@ -186,7 +186,7 @@ class IssueComponentControllerSpec extends Specification {
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
-        List<ComponentForListDTO> result = entity.body
+        List<ComponentForListDTO> result = entity.body.getList()
 
         and: '设置值'
         result.size() == expectSize
