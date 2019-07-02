@@ -26,7 +26,7 @@ const defaultProps = {
   disabled: true,
 };
 
-@observer class FeatureDetailShow extends Component {
+@observer class ProgramIssueShow extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -242,5 +242,5 @@ const defaultProps = {
     );
   }
 }
-FeatureDetailShow.defaultProps = defaultProps;
-export default withRouter(FeatureDetailShow);
+ProgramIssueShow.defaultProps = defaultProps;
+export default withRouter(ProgramIssueShow);

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import EditIssue from '../../../../../../components/EditIssue';
 import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
-import FeatureDetailShow from '../../../../../../components/FeatureDetailShow';
+import ProgramIssueShow from '../../../../../../components/ProgramIssueShow';
 
 @inject('AppState')
 @observer
@@ -37,7 +37,7 @@ class IssueDetail extends Component {
     const { selectedIssueMap } = StoryMapStore;
     const visible = selectedIssueMap.size;
     const { programId, issueId } = selectedIssueMap.values().next().value || {};
-    const TargetComponent = programId ? FeatureDetailShow : EditIssue;
+    const TargetComponent = programId ? ProgramIssueShow : EditIssue;
     return (
       visible ? (
         <TargetComponent         
