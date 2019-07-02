@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
+
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.assembler.*;
@@ -31,6 +32,7 @@ import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaClient;
 import io.choerodon.base.domain.PageRequest;
+import io.choerodon.base.domain.Sort;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
@@ -38,6 +40,7 @@ import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -432,14 +435,14 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public PageInfo<IssueListDTO> listIssueWithSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
+    public PageInfo<IssueListFieldKVDTO> listIssueWithSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
         if (organizationId == null) {
             organizationId = ConvertUtil.getOrganizationId(projectId);
         }
         //处理用户搜索
         Boolean condition = handleSearchUser(searchDTO, projectId);
         if (condition) {
-            //处理表映射
+            PageInfo<Long> issueIdPage;
             String filterSql = null;
             //处理自定义搜索
             if (searchDTO.getQuickFilterIds() != null && !searchDTO.getQuickFilterIds().isEmpty()) {
@@ -448,21 +451,39 @@ public class IssueServiceImpl implements IssueService {
             //处理未匹配的筛选
             handleOtherArgs(searchDTO);
             final String searchSql = filterSql;
-            Map<String, String> order = new HashMap<>(1);
-            order.put("issueId", "search.issue_issue_id");
-            //pageRequest.resetOrder(SEARCH, order);
-            pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), SEARCH, order));
-            PageInfo<Long> issueIdPage = PageHelper.startPage(pageRequest.getPage(),
-                    pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> issueMapper.queryIssueIdsListWithSub
-                    (projectId, searchDTO, searchSql, searchDTO.getAssigneeFilterIds()));
-            PageInfo<IssueListDTO> issueListDTOPage;
+
+            if (!handleSortField(pageRequest).equals("")) {
+                String fieldCode = handleSortField(pageRequest);
+                Map<String, String> order = new HashMap<>(1);
+                String sortCode = fieldCode.split("\\.")[1];
+                order.put(fieldCode, sortCode);
+                PageUtil.sortResetOrder(pageRequest.getSort(), null, order);
+                List<Long> issueIdsWithSub = issueMapper.queryIssueIdsListWithSub(projectId, searchDTO, searchSql, searchDTO.getAssigneeFilterIds());
+                List<Long> foundationIssueIds = foundationFeignClient.sortIssueIdsByFieldValue(organizationId, projectId, pageRequest.getSort().toString()).getBody();
+
+                List<Long> foundationIssueIdsWithSub = issueIdsWithSub.stream().filter(foundationIssueIds::contains).collect(Collectors.toList());
+                List<Long> issueIdsWithSubWithoutFoundation = issueIdsWithSub.stream().filter(t -> !foundationIssueIdsWithSub.contains(t)).collect(Collectors.toList());
+                issueIdPage = new PageInfo<>(handleIssueLists(foundationIssueIdsWithSub, issueIdsWithSubWithoutFoundation, pageRequest)
+                        .subList((pageRequest.getPage() - 1) * pageRequest.getSize(), pageRequest.getPage() * pageRequest.getSize()));
+            } else {
+                Map<String, String> order = new HashMap<>(1);
+                //处理表映射
+                order.put("issueId", "search.issue_issue_id");
+                pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), SEARCH, order));
+                issueIdPage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
+                        PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> issueMapper.queryIssueIdsListWithSub
+                        (projectId, searchDTO, searchSql, searchDTO.getAssigneeFilterIds()));
+            }
+
+            PageInfo<IssueListFieldKVDTO> issueListDTOPage;
             if (issueIdPage.getList() != null && !issueIdPage.getList().isEmpty()) {
                 List<IssueDO> issueDOList = issueMapper.queryIssueListWithSubByIssueIds(issueIdPage.getList());
                 Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
                 Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
                 Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+                Map<Long, Map<String, String>> foundationCodeValue = foundationFeignClient.queryFieldValueWithIssueIds(organizationId, projectId, issueIdPage.getList()).getBody();
                 issueListDTOPage = PageUtil.buildPageInfoWithPageInfoList(issueIdPage,
-                        issueAssembler.issueDoToIssueListDto(issueDOList, priorityMap, statusMapDTOMap, issueTypeDTOMap));
+                        issueAssembler.issueDoToIssueListFieldKVDTO(issueDOList, priorityMap, statusMapDTOMap, issueTypeDTOMap, foundationCodeValue));
             } else {
                 issueListDTOPage = new PageInfo<>(new ArrayList<>());
             }
@@ -470,6 +491,38 @@ public class IssueServiceImpl implements IssueService {
         } else {
             return new PageInfo<>(new ArrayList<>());
         }
+    }
+
+    private List<Long> handleIssueLists(List<Long> foundationList, List<Long> agileList, PageRequest pageRequest) {
+        if (pageRequest.getSort() != null) {
+            Iterator<Sort.Order> iterator = pageRequest.getSort().iterator();
+            Sort.Direction direction = Sort.Direction.ASC;
+            while (iterator.hasNext()) {
+                Sort.Order order = iterator.next();
+                direction = order.getDirection();
+            }
+            if (direction.isAscending()) {
+                agileList.addAll(foundationList);
+                return agileList;
+            } else {
+                foundationList.addAll(agileList);
+                return foundationList;
+            }
+        } else return new ArrayList<>();
+    }
+
+    private String handleSortField(PageRequest pageRequest) {
+        if (pageRequest.getSort() != null) {
+            Iterator<Sort.Order> iterator = pageRequest.getSort().iterator();
+            String fieldCode = "";
+            while (iterator.hasNext()) {
+                Sort.Order order = iterator.next();
+                fieldCode = order.getProperty();
+            }
+            if (fieldCode.contains("foundation.")) {
+                return fieldCode;
+            } else return "";
+        } else return "";
     }
 
     private void handleOtherArgs(SearchDTO searchDTO) {

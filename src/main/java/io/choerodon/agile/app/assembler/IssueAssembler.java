@@ -3,6 +3,7 @@ package io.choerodon.agile.app.assembler;
 import com.google.common.collect.Lists;
 
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.infra.feign.FoundationFeignClient;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
@@ -89,6 +90,52 @@ public class IssueAssembler extends AbstractAssembler {
         }
         return issueDTO;
     }
+
+    /**
+     * issueDO转换到IssueListFieldKVDTO
+     *
+     * @param issueDOList issueDetailDO
+     * @return IssueListFieldKVDTO
+     */
+
+    public List<IssueListFieldKVDTO> issueDoToIssueListFieldKVDTO(List<IssueDO> issueDOList, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap, Map<Long, Map<String, String>> foundationCodeValue) {
+        List<IssueListFieldKVDTO> issueListFieldKVDTOList = new ArrayList<>(issueDOList.size());
+        Set<Long> userIds = issueDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDO::getAssigneeId).collect(Collectors.toSet());
+        userIds.addAll(issueDOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(IssueDO::getReporterId).collect(Collectors.toSet()));
+        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(Lists.newArrayList(userIds), true);
+        issueDOList.forEach(issueDO -> {
+            UserMessageDO assigneeUserDO = usersMap.get(issueDO.getAssigneeId());
+            UserMessageDO reporterUserDO = usersMap.get(issueDO.getReporterId());
+            String assigneeName = assigneeUserDO != null ? assigneeUserDO.getName() : null;
+            String assigneeLoginName = assigneeUserDO != null ? assigneeUserDO.getLoginName() : null;
+            String assigneeRealName = assigneeUserDO != null ? assigneeUserDO.getRealName() : null;
+            String reporterName = reporterUserDO != null ? reporterUserDO.getName() : null;
+            String reporterLoginName = reporterUserDO != null ? reporterUserDO.getLoginName() : null;
+            String reporterRealName = reporterUserDO != null ? reporterUserDO.getRealName() : null;
+            String assigneeImageUrl = assigneeUserDO != null ? assigneeUserDO.getImageUrl() : null;
+            String reporterImageUrl = reporterUserDO != null ? reporterUserDO.getImageUrl() : null;
+            IssueListFieldKVDTO issueListFieldKVDTO = toTarget(issueDO, IssueListFieldKVDTO.class);
+            issueListFieldKVDTO.setAssigneeName(assigneeName);
+            issueListFieldKVDTO.setAssigneeLoginName(assigneeLoginName);
+            issueListFieldKVDTO.setAssigneeRealName(assigneeRealName);
+            issueListFieldKVDTO.setReporterName(reporterName);
+            issueListFieldKVDTO.setReporterLoginName(reporterLoginName);
+            issueListFieldKVDTO.setReporterRealName(reporterRealName);
+            issueListFieldKVDTO.setPriorityDTO(priorityMap.get(issueDO.getPriorityId()));
+            issueListFieldKVDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
+            issueListFieldKVDTO.setStatusMapDTO(statusMapDTOMap.get(issueDO.getStatusId()));
+            issueListFieldKVDTO.setAssigneeImageUrl(assigneeImageUrl);
+            issueListFieldKVDTO.setReporterImageUrl(reporterImageUrl);
+            issueListFieldKVDTO.setVersionIssueRelDTOS(toTargetList(issueDO.getVersionIssueRelDOS(), VersionIssueRelDTO.class));
+            issueListFieldKVDTO.setIssueComponentBriefDTOS(toTargetList(issueDO.getIssueComponentBriefDOS(), IssueComponentBriefDTO.class));
+            issueListFieldKVDTO.setIssueSprintDTOS(toTargetList(issueDO.getIssueSprintDOS(), IssueSprintDTO.class));
+            issueListFieldKVDTO.setLabelIssueRelDTOS(toTargetList(issueDO.getLabelIssueRelDOS(), LabelIssueRelDTO.class));
+            issueListFieldKVDTO.setFoundationFieldValue(foundationCodeValue.get(issueDO.getIssueId()) != null ? foundationCodeValue.get(issueDO.getIssueId()) : new HashMap<>());
+            issueListFieldKVDTOList.add(issueListFieldKVDTO);
+        });
+        return issueListFieldKVDTOList;
+    }
+
 
     /**
      * issueDO转换到IssueListDTO
