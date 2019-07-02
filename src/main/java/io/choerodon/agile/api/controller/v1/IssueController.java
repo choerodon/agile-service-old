@@ -164,7 +164,7 @@ public class IssueController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("分页查询问题列表，包含子任务")
     @PostMapping(value = "/include_sub")
-    public ResponseEntity<PageInfo<IssueListDTO>> listIssueWithSub(@ApiIgnore
+    public ResponseEntity<PageInfo<IssueListFieldKVDTO>> listIssueWithSub(@ApiIgnore
                                                                @ApiParam(value = "分页信息", required = true)
                                                                @SortDefault(value = "issueId", direction = Sort.Direction.DESC)
                                                                        PageRequest pageRequest,
