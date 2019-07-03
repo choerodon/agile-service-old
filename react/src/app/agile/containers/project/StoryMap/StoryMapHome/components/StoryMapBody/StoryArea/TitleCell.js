@@ -31,6 +31,7 @@ class TitleCell extends Component {
               }}
             />
             {version.name}
+            {` (${version.storyNum || 0})`}
             {version.versionId === 'none' && !isFullScreen && (
               <Tooltip title="创建版本">
                 <Icon

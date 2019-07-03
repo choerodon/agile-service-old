@@ -281,7 +281,7 @@ class StoryMapStore {
   }
 
   @action addStoryNumToVersion(versionId) {
-    const version = find(this.versionList, { versionId: 'none' });
+    const version = find(this.versionList, { versionId });
     if (version) {
       if (!version.storyNum) {
         version.storyNum = 0;
