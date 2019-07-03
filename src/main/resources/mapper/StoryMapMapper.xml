@@ -191,12 +191,11 @@
             )
         </if>
         <if test='searchDTO.advancedSearchArgs.statusList != null and searchDTO.advancedSearchArgs.statusList.size > 0'>
-            and ai.status_id in (
+            and ai.status_id in
             <foreach collection="searchDTO.advancedSearchArgs.statusList" item="statusId" open="(" separator=","
                      close=")">
                 #{statusId}
             </foreach>
-            )
         </if>
         order by ai.issue_id
     </select>
@@ -239,12 +238,11 @@
             )
         </if>
         <if test='searchDTO.advancedSearchArgs.statusList != null and searchDTO.advancedSearchArgs.statusList.size > 0'>
-            and ai.status_id in (
+            and ai.status_id in
             <foreach collection="searchDTO.advancedSearchArgs.statusList" item="statusId" open="(" separator=","
                      close=")">
                 #{statusId}
             </foreach>
-            )
         </if>
         order by ai.issue_id desc
     </select>
