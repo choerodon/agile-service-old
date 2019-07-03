@@ -99,7 +99,7 @@ class StoryCard extends Component {
       >
         <Icon type="close" className="c7nagile-StoryMap-StoryCard-delete" onClick={this.handlRemoveStory} />
         <div className="summary">
-          <Tooltip title={summary} getPopupContainer={() => document.getElementsByClassName('minimap-container-scroll')[0]}>            
+          <Tooltip title={summary} getPopupContainer={trigger => trigger.parentNode.parentNode.parentNode}>            
             {summary}
           </Tooltip>
         </div>

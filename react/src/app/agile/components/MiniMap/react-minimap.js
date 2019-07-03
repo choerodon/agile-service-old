@@ -116,19 +116,25 @@ export class Minimap extends React.Component {
         const {
           width, height, left, top,
         } = node.getBoundingClientRect();
-        const { position } = getComputedStyle(node);        
+        const { position } = getComputedStyle(node);
         const wM = width * ratioX;
         const hM = height * ratioY;
         const xM = (left + scrollLeft - sourceRect.left) * ratioX;
-        const yM = (top + node.classList.contains('c7nagile-StoryMap-EpicCard')||node.classList.contains('c7nagile-StoryMap-FeatureCard') ? 0 : scrollTop - sourceRect.top) * ratioY;
+        let scrollTopCal = scrollTop;
+        if (node.classList.contains('c7nagile-StoryMap-EpicCard')) {
+          scrollTopCal = 0
+        } else if (node.classList.contains('c7nagile-StoryMap-FeatureCard')) {
+          scrollTopCal = 22;
+        }
+        const yM = (top + scrollTopCal - sourceRect.top) * ratioY;
 
         return (
           <ChildComponent
             key={key}
-            width={Math.round(wM)}
-            height={Math.round(hM)}
-            left={Math.round(xM)}
-            top={Math.round(yM)}
+            width={wM}
+            height={hM}
+            left={xM}
+            top={yM}
             node={node}
           />
         );
