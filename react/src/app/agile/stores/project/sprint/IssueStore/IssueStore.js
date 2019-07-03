@@ -191,6 +191,8 @@ class SprintCommonStore {
   // 经办人
   @observable users = [];
 
+  @observable foundationHeader = [];
+
   // 筛选列表是否显示
   @observable filterListVisible = false;
 
@@ -503,6 +505,7 @@ class SprintCommonStore {
     this.issueVersions = issueVersions;
     this.issueEpics = issueEpics;
     this.issueSprints = issueSprints;
+    debugger;
     this.foundationHeader = foundationHeader;
     // 生成 Filter 单选项所需数据
     this.columnFilter = new Map([
