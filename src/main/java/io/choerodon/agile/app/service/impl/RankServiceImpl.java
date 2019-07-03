@@ -127,11 +127,45 @@ public class RankServiceImpl implements RankService {
         }
     }
 
+    private RankDO getOrinitReferenceRank(Long projectId, String type, Long referenceIssueId, Long issueId) {
+        RankDO rankReference = rankMapper.selectRankByIssueId(projectId, type, referenceIssueId);
+        RankDO rankCurrent = rankMapper.selectRankByIssueId(projectId, type, issueId);
+        if (rankReference == null || rankCurrent == null) {
+            switch (type) {
+                case RANK_TYPE_FEATURE:
+                    List<Long> featureIds = getFeatureIds(projectId);
+                    List<Long> featureRankDOList = rankMapper.checkRankEmpty(projectId, RANK_TYPE_FEATURE);
+                    List<Long> emptyFeatureIds = featureIds.stream().filter(featureId -> !featureRankDOList.contains(featureId)).collect(Collectors.toList());
+                    if (emptyFeatureIds != null && !emptyFeatureIds.isEmpty()) {
+                        insertRankByBatch(projectId, emptyFeatureIds, RANK_TYPE_FEATURE);
+                    }
+                    break;
+                case RANK_TYPE_EPIC:
+                    List<Long> epicIds = getEpicIds(projectId);
+                    List<Long> epicRankDOList = rankMapper.checkRankEmpty(projectId, RANK_TYPE_EPIC);
+                    List<Long> emptyEpicIds = epicIds.stream().filter(epicId -> !epicRankDOList.contains(epicId)).collect(Collectors.toList());
+                    if (emptyEpicIds != null && !emptyEpicIds.isEmpty()) {
+                        insertRankByBatch(projectId, emptyEpicIds, RANK_TYPE_EPIC);
+                    }
+                    break;
+                default:
+                    break;
+            }
+            RankDO newRank = rankMapper.selectRankByIssueId(projectId, type, referenceIssueId);
+            if (newRank == null) {
+                throw new CommonException("error.rank.get");
+            }
+            return newRank;
+        } else {
+            return rankReference;
+        }
+    }
+
     @Override
     public void epicAndFeatureRank(Long projectId, RankDTO rankDTO) {
         rankValidator.checkEpicAndFeatureRank(rankDTO);
         Long referenceIssueId = rankDTO.getReferenceIssueId();
-        RankDO referenceRank = getReferenceRank(projectId, rankDTO.getType(), referenceIssueId);
+        RankDO referenceRank = getOrinitReferenceRank(projectId, rankDTO.getType(), referenceIssueId, rankDTO.getIssueId());
         if (rankDTO.getBefore()) {
             String leftRank = rankMapper.selectLeftRank(projectId, rankDTO.getType(), referenceRank.getRank());
             String rank = (leftRank == null ? RankUtil.genPre(referenceRank.getRank()) : RankUtil.between(leftRank, referenceRank.getRank()));
