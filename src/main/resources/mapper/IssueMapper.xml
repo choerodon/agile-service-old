@@ -1466,6 +1466,7 @@
         ai.issue_id,
         ai.summary,
         ai.epic_id,
+        ai.program_id,
         ar.rank as feature_rank,
         ar.object_version_number as feature_rank_object_version_number
         FROM

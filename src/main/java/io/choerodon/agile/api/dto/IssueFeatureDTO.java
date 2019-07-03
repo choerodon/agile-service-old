@@ -19,6 +19,9 @@ public class IssueFeatureDTO {
     @ApiModelProperty(value = "史诗id")
     private Long epicId;
 
+    @ApiModelProperty(value = "项目群id")
+    private Long programId;
+
     @ApiModelProperty(value = "故事数量")
     private Integer storyCount;
 
@@ -107,5 +110,13 @@ public class IssueFeatureDTO {
 
     public void setFeatureRankObjectVersionNumber(Long featureRankObjectVersionNumber) {
         this.featureRankObjectVersionNumber = featureRankObjectVersionNumber;
+    }
+
+    public void setProgramId(Long programId) {
+        this.programId = programId;
+    }
+
+    public Long getProgramId() {
+        return programId;
     }
 }
