@@ -41,6 +41,16 @@ export function checkVersionNameRepeat(value) {
   const projectId = AppState.currentMenuType.id;
   return axios.get(`/agile/v1/projects/${projectId}/product_version/check?name=${value}`);
 }
+export function getFoundationHeader() {
+  const projectId = AppState.currentMenuType.id;
+  return axios.get(`/foundation/v1/projects/${projectId}/field_value/list/getFields`, {
+    params: {
+      project_id: projectId * 1,
+      organizationId: AppState.currentMenuType.organizationId * 1,
+      schemeCode: 'agile_issue',
+    },
+  });
+}
 export function createCommit(commitObj, projectId = AppState.currentMenuType.id) {
   return axios.post(`/agile/v1/projects/${projectId}/issue_comment`, commitObj);
 }

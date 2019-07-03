@@ -20,11 +20,11 @@ class IssueTable extends Component {
     this.filterControler = new IssueFilterControler();
   }
 
-  componentDidMount() {    
-    this.getAssigneeDistributed();   
-    this.setSelectRow(); 
+  componentDidMount() {
+    this.getAssigneeDistributed();
+    this.setSelectRow();
   }
-  
+
 
   componentWillUnmount() {
     IssueStore.setClickedRow({
@@ -32,9 +32,9 @@ class IssueTable extends Component {
       expand: false,
     });
   }
-  
+
   setSelectRow=() => {
-    const selectedIssue = IssueStore.getSelectedIssue;   
+    const selectedIssue = IssueStore.getSelectedIssue;
     if (selectedIssue && selectedIssue.issueId) {
       const issues = IssueStore.getIssues;
       const index = findIndex(issues, { issueId: selectedIssue.issueId });
@@ -498,8 +498,16 @@ class IssueTable extends Component {
         hidden: true,
         render: (text, record) => (<span>{record.storyPoints ? record.storyPoints : '-'}</span>),
       },
-    ]);
+    ].concat(IssueStore.getFoundationHeader.map(item => ({
+      ...item,
+      key: item.code,
+      width: 100,
+      sorterId: item.fieldType === 'date' || item.fieldType === 'datetime' ? item.sortId : null,
+      sorter: item.fieldType === 'date' || item.fieldType === 'datetime',
+      render: record => <span>{record.foundationFieldValue[item.code] || ''}</span>,
+    }))));
     // 表格列配置
+
     return (
       <Table
         rowKey={record => record.issueId}
