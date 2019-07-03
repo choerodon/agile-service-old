@@ -115,7 +115,7 @@ class IssueLinkTypeControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        List<IssueLinkTypeDTO> result = entity.body.content
+        List<IssueLinkTypeDTO> result = entity.body.getList()
 
         expect: '设置期望值'
         result.size() == exceptCount

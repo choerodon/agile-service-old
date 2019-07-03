@@ -398,7 +398,7 @@ class ProductVersionControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and:
-        List<ProductVersionPageDTO> list = entity.body.content
+        List<ProductVersionPageDTO> list = entity.body.getList()
 
         expect: "设置期望值"
         list.size() > 0

@@ -49,7 +49,7 @@ public interface IssueService {
      * @param pageRequest pageRequest
      * @return IssueListDTO
      */
-    PageInfo<IssueListDTO> listIssueWithSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId);
+    PageInfo<IssueListFieldKVDTO> listIssueWithSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId);
 
     List<EpicDataDTO> listEpic(Long projectId);
 
