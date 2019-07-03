@@ -14,11 +14,11 @@ public interface StoryMapMapper {
 
     List<Long> selectEpicIdsByProject(@Param("projectId") Long projectId);
 
-    List<EpicWithFeatureDO> selectEpicWithFeatureList(@Param("epicIds") List<Long> epicIds);
+    List<EpicWithFeatureDO> selectEpicWithFeatureList(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds);
 
     List<FeatureCommonDO> selectFeatureByNoEpicByProject(@Param("projectId") Long projectId);
 
-    List<FeatureCommonDO> selectFeatureByNoEpicByProgram(@Param("programId") Long programId);
+    List<FeatureCommonDO> selectFeatureByNoEpicByProgram(@Param("programId") Long programId, @Param("projectId") Long projectId);
 
     List<StoryMapStoryDO> selectStoryList(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds, @Param("featureIds") List<Long> featureIds, @Param("searchDTO") SearchDTO searchDTO);
 

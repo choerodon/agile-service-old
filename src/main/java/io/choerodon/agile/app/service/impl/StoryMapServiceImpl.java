@@ -50,7 +50,7 @@ public class StoryMapServiceImpl implements StoryMapService {
 
     private List<FeatureCommonDO> setFeatureWithoutEpicByProgram(Long programId, Long projectId, List<Long> featureIds) {
         List<FeatureCommonDO> result = new ArrayList<>();
-        List<FeatureCommonDO> programFeatureList = storyMapMapper.selectFeatureByNoEpicByProgram(programId);
+        List<FeatureCommonDO> programFeatureList = storyMapMapper.selectFeatureByNoEpicByProgram(programId, projectId);
         List<FeatureCommonDO> projectFeatureList = storyMapMapper.selectFeatureByNoEpicByProject(projectId);
         if (programFeatureList != null && !programFeatureList.isEmpty()) {
             result.addAll(programFeatureList);
@@ -94,7 +94,7 @@ public class StoryMapServiceImpl implements StoryMapService {
         if (epicIds.isEmpty()) {
             result.put("epicWithFeature", new ArrayList<>());
         } else {
-            List<EpicWithFeatureDO> epicWithFeatureDOList = storyMapMapper.selectEpicWithFeatureList(epicIds);
+            List<EpicWithFeatureDO> epicWithFeatureDOList = storyMapMapper.selectEpicWithFeatureList(projectId, epicIds);
             result.put("epicWithFeature", epicWithFeatureDOList);
             epicWithFeatureDOList.forEach(epicWithFeatureDO -> {
                 List<FeatureCommonDO> featureCommonDOList = epicWithFeatureDO.getFeatureCommonDOList();

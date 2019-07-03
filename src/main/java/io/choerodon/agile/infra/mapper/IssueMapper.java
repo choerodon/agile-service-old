@@ -52,7 +52,7 @@ public interface IssueMapper extends Mapper<IssueDO> {
      */
     List<IssueDO> queryIssueEpicSelectList(@Param("projectId") Long projectId);
 
-    List<IssueDO> queryIssueFeatureSelectList(@Param("programId") Long programId, @Param("epicId") Long epicId);
+    List<IssueDO> queryIssueFeatureSelectList(@Param("programId") Long programId, @Param("projectId") Long projectId, @Param("epicId") Long epicId);
 
     List<IssueDO> selectFeatureListByAgileProject(@Param("projectId") Long projectId);
 
@@ -577,5 +577,5 @@ public interface IssueMapper extends Mapper<IssueDO> {
 
     List<IssueDO> selectByFeatureIds(@Param("featureIds") List<Long> featureIds);
 
-    List<EpicDataDO> selectEpicByProgram(@Param("programId") Long programId);
+    List<EpicDataDO> selectEpicByProgram(@Param("programId") Long programId, @Param("projectId") Long projectId);
 }

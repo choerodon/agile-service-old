@@ -720,7 +720,7 @@ public class IssueServiceImpl implements IssueService {
         ProjectDTO program = userRepository.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
         List<EpicDataDTO> programEpics = null;
         if (program != null) {
-            programEpics = epicDataAssembler.toTargetList(issueMapper.selectEpicByProgram(program.getId()), EpicDataDTO.class);
+            programEpics = epicDataAssembler.toTargetList(issueMapper.selectEpicByProgram(program.getId(), projectId), EpicDataDTO.class);
             if (programEpics != null && !programEpics.isEmpty()) {
                 epicDataList.addAll(programEpics);
             }
@@ -1283,7 +1283,7 @@ public class IssueServiceImpl implements IssueService {
     public List<IssueFeatureDTO> listFeatureSelectData(Long projectId, Long organizationId, Long epicId) {
         ProjectDTO program = userRepository.getGroupInfoByEnableProject(organizationId, projectId);
         if (program != null) {
-            return issueAssembler.toTargetList(issueMapper.queryIssueFeatureSelectList(program.getId(), epicId), IssueFeatureDTO.class);
+            return issueAssembler.toTargetList(issueMapper.queryIssueFeatureSelectList(program.getId(), projectId, epicId), IssueFeatureDTO.class);
         } else {
             return issueAssembler.toTargetList(issueMapper.selectFeatureListByAgileProject(projectId), IssueFeatureDTO.class);
         }
@@ -1309,7 +1309,7 @@ public class IssueServiceImpl implements IssueService {
     public List<IssueFeatureDTO> listFeature(Long projectId, Long organizationId) {
         ProjectDTO program = userRepository.getGroupInfoByEnableProject(organizationId, projectId);
         if (program != null) {
-            List<IssueDO> programFeatureList = issueMapper.queryIssueFeatureSelectList(program.getId(), null);
+            List<IssueDO> programFeatureList = issueMapper.queryIssueFeatureSelectList(program.getId(), projectId,null);
             List<IssueFeatureDTO> issueFeatureDTOList = issueAssembler.toTargetList(programFeatureList, IssueFeatureDTO.class);
             setFeatureStatisticDetail(projectId, issueFeatureDTOList);
             return issueFeatureDTOList;
