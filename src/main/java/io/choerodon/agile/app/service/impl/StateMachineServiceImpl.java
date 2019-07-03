@@ -154,12 +154,6 @@ public class StateMachineServiceImpl implements StateMachineService {
      */
     @Override
     public IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType) {
-//        if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
-//            throw new CommonException("error.applyType.illegal");
-//        }
-//        if (SchemeApplyType.AGILE.equals(applyType) && issueCreateDTO.getEpicName() != null && issueService.checkEpicName(issueCreateDTO.getProjectId(), issueCreateDTO.getEpicName())) {
-//            throw new CommonException("error.epicName.exist");
-//        }
         issueValidator.checkIssueCreate(issueCreateDTO, applyType);
         IssueE issueE = issueAssembler.toTarget(issueCreateDTO, IssueE.class);
         Long projectId = issueE.getProjectId();
