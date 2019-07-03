@@ -99,8 +99,7 @@ const { TextArea } = Input;
           >
             <Text>
               <div style={{
-                ...textStyle,
-                maxWidth: feature ? 200 : '',
+                ...textStyle,                
                 wordBreak: 'break-all',
                 whiteSpace: 'pre-line',
               }}
@@ -109,8 +108,7 @@ const { TextArea } = Input;
               </div>
             </Text>
             <Edit>
-              <TextArea
-                style={{ maxWidth: 200 }}
+              <TextArea               
                 autosize
                 maxLength={feature ? 100 : 44}
                 onChange={(e) => {

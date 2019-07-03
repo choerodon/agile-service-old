@@ -99,13 +99,7 @@ class StoryCard extends Component {
       >
         <Icon type="close" className="c7nagile-StoryMap-StoryCard-delete" onClick={this.handlRemoveStory} />
         <div className="summary">
-          <Tooltip title={summary} getPopupContainer={trigger => trigger.parentNode}>
-            {/* {issueId && issueNum ? (
-              <Link to={issueLink(issueId, 'story', issueNum)} style={{ marginRight: 5 }} target="_blank">
-                #
-                {issueNum}
-              </Link>
-            ) : null} */}
+          <Tooltip title={summary} getPopupContainer={trigger => trigger.parentNode.parentNode.parentNode}>            
             {summary}
           </Tooltip>
         </div>

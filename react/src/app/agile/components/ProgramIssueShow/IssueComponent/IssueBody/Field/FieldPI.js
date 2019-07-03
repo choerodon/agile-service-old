@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { toJS } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
@@ -22,7 +23,7 @@ const { Text, Edit } = TextEditToggle;
     const issue = store.getIssue;
     const { closePi = [], activePi = {} } = issue;
     const { name, code } = activePi || {};
-    const piList = closePi;
+    const piList = toJS(closePi);
     if (code) {
       piList.push({
         name,

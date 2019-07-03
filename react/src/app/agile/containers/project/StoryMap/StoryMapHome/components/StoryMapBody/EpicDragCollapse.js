@@ -12,31 +12,27 @@ const DragPreviewImage = React.memo(({ connect, src }) => {
 });
 
 class EpicDragCollapse extends Component {
-  constructor() {
-    super();
-    this.CardPreview = React.createRef();
-    this.state = {
-      src: '',
-    };
-  }
-  
+  state = {
+    src: '',
+  };
+
 
   componentDidMount() {
     // eslint-disable-next-line react/no-find-dom-node
-    setTimeout(() => {     
-      const src = dom2canvas(this.CardPreview.current);
+    setTimeout(() => {
+      const src = dom2canvas(this.CardPreview);
       this.setState({
         src,
       });
     });
   }
-  
+
   render() {
     const { connectDragSource, connectDragPreview, onMouseDown } = this.props;
     const { src } = this.state;
-    return connectDragSource(      
+    return connectDragSource(
       <div
-        role="none"      
+        role="none"
         style={{
           cursor: 'grab',
           position: 'absolute',
@@ -50,10 +46,10 @@ class EpicDragCollapse extends Component {
         <DragPreviewImage connect={connectDragPreview} src={src} />
         {/* {connectDragPreview(<img src={src} />)} */}
         {/* 隐藏元素,用来生成preview */}
-        <div style={{ position: 'fixed', top: -9999, left: -9999 }}>  
-          <EpicCard saveRef={this.CardPreview} {...this.props} />
+        <div style={{ position: 'fixed', top: -9999, left: -9999 }}>
+          <EpicCard saveRef={(CardPreview) => { this.CardPreview = CardPreview; }} {...this.props} />
         </div>
-      </div>,     
+      </div>,
     );
   }
 }
