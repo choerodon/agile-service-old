@@ -1,19 +1,22 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Select } from 'choerodon-ui';
+import { observer } from 'mobx-react';
 import FiltersProvider from '../../../../../../components/FiltersProvider';
 import { configTheme } from '../../../../../../common/utils';
 import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 
 const { Option } = Select;
 @FiltersProvider(['issueStatus', 'version'])
+@observer
 class Search extends Component {
   setFilter=(field, values) => {
     StoryMapStore.handleFilterChange(field, values.map(Number));
   }
 
   render() {
-    const { filters: { issueStatus, version: versionList } } = this.props;
+    const { filters: { issueStatus } } = this.props;
+    const { versionList } = StoryMapStore;
     return (
       <div style={{
         height: 48, 
@@ -38,14 +41,16 @@ class Search extends Component {
             {issueStatus.map(({ text, value }) => <Option value={value}>{text}</Option>)}
           </Select>
           <Select
-            {...configTheme({ list: versionList, primary: true })} 
+            {...configTheme({
+              list: versionList, primary: true, textField: 'name', valueFiled: 'versionId', 
+            })} 
             allowClear
             mode="multiple"
             style={{ width: 100 }}
             onChange={this.setFilter.bind(this, 'versionList')}
             placeholder="版本"
           >
-            {versionList.map(({ text, value }) => <Option value={value}>{text}</Option>)}
+            {versionList.filter(version => version.versionId !== 'none').map(({ name, versionId }) => <Option value={versionId}>{name}</Option>)}
           </Select>
         </div> 
       </div>

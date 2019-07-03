@@ -47,6 +47,7 @@ const StoryMapHome = observer(() => {
   };
   const handleCreateVersion = (version) => {
     StoryMapStore.afterCreateVersion(version);
+    document.getElementsByClassName('minimap-container-scroll')[0].scrollTop = 0;
   };
 
   const handleCreateEpic = (newEpic) => {

@@ -192,9 +192,10 @@ class StoryMapStore {
 
   @action afterCreateVersion(version) {
     this.setCreateModalVisible(false);
-    const index = this.versionList.length - 1;
-    this.versionList.splice(index, 0, {
+    // const index = this.versionList.length - 1;
+    this.versionList.unshift({
       ...version,
+      storyNum: 0,
       collapse: false,
     });
     Object.keys(this.storyData).forEach((epicId) => {
