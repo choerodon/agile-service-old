@@ -894,7 +894,7 @@
         FROM agile_issue ai
         LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        left join agile_rank ar on ar.project_id = #{projectId} and ai.issue_id = ar.issue_id and ar.type = 'epic'
+        LEFT JOIN agile_rank ar on ar.project_id = #{projectId} and ai.issue_id = ar.issue_id and ar.type = 'epic'
         WHERE ai.project_id = #{projectId} AND ai.type_code = 'issue_epic'
         ORDER BY ai.epic_sequence DESC
     </select>
@@ -1471,7 +1471,7 @@
         ar.object_version_number as feature_rank_object_version_number
         FROM
         agile_issue ai
-        left join agile_rank ar on ar.project_id = #{programId} and ai.issue_id = ar.issue_id and ar.type = 'feature'
+        LEFT JOIN agile_rank ar on ar.project_id = #{projectId} and ai.issue_id = ar.issue_id and ar.type = 'feature'
         , agile_issue_status ais
         WHERE
         ai.program_id = #{programId}
@@ -3618,7 +3618,7 @@
         FROM agile_issue ai
         LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
         LEFT JOIN agile_project_info api ON ai.program_id = api.project_id
-        left join agile_rank ar on ar.program_id = #{programid} and ai.issue_id = ar.issue_id and ar.type = 'epic'
+        left join agile_rank ar on ar.project_id = #{projectId} and ai.issue_id = ar.issue_id and ar.type = 'epic'
         WHERE ai.program_id = #{programId} AND ai.type_code = 'issue_epic'
         ORDER BY ai.epic_sequence DESC
     </select>
