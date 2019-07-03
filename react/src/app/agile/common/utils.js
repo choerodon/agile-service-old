@@ -3,7 +3,6 @@ import { stores } from '@choerodon/boot';
 import { DeltaOperation } from 'react-quill';
 import { find } from 'lodash';
 import { uploadImage, uploadFile } from '../api/FileApi';
-import { SERVICES_URL } from './Constant';
 
 const { AppState } = stores;
 const QuillDeltaToHtmlConverter = require('quill-delta-to-html');
@@ -52,7 +51,7 @@ export function replaceBase64ToUrl(imgUrlList, imgBase, text) {
   const deltaOps = text;
   const imgMap = {};
   imgUrlList.forEach((imgUrl, index) => {
-    imgMap[imgBase[index]] = `${SERVICES_URL}${imgUrl}`;
+    imgMap[imgBase[index]] = `${imgUrl}`;
   });
   deltaOps.forEach((item, index) => {
     if (item.insert && item.insert.image && imgBase.indexOf(item.insert.image) !== -1) {

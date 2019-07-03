@@ -43,5 +43,3 @@ export const TYPE_NAME = {
   issue_epic: '史诗',
   sub_task: '子任务',
 };
-
-export const SERVICES_URL = 'SERVICES_URL_EXAMPLE';
