@@ -175,9 +175,9 @@ class StoryMapStore {
     }]).map((version) => {
       const oldVersion = find(this.versionList, { versionId: version.versionId });
       if (oldVersion) {
-        return { ...version, collapse: oldVersion.collapse };
+        return { ...version, storyNum: 0, collapse: oldVersion.collapse };
       } else {
-        return { ...version, collapse: false };
+        return { ...version, storyNum: 0, collapse: false };
       }
     });
   }
@@ -282,11 +282,8 @@ class StoryMapStore {
 
   @action addStoryNumToVersion(versionId) {
     const version = find(this.versionList, { versionId });
-    if (version) {
-      if (!version.storyNum) {
-        version.storyNum = 0;
-      }
-      version.storyNum += 1;
+    if (version) {      
+      version.storyNum += 1;   
     }
   }
 

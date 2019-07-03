@@ -15,7 +15,7 @@ class TitleCell extends Component {
   renderTitle = (storyCollapse) => {
     const { swimLine, isFullScreen } = StoryMapStore;
     const { version } = this.props;
-
+    const { storyNum } = version;
     switch (swimLine) {
       case 'none': {
         return null;
@@ -31,7 +31,7 @@ class TitleCell extends Component {
               }}
             />
             {version.name}
-            {` (${version.storyNum || 0})`}
+            {` (${storyNum || 0})`}
             {version.versionId === 'none' && !isFullScreen && (
               <Tooltip title="创建版本">
                 <Icon
