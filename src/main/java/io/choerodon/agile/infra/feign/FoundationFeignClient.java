@@ -42,7 +42,7 @@ public interface FoundationFeignClient {
 
     @PostMapping("/v1/projects/{project_id}/field_value/sort/getInstanceIds")
     ResponseEntity<List<Long>> sortIssueIdsByFieldValue(@ApiParam(value = "组织id", required = true)
-                                                        @RequestParam Long organizationId,
+                                                        @RequestParam("organizationId") Long organizationId,
                                                         @ApiParam(value = "项目id", required = true)
                                                         @PathVariable("project_id") Long projectId,
                                                         @ApiParam(value = "分页信息", required = true)
