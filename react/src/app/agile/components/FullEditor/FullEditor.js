@@ -47,6 +47,7 @@ class FullEditor extends Component {
       >
         <WYSIWYGEditor
           autoFocus
+          hideFullScreen
           value={delta}
           style={{
             width: '100%', marginTop: 20, height: '100%',

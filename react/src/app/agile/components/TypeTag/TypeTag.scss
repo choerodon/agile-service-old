@@ -1,16 +1,10 @@
 .c7n-typeTag {
-  display: flex;
-  margin: -3px;
-  .icon-wapper {
-    display: flex;
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    color: #fff;
-  }
-
+  display: inline-block;
+  vertical-align: middle;
+  height: 27px;
+  line-height: 22px;
   .name {
     margin-left: 4px;
-    line-height: 25px;
+    vertical-align: middle;
   }
 }

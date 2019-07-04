@@ -11,7 +11,7 @@ import {
   handleFileUpload, beforeTextUpload, randomString,
 } from '../../common/utils';
 import IsInProgramStore from '../../stores/common/program/IsInProgramStore';
-
+import IssueLinkType from '../../api/IssueLinkType';
 import {
   createIssue, loadLabels, loadPriorities, loadVersions,
   loadSprints, loadComponents, loadEpics, loadIssuesInLink,
@@ -19,7 +19,6 @@ import {
 } from '../../api/NewIssueApi';
 import { getUsers } from '../../api/CommonApi';
 import WYSIWYGEditor from '../WYSIWYGEditor';
-import FullEditor from '../FullEditor';
 import UserHead from '../UserHead';
 import TypeTag from '../TypeTag';
 import './CreateIssue.scss';
@@ -59,13 +58,10 @@ class CreateIssue extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      delta: '',
-      edit: false,
       createLoading: false,
       fileList: [],
       selectLoading: true,
       loading: true,
-
       originLabels: [],
       originComponents: [],
       originEpics: [],
@@ -74,10 +70,8 @@ class CreateIssue extends Component {
       originSprints: [],
       originUsers: [],
       originIssueTypes: [],
-
       defaultPriority: false,
       defaultTypeId: false,
-
       newIssueTypeCode: '',
       storyPoints: '',
       estimatedTime: '',
@@ -131,18 +125,14 @@ class CreateIssue extends Component {
     this.setState({
       selectLoading: true,
     });
-    axios.post(`/agile/v1/projects/${AppState.currentMenuType.id}/issue_link_types/query_all`, {
-      contents: [],
-      linkName: '',
-    })
-      .then((res) => {
-        this.setState({
-          selectLoading: false,
-          links: res.list,
-          originLinks: res.list,
-        });
-        this.transform(res.list);
+    IssueLinkType.queryAll().then((res) => {
+      this.setState({
+        selectLoading: false,
+        links: res.list,
+        originLinks: res.list,
       });
+      this.transform(res.list);
+    });
   }
 
   setFileList = (data) => {
@@ -303,17 +293,34 @@ class CreateIssue extends Component {
       originLabels,
       originFixVersions,
       originIssueTypes,
-      delta,
       storyPoints,
       estimatedTime,
       originLinks,
     } = this.state;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const { typeCode } = originIssueTypes.find(t => t.id === values.typeId);
+        const {
+          typeId,
+          summary,
+          description,
+          sprintId,
+          epicId,
+          epicName,
+          assigneedId,
+          benfitHypothesis,
+          acceptanceCritera,
+          featureType,
+          componentIssueRel,
+          priorityId,
+          issueLabel,
+          fixVersionIssueRel,
+          linkTypeId,
+          linkIssues,
+        } = values;
+        const { typeCode } = originIssueTypes.find(t => t.id === typeId);
         const exitComponents = originComponents;
-        const componentIssueRelDTOList = _.map(values.componentIssueRel
-          && values.componentIssueRel.filter(v => v && v.trim()), (component) => {
+        const componentIssueRelDTOList = _.map(componentIssueRel
+          && componentIssueRel.filter(v => v && v.trim()), (component) => {
           const target = _.find(exitComponents, { name: component.trim() });
           if (target) {
             return target;
@@ -325,7 +332,7 @@ class CreateIssue extends Component {
           }
         });
         const exitLabels = originLabels;
-        const labelIssueRelDTOList = _.map(values.issueLabel, (label) => {
+        const labelIssueRelDTOList = _.map(issueLabel, (label) => {
           const target = _.find(exitLabels, { labelName: label });
           if (target) {
             return target;
@@ -337,8 +344,8 @@ class CreateIssue extends Component {
           }
         });
         const exitFixVersions = originFixVersions;
-        const fixVersionIssueRelDTOList = _.map(values.fixVersionIssueRel
-          && values.fixVersionIssueRel.filter(v => v && v.trim()), (version) => {
+        const fixVersionIssueRelDTOList = _.map(fixVersionIssueRel
+          && fixVersionIssueRel.filter(v => v && v.trim()), (version) => {
           const target = _.find(exitFixVersions, { name: version.trim() });
           if (target) {
             return {
@@ -354,20 +361,20 @@ class CreateIssue extends Component {
           }
         });
         const issueLinkCreateDTOList = [];
-        if (values.linkTypeId) {
-          Object.keys(values.linkTypeId).forEach((link) => {
-            if (values.linkTypeId[link] && values.linkIssues[link]) {
-              const currentLinkType = _.find(originLinks, { linkTypeId: values.linkTypeId[link].split('+')[0] * 1 });
-              values.linkIssues[link].forEach((issueId) => {
-                if (currentLinkType.inWard === values.linkTypeId[link].split('+')[1]) {
+        if (linkTypeId) {
+          Object.keys(linkTypeId).forEach((link) => {
+            if (linkTypeId[link] && linkIssues[link]) {
+              const currentLinkType = _.find(originLinks, { linkTypeId: linkTypeId[link].split('+')[0] * 1 });
+              linkIssues[link].forEach((issueId) => {
+                if (currentLinkType.inWard === linkTypeId[link].split('+')[1]) {
                   issueLinkCreateDTOList.push({
-                    linkTypeId: values.linkTypeId[link].split('+')[0] * 1,
+                    linkTypeId: linkTypeId[link].split('+')[0] * 1,
                     linkedIssueId: issueId * 1,
                     in: false,
                   });
                 } else {
                   issueLinkCreateDTOList.push({
-                    linkTypeId: values.linkTypeId[link].split('+')[0] * 1,
+                    linkTypeId: linkTypeId[link].split('+')[0] * 1,
                     linkedIssueId: issueId * 1,
                     in: true,
                   });
@@ -378,16 +385,16 @@ class CreateIssue extends Component {
         }
 
         const extra = {
-          issueTypeId: values.typeId,
+          issueTypeId: typeId,
           typeCode,
-          summary: values.summary.trim(),
-          priorityId: values.priorityId,
-          priorityCode: `priority-${values.priorityId}`,
-          sprintId: values.sprintId || 0,
-          epicId: values.epicId || 0,
-          epicName: values.epicName,
+          summary: summary.trim(),
+          priorityId,
+          priorityCode: `priority-${priorityId}`,
+          sprintId: sprintId || 0,
+          epicId: epicId || 0,
+          epicName,
           parentIssueId: 0,
-          assigneeId: values.assigneedId,
+          assigneeId: assigneedId,
           labelIssueRelDTOList,
           versionIssueRelDTOList: fixVersionIssueRelDTOList,
           componentIssueRelDTOList,
@@ -395,20 +402,19 @@ class CreateIssue extends Component {
           remainingTime: estimatedTime,
           issueLinkCreateDTOList,
           featureDTO: {
-            benfitHypothesis: values.benfitHypothesis,
-            acceptanceCritera: values.acceptanceCritera,
-            featureType: values.featureType,
+            benfitHypothesis,
+            acceptanceCritera,
+            featureType,
           },
         };
         this.setState({ createLoading: true });
-        const deltaOps = delta;
+        const deltaOps = description;
         if (deltaOps) {
           beforeTextUpload(deltaOps, extra, this.handleSave);
         } else {
           extra.description = '';
           this.handleSave(extra);
         }
-        // this.props.onOk(extra);
       }
     });
   };
@@ -642,7 +648,6 @@ class CreateIssue extends Component {
   };
 
   getIssueTypes = () => {
-    const createTypes = [];
     const { originIssueTypes } = this.state;
     return IsInProgramStore.isInProgram
       ? originIssueTypes.filter(type => (!['issue_epic', 'feature', 'sub_task'].includes(type.typeCode)))
@@ -657,7 +662,7 @@ class CreateIssue extends Component {
     } = field;
     const {
       originIssueTypes, originPriorities, defaultPriority, storyPoints,
-      edit, delta, originUsers, selectLoading, estimatedTime,
+      originUsers, selectLoading, estimatedTime,
       originEpics, originSprints, originFixVersions, originComponents,
       originLabels, newIssueTypeCode, defaultTypeId,
     } = this.state;
@@ -692,12 +697,10 @@ class CreateIssue extends Component {
                 >
                   {this.getIssueTypes().map(type => (
                     <Option key={type.id} value={type.id}>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', padding: '2px' }}>
-                        <TypeTag
-                          data={type}
-                          showName
-                        />
-                      </div>
+                      <TypeTag
+                        data={type}
+                        showName
+                      />
                     </Option>
                   ))}
                 </Select>,
@@ -1065,30 +1068,13 @@ class CreateIssue extends Component {
         );
       case 'description':
         return (
-          <div style={{ width: 520 }}>
-            <div style={{ display: 'flex', marginBottom: 3, alignItems: 'center' }}>
-              <div style={{ fontWeight: 'bold' }}>描述</div>
-              <div style={{ marginLeft: 80 }}>
-                <Button className="leftBtn" funcType="flat" onClick={() => this.setState({ edit: true })} style={{ display: 'flex', alignItems: 'center' }}>
-                  <Icon type="zoom_out_map" style={{ color: '#3f51b5', fontSize: '18px', marginRight: 12 }} />
-                  <span style={{ color: '#3f51b5' }}>全屏编辑</span>
-                </Button>
-              </div>
-            </div>
-            {
-              !edit && (
-                <div className="clear-p-mw">
-                  <WYSIWYGEditor
-                    value={delta}
-                    style={{ height: 200, width: '100%' }}
-                    onChange={(value) => {
-                      this.setState({ delta: value });
-                    }}
-                  />
-                </div>
-              )
-            }
-          </div>
+          <FormItem label={fieldName} style={{ width: 520 }}>
+            {getFieldDecorator(fieldCode)(
+              <WYSIWYGEditor
+                style={{ height: 200, width: '100%' }}
+              />,
+            )}
+          </FormItem>
         );
       default:
         return (
@@ -1125,15 +1111,9 @@ class CreateIssue extends Component {
     } = this.props;
     const { getFieldDecorator } = form;
     const {
-      createLoading, edit, delta, selectLoading, fields, loading,
+      createLoading, selectLoading, fields, loading,
       fileList, newIssueTypeCode, issueLinkArr, originIssues, links,
     } = this.state;
-    const callback = (value) => {
-      this.setState({
-        delta: value,
-        edit: false,
-      });
-    };
     return (
       <Sidebar
         className="c7n-createIssue"
@@ -1157,111 +1137,109 @@ class CreateIssue extends Component {
                 newIssueTypeCode !== 'issue_epic' && (
                   issueLinkArr && issueLinkArr.length > 0 && (
                     issueLinkArr.map((item, index, arr) => (
-                      <div
-                        key={item}
-                        style={{
-                          display: 'flex', width: 520, justifyContent: 'flex-start', alignItems: 'flex-end',
-                        }}
-                      >
-                        <FormItem label="关系" style={{ width: 110, marginRight: 20 }}>
-                          {getFieldDecorator(`linkTypeId[${item}]`, {
-                          })(
-                            <Select
-                              label="关系"
-                              loading={selectLoading}
-                              getPopupContainer={triggerNode => triggerNode.parentNode}
-                              tokenSeparators={[',']}
-                              onFocus={() => {
-                                this.getLinks();
-                              }}
-                            >
-                              {links.map(link => (
-                                <Option key={`${link.linkTypeId}+${link.name}`} value={`${link.linkTypeId}+${link.name}`}>
-                                  {link.name}
-                                </Option>
-                              ))}
-                            </Select>,
-                          )}
-                        </FormItem>
-                        <FormItem label="问题" style={{ width: 290, marginRight: 20 }}>
-                          {getFieldDecorator(`linkIssues[${item}]`, {
-                          })(
-                            <Select
-                              label="问题"
-                              mode="multiple"
-                              loading={selectLoading}
-                              optionLabelProp="showName"
-                              filter
-                              filterOption={false}
-                              onFilterChange={this.onIssueSelectFilterChange.bind(this)}
-                              getPopupContainer={triggerNode => triggerNode.parentNode}
-                            >
-                              {originIssues.map(issue => (
-                                <Option
-                                  key={issue.issueId}
-                                  value={issue.issueId}
-                                  showName={issue.issueNum}
-                                >
-                                  <div style={{
-                                    display: 'inline-flex',
-                                    flex: 1,
-                                    width: 'calc(100% - 30px)',
-                                    alignItems: 'center',
-                                    verticalAlign: 'bottom',
-                                  }}
+                      <Row gutter={16} style={{ width: 520 }}>
+                        <Col span={8}>
+                          <FormItem label="关系">
+                            {getFieldDecorator(`linkTypeId[${item}]`, {
+                            })(
+                              <Select
+                                label="关系"
+                                loading={selectLoading}
+                                getPopupContainer={triggerNode => triggerNode.parentNode}
+                                tokenSeparators={[',']}
+                                onFocus={() => {
+                                  this.getLinks();
+                                }}
+                              >
+                                {links.map(link => (
+                                  <Option key={`${link.linkTypeId}+${link.name}`} value={`${link.linkTypeId}+${link.name}`}>
+                                    {link.name}
+                                  </Option>
+                                ))}
+                              </Select>,
+                            )}
+                          </FormItem>
+                        </Col>
+                        <Col span={12}>
+                          <FormItem label="问题">
+                            {getFieldDecorator(`linkIssues[${item}]`, {
+                            })(
+                              <Select
+                                label="问题"
+                                mode="multiple"
+                                loading={selectLoading}
+                                optionLabelProp="showName"
+                                filter
+                                filterOption={false}
+                                onFilterChange={this.onIssueSelectFilterChange.bind(this)}
+                                getPopupContainer={triggerNode => triggerNode.parentNode}
+                              >
+                                {originIssues.map(issue => (
+                                  <Option
+                                    key={issue.issueId}
+                                    value={issue.issueId}
+                                    showName={issue.issueNum}
                                   >
-                                    <TypeTag
-                                      data={issue.issueTypeDTO}
-                                    />
-                                    <span style={{
-                                      paddingLeft: 12, paddingRight: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                                    <div style={{
+                                      display: 'inline-flex',
+                                      flex: 1,
+                                      width: 'calc(100% - 30px)',
+                                      alignItems: 'center',
+                                      verticalAlign: 'bottom',
                                     }}
                                     >
-                                      {issue.issueNum}
-                                    </span>
-                                    <div style={{ overflow: 'hidden', flex: 1 }}>
-                                      <p style={{
-                                        paddingRight: '25px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 0, maxWidth: 'unset',
+                                      <TypeTag
+                                        data={issue.issueTypeDTO}
+                                      />
+                                      <span style={{
+                                        paddingLeft: 12, paddingRight: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                                       }}
                                       >
-                                        {issue.summary}
-                                      </p>
+                                        {issue.issueNum}
+                                      </span>
+                                      <div style={{ overflow: 'hidden', flex: 1 }}>
+                                        <p style={{
+                                          paddingRight: '25px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 0, maxWidth: 'unset',
+                                        }}
+                                        >
+                                          {issue.summary}
+                                        </p>
+                                      </div>
                                     </div>
-                                  </div>
-                                </Option>
-                              ))}
-                            </Select>,
-                          )}
-                        </FormItem>
-                        <Button
-                          shape="circle"
-                          style={{ marginBottom: 10, marginRight: 10 }}
-                          onClick={() => {
-                            arr.splice(index + 1, 0, randomString(5));
-                            this.setState({
-                              issueLinkArr: arr,
-                            });
-                          }}
-                        >
-                          <Icon type="add icon" />
-                        </Button>
-                        {
-                          issueLinkArr.length > 1 ? (
-                            <Button
-                              shape="circle"
-                              style={{ marginBottom: 10 }}
-                              onClick={() => {
-                                arr.splice(index, 1);
-                                this.setState({
-                                  issueLinkArr: arr,
-                                });
-                              }}
-                            >
-                              <Icon type="delete" />
-                            </Button>
-                          ) : null
-                        }
-                      </div>
+                                  </Option>
+                                ))}
+                              </Select>,
+                            )}
+                          </FormItem>
+                        </Col>
+                        <Col span={4} style={{ marginTop: 10 }}>
+                          <Button
+                            shape="circle"
+                            icon="add"
+                            onClick={() => {
+                              arr.splice(index + 1, 0, randomString(5));
+                              this.setState({
+                                issueLinkArr: arr,
+                              });
+                            }}
+                          />
+                          {
+                            issueLinkArr.length > 1 ? (
+                              <Button
+                                shape="circle"
+                                style={{ marginLeft: 10 }}
+                                icon="delete"
+                                onClick={() => {
+                                  arr.splice(index, 1);
+                                  this.setState({
+                                    issueLinkArr: arr,
+                                  });
+                                }}
+                              />
+                            ) : null
+                          }
+                        </Col>
+                      </Row>
                     )))
                 )
               }
@@ -1279,16 +1257,6 @@ class CreateIssue extends Component {
               </div>
             </div>
           </Spin>
-          {
-            edit ? (
-              <FullEditor
-                initValue={delta}
-                visible={edit}
-                onCancel={() => this.setState({ edit: false })}
-                onOk={callback}
-              />
-            ) : null
-          }
         </Content>
       </Sidebar>
     );

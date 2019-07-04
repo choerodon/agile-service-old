@@ -3,7 +3,7 @@
   "routeName": "agile",
   "version": "0.19.0",
   "description": "",
-  "main": "./react/src/app/agile/containers/AGILEIndex.js",
+  "main": "./lib/src/app/agile/containers/AGILEIndex.js",
   "files": [
     "lib"
   ],
@@ -35,7 +35,7 @@
     "timeago-react": "2.0.0"
   },
   "devDependencies": {
-    "@choerodon/boot": "0.18.x",
+    "@choerodon/boot": "0.19.x",
     "@choerodon/master": "0.18.x",
     "babel-preset-env": "^1.7.0",
     "gulp": "^3.9.1",
