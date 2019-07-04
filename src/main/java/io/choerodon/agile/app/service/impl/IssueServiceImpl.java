@@ -3,6 +3,7 @@ package io.choerodon.agile.app.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
@@ -461,10 +462,15 @@ public class IssueServiceImpl implements IssueService {
                 List<Long> issueIdsWithSub = issueMapper.queryIssueIdsListWithSub(projectId, searchDTO, searchSql, searchDTO.getAssigneeFilterIds());
                 List<Long> foundationIssueIds = foundationFeignClient.sortIssueIdsByFieldValue(organizationId, projectId, pageRequest.getSort().toString()).getBody();
 
-                List<Long> foundationIssueIdsWithSub = issueIdsWithSub.stream().filter(foundationIssueIds::contains).collect(Collectors.toList());
+                List<Long> foundationIssueIdsWithSub = foundationIssueIds.stream().filter(issueIdsWithSub::contains).collect(Collectors.toList());
                 List<Long> issueIdsWithSubWithoutFoundation = issueIdsWithSub.stream().filter(t -> !foundationIssueIdsWithSub.contains(t)).collect(Collectors.toList());
-                issueIdPage = new PageInfo<>(handleIssueLists(foundationIssueIdsWithSub, issueIdsWithSubWithoutFoundation, pageRequest)
+
+                Page page = new Page<>(pageRequest.getPage(), pageRequest.getSize());
+                page.setTotal(issueIdsWithSub.size());
+                page.addAll(handleIssueLists(foundationIssueIdsWithSub, issueIdsWithSubWithoutFoundation, pageRequest)
                         .subList((pageRequest.getPage() - 1) * pageRequest.getSize(), pageRequest.getPage() * pageRequest.getSize()));
+
+                issueIdPage = page.toPageInfo();
             } else {
                 Map<String, String> order = new HashMap<>(1);
                 //处理表映射
@@ -1309,7 +1315,7 @@ public class IssueServiceImpl implements IssueService {
     public List<IssueFeatureDTO> listFeature(Long projectId, Long organizationId) {
         ProjectDTO program = userRepository.getGroupInfoByEnableProject(organizationId, projectId);
         if (program != null) {
-            List<IssueDO> programFeatureList = issueMapper.queryIssueFeatureSelectList(program.getId(), projectId,null);
+            List<IssueDO> programFeatureList = issueMapper.queryIssueFeatureSelectList(program.getId(), projectId, null);
             List<IssueFeatureDTO> issueFeatureDTOList = issueAssembler.toTargetList(programFeatureList, IssueFeatureDTO.class);
             setFeatureStatisticDetail(projectId, issueFeatureDTOList);
             return issueFeatureDTOList;
@@ -1755,14 +1761,36 @@ public class IssueServiceImpl implements IssueService {
      */
     private Map<String, String[]> handleExportFields(List<String> exportFieldCodes, Long projectId, Long organizationId) {
         Map<String, String[]> fieldMap = new HashMap<>(2);
+        ObjectMapper m = new ObjectMapper();
+
+        Object content = Optional.ofNullable(foundationFeignClient
+                .listQuery(projectId, organizationId, ObjectSchemeCode.AGILE_ISSUE)
+                .getBody()).orElseThrow(() -> new CommonException("error.foundation.listQuery"))
+                .get("content");
+
+        List<Object> contentList = m.convertValue(content, List.class);
+        List<ObjectSchemeFieldDTO> fieldDTOS = new ArrayList<>();
+
+        if (content != null) {
+            contentList.forEach(k ->
+                    fieldDTOS.add(m.convertValue(k, ObjectSchemeFieldDTO.class)));
+        }
+
+        List<ObjectSchemeFieldDTO> userDefinedFieldDTOS = fieldDTOS.stream().
+                filter(v -> !v.getSystem()).collect(Collectors.toList());
+
         if (exportFieldCodes != null && exportFieldCodes.size() != 0) {
-            Map<String, String> data = new HashMap<>(FIELDS.length);
+            Map<String, String> data = new HashMap<>(FIELDS.length + userDefinedFieldDTOS.size());
             for (int i = 0; i < FIELDS.length; i++) {
                 data.put(FIELDS[i], FIELDS_NAME[i]);
             }
+            for (ObjectSchemeFieldDTO userDefinedFieldDTO : userDefinedFieldDTOS) {
+                data.put(userDefinedFieldDTO.getCode(), userDefinedFieldDTO.getName());
+            }
+
             List<String> fieldCodes = new ArrayList<>(exportFieldCodes.size());
             List<String> fieldNames = new ArrayList<>(exportFieldCodes.size());
-            exportFieldCodes.stream().forEach(code -> {
+            exportFieldCodes.forEach(code -> {
                 String name = data.get(code);
                 if (name != null) {
                     fieldCodes.add(code);
@@ -1774,24 +1802,6 @@ public class IssueServiceImpl implements IssueService {
             fieldMap.put(FIELD_CODES, fieldCodes.stream().toArray(String[]::new));
             fieldMap.put(FIELD_NAMES, fieldNames.stream().toArray(String[]::new));
         } else {
-            ObjectMapper m = new ObjectMapper();
-
-            Object content = Optional.ofNullable(foundationFeignClient
-                    .listQuery(projectId, organizationId, ObjectSchemeCode.AGILE_ISSUE)
-                    .getBody()).orElseThrow(() -> new CommonException("error.foundation.listQuery"))
-                    .get("content");
-
-            List<Object> contentList = m.convertValue(content, List.class);
-            List<ObjectSchemeFieldDTO> fieldDTOS = new ArrayList<>();
-
-            if (content != null) {
-                contentList.forEach(k ->
-                        fieldDTOS.add(m.convertValue(k, ObjectSchemeFieldDTO.class)));
-            }
-
-            List<ObjectSchemeFieldDTO> userDefinedFieldDTOS = fieldDTOS.stream().
-                    filter(v -> !v.getSystem()).collect(Collectors.toList());
-
             if (!userDefinedFieldDTOS.isEmpty()) {
                 List<String> fieldCodes = new ArrayList(Arrays.asList(FIELDS));
                 List<String> fieldNames = new ArrayList(Arrays.asList(FIELDS_NAME));
