@@ -53,7 +53,7 @@ class Issue extends Component {
    * 处理传入的 Param（如果有的话）
    * 利用 filterControler 类中的 refresh 方法发出初始化请求（包含优先级，状态，类型，标签数据）
    */
-  componentDidMount() {    
+  componentDidMount() {
     this.axiosGetProjectInfo().then(() => {
       const { location } = this.props;
       if (location.search.indexOf('param') !== -1) {
@@ -214,9 +214,9 @@ class Issue extends Component {
             </div>
           </div>
           <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-            
+
             {/* <ExpandCssControler /> */}
-            
+
             <div
               className="c7n-content-issue"
               style={{
@@ -226,7 +226,7 @@ class Issue extends Component {
                 overflowY: 'scroll',
               }}
             >
-              
+
               <IssueTable filterControler={this.filterControler} ref={this.saveRef('issueTable')} />
             </div>
             <ExpandWideCard

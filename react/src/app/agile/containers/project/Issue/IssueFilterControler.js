@@ -7,7 +7,15 @@
 import { axios, stores } from '@choerodon/boot';
 import IssueStore from '../../../stores/project/sprint/IssueStore';
 import {
-  loadIssueTypes, loadStatusList, loadPriorities, loadLabels, loadComponents, loadVersions, loadEpics, loadSprints,
+  loadIssueTypes,
+  loadStatusList,
+  loadPriorities,
+  loadLabels,
+  loadComponents,
+  loadVersions,
+  loadEpics,
+  loadSprints,
+  getFoundationHeader,
 } from '../../../api/NewIssueApi';
 import { getUsers } from '../../../api/CommonApi';
 
@@ -141,7 +149,7 @@ export default class IssueFilterControler {
       const loadIssue = axios.post(
         `/agile/v1/projects/${AppState.currentMenuType.id}/issues/include_sub?organizationId=${AppState.currentMenuType.organizationId}&page=${page}&size=${size}`, filters,
       );
-      return Promise.all([loadIssueTypes(), loadStatusList(), loadPriorities(), getUsers(), loadLabels(), loadComponents(), loadVersions(), loadEpics(), loadSprints(), loadIssue]);
+      return Promise.all([loadIssueTypes(), loadStatusList(), loadPriorities(), getUsers(), loadLabels(), loadComponents(), loadVersions(), loadEpics(), loadSprints(), getFoundationHeader(), loadIssue]);
     } else {
       return axios.post(
         `/agile/v1/projects/${AppState.currentMenuType.id}/issues/include_sub?organizationId=${AppState.currentMenuType.organizationId}&page=${page}&size=${size}`, filters,

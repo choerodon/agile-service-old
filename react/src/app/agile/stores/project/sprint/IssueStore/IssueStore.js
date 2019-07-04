@@ -4,7 +4,6 @@ import {
 import { store, stores, axios } from '@choerodon/boot';
 import moment from 'moment';
 import _ from 'lodash';
-import { empty } from 'rxjs/Observer';
 
 const { AppState } = stores;
 // 当前跳转是否需要单选信息（跳转单个任务时使用）
@@ -17,7 +16,7 @@ const defaultTableShowColumns = [
   'priorityId',
   'assignee',
   'sprint',
-  'lastUpdateDate',    
+  'lastUpdateDate',
 ];
 @store('SprintCommonStore')
 class SprintCommonStore {
@@ -192,6 +191,8 @@ class SprintCommonStore {
   // 经办人
   @observable users = [];
 
+  @observable foundationHeader = [];
+
   // 筛选列表是否显示
   @observable filterListVisible = false;
 
@@ -308,6 +309,10 @@ class SprintCommonStore {
   @observable tableShowColumns = defaultTableShowColumns
 
   @computed get getTableShowColumns() {
+    const obj = {};
+    this.foundationHeader.forEach((item) => {
+      obj[item.code] = `${item.code}`;
+    });
     const transform = {
       issueNum: 'issueNum',
       summary: 'summary',
@@ -331,6 +336,7 @@ class SprintCommonStore {
       label: 'labelName',
       storyPoints: 'storyPoints',
       component: 'componentName',
+      ...obj,
     };
 
     return this.tableShowColumns.map(key => transform[key]);
@@ -487,7 +493,7 @@ class SprintCommonStore {
    * 设置初始化信息
    * @param res（loadCurrentSetting 返回数据）
    */
-  @action setCurrentSetting([issueTypes, issueStatus, issuePriority, users, tagData, issueComponents, issueVersions, issueEpics, issueSprints, issues]) {
+  @action setCurrentSetting([issueTypes, issueStatus, issuePriority, users, tagData, issueComponents, issueVersions, issueEpics, issueSprints, foundationHeader, issues]) {
     /* eslint-disable */
     this.issueTypes = issueTypes;
     this.issueStatus = issueStatus;
@@ -499,6 +505,7 @@ class SprintCommonStore {
     this.issueVersions = issueVersions;
     this.issueEpics = issueEpics;
     this.issueSprints = issueSprints;
+    this.foundationHeader = foundationHeader;
     // 生成 Filter 单选项所需数据
     this.columnFilter = new Map([
       [
@@ -593,6 +600,10 @@ class SprintCommonStore {
     this.issues = data;
     this.barFilter = barFilters;
     this.loading = false;
+  }
+
+  @computed get getFoundationHeader() {
+    return this.foundationHeader;
   }
 
   @computed get getParamFilter() {
