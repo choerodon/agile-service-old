@@ -180,10 +180,9 @@ class AdvancedSearch extends Component {
         <div className="c7n-mySearch">
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Select
-              key="myFilterSelect"
-              className="myFilterSelect"
+              key="myFilterSelect"              
               allowClear
-              dropdownClassName="myFilterSelect-dropdown"
+              className="SelectTheme"  
               dropdownMatchSelectWidth={false}
               placeholder="我的筛选"
               labelInValue
@@ -204,10 +203,10 @@ class AdvancedSearch extends Component {
 
             <Select
               key="issueTypeSelect"
-              className="issueTypeSelect"
+              className="SelectTheme"  
               mode="multiple"
               allowClear
-              dropdownClassName="issueTypeSelect-dropdown"
+              
               dropdownMatchSelectWidth={false}
               placeholder="问题类型"
               labelInValue
@@ -231,10 +230,9 @@ class AdvancedSearch extends Component {
 
             <Select
               key="statusSelect"
-              className="statusSelect"
+              className="SelectTheme"  
               mode="multiple"
-              allowClear
-              dropdownClassName="statusSelect-dropdown"
+              allowClear              
               dropdownMatchSelectWidth={false}
               placeholder="状态"
               labelInValue
@@ -258,9 +256,8 @@ class AdvancedSearch extends Component {
 
             <Select
               key="prioritySelect"
-              className="prioritySelect"
-              mode="multiple"
-              dropdownClassName="prioritySelect-dropdown"
+              className="SelectTheme"  
+              mode="multiple"             
               dropdownMatchSelectWidth={false}
               allowClear
               placeholder="优先级"
@@ -287,10 +284,9 @@ class AdvancedSearch extends Component {
               type="user"
               loadWhenMount
               key="assigneeSelect"
-              className="assigneeSelect"
+              className="SelectTheme"  
               mode="multiple"
-              allowClear         
-              dropdownClassName="assigneeSelect-dropdown"
+              allowClear
               dropdownMatchSelectWidth={false}
               placeholder="经办人"              
               saveList={(users) => { this.users = unionBy(this.users, users, 'id'); }}

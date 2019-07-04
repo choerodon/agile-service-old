@@ -149,12 +149,14 @@ class QuickSearch extends Component {
           <React.Fragment>
             {hideQuickSearch ? null : (
               <Select
-                key="quickSearchSelect"
-                className="quickSearchSelect"
-                dropdownClassName="quickSearchSelect-dropdown"
+                key="quickSearchSelect"    
+                showCheckAll={false}     
+                className="SelectTheme"          
                 mode="multiple"
                 labelInValue
                 placeholder="快速搜索"
+                style={{ width: 100 }}   
+                dropdownMatchSelectWidth={false}     
                 maxTagCount={0}
                 maxTagPlaceholder={ommittedValues => `${ommittedValues.map(item => item.label).join(', ')}`}
                 onChange={this.handleQuickSearchChange}
@@ -180,11 +182,13 @@ class QuickSearch extends Component {
             {
               onAssigneeChange && (
                 <Select
-                  key="assigneeSelect"
-                  className="assigneeSelect"
-                  mode="multiple"
-                  dropdownClassName="assigneeSelect-dropdown"
+                  key="assigneeSelect"       
+                  showCheckAll={false}          
+                  mode="multiple"        
+                  className="SelectTheme"  
+                  style={{ width: 100 }}        
                   placeholder="经办人"
+                  dropdownMatchSelectWidth={false}
                   labelInValue
                   maxTagCount={0}
                   maxTagPlaceholder={ommittedValues => `${ommittedValues.map(item => item.label).join(', ')}`}
@@ -225,8 +229,8 @@ class QuickSearch extends Component {
           </React.Fragment>
         ) : (
           <React.Fragment>
-            {hideQuickSearch ? null : <Select placeholder="快速搜索" className="quickSearchSelect" />}
-            <Select placeholder="经办人" className="assigneeSelect" />
+            {hideQuickSearch ? null : <Select className="SelectTheme" placeholder="快速搜索" />}
+            <Select className="SelectTheme" placeholder="经办人" />
           </React.Fragment>
         )}
       </div>
