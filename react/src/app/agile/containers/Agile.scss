@@ -15,6 +15,10 @@
   position: relative;
   overflow: hidden;
 
+  &:before {
+    border: none !important;
+  }
+
   // Select 下划线
   .c7n-select-underline {
     display: none;
@@ -54,12 +58,8 @@
     transition: 0s;
   }
 
-  .c7n-select-selection__placeholder {
-    color: #4a4a4a;
-  }
-
   &.primary {
-    .c7n-select-selection__placeholder {
+    .c7n-select-label {
       color: #3f51b5;
     }
   }
@@ -69,6 +69,10 @@
 
     // cursor: pointer;
     padding: 0 0 5px 5px;
+
+    .c7n-select-label {
+      margin-top: -2px;
+    }
 
     .c7n-select-search.c7n-select-search--inline {
       display: none;
@@ -107,10 +111,6 @@
         .c7n-ripple-wrapper {
           display: none;
         }
-      }
-
-      .c7n-select-arrow {
-        position: static !important;
       }
     }
   }
