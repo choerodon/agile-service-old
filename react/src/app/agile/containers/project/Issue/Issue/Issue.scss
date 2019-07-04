@@ -355,11 +355,9 @@
 
   .c7n-table {
     margin-top: 2px;
-
-    .c7n-table {
-      table {
-        border-collapse: collapse;
-      }
+    
+    table {
+      border-collapse: collapse;
     }
 
     .c7n-status {
@@ -735,30 +733,13 @@
         }
       }
 
-      .c7n-createRange {
-        display: flex;
-        align-items: center;
-
-        .c7n-calendar-underline {
-          display: none;
-        }
-
-        .c7n-calendar-picker-icon {
-          // display: none;
-          right: -45px;
-          bottom: 1px;
-        }
-
+      .c7n-createRange {    
         .c7n-calendar-range-picker-input {
-          width: 65px;
+          width: calc(100% - 40px);
+          text-align: center;
           overflow: hidden;
-          white-space: nowrap;
           text-overflow: ellipsis;
-        }
-
-        .c7n-calendar-picker-clear {
-          right: -24px;
-        }
+        }       
 
         .c7n-calendar-range-picker-separator,
         .c7n-calendar-range-picker-input[placeholder=""] {

@@ -309,8 +309,8 @@ class AdvancedSearch extends Component {
             {
               (moment(createStartDate).format('YYYY-MM-DD') === moment(projectInfo.creationDate).format('YYYY-MM-DD') || createStartDate === '') && (moment(createEndDate).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') || createEndDate === '') ? (
                 <div className="c7n-createRange">
-                  <RangePicker
-                    format="YYYY-MM-DD hh:mm:ss"
+                  <RangePicker                   
+                    format="YYYY-MM-DD"
                     defaultPickerValue={[moment().subtract(1, 'months'), moment()]}
                     disabledDate={current => current && (current > moment().endOf('day') || current < moment(projectInfo.creationDate).startOf('day'))}
                     allowClear
@@ -321,9 +321,9 @@ class AdvancedSearch extends Component {
               ) : (
                 <Tooltip title={`创建问题时间范围为${moment(createStartDate).format('YYYY-MM-DD')} ~ ${moment(createEndDate).format('YYYY-MM-DD')}`}>
                   <div className="c7n-createRange">
-                    <RangePicker
+                    <RangePicker                    
                       value={[createStartDate && moment(createStartDate), createEndDate && moment(createEndDate)]}
-                      format="YYYY-MM-DD hh:mm:ss"
+                      format="YYYY-MM-DD"
                       disabledDate={current => current && (current > moment().endOf('day') || current < moment(projectInfo.creationDate).startOf('day'))}
                       allowClear
                       onChange={this.handleCreateDateRangeChange}

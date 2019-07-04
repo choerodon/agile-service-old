@@ -79,7 +79,7 @@
     }
 
     .c7n-select-selection__rendered {
-      min-height: 24px;
+      height: 24px;
       display: flex;
       align-items: center;
       margin-bottom: 0;
@@ -114,7 +114,12 @@
       }
     }
   }
-
+  &.c7n-select-multiple{
+    .c7n-select-selection__rendered {
+      min-height: 24px;
+      height: auto;
+    }
+  }
   &.c7n-select-allow-clear {
     .c7n-select-selection__rendered {
 
