@@ -765,7 +765,7 @@ class CreateIssue extends Component {
                 display: 'inline-block',
                 color: 'rgba(63, 81, 181)',
                 marginLeft: 10,
-                marginTop: 20,
+                marginTop: 15,
                 cursor: 'pointer',
               }}
             >

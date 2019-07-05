@@ -23,13 +23,14 @@ function contains(root, n) {
 
 class TextEditToggle extends Component {
   static defaultProps = {
-
+    noButton: true,
   };
 
   static propTypes = {
     saveRef: PropTypes.func,
     className: PropTypes.string,
     disabled: PropTypes.bool,
+    noButton: PropTypes.bool,
     simpleMode: PropTypes.bool,
     formKey: PropTypes.string,
     onSubmit: PropTypes.func,
@@ -68,10 +69,10 @@ class TextEditToggle extends Component {
   componentWillUnmount() {
     document.removeEventListener('mousedown', this.handleDocumentClick);
   }
-  
+
   handleDocumentClick = (event) => {
     const { target } = event;
-    const root = findDOMNode(this); 
+    const root = findDOMNode(this);
     // 如果点击不在当前元素内，就调用submit提交数据
     if (!this.PortalMouseDown && !contains(root, target)) {
       // console.log(target);
@@ -91,7 +92,7 @@ class TextEditToggle extends Component {
   }
 
   // 提交编辑
-  handleSubmit = () => {    
+  handleSubmit = () => {
     try {
       this.props.form.validateFields((err, values) => {
         if (!err) {
@@ -172,7 +173,7 @@ class TextEditToggle extends Component {
     // console.log(childrenArray);
     return childrenArray.map((child) => {
       if (!child.props.getPopupContainer) {
-        return React.cloneElement(child, {        
+        return React.cloneElement(child, {
           getPopupContainer: () => findDOMNode(this),
         });
       } else {
@@ -194,7 +195,7 @@ class TextEditToggle extends Component {
     const { editing, newData } = this.state;
     const { disabled, simpleMode, noButton } = this.props;
     const {
-      originData, formKey, rules, fieldProps, 
+      originData, formKey, rules, fieldProps,
     } = this.props;
     const { getFieldDecorator } = this.props.form;
     // 拿到不同模式下对应的子元素

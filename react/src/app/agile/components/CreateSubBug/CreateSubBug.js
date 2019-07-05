@@ -14,7 +14,6 @@ import {
 } from '../../api/NewIssueApi';
 import { getUsers } from '../../api/CommonApi';
 import WYSIWYGEditor from '../WYSIWYGEditor';
-import FullEditor from '../FullEditor';
 import UserHead from '../UserHead';
 import './CreateSubBug.scss';
 
@@ -41,9 +40,7 @@ class CreateSubBug extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      delta: '',
-      edit: false,
+    this.state = {     
       createLoading: false,
       fileList: [],
       sprint: {},
@@ -118,13 +115,14 @@ class CreateSubBug extends Component {
   };
 
   handleCreateIssue = () => {
-    const { sprint, delta, estimatedTime } = this.state;
+    const { sprint, estimatedTime } = this.state;
     const {
       store, form, issueId,
     } = this.props;
     const { originLabels, originFixVersions } = this.state;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        const { description } = values;
         const subIssueType = store.getIssueTypes && store.getIssueTypes.find(t => t.typeCode === 'bug');
         const exitLabels = originLabels;
         const labelIssueRelDTOList = _.map(values.issueLink, (label) => {
@@ -170,7 +168,7 @@ class CreateSubBug extends Component {
           relateIssueId: issueId,
         };
         this.setState({ createLoading: true });
-        const deltaOps = delta;
+        const deltaOps = description;
         if (deltaOps) {
           beforeTextUpload(deltaOps, extra, this.handleSave);
         } else {
@@ -507,7 +505,7 @@ class CreateSubBug extends Component {
                 display: 'inline-block',
                 color: 'rgba(63, 81, 181)',
                 marginLeft: 10,
-                marginTop: 20,
+                marginTop: 15,
                 cursor: 'pointer',
               }}
             >
@@ -655,30 +653,13 @@ class CreateSubBug extends Component {
         return '';
       case 'description':
         return (
-          <div style={{ width: 520 }}>
-            <div style={{ display: 'flex', marginBottom: 3, alignItems: 'center' }}>
-              <div style={{ fontWeight: 'bold' }}>描述</div>
-              <div style={{ marginLeft: 80 }}>
-                <Button className="leftBtn" funcType="flat" onClick={() => this.setState({ edit: true })} style={{ display: 'flex', alignItems: 'center' }}>
-                  <Icon type="zoom_out_map" style={{ color: '#3f51b5', fontSize: '18px', marginRight: 12 }} />
-                  <span style={{ color: '#3f51b5' }}>全屏编辑</span>
-                </Button>
-              </div>
-            </div>
-            {
-              !edit && (
-                <div className="clear-p-mw">
-                  <WYSIWYGEditor
-                    value={delta}
-                    style={{ height: 200, width: '100%' }}
-                    onChange={(value) => {
-                      this.setState({ delta: value });
-                    }}
-                  />
-                </div>
-              )
-            }
-          </div>
+          <FormItem label={fieldName} style={{ width: 520 }}>
+            {getFieldDecorator(fieldCode)(
+              <WYSIWYGEditor
+                style={{ height: 200, width: '100%' }}
+              />,
+            )}
+          </FormItem>
         );
       default:
         return (
@@ -768,17 +749,7 @@ class CreateSubBug extends Component {
               />
             </div>
           </div>
-        </Spin>
-        {
-          edit ? (
-            <FullEditor
-              initValue={delta}
-              visible={edit}
-              onCancel={() => this.setState({ edit: false })}
-              onOk={callback}
-            />
-          ) : null
-        }
+        </Spin>        
       </Sidebar>
     );
   }
