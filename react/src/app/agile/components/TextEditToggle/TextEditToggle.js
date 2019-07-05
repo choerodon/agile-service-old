@@ -1,14 +1,13 @@
-/* eslint-disable react/no-find-dom-node */
+/* eslint-disable react/no-find-dom-node, react/destructuring-assignment */
 import React, { Component } from 'react';
 import { Form, Icon } from 'choerodon-ui';
 import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
-import { observer } from 'mobx-react';
 import './TextEditToggle.scss';
 // 防止提交前变回原值
-const Text = props => (typeof (props.children) === 'function' ? props.children(props.newData || props.originData) : props.children);
+const Text = ({ children, newData, originData }) => (typeof (children) === 'function' ? children(newData || originData) : children);
 
-const Edit = props => props.children;
+const Edit = ({ children }) => children;
 const FormItem = Form.Item;
 function contains(root, n) {
   let node = n;
@@ -21,7 +20,7 @@ function contains(root, n) {
 
   return false;
 }
-@observer
+
 class TextEditToggle extends Component {
   static defaultProps = {
 
@@ -66,8 +65,12 @@ class TextEditToggle extends Component {
     return null;
   }
 
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleDocumentClick);
+  }
+  
   handleDocumentClick = (event) => {
-    const target = event.target;
+    const { target } = event;
     const root = findDOMNode(this); 
     // 如果点击不在当前元素内，就调用submit提交数据
     if (!this.PortalMouseDown && !contains(root, target)) {
@@ -88,11 +91,11 @@ class TextEditToggle extends Component {
   }
 
   // 提交编辑
-  handleSubmit = () => {
-    document.removeEventListener('mousedown', this.handleDocumentClick);
+  handleSubmit = () => {    
     try {
       this.props.form.validateFields((err, values) => {
         if (!err) {
+          document.removeEventListener('mousedown', this.handleDocumentClick);
           if (this.props.formKey) {
             const newData = values[this.props.formKey];
             if (this.props.onSubmit && newData !== this.props.originData) {
@@ -188,10 +191,10 @@ class TextEditToggle extends Component {
   }
 
   renderChild = () => {
-    const { editing } = this.state;
+    const { editing, newData } = this.state;
+    const { disabled, simpleMode, noButton } = this.props;
     const {
-      originData, formKey, rules, fieldProps, editExtraContent,
-      disabled, simpleMode, noButton,
+      originData, formKey, rules, fieldProps, 
     } = this.props;
     const { getFieldDecorator } = this.props.form;
     // 拿到不同模式下对应的子元素
@@ -203,12 +206,11 @@ class TextEditToggle extends Component {
         className="c7ntest-TextEditToggle-edit"
         onMouseDown={this.handlePortalMouseDown} // Portal的事件会冒泡回父组件
       >
-        {editExtraContent}
         { // 采用form模式就进行form包装,否则
           formKey ? (
             <Form layout="vertical">
               {children.map(child => (
-                <FormItem key={child.key}>
+                <FormItem>
                   {getFieldDecorator(formKey, {
                     rules,
                     initialValue: originData,
@@ -245,7 +247,7 @@ class TextEditToggle extends Component {
   render() {
     const { style, className } = this.props;
     return (
-      <div style={style} className={className}>
+      <div style={style} className={`c7ntest-TextEditToggle ${className}`}>
         {this.renderChild()}
       </div>
     );
