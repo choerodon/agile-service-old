@@ -106,7 +106,7 @@ class EditLink extends Component {
                 }],
                 initialValue: outWard,
               })(
-                <TextArea label="链出描述" autosize maxLength={30} />,
+                <Input label="链出描述" autosize maxLength={30} />,
               )}
             </FormItem>
             <FormItem>
@@ -117,7 +117,7 @@ class EditLink extends Component {
                 }],
                 initialValue: inWard,
               })(
-                <TextArea label="链入描述" autosize maxLength={30} />,
+                <Input label="链入描述" autosize maxLength={30} />,
               )}
             </FormItem>
           </Form>

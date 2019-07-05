@@ -88,7 +88,7 @@ class CreateLink extends Component {
                   message: '链出描述为必输项',
                 }],
               })(
-                <TextArea label="链出描述" autosize maxLength={30} />,
+                <Input label="链出描述" autosize maxLength={30} />,
               )}
             </FormItem>
             <FormItem>
@@ -98,7 +98,7 @@ class CreateLink extends Component {
                   message: '链入描述为必输项',
                 }],
               })(
-                <TextArea label="链入描述" autosize maxLength={30} />,
+                <Input label="链入描述" autosize maxLength={30} />,
               )}
             </FormItem>
           </Form>
