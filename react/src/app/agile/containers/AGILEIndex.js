@@ -21,7 +21,6 @@ const PROJECTSETTINGINDEX = asyncRouter(() => import('./project/ProjectSetting')
 const FASTSEARCHINDEX = asyncRouter(() => import('./project/FastSearch'));
 const REPORTHOSTINDEX = asyncRouter(() => import('./project/ReportHost'));
 const ISSUELINKINDEX = asyncRouter(() => import('./project/IssueLink'));
-const USERMAPINDEX = asyncRouter(() => import('./project/userMap'));
 const STORYMAPINDEX = asyncRouter(() => import('./project/StoryMap'));
 const INERATIONBOARDINDEX = asyncRouter(() => import('./project/IterationBoard'));
 const REPORTBOARD = asyncRouter(() => import('./project/ReportBoard'));
