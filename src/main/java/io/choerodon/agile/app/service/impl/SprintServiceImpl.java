@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Ordering;
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.validator.SprintValidator;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.SprintService;
@@ -96,6 +97,9 @@ public class SprintServiceImpl implements SprintService {
 
     @Autowired
     private ArtMapper artMapper;
+
+    @Autowired
+    private SprintValidator sprintValidator;
 
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String SPRINT_DATA = "sprintData";
@@ -309,6 +313,7 @@ public class SprintServiceImpl implements SprintService {
         }
         SprintE sprintE = sprintUpdateAssembler.toTarget(sprintUpdateDTO, SprintE.class);
         sprintE.checkDate();
+        sprintValidator.checkSprintStartInProgram(sprintE);
         sprintE.startSprint();
         if (sprintUpdateDTO.getWorkDates() != null && !sprintUpdateDTO.getWorkDates().isEmpty()) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
