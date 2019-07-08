@@ -1,7 +1,5 @@
 package io.choerodon.agile.api.dto;
 
-import io.choerodon.agile.infra.dataobject.StoryMapVersionDO;
-
 import java.util.List;
 
 /**
