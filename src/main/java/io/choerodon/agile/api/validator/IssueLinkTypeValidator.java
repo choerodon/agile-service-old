@@ -1,20 +1,19 @@
-package io.choerodon.agile.domain.agile.rule;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+package io.choerodon.agile.api.validator;
 
 import io.choerodon.agile.api.dto.IssueLinkTypeCreateDTO;
 import io.choerodon.agile.api.dto.IssueLinkTypeDTO;
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper;
 import io.choerodon.core.exception.CommonException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
- * @author dinghuang123@gmail.com
- * @since 2018/6/22
+ * Created by HuangFuqiang@choerodon.io on 2019/7/8.
+ * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class IssueLinkTypeRule {
+public class IssueLinkTypeValidator {
 
     @Autowired
     private IssueLinkTypeMapper issueLinkTypeMapper;

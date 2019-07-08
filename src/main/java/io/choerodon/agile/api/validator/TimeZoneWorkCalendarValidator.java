@@ -1,4 +1,4 @@
-package io.choerodon.agile.domain.agile.rule;
+package io.choerodon.agile.api.validator;
 
 import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * @author dinghuang123@gmail.com
- * @since 2018/10/15
+ * Created by HuangFuqiang@choerodon.io on 2019/7/8.
+ * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class TimeZoneWorkCalendarRule {
+public class TimeZoneWorkCalendarValidator {
 
     @Autowired
     private TimeZoneWorkCalendarMapper timeZoneWorkCalendarMapper;
@@ -25,4 +25,5 @@ public class TimeZoneWorkCalendarRule {
             throw new CommonException("error.TimeZoneWorkCalendar.notFound");
         }
     }
+
 }

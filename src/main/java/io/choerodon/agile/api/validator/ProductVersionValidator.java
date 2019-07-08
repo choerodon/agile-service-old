@@ -1,19 +1,21 @@
-package io.choerodon.agile.domain.agile.rule;
+package io.choerodon.agile.api.validator;
 
 import io.choerodon.agile.api.dto.ProductVersionReleaseDTO;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
-import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;
+import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
 /**
- * Created by jian_zhang02@163.com on 2018/5/15.
+ * Created by HuangFuqiang@choerodon.io on 2018/8/9.
+ * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class ProductVersionRule {
+public class ProductVersionValidator {
+
     @Autowired
     private ProductVersionMapper productVersionMapper;
 

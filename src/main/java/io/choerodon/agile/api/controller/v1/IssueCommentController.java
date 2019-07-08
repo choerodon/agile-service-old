@@ -2,8 +2,8 @@ package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.validator.IssueCommentValidator;
 import io.choerodon.agile.app.service.IssueCommentService;
-import io.choerodon.agile.domain.agile.rule.IssueCommentRule;
 import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -32,7 +32,7 @@ public class IssueCommentController {
     @Autowired
     private IssueCommentService issueCommentService;
     @Autowired
-    private IssueCommentRule issueCommentRule;
+    private IssueCommentValidator issueCommentValidator;
     @Autowired
     private VerifyUpdateUtil verifyUpdateUtil;
 
@@ -43,7 +43,7 @@ public class IssueCommentController {
                                                               @PathVariable(name = "project_id") Long projectId,
                                                               @ApiParam(value = "创建issue评论对象", required = true)
                                                               @RequestBody IssueCommentCreateDTO issueCommentCreateDTO) {
-        issueCommentRule.verifyCreateData(issueCommentCreateDTO);
+        issueCommentValidator.verifyCreateData(issueCommentCreateDTO);
         return Optional.ofNullable(issueCommentService.createIssueComment(projectId, issueCommentCreateDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.IssueComment.createIssueComment"));
@@ -56,7 +56,7 @@ public class IssueCommentController {
                                                               @PathVariable(name = "project_id") Long projectId,
                                                               @ApiParam(value = "更新issue对象", required = true)
                                                               @RequestBody JSONObject issueCommentUpdate) {
-        issueCommentRule.verifyUpdateData(projectId, issueCommentUpdate);
+        issueCommentValidator.verifyUpdateData(projectId, issueCommentUpdate);
         IssueCommentUpdateDTO issueCommentUpdateDTO = new IssueCommentUpdateDTO();
         List<String> stringList = verifyUpdateUtil.verifyUpdateData(issueCommentUpdate, issueCommentUpdateDTO);
         return Optional.ofNullable(issueCommentService.updateIssueComment(issueCommentUpdateDTO, stringList,projectId))

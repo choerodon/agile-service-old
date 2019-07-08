@@ -2,11 +2,11 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.dto.IssueLinkCreateDTO;
 import io.choerodon.agile.api.dto.IssueLinkDTO;
+import io.choerodon.agile.api.validator.IssueLinkValidator;
 import io.choerodon.agile.app.assembler.IssueLinkAssembler;
 import io.choerodon.agile.app.service.IssueLinkService;
 import io.choerodon.agile.domain.agile.entity.IssueLinkE;
 import io.choerodon.agile.infra.repository.IssueLinkRepository;
-import io.choerodon.agile.domain.agile.rule.IssueLinkRule;
 import io.choerodon.agile.infra.mapper.IssueLinkMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class IssueLinkServiceImpl implements IssueLinkService {
     @Autowired
     private IssueLinkRepository issueLinkRepository;
     @Autowired
-    private IssueLinkRule issueLinkRule;
+    private IssueLinkValidator issueLinkValidator;
     @Autowired
     private IssueLinkAssembler issueLinkAssembler;
 
@@ -36,8 +36,8 @@ public class IssueLinkServiceImpl implements IssueLinkService {
         List<IssueLinkE> issueLinkEList = issueLinkAssembler.toTargetList(issueLinkCreateDTOList, IssueLinkE.class);
         issueLinkEList.forEach(issueLinkE -> {
             issueLinkE.setProjectId(projectId);
-            issueLinkRule.verifyCreateData(issueLinkE);
-            if (issueLinkRule.checkUniqueLink(issueLinkE)) {
+            issueLinkValidator.verifyCreateData(issueLinkE);
+            if (issueLinkValidator.checkUniqueLink(issueLinkE)) {
                 issueLinkRepository.create(issueLinkE);
             }
         });

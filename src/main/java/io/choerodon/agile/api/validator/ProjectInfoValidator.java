@@ -1,16 +1,15 @@
-package io.choerodon.agile.domain.agile.rule;
+package io.choerodon.agile.api.validator;
 
 import io.choerodon.agile.api.dto.ProjectInfoDTO;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.stereotype.Component;
 
 /**
- * @author dinghuang123@gmail.com
- * @since 2018/6/15
+ * Created by HuangFuqiang@choerodon.io on 2019/7/8.
+ * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class ProjectInfoRule {
-
+public class ProjectInfoValidator {
 
     public void verifyUpdateData(ProjectInfoDTO projectInfoDTO, Long projectId) {
         projectInfoDTO.setProjectId(projectId);
@@ -18,4 +17,5 @@ public class ProjectInfoRule {
             throw new CommonException("error.projectInfo.infoId");
         }
     }
+
 }

@@ -9,15 +9,14 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.validator.IssueLinkValidator;
 import io.choerodon.agile.api.validator.IssueValidator;
+import io.choerodon.agile.api.validator.ProductVersionValidator;
+import io.choerodon.agile.api.validator.SprintValidator;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.domain.agile.event.IssuePayload;
-import io.choerodon.agile.domain.agile.rule.IssueLinkRule;
-import io.choerodon.agile.domain.agile.rule.IssueRule;
-import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
-import io.choerodon.agile.domain.agile.rule.SprintRule;
 import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
 import io.choerodon.agile.infra.common.enums.ObjectSchemeCode;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
@@ -93,7 +92,7 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private ReportAssembler reportAssembler;
     @Autowired
-    private ProductVersionRule productVersionRule;
+    private ProductVersionValidator productVersionValidator;
     @Autowired
     private IssueComponentRepository issueComponentRepository;
     @Autowired
@@ -101,9 +100,7 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private IssueLabelRepository issueLabelRepository;
     @Autowired
-    private IssueRule issueRule;
-    @Autowired
-    private SprintRule sprintRule;
+    private SprintValidator sprintValidator;
     @Autowired
     private SprintMapper sprintMapper;
     @Autowired
@@ -186,6 +183,8 @@ public class IssueServiceImpl implements IssueService {
     private StoryMapMapper storyMapMapper;
     @Autowired
     private RankMapper rankMapper;
+    @Autowired
+    private IssueValidator issueValidator;
 
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
@@ -264,7 +263,7 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private IssueLinkAssembler issueLinkAssembler;
     @Autowired
-    private IssueLinkRule issueLinkRule;
+    private IssueLinkValidator issueLinkValidator;
     @Autowired
     private PiMapper piMapper;
 
@@ -312,7 +311,7 @@ public class IssueServiceImpl implements IssueService {
         if (issueE.isIssueMapRank()) {
             calculationMapRank(issueE);
         }
-        issueRule.verifyStoryPoints(issueE);
+        issueValidator.verifyStoryPoints(issueE);
     }
 
     private void calculationProgramRank(IssueE issueE) {
@@ -334,7 +333,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void calculationRank(Long projectId, IssueE issueE) {
-        if (sprintRule.hasIssue(projectId, issueE.getSprintId())) {
+        if (sprintValidator.hasIssue(projectId, issueE.getSprintId())) {
             String rank = sprintMapper.queryMaxRank(projectId, issueE.getSprintId());
             issueE.setRank(RankUtil.genNext(rank));
         } else {
@@ -925,7 +924,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public List<IssueSearchDTO> batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds) {
         if (versionId != null && !Objects.equals(versionId, 0L)) {
-            productVersionRule.judgeExist(projectId, versionId);
+            productVersionValidator.judgeExist(projectId, versionId);
             VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
             versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
             issueRepository.batchIssueToVersion(versionIssueRelE);
@@ -939,7 +938,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public void batchIssueToVersionTest(Long projectId, Long versionId, List<Long> issueIds) {
         if (versionId != null && !Objects.equals(versionId, 0L)) {
-            productVersionRule.judgeExist(projectId, versionId);
+            productVersionValidator.judgeExist(projectId, versionId);
             if (issueMapper.queryIssueIdsIsTest(projectId, issueIds) != issueIds.size()) {
                 throw new CommonException("error.Issue.type.isNotIssueTest");
             }
@@ -954,7 +953,7 @@ public class IssueServiceImpl implements IssueService {
     public void batchToVersionInStoryMap(Long projectId, Long versionId, StoryMapMoveDTO storyMapMoveDTO) {
         List<Long> issueIds = storyMapMoveDTO.getVersionIssueIds();
         if (versionId != null && !Objects.equals(versionId, 0L)) {
-            productVersionRule.judgeExistStoryMap(projectId, versionId);
+            productVersionValidator.judgeExistStoryMap(projectId, versionId);
             issueRepository.batchRemoveVersion(projectId, issueIds);
             VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
             versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
@@ -966,14 +965,14 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<IssueSearchDTO> batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds) {
-        issueRule.judgeExist(projectId, epicId);
+        issueValidator.judgeExist(projectId, epicId);
         issueRepository.batchIssueToEpic(projectId, epicId, issueIds);
         return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
     @Override
     public void batchStoryToFeature(Long projectId, Long featureId, List<Long> issueIds) {
-        issueRule.checkBatchStoryToFeature(featureId);
+        issueValidator.checkBatchStoryToFeature(featureId);
         List<Long> filterIds = issueMapper.filterStoryIds(projectId, issueIds);
         if (filterIds != null && !filterIds.isEmpty()) {
             IssueDO feature = issueMapper.selectByPrimaryKey(featureId);
@@ -985,7 +984,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public List<IssueSearchDTO> batchIssueToEpicInStoryMap(Long projectId, Long epicId, StoryMapMoveDTO storyMapMoveDTO) {
         List<Long> issueIds = storyMapMoveDTO.getEpicIssueIds();
-        issueRule.judgeExist(projectId, epicId);
+        issueValidator.judgeExist(projectId, epicId);
         issueRepository.batchIssueToEpic(projectId, epicId, issueIds);
         return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
@@ -1008,7 +1007,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<IssueSearchDTO> batchIssueToSprint(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO) {
-        sprintRule.judgeExist(projectId, sprintId);
+        sprintValidator.judgeExist(projectId, sprintId);
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
         if (moveIssueDTO.getBefore()) {
@@ -1177,7 +1176,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<IssueSearchDTO> batchIssueToSprintInStoryMap(Long projectId, Long sprintId, StoryMapMoveDTO storyMapMoveDTO) {
-        sprintRule.judgeExist(projectId, sprintId);
+        sprintValidator.judgeExist(projectId, sprintId);
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         //处理评级日志
         if (storyMapMoveDTO.getRankIndex() != null && !storyMapMoveDTO.getRankIndex()) {
@@ -1424,8 +1423,8 @@ public class IssueServiceImpl implements IssueService {
                 issueLinkE.setIssueId(issueLinkE.getIn() ? issueId : linkIssueId);
                 issueLinkE.setLinkedIssueId(issueLinkE.getIn() ? linkIssueId : issueId);
                 issueLinkE.setProjectId(projectId);
-                issueLinkRule.verifyCreateData(issueLinkE);
-                if (issueLinkRule.checkUniqueLink(issueLinkE)) {
+                issueLinkValidator.verifyCreateData(issueLinkE);
+                if (issueLinkValidator.checkUniqueLink(issueLinkE)) {
                     issueLinkRepository.create(issueLinkE);
                 }
             });
@@ -1437,7 +1436,7 @@ public class IssueServiceImpl implements IssueService {
             versionIssueRelE.setIssueId(issueId);
             versionIssueRelE.setProjectId(projectId);
             versionIssueRelE.setRelationType(versionIssueRelE.getRelationType() == null ? "fix" : versionIssueRelE.getRelationType());
-            issueRule.verifyVersionIssueRelData(versionIssueRelE);
+            issueValidator.verifyVersionIssueRelData(versionIssueRelE);
             if (versionIssueRelE.getName() != null && versionIssueRelE.getVersionId() == null) {
                 //重名校验
                 ProductVersionE productVersionE = versionIssueRelE.createProductVersionE();
@@ -1460,7 +1459,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void handleVersionIssueRelCreate(VersionIssueRelE versionIssueRelE) {
-        if (issueRule.existVersionIssueRel(versionIssueRelE)) {
+        if (issueValidator.existVersionIssueRel(versionIssueRelE)) {
             versionIssueRelRepository.create(versionIssueRelE);
         }
     }
@@ -1484,7 +1483,7 @@ public class IssueServiceImpl implements IssueService {
     private void handleComponentIssueRel(ComponentIssueRelE componentIssueRelE, Long projectId, Long issueId) {
         componentIssueRelE.setIssueId(issueId);
         componentIssueRelE.setProjectId(projectId);
-        issueRule.verifyComponentIssueRelData(componentIssueRelE);
+        issueValidator.verifyComponentIssueRelData(componentIssueRelE);
         //重名校验
         if (componentIssueRelE.getName() != null && componentIssueRelE.getComponentId() == null) {
             if (issueComponentMapper.checkNameExist(componentIssueRelE.getName(), componentIssueRelE.getProjectId())) {
@@ -1496,7 +1495,7 @@ public class IssueServiceImpl implements IssueService {
                 componentIssueRelE.setComponentId(issueComponentE.getComponentId());
             }
         }
-        if (issueRule.existComponentIssueRel(componentIssueRelE)) {
+        if (issueValidator.existComponentIssueRel(componentIssueRelE)) {
             componentIssueRelRepository.create(componentIssueRelE);
         }
     }
@@ -1613,7 +1612,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void handleLabelIssue(LabelIssueRelE labelIssueRelE) {
-        issueRule.verifyLabelIssueData(labelIssueRelE);
+        issueValidator.verifyLabelIssueData(labelIssueRelE);
         if (labelIssueRelE.getLabelName() != null && labelIssueRelE.getLabelId() == null) {
             //重名校验
             if (issueLabelMapper.checkNameExist(labelIssueRelE.getLabelName(), labelIssueRelE.getProjectId())) {
@@ -1624,7 +1623,7 @@ public class IssueServiceImpl implements IssueService {
                 labelIssueRelE.setLabelId(issueLabelE.getLabelId());
             }
         }
-        if (issueRule.existLabelIssue(labelIssueRelE)) {
+        if (issueValidator.existLabelIssue(labelIssueRelE)) {
             labelIssueRelRepository.create(labelIssueRelE);
         }
     }
@@ -1961,7 +1960,7 @@ public class IssueServiceImpl implements IssueService {
                 }
                 copy.setLinkTypeId(issueLinkE.getLinkTypeId());
                 copy.setProjectId(projectId);
-                if (issueLinkRule.checkUniqueLink(copy)) {
+                if (issueLinkValidator.checkUniqueLink(copy)) {
                     issueLinkRepository.create(copy);
                 }
             });
@@ -1979,7 +1978,7 @@ public class IssueServiceImpl implements IssueService {
             issueLinkE.setLinkTypeId(issueLinkTypeDO.getLinkTypeId());
             issueLinkE.setIssueId(newIssueId);
             issueLinkE.setProjectId(projectId);
-            if (issueLinkRule.checkUniqueLink(issueLinkE)) {
+            if (issueLinkValidator.checkUniqueLink(issueLinkE)) {
                 issueLinkRepository.create(issueLinkE);
             }
         }
@@ -2018,7 +2017,7 @@ public class IssueServiceImpl implements IssueService {
                 issueE.setTypeCode(SUB_TASK);
                 issueE.setIssueTypeId(issueTransformSubTask.getIssueTypeId());
                 issueE.setParentIssueId(issueTransformSubTask.getParentIssueId());
-                issueRule.verifySubTask(issueTransformSubTask.getParentIssueId());
+                issueValidator.verifySubTask(issueTransformSubTask.getParentIssueId());
                 //删除链接
                 issueLinkRepository.deleteByIssueId(issueE.getIssueId());
                 issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, ISSUE_TYPE_ID, RANK_FIELD, STATUS_ID, PARENT_ISSUE_ID, EPIC_SEQUENCE, STORY_POINTS_FIELD});
@@ -2035,10 +2034,10 @@ public class IssueServiceImpl implements IssueService {
                 }
                 return queryIssueSub(projectId, organizationId, issueE.getIssueId());
             } else {
-                throw new CommonException("error.IssueRule.subTaskError");
+                throw new CommonException("error.issueValidator.subTaskError");
             }
         } else {
-            throw new CommonException("error.IssueRule.issueNoFound");
+            throw new CommonException("error.issueValidator.issueNoFound");
         }
     }
 

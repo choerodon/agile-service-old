@@ -6,10 +6,8 @@ import com.google.common.collect.Ordering;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.SprintValidator;
 import io.choerodon.agile.app.assembler.*;
-import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.domain.agile.entity.SprintE;
-import io.choerodon.agile.domain.agile.rule.SprintRule;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.common.utils.PageUtil;
@@ -73,7 +71,7 @@ public class SprintServiceImpl implements SprintService {
     @Autowired
     private ReportMapper reportMapper;
     @Autowired
-    private SprintRule sprintRule;
+    private SprintValidator sprintValidator;
     @Autowired
     private QuickFilterMapper quickFilterMapper;
     @Autowired
@@ -89,17 +87,12 @@ public class SprintServiceImpl implements SprintService {
 
     @Autowired
     private StateMachineFeignClient stateMachineFeignClient;
-    @Autowired
-    private IssueService issueService;
 
     @Autowired
     private PiMapper piMapper;
 
     @Autowired
     private ArtMapper artMapper;
-
-    @Autowired
-    private SprintValidator sprintValidator;
 
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String SPRINT_DATA = "sprintData";
@@ -157,7 +150,7 @@ public class SprintServiceImpl implements SprintService {
         if (sprintUpdateDTO.getSprintName() != null && checkNameUpdate(projectId, sprintUpdateDTO.getSprintId(), sprintUpdateDTO.getSprintName())) {
             throw new CommonException("error.sprintName.exist");
         }
-        sprintRule.checkDate(sprintUpdateDTO);
+        sprintValidator.checkDate(sprintUpdateDTO);
         SprintE sprintE = sprintUpdateAssembler.toTarget(sprintUpdateDTO, SprintE.class);
         sprintE.trimSprintName();
         return sprintUpdateAssembler.toTarget(sprintRepository.updateSprint(sprintE), SprintDetailDTO.class);
@@ -342,7 +335,7 @@ public class SprintServiceImpl implements SprintService {
         if (!Objects.equals(projectId, sprintCompleteDTO.getProjectId())) {
             throw new CommonException(NOT_EQUAL_ERROR);
         }
-        sprintRule.judgeCompleteSprint(projectId, sprintCompleteDTO.getIncompleteIssuesDestination());
+        sprintValidator.judgeCompleteSprint(projectId, sprintCompleteDTO.getIncompleteIssuesDestination());
         SprintDO sprintDO = new SprintDO();
         sprintDO.setProjectId(projectId);
         sprintDO.setSprintId(sprintCompleteDTO.getSprintId());
