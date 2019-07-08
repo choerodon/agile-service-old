@@ -3,6 +3,7 @@ package io.choerodon.agile.app.service.impl;
 import com.alibaba.fastjson.JSON;
 
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.validator.ProductVersionValidator;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.ProductVersionService;
@@ -12,7 +13,6 @@ import io.choerodon.agile.domain.agile.event.VersionPayload;
 import io.choerodon.agile.infra.common.utils.PageUtil;
 import io.choerodon.agile.infra.repository.ProductVersionRepository;
 import io.choerodon.agile.infra.repository.VersionIssueRelRepository;
-import io.choerodon.agile.domain.agile.rule.ProductVersionRule;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.dataobject.IssueCountDO;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
@@ -71,7 +71,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     @Autowired
     private ProductVersionDataAssembler versionDataAssembler;
     @Autowired
-    private ProductVersionRule productVersionRule;
+    private ProductVersionValidator productVersionValidator;
     @Autowired
     private ProductVersionMapper productVersionMapper;
     @Autowired
@@ -121,7 +121,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             }
             ProductVersionE productVersionE = productVersionCreateAssembler.toTarget(versionCreateDTO, ProductVersionE.class);
             productVersionE.checkDate();
-            productVersionRule.judgeName(productVersionE.getProjectId(), productVersionE.getVersionId(), productVersionE.getName());
+            productVersionValidator.judgeName(productVersionE.getProjectId(), productVersionE.getVersionId(), productVersionE.getName());
             //设置状态
             productVersionE.setStatusCode(VERSION_PLANNING);
             //设置编号
@@ -143,7 +143,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
 
     @Override
     public Boolean deleteVersion(Long projectId, Long versionId, Long targetVersionId) {
-        productVersionRule.judgeExist(projectId, targetVersionId);
+        productVersionValidator.judgeExist(projectId, targetVersionId);
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         if (targetVersionId != null && !Objects.equals(targetVersionId, 0L)) {
             List<VersionIssueDO> versionFixIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, FIX_RELATION_TYPE);
@@ -187,7 +187,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         }
         ProductVersionE productVersionE = productVersionUpdateAssembler.toTarget(versionUpdateDTO, ProductVersionE.class);
         productVersionE.checkDate();
-        productVersionRule.judgeName(productVersionE.getProjectId(), productVersionE.getVersionId(), productVersionE.getName());
+        productVersionValidator.judgeName(productVersionE.getProjectId(), productVersionE.getVersionId(), productVersionE.getName());
         productVersionE.setVersionId(versionId);
         return productVersionUpdateAssembler.toTarget(productVersionRepository.updateVersion(productVersionE, fieldList), ProductVersionDetailDTO.class);
     }
@@ -289,7 +289,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         if (!Objects.equals(projectId, productVersionRelease.getProjectId())) {
             throw new CommonException(NOT_EQUAL_ERROR);
         }
-        productVersionRule.isRelease(projectId, productVersionRelease);
+        productVersionValidator.isRelease(projectId, productVersionRelease);
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         if (productVersionRelease.getTargetVersionId() != null && !Objects.equals(productVersionRelease.getTargetVersionId(), 0L)) {
             List<VersionIssueDO> incompleteIssues = productVersionMapper.queryIncompleteIssues(projectId, productVersionRelease.getVersionId());

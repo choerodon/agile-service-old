@@ -16,7 +16,6 @@ import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
 import io.choerodon.agile.domain.agile.entity.IssueE;
-import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
 import com.github.pagehelper.PageInfo;
@@ -44,8 +43,6 @@ public class IssueController {
     private IssueService issueService;
 
     @Autowired
-    private IssueRule issueRule;
-    @Autowired
     private VerifyUpdateUtil verifyUpdateUtil;
     @Autowired
     private IssueValidator issueValidator;
@@ -65,7 +62,7 @@ public class IssueController {
                                                 @RequestParam(value = "applyType") String applyType,
                                                 @ApiParam(value = "创建issue对象", required = true)
                                                 @RequestBody IssueCreateDTO issueCreateDTO) {
-        issueRule.verifyCreateData(issueCreateDTO, projectId, applyType);
+        issueValidator.verifyCreateData(issueCreateDTO, projectId, applyType);
         return Optional.ofNullable(stateMachineService.createIssue(issueCreateDTO, applyType))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.Issue.createIssue"));
@@ -90,7 +87,7 @@ public class IssueController {
                                                       @PathVariable(name = "project_id") Long projectId,
                                                       @ApiParam(value = "创建issue子任务对象", required = true)
                                                       @RequestBody IssueSubCreateDTO issueSubCreateDTO) {
-        issueRule.verifySubCreateData(issueSubCreateDTO, projectId);
+        issueValidator.verifySubCreateData(issueSubCreateDTO, projectId);
         return Optional.ofNullable(stateMachineService.createSubIssue(issueSubCreateDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.Issue.createSubIssue"));
@@ -103,7 +100,7 @@ public class IssueController {
                                                 @PathVariable(name = "project_id") Long projectId,
                                                 @ApiParam(value = "更新issue对象", required = true)
                                                 @RequestBody JSONObject issueUpdate) {
-        issueRule.verifyUpdateData(issueUpdate, projectId);
+        issueValidator.verifyUpdateData(issueUpdate, projectId);
         IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO();
         List<String> fieldList = verifyUpdateUtil.verifyUpdateData(issueUpdate, issueUpdateDTO);
         if (issueUpdate.get("featureDTO") != null) {
@@ -413,7 +410,7 @@ public class IssueController {
                                                         @RequestParam Long organizationId,
                                                         @ApiParam(value = "修改类型信息", required = true)
                                                         @RequestBody IssueUpdateTypeDTO issueUpdateTypeDTO) {
-        IssueE issueE = issueRule.verifyUpdateTypeData(projectId, issueUpdateTypeDTO);
+        IssueE issueE = issueValidator.verifyUpdateTypeData(projectId, issueUpdateTypeDTO);
         return Optional.ofNullable(issueService.updateIssueTypeCode(issueE, issueUpdateTypeDTO, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.updateIssueTypeCode"));
@@ -428,7 +425,7 @@ public class IssueController {
                                                           @RequestParam Long organizationId,
                                                           @ApiParam(value = "转换子任务信息", required = true)
                                                           @RequestBody IssueTransformSubTask issueTransformSubTask) {
-        issueRule.verifyTransformedSubTask(issueTransformSubTask);
+        issueValidator.verifyTransformedSubTask(issueTransformSubTask);
         return Optional.ofNullable(issueService.transformedSubTask(projectId, organizationId, issueTransformSubTask))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.transformedSubTask"));
@@ -443,7 +440,7 @@ public class IssueController {
                                                     @RequestParam Long organizationId,
                                                     @ApiParam(value = "转换任务信息", required = true)
                                                     @RequestBody IssueTransformTask issueTransformTask) {
-        IssueE issueE = issueRule.verifyTransformedTask(projectId, issueTransformTask);
+        IssueE issueE = issueValidator.verifyTransformedTask(projectId, issueTransformTask);
         return Optional.ofNullable(issueService.transformedTask(issueE, issueTransformTask, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.transformedTask"));

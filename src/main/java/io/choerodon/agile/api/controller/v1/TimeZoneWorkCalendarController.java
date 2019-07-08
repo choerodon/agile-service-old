@@ -1,8 +1,8 @@
 package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.validator.TimeZoneWorkCalendarValidator;
 import io.choerodon.agile.app.service.TimeZoneWorkCalendarService;
-import io.choerodon.agile.domain.agile.rule.TimeZoneWorkCalendarRule;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
@@ -28,7 +28,7 @@ public class TimeZoneWorkCalendarController {
     @Autowired
     private TimeZoneWorkCalendarService timeZoneWorkCalendarService;
     @Autowired
-    private TimeZoneWorkCalendarRule timeZoneWorkCalendarRule;
+    private TimeZoneWorkCalendarValidator timeZoneWorkCalendarValidator;
 
     @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation("获取时区设置")
@@ -63,7 +63,7 @@ public class TimeZoneWorkCalendarController {
                                                                                     @PathVariable(name = "timeZoneId") Long timeZoneId,
                                                                                     @ApiParam(value = "日期", required = true)
                                                                                     @RequestBody TimeZoneWorkCalendarRefCreateDTO timeZoneWorkCalendarRefCreateDTO) {
-        timeZoneWorkCalendarRule.verifyCreateTimeZoneWorkCalendarRef(organizationId, timeZoneId);
+        timeZoneWorkCalendarValidator.verifyCreateTimeZoneWorkCalendarRef(organizationId, timeZoneId);
         return Optional.ofNullable(timeZoneWorkCalendarService.createTimeZoneWorkCalendarRef(organizationId, timeZoneId, timeZoneWorkCalendarRefCreateDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.TimeZoneWorkCalendarController.createTimeZoneWorkCalendarRef"));

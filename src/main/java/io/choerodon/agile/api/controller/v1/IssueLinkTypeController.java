@@ -3,6 +3,7 @@ package io.choerodon.agile.api.controller.v1;
 import java.util.Optional;
 
 import io.choerodon.agile.api.dto.IssueLinkTypeSearchDTO;
+import io.choerodon.agile.api.validator.IssueLinkTypeValidator;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import com.github.pagehelper.PageInfo;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import io.choerodon.agile.api.dto.IssueLinkTypeCreateDTO;
 import io.choerodon.agile.api.dto.IssueLinkTypeDTO;
 import io.choerodon.agile.app.service.IssueLinkTypeService;
-import io.choerodon.agile.domain.agile.rule.IssueLinkTypeRule;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import springfox.documentation.annotations.ApiIgnore;
@@ -35,7 +35,7 @@ public class IssueLinkTypeController {
     @Autowired
     private IssueLinkTypeService issueLinkTypeService;
     @Autowired
-    private IssueLinkTypeRule issueLinkTypeRule;
+    private IssueLinkTypeValidator issueLinkTypeValidator;
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据项目id查询issueLinkType")
@@ -73,8 +73,8 @@ public class IssueLinkTypeController {
                                                                 @PathVariable(name = "project_id") Long projectId,
                                                                 @ApiParam(value = "创建issueLinkType对象", required = true)
                                                                 @RequestBody IssueLinkTypeCreateDTO issueLinkTypeCreateDTO) {
-        issueLinkTypeRule.verifyCreateData(issueLinkTypeCreateDTO, projectId);
-        issueLinkTypeRule.verifyIssueLinkTypeName(projectId, issueLinkTypeCreateDTO.getLinkName(), null);
+        issueLinkTypeValidator.verifyCreateData(issueLinkTypeCreateDTO, projectId);
+        issueLinkTypeValidator.verifyIssueLinkTypeName(projectId, issueLinkTypeCreateDTO.getLinkName(), null);
         return Optional.ofNullable(issueLinkTypeService.createIssueLinkType(issueLinkTypeCreateDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.createIssueLinkType"));
@@ -87,8 +87,8 @@ public class IssueLinkTypeController {
                                                                 @PathVariable(name = "project_id") Long projectId,
                                                                 @ApiParam(value = "issueLinkType", required = true)
                                                                 @RequestBody IssueLinkTypeDTO issueLinkTypeDTO) {
-        issueLinkTypeRule.verifyUpdateData(issueLinkTypeDTO, projectId);
-        issueLinkTypeRule.verifyIssueLinkTypeName(projectId, issueLinkTypeDTO.getLinkName(), issueLinkTypeDTO.getLinkTypeId());
+        issueLinkTypeValidator.verifyUpdateData(issueLinkTypeDTO, projectId);
+        issueLinkTypeValidator.verifyIssueLinkTypeName(projectId, issueLinkTypeDTO.getLinkName(), issueLinkTypeDTO.getLinkTypeId());
         return Optional.ofNullable(issueLinkTypeService.updateIssueLinkType(issueLinkTypeDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.IssueLinkType.updateIssueLinkType"));
@@ -103,7 +103,7 @@ public class IssueLinkTypeController {
                                               @PathVariable(name = "issueLinkTypeId") Long issueLinkTypeId,
                                               @ApiParam(value = "转移到其他的类型上，如果为空则不转移，直接删除")
                                               @RequestParam(required = false) Long toIssueLinkTypeId) {
-        issueLinkTypeRule.verifyDeleteData(issueLinkTypeId, toIssueLinkTypeId, projectId);
+        issueLinkTypeValidator.verifyDeleteData(issueLinkTypeId, toIssueLinkTypeId, projectId);
         issueLinkTypeService.deleteIssueLinkType(issueLinkTypeId, toIssueLinkTypeId, projectId);
         return new ResponseEntity(HttpStatus.OK);
     }

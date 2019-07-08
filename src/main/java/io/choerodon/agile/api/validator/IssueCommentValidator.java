@@ -1,4 +1,5 @@
-package io.choerodon.agile.domain.agile.rule;
+package io.choerodon.agile.api.validator;
+
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.dto.IssueCommentCreateDTO;
@@ -10,10 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * @author dinghuang123@gmail.com
+ * Created by HuangFuqiang@choerodon.io on 2019/7/8.
+ * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class IssueCommentRule {
+public class IssueCommentValidator {
 
     @Autowired
     private IssueMapper issueMapper;
@@ -43,4 +45,5 @@ public class IssueCommentRule {
             throw new CommonException("error.IssueCommentRule.issueComment");
         }
     }
+
 }

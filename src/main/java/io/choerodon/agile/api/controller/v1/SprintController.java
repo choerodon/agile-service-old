@@ -2,7 +2,6 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.app.service.TimeZoneWorkCalendarService;
-import io.choerodon.agile.domain.agile.rule.SprintRule;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import com.github.pagehelper.PageInfo;
@@ -36,9 +35,6 @@ public class SprintController {
 
     @Autowired
     private TimeZoneWorkCalendarService timeZoneWorkCalendarService;
-
-    @Autowired
-    private SprintRule sprintRule;
 
     private static final String CREATE_ERROR = "error.sprint.create";
     private static final String UPDATE_ERROR = "error.sprint.update";

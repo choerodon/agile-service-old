@@ -1,8 +1,8 @@
 package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.dto.ProjectInfoDTO;
+import io.choerodon.agile.api.validator.ProjectInfoValidator;
 import io.choerodon.agile.app.service.ProjectInfoService;
-import io.choerodon.agile.domain.agile.rule.ProjectInfoRule;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
@@ -27,7 +27,7 @@ public class ProjectInfoController {
     @Autowired
     private ProjectInfoService projectInfoService;
     @Autowired
-    private ProjectInfoRule projectInfoRule;
+    private ProjectInfoValidator projectInfoValidator;
 
     @Permission(type = ResourceType.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("更新projectInfo")
@@ -36,7 +36,7 @@ public class ProjectInfoController {
                                                             @PathVariable(name = "project_id") Long projectId,
                                                             @ApiParam(value = "projectInfo对象", required = true)
                                                             @RequestBody ProjectInfoDTO projectInfoDTO) {
-        projectInfoRule.verifyUpdateData(projectInfoDTO, projectId);
+        projectInfoValidator.verifyUpdateData(projectInfoDTO, projectId);
         return Optional.ofNullable(projectInfoService.updateProjectInfo(projectInfoDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.projectInfo.update"));

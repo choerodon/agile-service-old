@@ -1,4 +1,4 @@
-package io.choerodon.agile.domain.agile.rule;
+package io.choerodon.agile.api.validator;
 
 import io.choerodon.agile.domain.agile.entity.IssueLinkE;
 import io.choerodon.agile.infra.dataobject.IssueLinkDO;
@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * @author dinghuang123@gmail.com
- * @since 2018/6/14
+ * Created by HuangFuqiang@choerodon.io on 2019/7/8.
+ * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class IssueLinkRule {
+public class IssueLinkValidator {
 
     @Autowired
     private IssueLinkTypeMapper issueLinkTypeMapper;
@@ -57,4 +57,5 @@ public class IssueLinkRule {
         }
         return true;
     }
+
 }
