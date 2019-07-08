@@ -2,11 +2,9 @@ package io.choerodon.agile
 
 import com.alibaba.fastjson.JSON
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.choerodon.agile.api.eventhandler.AgileEventHandler
+import io.choerodon.agile.app.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueAttachmentService
-import io.choerodon.agile.app.service.ProductVersionService
 import io.choerodon.agile.app.service.impl.IssueAttachmentServiceImpl
-import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl
 import io.choerodon.agile.api.vo.event.OrganizationCreateEventPayload
 import io.choerodon.agile.api.vo.event.ProjectCreateAgilePayload
 import io.choerodon.agile.api.vo.event.ProjectEvent
@@ -16,7 +14,6 @@ import io.choerodon.agile.infra.common.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.feign.FileFeignClient
 import io.choerodon.agile.infra.mapper.*
-import io.choerodon.asgard.saga.feign.SagaClient
 import io.choerodon.core.convertor.ApplicationContextHelper
 import io.choerodon.core.oauth.CustomUserDetails
 import io.choerodon.liquibase.LiquibaseConfig
